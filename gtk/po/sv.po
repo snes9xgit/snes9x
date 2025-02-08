@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-10-29 23:56+0100\n"
-"PO-Revision-Date: 2025-02-08 18:09+0100\n"
+"PO-Revision-Date: 2025-02-08 19:07+0100\n"
 "Last-Translator: Daniel Nylander <github@danielnylander.se>\n"
 "Language-Team: \n"
 "Language: sv\n"
@@ -28,7 +28,6 @@ msgid "Keyboard {}{}{}{}"
 msgstr "Tangentbord {}{}{}{}"
 
 #: src/gtk_binding.cpp:267
-#, fuzzy
 msgid "Axis {} {} {}%"
 msgstr "Axel {} {} {}%"
 
@@ -99,9 +98,8 @@ msgstr ""
 "ange koderna manuellt."
 
 #: src/gtk_config.cpp:407
-#, fuzzy
 msgid "Couldn't create config directory: {}\n"
-msgstr "Det gick inte att skapa en konfigurationskatalog: {}\n"
+msgstr "Kunde inte skapa konfigurationskatalog: {}\n"
 
 #: src/gtk_netplay.cpp:66
 msgid "Connection Error"
@@ -134,11 +132,8 @@ msgid "XVideo – Use hardware video blitter"
 msgstr "XVideo - Använda hårdvaru-videoblitter"
 
 #: src/gtk_preferences.cpp:147
-#, fuzzy
 msgid "Vulkan"
-msgstr ""
-"Fel vid initiering av Vulkan-renderare:\n"
-"{}"
+msgstr "Vulkan"
 
 #: src/gtk_preferences.cpp:149
 #, fuzzy
@@ -159,16 +154,14 @@ msgstr[0] "millisekund"
 msgstr[1] "millisekunder"
 
 #: src/gtk_preferences.cpp:260 src/gtk_preferences.cpp:476
-#, fuzzy
 msgid "second after change"
 msgid_plural "seconds after change"
 msgstr[0] "sekund efter förändring"
 msgstr[1] "sekunder efter ändring"
 
 #: src/gtk_preferences.cpp:271
-#, fuzzy
 msgid "Snes9x version: "
-msgstr "Snes9x-version:"
+msgstr "Snes9x-version: "
 
 #: src/gtk_preferences.cpp:272
 #, fuzzy
@@ -181,7 +174,6 @@ msgid "English localization by Brandon Wright"
 msgstr "Engelsk lokalisering av Brandon Wright"
 
 #: src/gtk_preferences.cpp:298
-#, fuzzy
 msgid "Select directory"
 msgstr "Välj katalog"
 
@@ -220,7 +212,6 @@ msgid "Current joystick centers have been saved."
 msgstr "Aktuella joystickcentraler har sparats."
 
 #: src/gtk_preferences.cpp:981
-#, fuzzy
 msgid "Calibration Complete"
 msgstr "Kalibrering slutförd"
 
@@ -257,21 +248,18 @@ msgid "All Files"
 msgstr "Alla filer"
 
 #: src/gtk_s9xwindow.cpp:616
-#, fuzzy
 msgid "Couldn't load files."
-msgstr "Det gick inte att ladda filer."
+msgstr "Kunde inte att läsa in filer."
 
 #: src/gtk_s9xwindow.cpp:637
 msgid "Open SNES Movie"
 msgstr "Öppna SNES-film"
 
 #: src/gtk_s9xwindow.cpp:642
-#, fuzzy
 msgid "New SNES Movie"
 msgstr "Ny SNES-film"
 
 #: src/gtk_s9xwindow.cpp:661
-#, fuzzy
 msgid "SNES Movies"
 msgstr "SNES-filmer"
 
@@ -280,14 +268,12 @@ msgid "Open SNES ROM Image"
 msgstr "Öppna SNES ROM-avbild"
 
 #: src/gtk_s9xwindow.cpp:695
-#, fuzzy
 msgid "SNES ROM Images"
-msgstr "SNES ROM-bilder"
+msgstr "SNES ROM-avbilder"
 
 #: src/gtk_s9xwindow.cpp:740
-#, fuzzy
 msgid "Couldn't load file: "
-msgstr "Det gick inte att ladda filen:"
+msgstr "Kunde inte läsa in filen: "
 
 #: src/gtk_s9xwindow.cpp:767
 #, fuzzy
@@ -308,12 +294,11 @@ msgid "Save SPC file..."
 msgstr "Spara SPC-fil..."
 
 #: src/gtk_s9xwindow.cpp:872
-#, fuzzy
 msgid "Couldn't save SPC file:"
-msgstr "Filen SPC kunde inte sparas:"
+msgstr "Kunde inte spara SPC-fil:"
 
 #: src/gtk_s9xwindow.cpp:888
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "<b>Information for %s</b>\n"
 "\n"
@@ -343,8 +328,8 @@ msgstr ""
 "<i>ROM-storlek</i>: %s\n"
 "<i>Beräknad storlek</i>: %d\n"
 "<i>SRAM-storlek</i>: %s\n"
-"<i>Header Checksum</i>: %04X\n"
-"<i>Checksumma Komplement</i>: %04X\n"
+"<i>Kontrollsumma för header</i>: %04X\n"
+"<i>Kontrollsumma komplement</i>: %04X\n"
 "<i>Faktisk kontrollsumma</i>: %04X\n"
 "<i>Video</i>: %s\n"
 "<i>CRC32</i>: %08X\n"
@@ -383,9 +368,8 @@ msgid "Export Shader Preset to:"
 msgstr "Exportera Shader-förinställning till:"
 
 #: src/gtk_shader_parameters.cpp:90
-#, fuzzy
 msgid "Shader Preset"
-msgstr "Förinställd shader"
+msgstr "Shader-förval"
 
 #: src/gtk_shader_parameters.cpp:131
 #, fuzzy
@@ -397,9 +381,8 @@ msgid "About Snes9x"
 msgstr "Om Snes9x"
 
 #: src/snes9x.ui:283
-#, fuzzy
 msgid "Snes9x Cheats"
-msgstr "Snes9x fusk"
+msgstr "Snes9x-fusk"
 
 #: src/snes9x.ui:401
 #, fuzzy
@@ -407,12 +390,10 @@ msgid "Update Cheat"
 msgstr "Uppdatera fusk"
 
 #: src/snes9x.ui:416
-#, fuzzy
 msgid "Disable All"
 msgstr "Inaktivera alla"
 
 #: src/snes9x.ui:432
-#, fuzzy
 msgid "Delete All Cheats"
 msgstr "Ta bort alla fusk"
 
@@ -459,9 +440,8 @@ msgid "Pixel art patterns"
 msgstr "Pixelkonstmönster"
 
 #: src/snes9x.ui:815
-#, fuzzy
 msgid "Dithered gradient"
-msgstr "Diterad gradient"
+msgstr "Ditherad gradient"
 
 #: src/snes9x.ui:818
 #, fuzzy
@@ -592,14 +572,12 @@ msgid "Toggle the menu bar"
 msgstr "Växla mellan menyfältet"
 
 #: src/snes9x.ui:1064
-#, fuzzy
 msgid "Exit fullscreen mode"
 msgstr "Avsluta helskärmsläge"
 
 #: src/snes9x.ui:1067 src/snes9x.ui:6932
-#, fuzzy
 msgid "Quit Snes9x"
-msgstr "Sluta Snes9x"
+msgstr "Avsluta Snes9x"
 
 #: src/snes9x.ui:1078
 #, fuzzy
@@ -630,7 +608,6 @@ msgid "44,100 Hz"
 msgstr "44,100 Hz"
 
 #: src/snes9x.ui:1104
-#, fuzzy
 msgid "32,000 Hz"
 msgstr "32.000 Hz"
 
@@ -659,9 +636,8 @@ msgid "16‑bit (GL_RGB)"
 msgstr "16‑bit (GL_RGB)"
 
 #: src/snes9x.ui:1139
-#, fuzzy
 msgid "32‑bit (GL_BGRA)"
-msgstr "32-bitars (GL_BGRA)"
+msgstr "32‑bitars (GL_BGRA)"
 
 #: src/snes9x.ui:1150
 msgid "Nearest"
@@ -672,17 +648,14 @@ msgid "Linear"
 msgstr "Linjär"
 
 #: src/snes9x.ui:1156
-#, fuzzy
 msgid "Gaussian (correct)"
 msgstr "Gaussisk (korrekt)"
 
 #: src/snes9x.ui:1159
-#, fuzzy
 msgid "Cubic"
 msgstr "Kubisk"
 
 #: src/snes9x.ui:1162
-#, fuzzy
 msgid "Sinc"
 msgstr "Sinc"
 
@@ -720,9 +693,8 @@ msgid "Open _MultiCart…"
 msgstr "Öppna _MultiCart…"
 
 #: src/snes9x.ui:1266
-#, fuzzy
 msgid "_Load State"
-msgstr "Läs in tillstånd"
+msgstr "_Läs in tillstånd"
 
 #: src/snes9x.ui:1276 src/snes9x.ui:1410
 msgid "Slot _0"
@@ -765,9 +737,8 @@ msgid "Slot _9"
 msgstr "Plats _9"
 
 #: src/snes9x.ui:1372
-#, fuzzy
 msgid "From _File…"
-msgstr "&Skanna NFC-tagg från fil"
+msgstr "Från _fil…"
 
 #: src/snes9x.ui:1387
 #, fuzzy
@@ -780,7 +751,7 @@ msgstr "_Spara tillstånd"
 
 #: src/snes9x.ui:1506
 msgid "To _File…"
-msgstr "Till _fil..."
+msgstr "Till _fil…"
 
 #: src/snes9x.ui:1523
 msgid "Save SPC…"
@@ -800,18 +771,16 @@ msgid "_Emulation"
 msgstr "_Emulering"
 
 #: src/snes9x.ui:1578
-#, fuzzy
 msgid "Run / _Continue"
-msgstr "Kör / _Continue"
+msgstr "Kör / _Fortsätt"
 
 #: src/snes9x.ui:1589
 msgid "_Pause"
 msgstr "_Paus"
 
 #: src/snes9x.ui:1607
-#, fuzzy
 msgid "Load _Movie…"
-msgstr "Ladda _Movie.."
+msgstr "Läs in _film…"
 
 #: src/snes9x.ui:1619
 #, fuzzy
@@ -823,9 +792,8 @@ msgid "_Stop Recording"
 msgstr "_Stoppa inspelning"
 
 #: src/snes9x.ui:1643
-#, fuzzy
 msgid "_Jump to Frame…"
-msgstr "_Hoppa till ramen.."
+msgstr "_Hoppa till bildruta…"
 
 #: src/snes9x.ui:1661
 #, fuzzy
@@ -904,9 +872,8 @@ msgid "_Options"
 msgstr "A_lternativ"
 
 #: src/snes9x.ui:1867
-#, fuzzy
 msgid "Controller Ports"
-msgstr "Styrenhetsportar"
+msgstr "Kontrollerportar"
 
 #: src/snes9x.ui:1876
 msgid "SNES Port 1"
@@ -931,7 +898,6 @@ msgid "SNES Port 2"
 msgstr "SNES-port 2"
 
 #: src/snes9x.ui:1949
-#, fuzzy
 msgid "Multitap"
 msgstr "Multitap"
 
@@ -991,9 +957,8 @@ msgstr ""
 
 #: src/snes9x.ui:2303 src/snes9x.ui:4001 src/snes9x.ui:5116 src/snes9x.ui:5131
 #: src/snes9x.ui:5148 src/snes9x.ui:5165 src/snes9x.ui:5182
-#, fuzzy
 msgid "Browse…"
-msgstr "Bläddra"
+msgstr "Bläddra…"
 
 #: src/snes9x.ui:2325
 #, fuzzy
@@ -1005,7 +970,6 @@ msgid "<b>ROM Image</b>"
 msgstr "<b>ROM-avbild</b>"
 
 #: src/snes9x.ui:2374
-#, fuzzy
 msgid "Connect to another computer"
 msgstr "Anslut till en annan dator"
 
@@ -1015,7 +979,6 @@ msgid "Connect to another computer that is running Snes9x NetPlay as a server"
 msgstr "Anslut till en annan dator som kör Snes9x NetPlay som server"
 
 #: src/snes9x.ui:2398
-#, fuzzy
 msgid "Name or IP address:"
 msgstr "Namn eller IP-adress:"
 
@@ -1034,9 +997,8 @@ msgid "Connect to specified TCP port on remote computer"
 msgstr "Anslut till angiven TCP-port på fjärrdatorn"
 
 #: src/snes9x.ui:2463
-#, fuzzy
 msgid "Act as a server"
-msgstr "Fungera som server"
+msgstr "Fungera som en server"
 
 #: src/snes9x.ui:2467
 #, fuzzy
@@ -1098,9 +1060,8 @@ msgid "<b>Settings</b>"
 msgstr "<b>Inställningar</b>"
 
 #: src/snes9x.ui:2680
-#, fuzzy
 msgid "Snes9x Preferences"
-msgstr "Snes9x Inställningar"
+msgstr "Inställningar för Snes9x"
 
 #: src/snes9x.ui:2796
 #, fuzzy
@@ -1117,7 +1078,6 @@ msgid "Show local time"
 msgstr "Visa lokal tid"
 
 #: src/snes9x.ui:2827
-#, fuzzy
 msgid "Show frame rate"
 msgstr "Visa bildfrekvens"
 
@@ -1175,9 +1135,8 @@ msgid "Scales the image so no black bars are present"
 msgstr "Skalar bilden så att inga svarta fält visas"
 
 #: src/snes9x.ui:3054
-#, fuzzy
 msgid "Aspect ratio:"
-msgstr "Bildförhållande för pixel"
+msgstr "Bildförhållande:"
 
 #: src/snes9x.ui:3089
 #, fuzzy
@@ -1199,7 +1158,6 @@ msgid "Use"
 msgstr "Använd"
 
 #: src/snes9x.ui:3170
-#, fuzzy
 msgid "High‑resolution effect:"
 msgstr "Högupplösande effekt:"
 
@@ -1209,18 +1167,16 @@ msgid "Apply scaling filter:"
 msgstr "Använd skalningsfilter:"
 
 #: src/snes9x.ui:3281
-#, fuzzy
 msgid "Video preset:"
-msgstr "Förinställd video:"
+msgstr "Videoförval:"
 
 #: src/snes9x.ui:3295
 msgid "Composite"
 msgstr "Komposit"
 
 #: src/snes9x.ui:3309
-#, fuzzy
 msgid "S‑Video"
-msgstr "S-Video"
+msgstr "S‑Video"
 
 #: src/snes9x.ui:3323
 msgid "RGB"
@@ -1244,7 +1200,6 @@ msgid "Brightness:"
 msgstr "Ljusstyrka:"
 
 #: src/snes9x.ui:3423
-#, fuzzy
 msgid "Contrast:"
 msgstr "Kontrast:"
 
@@ -1258,7 +1213,6 @@ msgid "Hue:"
 msgstr "Hue:"
 
 #: src/snes9x.ui:3654
-#, fuzzy
 msgid "Gamma:"
 msgstr "Gamma:"
 
@@ -1325,9 +1279,8 @@ msgstr ""
 "minska inmatningslatensen"
 
 #: src/snes9x.ui:3969
-#, fuzzy
 msgid "Shader:"
-msgstr "Asynk shaderkompilering"
+msgstr "Shader:"
 
 #: src/snes9x.ui:4033
 #, fuzzy
@@ -1344,16 +1297,14 @@ msgstr ""
 "för grafikkortets"
 
 #: src/snes9x.ui:4061
-#, fuzzy
 msgid "Hardware Acceleration"
-msgstr "Acceleration av hårdvara"
+msgstr "Hårdvaruacceleration"
 
 #: src/snes9x.ui:4090
 msgid "Display"
 msgstr "Skärm"
 
 #: src/snes9x.ui:4143
-#, fuzzy
 msgid "Sound driver:"
 msgstr "Ljuddrivrutin:"
 
@@ -1404,9 +1355,8 @@ msgid "Playback rate:"
 msgstr "Uppspelningshastighet:"
 
 #: src/snes9x.ui:4310
-#, fuzzy
 msgid "Buffer size:"
-msgstr "ok buffertstorlek"
+msgstr "Buffertstorlek:"
 
 #: src/snes9x.ui:4324
 #, fuzzy
@@ -1414,7 +1364,6 @@ msgid "Dynamic rate limit:"
 msgstr "Dynamisk hastighetsbegränsning:"
 
 #: src/snes9x.ui:4369
-#, fuzzy
 msgid "Input rate:"
 msgstr "Inmatningshastighet:"
 
@@ -1430,9 +1379,8 @@ msgstr ""
 "stammar. Används bäst med alternativet \"Ljudbuffertssynkronisering\"."
 
 #: src/snes9x.ui:4432
-#, fuzzy
 msgid "Video rate:"
-msgstr "Videohastighet:"
+msgstr "Videofrekvens:"
 
 #: src/snes9x.ui:4469
 #, fuzzy
@@ -1532,7 +1480,6 @@ msgid "Gaussian is the correct behavior for SNES hardware"
 msgstr "Gaussian är det korrekta beteendet för SNES-hårdvara"
 
 #: src/snes9x.ui:4882
-#, fuzzy
 msgid "Sound filter:"
 msgstr "Ljudfilter:"
 
@@ -1553,19 +1500,16 @@ msgid "Save states:"
 msgstr "Sparade tillstånd:"
 
 #: src/snes9x.ui:5228
-#, fuzzy
 msgid "Cheats:"
 msgstr "Fusk:"
 
 #: src/snes9x.ui:5242
-#, fuzzy
 msgid "Patches:"
-msgstr "Misslyckades med att verkställa patchar för grafikpaketet '{}'"
+msgstr "Patchar:"
 
 #: src/snes9x.ui:5256
-#, fuzzy
 msgid "Exports:"
-msgstr "Export:"
+msgstr ""
 
 #: src/snes9x.ui:5280
 #, fuzzy
@@ -1608,9 +1552,8 @@ msgid "Swap with:"
 msgstr "Byt med:"
 
 #: src/snes9x.ui:5520
-#, fuzzy
 msgid "_Swap"
-msgstr "byt ut"
+msgstr "_Växla"
 
 #: src/snes9x.ui:5542
 #, fuzzy
@@ -1726,9 +1669,8 @@ msgid "<b>Calibration</b>"
 msgstr "<b>Kalibrering</b>"
 
 #: src/snes9x.ui:6659
-#, fuzzy
 msgid "Joystick Options"
-msgstr "Joystick-alternativ"
+msgstr "Styrspaksalternativ"
 
 #: src/snes9x.ui:6677 src/snes9x.ui:9029
 #, fuzzy
@@ -1961,9 +1903,8 @@ msgid "Seek to frame"
 msgstr "Försök att rama in"
 
 #: src/snes9x.ui:8768
-#, fuzzy
 msgid "Load Movie"
-msgstr "Ladda film"
+msgstr "Läs in film"
 
 #: src/snes9x.ui:8783
 #, fuzzy
@@ -1989,9 +1930,8 @@ msgid "Rewind"
 msgstr "Spola tillbaka"
 
 #: src/snes9x.ui:8975
-#, fuzzy
 msgid "Capture/release mouse"
-msgstr "Fånga/släppa musen"
+msgstr "Fånga/släpp muspekaren"
 
 #: src/snes9x.ui:9011
 msgid "Misc"
@@ -2039,7 +1979,6 @@ msgid "UI"
 msgstr "Användargränssnitt"
 
 #: src/snes9x.ui:9344
-#, fuzzy
 msgid ""
 "  Snes9x – A Portable Super Nintendo Entertainment System™ Emulator\n"
 "\n"
@@ -2072,7 +2011,7 @@ msgid ""
 msgstr ""
 "  Snes9x - En bärbar emulator för Super Nintendo Entertainment System™\n"
 "\n"
-"  Snes9x hemsida: http://www.snes9x.com/\n"
+"  Snes9x webbsida: http://www.snes9x.com/\n"
 "  Snes9x källkod: https://github.com/snes9xgit/snes9x/\n"
 "\n"
 "  Tillstånd att använda, kopiera, modifiera och/eller distribuera Snes9x i "
