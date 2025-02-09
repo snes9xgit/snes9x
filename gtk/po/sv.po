@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-10-29 23:56+0100\n"
-"PO-Revision-Date: 2025-02-08 19:28+0100\n"
+"PO-Revision-Date: 2025-02-09 08:39+0100\n"
 "Last-Translator: Daniel Nylander <github@danielnylander.se>\n"
 "Language-Team: \n"
 "Language: sv\n"
@@ -36,9 +36,8 @@ msgid "Button {}"
 msgstr "Knapp {}"
 
 #: src/gtk_binding.cpp:274
-#, fuzzy
 msgid "Joystick {} {}"
-msgstr "Joystick {} {}"
+msgstr "Styrspak {} {}"
 
 #: src/gtk_binding.cpp:278
 msgid "Unset"
@@ -61,22 +60,18 @@ msgid "No description"
 msgstr "Ingen beskrivning"
 
 #: src/gtk_cheat.cpp:231 src/gtk_cheat.cpp:360
-#, fuzzy
 msgid "Couldn't find any cheat codes in input."
 msgstr "Kunde inte hitta några fuskkoder i inmatningen."
 
 #: src/gtk_cheat.cpp:306
-#, fuzzy
 msgid "Couldn't Find Cheats Database"
 msgstr "Kunde inte hitta fuskdatabasen"
 
 #: src/gtk_cheat.cpp:306
-#, fuzzy
 msgid "No Matching Game Found"
 msgstr "Inget matchande spel hittades"
 
 #: src/gtk_cheat.cpp:307
-#, fuzzy
 msgid ""
 "The database file <b>cheats.bml</b> was not found. It is normally installed "
 "with Snes9x, but you may also place a custom copy in your configuration or "
@@ -87,7 +82,6 @@ msgstr ""
 "cheats-katalog."
 
 #: src/gtk_cheat.cpp:309
-#, fuzzy
 msgid ""
 "No matching game was found in the databases. If you are using a non-official "
 "translation or modified copy, you may be able to find and manually enter the "
@@ -106,42 +100,36 @@ msgid "Connection Error"
 msgstr "Anslutningsfel"
 
 #: src/gtk_netplay_dialog.cpp:31
-#, fuzzy
 msgid "frame behind"
 msgid_plural "frames behind"
-msgstr[0] "ram bakom"
-msgstr[1] "ramar bakom"
+msgstr[0] "bildruta bakom"
+msgstr[1] "bildrutor bakom"
 
 #: src/gtk_preferences.cpp:19
-#, fuzzy
 msgid "Same location as current game"
-msgstr "Samma plats som nuvarande spel"
+msgstr "Samma plats som aktuellt spel"
 
 #: src/gtk_preferences.cpp:110
 msgid "{0:Ld}×{1:Ld} @ {2:.3Lf} Hz"
 msgstr "{0:Ld}×{1:Ld} @ {2:.3Lf} Hz"
 
 #: src/gtk_preferences.cpp:143
-#, fuzzy
 msgid "OpenGL – Use 3D graphics hardware"
 msgstr "OpenGL - Använd hårdvara för 3D-grafik"
 
 #: src/gtk_preferences.cpp:145
-#, fuzzy
 msgid "XVideo – Use hardware video blitter"
-msgstr "XVideo - Använda hårdvaru-videoblitter"
+msgstr "XVideo - Använda videoblitter i hårdvara"
 
 #: src/gtk_preferences.cpp:147
 msgid "Vulkan"
 msgstr "Vulkan"
 
 #: src/gtk_preferences.cpp:149
-#, fuzzy
 msgid "None – Use software scaler"
-msgstr "Ingen - Använd mjukvaruskalare"
+msgstr "Ingen - Använd programvaruskalare"
 
 #: src/gtk_preferences.cpp:179 src/gtk_preferences.cpp:446
-#, fuzzy
 msgid "thread for filtering and scaling"
 msgid_plural "threads for filtering and scaling"
 msgstr[0] "tråd för filtrering och skalning"
@@ -164,14 +152,12 @@ msgid "Snes9x version: "
 msgstr "Snes9x-version: "
 
 #: src/gtk_preferences.cpp:272
-#, fuzzy
 msgid "GTK+ port version: "
-msgstr "GTK+ port version:"
+msgstr "Version av GTK+-port: "
 
 #: src/gtk_preferences.cpp:274
-#, fuzzy
 msgid "English localization by Brandon Wright"
-msgstr "Engelsk lokalisering av Brandon Wright"
+msgstr "Engelsk lokalanpassning av Brandon Wright"
 
 #: src/gtk_preferences.cpp:298
 msgid "Select directory"
@@ -190,37 +176,32 @@ msgid "Select Shader File"
 msgstr "Välj shader-fil"
 
 #: src/gtk_preferences.cpp:720
-#, fuzzy
 msgid ""
 "Changing the SRAM directory with a game loaded will replace the .srm file in "
 "the selected directory with the SRAM from the running game. If this is not "
 "what you want, click 'cancel'."
 msgstr ""
-"Om du ändrar SRAM-katalogen med ett spel laddat kommer .srm-filen i den "
-"valda katalogen att ersättas med SRAM från det pågående spelet. Om detta "
-"inte är vad du vill, klicka på \"Avbryt\"."
+"Om du ändrar SRAM-katalogen med ett spel inläst kommer .srm-filen i den "
+"valda katalogen att ersättas med SRAM från det körande spelet. Om detta inte "
+"är vad du vill, klicka på \"Avbryt\"."
 
 #: src/gtk_preferences.cpp:725
-#, fuzzy
 msgid "Warning: Possible File Overwrite"
-msgstr "Varning för filöverskrivning: Möjlig överskrivning av fil"
+msgstr "Varning: Möjlig överskrivning av filer"
 
 #: src/gtk_preferences.cpp:980
-#, fuzzy
 msgid "Current joystick centers have been saved."
-msgstr "Aktuella joystickcentraler har sparats."
+msgstr "Aktuella kontrollercentrum har sparats."
 
 #: src/gtk_preferences.cpp:981
 msgid "Calibration Complete"
 msgstr "Kalibrering slutförd"
 
 #: src/gtk_s9x.cpp:206
-#, fuzzy
 msgid "Using rewind buffer of {0}\n"
-msgstr "Använda återspolningsbuffert på {0}\n"
+msgstr "Använder tillbakaspolningsbuffert på {0}\n"
 
 #: src/gtk_s9x.cpp:598
-#, fuzzy
 msgid ""
 "GTK port options:\n"
 "-filter [option]               Use a filter to scale the image.\n"
@@ -231,8 +212,9 @@ msgid ""
 "-mutesound                     Disables sound output.\n"
 msgstr ""
 "Alternativ för GTK-port:\n"
-"-filter [option] Använd ett filter för att skala bilden.\n"
-"                               [option] är ett av: none supereagle 2xsai\n"
+"-filter [alternativ] Använd ett filter för att skala bilden.\n"
+"                               [alternativ] är ett av: none supereagle "
+"2xsai\n"
 "                               super2xsai hq2x hq3x hq4x 2xbrz 3xbrz 4xbrz "
 "epx ntsc\n"
 "\n"
@@ -275,12 +257,10 @@ msgid "Couldn't load file: "
 msgstr "Kunde inte läsa in filen: "
 
 #: src/gtk_s9xwindow.cpp:767
-#, fuzzy
 msgid "Load Saved State"
-msgstr "Ladda sparat tillstånd"
+msgstr "Läs in sparat tillstånd"
 
 #: src/gtk_s9xwindow.cpp:796
-#, fuzzy
 msgid "The current frame in the movie is <b>{0:Ld}</b>."
 msgstr "Den aktuella bildrutan i filmen är <b>{0:Ld}</b>."
 
@@ -336,7 +316,6 @@ msgstr ""
 "<b><i>%s%s</i></b>"
 
 #: src/gtk_s9xwindow.cpp:924
-#, fuzzy
 msgid ""
 "\n"
 "\n"
@@ -344,10 +323,9 @@ msgid ""
 msgstr ""
 "\n"
 "\n"
-"Denna ROM har auto-patchats med"
+"Denna ROM har auto-patchats med "
 
 #: src/gtk_s9xwindow.cpp:924
-#, fuzzy
 msgid ""
 "\n"
 "\n"
@@ -355,25 +333,23 @@ msgid ""
 msgstr ""
 "\n"
 "\n"
-"Denna ROM har modifierats eller skadats"
+"Denna ROM har ändrats eller skadats"
 
 #: src/gtk_s9xwindow.cpp:938
 msgid "File Information"
 msgstr "Filinformation"
 
 #: src/gtk_shader_parameters.cpp:67
-#, fuzzy
 msgid "Export Shader Preset to:"
-msgstr "Exportera Shader-förinställning till:"
+msgstr "Exportera Shader-förval till:"
 
 #: src/gtk_shader_parameters.cpp:90
 msgid "Shader Preset"
 msgstr "Shader-förval"
 
 #: src/gtk_shader_parameters.cpp:131
-#, fuzzy
 msgid "Shader Parameters"
-msgstr "Parametrar för skuggning"
+msgstr "Parametrar för shaders"
 
 #: src/snes9x.ui:10
 msgid "About Snes9x"
@@ -384,7 +360,6 @@ msgid "Snes9x Cheats"
 msgstr "Snes9x-fusk"
 
 #: src/snes9x.ui:401
-#, fuzzy
 msgid "Update Cheat"
 msgstr "Uppdatera fusk"
 
@@ -397,7 +372,6 @@ msgid "Delete All Cheats"
 msgstr "Ta bort alla fusk"
 
 #: src/snes9x.ui:447
-#, fuzzy
 msgid "Search Cheat Database"
 msgstr "Sök i fuskdatabasen"
 
@@ -410,31 +384,26 @@ msgid "Description:"
 msgstr "Beskrivning:"
 
 #: src/snes9x.ui:573
-#, fuzzy
 msgid "Advance to Frame"
-msgstr "Gå vidare till ram"
+msgstr "Gå vidare till bildruta"
 
 #: src/snes9x.ui:642
-#, fuzzy
 msgid "The current frame in the movie is"
 msgstr "Den aktuella bildrutan i filmen är"
 
 #: src/snes9x.ui:663
-#, fuzzy
 msgid "Fast‑forward to frame"
-msgstr "Snabbspola fram till bildrutan"
+msgstr "Snabbspola fram till bildruta"
 
 #: src/snes9x.ui:806
 msgid "Black"
 msgstr "Svart"
 
 #: src/snes9x.ui:809
-#, fuzzy
 msgid "Color bars"
-msgstr "Färgfält"
+msgstr "Färgrader"
 
 #: src/snes9x.ui:812
-#, fuzzy
 msgid "Pixel art patterns"
 msgstr "Pixelkonstmönster"
 
@@ -443,9 +412,8 @@ msgid "Dithered gradient"
 msgstr "Ditherad gradient"
 
 #: src/snes9x.ui:818
-#, fuzzy
 msgid "Color bars and patterns"
-msgstr "Färgfält och mönster"
+msgstr "Färgrader och mönster"
 
 #: src/snes9x.ui:821
 msgid "Starfield"
@@ -481,48 +449,40 @@ msgid "None"
 msgstr "Ingen"
 
 #: src/snes9x.ui:936
-#, fuzzy
 msgid "8:7 Square pixels"
-msgstr "8:7 Kvadratiska pixlar"
+msgstr "8:7 kvadratiska bildpunkter"
 
 #: src/snes9x.ui:939
-#, fuzzy
 msgid "8:7 Square pixels, integer multiples"
-msgstr "8:7 Kvadratiska pixlar, heltalsmultiplar"
+msgstr "8:7 kvadratiska bildpunkter, heltalsmultiplar"
 
 #: src/snes9x.ui:942
-#, fuzzy
 msgid "4:3 SNES correct aspect"
-msgstr "4:3 SNES korrekt aspekt"
+msgstr "4:3 SNES korrekt bildförhållande"
 
 #: src/snes9x.ui:945
-#, fuzzy
 msgid "4:3 SNES correct aspect, integer multiples"
-msgstr "4:3 SNES korrekt aspekt, heltalsmultiplar"
+msgstr "4:3 SNES korrekt bildförhållande, heltalsmultiplar"
 
 #: src/snes9x.ui:948
 msgid "8*8:7*7 NTSC"
 msgstr "8*8:7*7 NTSC"
 
 #: src/snes9x.ui:951
-#, fuzzy
 msgid "8*8:7*7 NTSC, integer multiples"
 msgstr "8*8:7*7 NTSC, heltalsmultiplar"
 
 #: src/snes9x.ui:968
-#, fuzzy
 msgid "Merge adjacent pairs"
 msgstr "Sammanfoga intilliggande par"
 
 #: src/snes9x.ui:971
-#, fuzzy
 msgid "Output directly"
-msgstr "Utgång direkt"
+msgstr "Utmatning direkt"
 
 #: src/snes9x.ui:974
-#, fuzzy
 msgid "Scale low‑resolution screens"
-msgstr "Skalning av lågupplösta skärmar"
+msgstr "Skalning för lågupplösta skärmar"
 
 #: src/snes9x.ui:985 src/snes9x.ui:1023
 msgid "1"
@@ -565,9 +525,8 @@ msgid "5+"
 msgstr "5+"
 
 #: src/snes9x.ui:1061
-#, fuzzy
 msgid "Toggle the menu bar"
-msgstr "Växla mellan menyfältet"
+msgstr "Växla menyraden"
 
 #: src/snes9x.ui:1064
 msgid "Exit fullscreen mode"
@@ -578,22 +537,18 @@ msgid "Quit Snes9x"
 msgstr "Avsluta Snes9x"
 
 #: src/snes9x.ui:1078
-#, fuzzy
 msgid "Timer‑based"
-msgstr "Timer-baserad"
+msgstr "Tidsbaserad"
 
 #: src/snes9x.ui:1081
-#, fuzzy
 msgid "Timer‑based with automatic frame-skipping"
-msgstr "Timerbaserad med automatisk frame-skipping"
+msgstr "Tidsbaserad med automatisk överhoppning av bildrutor"
 
 #: src/snes9x.ui:1084
-#, fuzzy
 msgid "Sound buffer synchronization"
 msgstr "Synkronisering av ljudbuffert"
 
 #: src/snes9x.ui:1087
-#, fuzzy
 msgid "No throttling, use vsync to control speed"
 msgstr "Ingen strypning, använd vsync för att styra hastigheten"
 
@@ -674,9 +629,8 @@ msgid "Open Recent"
 msgstr "Öppna senaste"
 
 #: src/snes9x.ui:1225
-#, fuzzy
 msgid "Clear Recent Items"
-msgstr "Rensa senaste artiklar"
+msgstr "Töm senaste poster"
 
 #: src/snes9x.ui:1237
 msgid "Open with _NetPlay…"
@@ -739,9 +693,8 @@ msgid "From _File…"
 msgstr "Från _fil…"
 
 #: src/snes9x.ui:1387
-#, fuzzy
 msgid "_Undo Load State"
-msgstr "_Undo belastningstillstånd"
+msgstr "Ån_gra inläst tillstånd"
 
 #: src/snes9x.ui:1400
 msgid "_Save State"
@@ -761,7 +714,7 @@ msgstr "Visa ROM-_info…"
 
 #: src/snes9x.ui:1557
 msgid "gtk-quit"
-msgstr "gtk-quit"
+msgstr "Avsluta"
 
 #: src/snes9x.ui:1571
 msgid "_Emulation"
@@ -780,9 +733,8 @@ msgid "Load _Movie…"
 msgstr "Läs in _film…"
 
 #: src/snes9x.ui:1619
-#, fuzzy
 msgid "R_ecord Movie…"
-msgstr "R_ecord Movie.."
+msgstr "S_pela in film…"
 
 #: src/snes9x.ui:1631
 msgid "_Stop Recording"
@@ -793,32 +745,28 @@ msgid "_Jump to Frame…"
 msgstr "_Hoppa till bildruta…"
 
 #: src/snes9x.ui:1661
-#, fuzzy
 msgid "Sy_nc Clients"
-msgstr "Sy_nc-klienter"
+msgstr "S_ynkronisera klienter"
 
 #: src/snes9x.ui:1678
 msgid "Reset"
-msgstr ""
+msgstr "Starta om"
 
 #: src/snes9x.ui:1690
-#, fuzzy
 msgid "Soft _Reset"
-msgstr "Mjuk omstart"
+msgstr "Mjuk o_mstart"
 
 #: src/snes9x.ui:1707
 msgid "_View"
 msgstr "_Visa"
 
 #: src/snes9x.ui:1715
-#, fuzzy
 msgid "_Toggle Menubar"
-msgstr "_Skrolla menyraden"
+msgstr "_Växla menyraden"
 
 #: src/snes9x.ui:1732
-#, fuzzy
 msgid "_Change Size"
-msgstr "_Change storlek"
+msgstr "Ä_ndra storlek"
 
 #: src/snes9x.ui:1746
 msgid "_1×"
@@ -862,7 +810,7 @@ msgstr "1_0×"
 
 #: src/snes9x.ui:1844
 msgid "gtk-fullscreen"
-msgstr "gtk-fullscreen"
+msgstr "Helskärm"
 
 #: src/snes9x.ui:1858
 msgid "_Options"
@@ -877,7 +825,6 @@ msgid "SNES Port 1"
 msgstr "SNES-port 1"
 
 #: src/snes9x.ui:1886 src/snes9x.ui:1930
-#, fuzzy
 msgid "Joypad"
 msgstr "Joypad"
 
@@ -886,7 +833,6 @@ msgid "Mouse"
 msgstr "Mus"
 
 #: src/snes9x.ui:1905 src/snes9x.ui:1959
-#, fuzzy
 msgid "Superscope"
 msgstr "Superscope"
 
@@ -908,13 +854,12 @@ msgid "_Cheats…"
 msgstr "_Fusk…"
 
 #: src/snes9x.ui:2010
-#, fuzzy
 msgid "_Shader Parameters…"
-msgstr "_Shader-parametrar.."
+msgstr "_Shader-parametrar…"
 
 #: src/snes9x.ui:2026
 msgid "gtk-preferences"
-msgstr "gtk-preferences"
+msgstr "Inställningar"
 
 #: src/snes9x.ui:2068
 msgid "Open Multiple ROM Images (MultiCart)"
@@ -925,32 +870,28 @@ msgid "Slot A:"
 msgstr "Plats A:"
 
 #: src/snes9x.ui:2143
-#, fuzzy
 msgid "Select an Image for Slot A"
-msgstr "Välj en bild för plats A"
+msgstr "Välj en avbildning för plats A"
 
 #: src/snes9x.ui:2167
-#, fuzzy
 msgid "Slot B:"
-msgstr "Slot B:"
+msgstr "Plats B:"
 
 #: src/snes9x.ui:2179
-#, fuzzy
 msgid "Select an Image for Slot B"
-msgstr "Välj en bild för Slot B"
+msgstr "Välj en avbildning för plats B"
 
 #: src/snes9x.ui:2211
 msgid "Snes9x NetPlay"
 msgstr "Snes9x NetPlay"
 
 #: src/snes9x.ui:2288
-#, fuzzy
 msgid ""
 "The game chosen will be loaded before connecting. This field can be blank if "
 "the server will send the ROM image"
 msgstr ""
-"Det valda spelet kommer att laddas innan anslutning. Detta fält kan vara "
-"tomt om servern ska skicka ROM-bilden"
+"Det valda spelet kommer att läsas in innan anslutning. Detta fält kan vara "
+"tomt om servern ska skicka ROM-avbildningen"
 
 #: src/snes9x.ui:2303 src/snes9x.ui:4001 src/snes9x.ui:5116 src/snes9x.ui:5131
 #: src/snes9x.ui:5148 src/snes9x.ui:5165 src/snes9x.ui:5182
@@ -958,9 +899,8 @@ msgid "Browse…"
 msgstr "Bläddra…"
 
 #: src/snes9x.ui:2325
-#, fuzzy
 msgid "Clear entry"
-msgstr "Klart inträde"
+msgstr "Töm post"
 
 #: src/snes9x.ui:2345
 msgid "<b>ROM Image</b>"
@@ -971,16 +911,14 @@ msgid "Connect to another computer"
 msgstr "Anslut till en annan dator"
 
 #: src/snes9x.ui:2378
-#, fuzzy
 msgid "Connect to another computer that is running Snes9x NetPlay as a server"
-msgstr "Anslut till en annan dator som kör Snes9x NetPlay som server"
+msgstr "Anslut till en annan dator som kör Snes9x NetPlay som en server"
 
 #: src/snes9x.ui:2398
 msgid "Name or IP address:"
 msgstr "Namn eller IP-adress:"
 
 #: src/snes9x.ui:2410
-#, fuzzy
 msgid "Domain name or internet protocol address of a remote computer"
 msgstr "Domännamn eller internetprotokolladress för en fjärrdator"
 
@@ -989,7 +927,6 @@ msgid "Port:"
 msgstr "Port:"
 
 #: src/snes9x.ui:2438
-#, fuzzy
 msgid "Connect to specified TCP port on remote computer"
 msgstr "Anslut till angiven TCP-port på fjärrdatorn"
 
@@ -998,12 +935,11 @@ msgid "Act as a server"
 msgstr "Fungera som en server"
 
 #: src/snes9x.ui:2467
-#, fuzzy
 msgid ""
 "Host a game on this computer as Player 1, requiring extra throughput to "
 "support multitple users"
 msgstr ""
-"Värd för ett spel på den här datorn som spelare 1, vilket kräver extra "
+"Stå värd för ett spel på den här datorn som spelare 1, vilket kräver extra "
 "genomströmning för att stödja flera användare"
 
 #: src/snes9x.ui:2487
@@ -1011,46 +947,40 @@ msgid "<b>Server</b>"
 msgstr "<b>Server</b>"
 
 #: src/snes9x.ui:2517
-#, fuzzy
 msgid "Sync using reset"
-msgstr "Synkronisera med hjälp av återställning"
+msgstr "Synkronisera med omstart"
 
 #: src/snes9x.ui:2521
-#, fuzzy
 msgid ""
 "Reset the game when players join instead of transferring potentially "
 "unreliable freeze states"
 msgstr ""
-"Återställ spelet när spelare ansluter sig istället för att överföra "
-"potentiellt opålitliga frysningsstatusar"
+"Starta om spelet när spelare ansluter sig istället för att överföra "
+"potentiellt opålitliga frysningstillstånd"
 
 #: src/snes9x.ui:2532
-#, fuzzy
 msgid "Send ROM image to clients"
-msgstr "Skicka ROM-bild till klienter"
+msgstr "Skicka ROM-avbilder till klienter"
 
 #: src/snes9x.ui:2536
-#, fuzzy
 msgid ""
 "Send the running game image to players instead of requiring them to have "
 "their own copies"
 msgstr ""
-"Skicka bilden av löpspelet till spelarna istället för att kräva att de har "
-"egna kopior"
+"Skicka avbildningen av körande spelet till spelarna istället för att kräva "
+"att de har egna kopior"
 
 #: src/snes9x.ui:2554
 msgid "Default port:"
 msgstr "Standardport:"
 
 #: src/snes9x.ui:2566
-#, fuzzy
 msgid "TCP port used as a connection point for remote clients"
 msgstr "TCP-port som används som anslutningspunkt för fjärrklienter"
 
 #: src/snes9x.ui:2598
-#, fuzzy
 msgid "Ask server to pause when"
-msgstr "Be servern att pausa när"
+msgstr "Fråga servern att pausa när"
 
 #: src/snes9x.ui:2652
 msgid "<b>Settings</b>"
@@ -1061,12 +991,10 @@ msgid "Snes9x Preferences"
 msgstr "Inställningar för Snes9x"
 
 #: src/snes9x.ui:2796
-#, fuzzy
 msgid "Use fullscreen on ROM open"
-msgstr "Använd fullskärm på ROM öppen"
+msgstr "Använd helskärm när ROM öppnas"
 
 #: src/snes9x.ui:2800
-#, fuzzy
 msgid "Go to fullscreen mode immediately after opening a ROM"
 msgstr "Gå till helskärmsläge omedelbart efter att du öppnat en ROM"
 
@@ -1083,36 +1011,30 @@ msgid "Show pressed keys"
 msgstr "Visa nedtryckta tangenter"
 
 #: src/snes9x.ui:2857
-#, fuzzy
 msgid "Show fast‑forward and pause indicators"
 msgstr "Visa indikatorer för snabbspolning framåt och paus"
 
 #: src/snes9x.ui:2872
-#, fuzzy
 msgid "Use overscanned height"
 msgstr "Använd överskannad höjd"
 
 #: src/snes9x.ui:2876
-#, fuzzy
 msgid "Use SNES extended height. Will probably cause letterboxing"
-msgstr "Använd SNES förlängda höjd. Kommer förmodligen att orsaka letterboxing"
+msgstr "Använd SNES utökade höjd. Kommer förmodligen att orsaka brevlådeformat"
 
 #: src/snes9x.ui:2898
-#, fuzzy
 msgid "On‑screen display size:"
-msgstr "Storlek på skärmen:"
+msgstr "Storlek för On-Screen Display:"
 
 #: src/snes9x.ui:2909
-#, fuzzy
 msgid "The size of on‑screen display messages in pixels"
-msgstr "Storleken på meddelanden på skärmen i pixlar"
+msgstr "Storleken för meddelanden på skärmen i bildpunkter"
 
 #: src/snes9x.ui:2940
 msgid "Change fullscreen resolution:"
 msgstr "Ändra helskärmsupplösning:"
 
 #: src/snes9x.ui:2944
-#, fuzzy
 msgid "Changes the screen resolution when running Snes9x in fullscreen mode"
 msgstr "Ändrar skärmupplösningen när du kör Snes9x i helskärmsläge"
 
@@ -1121,12 +1043,10 @@ msgid "Basic Settings"
 msgstr "Grundläggande inställningar"
 
 #: src/snes9x.ui:3030
-#, fuzzy
 msgid "Scale image to fit window"
 msgstr "Skala bilden så att den passar i fönstret"
 
 #: src/snes9x.ui:3034
-#, fuzzy
 msgid "Scales the image so no black bars are present"
 msgstr "Skalar bilden så att inga svarta fält visas"
 
@@ -1135,17 +1055,14 @@ msgid "Aspect ratio:"
 msgstr "Bildförhållande:"
 
 #: src/snes9x.ui:3089
-#, fuzzy
 msgid "Maintain aspect ratio"
 msgstr "Behåll bildförhållande"
 
 #: src/snes9x.ui:3093
-#, fuzzy
 msgid "Scales the image as large as possible without distortion"
 msgstr "Skalar bilden så stor som möjligt utan förvrängning"
 
 #: src/snes9x.ui:3108
-#, fuzzy
 msgid "Allows scaling and filtering to use multiple processors"
 msgstr "Tillåter skalning och filtrering för att använda flera processorer"
 
@@ -1158,9 +1075,8 @@ msgid "High‑resolution effect:"
 msgstr "Högupplösande effekt:"
 
 #: src/snes9x.ui:3213
-#, fuzzy
 msgid "Apply scaling filter:"
-msgstr "Använd skalningsfilter:"
+msgstr "Tillämpa skalningsfilter:"
 
 #: src/snes9x.ui:3281
 msgid "Video preset:"
@@ -1187,7 +1103,6 @@ msgid "Artifacts:"
 msgstr "Artefakter:"
 
 #: src/snes9x.ui:3393
-#, fuzzy
 msgid "Sharpness:"
 msgstr "Skarphet:"
 
@@ -1204,21 +1119,18 @@ msgid "Saturation:"
 msgstr "Färgmättnad:"
 
 #: src/snes9x.ui:3453
-#, fuzzy
 msgid "Hue:"
-msgstr "Hue:"
+msgstr "Nyans:"
 
 #: src/snes9x.ui:3654
 msgid "Gamma:"
 msgstr "Gamma:"
 
 #: src/snes9x.ui:3669
-#, fuzzy
 msgid "Fringing:"
 msgstr "Fringing:"
 
 #: src/snes9x.ui:3684
-#, fuzzy
 msgid "Bleed:"
 msgstr "Blöd:"
 
@@ -1227,46 +1139,38 @@ msgid "Resolution:"
 msgstr "Upplösning:"
 
 #: src/snes9x.ui:3729
-#, fuzzy
 msgid "Merge odd and even fields"
 msgstr "Slå samman udda och jämna fält"
 
 #: src/snes9x.ui:3751 src/snes9x.ui:3810
-#, fuzzy
 msgid "Scanline intensity:"
-msgstr "Scanline intensitet:"
+msgstr "Scanline-intensitet:"
 
 #: src/snes9x.ui:3855
 msgid "Scaling"
 msgstr "Skalning"
 
 #: src/snes9x.ui:3897
-#, fuzzy
 msgid "Bilinear‐filter output"
-msgstr "Bilineär filterutgång"
+msgstr "Bilinjär filterutgång"
 
 #: src/snes9x.ui:3912
-#, fuzzy
 msgid "Use best settings for FreeSync/G‑Sync when in fullscreen"
 msgstr "Använd bästa inställningar för FreeSync/G-Sync i helskärmsläge"
 
 #: src/snes9x.ui:3933
-#, fuzzy
 msgid "Sync to vertical blank"
 msgstr "Synkronisera till vertikal blank"
 
 #: src/snes9x.ui:3937
-#, fuzzy
 msgid "Sync the image to the vertical retrace to stop tearing"
-msgstr "Synkronisera bilden med den vertikala retracen för att stoppa rivning"
+msgstr "Synkronisera bilden med den vertikala retracen för att stoppa tearing"
 
 #: src/snes9x.ui:3949
-#, fuzzy
 msgid "Reduce input lag"
-msgstr "Minska fördröjningen i inmatningen"
+msgstr "Minska fördröjning i inmatningen"
 
 #: src/snes9x.ui:3953
-#, fuzzy
 msgid ""
 "Sync the program with the video output after every displayed frame to reduce "
 "input latency"
@@ -1279,12 +1183,10 @@ msgid "Shader:"
 msgstr "Shader:"
 
 #: src/snes9x.ui:4033
-#, fuzzy
 msgid "Force an inverted byte‑ordering"
 msgstr "Tvinga fram en inverterad byte-ordning"
 
 #: src/snes9x.ui:4037
-#, fuzzy
 msgid ""
 "Forces a swapped byte‑ordering for cases where the system’s endian is used "
 "instead of the video card"
@@ -1305,81 +1207,69 @@ msgid "Sound driver:"
 msgstr "Ljuddrivrutin:"
 
 #: src/snes9x.ui:4178
-#, fuzzy
 msgid "Automatically adjust input rate to display"
-msgstr "Automatisk justering av ingångsfrekvensen till displayen"
+msgstr "Automatisk justering av ingångsfrekvens till skärmen"
 
 #: src/snes9x.ui:4182
-#, fuzzy
 msgid "Sets the correct input rate based on the display’s refresh rate"
 msgstr ""
-"Ställer in rätt inmatningshastighet baserat på skärmens uppdateringshastighet"
+"Ställer in rätt inmatningsfrekvens baserat på skärmens uppdateringsfrekvens"
 
 #: src/snes9x.ui:4194
-#, fuzzy
 msgid "Dynamic rate control"
-msgstr "Dynamisk hastighetskontroll"
+msgstr "Dynamisk frekvenskontroll"
 
 #: src/snes9x.ui:4198
-#, fuzzy
 msgid "Smooth out slight hiccups in sound input rate"
-msgstr "Utjämna små hicka i ljudinmatningshastigheten"
+msgstr "Jämna ut små hickor i ljudinmatningsfrekvensen"
 
 #: src/snes9x.ui:4209
-#, fuzzy
 msgid "Mute sound output"
 msgstr "Stäng av ljudutgången"
 
 #: src/snes9x.ui:4213
-#, fuzzy
 msgid "Disables output of sound"
-msgstr "Avaktiverar ljudutmatning"
+msgstr "Inaktiverar ljudutmatning"
 
 #: src/snes9x.ui:4225
-#, fuzzy
 msgid "Mute sound when using turbo or rewind"
 msgstr "Stäng av ljudet när du använder turbo eller spola tillbaka"
 
 #: src/snes9x.ui:4229
-#, fuzzy
 msgid "Disables output of sound when using turbo or rewind"
-msgstr "Avaktiverar ljudet när du använder turbo eller spola tillbaka"
+msgstr "Inaktiverar ljudet när du använder turbo eller spola tillbaka"
 
 #: src/snes9x.ui:4252
-#, fuzzy
 msgid "Playback rate:"
-msgstr "Uppspelningshastighet:"
+msgstr "Uppspelningsfrekvens:"
 
 #: src/snes9x.ui:4310
 msgid "Buffer size:"
 msgstr "Buffertstorlek:"
 
 #: src/snes9x.ui:4324
-#, fuzzy
 msgid "Dynamic rate limit:"
-msgstr "Dynamisk hastighetsbegränsning:"
+msgstr "Dynamisk frekvensbegränsning:"
 
 #: src/snes9x.ui:4369
 msgid "Input rate:"
 msgstr "Inmatningshastighet:"
 
 #: src/snes9x.ui:4382
-#, fuzzy
 msgid ""
 "Adjust to produce more or less data. Decrease the rate if experiencing "
 "crackling. Increase the rate if experiencing frame rate stuttering. Best "
 "used with the “Sound buffer synchronization” option."
 msgstr ""
-"Justera för att producera mer eller mindre data. Minska hastigheten om du "
-"upplever sprakande ljud. Öka hastigheten om du upplever att bildfrekvensen "
-"stammar. Används bäst med alternativet \"Ljudbuffertssynkronisering\"."
+"Justera för att producera mer eller mindre data. Minska frekvensen om du "
+"upplever sprakande ljud. Öka frekvensen om du upplever att bildfrekvensen "
+"stammar. Används bäst med alternativet \"Synkronisering av ljudbuffert\"."
 
 #: src/snes9x.ui:4432
 msgid "Video rate:"
 msgstr "Videofrekvens:"
 
 #: src/snes9x.ui:4469
-#, fuzzy
 msgid "<b>Sound Settings</b>"
 msgstr "<b>Ljudinställningar</b>"
 
@@ -1388,7 +1278,6 @@ msgid "Sound"
 msgstr "Ljud"
 
 #: src/snes9x.ui:4561
-#, fuzzy
 msgid "Throttling method:"
 msgstr "Strypningsmetod:"
 
@@ -1397,26 +1286,22 @@ msgid "<b>Speed Control</b>"
 msgstr "<b>Hastighetskontroll</b>"
 
 #: src/snes9x.ui:4641
-#, fuzzy
 msgid "Rewind buffer size (MB):"
-msgstr "Buffertstorlek för återspolning (MB):"
+msgstr "Buffertstorlek för tillbakaspolning (MB):"
 
 #: src/snes9x.ui:4683
-#, fuzzy
 msgid "Number of frames between rewind snapshots:"
-msgstr "Antal bildrutor mellan snapshots för återspolning:"
+msgstr "Antal bildrutor mellan ögonblicksbilder för tillbakaspolning:"
 
 #: src/snes9x.ui:4724
 msgid "<b>Rewind Settings</b>"
 msgstr "<b>Inställningar för tillbakaspolning</b>"
 
 #: src/snes9x.ui:4755
-#, fuzzy
 msgid "Allow invalid VRAM access"
 msgstr "Tillåt ogiltig VRAM-åtkomst"
 
 #: src/snes9x.ui:4759
-#, fuzzy
 msgid ""
 "Allows ROM hacks to write to screen at the wrong time. Only use if you know "
 "your ROM hack expects this"
@@ -1425,12 +1310,10 @@ msgstr ""
 "Använd endast om du vet att ditt ROM-hack förväntar sig detta"
 
 #: src/snes9x.ui:4769
-#, fuzzy
 msgid "Allow opposing dpad directions"
 msgstr "Tillåt motsatta dpad-riktningar"
 
 #: src/snes9x.ui:4773
-#, fuzzy
 msgid "Let left and right or up and down be pressed at the same time"
 msgstr "Låt vänster och höger eller upp och ner tryckas samtidigt"
 
@@ -1439,41 +1322,34 @@ msgid "Overclock CPU"
 msgstr "Överklocka CPU"
 
 #: src/snes9x.ui:4788
-#, fuzzy
 msgid "Reduces slowdown, but has potential to break games"
-msgstr "Minskar avmattningen, men har potential att förstöra spel"
+msgstr "Minskar långsamheter, men har potential att förstöra spel"
 
 #: src/snes9x.ui:4799
-#, fuzzy
 msgid "Remove sprite limit"
 msgstr "Ta bort sprite-gräns"
 
 #: src/snes9x.ui:4803
-#, fuzzy
 msgid "Reduces flicker, but may cause graphical artifacts"
 msgstr "Minskar flimmer, men kan orsaka grafiska artefakter"
 
 #: src/snes9x.ui:4814
-#, fuzzy
 msgid "Redirect echo buffer overflow"
-msgstr "Buffertöverskridning för omdirigeringseko"
+msgstr "Omdirigera ekobuffertöverflöde"
 
 #: src/snes9x.ui:4818
-#, fuzzy
 msgid "Allows old addmusic hacks to work, but will likely hurt other games"
 msgstr ""
 "Tillåter gamla addmusic-hack att fungera, men kommer sannolikt att skada "
 "andra spel"
 
 #: src/snes9x.ui:4836
-#, fuzzy
 msgid "SuperFX clock speed %:"
-msgstr "SuperFX klockhastighet %:"
+msgstr "SuperFX klockfrekvens %:"
 
 #: src/snes9x.ui:4875
-#, fuzzy
 msgid "Gaussian is the correct behavior for SNES hardware"
-msgstr "Gaussian är det korrekta beteendet för SNES-hårdvara"
+msgstr "Gaussisk är det korrekta beteendet för SNES-hårdvara"
 
 #: src/snes9x.ui:4882
 msgid "Sound filter:"
@@ -1505,10 +1381,9 @@ msgstr "Patchar:"
 
 #: src/snes9x.ui:5256
 msgid "Exports:"
-msgstr ""
+msgstr "Exporter:"
 
 #: src/snes9x.ui:5280
-#, fuzzy
 msgid "<b>Game Data Locations</b>"
 msgstr "<b>Platser för speldata</b>"
 
@@ -1517,7 +1392,6 @@ msgid "Save SRAM:"
 msgstr "Spara SRAM:"
 
 #: src/snes9x.ui:5325
-#, fuzzy
 msgid ""
 "Automatically save the game’s SRAM at this interval. Setting this to 0 will "
 "only save when quitting or changing ROMs"
@@ -1538,26 +1412,22 @@ msgid "<b>Joypad:</b>"
 msgstr "<b>Joypad:</b>"
 
 #: src/snes9x.ui:5464
-#, fuzzy
 msgid "_Reset"
-msgstr "Nollställ &bredd"
+msgstr "_Omstart"
 
 #: src/snes9x.ui:5492
-#, fuzzy
 msgid "Swap with:"
-msgstr "Byt med:"
+msgstr "Växla med:"
 
 #: src/snes9x.ui:5520
 msgid "_Swap"
 msgstr "_Växla"
 
 #: src/snes9x.ui:5542
-#, fuzzy
 msgid "Use _modifier keys (Ctrl, Shift, Alt) directly"
 msgstr "Använd _modifieringstangenter (Ctrl, Shift, Alt) direkt"
 
 #: src/snes9x.ui:5546
-#, fuzzy
 msgid "Allow using modifier keys as independent keys instead of modifiers"
 msgstr ""
 "Tillåt användning av modifieringstangenter som oberoende tangenter istället "
@@ -1581,7 +1451,7 @@ msgstr "Höger"
 
 #: src/snes9x.ui:5635
 msgid "Start"
-msgstr "Starta"
+msgstr "Start"
 
 #: src/snes9x.ui:5649
 msgid "Select"
@@ -1616,7 +1486,6 @@ msgid "Buttons"
 msgstr "Knappar"
 
 #: src/snes9x.ui:6433
-#, fuzzy
 msgid "<b>Sticky</b>"
 msgstr "<b>Klistrig</b>"
 
@@ -1625,40 +1494,34 @@ msgid "<b>Turbo</b>"
 msgstr "<b>Turbo</b>"
 
 #: src/snes9x.ui:6468
-#, fuzzy
 msgid "Turbo / Sticky Buttons"
-msgstr "Turbo / Sticky-knappar"
+msgstr "Turbo / klistriga knappar"
 
 #: src/snes9x.ui:6505
-#, fuzzy
 msgid "Set new axis bindings at:"
-msgstr "Ställ in nya axelbindningar på:"
+msgstr "Ställ in nya axelbindningar till:"
 
 #: src/snes9x.ui:6517
-#, fuzzy
 msgid ""
 "Changes the amount a joystick should be tilted to register a button press"
 msgstr ""
-"Ändrar hur mycket en joystick ska lutas för att registrera en knapptryckning"
+"Ändrar hur mycket en styrspak ska lutas för att registrera en knapptryckning"
 
 #: src/snes9x.ui:6536
 msgid "percent"
 msgstr "procent"
 
 #: src/snes9x.ui:6553
-#, fuzzy
 msgid "<b>Joystick Axis Threshold</b>"
-msgstr "<b>Tröskelvärde för joystickaxel</b>"
+msgstr "<b>Tröskelvärde för styrspaksaxel</b>"
 
 #: src/snes9x.ui:6590
-#, fuzzy
 msgid "Center all axes on all joysticks and press Calibrate."
-msgstr "Centrera alla axlar på alla joysticks och tryck på Calibrate."
+msgstr "Centrera alla axlar på alla kontroller och tryck på Kalibrera."
 
 #: src/snes9x.ui:6605
-#, fuzzy
 msgid "Cali_brate"
-msgstr "Cali_brate"
+msgstr "Kali_brera"
 
 #: src/snes9x.ui:6638
 msgid "<b>Calibration</b>"
@@ -1669,51 +1532,44 @@ msgid "Joystick Options"
 msgstr "Styrspaksalternativ"
 
 #: src/snes9x.ui:6677 src/snes9x.ui:9029
-#, fuzzy
 msgid ""
 "<small>Click an entry and then press the desired keys or joystick button\n"
 "<tt>Escape</tt>: Move to next  <tt>Shift+Escape</tt>: Clear selected</small>"
 msgstr ""
 "<small>Klicka på en post och tryck sedan på önskad tangent eller "
-"joystickknapp\n"
-"<tt>Escape</tt>: Flytta till nästa <tt>Skift+Escape</tt>: Radera markerat</"
+"kontrollerknapp\n"
+"<tt>Escape</tt>: Flytta till nästa <tt>Skift+Escape</tt>: Töm markerad</"
 "small>"
 
 #: src/snes9x.ui:6715
-#, fuzzy
 msgid "Joypads"
 msgstr "Joypads"
 
 #: src/snes9x.ui:6742
-#, fuzzy
 msgid "<b>Snes9x Emulator Shortcut Keys</b>"
-msgstr "<b>Snes9x Emulator genvägsknappar</b>"
+msgstr "<b>Snabbtangenter för Snes9x-emulator</b>"
 
 #: src/snes9x.ui:6793
-#, fuzzy
 msgid "Soft reset"
 msgstr "Mjuk omstart"
 
 #: src/snes9x.ui:6807
-#, fuzzy
 msgid "Hardware reset"
-msgstr "Återställning av hårdvara"
+msgstr "Omstart av hårdvara"
 
 #: src/snes9x.ui:6821
 msgid "Increase frame time"
 msgstr "Öka bildtid"
 
 #: src/snes9x.ui:6835
-#, fuzzy
 msgid "Decrease frame time"
-msgstr "Minska ramtiden"
+msgstr "Minska bildtiden"
 
 #: src/snes9x.ui:6849
 msgid "Increase frame rate"
 msgstr "Öka bildfrekvens"
 
 #: src/snes9x.ui:6863
-#, fuzzy
 msgid "Decrease frame rate"
 msgstr "Minska bildfrekvensen"
 
@@ -1734,22 +1590,18 @@ msgid "Open ROM"
 msgstr "Öppna ROM"
 
 #: src/snes9x.ui:7179
-#, fuzzy
 msgid "Toggle BG layer 0"
 msgstr "Växla BG-lager 0"
 
 #: src/snes9x.ui:7191
-#, fuzzy
 msgid "Toggle BG layer 1"
 msgstr "Växla BG-lager 1"
 
 #: src/snes9x.ui:7205
-#, fuzzy
 msgid "Toggle BG layer 2"
 msgstr "Växla BG-lager 2"
 
 #: src/snes9x.ui:7219
-#, fuzzy
 msgid "Toggle BG layer 3"
 msgstr "Växla BG-lager 3"
 
@@ -1758,7 +1610,6 @@ msgid "Toggle sprites"
 msgstr "Växla sprites"
 
 #: src/snes9x.ui:7247
-#, fuzzy
 msgid "Toggle forced backdrop color"
 msgstr "Växla färg för tvingad bakgrund"
 
@@ -1775,44 +1626,36 @@ msgid "Graphics"
 msgstr "Grafik"
 
 #: src/snes9x.ui:7476
-#, fuzzy
 msgid "Save current slot"
 msgstr "Spara aktuell plats"
 
 #: src/snes9x.ui:7509
-#, fuzzy
 msgid "Load current slot"
-msgstr "Ladda aktuell slot"
+msgstr "Läs in aktuell plats"
 
 #: src/snes9x.ui:7542
-#, fuzzy
 msgid "Increment and save"
-msgstr "Inkrementera och spara"
+msgstr "Öka och spara"
 
 #: src/snes9x.ui:7575
-#, fuzzy
 msgid "Decrement and load"
-msgstr "Minskning och belastning"
+msgstr "Minska och läs in"
 
 #: src/snes9x.ui:7608
-#, fuzzy
 msgid "Increment slot"
-msgstr "Plats för inkrement"
+msgstr "Öka plats"
 
 #: src/snes9x.ui:7641
-#, fuzzy
 msgid "Decrement slot"
-msgstr "Minskning av slot"
+msgstr "Minska plats"
 
 #: src/snes9x.ui:7685
-#, fuzzy
 msgid "<b>Quick save state</b>"
-msgstr "<b>Snabbsparläge</b>"
+msgstr "<b>Snabbspara tillstånd</b>"
 
 #: src/snes9x.ui:7700
-#, fuzzy
 msgid "<b>Quick load state</b>"
-msgstr "<b>Snabb laddningstillstånd</b>"
+msgstr "<b>Snabbinläs tillstånd</b>"
 
 #: src/snes9x.ui:7715 src/snes9x.ui:7855
 msgid "Slot 0"
@@ -1891,9 +1734,8 @@ msgid "Toggle all sound channels"
 msgstr "Växla mellan alla ljudkanaler"
 
 #: src/snes9x.ui:8753
-#, fuzzy
 msgid "Seek to frame"
-msgstr "Försök att rama in"
+msgstr "Spola till bildruta"
 
 #: src/snes9x.ui:8768
 msgid "Load Movie"
@@ -1904,7 +1746,6 @@ msgid "Stop movie recording"
 msgstr "Stoppa filminspelning"
 
 #: src/snes9x.ui:8798
-#, fuzzy
 msgid "Begin movie recording"
 msgstr "Påbörja filminspelning"
 
@@ -1913,9 +1754,8 @@ msgid "Save SPC"
 msgstr "Spara SPC"
 
 #: src/snes9x.ui:8913
-#, fuzzy
 msgid "Swap controllers 1 & 2"
-msgstr "Byt styrenheter 1 & 2"
+msgstr "Växla kontroller 1 & 2"
 
 #: src/snes9x.ui:8944
 msgid "Rewind"
@@ -1934,22 +1774,18 @@ msgid "Shortcuts"
 msgstr "Genvägar"
 
 #: src/snes9x.ui:9106
-#, fuzzy
 msgid "Pause emulation when switching away from Snes9x"
 msgstr "Pausa emuleringen när du byter från Snes9x"
 
 #: src/snes9x.ui:9120
-#, fuzzy
 msgid "Force‑enable button and menu icons"
 msgstr "Tvinga fram aktivering av knapp- och menyikoner"
 
 #: src/snes9x.ui:9141
-#, fuzzy
 msgid "The <tt>Esc</tt> key should:"
 msgstr "<tt>Esc-tangenten</tt> bör användas:"
 
 #: src/snes9x.ui:9185
-#, fuzzy
 msgid "Initial background:"
 msgstr "Initial bakgrund:"
 
@@ -1958,7 +1794,6 @@ msgid "<b>Window Behavior</b>"
 msgstr "<b>Fönsterbeteende</b>"
 
 #: src/snes9x.ui:9256
-#, fuzzy
 msgid "Prevent the screensaver from activating"
 msgstr "Förhindra att skärmsläckaren aktiveras"
 
