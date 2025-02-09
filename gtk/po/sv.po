@@ -1,17 +1,16 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# Swedish translations for Snes9x package.
+# Copyright © 2023 Brandon Wright and Snes9x contributors
+# This file is distributed under the same license as the Snes9x package.
+# Daniel Nylander <github@danielnylander.se>, 2025.
 #
-#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: \n"
+"Project-Id-Version: Snes9x\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-10-29 23:56+0100\n"
 "PO-Revision-Date: 2025-02-09 08:39+0100\n"
 "Last-Translator: Daniel Nylander <github@danielnylander.se>\n"
-"Language-Team: \n"
+"Language-Team: Swedish\n"
 "Language: sv\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
