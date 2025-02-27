@@ -29,6 +29,8 @@ void S9xAPULoadBlarggState(uint8 *oldblock);
 void S9xAPUSaveState (uint8 *);
 void S9xDumpSPCSnapshot (void);
 bool8 S9xSPCDump (const char *);
+void S9xForwardEvent (int snd_que);
+// void S9xWriteToSoundDriver (int snd_que);
 
 bool8 S9xInitSound (int);
 bool8 S9xOpenSoundDevice (void);

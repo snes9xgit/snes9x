@@ -12,6 +12,8 @@
 #include "../snapshot.h"
 #include "../display.h"
 #include "resampler.h"
+#include "hbbh/Orchestrator.h"
+// #include "macosx/gtk_sound.h" <-- revisit this...
 
 #include "bapu/snes/snes.hpp"
 
@@ -61,16 +63,36 @@ static Resampler resampler;
 static std::vector<int16_t> resampler_buffer;
 } // namespace msu
 
+// Attempt to write into new resampler.
+// Foiled by emu lifecycle nuances/timing.
+// namespace hbh {
+//     static Resampler resampler;
+//     static bool8 sound_in_sync = true;
+//     int sample_rate = Settings.SoundPlaybackRate;
+// }
+
 static void UpdatePlaybackRate(void);
 static void SPCSnapshotCallback(void);
 static inline int S9xAPUGetClock(int32);
 static inline int S9xAPUGetClockRemainder(int32);
 
+Orchestrator orch;
+
+// Weirdly needs to be namespaced because SPC_DSP header code wraps/prefixes all included methods with `SNES::`.
+namespace SNES {
+    void S9xForwardEvent(int snd_que)
+    {
+        // printf("snd_que: %d\n", snd_que);
+        orch.ForwardEvent(snd_que);
+    }
+}
+
 bool8 S9xMixSamples(uint8 *dest, int sample_count)
 {
     int16 *out = (int16 *)dest;
 
-    if (Settings.Mute)
+    // if (Settings.Mute)
+    if (true)
     {
         memset(out, 0, sample_count << 1);
         S9xClearSamples();
@@ -254,11 +276,23 @@ static inline int S9xAPUGetClockRemainder(int32 cpucycles)
 uint8 S9xAPUReadPort(int port)
 {
     S9xAPUExecute();
+    // Early debugging work.
+	// uint8 val = (uint8)SNES::smp.port_read(port & 3);
+//    if (port != 0 && val != 0 && val != spc::last_value) {
+//        printf("%u - %d\n", val, port);
+//    }
+	
+//	if (port != 0) {
+//		printf("%u - %d\n", val, port);
+//	}
+//    spc::last_value = val;
+    // return val;
     return ((uint8)SNES::smp.port_read(port & 3));
 }
 
 void S9xAPUWritePort(int port, uint8 byte)
 {
+//	printf("%u\n", byte);
     S9xAPUExecute();
     SNES::cpu.port_write(port & 3, byte);
 }

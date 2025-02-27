@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 45;
+	objectVersion = 70;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -574,6 +574,11 @@
 		F5FC76BD03873BBF01A80002 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = /System/Library/Frameworks/IOKit.framework; sourceTree = "<absolute>"; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		E1B687CC2D69A10A001C726B /* gtx */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = gtx; sourceTree = "<group>"; };
+		E1B687D72D6A9AD5001C726B /* hbbh */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = hbbh; sourceTree = "<group>"; };
+/* End PBXFileSystemSynchronizedRootGroup section */
+
 /* Begin PBXFrameworksBuildPhase section */
 		30714712230E379500917F82 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
@@ -779,6 +784,7 @@
 		BF0B39791FA5792F002B04D3 /* apu */ = {
 			isa = PBXGroup;
 			children = (
+				E1B687D72D6A9AD5001C726B /* hbbh */,
 				BF0B397A1FA5792F002B04D3 /* apu.cpp */,
 				BF0B397B1FA5792F002B04D3 /* apu.h */,
 				BF0B397C1FA5792F002B04D3 /* bapu */,
@@ -886,6 +892,7 @@
 		EAE061540526CCB900A80003 /* snes9x */ = {
 			isa = PBXGroup;
 			children = (
+				E1B687CC2D69A10A001C726B /* gtx */,
 				EAE0615A0526CCB900A80003 /* 65c816.h */,
 				BF0B39791FA5792F002B04D3 /* apu */,
 				85FEF90620DDB15B00C038E9 /* bml.cpp */,
@@ -1206,6 +1213,10 @@
 			);
 			dependencies = (
 			);
+			fileSystemSynchronizedGroups = (
+				E1B687CC2D69A10A001C726B /* gtx */,
+				E1B687D72D6A9AD5001C726B /* hbbh */,
+			);
 			name = "snes9x framework";
 			productName = "snes9x framework";
 			productReference = 30D15CEF22CE6B5A005BC352 /* snes9x_framework.framework */;
@@ -1499,7 +1510,10 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				INFOPLIST_FILE = Snes9x/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
 				MACOSX_DEPLOYMENT_TARGET = 10.12;
 				MARKETING_VERSION = 1.63;
 				MTL_ENABLE_DEBUG_INFO = NO;
@@ -1546,7 +1560,10 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				INFOPLIST_FILE = Snes9x/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
 				MACOSX_DEPLOYMENT_TARGET = 10.12;
 				MARKETING_VERSION = 1.63;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
@@ -1593,7 +1610,11 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				INFOPLIST_FILE = "snes9x framework/Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/Frameworks",
+				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
@@ -1652,7 +1673,11 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				INFOPLIST_FILE = "snes9x framework/Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/Frameworks",
+				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
@@ -1703,7 +1728,10 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				ONLY_ACTIVE_ARCH = YES;
-				USER_HEADER_SEARCH_PATHS = "../apu/bapu ..";
+				USER_HEADER_SEARCH_PATHS = (
+					../apu/bapu,
+					..,
+				);
 			};
 			name = Debug;
 		};
@@ -1737,7 +1765,10 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				USER_HEADER_SEARCH_PATHS = "../apu/bapu ..";
+				USER_HEADER_SEARCH_PATHS = (
+					../apu/bapu,
+					..,
+				);
 			};
 			name = Release;
 		};

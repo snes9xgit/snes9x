@@ -4,8 +4,8 @@
 #ifndef SPC_DSP_H
 #define SPC_DSP_H
 
+#include "apu/apu.h"
 #include "blargg_common.h"
-
 extern "C" { typedef void (*dsp_copy_func_t)( unsigned char** io, void* state, size_t ); }
 
 class SPC_DSP {
@@ -262,7 +262,12 @@ inline int SPC_DSP::sample_count() const { return m.out - m.out_begin; }
 inline int SPC_DSP::read( int addr ) const
 {
 	assert( (unsigned) addr < register_count );
-	return m.external_regs [addr];
+	int data = m.external_regs[addr];
+	if ((addr >= v_srcn) && data != 0 && ((addr - v_srcn) % 0x10 == 0)) {
+		S9xForwardEvent(data);
+		printf("srcn (voice %d) - %d\n", (addr - v_srcn) / 0x10, data);
+	}
+	return data;
 }
 
 inline void SPC_DSP::write( int addr, int data )
