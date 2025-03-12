@@ -22,16 +22,17 @@ static void wl_global(void *data,
 {
     auto wl = (WaylandSurface *)data;
 
-    if (!strcmp(interface, "wl_compositor"))
-        wl->compositor = (struct wl_compositor *)wl_registry_bind(wl_registry, name, &wl_compositor_interface, version);
-    else if (!strcmp(interface, "wl_subcompositor"))
-        wl->subcompositor = (struct wl_subcompositor *)wl_registry_bind(wl_registry, name, &wl_subcompositor_interface, version);
-    else if (!strcmp(interface, zwp_idle_inhibit_manager_v1_interface.name))
-        wl->idle_inhibit_manager = (struct zwp_idle_inhibit_manager_v1 *)wl_registry_bind(wl_registry, name, &zwp_idle_inhibit_manager_v1_interface, version);
-    else if (!strcmp(interface, wp_viewporter_interface.name))
-        wl->viewporter = (struct wp_viewporter *)wl_registry_bind(wl_registry, name, &wp_viewporter_interface, version);
-    else if (!strcmp(interface, wp_fractional_scale_manager_v1_interface.name))
-        wl->fractional_scale_manager = (struct wp_fractional_scale_manager_v1 *)wl_registry_bind(wl_registry, name, &wp_fractional_scale_manager_v1_interface, version);
+    auto bind = [=](auto **pointer, auto *interface_struct) {
+        if (!strcmp(interface, interface_struct->name))
+            *pointer = reinterpret_cast<typeof(*pointer)>(
+                wl_registry_bind(wl_registry, name, interface_struct, version));
+    };
+
+    bind(&wl->compositor,               &wl_compositor_interface);
+    bind(&wl->subcompositor,            &wl_subcompositor_interface);
+    bind(&wl->idle_inhibit_manager,     &zwp_idle_inhibit_manager_v1_interface);
+    bind(&wl->viewporter,               &wp_viewporter_interface);
+    bind(&wl->fractional_scale_manager, &wp_fractional_scale_manager_v1_interface);
 }
 
 static void wl_global_remove(void *data,
@@ -44,25 +45,6 @@ static const struct wl_registry_listener wl_registry_listener = {
     wl_global,
     wl_global_remove
 };
-
-WaylandSurface::WaylandSurface()
-{
-    display = nullptr;
-    registry = nullptr;
-    compositor = nullptr;
-    subcompositor = nullptr;
-    parent = nullptr;
-    child = nullptr;
-    region = nullptr;
-    subsurface = nullptr;
-    idle_inhibit_manager = nullptr;
-    idle_inhibitor = nullptr;
-    viewporter = nullptr;
-    viewport = nullptr;
-    fractional_scale_manager = nullptr;
-    fractional_scale = nullptr;
-    actual_scale = 0.0;
-}
 
 WaylandSurface::~WaylandSurface()
 {
@@ -163,30 +145,12 @@ std::tuple<int, int> WaylandSurface::get_size_for_metrics(Metrics m)
 
 void WaylandSurface::shrink()
 {
-    if (!viewport)
-        viewport = wp_viewporter_get_viewport(viewporter, child);
-
-    wp_viewport_set_source(viewport,
-        wl_fixed_from_int(-1), wl_fixed_from_int(-1),
-        wl_fixed_from_int(-1), wl_fixed_from_int(-1));
-    wp_viewport_set_destination(viewport, 2, 2);
-
-    wl_surface_commit(child);
-    wl_surface_commit(parent);
+    resize({ metrics.x, metrics.y, 1, 1, metrics.scale});
 }
 
 void WaylandSurface::regrow()
 {
-    if (!viewport)
-        viewport = wp_viewporter_get_viewport(viewporter, child);
-
-    wp_viewport_set_source(viewport,
-        wl_fixed_from_int(-1), wl_fixed_from_int(-1),
-        wl_fixed_from_int(-1), wl_fixed_from_int(-1));
-    wp_viewport_set_destination(viewport, metrics.width, metrics.height);
-
-    wl_surface_commit(child);
-    wl_surface_commit(parent);
+    resize(metrics);
 }
 
 void WaylandSurface::resize(Metrics m)

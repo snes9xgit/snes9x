@@ -13,7 +13,7 @@
 class WaylandSurface
 {
   public:
-    WaylandSurface();
+    WaylandSurface() = default;
     ~WaylandSurface();
 
     struct Metrics {
