@@ -8761,9 +8761,7 @@ static std::vector<std::pair<int, int>> get_all_selected_listitems(HWND lView)
 INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	static bool internal_change;
-	static bool has_sel;
-	static int  sel_idx;
-	static uint8 new_sel;
+	static int  sel_idx = -1;
 	static CheatTracker ct;
 	switch(msg)
 	{
@@ -8860,33 +8858,41 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
                             {
                                 EnableWindow(GetDlgItem(hDlg, IDC_DELETE_CHEAT), false);
                                 EnableWindow(GetDlgItem(hDlg, IDC_UPDATE_CHEAT), false);
-                                has_sel = false;
                                 sel_idx = -1;
                             }
                             else
                             {
                                 EnableWindow(GetDlgItem(hDlg, IDC_DELETE_CHEAT), true);
-                                if (!has_sel || sel_idx != ListView_GetSelectionMark(lView))
+                                if ((listview_notify->uNewState & LVIS_SELECTED))
                                 {
-                                    new_sel = 3;
                                     //change
-                                    TCHAR buf[CHEAT_SIZE];
-                                    LV_ITEM lvi;
-
+                                    sel_idx = listview_notify->iItem;
                                     internal_change = true; // do not enable update button
 
+                                    // we can't use the ITEM_QUERY macro, since the selection mark is not yet updated,
+                                    // and we also already know which id the newly selected item has
+                                    auto item_query = [&](int sel_id, int sub_id)
+                                        {
+                                            TCHAR buf[CHEAT_SIZE];
+                                            LV_ITEM lvi;
+                                            memset(&lvi, 0, sizeof(LV_ITEM));
+                                            lvi.iItem = sel_id;
+                                            lvi.iSubItem = sub_id;
+                                            lvi.mask = LVIF_TEXT;
+                                            lvi.pszText = buf;
+                                            lvi.cchTextMax = CHEAT_SIZE;
+                                            ListView_GetItem(GetDlgItem(hDlg, IDC_CHEAT_LIST), &lvi);
+                                            return std::wstring(buf);
+                                        };
+
                                     /* Code */
-                                    ITEM_QUERY(lvi, IDC_CHEAT_LIST, 0, buf, CHEAT_SIZE);
-                                    SetDlgItemText(hDlg, IDC_CHEAT_CODE, lvi.pszText);
+                                    SetDlgItemText(hDlg, IDC_CHEAT_CODE, item_query(sel_idx, 0).c_str());
 
                                     /* Description */
-                                    ITEM_QUERY(lvi, IDC_CHEAT_LIST, 1, buf, CHEAT_SIZE);
-                                    SetDlgItemText(hDlg, IDC_CHEAT_DESCRIPTION, lvi.pszText);
+                                    SetDlgItemText(hDlg, IDC_CHEAT_DESCRIPTION, item_query(sel_idx, 1).c_str());
 
                                     internal_change = false;
                                 }
-                                sel_idx = ListView_GetSelectionMark(lView);
-                                has_sel = true;
                             }
                         }
 
@@ -8921,7 +8927,7 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 						{
 							return false;
 						}
-						if(!has_sel)
+						if(sel_idx == -1)
 							return true;
 
 						EnableWindow(GetDlgItem(hDlg, IDC_UPDATE_CHEAT), true);
@@ -9059,7 +9065,6 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 				ListView_SetItemState(GetDlgItem(hDlg, IDC_CHEAT_LIST),sel_idx, 0, LVIS_SELECTED|LVIS_FOCUSED);
 				ListView_SetSelectionMark(GetDlgItem(hDlg, IDC_CHEAT_LIST), -1);
 				sel_idx=-1;
-				has_sel=false;
 				break;
 			case IDC_SEARCH_DB:
 				if (MessageBox(hDlg,
@@ -9090,7 +9095,7 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 
 						if (temp && temp[0] && (!S9xCheatValidate(temp).empty()))
 						{
-							if (has_sel)
+							if (sel_idx != -1)
 								EnableWindow(GetDlgItem(hDlg, IDC_UPDATE_CHEAT), true);
 							else
 								EnableWindow(GetDlgItem(hDlg, IDC_UPDATE_CHEAT), false);
