@@ -30,8 +30,8 @@
     <ClCompile Include="..\..\..\external\glslang\glslang\MachineIndependent\propagateNoContraction.cpp" />
     <ClCompile Include="..\..\..\external\glslang\glslang\GenericCodeGen\CodeGen.cpp" />
     <ClCompile Include="..\..\..\external\glslang\glslang\GenericCodeGen\Link.cpp" />
-    <ClCompile Include="..\..\..\external\glslang\StandAlone\ResourceLimits.cpp" />
     <ClCompile Include="..\..\..\external\glslang\glslang\MachineIndependent\SpirvIntrinsics.cpp" />
+    <ClCompile Include="..\..\..\external\glslang\glslang\ResourceLimits\ResourceLimits.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\external\glslang\glslang\Public\ShaderLang.h" />

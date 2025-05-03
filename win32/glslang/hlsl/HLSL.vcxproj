@@ -180,6 +180,7 @@
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>WIN32;_WINDOWS;AMD_EXTENSIONS;NV_EXTENSIONS;ENABLE_HLSL;GLSLANG_OSINCLUDE_WIN32;ENABLE_OPT=0;CMAKE_INTDIR="Debug";%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ObjectFileName>$(IntDir)</ObjectFileName>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;AMD_EXTENSIONS;NV_EXTENSIONS;ENABLE_HLSL;GLSLANG_OSINCLUDE_WIN32;ENABLE_OPT=0;CMAKE_INTDIR=\"Debug\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -211,6 +212,7 @@
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>WIN32;_WINDOWS;AMD_EXTENSIONS;NV_EXTENSIONS;ENABLE_HLSL;GLSLANG_OSINCLUDE_WIN32;ENABLE_OPT=0;CMAKE_INTDIR="Debug";%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ObjectFileName>$(IntDir)</ObjectFileName>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;AMD_EXTENSIONS;NV_EXTENSIONS;ENABLE_HLSL;GLSLANG_OSINCLUDE_WIN32;ENABLE_OPT=0;CMAKE_INTDIR=\"Debug\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -240,6 +242,7 @@
       <ObjectFileName>$(IntDir)</ObjectFileName>
       <DebugInformationFormat>
       </DebugInformationFormat>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;AMD_EXTENSIONS;NV_EXTENSIONS;ENABLE_HLSL;GLSLANG_OSINCLUDE_WIN32;ENABLE_OPT=0;CMAKE_INTDIR=\"Release\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -271,6 +274,7 @@
       <ObjectFileName>$(IntDir)</ObjectFileName>
       <DebugInformationFormat>
       </DebugInformationFormat>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;AMD_EXTENSIONS;NV_EXTENSIONS;ENABLE_HLSL;GLSLANG_OSINCLUDE_WIN32;ENABLE_OPT=0;CMAKE_INTDIR=\"Release\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -300,6 +304,7 @@
       <ObjectFileName>$(IntDir)</ObjectFileName>
       <DebugInformationFormat>
       </DebugInformationFormat>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;AMD_EXTENSIONS;NV_EXTENSIONS;ENABLE_HLSL;GLSLANG_OSINCLUDE_WIN32;ENABLE_OPT=0;CMAKE_INTDIR=\"MinSizeRel\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -331,6 +336,7 @@
       <ObjectFileName>$(IntDir)</ObjectFileName>
       <DebugInformationFormat>
       </DebugInformationFormat>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;AMD_EXTENSIONS;NV_EXTENSIONS;ENABLE_HLSL;GLSLANG_OSINCLUDE_WIN32;ENABLE_OPT=0;CMAKE_INTDIR=\"MinSizeRel\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -359,6 +365,7 @@
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;AMD_EXTENSIONS;NV_EXTENSIONS;ENABLE_HLSL;GLSLANG_OSINCLUDE_WIN32;ENABLE_OPT=0;CMAKE_INTDIR="RelWithDebInfo";%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ObjectFileName>$(IntDir)</ObjectFileName>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;AMD_EXTENSIONS;NV_EXTENSIONS;ENABLE_HLSL;GLSLANG_OSINCLUDE_WIN32;ENABLE_OPT=0;CMAKE_INTDIR=\"RelWithDebInfo\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -389,6 +396,7 @@
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;AMD_EXTENSIONS;NV_EXTENSIONS;ENABLE_HLSL;GLSLANG_OSINCLUDE_WIN32;ENABLE_OPT=0;CMAKE_INTDIR="RelWithDebInfo";%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ObjectFileName>$(IntDir)</ObjectFileName>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;AMD_EXTENSIONS;NV_EXTENSIONS;ENABLE_HLSL;GLSLANG_OSINCLUDE_WIN32;ENABLE_OPT=0;CMAKE_INTDIR=\"RelWithDebInfo\";%(PreprocessorDefinitions)</PreprocessorDefinitions>

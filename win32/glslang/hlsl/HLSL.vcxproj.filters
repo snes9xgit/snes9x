@@ -1,24 +1,23 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="..\..\..\external\glslang\hlsl\hlslAttributes.cpp" />
-    <ClCompile Include="..\..\..\external\glslang\hlsl\hlslParseHelper.cpp" />
-    <ClCompile Include="..\..\..\external\glslang\hlsl\hlslScanContext.cpp" />
-    <ClCompile Include="..\..\..\external\glslang\hlsl\hlslOpMap.cpp" />
-    <ClCompile Include="..\..\..\external\glslang\hlsl\hlslTokenStream.cpp" />
-    <ClCompile Include="..\..\..\external\glslang\hlsl\hlslGrammar.cpp" />
-    <ClCompile Include="..\..\..\external\glslang\hlsl\hlslParseables.cpp" />
-    <ClCompile Include="..\..\..\external\glslang\hlsl\pch.cpp" />
+    <ClCompile Include="..\..\..\external\glslang\glslang\HLSL\hlslAttributes.cpp" />
+    <ClCompile Include="..\..\..\external\glslang\glslang\HLSL\hlslParseHelper.cpp" />
+    <ClCompile Include="..\..\..\external\glslang\glslang\HLSL\hlslScanContext.cpp" />
+    <ClCompile Include="..\..\..\external\glslang\glslang\HLSL\hlslOpMap.cpp" />
+    <ClCompile Include="..\..\..\external\glslang\glslang\HLSL\hlslTokenStream.cpp" />
+    <ClCompile Include="..\..\..\external\glslang\glslang\HLSL\hlslGrammar.cpp" />
+    <ClCompile Include="..\..\..\external\glslang\glslang\HLSL\hlslParseables.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\external\glslang\hlsl\hlslAttributes.h" />
-    <ClInclude Include="..\..\..\external\glslang\hlsl\hlslParseHelper.h" />
-    <ClInclude Include="..\..\..\external\glslang\hlsl\hlslTokens.h" />
-    <ClInclude Include="..\..\..\external\glslang\hlsl\hlslScanContext.h" />
-    <ClInclude Include="..\..\..\external\glslang\hlsl\hlslOpMap.h" />
-    <ClInclude Include="..\..\..\external\glslang\hlsl\hlslTokenStream.h" />
-    <ClInclude Include="..\..\..\external\glslang\hlsl\hlslGrammar.h" />
-    <ClInclude Include="..\..\..\external\glslang\hlsl\hlslParseables.h" />
+    <ClInclude Include="..\..\..\external\glslang\glslang\HLSL\hlslAttributes.h" />
+    <ClInclude Include="..\..\..\external\glslang\glslang\HLSL\hlslParseHelper.h" />
+    <ClInclude Include="..\..\..\external\glslang\glslang\HLSL\hlslTokens.h" />
+    <ClInclude Include="..\..\..\external\glslang\glslang\HLSL\hlslScanContext.h" />
+    <ClInclude Include="..\..\..\external\glslang\glslang\HLSL\hlslOpMap.h" />
+    <ClInclude Include="..\..\..\external\glslang\glslang\HLSL\hlslTokenStream.h" />
+    <ClInclude Include="..\..\..\external\glslang\glslang\HLSL\hlslGrammar.h" />
+    <ClInclude Include="..\..\..\external\glslang\glslang\HLSL\hlslParseables.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Source">
