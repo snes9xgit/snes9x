@@ -89,11 +89,10 @@ if(USE_SLANG)
 
     set(SPIRV_CROSS_EXCEPTIONS_TO_ASSERTIONS CACHE BOOL ON)
     set(BUILD_TESTING CACHE BOOL OFF)
+    set(ENABLE_OPT 0)
     add_subdirectory("../external/glslang" "glslang" EXCLUDE_FROM_ALL)
     add_subdirectory("../external/SPIRV-Cross" "SPIRV-Cross" EXCLUDE_FROM_ALL)
     list(APPEND LIBS glslang
-                     OGLCompiler
-                     HLSL
                      OSDependent
                      SPIRV
                      glslang-default-resource-limits)

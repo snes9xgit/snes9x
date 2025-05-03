@@ -243,11 +243,10 @@ list(APPEND LIBS cubeb)
 list(APPEND INCLUDES "../external/cubeb/include")
 
 set(BUILD_TESTING CACHE BOOL OFF)
+set(ENABLE_OPT 0)
 add_subdirectory("../external/glslang" "glslang" EXCLUDE_FROM_ALL)
 list(APPEND LIBS
     glslang
-    OGLCompiler
-    HLSL
     OSDependent
     SPIRV
     glslang-default-resource-limits)

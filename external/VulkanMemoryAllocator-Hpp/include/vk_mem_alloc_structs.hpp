@@ -115,6 +115,11 @@ namespace VMA_HPP_NAMESPACE {
         , PFN_vkGetDeviceBufferMemoryRequirementsKHR vkGetDeviceBufferMemoryRequirements_ = {}
         , PFN_vkGetDeviceImageMemoryRequirementsKHR vkGetDeviceImageMemoryRequirements_ = {}
 #endif
+#if VMA_EXTERNAL_MEMORY_WIN32
+        , PFN_vkGetMemoryWin32HandleKHR vkGetMemoryWin32HandleKHR_ = {}
+#else
+        , void* vkGetMemoryWin32HandleKHR_ = {}
+#endif
       ) VULKAN_HPP_NOEXCEPT
       : vkGetInstanceProcAddr(vkGetInstanceProcAddr_)
       , vkGetDeviceProcAddr(vkGetDeviceProcAddr_)
@@ -149,6 +154,11 @@ namespace VMA_HPP_NAMESPACE {
 #if VMA_KHR_MAINTENANCE4 || VMA_VULKAN_VERSION >= 1003000
       , vkGetDeviceBufferMemoryRequirements(vkGetDeviceBufferMemoryRequirements_)
       , vkGetDeviceImageMemoryRequirements(vkGetDeviceImageMemoryRequirements_)
+#endif
+#if VMA_EXTERNAL_MEMORY_WIN32
+      , vkGetMemoryWin32HandleKHR(vkGetMemoryWin32HandleKHR_)
+#else
+      , vkGetMemoryWin32HandleKHR(vkGetMemoryWin32HandleKHR_)
 #endif
       {}
 
@@ -207,6 +217,11 @@ namespace VMA_HPP_NAMESPACE {
 #if VMA_KHR_MAINTENANCE4 || VMA_VULKAN_VERSION >= 1003000
           && vkGetDeviceBufferMemoryRequirements == rhs.vkGetDeviceBufferMemoryRequirements
           && vkGetDeviceImageMemoryRequirements == rhs.vkGetDeviceImageMemoryRequirements
+#endif
+#if VMA_EXTERNAL_MEMORY_WIN32
+          && vkGetMemoryWin32HandleKHR == rhs.vkGetMemoryWin32HandleKHR
+#else
+          && vkGetMemoryWin32HandleKHR == rhs.vkGetMemoryWin32HandleKHR
 #endif
       ;
     }
@@ -351,6 +366,19 @@ namespace VMA_HPP_NAMESPACE {
       return *this;
     }
 #endif
+#if VMA_EXTERNAL_MEMORY_WIN32
+
+    VULKAN_HPP_CONSTEXPR_14 VulkanFunctions& setVkGetMemoryWin32HandleKHR(PFN_vkGetMemoryWin32HandleKHR vkGetMemoryWin32HandleKHR_) VULKAN_HPP_NOEXCEPT {
+      vkGetMemoryWin32HandleKHR = vkGetMemoryWin32HandleKHR_;
+      return *this;
+    }
+#else
+
+    VULKAN_HPP_CONSTEXPR_14 VulkanFunctions& setVkGetMemoryWin32HandleKHR(void* vkGetMemoryWin32HandleKHR_) VULKAN_HPP_NOEXCEPT {
+      vkGetMemoryWin32HandleKHR = vkGetMemoryWin32HandleKHR_;
+      return *this;
+    }
+#endif
 #endif
 
   public:
@@ -387,6 +415,11 @@ namespace VMA_HPP_NAMESPACE {
 #if VMA_KHR_MAINTENANCE4 || VMA_VULKAN_VERSION >= 1003000
     PFN_vkGetDeviceBufferMemoryRequirementsKHR vkGetDeviceBufferMemoryRequirements = {};
     PFN_vkGetDeviceImageMemoryRequirementsKHR vkGetDeviceImageMemoryRequirements = {};
+#endif
+#if VMA_EXTERNAL_MEMORY_WIN32
+    PFN_vkGetMemoryWin32HandleKHR vkGetMemoryWin32HandleKHR = {};
+#else
+    void* vkGetMemoryWin32HandleKHR = {};
 #endif
   };
   VULKAN_HPP_STATIC_ASSERT(sizeof(VulkanFunctions) == sizeof(VmaVulkanFunctions),

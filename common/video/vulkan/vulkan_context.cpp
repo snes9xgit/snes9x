@@ -7,7 +7,7 @@
 namespace Vulkan
 {
 
-static std::unique_ptr<vk::DynamicLoader> dl;
+static std::unique_ptr<vk::detail::DynamicLoader> dl;
 
 Context::Context()
 {
@@ -33,7 +33,7 @@ static bool load_loader()
     if (dl)
         return true;
 
-    dl = std::make_unique<vk::DynamicLoader>();
+    dl = std::make_unique<vk::detail::DynamicLoader>();
     if (!dl->success())
     {
         dl.reset();

@@ -105,8 +105,8 @@ namespace VMA_HPP_NAMESPACE {
                                                                                                                   const AllocationCreateInfo& allocationCreateInfo) const {
     uint32_t memoryTypeIndex;
     VULKAN_HPP_NAMESPACE::Result result = static_cast<VULKAN_HPP_NAMESPACE::Result>( vmaFindMemoryTypeIndex(m_allocator, memoryTypeBits, reinterpret_cast<const VmaAllocationCreateInfo*>(&allocationCreateInfo), &memoryTypeIndex) );
-    resultCheck(result, VMA_HPP_NAMESPACE_STRING "::Allocator::findMemoryTypeIndex");
-    return createResultValueType(result, memoryTypeIndex);
+    VMA_HPP_NAMESPACE::detail::resultCheck(result, VMA_HPP_NAMESPACE_STRING "::Allocator::findMemoryTypeIndex");
+    return VMA_HPP_NAMESPACE::detail::createResultValueType(result, memoryTypeIndex);
   }
 #endif
   VULKAN_HPP_INLINE VULKAN_HPP_NAMESPACE::Result Allocator::findMemoryTypeIndex(uint32_t memoryTypeBits,
@@ -121,8 +121,8 @@ namespace VMA_HPP_NAMESPACE {
                                                                                                                                const AllocationCreateInfo& allocationCreateInfo) const {
     uint32_t memoryTypeIndex;
     VULKAN_HPP_NAMESPACE::Result result = static_cast<VULKAN_HPP_NAMESPACE::Result>( vmaFindMemoryTypeIndexForBufferInfo(m_allocator, reinterpret_cast<const VkBufferCreateInfo*>(&bufferCreateInfo), reinterpret_cast<const VmaAllocationCreateInfo*>(&allocationCreateInfo), &memoryTypeIndex) );
-    resultCheck(result, VMA_HPP_NAMESPACE_STRING "::Allocator::findMemoryTypeIndexForBufferInfo");
-    return createResultValueType(result, memoryTypeIndex);
+    VMA_HPP_NAMESPACE::detail::resultCheck(result, VMA_HPP_NAMESPACE_STRING "::Allocator::findMemoryTypeIndexForBufferInfo");
+    return VMA_HPP_NAMESPACE::detail::createResultValueType(result, memoryTypeIndex);
   }
 #endif
   VULKAN_HPP_INLINE VULKAN_HPP_NAMESPACE::Result Allocator::findMemoryTypeIndexForBufferInfo(const VULKAN_HPP_NAMESPACE::BufferCreateInfo* bufferCreateInfo,
@@ -137,8 +137,8 @@ namespace VMA_HPP_NAMESPACE {
                                                                                                                               const AllocationCreateInfo& allocationCreateInfo) const {
     uint32_t memoryTypeIndex;
     VULKAN_HPP_NAMESPACE::Result result = static_cast<VULKAN_HPP_NAMESPACE::Result>( vmaFindMemoryTypeIndexForImageInfo(m_allocator, reinterpret_cast<const VkImageCreateInfo*>(&imageCreateInfo), reinterpret_cast<const VmaAllocationCreateInfo*>(&allocationCreateInfo), &memoryTypeIndex) );
-    resultCheck(result, VMA_HPP_NAMESPACE_STRING "::Allocator::findMemoryTypeIndexForImageInfo");
-    return createResultValueType(result, memoryTypeIndex);
+    VMA_HPP_NAMESPACE::detail::resultCheck(result, VMA_HPP_NAMESPACE_STRING "::Allocator::findMemoryTypeIndexForImageInfo");
+    return VMA_HPP_NAMESPACE::detail::createResultValueType(result, memoryTypeIndex);
   }
 #endif
   VULKAN_HPP_INLINE VULKAN_HPP_NAMESPACE::Result Allocator::findMemoryTypeIndexForImageInfo(const VULKAN_HPP_NAMESPACE::ImageCreateInfo* imageCreateInfo,
@@ -152,15 +152,15 @@ namespace VMA_HPP_NAMESPACE {
   VULKAN_HPP_INLINE typename VULKAN_HPP_NAMESPACE::ResultValueType<Pool>::type Allocator::createPool(const PoolCreateInfo& createInfo) const {
     Pool pool;
     VULKAN_HPP_NAMESPACE::Result result = static_cast<VULKAN_HPP_NAMESPACE::Result>( vmaCreatePool(m_allocator, reinterpret_cast<const VmaPoolCreateInfo*>(&createInfo), reinterpret_cast<VmaPool*>(&pool)) );
-    resultCheck(result, VMA_HPP_NAMESPACE_STRING "::Allocator::createPool");
-    return createResultValueType(result, pool);
+    VMA_HPP_NAMESPACE::detail::resultCheck(result, VMA_HPP_NAMESPACE_STRING "::Allocator::createPool");
+    return VMA_HPP_NAMESPACE::detail::createResultValueType(result, pool);
   }
 #ifndef VULKAN_HPP_NO_SMART_HANDLE
   VULKAN_HPP_INLINE typename VULKAN_HPP_NAMESPACE::ResultValueType<UniquePool>::type Allocator::createPoolUnique(const PoolCreateInfo& createInfo) const {
     Pool pool;
     VULKAN_HPP_NAMESPACE::Result result = static_cast<VULKAN_HPP_NAMESPACE::Result>( vmaCreatePool(m_allocator, reinterpret_cast<const VmaPoolCreateInfo*>(&createInfo), reinterpret_cast<VmaPool*>(&pool)) );
-    resultCheck(result, VMA_HPP_NAMESPACE_STRING "::Allocator::createPool");
-    return createResultValueType(result, createUniqueHandle(pool, *this));
+    VMA_HPP_NAMESPACE::detail::resultCheck(result, VMA_HPP_NAMESPACE_STRING "::Allocator::createPool");
+    return VMA_HPP_NAMESPACE::detail::createResultValueType(result, createUniqueHandle(pool, *this));
   }
 #endif
 #endif
@@ -207,8 +207,8 @@ namespace VMA_HPP_NAMESPACE {
 #ifndef VULKAN_HPP_DISABLE_ENHANCED_MODE
   VULKAN_HPP_INLINE typename VULKAN_HPP_NAMESPACE::ResultValueType<void>::type Allocator::checkPoolCorruption(Pool pool) const {
     VULKAN_HPP_NAMESPACE::Result result = static_cast<VULKAN_HPP_NAMESPACE::Result>( vmaCheckPoolCorruption(m_allocator, static_cast<VmaPool>(pool)) );
-    resultCheck(result, VMA_HPP_NAMESPACE_STRING "::Allocator::checkPoolCorruption");
-    return createResultValueType(result);
+    VMA_HPP_NAMESPACE::detail::resultCheck(result, VMA_HPP_NAMESPACE_STRING "::Allocator::checkPoolCorruption");
+    return VMA_HPP_NAMESPACE::detail::createResultValueType(result);
   }
 #else
   VULKAN_HPP_INLINE VULKAN_HPP_NAMESPACE::Result Allocator::checkPoolCorruption(Pool pool) const {
@@ -247,8 +247,8 @@ namespace VMA_HPP_NAMESPACE {
                                                                                                                VULKAN_HPP_NAMESPACE::Optional<AllocationInfo> allocationInfo) const {
     Allocation allocation;
     VULKAN_HPP_NAMESPACE::Result result = static_cast<VULKAN_HPP_NAMESPACE::Result>( vmaAllocateMemory(m_allocator, reinterpret_cast<const VkMemoryRequirements*>(&vkMemoryRequirements), reinterpret_cast<const VmaAllocationCreateInfo*>(&createInfo), reinterpret_cast<VmaAllocation*>(&allocation), reinterpret_cast<VmaAllocationInfo*>(static_cast<AllocationInfo*>(allocationInfo))) );
-    resultCheck(result, VMA_HPP_NAMESPACE_STRING "::Allocator::allocateMemory");
-    return createResultValueType(result, allocation);
+    VMA_HPP_NAMESPACE::detail::resultCheck(result, VMA_HPP_NAMESPACE_STRING "::Allocator::allocateMemory");
+    return VMA_HPP_NAMESPACE::detail::createResultValueType(result, allocation);
   }
 #ifndef VULKAN_HPP_NO_SMART_HANDLE
   VULKAN_HPP_INLINE typename VULKAN_HPP_NAMESPACE::ResultValueType<UniqueAllocation>::type Allocator::allocateMemoryUnique(const VULKAN_HPP_NAMESPACE::MemoryRequirements& vkMemoryRequirements,
@@ -256,8 +256,8 @@ namespace VMA_HPP_NAMESPACE {
                                                                                                                            VULKAN_HPP_NAMESPACE::Optional<AllocationInfo> allocationInfo) const {
     Allocation allocation;
     VULKAN_HPP_NAMESPACE::Result result = static_cast<VULKAN_HPP_NAMESPACE::Result>( vmaAllocateMemory(m_allocator, reinterpret_cast<const VkMemoryRequirements*>(&vkMemoryRequirements), reinterpret_cast<const VmaAllocationCreateInfo*>(&createInfo), reinterpret_cast<VmaAllocation*>(&allocation), reinterpret_cast<VmaAllocationInfo*>(static_cast<AllocationInfo*>(allocationInfo))) );
-    resultCheck(result, VMA_HPP_NAMESPACE_STRING "::Allocator::allocateMemory");
-    return createResultValueType(result, createUniqueHandle(allocation, *this));
+    VMA_HPP_NAMESPACE::detail::resultCheck(result, VMA_HPP_NAMESPACE_STRING "::Allocator::allocateMemory");
+    return VMA_HPP_NAMESPACE::detail::createResultValueType(result, createUniqueHandle(allocation, *this));
   }
 #endif
 #endif
@@ -280,8 +280,8 @@ namespace VMA_HPP_NAMESPACE {
     size_t allocationCount = vkMemoryRequirements.size();
     std::vector<Allocation, VectorAllocator> allocations(allocationCount, vectorAllocator);
     VULKAN_HPP_NAMESPACE::Result result = static_cast<VULKAN_HPP_NAMESPACE::Result>( vmaAllocateMemoryPages(m_allocator, reinterpret_cast<const VkMemoryRequirements*>(vkMemoryRequirements.data()), reinterpret_cast<const VmaAllocationCreateInfo*>(createInfo.data()), allocationCount, reinterpret_cast<VmaAllocation*>(allocations.data()), reinterpret_cast<VmaAllocationInfo*>(allocationInfo.data())) );
-    resultCheck(result, VMA_HPP_NAMESPACE_STRING "::Allocator::allocateMemoryPages");
-    return createResultValueType(result, allocations);
+    VMA_HPP_NAMESPACE::detail::resultCheck(result, VMA_HPP_NAMESPACE_STRING "::Allocator::allocateMemoryPages");
+    return VMA_HPP_NAMESPACE::detail::createResultValueType(result, allocations);
   }
 
   template<typename VectorAllocator>
@@ -291,8 +291,8 @@ namespace VMA_HPP_NAMESPACE {
     size_t allocationCount = vkMemoryRequirements.size();
     std::vector<Allocation, VectorAllocator> allocations(allocationCount);
     VULKAN_HPP_NAMESPACE::Result result = static_cast<VULKAN_HPP_NAMESPACE::Result>( vmaAllocateMemoryPages(m_allocator, reinterpret_cast<const VkMemoryRequirements*>(vkMemoryRequirements.data()), reinterpret_cast<const VmaAllocationCreateInfo*>(createInfo.data()), allocationCount, reinterpret_cast<VmaAllocation*>(allocations.data()), reinterpret_cast<VmaAllocationInfo*>(allocationInfo.data())) );
-    resultCheck(result, VMA_HPP_NAMESPACE_STRING "::Allocator::allocateMemoryPages");
-    return createResultValueType(result, allocations);
+    VMA_HPP_NAMESPACE::detail::resultCheck(result, VMA_HPP_NAMESPACE_STRING "::Allocator::allocateMemoryPages");
+    return VMA_HPP_NAMESPACE::detail::createResultValueType(result, allocations);
   }
 #ifndef VULKAN_HPP_NO_SMART_HANDLE
   template<typename VectorAllocator,
@@ -305,8 +305,8 @@ namespace VMA_HPP_NAMESPACE {
     size_t allocationCount = vkMemoryRequirements.size();
     std::vector<Allocation> allocations(allocationCount);
     VULKAN_HPP_NAMESPACE::Result result = static_cast<VULKAN_HPP_NAMESPACE::Result>( vmaAllocateMemoryPages(m_allocator, reinterpret_cast<const VkMemoryRequirements*>(vkMemoryRequirements.data()), reinterpret_cast<const VmaAllocationCreateInfo*>(createInfo.data()), allocationCount, reinterpret_cast<VmaAllocation*>(allocations.data()), reinterpret_cast<VmaAllocationInfo*>(allocationInfo.data())) );
-    resultCheck(result, VMA_HPP_NAMESPACE_STRING "::Allocator::allocateMemoryPages");
-    return createResultValueType(result, createUniqueHandleVector(allocations, *this, vectorAllocator));
+    VMA_HPP_NAMESPACE::detail::resultCheck(result, VMA_HPP_NAMESPACE_STRING "::Allocator::allocateMemoryPages");
+    return VMA_HPP_NAMESPACE::detail::createResultValueType(result, createUniqueHandleVector(allocations, *this, vectorAllocator));
   }
 
   template<typename VectorAllocator>
@@ -316,8 +316,8 @@ namespace VMA_HPP_NAMESPACE {
     size_t allocationCount = vkMemoryRequirements.size();
     std::vector<Allocation> allocations(allocationCount);
     VULKAN_HPP_NAMESPACE::Result result = static_cast<VULKAN_HPP_NAMESPACE::Result>( vmaAllocateMemoryPages(m_allocator, reinterpret_cast<const VkMemoryRequirements*>(vkMemoryRequirements.data()), reinterpret_cast<const VmaAllocationCreateInfo*>(createInfo.data()), allocationCount, reinterpret_cast<VmaAllocation*>(allocations.data()), reinterpret_cast<VmaAllocationInfo*>(allocationInfo.data())) );
-    resultCheck(result, VMA_HPP_NAMESPACE_STRING "::Allocator::allocateMemoryPages");
-    return createResultValueType(result, createUniqueHandleVector(allocations, *this, VectorAllocator()));
+    VMA_HPP_NAMESPACE::detail::resultCheck(result, VMA_HPP_NAMESPACE_STRING "::Allocator::allocateMemoryPages");
+    return VMA_HPP_NAMESPACE::detail::createResultValueType(result, createUniqueHandleVector(allocations, *this, VectorAllocator()));
   }
 #endif
 #endif
@@ -336,8 +336,8 @@ namespace VMA_HPP_NAMESPACE {
                                                                                                                         VULKAN_HPP_NAMESPACE::Optional<AllocationInfo> allocationInfo) const {
     Allocation allocation;
     VULKAN_HPP_NAMESPACE::Result result = static_cast<VULKAN_HPP_NAMESPACE::Result>( vmaAllocateMemoryForBuffer(m_allocator, static_cast<VkBuffer>(buffer), reinterpret_cast<const VmaAllocationCreateInfo*>(&createInfo), reinterpret_cast<VmaAllocation*>(&allocation), reinterpret_cast<VmaAllocationInfo*>(static_cast<AllocationInfo*>(allocationInfo))) );
-    resultCheck(result, VMA_HPP_NAMESPACE_STRING "::Allocator::allocateMemoryForBuffer");
-    return createResultValueType(result, allocation);
+    VMA_HPP_NAMESPACE::detail::resultCheck(result, VMA_HPP_NAMESPACE_STRING "::Allocator::allocateMemoryForBuffer");
+    return VMA_HPP_NAMESPACE::detail::createResultValueType(result, allocation);
   }
 #ifndef VULKAN_HPP_NO_SMART_HANDLE
   VULKAN_HPP_INLINE typename VULKAN_HPP_NAMESPACE::ResultValueType<UniqueAllocation>::type Allocator::allocateMemoryForBufferUnique(VULKAN_HPP_NAMESPACE::Buffer buffer,
@@ -345,8 +345,8 @@ namespace VMA_HPP_NAMESPACE {
                                                                                                                                     VULKAN_HPP_NAMESPACE::Optional<AllocationInfo> allocationInfo) const {
     Allocation allocation;
     VULKAN_HPP_NAMESPACE::Result result = static_cast<VULKAN_HPP_NAMESPACE::Result>( vmaAllocateMemoryForBuffer(m_allocator, static_cast<VkBuffer>(buffer), reinterpret_cast<const VmaAllocationCreateInfo*>(&createInfo), reinterpret_cast<VmaAllocation*>(&allocation), reinterpret_cast<VmaAllocationInfo*>(static_cast<AllocationInfo*>(allocationInfo))) );
-    resultCheck(result, VMA_HPP_NAMESPACE_STRING "::Allocator::allocateMemoryForBuffer");
-    return createResultValueType(result, createUniqueHandle(allocation, *this));
+    VMA_HPP_NAMESPACE::detail::resultCheck(result, VMA_HPP_NAMESPACE_STRING "::Allocator::allocateMemoryForBuffer");
+    return VMA_HPP_NAMESPACE::detail::createResultValueType(result, createUniqueHandle(allocation, *this));
   }
 #endif
 #endif
@@ -364,8 +364,8 @@ namespace VMA_HPP_NAMESPACE {
                                                                                                                        VULKAN_HPP_NAMESPACE::Optional<AllocationInfo> allocationInfo) const {
     Allocation allocation;
     VULKAN_HPP_NAMESPACE::Result result = static_cast<VULKAN_HPP_NAMESPACE::Result>( vmaAllocateMemoryForImage(m_allocator, static_cast<VkImage>(image), reinterpret_cast<const VmaAllocationCreateInfo*>(&createInfo), reinterpret_cast<VmaAllocation*>(&allocation), reinterpret_cast<VmaAllocationInfo*>(static_cast<AllocationInfo*>(allocationInfo))) );
-    resultCheck(result, VMA_HPP_NAMESPACE_STRING "::Allocator::allocateMemoryForImage");
-    return createResultValueType(result, allocation);
+    VMA_HPP_NAMESPACE::detail::resultCheck(result, VMA_HPP_NAMESPACE_STRING "::Allocator::allocateMemoryForImage");
+    return VMA_HPP_NAMESPACE::detail::createResultValueType(result, allocation);
   }
 #ifndef VULKAN_HPP_NO_SMART_HANDLE
   VULKAN_HPP_INLINE typename VULKAN_HPP_NAMESPACE::ResultValueType<UniqueAllocation>::type Allocator::allocateMemoryForImageUnique(VULKAN_HPP_NAMESPACE::Image image,
@@ -373,8 +373,8 @@ namespace VMA_HPP_NAMESPACE {
                                                                                                                                    VULKAN_HPP_NAMESPACE::Optional<AllocationInfo> allocationInfo) const {
     Allocation allocation;
     VULKAN_HPP_NAMESPACE::Result result = static_cast<VULKAN_HPP_NAMESPACE::Result>( vmaAllocateMemoryForImage(m_allocator, static_cast<VkImage>(image), reinterpret_cast<const VmaAllocationCreateInfo*>(&createInfo), reinterpret_cast<VmaAllocation*>(&allocation), reinterpret_cast<VmaAllocationInfo*>(static_cast<AllocationInfo*>(allocationInfo))) );
-    resultCheck(result, VMA_HPP_NAMESPACE_STRING "::Allocator::allocateMemoryForImage");
-    return createResultValueType(result, createUniqueHandle(allocation, *this));
+    VMA_HPP_NAMESPACE::detail::resultCheck(result, VMA_HPP_NAMESPACE_STRING "::Allocator::allocateMemoryForImage");
+    return VMA_HPP_NAMESPACE::detail::createResultValueType(result, createUniqueHandle(allocation, *this));
   }
 #endif
 #endif
@@ -467,12 +467,30 @@ namespace VMA_HPP_NAMESPACE {
     vmaGetAllocationMemoryProperties(m_allocator, static_cast<VmaAllocation>(allocation), reinterpret_cast<VkMemoryPropertyFlags*>(flags));
   }
 
+#if VMA_EXTERNAL_MEMORY_WIN32
+#ifndef VULKAN_HPP_DISABLE_ENHANCED_MODE
+  VULKAN_HPP_INLINE typename VULKAN_HPP_NAMESPACE::ResultValueType<HANDLE>::type Allocator::getMemoryWin32Handle(Allocation allocation,
+                                                                                                                 HANDLE hTargetProcess) const {
+    HANDLE handle;
+    VULKAN_HPP_NAMESPACE::Result result = static_cast<VULKAN_HPP_NAMESPACE::Result>( vmaGetMemoryWin32Handle(m_allocator, static_cast<VmaAllocation>(allocation), hTargetProcess, &handle) );
+    VMA_HPP_NAMESPACE::detail::resultCheck(result, VMA_HPP_NAMESPACE_STRING "::Allocator::getMemoryWin32Handle");
+    return VMA_HPP_NAMESPACE::detail::createResultValueType(result, handle);
+  }
+#endif
+  VULKAN_HPP_INLINE VULKAN_HPP_NAMESPACE::Result Allocator::getMemoryWin32Handle(Allocation allocation,
+                                                                                 HANDLE hTargetProcess,
+                                                                                 HANDLE* handle) const {
+    VULKAN_HPP_NAMESPACE::Result result = static_cast<VULKAN_HPP_NAMESPACE::Result>( vmaGetMemoryWin32Handle(m_allocator, static_cast<VmaAllocation>(allocation), hTargetProcess, handle) );
+    return result;
+  }
+
+#endif
 #ifndef VULKAN_HPP_DISABLE_ENHANCED_MODE
   VULKAN_HPP_INLINE typename VULKAN_HPP_NAMESPACE::ResultValueType<void*>::type Allocator::mapMemory(Allocation allocation) const {
     void* data;
     VULKAN_HPP_NAMESPACE::Result result = static_cast<VULKAN_HPP_NAMESPACE::Result>( vmaMapMemory(m_allocator, static_cast<VmaAllocation>(allocation), &data) );
-    resultCheck(result, VMA_HPP_NAMESPACE_STRING "::Allocator::mapMemory");
-    return createResultValueType(result, data);
+    VMA_HPP_NAMESPACE::detail::resultCheck(result, VMA_HPP_NAMESPACE_STRING "::Allocator::mapMemory");
+    return VMA_HPP_NAMESPACE::detail::createResultValueType(result, data);
   }
 #endif
   VULKAN_HPP_INLINE VULKAN_HPP_NAMESPACE::Result Allocator::mapMemory(Allocation allocation,
@@ -496,8 +514,8 @@ namespace VMA_HPP_NAMESPACE {
                                                                                                           VULKAN_HPP_NAMESPACE::DeviceSize offset,
                                                                                                           VULKAN_HPP_NAMESPACE::DeviceSize size) const {
     VULKAN_HPP_NAMESPACE::Result result = static_cast<VULKAN_HPP_NAMESPACE::Result>( vmaFlushAllocation(m_allocator, static_cast<VmaAllocation>(allocation), static_cast<VkDeviceSize>(offset), static_cast<VkDeviceSize>(size)) );
-    resultCheck(result, VMA_HPP_NAMESPACE_STRING "::Allocator::flushAllocation");
-    return createResultValueType(result);
+    VMA_HPP_NAMESPACE::detail::resultCheck(result, VMA_HPP_NAMESPACE_STRING "::Allocator::flushAllocation");
+    return VMA_HPP_NAMESPACE::detail::createResultValueType(result);
   }
 #else
   VULKAN_HPP_INLINE VULKAN_HPP_NAMESPACE::Result Allocator::flushAllocation(Allocation allocation,
@@ -513,8 +531,8 @@ namespace VMA_HPP_NAMESPACE {
                                                                                                                VULKAN_HPP_NAMESPACE::DeviceSize offset,
                                                                                                                VULKAN_HPP_NAMESPACE::DeviceSize size) const {
     VULKAN_HPP_NAMESPACE::Result result = static_cast<VULKAN_HPP_NAMESPACE::Result>( vmaInvalidateAllocation(m_allocator, static_cast<VmaAllocation>(allocation), static_cast<VkDeviceSize>(offset), static_cast<VkDeviceSize>(size)) );
-    resultCheck(result, VMA_HPP_NAMESPACE_STRING "::Allocator::invalidateAllocation");
-    return createResultValueType(result);
+    VMA_HPP_NAMESPACE::detail::resultCheck(result, VMA_HPP_NAMESPACE_STRING "::Allocator::invalidateAllocation");
+    return VMA_HPP_NAMESPACE::detail::createResultValueType(result);
   }
 #else
   VULKAN_HPP_INLINE VULKAN_HPP_NAMESPACE::Result Allocator::invalidateAllocation(Allocation allocation,
@@ -531,8 +549,8 @@ namespace VMA_HPP_NAMESPACE {
                                                                                                            VULKAN_HPP_NAMESPACE::ArrayProxy<const VULKAN_HPP_NAMESPACE::DeviceSize> sizes) const {
     uint32_t allocationCount = allocations.size();
     VULKAN_HPP_NAMESPACE::Result result = static_cast<VULKAN_HPP_NAMESPACE::Result>( vmaFlushAllocations(m_allocator, allocationCount, reinterpret_cast<const VmaAllocation*>(allocations.data()), reinterpret_cast<const VkDeviceSize*>(offsets.data()), reinterpret_cast<const VkDeviceSize*>(sizes.data())) );
-    resultCheck(result, VMA_HPP_NAMESPACE_STRING "::Allocator::flushAllocations");
-    return createResultValueType(result);
+    VMA_HPP_NAMESPACE::detail::resultCheck(result, VMA_HPP_NAMESPACE_STRING "::Allocator::flushAllocations");
+    return VMA_HPP_NAMESPACE::detail::createResultValueType(result);
   }
 #endif
   VULKAN_HPP_INLINE VULKAN_HPP_NAMESPACE::Result Allocator::flushAllocations(uint32_t allocationCount,
@@ -549,8 +567,8 @@ namespace VMA_HPP_NAMESPACE {
                                                                                                                 VULKAN_HPP_NAMESPACE::ArrayProxy<const VULKAN_HPP_NAMESPACE::DeviceSize> sizes) const {
     uint32_t allocationCount = allocations.size();
     VULKAN_HPP_NAMESPACE::Result result = static_cast<VULKAN_HPP_NAMESPACE::Result>( vmaInvalidateAllocations(m_allocator, allocationCount, reinterpret_cast<const VmaAllocation*>(allocations.data()), reinterpret_cast<const VkDeviceSize*>(offsets.data()), reinterpret_cast<const VkDeviceSize*>(sizes.data())) );
-    resultCheck(result, VMA_HPP_NAMESPACE_STRING "::Allocator::invalidateAllocations");
-    return createResultValueType(result);
+    VMA_HPP_NAMESPACE::detail::resultCheck(result, VMA_HPP_NAMESPACE_STRING "::Allocator::invalidateAllocations");
+    return VMA_HPP_NAMESPACE::detail::createResultValueType(result);
   }
 #endif
   VULKAN_HPP_INLINE VULKAN_HPP_NAMESPACE::Result Allocator::invalidateAllocations(uint32_t allocationCount,
@@ -567,8 +585,8 @@ namespace VMA_HPP_NAMESPACE {
                                                                                                                  VULKAN_HPP_NAMESPACE::DeviceSize dstAllocationLocalOffset,
                                                                                                                  VULKAN_HPP_NAMESPACE::DeviceSize size) const {
     VULKAN_HPP_NAMESPACE::Result result = static_cast<VULKAN_HPP_NAMESPACE::Result>( vmaCopyMemoryToAllocation(m_allocator, srcHostPointer, static_cast<VmaAllocation>(dstAllocation), static_cast<VkDeviceSize>(dstAllocationLocalOffset), static_cast<VkDeviceSize>(size)) );
-    resultCheck(result, VMA_HPP_NAMESPACE_STRING "::Allocator::copyMemoryToAllocation");
-    return createResultValueType(result);
+    VMA_HPP_NAMESPACE::detail::resultCheck(result, VMA_HPP_NAMESPACE_STRING "::Allocator::copyMemoryToAllocation");
+    return VMA_HPP_NAMESPACE::detail::createResultValueType(result);
   }
 #else
   VULKAN_HPP_INLINE VULKAN_HPP_NAMESPACE::Result Allocator::copyMemoryToAllocation(const void* srcHostPointer,
@@ -581,29 +599,15 @@ namespace VMA_HPP_NAMESPACE {
 #endif
 
 #ifndef VULKAN_HPP_DISABLE_ENHANCED_MODE
-  template<typename VectorAllocator,
-           typename B,
-           typename std::enable_if<std::is_same<typename B::value_type, void>::value, int>::type>
-  VULKAN_HPP_INLINE typename VULKAN_HPP_NAMESPACE::ResultValueType<std::vector<void, VectorAllocator>>::type Allocator::copyAllocationToMemory(Allocation srcAllocation,
-                                                                                                                                               VULKAN_HPP_NAMESPACE::DeviceSize srcAllocationLocalOffset,
-                                                                                                                                               VULKAN_HPP_NAMESPACE::DeviceSize size,
-                                                                                                                                               VectorAllocator& vectorAllocator) const {
-    std::vector<void, VectorAllocator> dstHostPointer(size, vectorAllocator);
-    VULKAN_HPP_NAMESPACE::Result result = static_cast<VULKAN_HPP_NAMESPACE::Result>( vmaCopyAllocationToMemory(m_allocator, static_cast<VmaAllocation>(srcAllocation), static_cast<VkDeviceSize>(srcAllocationLocalOffset), &dstHostPointer, static_cast<VkDeviceSize>(size)) );
-    resultCheck(result, VMA_HPP_NAMESPACE_STRING "::Allocator::copyAllocationToMemory");
-    return createResultValueType(result, dstHostPointer);
+  VULKAN_HPP_INLINE typename VULKAN_HPP_NAMESPACE::ResultValueType<void>::type Allocator::copyAllocationToMemory(Allocation srcAllocation,
+                                                                                                                 VULKAN_HPP_NAMESPACE::DeviceSize srcAllocationLocalOffset,
+                                                                                                                 void* dstHostPointer,
+                                                                                                                 VULKAN_HPP_NAMESPACE::DeviceSize size) const {
+    VULKAN_HPP_NAMESPACE::Result result = static_cast<VULKAN_HPP_NAMESPACE::Result>( vmaCopyAllocationToMemory(m_allocator, static_cast<VmaAllocation>(srcAllocation), static_cast<VkDeviceSize>(srcAllocationLocalOffset), dstHostPointer, static_cast<VkDeviceSize>(size)) );
+    VMA_HPP_NAMESPACE::detail::resultCheck(result, VMA_HPP_NAMESPACE_STRING "::Allocator::copyAllocationToMemory");
+    return VMA_HPP_NAMESPACE::detail::createResultValueType(result);
   }
-
-  template<typename VectorAllocator>
-  VULKAN_HPP_INLINE typename VULKAN_HPP_NAMESPACE::ResultValueType<std::vector<void, VectorAllocator>>::type Allocator::copyAllocationToMemory(Allocation srcAllocation,
-                                                                                                                                               VULKAN_HPP_NAMESPACE::DeviceSize srcAllocationLocalOffset,
-                                                                                                                                               VULKAN_HPP_NAMESPACE::DeviceSize size) const {
-    std::vector<void, VectorAllocator> dstHostPointer(size);
-    VULKAN_HPP_NAMESPACE::Result result = static_cast<VULKAN_HPP_NAMESPACE::Result>( vmaCopyAllocationToMemory(m_allocator, static_cast<VmaAllocation>(srcAllocation), static_cast<VkDeviceSize>(srcAllocationLocalOffset), &dstHostPointer, static_cast<VkDeviceSize>(size)) );
-    resultCheck(result, VMA_HPP_NAMESPACE_STRING "::Allocator::copyAllocationToMemory");
-    return createResultValueType(result, dstHostPointer);
-  }
-#endif
+#else
   VULKAN_HPP_INLINE VULKAN_HPP_NAMESPACE::Result Allocator::copyAllocationToMemory(Allocation srcAllocation,
                                                                                    VULKAN_HPP_NAMESPACE::DeviceSize srcAllocationLocalOffset,
                                                                                    void* dstHostPointer,
@@ -611,12 +615,13 @@ namespace VMA_HPP_NAMESPACE {
     VULKAN_HPP_NAMESPACE::Result result = static_cast<VULKAN_HPP_NAMESPACE::Result>( vmaCopyAllocationToMemory(m_allocator, static_cast<VmaAllocation>(srcAllocation), static_cast<VkDeviceSize>(srcAllocationLocalOffset), dstHostPointer, static_cast<VkDeviceSize>(size)) );
     return result;
   }
+#endif
 
 #ifndef VULKAN_HPP_DISABLE_ENHANCED_MODE
   VULKAN_HPP_INLINE typename VULKAN_HPP_NAMESPACE::ResultValueType<void>::type Allocator::checkCorruption(uint32_t memoryTypeBits) const {
     VULKAN_HPP_NAMESPACE::Result result = static_cast<VULKAN_HPP_NAMESPACE::Result>( vmaCheckCorruption(m_allocator, memoryTypeBits) );
-    resultCheck(result, VMA_HPP_NAMESPACE_STRING "::Allocator::checkCorruption");
-    return createResultValueType(result);
+    VMA_HPP_NAMESPACE::detail::resultCheck(result, VMA_HPP_NAMESPACE_STRING "::Allocator::checkCorruption");
+    return VMA_HPP_NAMESPACE::detail::createResultValueType(result);
   }
 #else
   VULKAN_HPP_INLINE VULKAN_HPP_NAMESPACE::Result Allocator::checkCorruption(uint32_t memoryTypeBits) const {
@@ -629,8 +634,8 @@ namespace VMA_HPP_NAMESPACE {
   VULKAN_HPP_INLINE typename VULKAN_HPP_NAMESPACE::ResultValueType<DefragmentationContext>::type Allocator::beginDefragmentation(const DefragmentationInfo& info) const {
     DefragmentationContext context;
     VULKAN_HPP_NAMESPACE::Result result = static_cast<VULKAN_HPP_NAMESPACE::Result>( vmaBeginDefragmentation(m_allocator, reinterpret_cast<const VmaDefragmentationInfo*>(&info), reinterpret_cast<VmaDefragmentationContext*>(&context)) );
-    resultCheck(result, VMA_HPP_NAMESPACE_STRING "::Allocator::beginDefragmentation");
-    return createResultValueType(result, context);
+    VMA_HPP_NAMESPACE::detail::resultCheck(result, VMA_HPP_NAMESPACE_STRING "::Allocator::beginDefragmentation");
+    return VMA_HPP_NAMESPACE::detail::createResultValueType(result, context);
   }
 #endif
   VULKAN_HPP_INLINE VULKAN_HPP_NAMESPACE::Result Allocator::beginDefragmentation(const DefragmentationInfo* info,
@@ -654,8 +659,8 @@ namespace VMA_HPP_NAMESPACE {
   VULKAN_HPP_INLINE typename VULKAN_HPP_NAMESPACE::ResultValueType<DefragmentationPassMoveInfo>::type Allocator::beginDefragmentationPass(DefragmentationContext context) const {
     DefragmentationPassMoveInfo passInfo;
     VULKAN_HPP_NAMESPACE::Result result = static_cast<VULKAN_HPP_NAMESPACE::Result>( vmaBeginDefragmentationPass(m_allocator, static_cast<VmaDefragmentationContext>(context), reinterpret_cast<VmaDefragmentationPassMoveInfo*>(&passInfo)) );
-    resultCheck(result, VMA_HPP_NAMESPACE_STRING "::Allocator::beginDefragmentationPass");
-    return createResultValueType(result, passInfo);
+    VMA_HPP_NAMESPACE::detail::resultCheck(result, VMA_HPP_NAMESPACE_STRING "::Allocator::beginDefragmentationPass");
+    return VMA_HPP_NAMESPACE::detail::createResultValueType(result, passInfo);
   }
 #endif
   VULKAN_HPP_INLINE VULKAN_HPP_NAMESPACE::Result Allocator::beginDefragmentationPass(DefragmentationContext context,
@@ -668,8 +673,8 @@ namespace VMA_HPP_NAMESPACE {
   VULKAN_HPP_INLINE typename VULKAN_HPP_NAMESPACE::ResultValueType<DefragmentationPassMoveInfo>::type Allocator::endDefragmentationPass(DefragmentationContext context) const {
     DefragmentationPassMoveInfo passInfo;
     VULKAN_HPP_NAMESPACE::Result result = static_cast<VULKAN_HPP_NAMESPACE::Result>( vmaEndDefragmentationPass(m_allocator, static_cast<VmaDefragmentationContext>(context), reinterpret_cast<VmaDefragmentationPassMoveInfo*>(&passInfo)) );
-    resultCheck(result, VMA_HPP_NAMESPACE_STRING "::Allocator::endDefragmentationPass");
-    return createResultValueType(result, passInfo);
+    VMA_HPP_NAMESPACE::detail::resultCheck(result, VMA_HPP_NAMESPACE_STRING "::Allocator::endDefragmentationPass");
+    return VMA_HPP_NAMESPACE::detail::createResultValueType(result, passInfo);
   }
 #endif
   VULKAN_HPP_INLINE VULKAN_HPP_NAMESPACE::Result Allocator::endDefragmentationPass(DefragmentationContext context,
@@ -682,8 +687,8 @@ namespace VMA_HPP_NAMESPACE {
   VULKAN_HPP_INLINE typename VULKAN_HPP_NAMESPACE::ResultValueType<void>::type Allocator::bindBufferMemory(Allocation allocation,
                                                                                                            VULKAN_HPP_NAMESPACE::Buffer buffer) const {
     VULKAN_HPP_NAMESPACE::Result result = static_cast<VULKAN_HPP_NAMESPACE::Result>( vmaBindBufferMemory(m_allocator, static_cast<VmaAllocation>(allocation), static_cast<VkBuffer>(buffer)) );
-    resultCheck(result, VMA_HPP_NAMESPACE_STRING "::Allocator::bindBufferMemory");
-    return createResultValueType(result);
+    VMA_HPP_NAMESPACE::detail::resultCheck(result, VMA_HPP_NAMESPACE_STRING "::Allocator::bindBufferMemory");
+    return VMA_HPP_NAMESPACE::detail::createResultValueType(result);
   }
 #else
   VULKAN_HPP_INLINE VULKAN_HPP_NAMESPACE::Result Allocator::bindBufferMemory(Allocation allocation,
@@ -699,8 +704,8 @@ namespace VMA_HPP_NAMESPACE {
                                                                                                             VULKAN_HPP_NAMESPACE::Buffer buffer,
                                                                                                             const void* next) const {
     VULKAN_HPP_NAMESPACE::Result result = static_cast<VULKAN_HPP_NAMESPACE::Result>( vmaBindBufferMemory2(m_allocator, static_cast<VmaAllocation>(allocation), static_cast<VkDeviceSize>(allocationLocalOffset), static_cast<VkBuffer>(buffer), next) );
-    resultCheck(result, VMA_HPP_NAMESPACE_STRING "::Allocator::bindBufferMemory2");
-    return createResultValueType(result);
+    VMA_HPP_NAMESPACE::detail::resultCheck(result, VMA_HPP_NAMESPACE_STRING "::Allocator::bindBufferMemory2");
+    return VMA_HPP_NAMESPACE::detail::createResultValueType(result);
   }
 #else
   VULKAN_HPP_INLINE VULKAN_HPP_NAMESPACE::Result Allocator::bindBufferMemory2(Allocation allocation,
@@ -716,8 +721,8 @@ namespace VMA_HPP_NAMESPACE {
   VULKAN_HPP_INLINE typename VULKAN_HPP_NAMESPACE::ResultValueType<void>::type Allocator::bindImageMemory(Allocation allocation,
                                                                                                           VULKAN_HPP_NAMESPACE::Image image) const {
     VULKAN_HPP_NAMESPACE::Result result = static_cast<VULKAN_HPP_NAMESPACE::Result>( vmaBindImageMemory(m_allocator, static_cast<VmaAllocation>(allocation), static_cast<VkImage>(image)) );
-    resultCheck(result, VMA_HPP_NAMESPACE_STRING "::Allocator::bindImageMemory");
-    return createResultValueType(result);
+    VMA_HPP_NAMESPACE::detail::resultCheck(result, VMA_HPP_NAMESPACE_STRING "::Allocator::bindImageMemory");
+    return VMA_HPP_NAMESPACE::detail::createResultValueType(result);
   }
 #else
   VULKAN_HPP_INLINE VULKAN_HPP_NAMESPACE::Result Allocator::bindImageMemory(Allocation allocation,
@@ -733,8 +738,8 @@ namespace VMA_HPP_NAMESPACE {
                                                                                                            VULKAN_HPP_NAMESPACE::Image image,
                                                                                                            const void* next) const {
     VULKAN_HPP_NAMESPACE::Result result = static_cast<VULKAN_HPP_NAMESPACE::Result>( vmaBindImageMemory2(m_allocator, static_cast<VmaAllocation>(allocation), static_cast<VkDeviceSize>(allocationLocalOffset), static_cast<VkImage>(image), next) );
-    resultCheck(result, VMA_HPP_NAMESPACE_STRING "::Allocator::bindImageMemory2");
-    return createResultValueType(result);
+    VMA_HPP_NAMESPACE::detail::resultCheck(result, VMA_HPP_NAMESPACE_STRING "::Allocator::bindImageMemory2");
+    return VMA_HPP_NAMESPACE::detail::createResultValueType(result);
   }
 #else
   VULKAN_HPP_INLINE VULKAN_HPP_NAMESPACE::Result Allocator::bindImageMemory2(Allocation allocation,
@@ -754,8 +759,8 @@ namespace VMA_HPP_NAMESPACE {
     VULKAN_HPP_NAMESPACE::Buffer& buffer = pair.first;
     Allocation& allocation = pair.second;
     VULKAN_HPP_NAMESPACE::Result result = static_cast<VULKAN_HPP_NAMESPACE::Result>( vmaCreateBuffer(m_allocator, reinterpret_cast<const VkBufferCreateInfo*>(&bufferCreateInfo), reinterpret_cast<const VmaAllocationCreateInfo*>(&allocationCreateInfo), reinterpret_cast<VkBuffer*>(&buffer), reinterpret_cast<VmaAllocation*>(&allocation), reinterpret_cast<VmaAllocationInfo*>(static_cast<AllocationInfo*>(allocationInfo))) );
-    resultCheck(result, VMA_HPP_NAMESPACE_STRING "::Allocator::createBuffer");
-    return createResultValueType(result, pair);
+    VMA_HPP_NAMESPACE::detail::resultCheck(result, VMA_HPP_NAMESPACE_STRING "::Allocator::createBuffer");
+    return VMA_HPP_NAMESPACE::detail::createResultValueType(result, pair);
   }
 #ifndef VULKAN_HPP_NO_SMART_HANDLE
   VULKAN_HPP_INLINE typename VULKAN_HPP_NAMESPACE::ResultValueType<std::pair<UniqueBuffer, UniqueAllocation>>::type Allocator::createBufferUnique(const VULKAN_HPP_NAMESPACE::BufferCreateInfo& bufferCreateInfo,
@@ -765,8 +770,8 @@ namespace VMA_HPP_NAMESPACE {
     VULKAN_HPP_NAMESPACE::Buffer& buffer = pair.first;
     Allocation& allocation = pair.second;
     VULKAN_HPP_NAMESPACE::Result result = static_cast<VULKAN_HPP_NAMESPACE::Result>( vmaCreateBuffer(m_allocator, reinterpret_cast<const VkBufferCreateInfo*>(&bufferCreateInfo), reinterpret_cast<const VmaAllocationCreateInfo*>(&allocationCreateInfo), reinterpret_cast<VkBuffer*>(&buffer), reinterpret_cast<VmaAllocation*>(&allocation), reinterpret_cast<VmaAllocationInfo*>(static_cast<AllocationInfo*>(allocationInfo))) );
-    resultCheck(result, VMA_HPP_NAMESPACE_STRING "::Allocator::createBuffer");
-    return createResultValueType(result, createUniqueHandle(pair, *this));
+    VMA_HPP_NAMESPACE::detail::resultCheck(result, VMA_HPP_NAMESPACE_STRING "::Allocator::createBuffer");
+    return VMA_HPP_NAMESPACE::detail::createResultValueType(result, createUniqueHandle(pair, *this));
   }
 #endif
 #endif
@@ -788,8 +793,8 @@ namespace VMA_HPP_NAMESPACE {
     VULKAN_HPP_NAMESPACE::Buffer& buffer = pair.first;
     Allocation& allocation = pair.second;
     VULKAN_HPP_NAMESPACE::Result result = static_cast<VULKAN_HPP_NAMESPACE::Result>( vmaCreateBufferWithAlignment(m_allocator, reinterpret_cast<const VkBufferCreateInfo*>(&bufferCreateInfo), reinterpret_cast<const VmaAllocationCreateInfo*>(&allocationCreateInfo), static_cast<VkDeviceSize>(minAlignment), reinterpret_cast<VkBuffer*>(&buffer), reinterpret_cast<VmaAllocation*>(&allocation), reinterpret_cast<VmaAllocationInfo*>(static_cast<AllocationInfo*>(allocationInfo))) );
-    resultCheck(result, VMA_HPP_NAMESPACE_STRING "::Allocator::createBufferWithAlignment");
-    return createResultValueType(result, pair);
+    VMA_HPP_NAMESPACE::detail::resultCheck(result, VMA_HPP_NAMESPACE_STRING "::Allocator::createBufferWithAlignment");
+    return VMA_HPP_NAMESPACE::detail::createResultValueType(result, pair);
   }
 #ifndef VULKAN_HPP_NO_SMART_HANDLE
   VULKAN_HPP_INLINE typename VULKAN_HPP_NAMESPACE::ResultValueType<std::pair<UniqueBuffer, UniqueAllocation>>::type Allocator::createBufferWithAlignmentUnique(const VULKAN_HPP_NAMESPACE::BufferCreateInfo& bufferCreateInfo,
@@ -800,8 +805,8 @@ namespace VMA_HPP_NAMESPACE {
     VULKAN_HPP_NAMESPACE::Buffer& buffer = pair.first;
     Allocation& allocation = pair.second;
     VULKAN_HPP_NAMESPACE::Result result = static_cast<VULKAN_HPP_NAMESPACE::Result>( vmaCreateBufferWithAlignment(m_allocator, reinterpret_cast<const VkBufferCreateInfo*>(&bufferCreateInfo), reinterpret_cast<const VmaAllocationCreateInfo*>(&allocationCreateInfo), static_cast<VkDeviceSize>(minAlignment), reinterpret_cast<VkBuffer*>(&buffer), reinterpret_cast<VmaAllocation*>(&allocation), reinterpret_cast<VmaAllocationInfo*>(static_cast<AllocationInfo*>(allocationInfo))) );
-    resultCheck(result, VMA_HPP_NAMESPACE_STRING "::Allocator::createBufferWithAlignment");
-    return createResultValueType(result, createUniqueHandle(pair, *this));
+    VMA_HPP_NAMESPACE::detail::resultCheck(result, VMA_HPP_NAMESPACE_STRING "::Allocator::createBufferWithAlignment");
+    return VMA_HPP_NAMESPACE::detail::createResultValueType(result, createUniqueHandle(pair, *this));
   }
 #endif
 #endif
@@ -820,8 +825,8 @@ namespace VMA_HPP_NAMESPACE {
                                                                                                                                        const VULKAN_HPP_NAMESPACE::BufferCreateInfo& bufferCreateInfo) const {
     VULKAN_HPP_NAMESPACE::Buffer buffer;
     VULKAN_HPP_NAMESPACE::Result result = static_cast<VULKAN_HPP_NAMESPACE::Result>( vmaCreateAliasingBuffer(m_allocator, static_cast<VmaAllocation>(allocation), reinterpret_cast<const VkBufferCreateInfo*>(&bufferCreateInfo), reinterpret_cast<VkBuffer*>(&buffer)) );
-    resultCheck(result, VMA_HPP_NAMESPACE_STRING "::Allocator::createAliasingBuffer");
-    return createResultValueType(result, buffer);
+    VMA_HPP_NAMESPACE::detail::resultCheck(result, VMA_HPP_NAMESPACE_STRING "::Allocator::createAliasingBuffer");
+    return VMA_HPP_NAMESPACE::detail::createResultValueType(result, buffer);
   }
 #endif
   VULKAN_HPP_INLINE VULKAN_HPP_NAMESPACE::Result Allocator::createAliasingBuffer(Allocation allocation,
@@ -837,8 +842,8 @@ namespace VMA_HPP_NAMESPACE {
                                                                                                                                         const VULKAN_HPP_NAMESPACE::BufferCreateInfo& bufferCreateInfo) const {
     VULKAN_HPP_NAMESPACE::Buffer buffer;
     VULKAN_HPP_NAMESPACE::Result result = static_cast<VULKAN_HPP_NAMESPACE::Result>( vmaCreateAliasingBuffer2(m_allocator, static_cast<VmaAllocation>(allocation), static_cast<VkDeviceSize>(allocationLocalOffset), reinterpret_cast<const VkBufferCreateInfo*>(&bufferCreateInfo), reinterpret_cast<VkBuffer*>(&buffer)) );
-    resultCheck(result, VMA_HPP_NAMESPACE_STRING "::Allocator::createAliasingBuffer2");
-    return createResultValueType(result, buffer);
+    VMA_HPP_NAMESPACE::detail::resultCheck(result, VMA_HPP_NAMESPACE_STRING "::Allocator::createAliasingBuffer2");
+    return VMA_HPP_NAMESPACE::detail::createResultValueType(result, buffer);
   }
 #endif
   VULKAN_HPP_INLINE VULKAN_HPP_NAMESPACE::Result Allocator::createAliasingBuffer2(Allocation allocation,
@@ -869,8 +874,8 @@ namespace VMA_HPP_NAMESPACE {
     VULKAN_HPP_NAMESPACE::Image& image = pair.first;
     Allocation& allocation = pair.second;
     VULKAN_HPP_NAMESPACE::Result result = static_cast<VULKAN_HPP_NAMESPACE::Result>( vmaCreateImage(m_allocator, reinterpret_cast<const VkImageCreateInfo*>(&imageCreateInfo), reinterpret_cast<const VmaAllocationCreateInfo*>(&allocationCreateInfo), reinterpret_cast<VkImage*>(&image), reinterpret_cast<VmaAllocation*>(&allocation), reinterpret_cast<VmaAllocationInfo*>(static_cast<AllocationInfo*>(allocationInfo))) );
-    resultCheck(result, VMA_HPP_NAMESPACE_STRING "::Allocator::createImage");
-    return createResultValueType(result, pair);
+    VMA_HPP_NAMESPACE::detail::resultCheck(result, VMA_HPP_NAMESPACE_STRING "::Allocator::createImage");
+    return VMA_HPP_NAMESPACE::detail::createResultValueType(result, pair);
   }
 #ifndef VULKAN_HPP_NO_SMART_HANDLE
   VULKAN_HPP_INLINE typename VULKAN_HPP_NAMESPACE::ResultValueType<std::pair<UniqueImage, UniqueAllocation>>::type Allocator::createImageUnique(const VULKAN_HPP_NAMESPACE::ImageCreateInfo& imageCreateInfo,
@@ -880,8 +885,8 @@ namespace VMA_HPP_NAMESPACE {
     VULKAN_HPP_NAMESPACE::Image& image = pair.first;
     Allocation& allocation = pair.second;
     VULKAN_HPP_NAMESPACE::Result result = static_cast<VULKAN_HPP_NAMESPACE::Result>( vmaCreateImage(m_allocator, reinterpret_cast<const VkImageCreateInfo*>(&imageCreateInfo), reinterpret_cast<const VmaAllocationCreateInfo*>(&allocationCreateInfo), reinterpret_cast<VkImage*>(&image), reinterpret_cast<VmaAllocation*>(&allocation), reinterpret_cast<VmaAllocationInfo*>(static_cast<AllocationInfo*>(allocationInfo))) );
-    resultCheck(result, VMA_HPP_NAMESPACE_STRING "::Allocator::createImage");
-    return createResultValueType(result, createUniqueHandle(pair, *this));
+    VMA_HPP_NAMESPACE::detail::resultCheck(result, VMA_HPP_NAMESPACE_STRING "::Allocator::createImage");
+    return VMA_HPP_NAMESPACE::detail::createResultValueType(result, createUniqueHandle(pair, *this));
   }
 #endif
 #endif
@@ -899,8 +904,8 @@ namespace VMA_HPP_NAMESPACE {
                                                                                                                                      const VULKAN_HPP_NAMESPACE::ImageCreateInfo& imageCreateInfo) const {
     VULKAN_HPP_NAMESPACE::Image image;
     VULKAN_HPP_NAMESPACE::Result result = static_cast<VULKAN_HPP_NAMESPACE::Result>( vmaCreateAliasingImage(m_allocator, static_cast<VmaAllocation>(allocation), reinterpret_cast<const VkImageCreateInfo*>(&imageCreateInfo), reinterpret_cast<VkImage*>(&image)) );
-    resultCheck(result, VMA_HPP_NAMESPACE_STRING "::Allocator::createAliasingImage");
-    return createResultValueType(result, image);
+    VMA_HPP_NAMESPACE::detail::resultCheck(result, VMA_HPP_NAMESPACE_STRING "::Allocator::createAliasingImage");
+    return VMA_HPP_NAMESPACE::detail::createResultValueType(result, image);
   }
 #endif
   VULKAN_HPP_INLINE VULKAN_HPP_NAMESPACE::Result Allocator::createAliasingImage(Allocation allocation,
@@ -916,8 +921,8 @@ namespace VMA_HPP_NAMESPACE {
                                                                                                                                       const VULKAN_HPP_NAMESPACE::ImageCreateInfo& imageCreateInfo) const {
     VULKAN_HPP_NAMESPACE::Image image;
     VULKAN_HPP_NAMESPACE::Result result = static_cast<VULKAN_HPP_NAMESPACE::Result>( vmaCreateAliasingImage2(m_allocator, static_cast<VmaAllocation>(allocation), static_cast<VkDeviceSize>(allocationLocalOffset), reinterpret_cast<const VkImageCreateInfo*>(&imageCreateInfo), reinterpret_cast<VkImage*>(&image)) );
-    resultCheck(result, VMA_HPP_NAMESPACE_STRING "::Allocator::createAliasingImage2");
-    return createResultValueType(result, image);
+    VMA_HPP_NAMESPACE::detail::resultCheck(result, VMA_HPP_NAMESPACE_STRING "::Allocator::createAliasingImage2");
+    return VMA_HPP_NAMESPACE::detail::createResultValueType(result, image);
   }
 #endif
   VULKAN_HPP_INLINE VULKAN_HPP_NAMESPACE::Result Allocator::createAliasingImage2(Allocation allocation,
@@ -1003,16 +1008,16 @@ namespace VMA_HPP_NAMESPACE {
                                                                                                                           VULKAN_HPP_NAMESPACE::Optional<VULKAN_HPP_NAMESPACE::DeviceSize> offset) const {
     VirtualAllocation allocation;
     VULKAN_HPP_NAMESPACE::Result result = static_cast<VULKAN_HPP_NAMESPACE::Result>( vmaVirtualAllocate(m_virtualBlock, reinterpret_cast<const VmaVirtualAllocationCreateInfo*>(&createInfo), reinterpret_cast<VmaVirtualAllocation*>(&allocation), reinterpret_cast<VkDeviceSize*>(static_cast<VULKAN_HPP_NAMESPACE::DeviceSize*>(offset))) );
-    resultCheck(result, VMA_HPP_NAMESPACE_STRING "::VirtualBlock::virtualAllocate");
-    return createResultValueType(result, allocation);
+    VMA_HPP_NAMESPACE::detail::resultCheck(result, VMA_HPP_NAMESPACE_STRING "::VirtualBlock::virtualAllocate");
+    return VMA_HPP_NAMESPACE::detail::createResultValueType(result, allocation);
   }
 #ifndef VULKAN_HPP_NO_SMART_HANDLE
   VULKAN_HPP_INLINE typename VULKAN_HPP_NAMESPACE::ResultValueType<UniqueVirtualAllocation>::type VirtualBlock::virtualAllocateUnique(const VirtualAllocationCreateInfo& createInfo,
                                                                                                                                       VULKAN_HPP_NAMESPACE::Optional<VULKAN_HPP_NAMESPACE::DeviceSize> offset) const {
     VirtualAllocation allocation;
     VULKAN_HPP_NAMESPACE::Result result = static_cast<VULKAN_HPP_NAMESPACE::Result>( vmaVirtualAllocate(m_virtualBlock, reinterpret_cast<const VmaVirtualAllocationCreateInfo*>(&createInfo), reinterpret_cast<VmaVirtualAllocation*>(&allocation), reinterpret_cast<VkDeviceSize*>(static_cast<VULKAN_HPP_NAMESPACE::DeviceSize*>(offset))) );
-    resultCheck(result, VMA_HPP_NAMESPACE_STRING "::VirtualBlock::virtualAllocate");
-    return createResultValueType(result, createUniqueHandle(allocation, *this));
+    VMA_HPP_NAMESPACE::detail::resultCheck(result, VMA_HPP_NAMESPACE_STRING "::VirtualBlock::virtualAllocate");
+    return VMA_HPP_NAMESPACE::detail::createResultValueType(result, createUniqueHandle(allocation, *this));
   }
 #endif
 #endif
@@ -1105,15 +1110,15 @@ namespace VMA_HPP_NAMESPACE {
   VULKAN_HPP_INLINE typename VULKAN_HPP_NAMESPACE::ResultValueType<Allocator>::type createAllocator(const AllocatorCreateInfo& createInfo) {
     Allocator allocator;
     VULKAN_HPP_NAMESPACE::Result result = static_cast<VULKAN_HPP_NAMESPACE::Result>( vmaCreateAllocator(reinterpret_cast<const VmaAllocatorCreateInfo*>(&createInfo), reinterpret_cast<VmaAllocator*>(&allocator)) );
-    resultCheck(result, VMA_HPP_NAMESPACE_STRING "::createAllocator");
-    return createResultValueType(result, allocator);
+    VMA_HPP_NAMESPACE::detail::resultCheck(result, VMA_HPP_NAMESPACE_STRING "::createAllocator");
+    return VMA_HPP_NAMESPACE::detail::createResultValueType(result, allocator);
   }
 #ifndef VULKAN_HPP_NO_SMART_HANDLE
   VULKAN_HPP_INLINE typename VULKAN_HPP_NAMESPACE::ResultValueType<UniqueAllocator>::type createAllocatorUnique(const AllocatorCreateInfo& createInfo) {
     Allocator allocator;
     VULKAN_HPP_NAMESPACE::Result result = static_cast<VULKAN_HPP_NAMESPACE::Result>( vmaCreateAllocator(reinterpret_cast<const VmaAllocatorCreateInfo*>(&createInfo), reinterpret_cast<VmaAllocator*>(&allocator)) );
-    resultCheck(result, VMA_HPP_NAMESPACE_STRING "::createAllocator");
-    return createResultValueType(result, createUniqueHandle(allocator));
+    VMA_HPP_NAMESPACE::detail::resultCheck(result, VMA_HPP_NAMESPACE_STRING "::createAllocator");
+    return VMA_HPP_NAMESPACE::detail::createResultValueType(result, createUniqueHandle(allocator));
   }
 #endif
 #endif
@@ -1127,15 +1132,15 @@ namespace VMA_HPP_NAMESPACE {
   VULKAN_HPP_INLINE typename VULKAN_HPP_NAMESPACE::ResultValueType<VirtualBlock>::type createVirtualBlock(const VirtualBlockCreateInfo& createInfo) {
     VirtualBlock virtualBlock;
     VULKAN_HPP_NAMESPACE::Result result = static_cast<VULKAN_HPP_NAMESPACE::Result>( vmaCreateVirtualBlock(reinterpret_cast<const VmaVirtualBlockCreateInfo*>(&createInfo), reinterpret_cast<VmaVirtualBlock*>(&virtualBlock)) );
-    resultCheck(result, VMA_HPP_NAMESPACE_STRING "::createVirtualBlock");
-    return createResultValueType(result, virtualBlock);
+    VMA_HPP_NAMESPACE::detail::resultCheck(result, VMA_HPP_NAMESPACE_STRING "::createVirtualBlock");
+    return VMA_HPP_NAMESPACE::detail::createResultValueType(result, virtualBlock);
   }
 #ifndef VULKAN_HPP_NO_SMART_HANDLE
   VULKAN_HPP_INLINE typename VULKAN_HPP_NAMESPACE::ResultValueType<UniqueVirtualBlock>::type createVirtualBlockUnique(const VirtualBlockCreateInfo& createInfo) {
     VirtualBlock virtualBlock;
     VULKAN_HPP_NAMESPACE::Result result = static_cast<VULKAN_HPP_NAMESPACE::Result>( vmaCreateVirtualBlock(reinterpret_cast<const VmaVirtualBlockCreateInfo*>(&createInfo), reinterpret_cast<VmaVirtualBlock*>(&virtualBlock)) );
-    resultCheck(result, VMA_HPP_NAMESPACE_STRING "::createVirtualBlock");
-    return createResultValueType(result, createUniqueHandle(virtualBlock));
+    VMA_HPP_NAMESPACE::detail::resultCheck(result, VMA_HPP_NAMESPACE_STRING "::createVirtualBlock");
+    return VMA_HPP_NAMESPACE::detail::createResultValueType(result, createUniqueHandle(virtualBlock));
   }
 #endif
 #endif
