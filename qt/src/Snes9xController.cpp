@@ -182,7 +182,7 @@ void Snes9xController::updateSettings(const EmuConfig * const config)
 
     high_resolution_effect = config->high_resolution_effect;
 
-    config_folder = config->findConfigDir();
+    config_folder = EmuConfig::findConfigDir();
 
     auto doFolder = [&](int location, std::string &dest, const std::string &src, const char *subfolder_name)
     {
