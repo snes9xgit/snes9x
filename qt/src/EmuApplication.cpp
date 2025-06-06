@@ -240,7 +240,7 @@ void EmuApplication::startThread()
     }
 }
 
-bool EmuApplication::openFile(std::string filename)
+bool EmuApplication::openFile(const std::string &filename)
 {
     window->gameChanging();
     updateSettings();
@@ -428,7 +428,7 @@ void EmuApplication::updateSettings()
 
 void EmuApplication::pollJoysticks()
 {
-    while (1)
+    while (true)
     {
         auto event = input_manager->processEvent();
         if (!event)
@@ -436,6 +436,8 @@ void EmuApplication::pollJoysticks()
 
         switch (event->type)
         {
+        default:
+            break;
         case SDL_EVENT_JOYSTICK_ADDED:
         case SDL_EVENT_JOYSTICK_REMOVED:
             if (joypads_changed_callback)
@@ -506,7 +508,7 @@ void EmuApplication::loadState(int slot)
     });
 }
 
-void EmuApplication::loadState(std::string filename)
+void EmuApplication::loadState(const std::string& filename)
 {
     emu_thread->runOnThread([&, filename] {
         core->loadState(filename);
@@ -520,7 +522,7 @@ void EmuApplication::saveState(int slot)
     });
 }
 
-void EmuApplication::saveState(std::string filename)
+void EmuApplication::saveState(const std::string& filename)
 {
     emu_thread->runOnThread([&, filename] {
         core->saveState(filename);
@@ -583,7 +585,8 @@ void EmuApplication::disableCheat(int index)
     });
 }
 
-bool EmuApplication::addCheat(std::string description, std::string code)
+bool EmuApplication::addCheat(const std::string &description,
+                              const std::string &code)
 {
     suspendThread();
     auto retval = core->addCheat(description, code);
@@ -605,7 +608,7 @@ void EmuApplication::deleteAllCheats()
     });
 }
 
-int EmuApplication::tryImportCheats(std::string filename)
+int EmuApplication::tryImportCheats(const std::string &filename)
 {
     suspendThread();
     auto retval = core->tryImportCheats(filename);
@@ -613,7 +616,7 @@ int EmuApplication::tryImportCheats(std::string filename)
     return retval;
 }
 
-std::string EmuApplication::validateCheat(std::string code)
+std::string EmuApplication::validateCheat(const std::string &code)
 {
     suspendThread();
     auto retval = core->validateCheat(code);
@@ -621,7 +624,8 @@ std::string EmuApplication::validateCheat(std::string code)
     return retval;
 }
 
-int EmuApplication::modifyCheat(int index, std::string name, std::string code)
+int EmuApplication::modifyCheat(int index, const std::string &name,
+                                const std::string &code)
 {
     suspendThread();
     auto retval = core->modifyCheat(index, name, code);
@@ -651,7 +655,7 @@ std::string EmuApplication::getContentFolder()
     return core->getContentFolder();
 }
 
-void EmuThread::runOnThread(std::function<void()> func, bool blocking)
+void EmuThread::runOnThread(const std::function<void()> &func, bool blocking)
 {
     if (QThread::currentThread() != this)
     {
@@ -667,7 +671,7 @@ void EmuThread::runOnThread(std::function<void()> func, bool blocking)
 }
 
 EmuThread::EmuThread(QThread *main_thread_)
-    : main_thread(main_thread_), QThread()
+    : QThread(), main_thread(main_thread_)
 {
     qRegisterMetaType<std::function<void()>>("std::function<void()>");
 }
@@ -687,7 +691,7 @@ void EmuThread::waitForStatusBit(int new_status)
     if (status & new_status)
         return;
 
-    while (1)
+    while (true)
     {
         QThread::yieldCurrentThread();
         if (status & new_status)
@@ -700,7 +704,7 @@ void EmuThread::waitForStatusBitCleared(int new_status)
     if (!(status & new_status))
         return;
 
-    while (1)
+    while (true)
     {
         QThread::yieldCurrentThread();
         if (!(status & new_status))
@@ -720,11 +724,11 @@ void EmuThread::unpause()
 
 void EmuThread::run()
 {
-    auto event_loop = new QEventLoop();
+    auto event_loop = std::make_unique<QEventLoop>();
 
     setStatusBits(ePaused);
 
-    while (1)
+    while (true)
     {
         event_loop->processEvents();
 
@@ -742,7 +746,7 @@ void EmuThread::run()
     }
 }
 
-void EmuThread::setMainLoop(std::function<void ()> loop)
+void EmuThread::setMainLoop(const std::function<void()> &loop)
 {
     main_loop = loop;
 }

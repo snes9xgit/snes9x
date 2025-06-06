@@ -33,7 +33,7 @@ class EmuMainWindow : public QMainWindow
     void pauseContinue();
     bool isActivelyDrawing();
     void openFile();
-    bool openFile(std::string filename);
+    bool openFile(const std::string &filename);
     void recreateUIAssets();
     void shaderChanged();
     void gameChanging();

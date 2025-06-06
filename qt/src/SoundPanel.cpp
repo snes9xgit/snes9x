@@ -2,7 +2,7 @@
 #include "EmuApplication.hpp"
 #include "EmuConfig.hpp"
 
-static const int playback_rates[] = { 96000, 48000, 44100 };
+static constexpr int playback_rates[] = { 96000, 48000, 44100 };
 
 SoundPanel::SoundPanel(EmuApplication *app_)
     : app(app_)
@@ -74,9 +74,7 @@ SoundPanel::SoundPanel(EmuApplication *app_)
     });
 }
 
-SoundPanel::~SoundPanel()
-{
-}
+SoundPanel::~SoundPanel() = default;
 
 void SoundPanel::updateInputRate()
 {
