@@ -7,8 +7,7 @@ class DisplayPanel :
     public QWidget
 {
   public:
-    DisplayPanel(EmuApplication *app);
-    ~DisplayPanel();
+    explicit DisplayPanel(EmuApplication *app);
     void showEvent(QShowEvent *event) override;
     void populateDevices();
     void selectShaderDialog();

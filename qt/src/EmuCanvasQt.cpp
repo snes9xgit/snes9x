@@ -11,11 +11,6 @@ EmuCanvasQt::EmuCanvasQt(EmuConfig *config, QWidget *main_window)
     setMinimumSize(256 / devicePixelRatioF(), 224 / devicePixelRatioF());
 }
 
-EmuCanvasQt::~EmuCanvasQt()
-{
-    deinit();
-}
-
 void EmuCanvasQt::deinit()
 {
 }

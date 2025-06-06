@@ -7,15 +7,15 @@ ShortcutsPanel::ShortcutsPanel(EmuApplication *app_)
     setupUi(this);
     setTableWidget(tableWidget_shortcuts,
                    app->config->binding.shortcuts,
-                   app->config->allowed_bindings,
-                   app->config->num_shortcuts);
+                   EmuConfig::allowed_bindings,
+                   EmuConfig::num_shortcuts);
 
     toolButton_reset_to_default->setPopupMode(QToolButton::InstantPopup);
 
-    for (auto slot = 0; slot < app->config->allowed_bindings; slot++)
+    for (auto slot = 0; slot < EmuConfig::allowed_bindings; slot++)
     {
         auto action = reset_to_default_menu.addAction(tr("Slot %1").arg(slot));
-        QObject::connect(action, &QAction::triggered, [&, slot](bool checked) {
+        connect(action, &QAction::triggered, [&, slot](bool checked) {
             setDefaultKeys(slot);
         });
     }
@@ -30,13 +30,9 @@ ShortcutsPanel::ShortcutsPanel(EmuApplication *app_)
     fillTable();
 }
 
-ShortcutsPanel::~ShortcutsPanel()
-{
-}
-
 void ShortcutsPanel::setDefaultKeys(int slot)
 {
-    for (int i = 0; i < app->config->num_shortcuts; i++)
+    for (int i = 0; i < EmuConfig::num_shortcuts; i++)
     {
         std::string str = EmuConfig::getDefaultShortcutKeys()[i];
         if (!str.empty())

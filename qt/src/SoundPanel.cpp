@@ -74,8 +74,6 @@ SoundPanel::SoundPanel(EmuApplication *app_)
     });
 }
 
-SoundPanel::~SoundPanel() = default;
-
 void SoundPanel::updateInputRate()
 {
     constexpr double ir_ratio = 60.098813 / 32040.0;

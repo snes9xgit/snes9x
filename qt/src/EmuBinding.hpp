@@ -1,5 +1,4 @@
-#ifndef __EMU_BINDING_HPP
-#define __EMU_BINDING_HPP
+#pragma once
 #include <cstdint>
 #include <string>
 
@@ -60,5 +59,3 @@ struct EmuBinding
         };
     };
 };
-
-#endif

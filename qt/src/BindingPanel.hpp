@@ -19,9 +19,9 @@ class BindingPanel : public QWidget
     void hideEvent(QHideEvent *event) override;
     void fillTable();
     void checkJoypadInput();
-    void finalizeCurrentBinding(EmuBinding b);
+    void finalizeCurrentBinding(const EmuBinding &b);
     void setRedirectInput(bool redirect);
-    void onJoypadsChanged(std::function<void()> func);
+    void onJoypadsChanged(const std::function<void()> &func);
 
     bool awaiting_binding;
     bool accept_return;

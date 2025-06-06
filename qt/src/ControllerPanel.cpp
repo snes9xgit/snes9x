@@ -18,16 +18,16 @@ ControllerPanel::ControllerPanel(EmuApplication *app_)
 
     BindingPanel::setTableWidget(tableWidget_controller,
                                  app->config->binding.controller[0].buttons,
-                                 app->config->allowed_bindings,
-                                 app->config->num_controller_bindings);
+                                 EmuConfig::allowed_bindings,
+                                 EmuConfig::num_controller_bindings);
 
     auto action = edit_menu.addAction(QObject::tr("Clear Current Controller"));
-    action->connect(action, &QAction::triggered, [&](bool checked) {
+    connect(action, &QAction::triggered, [&](bool checked) {
         clearCurrentController();
     });
 
     action = edit_menu.addAction(QObject::tr("Clear All Controllers"));
-    action->connect(action, &QAction::triggered, [&](bool checked) {
+    connect(action, &QAction::triggered, [&](bool checked) {
         clearAllControllers();
     });
 
@@ -35,7 +35,7 @@ ControllerPanel::ControllerPanel(EmuApplication *app_)
     for (auto i = 0; i < 5; i++)
     {
         action = swap_menu->addAction(QObject::tr("Controller %1").arg(i + 1));
-        action->connect(action, &QAction::triggered, [&, i](bool) {
+        connect(action, &QAction::triggered, [&, i](bool) {
             auto current_index = controllerComboBox->currentIndex();
             if (current_index == i)
                 return;
@@ -68,18 +68,18 @@ void ControllerPanel::recreateAutoAssignMenu()
     auto_assign_menu.clear();
     auto controller_list = app->input_manager->getXInputControllers();
 
-    for (int i = 0; i < app->config->allowed_bindings; i++)
+    for (int i = 0; i < EmuConfig::allowed_bindings; i++)
     {
         auto slot_menu = auto_assign_menu.addMenu(tr("Binding Set #%1").arg(i + 1));
         auto default_keyboard = slot_menu->addAction(tr("Default Keyboard"));
-        default_keyboard->connect(default_keyboard, &QAction::triggered, [&, slot = i](bool) {
+        connect(default_keyboard, &QAction::triggered, [&, slot = i](bool) {
             autoPopulateWithKeyboard(slot);
         });
 
-        for (auto c : controller_list)
+        for (const auto& c : controller_list)
         {
             auto controller_item = slot_menu->addAction(c.second.c_str());
-            controller_item->connect(controller_item, &QAction::triggered, [&, id = c.first, slot = i](bool) {
+            connect(controller_item, &QAction::triggered, [&, id = c.first, slot = i](bool) {
                 autoPopulateWithJoystick(id, slot);
             });
         }
@@ -94,7 +94,7 @@ void ControllerPanel::autoPopulateWithKeyboard(int slot)
     const char *button_list[] = { "Up", "Down", "Left", "Right", "d", "c", "s", "x", "z", "a", "Return", "Space" };
 
     for (int i = 0; i < std::size(button_list); i++)
-        buttons[app->config->allowed_bindings * i + slot] = EmuBinding::keyboard(QKeySequence::fromString(button_list[i])[0].key());
+        buttons[EmuConfig::allowed_bindings * i + slot] = EmuBinding::keyboard(QKeySequence::fromString(button_list[i])[0].key());
 
     fillTable();
     app->updateBindings();
@@ -187,8 +187,3 @@ void ControllerPanel::showEvent(QShowEvent *event)
     recreateAutoAssignMenu();
     portComboBox->setCurrentIndex(app->config->port_configuration);
 }
-
-ControllerPanel::~ControllerPanel()
-{
-}
-

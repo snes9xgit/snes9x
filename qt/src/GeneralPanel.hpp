@@ -8,7 +8,6 @@ class GeneralPanel :
 {
   public:
     GeneralPanel(EmuApplication *app);
-    ~GeneralPanel();
     void showEvent(QShowEvent *event) override;
 
     EmuApplication *app;

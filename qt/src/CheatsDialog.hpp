@@ -1,3 +1,4 @@
+#pragma once
 #include "ui_CheatsDialog.h"
 
 class EmuApplication;

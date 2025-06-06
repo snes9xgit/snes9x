@@ -10,8 +10,7 @@ class ControllerPanel :
     public BindingPanel
 {
   public:
-    ControllerPanel(EmuApplication *app);
-    ~ControllerPanel();
+    explicit ControllerPanel(EmuApplication *app);
     void showEvent(QShowEvent *event) override;
     void clearAllControllers();
     void clearCurrentController();

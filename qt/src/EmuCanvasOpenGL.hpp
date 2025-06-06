@@ -1,5 +1,4 @@
-#ifndef __EMU_CANVAS_OPENGL_HPP
-#define __EMU_CANVAS_OPENGL_HPP
+#pragma once
 #include <QWindow>
 
 #include "EmuCanvas.hpp"
@@ -12,13 +11,12 @@ class EmuCanvasOpenGL : public EmuCanvas
 {
   public:
     EmuCanvasOpenGL(EmuConfig *config, QWidget *main_window);
-    ~EmuCanvasOpenGL();
 
     bool createContext() override;
     void deinit() override;
     void paintEvent(QPaintEvent *event) override;
     void resizeEvent(QResizeEvent *event) override;
-    QPaintEngine * paintEngine() const override { return nullptr; }
+    QPaintEngine *paintEngine() const override { return nullptr; }
     void draw() override;
     void shaderChanged() override;
     void showParametersDialog() override;
@@ -26,7 +24,6 @@ class EmuCanvasOpenGL : public EmuCanvas
     void recreateUIAssets() override;
 
   private:
-    void resizeTexture(int width, int height);
     void createStockShaders();
     void stockShaderDraw();
     void customShaderDraw();
@@ -46,5 +43,3 @@ class EmuCanvasOpenGL : public EmuCanvas
     const float coords[16] = { -1.0f, -1.0f, 1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f,
                                 0.0f,  1.0f, 1.0f,  1.0f,  0.0f, 0.0f, 1.0f, 0.0f, };
 };
-
-#endif

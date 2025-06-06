@@ -13,7 +13,7 @@ EmuSettingsWindow::EmuSettingsWindow(QWidget *parent, EmuApplication *app_)
     general_panel = new GeneralPanel(app);
     stackedWidget->addWidget(general_panel);
 
-    QScrollArea *area = new QScrollArea(stackedWidget);
+    auto *area = new QScrollArea(stackedWidget);
     area->setWidgetResizable(true);
     area->setFrameStyle(0);
     display_panel = new DisplayPanel(app);
@@ -46,7 +46,7 @@ EmuSettingsWindow::EmuSettingsWindow(QWidget *parent, EmuApplication *app_)
     });
 
     auto iconset = app->iconPrefix();
-    auto icon = [iconset](QString name) -> QIcon { return QIcon(iconset + name); };
+    auto icon = [iconset](const QString &name) -> QIcon { return QIcon(iconset + name); };
 
     panelList->item(0)->setIcon(icon("settings.svg"));
     panelList->item(1)->setIcon(icon("display.svg"));
@@ -77,10 +77,6 @@ EmuSettingsWindow::EmuSettingsWindow(QWidget *parent, EmuApplication *app_)
     connect(pushButton_help, &QPushButton::clicked, [&] {
         QWhatsThis::enterWhatsThisMode();
     });
-}
-
-EmuSettingsWindow::~EmuSettingsWindow()
-{
 }
 
 void EmuSettingsWindow::show(int page)

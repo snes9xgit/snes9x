@@ -8,8 +8,7 @@ class SoundPanel :
     public QWidget
 {
   public:
-    SoundPanel(EmuApplication *app);
-    ~SoundPanel();
+    explicit SoundPanel(EmuApplication *app);
     EmuApplication *app;
     void showEvent(QShowEvent *event) override;
     void updateInputRate();

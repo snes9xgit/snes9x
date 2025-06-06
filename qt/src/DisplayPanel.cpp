@@ -8,7 +8,7 @@ DisplayPanel::DisplayPanel(EmuApplication *app_)
 {
     setupUi(this);
 
-    QObject::connect(comboBox_driver, &QComboBox::activated, [&](int index) {
+    connect(comboBox_driver, &QComboBox::activated, [&](int index) {
         if (driver_list.empty() || index < 0 || index >= driver_list.size())
             return;
 
@@ -22,7 +22,7 @@ DisplayPanel::DisplayPanel(EmuApplication *app_)
         }
     });
 
-    QObject::connect(comboBox_device, &QComboBox::activated, [&](int index) {
+    connect(comboBox_device, &QComboBox::activated, [&](int index) {
         if (app->config->display_device_index != index)
         {
             app->config->display_device_index = index;
@@ -30,47 +30,47 @@ DisplayPanel::DisplayPanel(EmuApplication *app_)
         }
     });
 
-    QObject::connect(checkBox_use_shader, &QCheckBox::clicked, [&](bool checked) {
+    connect(checkBox_use_shader, &QCheckBox::clicked, [&](bool checked) {
         app->config->use_shader = checked;
         app->window->shaderChanged();
     });
 
-    QObject::connect(pushButton_browse_shader, &QPushButton::clicked, [&] {
+    connect(pushButton_browse_shader, &QPushButton::clicked, [&] {
         selectShaderDialog();
     });
 
-    QObject::connect(checkBox_vsync, &QCheckBox::clicked, [&](bool checked) {
+    connect(checkBox_vsync, &QCheckBox::clicked, [&](bool checked) {
         app->config->enable_vsync = checked;
     });
 
-    QObject::connect(checkBox_reduce_input_lag, &QCheckBox::clicked, [&](bool checked) {
+    connect(checkBox_reduce_input_lag, &QCheckBox::clicked, [&](bool checked) {
         app->config->reduce_input_lag = checked;
     });
 
-    QObject::connect(checkBox_bilinear_filter, &QCheckBox::clicked, [&](bool checked) {
+    connect(checkBox_bilinear_filter, &QCheckBox::clicked, [&](bool checked) {
         app->config->bilinear_filter = checked;
     });
 
-    QObject::connect(checkBox_adjust_for_vrr, &QCheckBox::clicked, [&](bool checked) {
+    connect(checkBox_adjust_for_vrr, &QCheckBox::clicked, [&](bool checked) {
         app->config->adjust_for_vrr = checked;
     });
 
     //
 
-    QObject::connect(checkBox_maintain_aspect_ratio, &QCheckBox::clicked, [&](bool checked) {
+    connect(checkBox_maintain_aspect_ratio, &QCheckBox::clicked, [&](bool checked) {
         app->config->maintain_aspect_ratio = checked;
     });
 
-    QObject::connect(checkBox_integer_scaling, &QCheckBox::clicked, [&](bool checked) {
+    connect(checkBox_integer_scaling, &QCheckBox::clicked, [&](bool checked) {
         app->config->use_integer_scaling = checked;
     });
 
-    QObject::connect(checkBox_overscan, &QCheckBox::clicked, [&](bool checked) {
+    connect(checkBox_overscan, &QCheckBox::clicked, [&](bool checked) {
         app->config->show_overscan = checked;
         app->updateSettings();
     });
 
-    QObject::connect(comboBox_aspect_ratio, &QComboBox::activated, [&](int index) {
+    connect(comboBox_aspect_ratio, &QComboBox::activated, [&](int index) {
         auto &num = app->config->aspect_ratio_numerator;
         auto &den = app->config->aspect_ratio_denominator;
         if (index == 0) { num = 4,  den = 3;  }
@@ -78,12 +78,12 @@ DisplayPanel::DisplayPanel(EmuApplication *app_)
         if (index == 2) { num = 8,  den = 7;  }
     });
 
-    QObject::connect(comboBox_high_resolution_mode, &QComboBox::currentIndexChanged, [&](int index) {
+    connect(comboBox_high_resolution_mode, &QComboBox::currentIndexChanged, [&](int index) {
         app->config->high_resolution_effect = index;
         app->updateSettings();
     });
 
-    QObject::connect(comboBox_messages, &QComboBox::currentIndexChanged, [&](int index) {
+    connect(comboBox_messages, &QComboBox::currentIndexChanged, [&](int index) {
         bool recreate = (app->config->display_messages == EmuConfig::eOnscreen || index == EmuConfig::eOnscreen);
 
         app->config->display_messages = index;
@@ -92,7 +92,7 @@ DisplayPanel::DisplayPanel(EmuApplication *app_)
             app->window->recreateUIAssets();
     });
 
-    QObject::connect(spinBox_osd_size, &QSpinBox::valueChanged, [&](int value) {
+    connect(spinBox_osd_size, &QSpinBox::valueChanged, [&](int value) {
         bool recreate = (app->config->osd_size != value && app->config->display_messages == EmuConfig::eOnscreen);
         app->config->osd_size = value;
         if (recreate)
@@ -100,10 +100,6 @@ DisplayPanel::DisplayPanel(EmuApplication *app_)
     });
 
     groupBox_software_filters->hide();
-}
-
-DisplayPanel::~DisplayPanel()
-{
 }
 
 void DisplayPanel::selectShaderDialog()
@@ -142,14 +138,14 @@ void DisplayPanel::showEvent(QShowEvent *event)
     comboBox_driver->addItem("Vulkan");
 
     driver_list.clear();
-    driver_list.push_back({ driver_list.size(), "qt" });
-    driver_list.push_back({ driver_list.size(), "opengl" });
-    driver_list.push_back({ driver_list.size(), "vulkan" });
+    driver_list.emplace_back(driver_list.size(), "qt");
+    driver_list.emplace_back(driver_list.size(), "opengl");
+    driver_list.emplace_back(driver_list.size(), "vulkan");
 
-    for (auto &i : driver_list)
-        if (config->display_driver == i.second)
+    for (auto &[index, driver] : driver_list)
+        if (config->display_driver == driver)
         {
-            comboBox_driver->setCurrentIndex(i.first);
+            comboBox_driver->setCurrentIndex(index);
             break;
         }
 

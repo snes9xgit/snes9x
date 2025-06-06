@@ -14,7 +14,6 @@ class EmuCanvasVulkan : public EmuCanvas
 {
   public:
     EmuCanvasVulkan(EmuConfig *config, QWidget *main_window);
-    ~EmuCanvasVulkan();
 
     bool createContext() override;
     void deinit() override;

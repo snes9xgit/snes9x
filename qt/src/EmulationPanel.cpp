@@ -8,25 +8,25 @@ EmulationPanel::EmulationPanel(EmuApplication *app_)
     setupUi(this);
 
     auto connect_checkbox = [&](QCheckBox *box, bool *config) {
-        QObject::connect(box, &QCheckBox::clicked, [&, box, config](bool is_checked) {
+        connect(box, &QCheckBox::clicked, [&, box, config](bool is_checked) {
             *config = is_checked;
             app->updateSettings();
         });
     };
     auto connect_spin = [&](QSpinBox *box, int *config) {
-        QObject::connect(box, &QSpinBox::valueChanged, [&, box, config](int value) {
+        connect(box, &QSpinBox::valueChanged, [&, box, config](int value) {
             *config = value;
             app->updateSettings();
         });
     };
     auto connect_combo = [&](QComboBox *box, int *config) {
-        QObject::connect(box, &QComboBox::activated, [&, box, config](int index) {
+        connect(box, &QComboBox::activated, [&, box, config](int index) {
             *config = index;
             app->updateSettings();
         });
     };
     connect_combo(comboBox_speed_control_method, &app->config->speed_sync_method);
-    QObject::connect(doubleSpinBox_frame_rate, &QDoubleSpinBox::valueChanged, [&](double value) {
+    connect(doubleSpinBox_frame_rate, &QDoubleSpinBox::valueChanged, [&](double value) {
         app->config->fixed_frame_rate = value;
     });
 
@@ -41,10 +41,6 @@ EmulationPanel::EmulationPanel(EmuApplication *app_)
     connect_checkbox(checkBox_use_shadow_echo_buffer, &app->config->enable_shadow_buffer);
     connect_spin(spinBox_superfx_clock_speed, &app->config->superfx_clock_multiplier);
     connect_combo(comboBox_sound_filter, &app->config->sound_filter);
-}
-
-EmulationPanel::~EmulationPanel()
-{
 }
 
 void EmulationPanel::showEvent(QShowEvent *event)

@@ -8,8 +8,7 @@ class EmulationPanel :
     public QWidget
 {
   public:
-    EmulationPanel(EmuApplication *app);
-    ~EmulationPanel();
+    explicit EmulationPanel(EmuApplication *app);
     void showEvent(QShowEvent *event) override;
 
     EmuApplication *app;

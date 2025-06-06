@@ -9,7 +9,6 @@ class EmuCanvas : public QWidget
 {
   public:
     EmuCanvas(EmuConfig *config, QWidget *main_window);
-    ~EmuCanvas();
 
     virtual void deinit() = 0;
     virtual void draw() = 0;

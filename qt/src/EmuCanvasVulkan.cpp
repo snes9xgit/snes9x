@@ -1,6 +1,5 @@
 #include <QGuiApplication>
 #include <qpa/qplatformnativeinterface.h>
-#include <QTimer>
 #include <QtEvents>
 #include <QMessageBox>
 #include "EmuCanvasVulkan.hpp"
@@ -32,11 +31,6 @@ EmuCanvasVulkan::EmuCanvasVulkan(EmuConfig *config, QWidget *main_window)
 
     createWinId();
     window = windowHandle();
-}
-
-EmuCanvasVulkan::~EmuCanvasVulkan()
-{
-    assert(!context);
 }
 
 bool EmuCanvasVulkan::initImGui()

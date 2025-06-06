@@ -55,7 +55,7 @@ bool EmuBinding::operator==(const EmuBinding &other)
 
 EmuBinding EmuBinding::joystick_axis(int device, int axis, int threshold)
 {
-    EmuBinding binding;
+    EmuBinding binding{};
     binding.type = Joystick;
     binding.input_type = Axis;
     binding.guid = device;
@@ -142,7 +142,7 @@ EmuBinding EmuBinding::from_config_string(std::string string)
         }
         else if (sscanf(substr.c_str(), "%u hat %u %5s", &device, &axis, direction_string) == 3)
         {
-            uint8_t direction;
+            uint8_t direction = 0;
             if (!strcmp(direction_string, "up"))
                 direction = SDL_HAT_UP;
             else if (!strcmp(direction_string, "down"))

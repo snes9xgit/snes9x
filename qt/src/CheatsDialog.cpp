@@ -13,7 +13,7 @@ static const auto desired_flags = Qt::ItemFlag::ItemIsUserCheckable |
                                   Qt::ItemFlag::ItemIsDragEnabled;
 
 CheatsDialog::CheatsDialog(QWidget *parent, EmuApplication *app_)
-    : app(app_), QDialog(parent)
+    : QDialog(parent), app(app_)
 {
     setupUi(this);
 
@@ -80,8 +80,7 @@ void CheatsDialog::removeCode()
     auto index = treeWidget_cheats->currentIndex().row();
     app->deleteCheat(index);
     auto item = treeWidget_cheats->takeTopLevelItem(index);
-    if (item)
-        delete item;
+    delete item;
 }
 
 void CheatsDialog::disableAll()
@@ -106,8 +105,6 @@ void CheatsDialog::searchDatabase()
         "/usr/share/snes9x",
         "/usr/local/share/snes9x"
     };
-
-    bool found = false;
 
     for (auto &path : dirs)
     {

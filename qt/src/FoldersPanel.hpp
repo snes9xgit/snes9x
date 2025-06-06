@@ -7,8 +7,7 @@ class FoldersPanel :
     public QWidget
 {
   public:
-    FoldersPanel(EmuApplication *app);
-    ~FoldersPanel();
+    explicit FoldersPanel(EmuApplication *app);
     void showEvent(QShowEvent *event) override;
     void connectEntry(QComboBox *combo, QLineEdit *lineEdit, QPushButton *browse, int *location, std::string *folder);
     void refreshEntry(QComboBox *combo, QLineEdit *lineEdit, QPushButton *browse, int *location, std::string *folder);

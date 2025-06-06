@@ -320,7 +320,7 @@ void EmuApplication::updateBindings()
     unsuspendThread();
 }
 
-void EmuApplication::handleBinding(std::string name, bool pressed)
+void EmuApplication::handleBinding(const std::string &name, bool pressed)
 {
     if (core->active)
     {
@@ -392,7 +392,7 @@ void EmuApplication::handleBinding(std::string name, bool pressed)
     }
 }
 
-bool EmuApplication::isBound(EmuBinding b)
+bool EmuApplication::isBound(const EmuBinding &b)
 {
     if (bindings.find(b.hash()) != bindings.end())
         return true;

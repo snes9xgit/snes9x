@@ -16,7 +16,6 @@ class EmuSettingsWindow
 {
   public:
     EmuSettingsWindow(QWidget *parent, EmuApplication *app);
-    ~EmuSettingsWindow();
     void show(int page);
 
     EmuApplication *app;

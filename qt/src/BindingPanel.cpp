@@ -1,7 +1,6 @@
 #include "BindingPanel.hpp"
 #include "EmuApplication.hpp"
 #include <QStyleHints>
-#include <QTimer>
 
 BindingPanel::BindingPanel(EmuApplication *app)
     : app(app)
@@ -65,7 +64,7 @@ void BindingPanel::setRedirectInput(bool redirect)
 {
     if (redirect)
     {
-        app->binding_callback = [&](EmuBinding b)
+        app->binding_callback = [&](const EmuBinding &b)
         {
             finalizeCurrentBinding(b);
         };
@@ -123,7 +122,7 @@ void BindingPanel::cellActivated(int row, int column)
     accept_return = false;
 }
 
-void BindingPanel::finalizeCurrentBinding(EmuBinding b)
+void BindingPanel::finalizeCurrentBinding(const EmuBinding &b)
 {
     if (!awaiting_binding)
         return;
@@ -144,7 +143,7 @@ void BindingPanel::finalizeCurrentBinding(EmuBinding b)
     app->updateBindings();
 }
 
-void BindingPanel::onJoypadsChanged(std::function<void()> func)
+void BindingPanel::onJoypadsChanged(const std::function<void()> &func)
 {
     joypads_changed = func;
 }

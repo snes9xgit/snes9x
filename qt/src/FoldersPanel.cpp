@@ -1,6 +1,5 @@
 #include "FoldersPanel.hpp"
 #include "EmuConfig.hpp"
-#include <QSpinBox>
 #include <QFileDialog>
 #include <QDesktopServices>
 
@@ -16,13 +15,9 @@ FoldersPanel::FoldersPanel(EmuApplication *app_)
     connectEntry(comboBox_export, lineEdit_export, pushButton_export, &app->config->export_location, &app->config->export_folder);
 }
 
-FoldersPanel::~FoldersPanel()
-{
-}
-
 void FoldersPanel::connectEntry(QComboBox *combo, QLineEdit *lineEdit, QPushButton *browse, int *location, std::string *folder)
 {
-    QObject::connect(combo, &QComboBox::activated, [=, this](int index) {
+    connect(combo, &QComboBox::activated, [=, this](int index) {
         *location = index;
         this->refreshEntry(combo, lineEdit, browse, location, folder);
         app->updateSettings();
@@ -49,7 +44,7 @@ void FoldersPanel::refreshEntry(QComboBox *combo, QLineEdit *lineEdit, QPushButt
     }
     else if (*location == EmuConfig::eConfigDirectory)
     {
-        lineEdit->setText(tr("Config folder is %1").arg(app->config->findConfigDir().c_str()));
+        lineEdit->setText(tr("Config folder is %1").arg(EmuConfig::findConfigDir().c_str()));
     } else
     {
         rom_dir = QString::fromStdString(app->getContentFolder());
@@ -62,11 +57,11 @@ void FoldersPanel::refreshEntry(QComboBox *combo, QLineEdit *lineEdit, QPushButt
 
     lineEdit->setEnabled(custom);
 
-    browse->disconnect();
+    browse->disconnect(SIGNAL(pressed()));
     if (custom)
     {
         browse->setText(tr("Browse..."));
-        QObject::connect(browse, &QPushButton::pressed, [=, this] {
+        connect(browse, &QPushButton::pressed, [=, this] {
             QFileDialog dialog(this, tr("Select a Folder"));
             dialog.setFileMode(QFileDialog::Directory);
             dialog.setDirectory(QString::fromUtf8(*folder));
@@ -82,11 +77,11 @@ void FoldersPanel::refreshEntry(QComboBox *combo, QLineEdit *lineEdit, QPushButt
     {
         QString dir{};
         if (*location == EmuConfig::eConfigDirectory)
-            dir = app->config->findConfigDir().c_str();
+            dir = EmuConfig::findConfigDir().c_str();
         else if (*location == EmuConfig::eROMDirectory)
             dir = rom_dir;
 
-        QObject::connect(browse, &QPushButton::pressed, [dir] {
+        connect(browse, &QPushButton::pressed, [dir] {
             QDesktopServices::openUrl(QUrl::fromLocalFile(dir));
         });
         lineEdit->setEnabled(custom);

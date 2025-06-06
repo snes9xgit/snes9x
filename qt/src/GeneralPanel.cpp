@@ -9,7 +9,7 @@ GeneralPanel::GeneralPanel(EmuApplication *app_)
 
     auto connectCheckbox = [&](QCheckBox *box, bool *config)
     {
-        QObject::connect(box, &QCheckBox::clicked, [&, config](bool checked)
+        connect(box, &QCheckBox::clicked, [&, config](bool checked)
         {
             *config = checked;
             app->updateSettings();
@@ -23,10 +23,6 @@ GeneralPanel::GeneralPanel(EmuApplication *app_)
     connectCheckbox(checkBox_show_indicators, &app->config->show_indicators);
     connectCheckbox(checkBox_show_pressed_keys, &app->config->show_pressed_keys);
     connectCheckbox(checkBox_show_time, &app->config->show_time);
-}
-
-GeneralPanel::~GeneralPanel()
-{
 }
 
 void GeneralPanel::showEvent(QShowEvent *event)

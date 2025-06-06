@@ -1,7 +1,6 @@
 #include "EmuCanvasOpenGL.hpp"
 #include <QtGui/QGuiApplication>
 #include <qpa/qplatformnativeinterface.h>
-#include <QTimer>
 #include <QMessageBox>
 #include "common/video/opengl/opengl_context.hpp"
 
@@ -17,7 +16,7 @@ using namespace QNativeInterface;
 #include "EmuMainWindow.hpp"
 #include "snes9x_imgui.h"
 #include "imgui_impl_opengl3.h"
-#include <locale.h>
+#include <clocale>
 
 static const char *stock_vertex_shader_140 = R"(
 #version 140
@@ -67,10 +66,6 @@ EmuCanvasOpenGL::EmuCanvasOpenGL(EmuConfig *config, QWidget *main_window)
     createWinId();
 }
 
-EmuCanvasOpenGL::~EmuCanvasOpenGL()
-{
-}
-
 void EmuCanvasOpenGL::createStockShaders()
 {
     stock_program = glCreateProgram();
@@ -78,8 +73,8 @@ void EmuCanvasOpenGL::createStockShaders()
     GLuint vertex_shader = glCreateShader(GL_VERTEX_SHADER);
     GLuint fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
 
-    glShaderSource(vertex_shader, 1, &stock_vertex_shader_140, NULL);
-    glShaderSource(fragment_shader, 1, &stock_fragment_shader_140, NULL);
+    glShaderSource(vertex_shader, 1, &stock_vertex_shader_140, nullptr);
+    glShaderSource(fragment_shader, 1, &stock_fragment_shader_140, nullptr);
 
     glCompileShader(vertex_shader);
     glAttachShader(stock_program, vertex_shader);
@@ -216,7 +211,7 @@ bool EmuCanvasOpenGL::createContext()
 
 void EmuCanvasOpenGL::loadShaders()
 {
-    auto endswith = [&](std::string ext) ->bool {
+    auto endswith = [&](const std::string &ext) ->bool {
         return config->shader.rfind(ext) == config->shader.length() - ext.length();
     };
     using_shader = true;
@@ -333,7 +328,7 @@ void EmuCanvasOpenGL::paintEvent(QPaintEvent *event)
 
     if (output_data.ready)
     {
-        if (!static_cast<EmuMainWindow *>(main_window)->isActivelyDrawing())
+        if (!dynamic_cast<EmuMainWindow *>(main_window)->isActivelyDrawing())
             draw();
         return;
     }
