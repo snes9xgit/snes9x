@@ -15,12 +15,12 @@ class Snes9xController
     void init();
     void deinit();
     void mainLoop();
-    bool openFile(std::string filename);
+    bool openFile(const std::string &filename);
     bool slotUsed(int slot);
-    bool loadState(std::string filename);
+    bool loadState(const std::string &filename);
     bool loadState(int slot);
     void loadUndoState();
-    bool saveState(std::string filename);
+    bool saveState(const std::string &filename);
     bool saveState(int slot);
     void updateSettings(const EmuConfig * const config);
     void updateBindings(const EmuConfig * const config);
@@ -34,18 +34,19 @@ class Snes9xController
     void reset();
     void softReset();
     void setPaused(bool paused);
-    void setMessage(std::string message);
+    void setMessage(const std::string &message);
     void clearSoundBuffer();
     std::vector<std::tuple<bool, std::string, std::string>> getCheatList();
     void disableAllCheats();
     void enableCheat(int index);
     void disableCheat(int index);
-    bool addCheat(std::string description, std::string code);
+    bool addCheat(const std::string &description, const std::string &code);
     void deleteCheat(int index);
     void deleteAllCheats();
-    int tryImportCheats(std::string filename);
-    std::string validateCheat(std::string code);
-    int modifyCheat(int index, std::string name, std::string code);
+    int tryImportCheats(const std::string &filename);
+    std::string validateCheat(const std::string &code);
+    int modifyCheat(int index, const std::string &name,
+                    const std::string &code);
     std::string getContentFolder();
 
     std::string getStateFolder();
