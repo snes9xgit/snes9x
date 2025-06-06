@@ -430,7 +430,7 @@ void EmuApplication::pollJoysticks()
 {
     while (1)
     {
-        auto event = input_manager->ProcessEvent();
+        auto event = input_manager->processEvent();
         if (!event)
             return;
 
@@ -442,7 +442,7 @@ void EmuApplication::pollJoysticks()
                 joypads_changed_callback();
             break;
         case SDL_EVENT_JOYSTICK_AXIS_MOTION: {
-            auto axis_event = input_manager->DiscretizeJoyAxisEvent(event.value());
+            auto axis_event = input_manager->discretizeJoyAxisEvent(event.value());
             if (axis_event)
             {
                 auto binding = EmuBinding::joystick_axis(
@@ -461,7 +461,7 @@ void EmuApplication::pollJoysticks()
                               event->jbutton.button), event->jbutton.down == 1);
             break;
         case SDL_EVENT_JOYSTICK_HAT_MOTION:
-            auto hat_event = input_manager->DiscretizeHatEvent(event.value());
+            auto hat_event = input_manager->discretizeHatEvent(event.value());
             if (hat_event)
             {
                 reportBinding(EmuBinding::joystick_hat(hat_event->joystick_num,

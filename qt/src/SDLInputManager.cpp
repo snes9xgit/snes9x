@@ -8,24 +8,22 @@ SDLInputManager::SDLInputManager()
     SDL_Init(SDL_INIT_GAMEPAD | SDL_INIT_JOYSTICK);
 }
 
-SDLInputManager::~SDLInputManager()
-{
-}
+SDLInputManager::~SDLInputManager() = default;
 
-void SDLInputManager::AddDevice(int device_index)
+void SDLInputManager::addDevice(int device_index)
 {
     SDLInputDevice d;
     if (!d.open(device_index))
         return;
-    d.index = FindFirstOpenIndex();
+    d.index = findFirstOpenIndex();
 
     printf("Slot %d: %s: ", d.index, SDL_GetJoystickName(d.joystick));
-    printf("%zu axes, %zu buttons, %zu hats, %s API\n", d.axes.size(), d.buttons.size(), d.hats.size(), d.is_gamepad ? "Controller" : "Joystick");
+    printf("%zu axes, %d buttons, %zu hats, %s API\n", d.axes.size(), d.num_buttons, d.hats.size(), d.is_gamepad ? "Controller" : "Joystick");
 
     devices.insert({ d.instance_id, d });
 }
 
-void SDLInputManager::RemoveDevice(int instance_id)
+void SDLInputManager::removeDevice(int instance_id)
 {
     auto iter = devices.find(instance_id);
     if (iter == devices.end())
@@ -39,21 +37,20 @@ void SDLInputManager::RemoveDevice(int instance_id)
         SDL_CloseJoystick(d.joystick);
 
     devices.erase(iter);
-    return;
 }
 
-void SDLInputManager::ClearEvents()
+void SDLInputManager::clearEvents()
 {
     std::optional<SDL_Event> event;
 
-    while ((event = ProcessEvent()))
+    while ((event = processEvent()))
     {
     }
 }
 
 
 std::optional<SDLInputManager::DiscreteHatEvent>
-SDLInputManager::DiscretizeHatEvent(SDL_Event &event)
+SDLInputManager::discretizeHatEvent(SDL_Event &event)
 {
     auto &device = devices.at(event.jhat.which);
     auto &hat = event.jhat.hat;
@@ -80,7 +77,7 @@ SDLInputManager::DiscretizeHatEvent(SDL_Event &event)
 }
 
 std::optional<SDLInputManager::DiscreteAxisEvent>
-SDLInputManager::DiscretizeJoyAxisEvent(SDL_Event &event)
+SDLInputManager::discretizeJoyAxisEvent(SDL_Event &event, int threshold_percent)
 {
     auto &device = devices.at(event.jaxis.which);
     auto &axis = event.jaxis.axis;
@@ -88,12 +85,10 @@ SDLInputManager::DiscretizeJoyAxisEvent(SDL_Event &event)
     auto &then = device.axes[axis].last;
     auto center = device.axes[axis].initial;
 
-    int offset = now - center;
-
-    auto pressed = [&](int axis) -> int {
-        if (axis > (center + (32767 - center) / 3)) // TODO threshold
+    auto pressed = [&](int pos) -> int {
+        if (pos > (center + (32767 - center) * threshold_percent / 100))
             return 1;
-        if (axis < (center - (center + 32768) / 3)) // TODO threshold
+        if (pos < (center - (center + 32768) * threshold_percent / 100))
             return -1;
         return 0;
     };
@@ -107,7 +102,7 @@ SDLInputManager::DiscretizeJoyAxisEvent(SDL_Event &event)
         return std::nullopt;
     }
 
-    DiscreteAxisEvent dae;
+    DiscreteAxisEvent dae{};
     dae.axis = axis;
     dae.direction = is_pressed_now ? is_pressed_now : was_pressed_then;
     dae.pressed = (is_pressed_now != 0);
@@ -117,7 +112,7 @@ SDLInputManager::DiscretizeJoyAxisEvent(SDL_Event &event)
     return dae;
 }
 
-std::optional<SDL_Event> SDLInputManager::ProcessEvent()
+std::optional<SDL_Event> SDLInputManager::processEvent()
 {
     SDL_Event event{};
 
@@ -126,25 +121,25 @@ std::optional<SDL_Event> SDLInputManager::ProcessEvent()
         switch (event.type)
         {
         case SDL_EVENT_JOYSTICK_AXIS_MOTION:
-            return event;
         case SDL_EVENT_JOYSTICK_HAT_MOTION:
-            return event;
         case SDL_EVENT_JOYSTICK_BUTTON_UP:
         case SDL_EVENT_JOYSTICK_BUTTON_DOWN:
             return event;
         case SDL_EVENT_JOYSTICK_ADDED:
-            AddDevice(event.jdevice.which);
+            addDevice(event.jdevice.which);
             return event;
         case SDL_EVENT_JOYSTICK_REMOVED:
-            RemoveDevice(event.jdevice.which);
+            removeDevice(event.jdevice.which);
             return event;
+        default:
+            break;
         }
     }
 
     return std::nullopt;
 }
 
-void SDLInputManager::PrintDevices()
+void SDLInputManager::printDevices()
 {
     for (auto &pair : devices)
     {
@@ -161,14 +156,14 @@ void SDLInputManager::PrintDevices()
     }
 }
 
-int SDLInputManager::FindFirstOpenIndex()
+int SDLInputManager::findFirstOpenIndex()
 {
-    for (int i = 0;; i++)
+    for (int i = 0; i < 10000; i++)
     {
-        if (std::none_of(devices.begin(), devices.end(), [i](auto &d) -> bool {
-            return (d.second.index == i);
-        }))
+        if (std::ranges::none_of(devices, [i](auto &d) -> bool { return d.second.index == i; }))
+        {
             return i;
+        }
     }
     return -1;
 }
@@ -192,7 +187,7 @@ bool SDLInputDevice::open(int joystick_num)
     if (!joystick)
         return false;
 
-    auto num_axes = SDL_GetNumJoystickAxes(joystick);
+    num_axes = SDL_GetNumJoystickAxes(joystick);
     axes.resize(num_axes);
     for (int i = 0; i < num_axes; i++)
     {
@@ -200,8 +195,9 @@ bool SDLInputDevice::open(int joystick_num)
         axes[i].last = axes[i].initial;
     }
 
-    buttons.resize(SDL_GetNumJoystickButtons(joystick));
-    hats.resize(SDL_GetNumJoystickHats(joystick));
+    num_buttons = SDL_GetNumJoystickButtons(joystick);
+    num_hats = SDL_GetNumJoystickHats(joystick);
+    hats.resize(num_hats);
     instance_id = SDL_GetJoystickID(joystick);
 
     return true;
@@ -216,8 +212,7 @@ std::vector<std::pair<int, std::string>> SDLInputManager::getXInputControllers()
         if (!d.second.is_gamepad)
             continue;
 
-        list.push_back(std::pair<int, std::string>(d.first, SDL_GetJoystickName(d.second.joystick)));
-        auto bind = SDL_GetGamepadButton(d.second.gamepad, SDL_GAMEPAD_BUTTON_EAST);
+        list.emplace_back(d.first, SDL_GetJoystickName(d.second.joystick));
     }
 
     return list;
