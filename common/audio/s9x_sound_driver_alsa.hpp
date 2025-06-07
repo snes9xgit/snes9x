@@ -4,9 +4,7 @@
    For further information, consult the LICENSE file in the root directory.
 \*****************************************************************************/
 
-#ifndef __S9X_SOUND_DRIVER_ALSA_HPP
-#define __S9X_SOUND_DRIVER_ALSA_HPP
-
+#pragma once
 #include "s9x_sound_driver.hpp"
 #include "alsa/asoundlib.h"
 
@@ -27,5 +25,3 @@ class S9xAlsaSoundDriver : public S9xSoundDriver
     snd_pcm_t *pcm;
     int output_buffer_size_bytes;
 };
-
-#endif /* __S9X_SOUND_DRIVER_ALSA_HPP */

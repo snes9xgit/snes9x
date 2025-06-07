@@ -4,9 +4,7 @@
    For further information, consult the LICENSE file in the root directory.
 \*****************************************************************************/
 
-#ifndef __S9X_SOUND_DRIVER_SDL_HPP
-#define __S9X_SOUND_DRIVER_SDL_HPP
-
+#pragma once
 #include "SDL.h"
 // SDL.h may include altivec.h which redefines vector and bool
 #undef vector
@@ -22,7 +20,7 @@ class S9xSDLSoundDriver : public S9xSoundDriver
 {
   public:
     S9xSDLSoundDriver();
-    ~S9xSDLSoundDriver();
+    ~S9xSDLSoundDriver() override;
     void init() override;
     void deinit() override;
     bool open_device(int playback_rate, int buffer_size) override;
@@ -40,5 +38,3 @@ class S9xSDLSoundDriver : public S9xSoundDriver
     std::mutex mutex;
     int16_t temp[512];
 };
-
-#endif /* __S9X_SOUND_DRIVER_SDL_HPP */

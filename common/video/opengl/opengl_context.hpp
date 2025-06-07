@@ -4,13 +4,12 @@
    For further information, consult the LICENSE file in the root directory.
 \*****************************************************************************/
 
-#ifndef __GTK_OPENGL_CONTEXT_H
-#define __GTK_OPENGL_CONTEXT_H
+#pragma once
 
 class OpenGLContext
 {
   public:
-    virtual ~OpenGLContext(){};
+    virtual ~OpenGLContext() = default;
     virtual bool create_context() = 0;
     virtual void resize() = 0;
     virtual void swap_buffers() = 0;
@@ -26,5 +25,3 @@ class OpenGLContext
     int width;
     int height;
 };
-
-#endif

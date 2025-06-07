@@ -13,7 +13,7 @@ class threadpool
 public:
     void start(int num_threads);
     void stop();
-    void queue(std::function<void()> func);
+    void queue(const std::function<void()>& func);
     void wait_idle();
 
 private:

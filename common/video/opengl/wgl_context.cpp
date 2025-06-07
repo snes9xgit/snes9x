@@ -4,9 +4,6 @@
    For further information, consult the LICENSE file in the root directory.
 \*****************************************************************************/
 
-#include <cstdlib>
-#include <cstdio>
-
 #include "wgl_context.hpp"
 
 WGLContext::WGLContext()

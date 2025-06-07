@@ -6,7 +6,6 @@
 
 #include <vector>
 #include <string>
-#include <sstream>
 #include <fstream>
 #include <map>
 #include "glsl.h"
@@ -24,18 +23,18 @@ static const GLfloat mvp_ortho[16] = { 2.0f,  0.0f,  0.0f,  0.0f,
                                        0.0f,  0.0f, -1.0f,  0.0f,
                                       -1.0f, -1.0f,  0.0f,  1.0f };
 
-static int scale_string_to_enum(std::string string)
+static int scale_string_to_enum(const std::string &string)
 {
-    const struct { const char *string; int value; } map[] =
+    constexpr struct { const char *string; int value; } map[] =
     {
         { "source",   GLSL_SOURCE   },
         { "viewport", GLSL_VIEWPORT },
         { "absolute", GLSL_ABSOLUTE }
     };
 
-    for (size_t i = 0; i < 3; i++)
-        if (string == map[i].string)
-            return map[i].value;
+    for (auto &i : map)
+        if (string == i.string)
+            return i.value;
     return GLSL_NONE;
 }
 
@@ -54,7 +53,7 @@ static const char *scale_enum_to_string(int val)
     }
 }
 
-static int wrap_mode_string_to_enum(std::string string)
+static int wrap_mode_string_to_enum(const std::string &string)
 {
     if (string == "repeat")
     {
@@ -102,19 +101,19 @@ bool GLSLShader::load_shader_preset_file(const char *filename)
 
     if (ends_with(filename, ".glsl") || ends_with(filename, ".slang"))
     {
-        GLSLPass pass;
-        this->pass.push_back(GLSLPass());
+        this->pass.emplace_back();
 
-        pass.scale_type_x = pass.scale_type_y = GLSL_VIEWPORT;
-        pass.filter = GLSL_UNDEFINED;
-        pass.wrap_mode = GL_CLAMP_TO_BORDER;
-        strcpy(pass.filename, filename);
-        pass.frame_count_mod = 0;
-        pass.frame_count = 0;
-        pass.fp = 0;
-        pass.scale_x = 1.0;
-        pass.scale_y = 1.0;
-        this->pass.push_back(pass);
+        GLSLPass new_pass;
+        new_pass.scale_type_x = new_pass.scale_type_y = GLSL_VIEWPORT;
+        new_pass.filter = GLSL_UNDEFINED;
+        new_pass.wrap_mode = GL_CLAMP_TO_BORDER;
+        strcpy(new_pass.filename, filename);
+        new_pass.frame_count_mod = 0;
+        new_pass.frame_count = 0;
+        new_pass.fp = false;
+        new_pass.scale_x = 1.0;
+        new_pass.scale_y = 1.0;
+        this->pass.push_back(new_pass);
 
         return true;
     }
@@ -126,7 +125,7 @@ bool GLSLShader::load_shader_preset_file(const char *filename)
     if (shader_count < 1)
         return false;
 
-    this->pass.push_back(GLSLPass());
+    this->pass.emplace_back();
 
     for (int i = 0; i < shader_count; i++)
     {
@@ -138,7 +137,7 @@ bool GLSLShader::load_shader_preset_file(const char *filename)
 
         std::string scaleType = ini.get_string("scale_type" + num, "");
 
-        if (scaleType == "")
+        if (scaleType.empty())
         {
             std::string scaleTypeX = ini.get_string("scale_type_x" + num, "");
             pass.scale_type_x = scale_string_to_enum(scaleTypeX);
@@ -183,7 +182,7 @@ bool GLSLShader::load_shader_preset_file(const char *filename)
 
     for (auto &id : ids)
     {
-        GLSLLut lut;
+        GLSLLut lut{};
 
         strcpy(lut.id, id.c_str());
         strcpy(lut.filename, ini.get_string(id, "").c_str());
@@ -201,18 +200,18 @@ bool GLSLShader::load_shader_preset_file(const char *filename)
     return true;
 }
 
-static std::string folder_from_path(std::string filename)
+static std::string folder_from_path(const std::string &filename)
 {
     for (int i = filename.length() - 1; i >= 0; i--)
         if (filename[i] == '\\' || filename[i] == '/')
             return filename.substr(0, i);
 
-    return std::string(".");
+    return ".";
 }
 
 static std::string canonicalize(const std::string &noncanonical)
 {
-    char *temp = realpath(noncanonical.c_str(), NULL);
+    char *temp = realpath(noncanonical.c_str(), nullptr);
     std::string filename_string(temp);
     free(temp);
     return filename_string;
@@ -263,7 +262,7 @@ static GLuint string_to_format(char *format)
 #endif
 
 // filename must be canonical
-void GLSLShader::read_shader_file_with_includes(std::string filename,
+void GLSLShader::read_shader_file_with_includes(const std::string& filename,
                                                 std::vector<std::string> &lines,
                                                 int p)
 {
@@ -285,10 +284,10 @@ void GLSLShader::read_shader_file_with_includes(std::string filename,
         if (line.compare(0, 8, "#include") == 0)
         {
             char tmp[PATH_MAX];
-            sscanf(line.c_str(), "#include \"%[^\"]\"", tmp);
+            sscanf(line.c_str(), R"(#include "%[^"]")", tmp);
 
             std::string fullpath = canonicalize(folder_from_path(filename) + "/" + tmp);
-            read_shader_file_with_includes(fullpath.c_str(), lines, p);
+            read_shader_file_with_includes(fullpath, lines, p);
             continue;
         }
         else if (line.compare(0, 17, "#pragma parameter") == 0)
@@ -297,12 +296,12 @@ void GLSLShader::read_shader_file_with_includes(std::string filename,
             char name[PATH_MAX];
             GLSLParam par;
 
-            sscanf(line.c_str(), "#pragma parameter %s \"%[^\"]\" %f %f %f %f",
+            sscanf(line.c_str(), R"(#pragma parameter %s "%[^"]" %f %f %f %f)",
                    id, name, &par.val, &par.min, &par.max, &par.step);
             par.id = id;
             par.name = name;
 
-            unsigned int last_decimal = line.rfind(".") + 1;
+            unsigned int last_decimal = line.rfind('.') + 1;
             unsigned int index = last_decimal;
             while (isdigit(line[index]) && index < line.length())
                 index++;
@@ -343,8 +342,6 @@ void GLSLShader::read_shader_file_with_includes(std::string filename,
 #endif
         lines.push_back(line);
     }
-
-    return;
 }
 
 GLuint GLSLShader::compile_shader(std::vector<std::string> &lines,
@@ -383,14 +380,14 @@ GLuint GLSLShader::compile_shader(std::vector<std::string> &lines,
     GLuint shader = glCreateShader(type);
     GLint status;
     GLint length = source.length();
-    GLchar *prog = (GLchar *)source.c_str();
+    auto prog = (GLchar *)source.c_str();
 
     glShaderSource(shader, 1, &prog, &length);
     glCompileShader(shader);
     glGetShaderiv(shader, GL_COMPILE_STATUS, &status);
 
     info_log[0] = '\0';
-    glGetShaderInfoLog(shader, 1024, NULL, info_log);
+    glGetShaderInfoLog(shader, 1024, nullptr, info_log);
     if (*info_log)
         printf("%s\n", info_log);
     *out = shader;
@@ -402,11 +399,10 @@ bool GLSLShader::load_shader(const char *filename)
 {
     char shader_path[PATH_MAX];
     char temp[PATH_MAX];
-    std::string aliases = "";
     GLint status;
     char log[1024];
 
-    if (this->pass.size())
+    if (!this->pass.empty())
         return false;
 
     if (!filename || *filename == '\0')
@@ -439,8 +435,7 @@ bool GLSLShader::load_shader(const char *filename)
 #ifdef USE_SLANG
         if (using_slang)
         {
-            GLint retval;
-            retval = slang_compile(lines, "vertex");
+            GLint retval = slang_compile(lines, "vertex");
             if (retval < 0)
             {
                 printf("Vertex shader in \"%s\" failed to compile.\n", p->filename);
@@ -461,7 +456,7 @@ bool GLSLShader::load_shader(const char *filename)
         {
             if (!compile_shader(lines,
                                 "#define VERTEX\n#define PARAMETER_UNIFORM\n",
-                                aliases.c_str(),
+                                "",
                                 GL_VERTEX_SHADER,
                                 &vertex_shader) || !vertex_shader)
             {
@@ -471,7 +466,7 @@ bool GLSLShader::load_shader(const char *filename)
 
             if (!compile_shader(lines,
                                 "#define FRAGMENT\n#define PARAMETER_UNIFORM\n",
-                                aliases.c_str(),
+                                "",
                                 GL_FRAGMENT_SHADER,
                                 &fragment_shader) || !fragment_shader)
             {
@@ -488,7 +483,7 @@ bool GLSLShader::load_shader(const char *filename)
         glLinkProgram(p->program);
         glGetProgramiv(p->program, GL_LINK_STATUS, &status);
         log[0] = '\0';
-        glGetProgramInfoLog(p->program, 1024, NULL, log);
+        glGetProgramInfoLog(p->program, 1024, nullptr, log);
         if (*log)
             printf("%s\n", log);
 
@@ -603,13 +598,13 @@ bool GLSLShader::load_shader(const char *filename)
     }
 
     // Check for parameters specified in file
-    for (unsigned int i = 0; i < param.size(); i++)
+    for (auto &p : param)
     {
-        param[i].val = ini.get_float(param[i].id, param[i].val);
-        if (param[i].val < param[i].min)
-            param[i].val = param[i].min;
-        if (param[i].val > param[i].max)
-            param[i].val = param[i].max;
+        p.val = ini.get_float(p.id, p.val);
+        if (p.val < p.min)
+            p.val = p.min;
+        if (p.val > p.max)
+            p.val = p.max;
     }
 
     glActiveTexture(GL_TEXTURE0);
@@ -623,10 +618,10 @@ bool GLSLShader::load_shader(const char *filename)
 
     prev_frame.resize(max_prev_frame);
 
-    for (unsigned int i = 0; i < prev_frame.size(); i++)
+    for (auto &frame : prev_frame)
     {
-        glGenTextures(1, &(prev_frame[i].texture));
-        prev_frame[i].width = prev_frame[i].height = 0;
+        glGenTextures(1, &(frame.texture));
+        frame.width = frame.height = 0;
     }
 
     glGenBuffers(1, &vbo);
@@ -731,7 +726,7 @@ void GLSLShader::render(GLuint &orig,
                              0,
                              GL_RGBA,
                              GL_UNSIGNED_INT_8_8_8_8,
-                             NULL);
+                             nullptr);
             }
             else
             {
@@ -743,7 +738,7 @@ void GLSLShader::render(GLuint &orig,
                              0,
                              GL_RGBA,
                              (pass[i].fp ? GL_FLOAT : GL_UNSIGNED_INT_8_8_8_8),
-                             NULL);
+                             nullptr);
             }
 
             // viewport determines the area we render into the output texture
@@ -859,13 +854,13 @@ void GLSLShader::render(GLuint &orig,
     glUseProgram(0);
 
     // Pop back of previous frame stack and use as upload buffer
-    if (prev_frame.size() > 0)
+    if (!prev_frame.empty())
     {
         GLint internal_format;
         orig = prev_frame.back().texture;
         prev_frame.pop_back();
 
-        GLSLPass *newprevframe = new GLSLPass;
+        auto newprevframe = new GLSLPass;
         newprevframe->width = width;
         newprevframe->height = height;
         newprevframe->texture = pass[0].texture;
@@ -885,7 +880,7 @@ void GLSLShader::render(GLuint &orig,
                      0,
                      GL_RGB,
                      GL_UNSIGNED_BYTE,
-                     NULL);
+                     nullptr);
     }
 
     glBindTexture(GL_TEXTURE_2D, orig);
@@ -1121,8 +1116,8 @@ void GLSLShader::set_shader_vars(unsigned int p, bool inverted)
 
 void GLSLShader::clear_shader_vars()
 {
-    for (unsigned int i = 0; i < vaos.size(); i++)
-        glDisableVertexAttribArray(vaos[i]);
+    for (unsigned int vao : vaos)
+        glDisableVertexAttribArray(vao);
 
     vaos.clear();
 }
@@ -1177,7 +1172,7 @@ void GLSLShader::save(const char *filename)
             outd("frame_count_mod", p->frame_count_mod);
     }
 
-    if (param.size() > 0)
+    if (!param.empty())
     {
         fprintf(file, "parameters = \"");
         for (unsigned int i = 0; i < param.size(); i++)
@@ -1187,12 +1182,12 @@ void GLSLShader::save(const char *filename)
         fprintf(file, "\n");
     }
 
-    for (unsigned int i = 0; i < param.size(); i++)
+    for (auto &p : param)
     {
-        fprintf(file, "%s = \"%f\"\n", param[i].id.c_str(), param[i].val);
+        fprintf(file, "%s = \"%f\"\n", p.id.c_str(), p.val);
     }
 
-    if (lut.size() > 0)
+    if (!lut.empty())
     {
         fprintf(file, "textures = \"");
         for (unsigned int i = 0; i < lut.size(); i++)
@@ -1202,12 +1197,12 @@ void GLSLShader::save(const char *filename)
         fprintf(file, "\n");
     }
 
-    for (unsigned int i = 0; i < lut.size(); i++)
+    for (auto &l : lut)
     {
-        fprintf(file, "%s = \"%s\"\n", lut[i].id, lut[i].filename);
-        fprintf(file, "%s_linear = \"%s\"\n", lut[i].id, lut[i].filter == GL_LINEAR || lut[i].filter == GL_LINEAR_MIPMAP_LINEAR ? "true" : "false");
-        fprintf(file, "%s_wrap_mode = \"%s\"\n", lut[i].id, wrap_mode_enum_to_string(lut[i].wrap_mode));
-        fprintf(file, "%s_mipmap = \"%s\"\n", lut[i].id, lut[i].mipmap ? "true" : "false");
+        fprintf(file, "%s = \"%s\"\n", l.id, l.filename);
+        fprintf(file, "%s_linear = \"%s\"\n", l.id, l.filter == GL_LINEAR || l.filter == GL_LINEAR_MIPMAP_LINEAR ? "true" : "false");
+        fprintf(file, "%s_wrap_mode = \"%s\"\n", l.id, wrap_mode_enum_to_string(l.wrap_mode));
+        fprintf(file, "%s_mipmap = \"%s\"\n", l.id, l.mipmap ? "true" : "false");
     }
 
     fclose(file);
@@ -1233,20 +1228,20 @@ void GLSLShader::destroy()
         {
             if (pass[i].uses_feedback)
                 glDeleteTextures(1, &pass[i].feedback_texture);
-            if (pass[i].ubo_buffer.size() > 0)
+            if (!pass[i].ubo_buffer.empty())
                 glDeleteBuffers(1, &pass[i].ubo);
         }
 #endif
     }
 
-    for (unsigned int i = 0; i < lut.size(); i++)
+    for (auto &l : lut)
     {
-        glDeleteTextures(1, &lut[i].texture);
+        glDeleteTextures(1, &l.texture);
     }
 
-    for (unsigned int i = 0; i < prev_frame.size(); i++)
+    for (auto &frame: prev_frame)
     {
-        glDeleteTextures(1, &prev_frame[i].texture);
+        glDeleteTextures(1, &frame.texture);
     }
 
     glDeleteBuffers(1, &vbo);

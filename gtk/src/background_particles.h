@@ -1,5 +1,4 @@
-#ifndef __BACKGROUND_PARTICLES_H
-#define __BACKGROUND_PARTICLES_H
+#pragma once
 #include <vector>
 #include <list>
 #include <cstdint>
@@ -26,11 +25,9 @@ class Particles
         unsigned int intensity;
     };
 
-    Particles(enum Mode = Stars);
-    ~Particles();
+    explicit Particles(enum Mode = Stars);
     void advance();
     void copyto(uint16_t *dst, int pitch);
-    enum Mode getmode();
     void setmode(enum Mode);
     void set_game_image(uint16_t *src, int pitch);
 
@@ -51,4 +48,3 @@ class Particles
 };
 
 } // namespace Background
-#endif // __BACKGROUND_PARTICLES_H

@@ -19,7 +19,7 @@ using std::vector;
     #include and #pragma directives. Will strip all directives except
     #pragma stage.
 */
-bool SlangShader::preprocess_shader_file(string filename, vector<string> &lines)
+bool SlangShader::preprocess_shader_file(const string& filename, vector<string> &lines)
 {
     std::ifstream stream(filename.c_str(), std::ios::binary);
 
@@ -39,7 +39,7 @@ bool SlangShader::preprocess_shader_file(string filename, vector<string> &lines)
         {
             sv.remove_prefix(8);
             trim(sv);
-            if (sv.length() && sv[0] == '\"' && sv[sv.length() - 1] == '\"')
+            if (!sv.empty() && sv[0] == '\"' && sv[sv.length() - 1] == '\"')
             {
                 sv.remove_prefix(1);
                 sv.remove_suffix(1);
@@ -152,7 +152,7 @@ void SlangShader::divide_into_stages(const std::vector<std::string> &lines)
     Load a shader file into memory, preprocess, divide and compile it to
     SPIRV bytecode. Returns true on success.
 */
-bool SlangShader::load_file(string new_filename)
+bool SlangShader::load_file(const string &new_filename)
 {
     if (!new_filename.empty())
         filename = new_filename;
@@ -182,10 +182,10 @@ void SlangShader::initialize_glslang()
     }
 }
 
-std::vector<uint32_t> SlangShader::generate_spirv(std::string shader_string, std::string stage)
+std::vector<uint32_t> SlangShader::generate_spirv(const std::string &shader_string, const std::string &stage)
 {
     initialize_glslang();
-    const EShMessages messages = (EShMessages)(EShMsgDefault | EShMsgVulkanRules | EShMsgSpvRules);
+    const auto messages = (EShMessages)(EShMsgDefault | EShMsgVulkanRules | EShMsgSpvRules);
     string debug;
     auto forbid_includer = glslang::TShader::ForbidIncluder();
 
@@ -193,8 +193,8 @@ std::vector<uint32_t> SlangShader::generate_spirv(std::string shader_string, std
 
     glslang::TShader shaderTShader(language);
 
-    auto compile = [&](glslang::TShader &shader, string &shader_string, std::vector<uint32_t> &spirv) -> bool {
-        const char *source = shader_string.c_str();
+    auto compile = [&](glslang::TShader &shader, const string &source_string, std::vector<uint32_t> &spirv) -> bool {
+        const char *source = source_string.c_str();
         shader.setStrings(&source, 1);
         if (!shader.preprocess(GetDefaultResources(), 450, ENoProfile, false, false, messages, &debug, forbid_includer))
             return false;

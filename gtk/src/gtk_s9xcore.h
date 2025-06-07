@@ -4,9 +4,7 @@
    For further information, consult the LICENSE file in the root directory.
 \*****************************************************************************/
 
-#ifndef __GTK_S9XCORE_H
-#define __GTK_S9XCORE_H
-
+#pragma once
 #include "snes9x.h"
 #include "memmap.h"
 #include "debug.h"
@@ -24,7 +22,5 @@
 #include "netplay.h"
 
 #include <sys/types.h>
-#include <ctype.h>
+#include <cctype>
 #include <dirent.h>
-
-#endif /* __GTK_S9XCORE_H */

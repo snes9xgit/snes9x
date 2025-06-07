@@ -14,10 +14,6 @@ Swapchain::Swapchain(Context &context_)
 {
 }
 
-Swapchain::~Swapchain()
-{
-}
-
 void Swapchain::set_vsync(bool new_setting)
 {
     if (vsync != new_setting)
@@ -28,7 +24,7 @@ void Swapchain::set_vsync(bool new_setting)
     }
 }
 
-void Swapchain::on_render_pass_end(std::function<void ()> function)
+void Swapchain::on_render_pass_end(const std::function<void()> &function)
 {
     end_render_pass_function = function;
 }
@@ -93,15 +89,6 @@ vk::Image Swapchain::get_image()
     return image_data[current_swapchain_image].image;
 }
 
-template<typename T>
-static bool vector_find(std::vector<T> haystack, T&& needle)
-{
-    for (auto &elem : haystack)
-        if (elem == needle)
-            return true;
-    return false;
-}
-
 vk::PresentModeKHR Swapchain::get_present_mode() {
     auto present_mode = vk::PresentModeKHR::eFifo;
 
@@ -121,11 +108,9 @@ vk::PresentModeKHR Swapchain::get_present_mode() {
 
 bool Swapchain::check_and_resize(int width, int height)
 {
-    vk::SurfaceCapabilitiesKHR surface_capabilities;
-
     if (width == -1 && height == -1)
     {
-        surface_capabilities = physical_device.getSurfaceCapabilitiesKHR(surface).value;
+        vk::SurfaceCapabilitiesKHR surface_capabilities = physical_device.getSurfaceCapabilitiesKHR(surface).value;
         width = surface_capabilities.currentExtent.width;
         height = surface_capabilities.currentExtent.height;
     }

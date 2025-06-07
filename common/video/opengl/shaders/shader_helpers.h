@@ -8,9 +8,6 @@
 #define __SHADER_HELPERS_H
 
 #include "shader_platform.h"
-#include <vector>
-#include <string>
-#include <sstream>
 
 typedef struct _STGA
 {

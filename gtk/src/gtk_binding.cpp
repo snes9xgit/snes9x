@@ -84,18 +84,7 @@ Binding::Binding(unsigned int val)
     value = val;
 }
 
-Binding::Binding(const Binding &binding)
-{
-    this->value = binding.value;
-}
-
-Binding &Binding::operator=(const Binding &binding)
-{
-    this->value = binding.value;
-    return *this;
-}
-
-bool Binding::operator==(const Binding &binding)
+bool Binding::operator==(const Binding &binding) const
 {
     if ((value & ~BINDING_THRESHOLD_MASK) == (binding.value & ~BINDING_THRESHOLD_MASK))
         return true;
@@ -254,7 +243,7 @@ std::string Binding::to_string(bool translate)
                 if (c == '_')
                     c = ' ';
 
-        str = fmt::format(maybegettext("Keyboard {}{}{}{}"),
+        str = fmt::format(fmt::runtime(maybegettext("Keyboard {}{}{}{}")),
                           (value & BINDING_SHIFT) ? "Shift+" : "",
                           (value & BINDING_CTRL) ? "Ctrl+" : "",
                           (value & BINDING_ALT) ? "Alt+" : "",
@@ -264,14 +253,14 @@ std::string Binding::to_string(bool translate)
     else if (is_joy())
     {
         if ((get_key()) >= 512)
-            str = fmt::format(maybegettext("Axis {} {} {}%"),
+            str = fmt::format(fmt::runtime(maybegettext("Axis {} {} {}%")),
                               get_axis(),
                               is_positive() ? "+" : "-",
                               get_threshold());
         else
-            str = fmt::format(maybegettext("Button {}"), get_key());
+            str = fmt::format(fmt::runtime(maybegettext("Button {}")), get_key());
 
-        str = fmt::format(maybegettext("Joystick {} {}"), get_device(), str);
+        str = fmt::format(fmt::runtime(maybegettext("Joystick {} {}")), get_device(), str);
     }
 
     else

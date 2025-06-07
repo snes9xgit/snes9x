@@ -5,16 +5,16 @@
 \*****************************************************************************/
 
 #include <cstdlib>
-#include <stdio.h>
-#include <string.h>
+#include <cstdio>
+#include <cstring>
 #include <unistd.h>
 
 #include "glx_context.hpp"
 
 GTKGLXContext::GTKGLXContext()
 {
-    display = NULL;
-    context = NULL;
+    display = nullptr;
+    context = nullptr;
 
     version_major = -1;
     version_minor = -1;
@@ -30,18 +30,6 @@ GTKGLXContext::~GTKGLXContext()
 
 bool GTKGLXContext::attach(Display *dpy, Window xid)
 {
-    GLXFBConfig *fbconfigs;
-    int num_fbconfigs;
-
-    int attribs[] = {
-        GLX_DOUBLEBUFFER, True,
-        GLX_X_RENDERABLE, True,
-        GLX_RED_SIZE, 8,
-        GLX_GREEN_SIZE, 8,
-        GLX_BLUE_SIZE, 8,
-        None
-    };
-
     this->xid = xid;
     display = dpy;
 
@@ -53,7 +41,16 @@ bool GTKGLXContext::attach(Display *dpy, Window xid)
     if (version_major < 2 && version_minor < 3)
         return false;
 
-    fbconfigs = glXChooseFBConfig(display, screen, attribs, &num_fbconfigs);
+    int attribs[] = {
+        GLX_DOUBLEBUFFER, True,
+        GLX_X_RENDERABLE, True,
+        GLX_RED_SIZE, 8,
+        GLX_GREEN_SIZE, 8,
+        GLX_BLUE_SIZE, 8,
+        None
+    };
+    int num_fbconfigs;
+    GLXFBConfig *fbconfigs = glXChooseFBConfig(display, screen, attribs, &num_fbconfigs);
 
     if (!fbconfigs || num_fbconfigs < 1)
     {
@@ -83,9 +80,9 @@ bool GTKGLXContext::create_context()
         return X_OK;
     });
     if (strstr(extensions, "GLX_ARB_create_context"))
-        context = glXCreateContextAttribsARB(display, fbconfig, NULL, True, context_attribs);
+        context = glXCreateContextAttribsARB(display, fbconfig, nullptr, True, context_attribs);
     if (!context)
-        context = glXCreateNewContext(display, fbconfig, GLX_RGBA_TYPE, NULL, True);
+        context = glXCreateNewContext(display, fbconfig, GLX_RGBA_TYPE, nullptr, True);
     XSetErrorHandler(nullptr);
 
     if (!context)

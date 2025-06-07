@@ -4,9 +4,7 @@
    For further information, consult the LICENSE file in the root directory.
 \*****************************************************************************/
 
-#ifndef __GTK_CONTROL_H
-#define __GTK_CONTROL_H
-
+#pragma once
 #include <queue>
 #include <array>
 
@@ -101,7 +99,6 @@ class JoyDevice
     void handle_event(SDL_Event *event);
     void register_centers();
     bool set_sdl_joystick(unsigned int device_index, int slot);
-    static void poll_joystick_events();
 
     std::string description;
     SDL_Joystick *filedes;
@@ -140,5 +137,3 @@ class JoyDevices
 void S9xDeinitInputDevices();
 Binding S9xGetBindingByName(const char *name);
 bool S9xIsMousePluggedIn();
-
-#endif /* __GTK_CONTROL_H*/

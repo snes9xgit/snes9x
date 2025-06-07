@@ -43,9 +43,8 @@ void S9xGTKDisplayDriver::output(void *src,
     }
 
     cairo_t *cr = window->get_cairo();
-    cairo_surface_t *surface;
 
-    surface = cairo_image_surface_create_for_data((unsigned char *)src, CAIRO_FORMAT_RGB16_565, width, height, src_pitch);
+    cairo_surface_t *surface = cairo_image_surface_create_for_data((unsigned char *)src, CAIRO_FORMAT_RGB16_565, width, height, src_pitch);
 
     cairo_set_source_surface(cr, surface, 0, 0);
 
@@ -103,7 +102,7 @@ void S9xGTKDisplayDriver::clear()
         return;
     }
 
-    S9xRect dst;
+    S9xRect dst{};
     dst.w = window->last_width;
     dst.h = window->last_height;
     apply_filter_scale(dst.w, dst.h);

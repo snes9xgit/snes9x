@@ -5,8 +5,8 @@
 \*****************************************************************************/
 
 #include <png.h>
-#include <stdlib.h>
-#include <string.h>
+#include <cstdlib>
+#include <cstring>
 
 #include "shader_helpers.h"
 #include "shader_platform.h"
@@ -18,16 +18,13 @@ static void gl_error_callback(GLenum source, GLenum type, GLuint id,
     if (type == GL_DEBUG_TYPE_ERROR)
     {
         fprintf(stderr, "GL: %s type = 0x%x, severity = 0x%x, \n %s\n",
-                (type == GL_DEBUG_TYPE_ERROR ? "*ERROR*" : ""), type, severity,
-                message);
+                "*ERROR*", type, severity, message);
     }
     else
     {
         fprintf(stderr, "GL type = 0x%x, severity = 0x%x, \n %s\n", type,
                 severity, message);
     }
-
-    return;
 }
 
 int gl_version()
@@ -47,7 +44,7 @@ int gl_version()
     return version;
 }
 
-bool gl_srgb_available(void)
+bool gl_srgb_available()
 {
     if (gl_version() >= 30)
         return true;
@@ -61,7 +58,7 @@ bool gl_srgb_available(void)
     return false;
 }
 
-bool gl_float_texture_available(void)
+bool gl_float_texture_available()
 {
     if (gl_version() >= 32)
         return true;
@@ -74,10 +71,10 @@ bool gl_float_texture_available(void)
     return false;
 }
 
-void gl_log_errors(void)
+void gl_log_errors()
 {
     glEnable(GL_DEBUG_OUTPUT);
-    glDebugMessageCallback((GLDEBUGPROC)gl_error_callback, 0);
+    glDebugMessageCallback((GLDEBUGPROC)gl_error_callback, nullptr);
 }
 
 bool loadPngImage(const char *name, int &outWidth, int &outHeight,
@@ -89,28 +86,28 @@ bool loadPngImage(const char *name, int &outWidth, int &outHeight,
     unsigned int sig_read = 0;
     FILE *fp;
 
-    if ((fp = fopen(name, "rb")) == NULL)
+    if ((fp = fopen(name, "rb")) == nullptr)
         return false;
 
-    png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+    png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr);
 
-    if (png_ptr == NULL)
+    if (png_ptr == nullptr)
     {
         fclose(fp);
         return false;
     }
 
     info_ptr = png_create_info_struct(png_ptr);
-    if (info_ptr == NULL)
+    if (info_ptr == nullptr)
     {
         fclose(fp);
-        png_destroy_read_struct(&png_ptr, (png_infopp)NULL, (png_infopp)NULL);
+        png_destroy_read_struct(&png_ptr, (png_infopp)nullptr, (png_infopp)nullptr);
         return false;
     }
 
     if (setjmp(png_jmpbuf(png_ptr)))
     {
-        png_destroy_read_struct(&png_ptr, &info_ptr, (png_infopp)NULL);
+        png_destroy_read_struct(&png_ptr, &info_ptr, (png_infopp)nullptr);
         fclose(fp);
         return false;
     }
@@ -122,7 +119,7 @@ bool loadPngImage(const char *name, int &outWidth, int &outHeight,
     png_read_png(png_ptr, info_ptr,
                  PNG_TRANSFORM_STRIP_16 | PNG_TRANSFORM_PACKING |
                      PNG_TRANSFORM_EXPAND,
-                 (png_voidp)NULL);
+                 (png_voidp)nullptr);
 
     outWidth = png_get_image_width(png_ptr, info_ptr);
     outHeight = png_get_image_height(png_ptr, info_ptr);
@@ -141,7 +138,7 @@ bool loadPngImage(const char *name, int &outWidth, int &outHeight,
         grayscale = true;
         break;
     default:
-        png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
+        png_destroy_read_struct(&png_ptr, &info_ptr, nullptr);
         fclose(fp);
         return false;
     }
@@ -156,7 +153,7 @@ bool loadPngImage(const char *name, int &outWidth, int &outHeight,
         memcpy(*outData + (row_bytes * i), row_pointers[i], row_bytes);
     }
 
-    png_destroy_read_struct(&png_ptr, &info_ptr, (png_infopp)NULL);
+    png_destroy_read_struct(&png_ptr, &info_ptr, (png_infopp)nullptr);
 
     fclose(fp);
 
@@ -168,11 +165,10 @@ bool loadPngImage(const char *name, int &outWidth, int &outHeight,
 
 bool loadTGA(const char *filename, STGA &tgaFile)
 {
-    FILE *file;
     unsigned char type[4];
     unsigned char info[6];
 
-    file = fopen(filename, "rb");
+    FILE *file = fopen(filename, "rb");
 
     if (!file)
         return false;

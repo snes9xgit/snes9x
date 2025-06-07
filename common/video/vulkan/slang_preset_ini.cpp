@@ -23,10 +23,10 @@ static std::string trim_quotes(std::string str)
     return str;
 }
 
-bool IniFile::load_file(std::string filename)
+bool IniFile::load_file(const std::string& filename)
 {
     std::ifstream file;
-    file.open(filename.c_str(), std::ios_base::binary);
+    file.open(filename, std::ios_base::binary);
     if (!file.is_open())
     {
         printf("No file %s\n", filename.c_str());
@@ -34,7 +34,7 @@ bool IniFile::load_file(std::string filename)
     }
 
     std::string line;
-    while (1)
+    while (true)
     {
         if (file.eof())
             break;
@@ -58,7 +58,7 @@ bool IniFile::load_file(std::string filename)
 
         line = trim_comments(line);
 
-        if (line.length() == 0)
+        if (line.empty())
             continue;
 
         auto equals = line.find('=');
@@ -74,7 +74,7 @@ bool IniFile::load_file(std::string filename)
     return true;
 }
 
-std::string IniFile::get_string(std::string key, std::string default_value = "")
+std::string IniFile::get_string(const std::string &key, std::string default_value = "")
 {
     auto it = keys.find(key);
     if (it == keys.end())
@@ -83,7 +83,7 @@ std::string IniFile::get_string(std::string key, std::string default_value = "")
     return it->second.first;
 }
 
-int IniFile::get_int(std::string key, int default_value = 0)
+int IniFile::get_int(const std::string &key, int default_value = 0)
 {
     auto it = keys.find(key);
     if (it == keys.end())
@@ -92,7 +92,7 @@ int IniFile::get_int(std::string key, int default_value = 0)
     return std::stoi(it->second.first);
 }
 
-float IniFile::get_float(std::string key, float default_value = 0.0f)
+float IniFile::get_float(const std::string &key, float default_value = 0.0f)
 {
    auto it = keys.find(key);
    if (it == keys.end())
@@ -101,7 +101,7 @@ float IniFile::get_float(std::string key, float default_value = 0.0f)
     return std::stof(it->second.first);
 }
 
-std::string IniFile::get_source(std::string key)
+std::string IniFile::get_source(const std::string &key)
 {
     auto it = keys.find(key);
     if (it == keys.end())
@@ -110,7 +110,7 @@ std::string IniFile::get_source(std::string key)
     return it->second.second;
 }
 
-bool IniFile::get_bool(std::string key, bool default_value = false)
+bool IniFile::get_bool(const std::string &key, bool default_value = false)
 {
    auto it = keys.find(key);
    if (it == keys.end())
@@ -127,7 +127,7 @@ bool IniFile::get_bool(std::string key, bool default_value = false)
     return false;
 }
 
-bool IniFile::exists(std::string key)
+bool IniFile::exists(const std::string &key)
 {
     auto it = keys.find(key);
     if (it == keys.end())

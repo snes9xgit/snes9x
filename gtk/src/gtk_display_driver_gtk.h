@@ -4,32 +4,22 @@
    For further information, consult the LICENSE file in the root directory.
 \*****************************************************************************/
 
-#ifndef __GTK_DISPLAY_DRIVER_GTK_H
-#define __GTK_DISPLAY_DRIVER_GTK_H
-
+#pragma once
 #include "gtk_display_driver.h"
 
 class S9xGTKDisplayDriver : public S9xDisplayDriver
 {
   public:
     S9xGTKDisplayDriver(Snes9xWindow *window, Snes9xConfig *config);
-    void refresh();
-    int init();
-    void deinit();
-    void update(uint16_t *buffer, int width, int height, int stride_in_pixels);
-    void *get_parameters()
-    {
-        return NULL;
-    }
-    void save(const char *filename)
-    {
-    }
-    bool is_ready()
-    {
-        return true;
-    }
-    int get_width() { return last_known_width; }
-    int get_height() { return last_known_height; }
+    void refresh() override;
+    int init() override;
+    void deinit() override;
+    void update(uint16_t *buffer, int width, int height, int stride_in_pixels) override;
+    void *get_parameters() override { return nullptr; }
+    void save(const std::string &filename) override {}
+    bool is_ready() override { return true; }
+    int get_width() override { return last_known_width; }
+    int get_height() override { return last_known_height; }
 
   private:
     void clear();
@@ -45,5 +35,3 @@ class S9xGTKDisplayDriver : public S9xDisplayDriver
     int last_known_width;
     int last_known_height;
 };
-
-#endif /* __GTK_DISPLAY_DRIVER_GTK_H */

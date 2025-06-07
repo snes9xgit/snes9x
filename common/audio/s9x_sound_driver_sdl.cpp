@@ -32,13 +32,11 @@ void S9xSDLSoundDriver::mix(unsigned char *output, int bytes)
     }
 }
 
-S9xSDLSoundDriver::S9xSDLSoundDriver()
-{
-}
+S9xSDLSoundDriver::S9xSDLSoundDriver() = default;
 
 S9xSDLSoundDriver::~S9xSDLSoundDriver()
 {
-    deinit();
+    S9xSDLSoundDriver::deinit();
 }
 
 void S9xSDLSoundDriver::init()
@@ -82,7 +80,7 @@ bool S9xSDLSoundDriver::open_device(int playback_rate, int buffer_size)
            audiospec.freq,
            (audiospec.samples * 1000 / audiospec.freq));
 
-    if (SDL_OpenAudio(&audiospec, NULL) < 0)
+    if (SDL_OpenAudio(&audiospec, nullptr) < 0)
     {
         printf("Failed\n");
         return false;

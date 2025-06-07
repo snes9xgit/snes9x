@@ -42,9 +42,8 @@ void snes9x_preferences_open(Snes9xWindow *window)
 
 gboolean poll_joystick(gpointer data)
 {
-    Snes9xPreferences *window = (Snes9xPreferences *)data;
+    auto window = (Snes9xPreferences *)data;
     JoyEvent event;
-    Binding binding;
     int focus;
 
     window->config->joysticks.poll_events();
@@ -56,9 +55,9 @@ gboolean poll_joystick(gpointer data)
             {
                 if ((focus = window->get_focused_binding()) >= 0)
                 {
-                    binding = Binding(j.second->joynum,
-                                      event.parameter,
-                                      window->config->joystick_threshold);
+                    Binding binding(j.second->joynum,
+                                    event.parameter,
+                                    window->config->joystick_threshold);
 
                     window->store_binding(b_links[focus].button_name,
                                           binding);
@@ -106,7 +105,7 @@ Snes9xPreferences::Snes9xPreferences(Snes9xConfig *config)
             if (m->modeFlags & RR_DoubleClock)
                 dotClock *= 2;
 
-            auto str = fmt::format(_("{0:Ld}×{1:Ld} @ {2:.3Lf} Hz"),
+            auto str = fmt::format("{0:Ld}×{1:Ld} @ {2:.3Lf} Hz",
                                    m->width,
                                    m->height,
                                    (double)dotClock / m->hTotal / m->vTotal);
@@ -154,10 +153,6 @@ Snes9xPreferences::Snes9xPreferences(Snes9xConfig *config)
     {
         combo_box_append("sound_driver", name.c_str());
     }
-}
-
-Snes9xPreferences::~Snes9xPreferences ()
-{
 }
 
 void Snes9xPreferences::connect_signals()
@@ -291,7 +286,7 @@ void Snes9xPreferences::about_dialog()
     about_dialog.window->hide();
 }
 
-void Snes9xPreferences::game_data_browse(std::string folder)
+void Snes9xPreferences::game_data_browse(const std::string &folder)
 {
     auto entry = get_object<Gtk::Entry>((folder + "_directory").c_str());
     auto dialog = Gtk::FileChooserDialog(*window.get(), _("Select directory"), Gtk::FILE_CHOOSER_ACTION_SELECT_FOLDER);
@@ -319,12 +314,12 @@ void Snes9xPreferences::input_rate_changed()
         32040.0 * NTSC_PROGRESSIVE_FRAME_RATE;
     set_label(
         "relative_video_rate",
-        fmt::format(_("{0:.4Lf} Hz"), value).c_str());
+        fmt::format("{0:.4Lf} Hz", value).c_str());
 }
 
 Glib::ustring Snes9xPreferences::format_sound_input_rate_value(double value)
 {
-    return fmt::format(_("{0:Ld} Hz"), (uint32_t)std::round(value));
+    return fmt::format("{0:Ld} Hz", (uint32_t)std::round(value));
 }
 
 bool Snes9xPreferences::key_pressed(GdkEventKey *event)
@@ -350,7 +345,7 @@ bool Snes9xPreferences::key_pressed(GdkEventKey *event)
         }
     }
 
-    Binding key_binding = Binding(event);
+    Binding key_binding(event);
 
     // Allows ESC key to clear the key binding
     if (event->keyval == GDK_Escape)
@@ -487,7 +482,7 @@ void Snes9xPreferences::move_settings_to_dialog()
     set_slider("sound_input_rate",         config->sound_input_rate);
     if (top_level->get_auto_input_rate() == 0)
     {
-        config->auto_input_rate = 0;
+        config->auto_input_rate = false;
         enable_widget("auto_input_rate", false);
     }
     set_check ("auto_input_rate",           config->auto_input_rate);
@@ -708,11 +703,11 @@ void Snes9xPreferences::get_settings_from_dialog()
                      &config->cheat_directory,
                      &config->export_directory })
     {
-        if (!i->compare(SAME_AS_GAME))
+        if (*i == SAME_AS_GAME)
             i->clear();
     }
 
-    if (new_sram_directory.compare(config->sram_directory) && config->rom_loaded)
+    if (new_sram_directory != config->sram_directory && config->rom_loaded)
     {
         auto msg = Gtk::MessageDialog(
             *window.get(),
@@ -767,7 +762,7 @@ void Snes9xPreferences::get_settings_from_dialog()
         top_level->leave_fullscreen_mode();
 }
 
-int Snes9xPreferences::combo_value(std::string driver_name)
+int Snes9xPreferences::combo_value(const std::string &driver_name)
 {
     for (size_t i = 0; i < config->display_drivers.size(); i++)
     {
@@ -780,13 +775,10 @@ int Snes9xPreferences::combo_value(std::string driver_name)
 
 void Snes9xPreferences::show()
 {
-    bool close_dialog;
-    guint source_id = -1;
-
     move_settings_to_dialog();
 
     S9xGrabJoysticks();
-    source_id = g_timeout_add(100, poll_joystick, (gpointer)this);
+    guint source_id = g_timeout_add(100, poll_joystick, (gpointer)this);
 
     if (config->preferences_width > 0 && config->preferences_height > 0)
         resize (config->preferences_width, config->preferences_height);
@@ -795,7 +787,7 @@ void Snes9xPreferences::show()
 
     auto dialog = Glib::RefPtr<Gtk::Dialog>::cast_static(window);
 
-    for (close_dialog = false; !close_dialog; )
+    for (bool close_dialog = false; !close_dialog; )
     {
         dialog->show();
         auto result = dialog->run();
@@ -852,11 +844,10 @@ void Snes9xPreferences::focus_next()
 
 void Snes9xPreferences::swap_with()
 {
-    JoypadBinding tmp;
     int source_joypad = get_combo("control_combo");
     int dest_joypad = get_combo("joypad_to_swap_with");
 
-    tmp = pad[source_joypad];
+    JoypadBinding tmp = pad[source_joypad];
     pad[source_joypad] = pad[dest_joypad];
     pad[dest_joypad] = tmp;
 

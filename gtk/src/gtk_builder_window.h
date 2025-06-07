@@ -4,9 +4,7 @@
    For further information, consult the LICENSE file in the root directory.
 \*****************************************************************************/
 
-#ifndef __GTK_BUILDER_WINDOW_H
-#define __GTK_BUILDER_WINDOW_H
-
+#pragma once
 #include "gtk_compat.h"
 
 extern Glib::RefPtr<Gtk::Builder> global_builder;
@@ -14,8 +12,7 @@ extern Glib::RefPtr<Gtk::Builder> global_builder;
 class GtkBuilderWindow
 {
   public:
-    GtkBuilderWindow(const char *root);
-    ~GtkBuilderWindow();
+    explicit GtkBuilderWindow(const char *root);
 
     template <typename T>
     Glib::RefPtr<T> get_object(const char *name)
@@ -37,7 +34,7 @@ class GtkBuilderWindow
 
     void enable_widget(const char *name, bool state);
     void show_widget(const char *name, bool state);
-    void set_label(const char * const name, const char * const label);
+    void set_label(const char *name, const char *label);
     void set_button_label(const char *name, const char *label);
     bool get_check(const char *name);
     int get_entry_value(const char *name);
@@ -58,5 +55,3 @@ class GtkBuilderWindow
 
     Glib::RefPtr<Gtk::Window> window;
 };
-
-#endif /* __GTK_BUILDER_WINDOW_H */

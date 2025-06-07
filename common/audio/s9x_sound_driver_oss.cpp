@@ -9,7 +9,6 @@
 #include <fcntl.h>
 #include <sys/ioctl.h>
 #include <sys/soundcard.h>
-#include <sys/time.h>
 #include <unistd.h>
 #include <cstdio>
 
@@ -164,9 +163,6 @@ std::pair<int, int> S9xOSSSoundDriver::buffer_level()
 bool S9xOSSSoundDriver::write_samples(int16_t *data, int samples)
 {
     audio_buf_info info;
-    int bytes_to_write;
-    int bytes_written;
-
     ioctl(filedes, SNDCTL_DSP_GETOSPACE, &info);
 
     if (samples > info.bytes / 2)
@@ -175,16 +171,15 @@ bool S9xOSSSoundDriver::write_samples(int16_t *data, int samples)
     if (samples == 0)
         return false;
 
-    bytes_written = 0;
-    bytes_to_write = samples * 2;
+    int bytes_written = 0;
+    int bytes_to_write = samples * 2;
 
     while (bytes_to_write > bytes_written)
     {
-        int result;
 
-        result = write(filedes,
-                       ((char *)data) + bytes_written,
-                       bytes_to_write - bytes_written);
+        int result = write(filedes,
+                           ((char *)data) + bytes_written,
+                           bytes_to_write - bytes_written);
 
         if (result < 0)
             break;

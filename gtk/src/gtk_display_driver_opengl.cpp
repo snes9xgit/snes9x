@@ -162,11 +162,11 @@ void *S9xOpenGLDisplayDriver::get_parameters()
     return NULL;
 }
 
-void S9xOpenGLDisplayDriver::save(const char *filename)
+void S9xOpenGLDisplayDriver::save(const std::string &filename)
 {
     if (using_glsl_shaders && glsl_shader)
     {
-        glsl_shader->save(filename);
+        glsl_shader->save(filename.c_str());
     }
 }
 

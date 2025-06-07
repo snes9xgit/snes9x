@@ -3,7 +3,7 @@
 
 void threadpool::thread_func()
 {
-    while (1)
+    while (true)
     {
         std::unique_lock<std::mutex> lock(mutex);
         cond.wait_for(lock, std::chrono::microseconds(100), [this] {
@@ -69,7 +69,7 @@ void threadpool::stop()
     started = false;
 }
 
-void threadpool::queue(std::function<void()> func)
+void threadpool::queue(const std::function<void()>& func)
 {
     std::unique_lock<std::mutex> lock(mutex);
 
@@ -81,5 +81,4 @@ void threadpool::queue(std::function<void()> func)
     lock.unlock();
 
     cond.notify_all();
-    return;
 }

@@ -16,13 +16,13 @@
 #include "external/SPIRV-Cross/spirv_glsl.hpp"
 
 std::string GLSLShader::slang_get_stage(std::vector<std::string> &lines,
-                                        std::string name)
+                                        const std::string &name)
 {
     std::ostringstream output;
     bool in_stage = true;
 
     if (name.empty())
-        return std::string("");
+        return {};
 
     for (auto &line : lines)
     {
@@ -85,7 +85,7 @@ static void printuniforms(std::vector<SlangUniform> &unif)
 #endif // #if 0
 
 GLint GLSLShader::slang_compile(std::vector<std::string> &lines,
-                                std::string stage)
+                                const std::string& stage)
 {
     static bool ProcessInitialized = false;
 
@@ -98,7 +98,7 @@ GLint GLSLShader::slang_compile(std::vector<std::string> &lines,
     std::string source = slang_get_stage(lines, stage);
 
     EShLanguage language;
-    if (!stage.compare("fragment"))
+    if (stage == "fragment")
         language = EShLangFragment;
     else
         language = EShLangVertex;
@@ -107,8 +107,7 @@ GLint GLSLShader::slang_compile(std::vector<std::string> &lines,
     const char *csource = source.c_str();
     shader.setStrings(&csource, 1);
 
-    EShMessages messages =
-        (EShMessages)(EShMsgDefault | EShMsgVulkanRules | EShMsgSpvRules);
+    auto messages = (EShMessages)(EShMsgDefault | EShMsgVulkanRules | EShMsgSpvRules);
 
     std::string debug;
     auto forbid_includer = glslang::TShader::ForbidIncluder();
@@ -175,17 +174,17 @@ GLint GLSLShader::slang_compile(std::vector<std::string> &lines,
     std::string glsl_source = glsl.compile();
 
     GLint status = 0;
-    GLchar *cstring = (GLchar *)glsl_source.c_str();
+    auto cstring = (GLchar *)glsl_source.c_str();
 
     GLint shaderid = glCreateShader(
         language == EShLangFragment ? GL_FRAGMENT_SHADER : GL_VERTEX_SHADER);
-    glShaderSource(shaderid, 1, &cstring, NULL);
+    glShaderSource(shaderid, 1, &cstring, nullptr);
     glCompileShader(shaderid);
 
     glGetShaderiv(shaderid, GL_COMPILE_STATUS, &status);
 
     char info_log[1024];
-    glGetShaderInfoLog(shaderid, 1024, NULL, info_log);
+    glGetShaderInfoLog(shaderid, 1024, nullptr, info_log);
     if (*info_log)
         puts(info_log);
 
@@ -195,7 +194,7 @@ GLint GLSLShader::slang_compile(std::vector<std::string> &lines,
     return shaderid;
 }
 
-static inline bool isalldigits(std::string str)
+static inline bool isalldigits(const std::string &str)
 {
     for (auto c : str)
     {
@@ -233,8 +232,8 @@ void GLSLShader::slang_introspect()
         for (int j = 0; j < num_uniforms; j++)
         {
             char name[1024];
-            glGetActiveUniformName(p.program, j, 1024, NULL, name);
-            names.push_back(std::string(name));
+            glGetActiveUniformName(p.program, j, 1024, nullptr, name);
+            names.emplace_back(name);
             locations[j] = glGetUniformLocation(p.program, name);
         }
 
@@ -258,7 +257,7 @@ void GLSLShader::slang_introspect()
             else
                 name = names[j];
 
-            auto indexedtexorsize = [&](std::string needle, int type) -> bool {
+            auto indexedtexorsize = [&](const std::string &needle, int type) -> bool {
                 if (name.find(needle) == 0)
                 {
                     std::string tmp = name.substr(needle.length());
@@ -279,36 +278,36 @@ void GLSLShader::slang_introspect()
                 return false;
             };
 
-            if (!name.compare("MVP"))
+            if (name == "MVP")
             {
                 u.type = SL_MVP;
             }
-            else if (!name.compare("Original"))
+            else if (name == "Original")
             {
                 u.type = SL_PASSTEXTURE;
                 u.num  = 0;
             }
-            else if (!name.compare("OriginalSize"))
+            else if (name == "OriginalSize")
             {
                 u.type = SL_PASSSIZE;
                 u.num = 0;
             }
-            else if (!name.compare("Source"))
+            else if (name == "Source")
             {
                 u.type = SL_PASSTEXTURE;
                 u.num = i - 1;
             }
-            else if (!name.compare("SourceSize"))
+            else if (name == "SourceSize")
             {
                 u.type = SL_PASSSIZE;
                 u.num = i - 1;
             }
-            else if (!name.compare("OutputSize"))
+            else if (name == "OutputSize")
             {
                 u.type = SL_PASSSIZE;
                 u.num = i;
             }
-            else if (!name.compare("FrameCount"))
+            else if (name == "FrameCount")
             {
                 u.type = SL_FRAMECOUNT;
             }
@@ -354,13 +353,13 @@ void GLSLShader::slang_introspect()
             {
                 std::string lutname(lut[k].id);
 
-                if (name.compare(lutname) == 0)
+                if (name == lutname)
                 {
                     u.type = SL_LUTTEXTURE;
                     u.num  = k;
                     matched_lut = true;
                 }
-                else if (name.compare(lutname + "Size") == 0)
+                else if (name == lutname + "Size")
                 {
                     u.type = SL_LUTSIZE;
                     u.num  = k;
@@ -378,13 +377,13 @@ void GLSLShader::slang_introspect()
             {
                 std::string alias(pass[k].alias);
 
-                if (name.compare(alias) == 0)
+                if (name == alias)
                 {
                     u.type = SL_PASSTEXTURE;
                     u.num  = k;
                     matched_alias = true;
                 }
-                else if (name.compare(alias + "Size") == 0)
+                else if (name == alias + "Size")
                 {
                     u.type = SL_PASSSIZE;
                     u.num  = k;
@@ -400,7 +399,7 @@ void GLSLShader::slang_introspect()
             u.type = SL_INVALID;
             for (int k = 0; k < (int)param.size(); k++)
             {
-                if (name.compare(param[k].id) == 0)
+                if (name == param[k].id)
                 {
                     u.type = SL_PARAM;
                     u.num  = k;
@@ -475,7 +474,7 @@ void GLSLShader::slang_set_shader_vars(int p, bool inverted)
     attr = glGetAttribLocation(pass[p].program, "TexCoord");
     if (attr > -1)
     {
-        GLfloat *offset = 0;
+        GLfloat *offset = nullptr;
         offset += 16;
         if (inverted)
             offset += 8;
@@ -546,7 +545,7 @@ void GLSLShader::slang_set_shader_vars(int p, bool inverted)
 
             if (u.location == -1)
             {
-                GLfloat *data = (GLfloat *)(ubo + u.offset);
+                auto data = (GLfloat *)(ubo + u.offset);
                 data[0] = size[0];
                 data[1] = size[1];
                 data[2] = size[2];
@@ -560,8 +559,7 @@ void GLSLShader::slang_set_shader_vars(int p, bool inverted)
         case SL_MVP:
             if (u.location == -1)
             {
-
-                GLfloat *data = (GLfloat *)(ubo + u.offset);
+                auto data = (GLfloat *)(ubo + u.offset);
                 for (int i = 0; i < 16; i++)
                     data[i] = mvp_ortho[i];
             }
@@ -585,7 +583,7 @@ void GLSLShader::slang_set_shader_vars(int p, bool inverted)
         }
     }
 
-    if (pass[p].ubo_buffer.size() > 0)
+    if (!pass[p].ubo_buffer.empty())
     {
         glBindBuffer(GL_UNIFORM_BUFFER, pass[p].ubo);
         glBufferData(GL_UNIFORM_BUFFER, pass[p].ubo_buffer.size(), ubo,

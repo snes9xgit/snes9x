@@ -9,7 +9,6 @@
 #include <cstring>
 #include <cstdio>
 #include <fcntl.h>
-#include <sys/ioctl.h>
 #include <sys/time.h>
 #include "fmt/format.h"
 #include "messages.h"
@@ -17,7 +16,7 @@
 
 S9xPulseSoundDriver::S9xPulseSoundDriver()
 {
-    init();
+    S9xPulseSoundDriver::init();
 }
 
 void S9xPulseSoundDriver::init()
@@ -76,10 +75,9 @@ void S9xPulseSoundDriver::wait()
 
 static void context_state_cb(pa_context *c, void *userdata)
 {
-    S9xPulseSoundDriver *driver = (S9xPulseSoundDriver *)userdata;
-    int state;
+    auto driver = (S9xPulseSoundDriver *)userdata;
 
-    state = pa_context_get_state(c);
+    int state = pa_context_get_state(c);
 
     if (state == PA_CONTEXT_READY ||
         state == PA_CONTEXT_FAILED ||
@@ -91,10 +89,9 @@ static void context_state_cb(pa_context *c, void *userdata)
 
 static void stream_state_callback(pa_stream *p, void *userdata)
 {
-    S9xPulseSoundDriver *driver = (S9xPulseSoundDriver *)userdata;
-    int state;
+    auto *driver = (S9xPulseSoundDriver *)userdata;
 
-    state = pa_stream_get_state(p);
+    int state = pa_stream_get_state(p);
 
     if (state == PA_STREAM_READY ||
         state == PA_STREAM_FAILED ||
@@ -126,7 +123,6 @@ bool S9xPulseSoundDriver::open_device(int playback_rate, int buffer_size_ms)
             playback_rate,
             buffer_size_ms).c_str());
 
-    int err = PA_ERR_UNKNOWN;
     mainloop = pa_threaded_mainloop_new();
     context = pa_context_new(pa_threaded_mainloop_get_api(mainloop), "Snes9x");
     pa_context_set_state_callback(context, context_state_cb, this);
@@ -136,7 +132,7 @@ bool S9xPulseSoundDriver::open_device(int playback_rate, int buffer_size_ms)
     pa_threaded_mainloop_start(mainloop);
     wait();
 
-    if ((err = pa_context_get_state(context)) != PA_CONTEXT_READY)
+    if (pa_context_get_state(context) != PA_CONTEXT_READY)
         return false;
 
     stream = pa_stream_new(context, "Game", &ss, nullptr);

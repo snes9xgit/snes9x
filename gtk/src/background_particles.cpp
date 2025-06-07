@@ -1,7 +1,6 @@
 #include "background_particles.h"
 #include <cstring>
 #include <cmath>
-#include <cstdio>
 #include <random>
 
 static const double pi = 3.141592;
@@ -13,10 +12,6 @@ Particles::Particles(enum Mode mode)
 {
     this->mode = Invalid;
     setmode(mode);
-}
-
-Particles::~Particles()
-{
 }
 
 void Particles::setmode(enum Mode mode)
@@ -91,7 +86,7 @@ void Particles::advance_starfield()
     std::uniform_real_distribution<double> realrand(0.0, 1.0);
     if (realrand(mt) <= rate)
     {
-        Particle pt;
+        Particle pt{};
 
         double angle = realrand(mt) * 2 * pi;
         pt.dx = cos(angle);
@@ -159,7 +154,7 @@ void Particles::advance_snow()
 
     for (double new_snowflakes = rate; new_snowflakes >= 1.0; new_snowflakes -= 1.0)
     {
-        Particle pt;
+        Particle pt{};
 
         realrand = std::uniform_real_distribution<double>(0.0, 1.0);
         pt.x = ((wind + 0.8) / 1.6) * -192.0 + realrand(mt) * 384.0;

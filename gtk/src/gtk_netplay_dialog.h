@@ -4,9 +4,7 @@
    For further information, consult the LICENSE file in the root directory.
 \*****************************************************************************/
 
-#ifndef __GTK_NETPLAY_DIALOG_H
-#define __GTK_NETPLAY_DIALOG_H
-
+#pragma once
 #include "gtk_builder_window.h"
 #include "gtk_config.h"
 
@@ -23,5 +21,3 @@ class Snes9xNetplayDialog : public GtkBuilderWindow
     void settings_to_dialog();
     void settings_from_dialog();
 };
-
-#endif /* __GTK_NETPLAY_DIALOG_H */

@@ -65,13 +65,13 @@ struct SlangShader
         Fragment
     };
 
-    bool preprocess_shader_file(std::string filename, std::vector<std::string> &lines);
+    bool preprocess_shader_file(const std::string& filename, std::vector<std::string> &lines);
     void set_base_path(std::string filename);
-    bool load_file(std::string new_filename = "");
+    bool load_file(const std::string &new_filename = "");
     void divide_into_stages(const std::vector<std::string> &lines);
     bool generate_spirv();
     static void initialize_glslang();
-    static std::vector<uint32_t> generate_spirv(std::string shader_string, std::string stage);
+    static std::vector<uint32_t> generate_spirv(const std::string &shader_string, const std::string &stage);
 
     std::string filename;
     std::string alias;

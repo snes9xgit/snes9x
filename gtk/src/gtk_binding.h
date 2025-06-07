@@ -4,9 +4,7 @@
    For further information, consult the LICENSE file in the root directory.
 \*****************************************************************************/
 
-#ifndef __GTK_BINDING_H
-#define __GTK_BINDING_H
-
+#pragma once
 #include "gtk_compat.h"
 #include <string>
 
@@ -32,14 +30,11 @@
 #define BINDING_MOUSE_BUTTON1       0x42000001
 #define BINDING_MOUSE_BUTTON2       0x42000002
 
-class Binding
+struct Binding
 {
-  public:
     Binding(unsigned int key, bool ctrl, bool shift, bool alt);
     Binding(unsigned int device, unsigned int button, unsigned int threshold);
-    Binding(const Binding &binding);
-    Binding &operator=(const Binding &binding);
-    bool operator==(const Binding &binding);
+    bool operator==(const Binding &binding) const;
     Binding(GdkEventKey *event);
     Binding(unsigned int);
     Binding();
@@ -60,8 +55,5 @@ class Binding
     unsigned int get_axis();
     Gdk::ModifierType get_gdk_modifiers();
 
-  private:
     unsigned int value;
 };
-
-#endif /* __GTK_BINDING_H_ */

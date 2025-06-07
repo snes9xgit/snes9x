@@ -57,7 +57,7 @@ S9xSDL3SoundDriver::S9xSDL3SoundDriver()
 
 S9xSDL3SoundDriver::~S9xSDL3SoundDriver()
 {
-    deinit();
+    S9xSDL3SoundDriver::deinit();
 }
 
 void S9xSDL3SoundDriver::init()

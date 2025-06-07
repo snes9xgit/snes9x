@@ -4,9 +4,7 @@
    For further information, consult the LICENSE file in the root directory.
 \*****************************************************************************/
 
-#ifndef __GTK_DISPLAY_DRIVER_XV_H
-#define __GTK_DISPLAY_DRIVER_XV_H
-
+#pragma once
 #include "gtk_s9x.h"
 #include "gtk_display_driver.h"
 
@@ -21,16 +19,16 @@ class S9xXVDisplayDriver : public S9xDisplayDriver
 {
   public:
     S9xXVDisplayDriver(Snes9xWindow *window, Snes9xConfig *config);
-    void refresh();
-    int init();
-    void deinit();
-    void update(uint16_t *buffer, int width, int height, int stride_in_pixels);
-    void *get_parameters() { return nullptr; }
-    void save(const char *filename) {}
+    void refresh() override;
+    int init() override;
+    void deinit() override;
+    void update(uint16_t *buffer, int width, int height, int stride_in_pixels) override;
+    void *get_parameters() override { return nullptr; }
+    void save(const std::string &filename) override {}
     static int query_availability();
-    bool is_ready() { return true; }
-    int get_width() { return output_window_width; }
-    int get_height() { return output_window_height; }
+    bool is_ready() override { return true; }
+    int get_width() override { return output_window_width; }
+    int get_height() override { return output_window_height; }
 
   private:
     void clear();
@@ -63,5 +61,3 @@ class S9xXVDisplayDriver : public S9xDisplayDriver
     uint8 u_table[65536];
     uint8 v_table[65536];
 };
-
-#endif /* __GTK_DISPLAY_DRIVER_XV_H */

@@ -4,9 +4,7 @@
    For further information, consult the LICENSE file in the root directory.
 \*****************************************************************************/
 
-#ifndef __GTK_CHEAT_H
-#define __GTK_CHEAT_H
-
+#pragma once
 #include "gtk_builder_window.h"
 
 void open_snes9x_cheats_dialog();
@@ -21,7 +19,6 @@ class Snes9xCheats : public GtkBuilderWindow
 {
   public:
     Snes9xCheats();
-    ~Snes9xCheats();
     void show();
     void add_code();
     void remove_code();
@@ -47,5 +44,3 @@ class Snes9xCheats : public GtkBuilderWindow
     int dst_row;
     Glib::RefPtr<Gtk::ListStore> store;
 };
-
-#endif /* __GTK_CHEAT_H */

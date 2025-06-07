@@ -4,9 +4,7 @@
    For further information, consult the LICENSE file in the root directory.
 \*****************************************************************************/
 
-#ifndef __GTK_COMPAT_H
-#define __GTK_COMPAT_H
-
+#pragma once
 #include <gtkmm.h>
 
 #include <gtk/gtk.h>
@@ -32,6 +30,4 @@ inline bool is_x11()
 {
    return GDK_IS_X11_DISPLAY(gdk_display_get_default());
 }
-#endif
-
 #endif

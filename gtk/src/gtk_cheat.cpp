@@ -15,8 +15,6 @@ enum {
     NUM_COLS
 };
 
-extern SCheatData Cheat;
-
 static void display_errorbox(const char *error)
 {
     auto dialog = Gtk::MessageDialog(error, false, Gtk::MESSAGE_ERROR, Gtk::BUTTONS_OK, true);
@@ -95,10 +93,6 @@ Snes9xCheats::Snes9xCheats()
     get_object<Gtk::Button>("cheat_search_button")->signal_clicked().connect(sigc::mem_fun(*this, &Snes9xCheats::search_database));
 
     gtk_widget_realize(GTK_WIDGET(window->gobj()));
-}
-
-Snes9xCheats::~Snes9xCheats()
-{
 }
 
 void Snes9xCheats::enable_dnd(bool enable)
@@ -197,7 +191,7 @@ void Snes9xCheats::refresh_tree_view()
 
     auto list_size = store->children().size();
 
-    if (Cheat.group.size() == 0)
+    if (Cheat.group.empty())
         return;
 
     for (unsigned int i = 0; i < Cheat.group.size() - list_size; i++)

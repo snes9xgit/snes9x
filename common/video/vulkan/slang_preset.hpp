@@ -8,13 +8,13 @@
 struct SlangPreset
 {
     void print();
-    bool load_preset_file(std::string filename);
+    bool load_preset_file(const std::string &filename);
     bool introspect();
     bool introspect_shader(SlangShader &s, int index, SlangShader::Stage stage);
     bool match_buffer_semantic(const std::string &name, int pass, SlangShader::Uniform::Type &type, int &specifier);
     bool match_sampler_semantic(const std::string &name, int pass, SlangShader::Sampler::Type &type, int &specifier);
     void gather_parameters();
-    bool save_to_file(std::string filename);
+    bool save_to_file(const std::string& filename);
 
     struct Texture
     {

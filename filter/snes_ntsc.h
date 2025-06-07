@@ -83,10 +83,10 @@ value. */
 
 /* Interface for user-defined custom blitters */
 
-enum { snes_ntsc_in_chunk    = 3  }; /* number of input pixels read per chunk */
-enum { snes_ntsc_out_chunk   = 7  }; /* number of output pixels generated per chunk */
-enum { snes_ntsc_black       = 0  }; /* palette index for black */
-enum { snes_ntsc_burst_count = 3  }; /* burst phase cycles through 0, 1, and 2 */
+const int snes_ntsc_in_chunk    = 3; /* number of input pixels read per chunk */
+const int snes_ntsc_out_chunk   = 7; /* number of output pixels generated per chunk */
+const int snes_ntsc_black       = 0; /* palette index for black */
+const int snes_ntsc_burst_count = 3; /* burst phase cycles through 0, 1, and 2 */
 
 /* Begins outputting row and starts three pixels. First pixel will be cut off a bit.
 Use snes_ntsc_black for unused pixels. Declares variables, so must be before first
@@ -143,13 +143,13 @@ statement in a block (unless you're using C++). */
 
 
 /* private */
-enum { snes_ntsc_entry_size = 128 };
-enum { snes_ntsc_palette_size = 0x2000 };
+static const int snes_ntsc_entry_size = 128;
+static const int snes_ntsc_palette_size = 0x2000;
 typedef unsigned long snes_ntsc_rgb_t;
 struct snes_ntsc_t {
-	snes_ntsc_rgb_t table [snes_ntsc_palette_size] [snes_ntsc_entry_size];
+	snes_ntsc_rgb_t table [0x2000][128];
 };
-enum { snes_ntsc_burst_size = snes_ntsc_entry_size / snes_ntsc_burst_count };
+const int snes_ntsc_burst_size = snes_ntsc_entry_size / snes_ntsc_burst_count;
 
 #define SNES_NTSC_RGB16( ktable, n ) \
 	(snes_ntsc_rgb_t const*) (ktable + ((n & 0x001E) | (n >> 1 & 0x03E0) | (n >> 2 & 0x3C00)) * \

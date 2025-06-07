@@ -4,9 +4,7 @@
    For further information, consult the LICENSE file in the root directory.
 \*****************************************************************************/
 
-#ifndef __S9X_SOUND_DRIVER_OSS_HPP
-#define __S9X_SOUND_DRIVER_OSS_HPP
-
+#pragma once
 #include "s9x_sound_driver.hpp"
 
 class S9xOSSSoundDriver : public S9xSoundDriver
@@ -26,5 +24,3 @@ class S9xOSSSoundDriver : public S9xSoundDriver
     int filedes;
     int output_buffer_size_bytes;
 };
-
-#endif /* __S9X_SOUND_DRIVER_OSS_HPP */

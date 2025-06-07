@@ -18,10 +18,10 @@ int mipmap_levels_for_size(int width, int height)
 
 void trim(string_view &view)
 {
-    while (view.length() > 0 && isspace((unsigned char)view.at(0)))
+    while (!view.empty() && isspace((unsigned char)view.at(0)))
         view.remove_prefix(1);
 
-    while (view.length() > 0 && isspace((unsigned char)view.at(view.length() - 1)))
+    while (!view.empty() && isspace((unsigned char)view.at(view.length() - 1)))
         view.remove_suffix(1);
 }
 
@@ -78,11 +78,10 @@ vector<string> split_string(const string_view &str, unsigned char delim)
 {
     vector<string> tokens;
     size_t pos = 0;
-    size_t index;
 
     while (pos < str.length())
     {
-        index = str.find(delim, pos);
+        size_t index = str.find(delim, pos);
         if (index == string::npos)
         {
             if (pos < str.length())

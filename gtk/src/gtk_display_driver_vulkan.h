@@ -20,17 +20,16 @@ class S9xVulkanDisplayDriver : public S9xDisplayDriver
 {
   public:
     S9xVulkanDisplayDriver(Snes9xWindow *window, Snes9xConfig *config);
-    ~S9xVulkanDisplayDriver();
     void refresh() override;
     int init() override;
     void deinit() override;
     void update(uint16_t *buffer, int width, int height, int stride_in_pixels) override;
     void *get_parameters() override;
-    void save(const char *filename) override;
+    void save(const std::string &filename) override;
     bool is_ready() override;
     bool can_throttle() override { return true; }
-    int get_width() final override { return current_width; }
-    int get_height() final override { return current_height; }
+    int get_width() override { return current_width; }
+    int get_height() override { return current_height; }
     void shrink() override;
     void regrow() override;
 

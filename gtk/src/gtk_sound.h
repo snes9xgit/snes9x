@@ -4,9 +4,7 @@
    For further information, consult the LICENSE file in the root directory.
 \*****************************************************************************/
 
-#ifndef __GTK_SOUND_H
-#define __GTK_SOUND_H
-
+#pragma once
 #include <vector>
 #include <string>
 
@@ -16,8 +14,4 @@ void S9xPortSoundReinit();
 void S9xSoundStart();
 void S9xSoundStop();
 
-int S9xSoundBase2log(int num);
-int S9xSoundPowerof2(int num);
 std::vector<std::string> S9xGetSoundDriverNames();
-
-#endif /* __GTK_SOUND_H */

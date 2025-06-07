@@ -9,13 +9,11 @@
 
 #include "opengl_context.hpp"
 
-#include <glad/wgl.h>
-
 class WGLContext : public OpenGLContext
 {
   public:
     WGLContext();
-    ~WGLContext();
+    ~WGLContext() override;
     bool attach(HWND xid);
     bool create_context() override;
     void resize() override;

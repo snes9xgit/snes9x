@@ -4,13 +4,10 @@
    For further information, consult the LICENSE file in the root directory.
 \*****************************************************************************/
 
-#ifndef __GTK_CONFIG_H
-#define __GTK_CONFIG_H
-
+#pragma once
 #include "gtk_control.h"
 #include "filter/snes_ntsc.h"
 
-#include <X11/Xlib.h>
 #include <X11/extensions/Xrandr.h>
 #include <string>
 #include <array>
@@ -163,5 +160,3 @@ class Snes9xConfig
 
 std::string get_config_dir();
 std::string get_config_file_name();
-
-#endif /* __GTK_CONFIG_H */

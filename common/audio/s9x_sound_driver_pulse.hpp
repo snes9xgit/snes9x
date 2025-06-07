@@ -4,9 +4,7 @@
    For further information, consult the LICENSE file in the root directory.
 \*****************************************************************************/
 
-#ifndef __S9X_SOUND_DRIVER_PULSE_HPP
-#define __S9X_SOUND_DRIVER_PULSE_HPP
-
+#pragma once
 #include "s9x_sound_driver.hpp"
 #include "pulse/pulseaudio.h"
 
@@ -34,5 +32,3 @@ class S9xPulseSoundDriver : public S9xSoundDriver
     int buffer_size;
     bool draining = false;
 };
-
-#endif /* __S9X_SOUND_DRIVER_PULSE_HPP */

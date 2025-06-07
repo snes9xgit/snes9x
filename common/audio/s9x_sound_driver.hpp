@@ -4,18 +4,14 @@
    For further information, consult the LICENSE file in the root directory.
 \*****************************************************************************/
 
-#ifndef __S9X_SOUND_DRIVER_HPP
-#define __S9X_SOUND_DRIVER_HPP
-
+#pragma once
 #include <cstdint>
 #include <tuple>
 
 class S9xSoundDriver
 {
   public:
-    virtual ~S9xSoundDriver()
-    {
-    }
+    virtual ~S9xSoundDriver() = default;
     virtual bool write_samples(int16_t *data, int samples) = 0;
     virtual int space_free() = 0;
     virtual std::pair<int, int> buffer_level() = 0;
@@ -25,5 +21,3 @@ class S9xSoundDriver
     virtual void start() = 0;
     virtual void stop() = 0;
 };
-
-#endif /* __S9X_SOUND_DRIVER_HPP */

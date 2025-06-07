@@ -4,9 +4,7 @@
    For further information, consult the LICENSE file in the root directory.
 \*****************************************************************************/
 
-#ifndef __GTK_PREFERENCES_H
-#define __GTK_PREFERENCES_H
-
+#pragma once
 #include "gtk_compat.h"
 #include "gtk_s9x.h"
 #include "gtk_builder_window.h"
@@ -17,14 +15,12 @@ void snes9x_preferences_open(Snes9xWindow *window);
 class Snes9xPreferences final : public GtkBuilderWindow
 {
   public:
-    Snes9xPreferences(Snes9xConfig *config);
-    ~Snes9xPreferences();
+    explicit Snes9xPreferences(Snes9xConfig *config);
     void show();
     void bindings_to_dialog(int joypad);
     int get_focused_binding();
     void store_binding(const char *string, Binding binding);
-    int hw_accel_value(int combo_value);
-    int combo_value(std::string driver_name);
+    int combo_value(const std::string &driver_name);
     void focus_next();
     void swap_with();
     void clear_binding(const char *name);
@@ -35,9 +31,8 @@ class Snes9xPreferences final : public GtkBuilderWindow
     void connect_signals();
     void input_rate_changed();
     bool key_pressed(GdkEventKey *event);
-    void scale_method_changed();
     void shader_select();
-    void game_data_browse(std::string folder);
+    void game_data_browse(const std::string &folder);
     void about_dialog();
 
     Snes9xConfig *config;
@@ -51,5 +46,3 @@ class Snes9xPreferences final : public GtkBuilderWindow
     void move_settings_to_dialog();
     Glib::ustring format_sound_input_rate_value(double);
 };
-
-#endif /* __GTK_PREFERENCES_H */

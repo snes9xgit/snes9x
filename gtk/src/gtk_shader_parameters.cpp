@@ -6,7 +6,7 @@
 
 #include "gtk_compat.h"
 #include <vector>
-#include <math.h>
+#include <cmath>
 
 #include "gtk_s9x.h"
 #include "gtk_display.h"
@@ -41,12 +41,11 @@ static void dialog_response(int response_id)
             config_file += "/snes9x.slangp";
         else
             config_file = get_config_dir() + "/snes9x.glslp";
-        S9xDisplayGetDriver()->save(config_file.c_str());
+        S9xDisplayGetDriver()->save(config_file);
         realpath(config_file.c_str(), path);
         gui_config->shader_filename = path;
 
-        if (dialog)
-            delete dialog;
+        delete dialog;
         dialog = nullptr;
         break;
     }
@@ -54,8 +53,7 @@ static void dialog_response(int response_id)
     case Gtk::RESPONSE_CANCEL:
     case Gtk::RESPONSE_DELETE_EVENT:
     case Gtk::RESPONSE_NONE:
-        if (dialog)
-            delete dialog;
+        delete dialog;
         dialog = nullptr;
         *params = saved_params;
         if (Settings.Paused)
@@ -94,7 +92,7 @@ static void dialog_response(int response_id)
         auto result = dialog.run();
 
         if (result == GTK_RESPONSE_ACCEPT)
-            S9xDisplayGetDriver()->save(dialog.get_filename().c_str());
+            S9xDisplayGetDriver()->save(dialog.get_filename());
 
         break;
     }
@@ -125,7 +123,7 @@ bool gtk_shader_parameters_dialog(GtkWindow *parent)
     params = (std::vector<GLSLParam> *)S9xDisplayGetDriver()->get_parameters();
     saved_params = *params;
 
-    if (!params || params->size() == 0)
+    if (!params || params->empty())
         return false;
 
     dialog = new Gtk::Dialog(_("Shader Parameters"), Gtk::DIALOG_DESTROY_WITH_PARENT);

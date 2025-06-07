@@ -4,7 +4,7 @@
    For further information, consult the LICENSE file in the root directory.
 \*****************************************************************************/
 
-#include <stdlib.h>
+#include <cstdlib>
 #include "gtk_builder_window.h"
 
 extern const unsigned char snes9x_ui[];
@@ -23,10 +23,6 @@ GtkBuilderWindow::GtkBuilderWindow(const char *root)
     }
 
     window = get_object<Gtk::Window>(root);
-}
-
-GtkBuilderWindow::~GtkBuilderWindow()
-{
 }
 
 void GtkBuilderWindow::enable_widget(const char *name, bool state)
@@ -144,11 +140,9 @@ void GtkBuilderWindow::combo_box_append(const char *name, const char *value)
 
 void GtkBuilderWindow::combo_box_append(Gtk::ComboBox *combo, const char *value)
 {
-    GtkListStore *store;
+    GtkListStore *store = GTK_LIST_STORE(combo->get_model()->gobj());
+
     GtkTreeIter iter;
-
-    store = GTK_LIST_STORE(combo->get_model()->gobj());
-
     gtk_list_store_append(store, &iter);
     gtk_list_store_set(store, &iter, 0, value, -1);
 }

@@ -14,7 +14,7 @@ option(USE_SYSTEMZIP "Force use of system minizip" ON)
 option(USE_WAYLAND "Build support for Wayland" ON)
 option(DANGEROUS_HACKS "Allow dangerous hacks to be used" ON)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 

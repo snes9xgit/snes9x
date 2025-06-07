@@ -41,7 +41,6 @@ void S9xAlsaSoundDriver::stop()
 
 bool S9xAlsaSoundDriver::open_device(int playback_rate, int buffer_size_ms)
 {
-    int err;
     unsigned int periods = 8;
     unsigned int buffer_size = buffer_size_ms * 1000;
     snd_pcm_sw_params_t *sw_params;
@@ -54,7 +53,7 @@ bool S9xAlsaSoundDriver::open_device(int playback_rate, int buffer_size_ms)
     printf("ALSA sound driver initializing...\n");
     printf("    --> (Device: default)...\n");
 
-    err = snd_pcm_open(&pcm, "default", SND_PCM_STREAM_PLAYBACK, SND_PCM_NONBLOCK);
+    int err = snd_pcm_open(&pcm, "default", SND_PCM_STREAM_PLAYBACK, SND_PCM_NONBLOCK);
 
     if (err < 0)
     {
@@ -141,14 +140,11 @@ fail:
 
 bool S9xAlsaSoundDriver::write_samples(int16_t *data, int samples)
 {
-    snd_pcm_sframes_t frames_written, frames;
-    size_t bytes;
-
-    frames = snd_pcm_avail(pcm);
+    snd_pcm_sframes_t frames = snd_pcm_avail(pcm);
 
     if (frames < 0)
     {
-        frames = snd_pcm_recover(pcm, frames, 1);
+        snd_pcm_recover(pcm, frames, 1);
         return false;
     }
 
@@ -160,18 +156,16 @@ bool S9xAlsaSoundDriver::write_samples(int16_t *data, int samples)
         result = false;
     }
 
-    bytes = snd_pcm_frames_to_bytes(pcm, frames);
+    size_t bytes = snd_pcm_frames_to_bytes(pcm, frames);
     if (bytes <= 0)
         return false;
 
-    frames_written = 0;
+    snd_pcm_sframes_t frames_written = 0;
     while (frames_written < frames)
     {
-        int result;
-
-        result = snd_pcm_writei(pcm,
-                                &data[snd_pcm_frames_to_bytes(pcm, frames_written) / 2],
-                                frames - frames_written);
+        int result = snd_pcm_writei(pcm,
+                                    &data[snd_pcm_frames_to_bytes(pcm, frames_written) / 2],
+                                    frames - frames_written);
 
         if (result < 0)
         {

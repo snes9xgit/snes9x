@@ -17,7 +17,7 @@
 using std::string;
 using std::to_string;
 
-bool SlangPreset::load_preset_file(string filename)
+bool SlangPreset::load_preset_file(const string &filename)
 {
     if (!ends_with(filename, ".slangp"))
         return false;
@@ -35,17 +35,17 @@ bool SlangPreset::load_preset_file(string filename)
     passes.resize(num_passes);
 
     int index;
-    auto key = [&](string s) -> string { return s + to_string(index); };
-    auto iGetBool = [&](string s, bool def = false) -> bool {
+    auto key = [&](const string &s) -> string { return s + to_string(index); };
+    auto iGetBool = [&](const string &s, bool def = false) -> bool {
         return conf.get_bool(key(s), def);
     };
-    auto iGetString = [&](string s, string def = "") -> string {
+    auto iGetString = [&](const string &s, const string &def = "") -> string {
         return conf.get_string(key(s), def);
     };
-    auto iGetFloat = [&](string s, float def = 1.0f) -> float {
+    auto iGetFloat = [&](const string &s, float def = 1.0f) -> float {
         return conf.get_float(key(s), def);
     };
-    auto iGetInt = [&](string s, int def = 0) -> int {
+    auto iGetInt = [&](const string &s, int def = 0) -> int {
         return conf.get_int(key(s), def);
     };
 
@@ -99,10 +99,10 @@ bool SlangPreset::load_preset_file(string filename)
 
     SlangShader::initialize_glslang();
     std::vector<std::future<bool>> futures;
-    for (size_t i = 0; i < passes.size(); i++)
+    for (auto &pass : passes)
     {
-        futures.push_back(std::async(std::launch::async, [this, i]() -> bool {
-            return passes[i].load_file();
+        futures.push_back(std::async(std::launch::async, [this, &pass]() -> bool {
+            return pass.load_file();
         }));
     }
     if (!std::all_of(futures.begin(), futures.end(), [](auto &f) { return f.get(); }))
@@ -115,7 +115,7 @@ bool SlangPreset::load_preset_file(string filename)
         auto value_str = conf.get_string(p.id, "");
         if (!value_str.empty())
         {
-            p.val = atof(value_str.c_str());
+            p.val = std::stof(value_str);
             if (p.val < p.min)
                 p.val = p.min;
             else if (p.val > p.max)
@@ -137,7 +137,7 @@ void SlangPreset::gather_parameters()
     {
         for (auto &p : s.parameters)
         {
-            auto it = std::find_if(parameters.begin(), parameters.end(), [&p](SlangShader::Parameter &needle) {
+            auto it = std::find_if(parameters.begin(), parameters.end(), [&p](const SlangShader::Parameter &needle) {
                 return (needle.id == p.id);
             });
 
@@ -154,37 +154,36 @@ void SlangPreset::gather_parameters()
 void SlangPreset::print()
 {
     printf("Number of Shaders: %zu\n", passes.size());
-    for (size_t i = 0; i < passes.size(); i++)
+    for (auto &pass : passes)
     {
-        auto &s = passes[i];
         printf(" Shader \n");
-        printf("  filename:          %s\n", s.filename.c_str());
-        printf("  alias:             %s\n", s.alias.c_str());
-        printf("  filter_linear:     %d\n", s.filter_linear);;
-        printf("  mipmap_input:      %d\n", s.mipmap_input);
-        printf("  float_framebuffer: %d\n", s.float_framebuffer);
-        printf("  srgb_framebuffer:  %d\n", s.srgb_framebuffer);
-        printf("  frame_count_mod:   %d\n", s.frame_count_mod);
-        printf("  wrap_mode:         %s\n", s.wrap_mode.c_str());
-        printf("  scale_type_x:      %s\n", s.scale_type_x.c_str());
-        printf("  scale_type_y:      %s\n", s.scale_type_y.c_str());
-        printf("  scale_x:           %f\n", s.scale_x);
-        printf("  scale_y:           %f\n", s.scale_y);
+        printf("  filename:          %s\n", pass.filename.c_str());
+        printf("  alias:             %s\n", pass.alias.c_str());
+        printf("  filter_linear:     %d\n", pass.filter_linear);;
+        printf("  mipmap_input:      %d\n", pass.mipmap_input);
+        printf("  float_framebuffer: %d\n", pass.float_framebuffer);
+        printf("  srgb_framebuffer:  %d\n", pass.srgb_framebuffer);
+        printf("  frame_count_mod:   %d\n", pass.frame_count_mod);
+        printf("  wrap_mode:         %s\n", pass.wrap_mode.c_str());
+        printf("  scale_type_x:      %s\n", pass.scale_type_x.c_str());
+        printf("  scale_type_y:      %s\n", pass.scale_type_y.c_str());
+        printf("  scale_x:           %f\n", pass.scale_x);
+        printf("  scale_y:           %f\n", pass.scale_y);
         printf("  pragma lines: ");
-        for (auto &p : s.pragma_stage_lines)
+        for (auto &p : pass.pragma_stage_lines)
             printf("%zu ", p);
         printf("\n");
-        printf("  Number of parameters:    %zu\n", s.parameters.size());
-        for (auto &p : s.parameters)
+        printf("  Number of parameters:    %zu\n", pass.parameters.size());
+        for (auto &p : pass.parameters)
         {
             printf("   %s \"%s\" min: %f max: %f val: %f step: %f digits: %d\n",
                 p.id.c_str(), p.name.c_str(), p.min, p.max, p.val, p.step, p.significant_digits);
         }
 
-        printf("  Uniforms: %zu\n", s.uniforms.size());
-        printf("   UBO size: %zu, binding: %d\n", s.ubo_size, s.ubo_binding);
-        printf("   Push Constant block size: %zu\n", s.push_constant_block_size);
-        for (auto &u : s.uniforms)
+        printf("  Uniforms: %zu\n", pass.uniforms.size());
+        printf("   UBO size: %zu, binding: %d\n", pass.ubo_size, pass.ubo_binding);
+        printf("   Push Constant block size: %zu\n", pass.push_constant_block_size);
+        for (auto &u : pass.uniforms)
         {
             const char *strings[] = {
                 "Output Size",
@@ -223,8 +222,8 @@ void SlangPreset::print()
             }
         }
 
-        printf("  Samplers: %zu\n", s.samplers.size());
-        for (auto &sampler : s.samplers)
+        printf("  Samplers: %zu\n", pass.samplers.size());
+        for (auto &sampler : pass.samplers)
         {
             const char *strings[] =
             {
@@ -285,7 +284,7 @@ void SlangPreset::print()
 
 bool SlangPreset::match_sampler_semantic(const string &name, int pass, SlangShader::Sampler::Type &type, int &specifier)
 {
-    auto match_with_specifier = [&name, &specifier](string prefix) -> bool {
+    auto match_with_specifier = [&name, &specifier](const string &prefix) -> bool {
         if (name.compare(0, prefix.length(), prefix) != 0)
             return false;
 
@@ -394,7 +393,7 @@ bool SlangPreset::match_buffer_semantic(const string &name, int pass, SlangShade
 
     if (name.find("Size") != string::npos)
     {
-        auto match = [&name, &specifier](string prefix) -> bool {
+        auto match = [&name, &specifier](const string &prefix) -> bool {
             if (name.compare(0, prefix.length(), prefix) != 0)
                 return false;
 
@@ -514,7 +513,7 @@ bool SlangPreset::introspect_shader(SlangShader &shader, int pass, SlangShader::
         return false;
     };
 
-    if (res.push_constant_buffers.size() == 0)
+    if (res.push_constant_buffers.empty())
     {
         shader.push_constant_block_size = 0;
     }
@@ -548,7 +547,7 @@ bool SlangPreset::introspect_shader(SlangShader &shader, int pass, SlangShader::
         }
     }
 
-    if (res.uniform_buffers.size() == 0)
+    if (res.uniform_buffers.empty())
     {
         shader.ubo_size = 0;
     }
@@ -583,13 +582,13 @@ bool SlangPreset::introspect_shader(SlangShader &shader, int pass, SlangShader::
         }
     }
 
-    if (res.sampled_images.size() == 0 && stage == SlangShader::Stage::Fragment)
+    if (res.sampled_images.empty() && stage == SlangShader::Stage::Fragment)
     {
         printf("No sampled images found in fragment shader.\n");
         return false;
     }
 
-    if (res.sampled_images.size() > 0 && stage == SlangShader::Stage::Vertex)
+    if (!res.sampled_images.empty() && stage == SlangShader::Stage::Vertex)
     {
         printf("Sampled image found in vertex shader.\n");
         return false;
@@ -653,22 +652,22 @@ bool SlangPreset::introspect()
     return true;
 }
 
-bool SlangPreset::save_to_file(std::string filename)
+bool SlangPreset::save_to_file(const std::string& filename)
 {
     std::ofstream out(filename);
     if (!out.is_open())
         return false;
 
-    auto outs = [&](std::string key, std::string value) { out << key << " = \"" << value << "\"\n"; };
-    auto outb = [&](std::string key, bool value) { outs(key, value ? "true" : "false"); };
-    auto outa = [&](std::string key, auto value) { outs(key, to_string(value)); };
+    auto outs = [&](const std::string &key, const std::string &value) { out << key << " = \"" << value << "\"\n"; };
+    auto outb = [&](const std::string &key, bool value) { outs(key, value ? "true" : "false"); };
+    auto outa = [&](const std::string &key, auto value) { outs(key, to_string(value)); };
 
     outa("shaders", passes.size());
 
     for (size_t i = 0; i < passes.size(); i++)
     {
         auto &pass = passes[i];
-        auto indexed = [i](std::string str) { return str + to_string(i); };
+        auto indexed = [i](const std::string &str) { return str + to_string(i); };
         outs(indexed("shader"), pass.filename);
         outb(indexed("filter_linear"), pass.filter_linear);
         outs(indexed("wrap_mode"), pass.wrap_mode);
@@ -683,9 +682,9 @@ bool SlangPreset::save_to_file(std::string filename)
         outa(indexed("frame_count_mod"), pass.frame_count_mod);
     }
 
-    if (parameters.size() > 0)
+    if (!parameters.empty())
     {
-        std::string parameter_list = "";
+        std::string parameter_list;
         for (size_t i = 0; i < parameters.size(); i++)
         {
             parameter_list += parameters[i].id;
@@ -698,9 +697,9 @@ bool SlangPreset::save_to_file(std::string filename)
     for (auto &item : parameters)
         outa(item.id, item.val);
 
-    if (textures.size() > 0)
+    if (!textures.empty())
     {
-        std::string texture_list = "";
+        std::string texture_list;
         for (size_t i = 0; i < textures.size(); i++)
         {
             texture_list += textures[i].id;

@@ -7,25 +7,23 @@
 #include "s9x_sound_driver_portaudio.hpp"
 #include <cstring>
 #include <cstdio>
-#include <cstdint>
 #include <vector>
 #include <string>
 
 S9xPortAudioSoundDriver::S9xPortAudioSoundDriver()
 {
-    audio_stream = NULL;
+    audio_stream = nullptr;
 }
 
 S9xPortAudioSoundDriver::~S9xPortAudioSoundDriver()
 {
-    deinit();
+    S9xPortAudioSoundDriver::deinit();
 }
 
 void S9xPortAudioSoundDriver::init()
 {
-    PaError err;
 
-    err = Pa_Initialize();
+    PaError err = Pa_Initialize();
 
     if (err != paNoError)
         fprintf(stderr,
@@ -36,20 +34,17 @@ void S9xPortAudioSoundDriver::init()
 void S9xPortAudioSoundDriver::deinit()
 {
     stop();
-
     Pa_Terminate();
 }
 
 void S9xPortAudioSoundDriver::start()
 {
-    PaError err;
-
-    if (audio_stream != NULL)
+    if (audio_stream != nullptr)
     {
         if ((Pa_IsStreamActive(audio_stream)))
             return;
 
-        err = Pa_StartStream(audio_stream);
+        PaError err = Pa_StartStream(audio_stream);
 
         if (err != paNoError)
         {
@@ -60,7 +55,7 @@ void S9xPortAudioSoundDriver::start()
 
 void S9xPortAudioSoundDriver::stop()
 {
-    if (audio_stream != NULL)
+    if (audio_stream != nullptr)
     {
         Pa_StopStream(audio_stream);
     }
@@ -87,7 +82,7 @@ bool S9xPortAudioSoundDriver::tryHostAPI(int index)
     param.suggestedLatency = buffer_size_ms * 0.001;
     param.channelCount = 2;
     param.sampleFormat = paInt16;
-    param.hostApiSpecificStreamInfo = NULL;
+    param.hostApiSpecificStreamInfo = nullptr;
 
     printf("(%s : %s, latency %dms)...\n",
            hostapi_info->name,
@@ -95,13 +90,13 @@ bool S9xPortAudioSoundDriver::tryHostAPI(int index)
            (int)(param.suggestedLatency * 1000.0));
 
     auto err = Pa_OpenStream(&audio_stream,
-                             NULL,
+                             nullptr,
                              &param,
                              playback_rate,
                              0,
                              paNoFlag,
-                             NULL,
-                             NULL);
+                             nullptr,
+                             nullptr);
 
     int frames = Pa_GetStreamWriteAvailable(audio_stream);
     if (frames < 0)
@@ -126,11 +121,9 @@ bool S9xPortAudioSoundDriver::tryHostAPI(int index)
 
 bool S9xPortAudioSoundDriver::open_device(int playback_rate, int buffer_size_ms)
 {
-    const PaDeviceInfo *device_info;
-    const PaHostApiInfo *hostapi_info;
     PaError err = paNoError;
 
-    if (audio_stream != NULL)
+    if (audio_stream != nullptr)
     {
         printf("Shutting down sound for reset\n");
         err = Pa_CloseStream(audio_stream);
@@ -141,7 +134,7 @@ bool S9xPortAudioSoundDriver::open_device(int playback_rate, int buffer_size_ms)
             return true;
         }
 
-        audio_stream = NULL;
+        audio_stream = nullptr;
     }
 
     this->playback_rate = playback_rate;
@@ -189,9 +182,7 @@ std::pair<int, int> S9xPortAudioSoundDriver::buffer_level()
 
 bool S9xPortAudioSoundDriver::write_samples(int16_t *data, int samples)
 {
-    int frames;
-
-    frames = Pa_GetStreamWriteAvailable(audio_stream);
+    int frames = Pa_GetStreamWriteAvailable(audio_stream);
 
     if (frames == output_buffer_size)
     {

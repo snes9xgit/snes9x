@@ -4,18 +4,17 @@
    For further information, consult the LICENSE file in the root directory.
 \*****************************************************************************/
 
-#include <stdio.h>
-#include <string.h>
+#include <cstdio>
 
 #include "wayland_egl_context.hpp"
 
 WaylandEGLContext::WaylandEGLContext()
 {
-    egl_display = NULL;
-    egl_surface = NULL;
-    egl_context = NULL;
-    egl_config = NULL;
-    egl_window = NULL;
+    egl_display = nullptr;
+    egl_surface = nullptr;
+    egl_context = nullptr;
+    egl_config = nullptr;
+    egl_window = nullptr;
     x = 0;
     y = 0;
 }
@@ -95,7 +94,7 @@ bool WaylandEGLContext::create_context()
         return false;
     }
 
-    egl_surface = eglCreateWindowSurface(egl_display, egl_config, (EGLNativeWindowType)egl_window, NULL);
+    egl_surface = eglCreateWindowSurface(egl_display, egl_config, (EGLNativeWindowType)egl_window, nullptr);
     if (!egl_surface)
     {
         printf("Couldn't create surface.\n");

@@ -33,10 +33,6 @@ S9xVulkanDisplayDriver::S9xVulkanDisplayDriver(Snes9xWindow *_window, Snes9xConf
     context.reset();
 }
 
-S9xVulkanDisplayDriver::~S9xVulkanDisplayDriver()
-{
-}
-
 bool S9xVulkanDisplayDriver::init_imgui()
 {
     auto defaults = S9xImGuiGetDefaults();
@@ -257,7 +253,7 @@ void *S9xVulkanDisplayDriver::get_parameters()
     return nullptr;
 }
 
-void S9xVulkanDisplayDriver::save(const char *filename)
+void S9xVulkanDisplayDriver::save(const std::string &filename)
 {
     setlocale(LC_NUMERIC, "C");
     if (shaderchain)

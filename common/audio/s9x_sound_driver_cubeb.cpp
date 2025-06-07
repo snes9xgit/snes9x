@@ -22,13 +22,9 @@ bool S9xCubebSoundDriver::write_samples(int16_t *data, int samples)
     return retval;
 }
 
-S9xCubebSoundDriver::S9xCubebSoundDriver()
-{
-}
-
 S9xCubebSoundDriver::~S9xCubebSoundDriver()
 {
-    deinit();
+    S9xCubebSoundDriver::deinit();
 }
 
 void S9xCubebSoundDriver::init()

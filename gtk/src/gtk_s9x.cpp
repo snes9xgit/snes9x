@@ -4,7 +4,7 @@
    For further information, consult the LICENSE file in the root directory.
 \*****************************************************************************/
 
-#include <signal.h>
+#include <csignal>
 #define G_LOG_USE_STRUCTURED
 #define G_LOG_DOMAIN GETTEXT_PACKAGE
 #include "gtk_compat.h"
@@ -42,11 +42,6 @@ gint64 pointer_timestamp = -1;
 
 Background::Particles particles(Background::Particles::Snow);
 
-static void S9xTerm(int signal)
-{
-    S9xExit();
-}
-
 int main(int argc, char *argv[])
 {
     auto app = Gtk::Application::create("com.snes9x.gtk", Gio::APPLICATION_NON_UNIQUE);
@@ -56,16 +51,17 @@ int main(int argc, char *argv[])
     bind_textdomain_codeset(GETTEXT_PACKAGE, "UTF-8");
     textdomain(GETTEXT_PACKAGE);
 
+    auto signal_handler = [](int signal) {
+        printf("Received signal %d\n", signal);
+        S9xExit();
+    };
     struct sigaction sig_callback{};
-    sig_callback.sa_handler = S9xTerm;
-    sigaction(15, &sig_callback, NULL); // SIGTERM
-    sigaction(3, &sig_callback, NULL);  // SIGQUIT
-    sigaction(2, &sig_callback, NULL);  // SIGINT
+    sig_callback.sa_handler = signal_handler;
+    sigaction(15, &sig_callback, nullptr); // SIGTERM
+    sigaction(3, &sig_callback, nullptr);  // SIGQUIT
+    sigaction(2, &sig_callback, nullptr);  // SIGINT
 
     Settings = {};
-
-    // Original config fills out values this port doesn't.
-    S9xLoadConfigFiles(argv, argc);
 
     gui_config = new Snes9xConfig();
     gui_config->sound_drivers = S9xGetSoundDriverNames();
@@ -150,6 +146,7 @@ int main(int argc, char *argv[])
 
     gui_config->joysticks.flush_events();
 
+    Glib::signal_timeout().connect_once([]() { top_level->refresh(); }, 10);
     Glib::signal_timeout().connect(sigc::ptr_fun(S9xPauseFunc), 100);
     Glib::signal_timeout().connect(sigc::ptr_fun(S9xScreenSaverCheckFunc), 10000);
     app->run(*top_level->window.get());
@@ -158,9 +155,6 @@ int main(int argc, char *argv[])
 
 int S9xOpenROM(const char *rom_filename)
 {
-    uint32 flags;
-    bool loaded;
-
     if (gui_config->rom_loaded)
     {
         S9xAutoSaveSRAM();
@@ -168,10 +162,9 @@ int S9xOpenROM(const char *rom_filename)
 
     S9xNetplayDisconnect();
 
-    flags = CPU.Flags;
+    uint32 flags = CPU.Flags;
 
-    loaded = false;
-
+    bool loaded = false;
     if (Settings.Multi)
         loaded = Memory.LoadMultiCart(Settings.CartAName, Settings.CartBName);
     else if (rom_filename)
@@ -201,7 +194,7 @@ int S9xOpenROM(const char *rom_filename)
         S9xMessage(
             S9X_INFO,
             S9X_NO_INFO,
-            fmt::format(_("Using rewind buffer of {0}\n"),
+            fmt::format(fmt::runtime(_("Using rewind buffer of {0}\n")),
                 Glib::format_size(
                     gui_config->rewind_buffer_size * 1024 * 1024,
                     Glib::FORMAT_SIZE_IEC_UNITS).c_str()).c_str());
@@ -236,14 +229,6 @@ void S9xNoROMLoaded()
 
 static bool S9xPauseFunc()
 {
-    static bool first_clear = false;
-
-    if (!first_clear)
-    {
-        top_level->refresh();
-        first_clear = true;
-    }
-
     S9xProcessEvents(true);
 
     if (!S9xNetplayPush())
@@ -265,7 +250,6 @@ static bool S9xPauseFunc()
 
         /* Resume high-performance callback */
         Glib::signal_idle().connect(sigc::ptr_fun(S9xIdleFunc));
-
         return false;
     }
 
@@ -285,9 +269,7 @@ static bool S9xPauseFunc()
         }
     }
 
-    Glib::signal_timeout().connect(sigc::ptr_fun(S9xPauseFunc), 8);
-
-    return false;
+    return true;
 }
 
 static bool S9xIdleFunc()
@@ -457,12 +439,10 @@ void S9xParseArg(char **argv, int &i, int argc)
 
 static void S9xThrottle(int method)
 {
-    gint64 now;
-
     if (S9xNetplaySyncSpeed())
         return;
 
-    now = g_get_monotonic_time();
+    gint64 now = g_get_monotonic_time();
 
     if (Settings.HighSpeedSeek > 0)
     {
@@ -589,7 +569,7 @@ void S9xExit()
 
 const char *S9xStringInput(const char *message)
 {
-    return NULL;
+    return nullptr;
 }
 
 void S9xExtraUsage()

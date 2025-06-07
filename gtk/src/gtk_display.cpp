@@ -27,6 +27,16 @@
 
 #include "snes9x_imgui.h"
 
+#include "filter/2xsai.h"
+#ifdef USE_HQ2X
+#include "filter/hq2x.h"
+#endif
+#ifdef USE_XBRZ
+#include "filter_xbrz.h"
+#endif
+#include "filter_epx_unsafe.h"
+#include "filter/snes_ntsc.h"
+
 void filter_scanlines(uint8 *, int, uint8 *, int, int, int);
 void filter_2x(uint8 *, int, uint8 *, int, int, int);
 void filter_3x(uint8 *, int, uint8 *, int, int, int);
@@ -210,20 +220,16 @@ static void internal_convert_16_yuv(void *src_buffer,
                                     int height,
                                     int bpp)
 {
-    int x, y;
-    uint16 *src;
-    uint8 *dst;
-    uint16 p0, p1;
 
-    for (y = 0; y < height; y++)
+    for (int y = 0; y < height; y++)
     {
-        src = (uint16 *)(((uint8 *)src_buffer) + src_pitch * y);
-        dst = (uint8 *)(((uint8 *)dst_buffer) + dst_pitch * y);
+        auto src = (uint16_t *)(((uint8_t *)src_buffer) + src_pitch * y);
+        auto dst = (uint8_t *)dst_buffer + dst_pitch * y;
 
-        for (x = 0; x < width / 2; x++)
+        for (int x = 0; x < width / 2; x++)
         {
-            p0 = *src++;
-            p1 = *src++;
+            uint16_t p0 = *src++;
+            uint16_t p1 = *src++;
 
             *dst++ = y_table[p0];
             *dst++ = (u_table[p0] + u_table[p1]) >> 1;
@@ -480,7 +486,6 @@ void apply_filter_scale(int &width, int &height)
     const auto &filter = filter_data[gui_config->scale_method];
     width *= filter.xscale;
     height *= filter.yscale;
-    return;
 }
 
 static void internal_filter(uint8 *src_buffer,
@@ -547,22 +552,24 @@ static void internal_threaded_convert(void *src_buffer,
     create_thread_pool();
 
     auto func = (bpp == -1) ? internal_convert_16_yuv : internal_convert;
-    int coverage = 0;
+    int lines_handled = 0;
 
     for (int i = 0; i < gui_config->num_threads; i++)
     {
         int job_height = (height / gui_config->num_threads) & 3;
-            job_height = height - coverage;
+        if (i == gui_config->num_threads - 1)
+            job_height = height - lines_handled;
 
         pool->queue([=] {
-            func((uint8 *)src_buffer + (src_pitch * coverage),
-                 (uint8 *)dst_buffer + (dst_pitch * coverage),
+            func((uint8 *)src_buffer + (src_pitch * lines_handled),
+                 (uint8 *)dst_buffer + (dst_pitch * lines_handled),
                  src_pitch,
                  dst_pitch,
                  width,
                  job_height,
                  bpp);
         });
+        lines_handled += job_height;
     }
 
     pool->wait_idle();
@@ -582,10 +589,10 @@ static void internal_threaded_convert_mask(void *src_buffer,
     create_thread_pool();
 
     int lines_handled = 0;
-    int job_height = height / gui_config->num_threads;
 
     for (int i = 0; i < gui_config->num_threads; i++)
     {
+        int job_height = height / gui_config->num_threads & 3;
         if (i == gui_config->num_threads - 1)
             job_height = height - lines_handled;
         pool->queue([=] {
@@ -600,6 +607,7 @@ static void internal_threaded_convert_mask(void *src_buffer,
                                   inv_bmask,
                                   bpp);
         });
+        lines_handled += job_height;
     }
 
     pool->wait_idle();
@@ -620,23 +628,23 @@ static void internal_threaded_filter(uint8 *src_buffer,
     create_thread_pool();
 
     int yscale = filter_data[gui_config->scale_method].yscale;
-    int coverage = 0;
+    int lines_handled = 0;
 
     for (int i = 0; i < gui_config->num_threads; i++)
     {
         int job_height = height / gui_config->num_threads & ~3;
         if (i == gui_config->num_threads - 1)
-            job_height = height - coverage;
+            job_height = height - lines_handled;
 
         pool->queue([=] {
-            internal_filter(src_buffer + (src_pitch * coverage),
+            internal_filter(src_buffer + (src_pitch * lines_handled),
                             src_pitch,
-                            dst_buffer + (dst_pitch * coverage * yscale),
+                            dst_buffer + (dst_pitch * lines_handled * yscale),
                             dst_pitch,
                             width,
                             job_height);
         });
-        coverage += job_height;
+        lines_handled += job_height;
     }
 
     pool->wait_idle();
@@ -947,7 +955,7 @@ static void S9xInitDriver()
         dialog.run();
     }
 
-    pool = NULL;
+    pool = nullptr;
 }
 
 S9xDisplayDriver *S9xDisplayGetDriver()
@@ -971,14 +979,12 @@ void S9xDeinitDisplay()
 
 void S9xReinitDisplay()
 {
-    uint16_t *buffer = NULL;
-    int width, height;
+    uint16_t buffer[512 * 512];
 
-    buffer = new uint16_t[512 * 512];
     memmove(buffer, GFX.Screen, 512 * 478 * 2);
 
-    width = top_level->last_width;
-    height = top_level->last_height;
+    int width = top_level->last_width;
+    int height = top_level->last_height;
 
     S9xDeinitDisplay();
     S9xInitDriver();
@@ -988,8 +994,6 @@ void S9xReinitDisplay()
     top_level->last_height = height;
 
     memmove(GFX.Screen, buffer, 512 * 478 * 2);
-
-    delete[] buffer;
 }
 
 bool8 S9xContinueUpdate(int width, int height)
@@ -1016,7 +1020,7 @@ void S9xInitDisplay(int argc, char **argv)
     S9xBlit2xSaIFilterInit();
 #ifdef USE_HQ2X
     S9xBlitHQ2xFilterInit();
-#endif /* USE_HQ2SX */
+#endif /* USE_HQ2X */
     S9xQueryDrivers();
     S9xInitDriver();
     S9xGraphicsInit();

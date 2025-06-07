@@ -4,9 +4,7 @@
    For further information, consult the LICENSE file in the root directory.
 \*****************************************************************************/
 
-#ifndef __GTK_S9X_H
-#define __GTK_S9X_H
-
+#pragma once
 #include "gtk_config.h"
 #include "gtk_s9xwindow.h"
 
@@ -21,5 +19,3 @@ extern Snes9xConfig *gui_config;
 int S9xOpenROM(const char *filename);
 void S9xNoROMLoaded();
 void S9xROMLoaded();
-
-#endif /* __GTK_S9X_H */

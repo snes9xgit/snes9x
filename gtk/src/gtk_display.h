@@ -4,21 +4,9 @@
    For further information, consult the LICENSE file in the root directory.
 \*****************************************************************************/
 
-#ifndef __GTK_DISPLAY_H
-#define __GTK_DISPLAY_H
-
+#pragma once
 #include "gtk_s9x.h"
 #include "gtk_display_driver.h"
-#include "filter/2xsai.h"
-#ifdef USE_HQ2X
-#include "filter/hq2x.h"
-#endif
-#ifdef USE_XBRZ
-#include "filter_xbrz.h"
-#endif
-#include "filter/epx.h"
-#include "filter_epx_unsafe.h"
-#include "filter/snes_ntsc.h"
 
 enum {
     FILTER_NONE       = 0,
@@ -94,5 +82,3 @@ void S9xDisplayReconfigure();
 void S9xQueryDrivers();
 S9xDisplayDriver *S9xDisplayGetDriver();
 bool S9xDisplayDriverIsReady();
-
-#endif /* __GTK_DISPLAY_H */

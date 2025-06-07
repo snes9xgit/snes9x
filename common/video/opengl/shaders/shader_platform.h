@@ -4,9 +4,7 @@
    For further information, consult the LICENSE file in the root directory.
 \*****************************************************************************/
 
-#ifndef __SHADER_PLATFORM_H
-#define __SHADER_PLATFORM_H
-
+#pragma once
 #include "port.h"
 
 #if defined(SNES9X_QT)
@@ -31,5 +29,3 @@
         #define realpath(src, resolved) _fullpath(resolved, src, PATH_MAX)
     #endif
 #endif
-
-#endif /* __SHADER_PLATFORM_H */
