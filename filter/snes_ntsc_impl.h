@@ -284,8 +284,8 @@ static void init( init_t* impl, snes_ntsc_setup_t const* setup )
 
 #define PACK_RGB( r, g, b ) ((r) << 21 | (g) << 11 | (b) << 1)
 
-constexpr int rgb_kernel_size = burst_size / alignment_count;
-constexpr int rgb_bias = rgb_unit * 2 * snes_ntsc_rgb_builder;
+enum { rgb_kernel_size = burst_size / alignment_count };
+enum { rgb_bias = rgb_unit * 2 * snes_ntsc_rgb_builder };
 
 typedef struct pixel_info_t
 {
