@@ -4,7 +4,7 @@
 
 struct IniFile
 {
-    bool load_file(const std::string& filename);
+    bool load_file(std::string filename);
     std::string get_string(const std::string &key, std::string default_string);
     int get_int(const std::string &key, int default_int);
     float get_float(const std::string &key, float default_float);

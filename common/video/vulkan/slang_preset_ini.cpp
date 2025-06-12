@@ -23,7 +23,7 @@ static std::string trim_quotes(std::string str)
     return str;
 }
 
-bool IniFile::load_file(const std::string& filename)
+bool IniFile::load_file(std::string filename)
 {
     std::ifstream file;
     file.open(filename, std::ios_base::binary);
