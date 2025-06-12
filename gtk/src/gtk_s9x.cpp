@@ -28,17 +28,15 @@
 #include "ppu.h"
 #include "fmt/format.h"
 
-static void S9xThrottle(int);
-static void S9xCheckPointerTimer();
-static bool S9xIdleFunc();
-static bool S9xPauseFunc();
-static bool S9xScreenSaverCheckFunc();
+static void check_pointer_timer();
+static bool idle_func();
+static bool screen_saver_check_func();
 
 Snes9xWindow *top_level = nullptr;
 Snes9xConfig *gui_config = nullptr;
 StateManager state_manager;
-gint64 frame_clock = -1;
-gint64 pointer_timestamp = -1;
+static gint64 frame_clock = -1;
+static bool high_performance_idle_loop = true;
 
 Background::Particles particles(Background::Particles::Snow);
 
@@ -146,9 +144,9 @@ int main(int argc, char *argv[])
 
     gui_config->joysticks.flush_events();
 
-    Glib::signal_timeout().connect_once([]() { top_level->refresh(); }, 10);
-    Glib::signal_timeout().connect(sigc::ptr_fun(S9xPauseFunc), 100);
-    Glib::signal_timeout().connect(sigc::ptr_fun(S9xScreenSaverCheckFunc), 10000);
+    Glib::signal_timeout().connect_once([]() { top_level->refresh(); }, 0);
+    Glib::signal_timeout().connect(sigc::ptr_fun(screen_saver_check_func), 10000);
+    Glib::signal_idle().connect(sigc::ptr_fun(idle_func));
     app->run(*top_level->window.get());
     return 0;
 }
@@ -227,79 +225,86 @@ void S9xNoROMLoaded()
     top_level->configure_widgets();
 }
 
-static bool S9xPauseFunc()
+static void switch_to_low_performance_idle_loop()
 {
-    S9xProcessEvents(true);
+    S9xSoundStop();
 
-    if (!S9xNetplayPush())
+    gui_config->joysticks.flush_events();
+
+    if (Settings.NetPlay && NetPlay.Connected)
     {
-        S9xNetplayPop();
+        S9xNPSendPause(true);
     }
 
-    if (!Settings.Paused) /* Coming out of pause */
-    {
-        /* Clear joystick queues */
-        gui_config->joysticks.flush_events();
+    top_level->window->queue_draw();
 
-        S9xSoundStart();
+    /* Move to a timer-based function to use less CPU */
+    unsigned int timeout = 8;
+    if (gui_config->splash_image == SPLASH_IMAGE_STARFIELD || gui_config->splash_image == SPLASH_IMAGE_SNOW)
+        timeout = 2;
 
-        if (Settings.NetPlay && NetPlay.Connected)
-        {
-            S9xNPSendPause(false);
-        }
-
-        /* Resume high-performance callback */
-        Glib::signal_idle().connect(sigc::ptr_fun(S9xIdleFunc));
-        return false;
-    }
-
-    if (!gui_config->rom_loaded)
-    {
-        if (gui_config->splash_image >= SPLASH_IMAGE_STARFIELD)
-        {
-            if (gui_config->splash_image == SPLASH_IMAGE_STARFIELD)
-                particles.setmode(Background::Particles::Stars);
-            else
-                particles.setmode(Background::Particles::Snow);
-
-            S9xThrottle(THROTTLE_TIMER);
-            particles.advance();
-            particles.copyto(GFX.Screen, GFX.Pitch);
-            S9xDeinitUpdate(256, 224);
-        }
-    }
-
-    return true;
+    Glib::signal_timeout().connect(sigc::ptr_fun(idle_func), timeout, Glib::PRIORITY_DEFAULT_IDLE);
+    high_performance_idle_loop = false;
 }
 
-static bool S9xIdleFunc()
+static void switch_to_high_performance_idle_loop()
 {
-    if (Settings.Paused && gui_config->rom_loaded)
+    /* Clear joystick queues */
+    gui_config->joysticks.flush_events();
+
+    S9xSoundStart();
+
+    if (Settings.NetPlay && NetPlay.Connected)
     {
-        S9xSoundStop();
-
-        gui_config->joysticks.flush_events();
-
-        if (Settings.NetPlay && NetPlay.Connected)
-        {
-            S9xNPSendPause(true);
-        }
-
-        top_level->window->queue_draw();
-
-        /* Move to a timer-based function to use less CPU */
-        Glib::signal_timeout().connect(sigc::ptr_fun(S9xPauseFunc), 8);
-        return false;
+        S9xNPSendPause(false);
     }
 
-    S9xCheckPointerTimer();
+    /* Resume high-performance callback */
+    Glib::signal_idle().connect(sigc::ptr_fun(idle_func));
+    high_performance_idle_loop = true;
+}
 
-    S9xProcessEvents(true);
+static void RunAnimatedBackgrounds()
+{
+    if (gui_config->rom_loaded || gui_config->splash_image < SPLASH_IMAGE_STARFIELD)
+        return;
 
+    if (gui_config->splash_image == SPLASH_IMAGE_STARFIELD)
+        particles.setmode(Background::Particles::Stars);
+    else
+        particles.setmode(Background::Particles::Snow);
+
+    static gint64 time = 0, last_time = 0;
+    time = g_get_monotonic_time();
+    if (time - last_time > 16666)
+    {
+        last_time = time;
+
+        auto reduce_input_lag = gui_config->reduce_input_lag;
+        gui_config->reduce_input_lag = false;
+        auto throttle = Settings.SkipFrames;
+        Settings.SkipFrames = THROTTLE_NONE;
+
+        particles.advance();
+        particles.copyto(GFX.Screen, GFX.Pitch);
+        S9xDeinitUpdate(256, 224);
+
+        Settings.SkipFrames = throttle;
+        gui_config->reduce_input_lag = reduce_input_lag;
+    }
+}
+
+static void pause_loop()
+{
+    RunAnimatedBackgrounds();
+}
+
+static void game_loop()
+{
     if (!S9xDisplayDriverIsReady())
     {
         usleep(100);
-        return true;
+        return;
     }
 
     if (!S9xNetplayPush())
@@ -327,13 +332,40 @@ static bool S9xIdleFunc()
 
         S9xNetplayPop();
     }
+}
+
+static bool idle_func()
+{
+    check_pointer_timer();
+    S9xProcessEvents(true);
+
+    if (Settings.Paused)
+    {
+        pause_loop();
+
+        if (high_performance_idle_loop)
+        {
+            switch_to_low_performance_idle_loop();
+            return false;
+        }
+    }
+
+    if (!Settings.Paused)
+    {
+        game_loop();
+
+        if (!high_performance_idle_loop)
+        {
+            switch_to_high_performance_idle_loop();
+            return false;
+        }
+    }
 
     return true;
 }
 
-static bool S9xScreenSaverCheckFunc()
+static bool screen_saver_check_func()
 {
-
     if (!Settings.Paused &&
         (gui_config->screensaver_needs_reset ||
          gui_config->prevent_screensaver))
@@ -437,7 +469,7 @@ void S9xParseArg(char **argv, int &i, int argc)
     }
 }
 
-static void S9xThrottle(int method)
+void S9xSyncSpeed()
 {
     if (S9xNetplaySyncSpeed())
         return;
@@ -481,8 +513,8 @@ static void S9xThrottle(int method)
         frame_clock = now;
     }
 
-    if (method == THROTTLE_SOUND_SYNC ||
-        method == THROTTLE_NONE)
+    if (Settings.SkipFrames == THROTTLE_SOUND_SYNC ||
+        Settings.SkipFrames == THROTTLE_NONE)
     {
         frame_clock = now;
         IPPU.SkippedFrames = 0;
@@ -492,7 +524,7 @@ static void S9xThrottle(int method)
         if (S9xDisplayGetDriver()->can_throttle())
             return;
 
-        if (method == THROTTLE_TIMER_FRAMESKIP)
+        if (Settings.SkipFrames == THROTTLE_TIMER_FRAMESKIP)
         {
             if (now - frame_clock > Settings.FrameTime)
             {
@@ -523,14 +555,9 @@ static void S9xThrottle(int method)
     }
 }
 
-void S9xSyncSpeed()
+static void check_pointer_timer()
 {
-    S9xThrottle(Settings.SkipFrames);
-}
-
-static void S9xCheckPointerTimer()
-{
-    if (!gui_config->pointer_is_visible)
+    if (!gui_config->pointer_is_visible || top_level->is_paused())
         return;
 
     if (g_get_monotonic_time() - gui_config->pointer_timestamp > 1000000)
