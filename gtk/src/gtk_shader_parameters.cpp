@@ -28,9 +28,8 @@ static inline double snap_to_interval(double value, double interval)
 
 static void dialog_response(int response_id)
 {
-    gui_config->shader_parameters_width = dialog->get_width();
-    gui_config->shader_parameters_height = dialog->get_height();
-
+    gui_config->shader_parameters_width = dialog->get_vbox()->get_width();
+    gui_config->shader_parameters_height = dialog->get_vbox()->get_height();
     switch (response_id)
     {
     case Gtk::RESPONSE_OK:

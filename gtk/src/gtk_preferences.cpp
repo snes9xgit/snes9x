@@ -792,8 +792,9 @@ void Snes9xPreferences::show()
         dialog->show();
         auto result = dialog->run();
 
-        config->preferences_width = get_width();
-        config->preferences_height = get_height();
+        auto box = get_object<Gtk::Widget>("preferences_box");
+        config->preferences_width = box->get_width();
+        config->preferences_height = box->get_height();
         config->current_display_tab = get_object<Gtk::Notebook>("display_notebook")->get_current_page();
 
         switch (result)

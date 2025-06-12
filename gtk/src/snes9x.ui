@@ -1180,7 +1180,7 @@
     <signal name="focus-out-event" handler="focus_out_event" swapped="no"/>
     <signal name="focus-in-event" handler="focus_in_event" swapped="no"/>
     <child>
-      <object class="GtkVBox" id="vbox1">
+      <object class="GtkVBox" id="main_window_vbox">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <child>
@@ -2685,7 +2685,7 @@
     <signal name="style-set" handler="style_set" swapped="no"/>
     <signal name="key-press-event" handler="on_key_press" swapped="no"/>
     <child internal-child="vbox">
-      <object class="GtkVBox" id="dialog-vbox1">
+      <object class="GtkVBox" id="preferences_box">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="spacing">2</property>

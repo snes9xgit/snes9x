@@ -491,8 +491,9 @@ bool Snes9xWindow::draw(const Cairo::RefPtr<Cairo::Context> &cr)
 
     if (!(config->fullscreen) && !(maximized_state))
     {
-        config->window_width = get_width();
-        config->window_height = get_height();
+        auto vbox = get_object<Gtk::VBox>("main_window_vbox");
+        config->window_width = vbox->get_width();
+        config->window_height = vbox->get_height();
     }
 
     if (last_width < 0)
