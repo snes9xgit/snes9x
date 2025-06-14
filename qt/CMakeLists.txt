@@ -155,7 +155,7 @@ else()
 endif()
 
 find_package(SDL3 QUIET)
-if (SDL3_FOUND AND (NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Windows"))
+if (SDL3_FOUND)
     message("Using system SDL3.")
     list(APPEND LIBS SDL3::SDL3)
     list(APPEND INCLUDES ${SDL3_INCLUDE_DIRS})
@@ -182,9 +182,6 @@ else()
 endif()
 
 list(APPEND DEFINES SDL_MAIN_HANDLED)
-
-list(APPEND PLATFORM_SOURCES ../external/fmt/src/format.cc)
-list(APPEND INCLUDES ../external/fmt/include)
 
 list(APPEND QT_GUI_SOURCES
     src/main.cpp
