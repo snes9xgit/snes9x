@@ -54,7 +54,7 @@ struct SDLInputManager
         int direction;
         int pressed;
     };
-    std::optional<DiscreteAxisEvent> discretizeJoyAxisEvent(SDL_Event &event, int threshold_percent = 33);
+    std::vector<DiscreteAxisEvent> discretizeJoyAxisEvent(SDL_Event &event, int threshold_percent = 33);
 
     struct DiscreteHatEvent
     {
@@ -63,7 +63,7 @@ struct SDLInputManager
         int direction;
         bool pressed;
     };
-    std::optional<DiscreteHatEvent> discretizeHatEvent(SDL_Event &event);
+    std::vector<DiscreteHatEvent> discretizeHatEvent(SDL_Event &event);
 
     std::map<SDL_JoystickID, SDLInputDevice> devices;
 };

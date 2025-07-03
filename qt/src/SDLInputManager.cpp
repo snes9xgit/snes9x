@@ -49,7 +49,7 @@ void SDLInputManager::clearEvents()
 }
 
 
-std::optional<SDLInputManager::DiscreteHatEvent>
+std::vector<SDLInputManager::DiscreteHatEvent>
 SDLInputManager::discretizeHatEvent(SDL_Event &event)
 {
     auto &device = devices.at(event.jhat.which);
@@ -58,25 +58,21 @@ SDLInputManager::discretizeHatEvent(SDL_Event &event)
     auto &old_state = device.hats[hat].state;
 
     if (old_state == new_state)
-        return std::nullopt;
+        return {};
 
-    DiscreteHatEvent dhe{};
-    dhe.hat = hat;
-    dhe.joystick_num = device.index;
+    std::vector<DiscreteHatEvent> events;
 
     for (auto &s : { SDL_HAT_UP, SDL_HAT_DOWN, SDL_HAT_LEFT, SDL_HAT_RIGHT })
         if ((old_state & s) != (new_state & s))
         {
-            dhe.direction = s;
-            dhe.pressed = (new_state & s);
-            old_state = new_state;
-            return dhe;
+            events.emplace_back(device.index, hat, s, new_state & s);
         }
 
-    return std::nullopt;
+    old_state = new_state;
+    return events;
 }
 
-std::optional<SDLInputManager::DiscreteAxisEvent>
+std::vector<SDLInputManager::DiscreteAxisEvent>
 SDLInputManager::discretizeJoyAxisEvent(SDL_Event &event, int threshold_percent)
 {
     auto &device = devices.at(event.jaxis.which);
@@ -85,7 +81,7 @@ SDLInputManager::discretizeJoyAxisEvent(SDL_Event &event, int threshold_percent)
     auto &then = device.axes[axis].last;
     auto center = device.axes[axis].initial;
 
-    auto pressed = [&](int pos) -> int {
+    auto get_direction = [&](int pos) -> int {
         if (pos > (center + (32767 - center) * threshold_percent / 100))
             return 1;
         if (pos < (center - (center + 32768) * threshold_percent / 100))
@@ -93,23 +89,29 @@ SDLInputManager::discretizeJoyAxisEvent(SDL_Event &event, int threshold_percent)
         return 0;
     };
 
-    auto was_pressed_then = pressed(then);
-    auto is_pressed_now   = pressed(now);
+    auto previous_direction = get_direction(then);
+    auto current_direction  = get_direction(now);
 
-    if (was_pressed_then == is_pressed_now)
+    if (previous_direction == current_direction)
     {
         then = now;
-        return std::nullopt;
+        return {};
     }
 
-    DiscreteAxisEvent dae{};
-    dae.axis = axis;
-    dae.direction = is_pressed_now ? is_pressed_now : was_pressed_then;
-    dae.pressed = (is_pressed_now != 0);
-    dae.joystick_num = device.index;
+    std::vector<DiscreteAxisEvent> events{};
+
+    if (previous_direction == -1 || current_direction == -1)
+    {
+        events.emplace_back(device.index, axis, -1, (current_direction == -1));
+    }
+    if (previous_direction == 1 || current_direction == 1)
+    {
+        events.emplace_back(device.index, axis, 1, (current_direction == 1));
+    }
+
     then = now;
 
-    return dae;
+    return events;
 }
 
 std::optional<SDL_Event> SDLInputManager::processEvent()
