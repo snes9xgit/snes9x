@@ -51,7 +51,7 @@ void ApplyLanczos4x(
     int src_pitch16 = src_pitch / 2;
     int dst_pitch16 = dst_pitch / 2;
 
-    constexpr float black_factor = 0.48f;
+    constexpr float black_factor = 0.45f;
 
     // Build weight tables
     int16_t w_table[2][scale * scale * kernel_size * kernel_size];
