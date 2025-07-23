@@ -13,7 +13,7 @@ static uint8_t gamma_decode[256];
 
 static void init_gamma_tables()
 {
-    constexpr float gamma = 1.5f;
+    constexpr float gamma = 1.45f;
     constexpr float inv_gamma = 1.0f / gamma;
 
     for (int i = 0; i < 32; ++i)
@@ -28,7 +28,7 @@ inline int hermite_weight(int t_fp)
 {
     int t = (t_fp > FP_ONE) ? FP_ONE : t_fp;
     int inv = FP_ONE - t;
-    return (inv * inv) >> FP_SHIFT; // Full quadratic
+    return ((inv * inv * (FP_ONE + (t >> 1))) >> FP_SHIFT) >> FP_SHIFT; // Softer (approx. 2/3)
 }
 
 inline uint16_t build_rgb565_fast(int r, int g, int b)
