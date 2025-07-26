@@ -10,7 +10,7 @@ static uint8_t gamma_decode[256];
 
 static void init_gamma_tables()
 {
-    constexpr float gamma = 1.4f;
+    constexpr float gamma = 1.6f;
     constexpr float inv_gamma = 1.0f / gamma;
 
     for (int i = 0; i < 32; ++i)
@@ -37,23 +37,19 @@ static inline void unpack_rgb565_gamma(const uint8_t* src, int pitch, int x, int
 
     r = gamma_r_encode[r5];
     g = gamma_g_encode[g6];
-    b = gamma_r_encode[b5]; // reuse red table for blue
+    b = gamma_r_encode[b5]; // reuse red gamma table for blue
 }
 
 extern "C"
-void ApplySharpBilinear4x(
-    uint8_t* __restrict dst,
-    int dst_pitch,
-    const uint8_t* __restrict src,
-    int src_width,
-    int src_height,
-    int src_pitch)
+void ApplySharpBilinear4x(uint8_t* __restrict dst, int dst_pitch, const uint8_t* __restrict src,
+    int src_width, int src_height, int src_pitch)
 {
     const int dst_width = src_width * 4;
     const int dst_height = src_height * 4;
 
     static bool gamma_ready = false;
-    if (!gamma_ready) {
+    if (!gamma_ready)
+    {
         init_gamma_tables();
         gamma_ready = true;
     }
@@ -72,31 +68,36 @@ void ApplySharpBilinear4x(
             float fx = src_xf - sx;
             sx = std::clamp(sx, 0, src_width - 2);
 
-            int r0, g0, b0, rx, gx, bx, ry, gy, by;
+            int r00, g00, b00;
+            int r10, g10, b10;
+            int r01, g01, b01;
+            int r11, g11, b11;
 
-            unpack_rgb565_gamma(src, src_pitch, sx, sy, r0, g0, b0);
-            unpack_rgb565_gamma(src, src_pitch, sx + 1, sy, rx, gx, bx);
-            unpack_rgb565_gamma(src, src_pitch, sx, sy + 1, ry, gy, by);
+            unpack_rgb565_gamma(src, src_pitch, sx, sy, r00, g00, b00);
+            unpack_rgb565_gamma(src, src_pitch, sx + 1, sy, r10, g10, b10);
+            unpack_rgb565_gamma(src, src_pitch, sx, sy + 1, r01, g01, b01);
+            unpack_rgb565_gamma(src, src_pitch, sx + 1, sy + 1, r11, g11, b11);
 
-            // Blend in gamma space
-            int rh = r0 + static_cast<int>((rx - r0) * fx + 0.5f);
-            int gh = g0 + static_cast<int>((gx - g0) * fx + 0.5f);
-            int bh = b0 + static_cast<int>((bx - b0) * fx + 0.5f);
+            float fx1 = 1.0f - fx;
+            float fy1 = 1.0f - fy;
 
-            int rv = r0 + static_cast<int>((ry - r0) * fy + 0.5f);
-            int gv = g0 + static_cast<int>((gy - g0) * fy + 0.5f);
-            int bv = b0 + static_cast<int>((by - b0) * fy + 0.5f);
+            // Always blend horizontally and vertically
+            float r_h = r00 * fx1 + r10 * fx;
+            float g_h = g00 * fx1 + g10 * fx;
+            float b_h = b00 * fx1 + b10 * fx;
 
-            // Average
-            int r = (rh + rv) >> 1;
-            int g = (gh + gv) >> 1;
-            int b = (bh + bv) >> 1;
+            float r_v = r01 * fx1 + r11 * fx;
+            float g_v = g01 * fx1 + g11 * fx;
+            float b_v = b01 * fx1 + b11 * fx;
 
-            // Gamma decode and clamp
+            float r = r_h * fy1 + r_v * fy;
+            float g = g_h * fy1 + g_v * fy;
+            float b = b_h * fy1 + b_v * fy;
+
             uint16_t out = build_rgb565_fast(
-                gamma_decode[r],
-                gamma_decode[g],
-                gamma_decode[b]
+                gamma_decode[CLAMP_U8(int(r + 0.5f), 0, 255)],
+                gamma_decode[CLAMP_U8(int(g + 0.5f), 0, 255)],
+                gamma_decode[CLAMP_U8(int(b + 0.5f), 0, 255)]
             );
 
             uint8_t* dst_px = dst + y * dst_pitch + x * 2;
