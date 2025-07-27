@@ -13,7 +13,7 @@ static uint8_t gamma_decode[256];
 
 static void init_gamma_tables()
 {
-    constexpr float gamma = 1.55f;
+    constexpr float gamma = 1.8f;
     constexpr float inv_gamma = 1.0f / gamma;
 
     for (int i = 0; i < 32; ++i)
