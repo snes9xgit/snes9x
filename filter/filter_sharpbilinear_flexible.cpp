@@ -4,6 +4,13 @@
 
 #define CLAMP_U8(x, lo, hi) ((x) < (lo) ? (lo) : ((x) > (hi) ? (hi) : (x)))
 
+// Smoothstep as in GLSL: cubic easing
+static inline float smoothstep(float edge0, float edge1, float x)
+{
+    x = std::clamp((x - edge0) / (edge1 - edge0), 0.0f, 1.0f);
+    return x * x * (3.0f - 2.0f * x);
+}
+
 static uint8_t gamma_r_encode[32];
 static uint8_t gamma_g_encode[64];
 static uint8_t gamma_decode[256];
@@ -68,6 +75,12 @@ void ApplySharpBilinear4x(uint8_t* __restrict dst, int dst_pitch, const uint8_t*
             float fx = src_xf - sx;
             sx = std::clamp(sx, 0, src_width - 2);
 
+            // Apply smoothstep easing
+            float fx_smooth = smoothstep(0.0f, 1.0f, fx);
+            float fy_smooth = smoothstep(0.0f, 1.0f, fy);
+            float fx1 = 1.0f - fx_smooth;
+            float fy1 = 1.0f - fy_smooth;
+
             int r00, g00, b00;
             int r10, g10, b10;
             int r01, g01, b01;
@@ -78,21 +91,18 @@ void ApplySharpBilinear4x(uint8_t* __restrict dst, int dst_pitch, const uint8_t*
             unpack_rgb565_gamma(src, src_pitch, sx, sy + 1, r01, g01, b01);
             unpack_rgb565_gamma(src, src_pitch, sx + 1, sy + 1, r11, g11, b11);
 
-            float fx1 = 1.0f - fx;
-            float fy1 = 1.0f - fy;
+            // Horizontal blends
+            float r_h = r00 * fx1 + r10 * fx_smooth;
+            float g_h = g00 * fx1 + g10 * fx_smooth;
+            float b_h = b00 * fx1 + b10 * fx_smooth;
 
-            // Always blend horizontally and vertically
-            float r_h = r00 * fx1 + r10 * fx;
-            float g_h = g00 * fx1 + g10 * fx;
-            float b_h = b00 * fx1 + b10 * fx;
+            float r_v = r01 * fx1 + r11 * fx_smooth;
+            float g_v = g01 * fx1 + g11 * fx_smooth;
+            float b_v = b01 * fx1 + b11 * fx_smooth;
 
-            float r_v = r01 * fx1 + r11 * fx;
-            float g_v = g01 * fx1 + g11 * fx;
-            float b_v = b01 * fx1 + b11 * fx;
-
-            float r = r_h * fy1 + r_v * fy;
-            float g = g_h * fy1 + g_v * fy;
-            float b = b_h * fy1 + b_v * fy;
+            float r = r_h * fy1 + r_v * fy_smooth;
+            float g = g_h * fy1 + g_v * fy_smooth;
+            float b = b_h * fy1 + b_v * fy_smooth;
 
             uint16_t out = build_rgb565_fast(
                 gamma_decode[CLAMP_U8(int(r + 0.5f), 0, 255)],
