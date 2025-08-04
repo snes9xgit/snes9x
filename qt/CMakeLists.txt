@@ -183,6 +183,9 @@ endif()
 
 list(APPEND DEFINES SDL_MAIN_HANDLED)
 
+list(APPEND PLATFORM_SOURCES ../external/fmt/src/format.cc)
+list(PREPEND INCLUDES ../external/fmt/include)
+
 list(APPEND QT_GUI_SOURCES
     src/main.cpp
     src/EmuApplication.cpp
