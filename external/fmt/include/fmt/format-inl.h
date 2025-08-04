@@ -14,10 +14,6 @@
 #  include <climits>
 #  include <cmath>
 #  include <exception>
-
-#  if !defined(FMT_STATIC_THOUSANDS_SEPARATOR)
-#    include <locale>
-#  endif
 #endif
 
 #if defined(_WIN32) && !defined(FMT_USE_WRITE_CONSOLE)
@@ -26,16 +22,22 @@
 
 #include "format.h"
 
+#if FMT_USE_LOCALE && !defined(FMT_MODULE)
+#  include <locale>
+#endif
+
+#ifndef FMT_FUNC
+#  define FMT_FUNC
+#endif
+
 FMT_BEGIN_NAMESPACE
 namespace detail {
 
 FMT_FUNC void assert_fail(const char* file, int line, const char* message) {
   // Use unchecked std::fprintf to avoid triggering another assertion when
-  // writing to stderr fails
-  std::fprintf(stderr, "%s:%d: assertion failed: %s", file, line, message);
-  // Chosen instead of std::abort to satisfy Clang in CUDA mode during device
-  // code pass.
-  std::terminate();
+  // writing to stderr fails.
+  fprintf(stderr, "%s:%d: assertion failed: %s", file, line, message);
+  abort();
 }
 
 FMT_FUNC void format_error_code(detail::buffer<char>& out, int error_code,
@@ -61,86 +63,95 @@ FMT_FUNC void format_error_code(detail::buffer<char>& out, int error_code,
   FMT_ASSERT(out.size() <= inline_buffer_size, "");
 }
 
-FMT_FUNC void report_error(format_func func, int error_code,
-                           const char* message) noexcept {
+FMT_FUNC void do_report_error(format_func func, int error_code,
+                              const char* message) noexcept {
   memory_buffer full_message;
   func(full_message, error_code, message);
-  // Don't use fwrite_fully because the latter may throw.
+  // Don't use fwrite_all because the latter may throw.
   if (std::fwrite(full_message.data(), full_message.size(), 1, stderr) > 0)
     std::fputc('\n', stderr);
 }
 
 // A wrapper around fwrite that throws on error.
-inline void fwrite_fully(const void* ptr, size_t count, FILE* stream) {
+inline void fwrite_all(const void* ptr, size_t count, FILE* stream) {
   size_t written = std::fwrite(ptr, 1, count, stream);
   if (written < count)
     FMT_THROW(system_error(errno, FMT_STRING("cannot write to file")));
 }
 
-#ifndef FMT_STATIC_THOUSANDS_SEPARATOR
+#if FMT_USE_LOCALE
+using std::locale;
+using std::numpunct;
+using std::use_facet;
+
 template <typename Locale>
 locale_ref::locale_ref(const Locale& loc) : locale_(&loc) {
-  static_assert(std::is_same<Locale, std::locale>::value, "");
+  static_assert(std::is_same<Locale, locale>::value, "");
 }
+#else
+struct locale {};
+template <typename Char> struct numpunct {
+  auto grouping() const -> std::string { return "\03"; }
+  auto thousands_sep() const -> Char { return ','; }
+  auto decimal_point() const -> Char { return '.'; }
+};
+template <typename Facet> Facet use_facet(locale) { return {}; }
+#endif  // FMT_USE_LOCALE
 
 template <typename Locale> auto locale_ref::get() const -> Locale {
-  static_assert(std::is_same<Locale, std::locale>::value, "");
-  return locale_ ? *static_cast<const std::locale*>(locale_) : std::locale();
+  static_assert(std::is_same<Locale, locale>::value, "");
+#if FMT_USE_LOCALE
+  if (locale_) return *static_cast<const locale*>(locale_);
+#endif
+  return locale();
 }
 
 template <typename Char>
 FMT_FUNC auto thousands_sep_impl(locale_ref loc) -> thousands_sep_result<Char> {
-  auto& facet = std::use_facet<std::numpunct<Char>>(loc.get<std::locale>());
+  auto&& facet = use_facet<numpunct<Char>>(loc.get<locale>());
   auto grouping = facet.grouping();
   auto thousands_sep = grouping.empty() ? Char() : facet.thousands_sep();
   return {std::move(grouping), thousands_sep};
 }
 template <typename Char>
 FMT_FUNC auto decimal_point_impl(locale_ref loc) -> Char {
-  return std::use_facet<std::numpunct<Char>>(loc.get<std::locale>())
-      .decimal_point();
+  return use_facet<numpunct<Char>>(loc.get<locale>()).decimal_point();
 }
-#else
-template <typename Char>
-FMT_FUNC auto thousands_sep_impl(locale_ref) -> thousands_sep_result<Char> {
-  return {"\03", FMT_STATIC_THOUSANDS_SEPARATOR};
-}
-template <typename Char> FMT_FUNC Char decimal_point_impl(locale_ref) {
-  return '.';
-}
-#endif
 
+#if FMT_USE_LOCALE
 FMT_FUNC auto write_loc(appender out, loc_value value,
                         const format_specs& specs, locale_ref loc) -> bool {
-#ifdef FMT_STATIC_THOUSANDS_SEPARATOR
-  value.visit(loc_writer<>{
-      out, specs, std::string(1, FMT_STATIC_THOUSANDS_SEPARATOR), "\3", "."});
-  return true;
-#else
   auto locale = loc.get<std::locale>();
   // We cannot use the num_put<char> facet because it may produce output in
   // a wrong encoding.
   using facet = format_facet<std::locale>;
   if (std::has_facet<facet>(locale))
-    return std::use_facet<facet>(locale).put(out, value, specs);
+    return use_facet<facet>(locale).put(out, value, specs);
   return facet(locale).put(out, value, specs);
-#endif
 }
+#endif
 }  // namespace detail
 
 FMT_FUNC void report_error(const char* message) {
+#if FMT_USE_EXCEPTIONS
+  // Use FMT_THROW instead of throw to avoid bogus unreachable code warnings
+  // from MSVC.
   FMT_THROW(format_error(message));
+#else
+  fputs(message, stderr);
+  abort();
+#endif
 }
 
 template <typename Locale> typename Locale::id format_facet<Locale>::id;
 
-#ifndef FMT_STATIC_THOUSANDS_SEPARATOR
 template <typename Locale> format_facet<Locale>::format_facet(Locale& loc) {
-  auto& numpunct = std::use_facet<std::numpunct<char>>(loc);
-  grouping_ = numpunct.grouping();
-  if (!grouping_.empty()) separator_ = std::string(1, numpunct.thousands_sep());
+  auto& np = detail::use_facet<detail::numpunct<char>>(loc);
+  grouping_ = np.grouping();
+  if (!grouping_.empty()) separator_ = std::string(1, np.thousands_sep());
 }
 
+#if FMT_USE_LOCALE
 template <>
 FMT_API FMT_FUNC auto format_facet<std::locale>::do_put(
     appender out, loc_value val, const format_specs& specs) const -> bool {
@@ -201,7 +212,7 @@ inline auto floor_log10_pow2_minus_log10_4_over_3(int e) noexcept -> int {
   return (e * 631305 - 261663) >> 21;
 }
 
-FMT_INLINE_VARIABLE constexpr struct {
+FMT_INLINE_VARIABLE constexpr struct div_small_pow10_infos_struct {
   uint32_t divisor;
   int shift_amount;
 } div_small_pow10_infos[] = {{10, 16}, {100, 16}};
@@ -264,7 +275,7 @@ template <> struct cache_accessor<float> {
   static auto get_cached_power(int k) noexcept -> uint64_t {
     FMT_ASSERT(k >= float_info<float>::min_k && k <= float_info<float>::max_k,
                "k is out of range");
-    static constexpr const uint64_t pow10_significands[] = {
+    static constexpr uint64_t pow10_significands[] = {
         0x81ceb32c4b43fcf5, 0xa2425ff75e14fc32, 0xcad2f7f5359a3b3f,
         0xfd87b5f28300ca0e, 0x9e74d1b791e07e49, 0xc612062576589ddb,
         0xf79687aed3eec552, 0x9abe14cd44753b53, 0xc16d9a0095928a28,
@@ -359,7 +370,7 @@ template <> struct cache_accessor<double> {
     FMT_ASSERT(k >= float_info<double>::min_k && k <= float_info<double>::max_k,
                "k is out of range");
 
-    static constexpr const uint128_fallback pow10_significands[] = {
+    static constexpr uint128_fallback pow10_significands[] = {
 #if FMT_USE_FULL_CACHE_DRAGONBOX
       {0xff77b1fcbebcdc4f, 0x25e8e89c13bb0f7b},
       {0x9faacf3df73609b1, 0x77b191618c54e9ad},
@@ -1026,7 +1037,7 @@ template <> struct cache_accessor<double> {
 #if FMT_USE_FULL_CACHE_DRAGONBOX
     return pow10_significands[k - float_info<double>::min_k];
 #else
-    static constexpr const uint64_t powers_of_5_64[] = {
+    static constexpr uint64_t powers_of_5_64[] = {
         0x0000000000000001, 0x0000000000000005, 0x0000000000000019,
         0x000000000000007d, 0x0000000000000271, 0x0000000000000c35,
         0x0000000000003d09, 0x000000000001312d, 0x000000000005f5e1,
@@ -1086,7 +1097,7 @@ template <> struct cache_accessor<double> {
     return {r.high(), r.low() == 0};
   }
 
-  static auto compute_delta(cache_entry_type const& cache, int beta) noexcept
+  static auto compute_delta(const cache_entry_type& cache, int beta) noexcept
       -> uint32_t {
     return static_cast<uint32_t>(cache.high() >> (64 - 1 - beta));
   }
@@ -1138,7 +1149,7 @@ auto is_left_endpoint_integer_shorter_interval(int exponent) noexcept -> bool {
          exponent <= case_shorter_interval_left_endpoint_upper_threshold;
 }
 
-// Remove trailing zeros from n and return the number of zeros removed (float)
+// Remove trailing zeros from n and return the number of zeros removed (float).
 FMT_INLINE int remove_trailing_zeros(uint32_t& n, int s = 0) noexcept {
   FMT_ASSERT(n != 0, "");
   // Modular inverse of 5 (mod 2^32): (mod_inv_5 * 5) mod 2^32 = 1.
@@ -1159,22 +1170,19 @@ FMT_INLINE int remove_trailing_zeros(uint32_t& n, int s = 0) noexcept {
   return s;
 }
 
-// Removes trailing zeros and returns the number of zeros removed (double)
+// Removes trailing zeros and returns the number of zeros removed (double).
 FMT_INLINE int remove_trailing_zeros(uint64_t& n) noexcept {
   FMT_ASSERT(n != 0, "");
 
-  // This magic number is ceil(2^90 / 10^8).
-  constexpr uint64_t magic_number = 12379400392853802749ull;
-  auto nm = umul128(n, magic_number);
-
   // Is n is divisible by 10^8?
-  if ((nm.high() & ((1ull << (90 - 64)) - 1)) == 0 && nm.low() < magic_number) {
+  constexpr uint32_t ten_pow_8 = 100000000u;
+  if ((n % ten_pow_8) == 0) {
     // If yes, work with the quotient...
-    auto n32 = static_cast<uint32_t>(nm.high() >> (90 - 64));
+    auto n32 = static_cast<uint32_t>(n / ten_pow_8);
     // ... and use the 32 bit variant of the function
-    int s = remove_trailing_zeros(n32, 8);
+    int num_zeros = remove_trailing_zeros(n32, 8);
     n = n32;
-    return s;
+    return num_zeros;
   }
 
   // If n is not divisible by 10^8, work with n itself.
@@ -1425,7 +1433,7 @@ FMT_FUNC void format_system_error(detail::buffer<char>& out, int error_code,
 
 FMT_FUNC void report_system_error(int error_code,
                                   const char* message) noexcept {
-  report_error(format_system_error, error_code, message);
+  do_report_error(format_system_error, error_code, message);
 }
 
 FMT_FUNC auto vformat(string_view fmt, format_args args) -> std::string {
@@ -1437,6 +1445,15 @@ FMT_FUNC auto vformat(string_view fmt, format_args args) -> std::string {
 }
 
 namespace detail {
+
+FMT_FUNC void vformat_to(buffer<char>& buf, string_view fmt, format_args args,
+                         locale_ref loc) {
+  auto out = appender(buf);
+  if (fmt.size() == 2 && equal2(fmt.data(), "{}"))
+    return args.get(0).visit(default_arg_formatter<char>{out});
+  parse_format_string(
+      fmt, format_handler<char>{parse_context<char>(fmt), {out, args, loc}});
+}
 
 template <typename T> struct span {
   T* data;
@@ -1506,7 +1523,7 @@ template <typename F> class glibc_file : public file_base<F> {
   }
 
   void init_buffer() {
-    if (this->file_->_IO_write_ptr) return;
+    if (this->file_->_IO_write_ptr < this->file_->_IO_write_end) return;
     // Force buffer initialization by placing and removing a char in a buffer.
     putc_unlocked(0, this->file_);
     --this->file_->_IO_write_ptr;
@@ -1529,7 +1546,8 @@ template <typename F> class glibc_file : public file_base<F> {
   bool needs_flush() const {
     if ((this->file_->_flags & line_buffered) == 0) return false;
     char* end = this->file_->_IO_write_end;
-    return memchr(end, '\n', to_unsigned(this->file_->_IO_write_ptr - end));
+    auto size = max_of<ptrdiff_t>(this->file_->_IO_write_ptr - end, 0);
+    return memchr(end, '\n', static_cast<size_t>(size));
   }
 
   void flush() { fflush_unlocked(this->file_); }
@@ -1615,7 +1633,7 @@ template <typename F> class fallback_file : public file_base<F> {
 };
 
 #ifndef FMT_USE_FALLBACK_FILE
-#  define FMT_USE_FALLBACK_FILE 1
+#  define FMT_USE_FALLBACK_FILE 0
 #endif
 
 template <typename F,
@@ -1692,7 +1710,7 @@ FMT_FUNC void vprint_mojibake(std::FILE* f, string_view fmt, format_args args,
   auto buffer = memory_buffer();
   detail::vformat_to(buffer, fmt, args);
   if (newline) buffer.push_back('\n');
-  fwrite_fully(buffer.data(), buffer.size(), f);
+  fwrite_all(buffer.data(), buffer.size(), f);
 }
 #endif
 
@@ -1704,7 +1722,7 @@ FMT_FUNC void print(std::FILE* f, string_view text) {
     if (write_console(fd, text)) return;
   }
 #endif
-  fwrite_fully(text.data(), text.size(), f);
+  fwrite_all(text.data(), text.size(), f);
 }
 }  // namespace detail
 
