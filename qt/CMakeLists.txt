@@ -154,7 +154,12 @@ else()
     ../external/glad/src/egl.c)
 endif()
 
-find_package(SDL3 QUIET)
+set(USE_SYSTEM_SDL3 CACHE BOOL OFF)
+
+if (USE_SYSTEM_SDL3)
+    find_package(SDL3 QUIET)
+endif()
+
 if (SDL3_FOUND)
     message("Using system SDL3.")
     list(APPEND LIBS SDL3::SDL3)
