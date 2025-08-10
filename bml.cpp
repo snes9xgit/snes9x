@@ -89,7 +89,7 @@ static void bml_parse_depth(bml_node &node, std::string_view &line)
 static void bml_parse_name(bml_node &node, std::string_view &line)
 {
     int len;
-    for (len = 0; bml_valid(line[len]); len++) {};
+    for (len = 0; len < line.length() && bml_valid(line[len]); len++) {};
 
     node.name = trim(line.substr(0, len));
     line.remove_prefix(len);
@@ -147,7 +147,7 @@ static void bml_parse_attr(bml_node &node, std::string_view &line)
 
         bml_node n;
         int len = 0;
-        while (bml_valid(line[len]))
+        while (len < line.length() && bml_valid(line[len]))
             len++;
         if (len == 0)
             return;
