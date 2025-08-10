@@ -20,7 +20,7 @@ inline float sinc(float x)
 
 inline int lanczos2_weight_fp(int t_fp)
 {
-    constexpr float radius = 0.6f;
+    constexpr float radius = 1.0f;
     float t = float(t_fp) / float(FP_ONE);
     if (std::abs(t) >= radius) return 0;
     float w = sinc(t) * sinc(t / radius);
@@ -163,3 +163,4 @@ void filter_lanczos4x(uint8_t* srcPtr, int srcPitch, uint8_t* dstPtr, int dstPit
     ApplyLanczos4x(dstPtr, width * 4, height * 4, dstPitch,
         srcPtr, width, height, srcPitch);
 }
+
