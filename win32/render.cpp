@@ -23,8 +23,6 @@
 #include "../filter/hq2x.h"
 #include "../filter/snes_ntsc.h"
 #include "../filter/xbrz.h"
-#include "../filter/filter_bicubic_win.h"
-#include "../filter/filter_lanczos.h"
 #include "../filter/filter_sharpbilinear_flexible.h"
 #include <vector>
 #include <intrin.h>
@@ -64,8 +62,6 @@ void RenderMergeHires(void *src, int srcPitch , void* dst, int dstPitch, unsigne
 void InitLUTsWin32(void);
 void RenderxBRZ(SSurface Src, SSurface Dst, RECT* rect, int scalingFactor);
 void RenderSharpBilinear(SSurface Src, SSurface Dst, RECT *);
-void RenderBicubic4x(SSurface Src, SSurface Dst, RECT *);
-void RenderLacnzos4x(SSurface Src, SSurface Dst, RECT *);
 // Contains the pointer to the now active render method
 typedef void (*TRenderMethod)( SSurface Src, SSurface Dst, RECT *);
 TRenderMethod _RenderMethod = RenderPlain;
@@ -158,8 +154,6 @@ TRenderMethod FilterToMethod(RenderFilter filterID)
 		case FILTER_5XBRZ:      return Render5xBRZ;
 		case FILTER_6XBRZ:      return Render6xBRZ;
         case FILTER_SHARPBILINEAR4X: return RenderSharpBilinear;
-        case FILTER_LANCZOS4X: return RenderLacnzos4x;
-        case FILTER_BICUBIC4X: return RenderBicubic4x;
 	}
 }
 
@@ -202,8 +196,6 @@ const char* GetFilterName(RenderFilter filterID)
 		case FILTER_5XBRZ: return "5xBRZ";
 		case FILTER_6XBRZ: return "6xBRZ";
         case FILTER_SHARPBILINEAR4X: return "SharpBilinear4x";
-        case FILTER_BICUBIC4X: return "Bicubic4x";
-        case FILTER_LANCZOS4X: return "Lanczos4x";
 	}
 }
 
@@ -236,8 +228,6 @@ int GetFilterScale(RenderFilter filterID)
 		case FILTER_HQ4X:
         case FILTER_4XBRZ:
         case FILTER_SHARPBILINEAR4X:
-        case FILTER_BICUBIC4X:
-        case FILTER_LANCZOS4X:
 			return 4;
         case FILTER_5XBRZ:
 			return 5;
@@ -2796,16 +2786,4 @@ void RenderSharpBilinear(SSurface Src, SSurface Dst, RECT *rect)
 {
     SetRect(rect, SNES_WIDTH, SNES_HEIGHT_EXTENDED, 4);
     filter_sharpbilinear_4x(Src.Surface, Src.Pitch, Dst.Surface, Dst.Pitch, Src.Width, Src.Height);
-}
-
-void RenderBicubic4x(SSurface Src, SSurface Dst, RECT *rect)
-{
-    SetRect(rect, SNES_WIDTH, SNES_HEIGHT_EXTENDED, 4);
-    filter_bicubic4x_standard(Src.Surface, Src.Pitch, Dst.Surface, Dst.Pitch, Src.Width, Src.Height);
-}
-
-void RenderLacnzos4x(SSurface Src, SSurface Dst, RECT *rect)
-{
-    SetRect(rect, SNES_WIDTH, SNES_HEIGHT_EXTENDED, 4);
-    filter_lanczos4x(Src.Surface, Src.Pitch, Dst.Surface, Dst.Pitch, Src.Width, Src.Height);
 }

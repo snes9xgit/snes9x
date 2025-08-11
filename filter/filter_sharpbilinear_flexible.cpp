@@ -56,7 +56,6 @@ static inline void unpack_rgb565_gamma(const uint8_t* src, int pitch, int x, int
 static constexpr uint16_t W[4] = { 0,  40, 128, 216 }; // w = smoothstep
 static constexpr uint16_t IW[4] = { 256, 216, 128,  40 }; // 256 - w
 
-extern "C"
 void ApplySharpBilinear4x(uint8_t* __restrict dst, int dst_pitch,
     const uint8_t* __restrict src,
     int src_width, int src_height, int src_pitch)
@@ -160,6 +159,5 @@ void filter_sharpbilinear_4x(uint8_t* srcPtr, int srcPitch,
     uint8_t* dstPtr, int dstPitch,
     int width, int height)
 {
-    
     ApplySharpBilinear4x(dstPtr, dstPitch, srcPtr, width, height, srcPitch);
 }
