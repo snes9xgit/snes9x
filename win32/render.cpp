@@ -23,7 +23,7 @@
 #include "../filter/hq2x.h"
 #include "../filter/snes_ntsc.h"
 #include "../filter/xbrz.h"
-#include "../filter/filter_sharpbilinear_flexible.h"
+#include "../filter/sharpbilinear_flexible.h"
 #include <vector>
 #include <intrin.h>
 
@@ -2785,5 +2785,5 @@ void RenderBlarggNTSC(SSurface Src, SSurface Dst, RECT *rect)
 void RenderSharpBilinear(SSurface Src, SSurface Dst, RECT *rect)
 {
     SetRect(rect, SNES_WIDTH, SNES_HEIGHT_EXTENDED, 4);
-    filter_sharpbilinear_4x(Src.Surface, Src.Pitch, Dst.Surface, Dst.Pitch, Src.Width, Src.Height);
+    sharpbilinear_4x(Src.Surface, Src.Pitch, Dst.Surface, Dst.Pitch, Src.Width, Src.Height);
 }

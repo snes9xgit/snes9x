@@ -369,7 +369,7 @@
     <ClInclude Include="..\external\imgui\snes9x_imgui.h">
       <Filter>GUI\VideoDriver\ImGui</Filter>
     </ClInclude>
-    <ClInclude Include="..\filter\filter_sharpbilinear_flexible.h">
+    <ClInclude Include="..\filter\sharpbilinear_flexible.h">
       <Filter>Filter</Filter>
     </ClInclude>
   </ItemGroup>
@@ -794,7 +794,7 @@
     <ClCompile Include="..\external\imgui\snes9x_imgui.cpp">
       <Filter>GUI\VideoDriver\ImGui</Filter>
     </ClCompile>
-    <ClCompile Include="..\filter\filter_sharpbilinear_flexible.cpp">
+    <ClCompile Include="..\filter\sharpbilinear_flexible.cpp">
       <Filter>Filter</Filter>
     </ClCompile>
   </ItemGroup>
