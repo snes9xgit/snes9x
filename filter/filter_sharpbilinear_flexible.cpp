@@ -4,12 +4,7 @@
 
 #define CLAMP_U8(x, lo, hi) ((x) < (lo) ? (lo) : ((x) > (hi) ? (hi) : (x)))
 
-// Smoothstep as in GLSL: cubic easing
-static inline float smoothstep(float edge0, float edge1, float x)
-{
-    x = std::clamp((x - edge0) / (edge1 - edge0), 0.0f, 1.0f);
-    return x * x * (3.0f - 2.0f * x);
-}
+// ---- Gamma tables (unchanged behavior) --------------------------------------
 
 static uint8_t gamma_r_encode[32];
 static uint8_t gamma_g_encode[64];
@@ -28,6 +23,8 @@ static void init_gamma_tables()
         gamma_decode[i] = uint8_t(CLAMP_U8(int(std::pow(i / 255.0f, inv_gamma) * 255.0f + 0.5f), 0, 255));
 }
 
+// ---- RGB565 helpers ---------------------------------------------------------
+
 static inline uint16_t build_rgb565_fast(int r, int g, int b)
 {
     return ((r & 0xF8) << 8) | ((g & 0xFC) << 3) | (b >> 3);
@@ -36,23 +33,30 @@ static inline uint16_t build_rgb565_fast(int r, int g, int b)
 static inline void unpack_rgb565_gamma(const uint8_t* src, int pitch, int x, int y, int& r, int& g, int& b)
 {
     const uint8_t* pixel = src + y * pitch + x * 2;
-    uint16_t color = pixel[0] | (pixel[1] << 8);
+    const uint16_t color = uint16_t(pixel[0]) | (uint16_t(pixel[1]) << 8);
 
-    int r5 = (color >> 11) & 0x1F;
-    int g6 = (color >> 5) & 0x3F;
-    int b5 = color & 0x1F;
+    const int r5 = (color >> 11) & 0x1F;
+    const int g6 = (color >> 5) & 0x3F;
+    const int b5 = color & 0x1F;
 
     r = gamma_r_encode[r5];
     g = gamma_g_encode[g6];
     b = gamma_r_encode[b5]; // reuse red gamma table for blue
 }
 
+// ---- Fixed-point smoothstep weights at 4× sample locations ------------------
+// smoothstep(0,1,x) at x in {0, 1/4, 1/2, 3/4} = {0, 5/32, 1/2, 27/32}
+// Scale by 256 for 8.8 fixed point.
+static constexpr uint16_t W[4] = { 0,  40, 128, 216 }; // w = smoothstep
+static constexpr uint16_t IW[4] = { 256, 216, 128,  40 }; // 256 - w
+
 extern "C"
-void ApplySharpBilinear4x(uint8_t* __restrict dst, int dst_pitch, const uint8_t* __restrict src,
+void ApplySharpBilinear4x(uint8_t* __restrict dst, int dst_pitch,
+    const uint8_t* __restrict src,
     int src_width, int src_height, int src_pitch)
 {
-    const int dst_width = src_width * 4;
-    const int dst_height = src_height * 4;
+    const int dst_width = src_width << 2; // *4
+    const int dst_height = src_height << 2; // *4
 
     static bool gamma_ready = false;
     if (!gamma_ready)
@@ -61,65 +65,96 @@ void ApplySharpBilinear4x(uint8_t* __restrict dst, int dst_pitch, const uint8_t*
         gamma_ready = true;
     }
 
-    for (int y = 0; y < dst_height; ++y)
+    // Iterate over source texels; each emits a 4×4 block in the destination.
+    for (int sy = 0; sy < src_height; ++sy)
     {
-        float src_yf = y / 4.0f;
-        int sy = static_cast<int>(src_yf);
-        float fy = src_yf - sy;
-        sy = std::clamp(sy, 0, src_height - 2);
+        // Clamp source rows to avoid reading past the bottom edge.
+        const int sy0 = (sy < src_height - 1) ? sy : (src_height - 2);
+        const int sy1 = sy0 + 1;
 
-        for (int x = 0; x < dst_width; ++x)
+        // Precompute destination row base once per source row.
+        const int dy_base = sy << 2; // sy * 4
+
+        for (int sx = 0; sx < src_width; ++sx)
         {
-            float src_xf = x / 4.0f;
-            int sx = static_cast<int>(src_xf);
-            float fx = src_xf - sx;
-            sx = std::clamp(sx, 0, src_width - 2);
+            // Clamp source cols to avoid reading past the right edge.
+            const int sx0 = (sx < src_width - 1) ? sx : (src_width - 2);
+            const int sx1 = sx0 + 1;
 
-            // Apply smoothstep easing
-            float fx_smooth = smoothstep(0.0f, 1.0f, fx);
-            float fy_smooth = smoothstep(0.0f, 1.0f, fy);
-            float fx1 = 1.0f - fx_smooth;
-            float fy1 = 1.0f - fy_smooth;
-
+            // Unpack the 2×2 neighborhood exactly once per 4×4 block.
             int r00, g00, b00;
             int r10, g10, b10;
             int r01, g01, b01;
             int r11, g11, b11;
 
-            unpack_rgb565_gamma(src, src_pitch, sx, sy, r00, g00, b00);
-            unpack_rgb565_gamma(src, src_pitch, sx + 1, sy, r10, g10, b10);
-            unpack_rgb565_gamma(src, src_pitch, sx, sy + 1, r01, g01, b01);
-            unpack_rgb565_gamma(src, src_pitch, sx + 1, sy + 1, r11, g11, b11);
+            unpack_rgb565_gamma(src, src_pitch, sx0, sy0, r00, g00, b00);
+            unpack_rgb565_gamma(src, src_pitch, sx1, sy0, r10, g10, b10);
+            unpack_rgb565_gamma(src, src_pitch, sx0, sy1, r01, g01, b01);
+            unpack_rgb565_gamma(src, src_pitch, sx1, sy1, r11, g11, b11);
 
-            // Horizontal blends
-            float r_h = r00 * fx1 + r10 * fx_smooth;
-            float g_h = g00 * fx1 + g10 * fx_smooth;
-            float b_h = b00 * fx1 + b10 * fx_smooth;
+            // Emit the 4×4 destination block using separable bilinear in 8.8 fixed-point.
+            const int dx_base = sx << 2; // sx * 4
 
-            float r_v = r01 * fx1 + r11 * fx_smooth;
-            float g_v = g01 * fx1 + g11 * fx_smooth;
-            float b_v = b01 * fx1 + b11 * fx_smooth;
+            // For each of the 4 subcolumns (dx), do horizontal mixes top/bottom once,
+            // then vertical mix for each of the 4 subrows (dy).
+            int rtop[4], gtop[4], btop[4];
+            int rbot[4], gbot[4], bbot[4];
 
-            float r = r_h * fy1 + r_v * fy_smooth;
-            float g = g_h * fy1 + g_v * fy_smooth;
-            float b = b_h * fy1 + b_v * fy_smooth;
+            for (int dx = 0; dx < 4; ++dx)
+            {
+                const uint16_t wx = W[dx];
+                const uint16_t iwx = IW[dx];
 
-            uint16_t out = build_rgb565_fast(
-                gamma_decode[CLAMP_U8(int(r + 0.5f), 0, 255)],
-                gamma_decode[CLAMP_U8(int(g + 0.5f), 0, 255)],
-                gamma_decode[CLAMP_U8(int(b + 0.5f), 0, 255)]
-            );
+                // Top row horizontal blend
+                rtop[dx] = (r00 * iwx + r10 * wx + 128) >> 8;
+                gtop[dx] = (g00 * iwx + g10 * wx + 128) >> 8;
+                btop[dx] = (b00 * iwx + b10 * wx + 128) >> 8;
 
-            uint8_t* dst_px = dst + y * dst_pitch + x * 2;
-            dst_px[0] = out & 0xFF;
-            dst_px[1] = (out >> 8) & 0xFF;
+                // Bottom row horizontal blend
+                rbot[dx] = (r01 * iwx + r11 * wx + 128) >> 8;
+                gbot[dx] = (g01 * iwx + g11 * wx + 128) >> 8;
+                bbot[dx] = (b01 * iwx + b11 * wx + 128) >> 8;
+            }
+
+            for (int dy = 0; dy < 4; ++dy)
+            {
+                const uint16_t wy = W[dy];
+                const uint16_t iwy = IW[dy];
+
+                // Destination row pointer for this subrow
+                const int y = dy_base + dy;
+                uint8_t* __restrict dst_row = dst + y * dst_pitch;
+
+                for (int dx = 0; dx < 4; ++dx)
+                {
+                    const int x = dx_base + dx;
+
+                    // Final vertical blend
+                    int r = (rtop[dx] * iwy + rbot[dx] * wy + 128) >> 8;
+                    int g = (gtop[dx] * iwy + gbot[dx] * wy + 128) >> 8;
+                    int b = (btop[dx] * iwy + bbot[dx] * wy + 128) >> 8;
+
+                    // Gamma decode back to display space and pack
+                    const uint16_t out = build_rgb565_fast(
+                        gamma_decode[CLAMP_U8(r, 0, 255)],
+                        gamma_decode[CLAMP_U8(g, 0, 255)],
+                        gamma_decode[CLAMP_U8(b, 0, 255)]
+                    );
+
+                    uint8_t* __restrict dst_px = dst_row + (x << 1); // x*2
+                    dst_px[0] = uint8_t(out & 0xFF);
+                    dst_px[1] = uint8_t((out >> 8) & 0xFF);
+                }
+            }
         }
     }
 }
 
 extern "C"
-void filter_sharpbilinear_4x(uint8_t* srcPtr, int srcPitch, uint8_t* dstPtr, int dstPitch,
+void filter_sharpbilinear_4x(uint8_t* srcPtr, int srcPitch,
+    uint8_t* dstPtr, int dstPitch,
     int width, int height)
 {
+    
     ApplySharpBilinear4x(dstPtr, dstPitch, srcPtr, width, height, srcPitch);
 }
