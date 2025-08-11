@@ -369,6 +369,9 @@
     <ClInclude Include="..\external\imgui\snes9x_imgui.h">
       <Filter>GUI\VideoDriver\ImGui</Filter>
     </ClInclude>
+    <ClInclude Include="..\filter\sharpbilinear_flexible.h">
+      <Filter>Filter</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\bsx.cpp">
@@ -710,9 +713,6 @@
     <ClCompile Include="CSaveLoadWithPreviewDlg.cpp">
       <Filter>GUI</Filter>
     </ClCompile>
-    <ClCompile Include="..\external\fmt\src\format.cc">
-      <Filter>fmtlib</Filter>
-    </ClCompile>
     <ClCompile Include="..\fscompat.cpp">
       <Filter>Emu</Filter>
     </ClCompile>
@@ -793,6 +793,9 @@
     </ClCompile>
     <ClCompile Include="..\external\imgui\snes9x_imgui.cpp">
       <Filter>GUI\VideoDriver\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\filter\sharpbilinear_flexible.cpp">
+      <Filter>Filter</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

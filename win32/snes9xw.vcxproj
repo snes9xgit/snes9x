@@ -358,6 +358,7 @@
     <ClInclude Include="..\filter\blit.h" />
     <ClInclude Include="..\filter\epx.h" />
     <CustomBuild Include="..\filter\hq2x.h" />
+    <ClInclude Include="..\filter\sharpbilinear_flexible.h" />
     <ClInclude Include="..\filter\snes_ntsc.h" />
     <ClInclude Include="..\filter\snes_ntsc_config.h" />
     <ClInclude Include="..\filter\snes_ntsc_impl.h" />
@@ -532,6 +533,7 @@
     <ClCompile Include="..\filter\2xsai.cpp" />
     <ClCompile Include="..\filter\blit.cpp" />
     <ClCompile Include="..\filter\epx.cpp" />
+    <ClCompile Include="..\filter\sharpbilinear_flexible.cpp" />
     <ClCompile Include="..\filter\hq2x.cpp" />
     <ClCompile Include="..\filter\snes_ntsc.c" />
     <ClCompile Include="..\filter\xbrz.cpp" />
