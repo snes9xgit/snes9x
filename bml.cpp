@@ -97,6 +97,9 @@ static void bml_parse_name(bml_node &node, std::string_view &line)
 
 static void bml_parse_data(bml_node &node, std::string_view &line)
 {
+    if (!line.length()) {
+        return;
+    }
     if (starts_with(line, "=\"")) {
         line.remove_prefix(2);
         auto quote_pos = line.find_first_of("\"\n\r");
