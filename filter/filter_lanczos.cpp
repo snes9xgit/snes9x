@@ -1,3 +1,9 @@
+/*****************************************************************************\
+     Snes9x - Portable Super Nintendo Entertainment System (TM) emulator.
+                This file is licensed under the Snes9x License.
+   For further information, consult the LICENSE file in the root directory.
+\*****************************************************************************/
+
 #include <cstdint>
 #include <cstring>
 #include <algorithm>
@@ -156,7 +162,6 @@ void ApplyLanczos4x(
     }
 }
 
-extern "C"
 void filter_lanczos4x(uint8_t* srcPtr, int srcPitch, uint8_t* dstPtr, int dstPitch,
     int width, int height)
 {

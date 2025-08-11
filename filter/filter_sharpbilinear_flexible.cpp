@@ -1,3 +1,9 @@
+/*****************************************************************************\
+     Snes9x - Portable Super Nintendo Entertainment System (TM) emulator.
+                This file is licensed under the Snes9x License.
+   For further information, consult the LICENSE file in the root directory.
+\*****************************************************************************/
+
 #include <cstdint>
 #include <cmath>
 #include <algorithm>
@@ -150,7 +156,6 @@ void ApplySharpBilinear4x(uint8_t* __restrict dst, int dst_pitch,
     }
 }
 
-extern "C"
 void filter_sharpbilinear_4x(uint8_t* srcPtr, int srcPitch,
     uint8_t* dstPtr, int dstPitch,
     int width, int height)
