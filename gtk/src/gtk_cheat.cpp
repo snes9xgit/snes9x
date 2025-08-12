@@ -194,8 +194,12 @@ void Snes9xCheats::refresh_tree_view()
     if (Cheat.group.empty())
         return;
 
-    for (unsigned int i = 0; i < Cheat.group.size() - list_size; i++)
-        store->append();
+    if (list_size > Cheat.group.size())
+        for (size_t i = 0; i < list_size - Cheat.group.size(); i++)
+            store->erase(store->get_iter("0"));
+    if (list_size < Cheat.group.size())
+        for (size_t i = 0; i < Cheat.group.size() - list_size; i++)
+            store->append();
 
     auto iter = store->children().begin();
     for (unsigned int i = 0; i < Cheat.group.size (); i++)
