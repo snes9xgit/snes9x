@@ -112,7 +112,8 @@ static void bml_parse_data(bml_node &node, std::string_view &line)
         line.remove_prefix(1);
         auto end_pos = line.find_first_of("\n\r ");
         node.data = trim(line.substr(0, end_pos));
-        line.remove_prefix(end_pos);
+        if (end_pos != std::string::npos)
+            line.remove_prefix(end_pos);
     }
     else if (line[0] == ':') {
         line.remove_prefix(1);
