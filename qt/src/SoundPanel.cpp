@@ -39,6 +39,8 @@ SoundPanel::SoundPanel(EmuApplication *app_)
     });
 
     connect(checkBox_adjust_input_rate, &QCheckBox::clicked, [&](bool checked) {
+        if (!checked && checked != app->config->adjust_input_rate_automatically)
+            app->config->input_rate = 32040;
         app->config->adjust_input_rate_automatically = checked;
         app->updateSettings();
         updateInputRate();
@@ -86,7 +88,10 @@ void SoundPanel::updateInputRate()
 
     double hz = app->config->input_rate * ir_ratio;
 
-    label_input_rate->setText(QString("%1\n%2 Hz").arg(app->config->input_rate).arg(hz, 6, 'g', 6));
+    label_input_rate->setText(QString("%1%3\n%2 Hz")
+        .arg(app->config->input_rate)
+        .arg(hz, 6, 'g', 6)
+        .arg(app->config->input_rate == 32040.0 ? " (Default)" : ""));
 }
 
 void SoundPanel::showEvent(QShowEvent *event)

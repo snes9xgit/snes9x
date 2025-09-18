@@ -219,8 +219,12 @@ void Snes9xPreferences::connect_signals()
         enable_widget("sound_input_rate", !toggle_button->get_active());
         enable_widget("video_rate_label", !toggle_button->get_active());
         enable_widget("relative_video_rate", !toggle_button->get_active());
-        if (toggle_button->get_active())
+        if (toggle_button->get_active()) {
             set_slider("sound_input_rate", top_level->get_auto_input_rate());
+        } else {
+            set_slider("sound_input_rate", 32040);
+        }
+
     });
     // Handle plurals on GtkLabel “milliseconds_label”
     get_object<Gtk::SpinButton>("sound_buffer_size")->signal_value_changed().connect([&] {
@@ -309,17 +313,16 @@ void Snes9xPreferences::game_data_browse(const std::string &folder)
 
 void Snes9xPreferences::input_rate_changed()
 {
-    const double value =
-        get_object<Gtk::HScale>("sound_input_rate")->get_value() /
-        32040.0 * NTSC_PROGRESSIVE_FRAME_RATE;
+    const int input_rate = round(get_object<Gtk::HScale>("sound_input_rate")->get_value());
+    const double value = input_rate / 32040.0 * NTSC_PROGRESSIVE_FRAME_RATE;
     set_label(
         "relative_video_rate",
-        fmt::format("{0:.4Lf} Hz", value).c_str());
+        fmt::format("{0:.4Lf} Hz {1}", value, input_rate == 32040.0 ? "(Default)" : "").c_str());
 }
 
 Glib::ustring Snes9xPreferences::format_sound_input_rate_value(double value)
 {
-    return fmt::format("{0:Ld} Hz", (uint32_t)std::round(value));
+    return fmt::format("{0:Ld} Hz", (uint32_t)std::round(value));
 }
 
 bool Snes9xPreferences::key_pressed(GdkEventKey *event)

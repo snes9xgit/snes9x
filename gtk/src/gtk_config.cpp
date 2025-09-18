@@ -107,8 +107,8 @@ int Snes9xConfig::load_defaults()
     sound_driver = 0;
     sound_buffer_size = 48;
     sound_playback_rate = 7;
-    sound_input_rate = 31950;
-    auto_input_rate = true;
+    sound_input_rate = 32040;
+    auto_input_rate = false;
     last_directory.clear();
     last_shader_directory.clear();
     window_width = -1;
@@ -174,7 +174,7 @@ int Snes9xConfig::load_defaults()
     Settings.FrameTime = Settings.FrameTimeNTSC;
     Settings.BlockInvalidVRAMAccessMaster = true;
     Settings.SoundSync = false;
-    Settings.DynamicRateControl = false;
+    Settings.DynamicRateControl = true;
     Settings.DynamicRateLimit = 5;
     Settings.InterpolationMethod = DSP_INTERPOLATION_GAUSSIAN;
     Settings.HDMATimingHack = 100;

@@ -256,9 +256,9 @@ bool EmuConfig::setDefaults(int section)
         restart_set(playback_rate, 48000);
         restart_set(audio_buffer_size_ms, 64);
 
-        adjust_input_rate_automatically = true;
-        input_rate = 31979;
-        dynamic_rate_control = false;
+        adjust_input_rate_automatically = false;
+        input_rate = 32040;
+        dynamic_rate_control = true;
         dynamic_rate_limit = 0.005;
         mute_audio = false;
         mute_audio_during_alternate_speed = false;
