@@ -61,6 +61,19 @@
     </layout>
    </item>
    <item>
+    <widget class="QCheckBox" name="automapGamepadsCheckbox">
+     <property name="toolTip">
+      <string>Use SDL to set up the D-pad, face buttons, and L/R. Other buttons may still be configured.</string>
+     </property>
+     <property name="whatsThis">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This option will use the SDL library to auto-configure gamepads. It will take the XBox mappings for the left D-pad and analog stick, as well as the the face buttons and L/R shoulder buttons, and assign them to relative locations on the first SNES controller.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;All gamepads will be assigned to player 1. If you need more players, disable this option and set up the mappings manually.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+     <property name="text">
+      <string>Auto-Assign Gamepad Buttons Using SDL Controller Map</string>
+     </property>
+    </widget>
+   </item>
+   <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
       <widget class="QLabel" name="label">

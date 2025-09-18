@@ -57,6 +57,11 @@ ControllerPanel::ControllerPanel(EmuApplication *app_)
     recreateAutoAssignMenu();
     onJoypadsChanged([&]{ recreateAutoAssignMenu(); });
 
+    connect(automapGamepadsCheckbox, &QCheckBox::toggled, [&](bool checked) {
+       this->app->config->automap_gamepads = checked;
+        app->updateBindings();
+    });
+
     connect(portComboBox, &QComboBox::currentIndexChanged, [&](int index) {
         this->app->config->port_configuration = index;
         app->updateBindings();
@@ -186,4 +191,5 @@ void ControllerPanel::showEvent(QShowEvent *event)
     BindingPanel::showEvent(event);
     recreateAutoAssignMenu();
     portComboBox->setCurrentIndex(app->config->port_configuration);
+    automapGamepadsCheckbox->setChecked(app->config->automap_gamepads);
 }

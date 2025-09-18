@@ -169,6 +169,8 @@ struct EmuConfig
     static const int num_controller_bindings = 18;
     static const int num_shortcuts = 55;
 
+    bool automap_gamepads;
+
     struct
     {
         struct
@@ -178,6 +180,13 @@ struct EmuConfig
 
         EmuBinding shortcuts[num_shortcuts * allowed_bindings];
     } binding;
+
+    struct controller_t
+    {
+        EmuBinding buttons[num_controller_bindings];
+    };
+    std::vector<controller_t> additional_controllers;
+
 
     static const char **getDefaultShortcutKeys();
     static const char **getShortcutNames();

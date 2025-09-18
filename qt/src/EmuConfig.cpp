@@ -284,6 +284,7 @@ bool EmuConfig::setDefaults(int section)
 
     if (section == -1 || section == 4)
     {
+        automap_gamepads = true;
         // Controllers
         port_configuration = 0;
         memset(binding.controller, 0, sizeof(binding.controller));
@@ -497,6 +498,7 @@ void EmuConfig::config(const std::string &filename, bool write)
     EndSection();
 
     BeginSection("Ports");
+    Bool("AutomapGamepads", automap_gamepads);
     Enum("PortConfiguration", port_configuration, { "OneController", "TwoControllers", "Mouse", "SuperScope", "Multitap" });
     EndSection();
 
