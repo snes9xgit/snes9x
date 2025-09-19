@@ -524,6 +524,8 @@ void EmuApplication::pollJoysticks()
         case SDL_EVENT_JOYSTICK_REMOVED:
             if (joypads_changed_callback)
                 joypads_changed_callback();
+            if (core)
+                updateBindings();
             break;
         case SDL_EVENT_JOYSTICK_AXIS_MOTION: {
             auto axis_events = input_manager->discretizeJoyAxisEvent(event.value());
