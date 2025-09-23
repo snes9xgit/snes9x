@@ -9,6 +9,7 @@ struct Throttle
     void reset();
     void wait_for_frame();
     void wait_for_frame_and_rebase_time();
+    double get_late_frames();
     std::chrono::microseconds remaining();
     double max_frame_rate = 0.0;
     double frame_duration = 0.0;

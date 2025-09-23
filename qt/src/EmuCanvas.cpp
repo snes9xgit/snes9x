@@ -20,7 +20,26 @@ void EmuCanvas::output(uint8_t *buffer, int width, int height, QImage::Format fo
     output_data.bytes_per_line = bytes_per_line;
     output_data.frame_rate = frame_rate;
     output_data.ready = true;
+
+    if (get_late_frames() >= 1.0)
+    {
+        throttle_object.advance();
+        if (get_late_frames() >= 1.0)
+            throttle_object.reset();
+        return;
+    }
+
     draw();
+}
+
+double EmuCanvas::get_late_frames()
+{
+    if (config->speed_sync_method != EmuConfig::eTimerWithFrameskip)
+        return 0.0;
+
+    throttle_object.set_frame_rate(config->fixed_frame_rate == 0.0 ? output_data.frame_rate : config->fixed_frame_rate);
+
+    return throttle_object.get_late_frames();
 }
 
 void EmuCanvas::throttle()

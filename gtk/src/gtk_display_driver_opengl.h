@@ -21,7 +21,6 @@
 #endif
 
 #include "common/video/opengl/shaders/glsl.h"
-#include "common/video/std_chrono_throttle.hpp"
 
 #define BUFFER_OFFSET(i) ((char *)(i))
 
@@ -70,8 +69,6 @@ class S9xOpenGLDisplayDriver : public S9xDisplayDriver
     int output_window_height;
 
     OpenGLContext *context;
-
-    Throttle throttle;
 
 #ifdef GDK_WINDOWING_X11
     GTKGLXContext glx;

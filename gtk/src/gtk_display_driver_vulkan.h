@@ -10,7 +10,6 @@
 #include "common/video/vulkan/vulkan_context.hpp"
 #include "common/video/vulkan/vulkan_shader_chain.hpp"
 #include "common/video/vulkan/vulkan_simple_output.hpp"
-#include "common/video/std_chrono_throttle.hpp"
 
 #ifdef VK_USE_PLATFORM_WAYLAND_KHR
 #include "common/video/wayland/wayland_surface.hpp"
@@ -48,7 +47,6 @@ class S9xVulkanDisplayDriver : public S9xDisplayDriver
     Window xid;
     int current_width;
     int current_height;
-    Throttle throttle;
 
 #ifdef VK_USE_PLATFORM_WAYLAND_KHR
     std::unique_ptr<WaylandSurface> wayland_surface;

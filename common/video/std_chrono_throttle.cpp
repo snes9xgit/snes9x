@@ -100,6 +100,13 @@ void Throttle::wait_for_frame()
 }
 #endif
 
+double Throttle::get_late_frames()
+{
+    if (frame_duration_us == 0us)
+        return 0.0;
+    return remaining() / -frame_duration_us;
+}
+
 void Throttle::wait_for_frame_and_rebase_time()
 {
     wait_for_frame();

@@ -522,7 +522,23 @@ void S9xSyncSpeed()
     else // THROTTLE_TIMER or THROTTLE_TIMER_FRAMESKIP
     {
         if (S9xDisplayGetDriver()->can_throttle())
+        {
+            IPPU.RenderThisFrame = true;
+            if (Settings.SkipFrames == THROTTLE_TIMER_FRAMESKIP)
+            {
+                auto &throttle = S9xDisplayGetDriver()->throttle;
+                auto late_frames = S9xDisplayGetDriver()->get_late_frames();
+                if (late_frames < 1.0)
+                    return;
+
+                if (late_frames >= 2.0)
+                    throttle.reset();
+                else if (late_frames >= 1.0)
+                    throttle.advance();
+                IPPU.RenderThisFrame = false;
+            }
             return;
+        }
 
         if (Settings.SkipFrames == THROTTLE_TIMER_FRAMESKIP)
         {

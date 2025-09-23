@@ -345,7 +345,6 @@ void S9xSyncSpeed()
     }
 
     IPPU.RenderThisFrame = true;
-
 }
 
 void S9xParsePortConfig(ConfigFile&, int)

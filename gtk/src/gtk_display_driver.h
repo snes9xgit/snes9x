@@ -6,6 +6,8 @@
 
 #pragma once
 #include "gtk_s9x.h"
+#include "snes9x.h"
+#include "common/video/std_chrono_throttle.hpp"
 
 class S9xDisplayDriver
 {
@@ -19,10 +21,18 @@ class S9xDisplayDriver
     virtual void save(const std::string &filename) = 0;
     virtual bool is_ready() = 0;
     virtual bool can_throttle() { return false; };
+    virtual double get_late_frames()
+    {
+        if (!can_throttle() || Settings.SkipFrames != THROTTLE_TIMER_FRAMESKIP)
+            return 0.0;
+        throttle.set_frame_rate(Settings.PAL ? PAL_PROGRESSIVE_FRAME_RATE : NTSC_PROGRESSIVE_FRAME_RATE);
+        return throttle.get_late_frames();
+    };
     virtual int get_width() = 0;
     virtual int get_height() = 0;
     virtual void shrink() {};
     virtual void regrow() {};
+    Throttle throttle;
 
   protected:
     Snes9xWindow *window = nullptr;

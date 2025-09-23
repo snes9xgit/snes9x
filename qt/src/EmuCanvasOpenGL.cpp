@@ -292,8 +292,7 @@ void EmuCanvasOpenGL::draw()
         }
     }
 
-    if (config->speed_sync_method == EmuConfig::eTimer || config->speed_sync_method == EmuConfig::eTimerWithFrameskip)
-        throttle();
+    throttle();
 
     context->swap_buffers();
 
