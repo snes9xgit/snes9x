@@ -124,21 +124,14 @@ void ControllerPanel::autoPopulateWithJoystick(int joystick_id, int slot)
                                        SDL_GAMEPAD_BUTTON_START,
                                        SDL_GAMEPAD_BUTTON_BACK };
 
-    int num_bindings;
-    auto bindings = SDL_GetGamepadBindings(sdl_controller, &num_bindings);
-
-    auto get_binding_for_button = [&](SDL_GamepadButton button) -> SDL_GamepadBinding
-    {
-        for (int i = 0; i < num_bindings; i++)
-            if (bindings[i]->output_type == SDL_GAMEPAD_BINDTYPE_BUTTON &&
-                bindings[i]->output.button == button)
-                return *bindings[i];
-        return SDL_GamepadBinding{};
-    };
+    auto bindings = SDLInputManager::getXInputButtonBindings(sdl_controller);
 
     for (auto i = 0; i < std::size(list); i++)
     {
-        auto sdl_binding = get_binding_for_button(list[i]);
+        if (!bindings.contains({ SDL_GAMEPAD_BINDTYPE_BUTTON, list[i] }))
+            continue;
+
+        auto &sdl_binding = bindings[{SDL_GAMEPAD_BINDTYPE_BUTTON, list[i]}];
         if (SDL_GAMEPAD_BINDTYPE_BUTTON == sdl_binding.input_type)
             buttons[4 * i + slot] = EmuBinding::joystick_button(device.index, sdl_binding.input.button);
         else if (SDL_GAMEPAD_BINDTYPE_HAT == sdl_binding.input_type)
@@ -146,7 +139,6 @@ void ControllerPanel::autoPopulateWithJoystick(int joystick_id, int slot)
         else if (SDL_GAMEPAD_BINDTYPE_AXIS == sdl_binding.input_type)
             buttons[4 * i + slot] = EmuBinding::joystick_axis(device.index, sdl_binding.input.axis.axis, sdl_binding.input.axis.axis);
     }
-    SDL_free(bindings);
 
     fillTable();
     app->updateBindings();

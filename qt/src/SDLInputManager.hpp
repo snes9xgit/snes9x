@@ -46,6 +46,7 @@ struct SDLInputManager
     void removeDevice(int i);
     void printDevices();
     int findFirstOpenIndex();
+    static std::map<std::pair<int, int>, SDL_GamepadBinding> getXInputButtonBindings(SDL_Gamepad *gamepad);
 
     struct DiscreteAxisEvent
     {

@@ -219,3 +219,17 @@ std::vector<std::pair<int, std::string>> SDLInputManager::getXInputControllers()
 
     return list;
 }
+
+std::map<std::pair<int, int>, SDL_GamepadBinding> SDLInputManager::getXInputButtonBindings(SDL_Gamepad *gamepad)
+{
+    int num_bindings = 0;
+    auto sdl_bindings = SDL_GetGamepadBindings(gamepad, &num_bindings);
+
+    std::map<std::pair<int, int>, SDL_GamepadBinding> binding_map;
+    for (int i = 0; i < num_bindings; i++)
+        binding_map.insert_or_assign({ sdl_bindings[i]->output_type, sdl_bindings[i]->output.button }, *sdl_bindings[i]);
+
+    SDL_free(sdl_bindings);
+
+    return binding_map;
+}

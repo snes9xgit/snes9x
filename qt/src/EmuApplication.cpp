@@ -323,38 +323,32 @@ void EmuApplication::updateBindings()
             if (!device.is_gamepad)
                 continue;
 
-            const SDL_GamepadButton list[] = { SDL_GAMEPAD_BUTTON_DPAD_UP,
-                                               SDL_GAMEPAD_BUTTON_DPAD_DOWN,
-                                               SDL_GAMEPAD_BUTTON_DPAD_LEFT,
-                                               SDL_GAMEPAD_BUTTON_DPAD_RIGHT,
-                                               // B, A and X, Y are inverted on XInput vs SNES
-                                               SDL_GAMEPAD_BUTTON_EAST,
-                                               SDL_GAMEPAD_BUTTON_SOUTH,
-                                               SDL_GAMEPAD_BUTTON_NORTH,
-                                               SDL_GAMEPAD_BUTTON_WEST,
-                                               SDL_GAMEPAD_BUTTON_LEFT_SHOULDER,
-                                               SDL_GAMEPAD_BUTTON_RIGHT_SHOULDER,
-                                               SDL_GAMEPAD_BUTTON_START,
-                                               SDL_GAMEPAD_BUTTON_BACK
+            const SDL_GamepadButton list[] = {
+                SDL_GAMEPAD_BUTTON_DPAD_UP,
+                SDL_GAMEPAD_BUTTON_DPAD_DOWN,
+                SDL_GAMEPAD_BUTTON_DPAD_LEFT,
+                SDL_GAMEPAD_BUTTON_DPAD_RIGHT,
+                // B, A and X, Y are inverted on XInput vs SNES
+                SDL_GAMEPAD_BUTTON_EAST,
+                SDL_GAMEPAD_BUTTON_SOUTH,
+                SDL_GAMEPAD_BUTTON_NORTH,
+                SDL_GAMEPAD_BUTTON_WEST,
+                SDL_GAMEPAD_BUTTON_LEFT_SHOULDER,
+                SDL_GAMEPAD_BUTTON_RIGHT_SHOULDER,
+                SDL_GAMEPAD_BUTTON_START,
+                SDL_GAMEPAD_BUTTON_BACK
             };
 
-            int num_bindings;
-            auto sdl_bindings = SDL_GetGamepadBindings(device.gamepad, &num_bindings);
-            auto get_binding_for_button = [&](SDL_GamepadButton button) -> SDL_GamepadBinding
-            {
-                for (int i = 0; i < num_bindings; i++)
-                    if (sdl_bindings[i]->output_type == SDL_GAMEPAD_BINDTYPE_BUTTON &&
-                        sdl_bindings[i]->output.button == button)
-                        return *sdl_bindings[i];
-                return SDL_GamepadBinding{};
-            };
+            auto sdl_bindings = SDLInputManager::getXInputButtonBindings(device.gamepad);
 
             EmuConfig::controller_t controller{};
 
             for (int i = 0; i < std::size(list); i++)
             {
-                auto sdl_binding = get_binding_for_button(list[i]);
+                if (!sdl_bindings.contains({ SDL_GAMEPAD_BINDTYPE_BUTTON, list[i] }))
+                    continue;
 
+                auto &sdl_binding = sdl_bindings[{ SDL_GAMEPAD_BINDTYPE_BUTTON, list[i] }];
                 if (SDL_GAMEPAD_BINDTYPE_BUTTON == sdl_binding.input_type)
                     controller.buttons[i] = EmuBinding::joystick_button(device.index, sdl_binding.input.button);
                 else if (SDL_GAMEPAD_BINDTYPE_HAT == sdl_binding.input_type)
@@ -369,31 +363,24 @@ void EmuApplication::updateBindings()
             }
 
             // Check axes for sticks, using slots 12-15 in controller
-            for (int i = 0; i < num_bindings; i++)
+            auto do_axis = [&](int sdl_axis, int negative_slot, int positive_slot)
             {
-                auto b = sdl_bindings[i];
-
-                if (b->output_type == SDL_GAMEPAD_BINDTYPE_AXIS && b->input.axis.axis == SDL_GAMEPAD_AXIS_LEFTY)
+                std::pair<int, int> axis{ SDL_GAMEPAD_BINDTYPE_AXIS, sdl_axis };
+                if (sdl_bindings.contains(axis))
                 {
-                    controller.buttons[12] = EmuBinding::joystick_axis(device.index, b->input.axis.axis, -1);
-                    controller.buttons[13] = EmuBinding::joystick_axis(device.index, b->input.axis.axis, 1);
-                    for (int i = 12; i <= 13; i++)
+                    auto &b = sdl_bindings[axis];
+                    controller.buttons[negative_slot] = EmuBinding::joystick_axis(device.index, b.input.axis.axis, -1);
+                    controller.buttons[positive_slot] = EmuBinding::joystick_axis(device.index, b.input.axis.axis, 1);
+                    for (int i = negative_slot; i <= positive_slot; i++)
                         bindings.insert({ controller.buttons[i].hash(), { "Snes9x", Core } });
                 }
-                if (b->output_type == SDL_GAMEPAD_BINDTYPE_AXIS && b->input.axis.axis == SDL_GAMEPAD_AXIS_LEFTX)
-                {
-                    controller.buttons[14] = EmuBinding::joystick_axis(device.index, b->input.axis.axis, -1);
-                    controller.buttons[15] = EmuBinding::joystick_axis(device.index, b->input.axis.axis, 1);
-                    for (int i = 14; i <= 15; i++)
-                        bindings.insert({ controller.buttons[i].hash(), { "Snes9x", Core } });
-                }
-            }
+            };
+            do_axis(SDL_GAMEPAD_AXIS_LEFTY, 12, 13);
+            do_axis(SDL_GAMEPAD_AXIS_LEFTX, 14, 15);
 
             printf("Automapping XInput Gamepad: %s\n", SDL_GetGamepadName(device.gamepad));
 
             config->additional_controllers.push_back(controller);
-
-            SDL_free(sdl_bindings);
         }
     }
 
