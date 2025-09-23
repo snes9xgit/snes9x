@@ -159,7 +159,7 @@ int Snes9xConfig::load_defaults()
     Settings.MultiPlayer5Master = true;
     Settings.UpAndDown = false;
     Settings.AutoSaveDelay = 0;
-    Settings.SkipFrames = 0;
+    Settings.SkipFrames = THROTTLE_TIMER_FRAMESKIP;
     Settings.Transparency = true;
     Settings.DisplayTime = false;
     Settings.DisplayFrameRate = false;
@@ -174,7 +174,7 @@ int Snes9xConfig::load_defaults()
     Settings.FrameTime = Settings.FrameTimeNTSC;
     Settings.BlockInvalidVRAMAccessMaster = true;
     Settings.SoundSync = false;
-    Settings.DynamicRateControl = true;
+    Settings.DynamicRateControl = false;
     Settings.DynamicRateLimit = 5;
     Settings.InterpolationMethod = DSP_INTERPOLATION_GAUSSIAN;
     Settings.HDMATimingHack = 100;
