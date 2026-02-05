@@ -120,8 +120,13 @@ namespace std {
     };
 }
 
+typedef void (*DeviceListChangeCallback)(void * _Nullable context);
+
 void SetUpHID (void);
 void ReleaseHID (void);
+
+void RegisterDeviceListChangeCallback(DeviceListChangeCallback _Nullable callback, void * _Nullable context);
+void UnregisterDeviceListChangeCallback(DeviceListChangeCallback _Nullable callback);
 
 std::unordered_set<struct JoypadDevice> ListJoypads (void);
 std::string NameForDevice(struct JoypadDevice device);
