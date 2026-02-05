@@ -1946,6 +1946,10 @@ LRESULT CALLBACK WinProc(
             GUI.BackgroundKeyHotkeys = !GUI.BackgroundKeyHotkeys;
             break;
 
+		case ID_INPUT_HIDESUPERSCOPECROSSHAIR:
+			Settings.HideSuperScopeCrosshair = !Settings.HideSuperScopeCrosshair;
+			break;
+
         case ID_INPUT_DETECTGAMEPADCHANGES:
             S9xDetectJoypads();
             break;
@@ -3917,6 +3921,9 @@ static void CheckMenuStates ()
     if (!GUI.BackgroundInput)
         mii.fState |= MFS_DISABLED;
     SetMenuItemInfo(GUI.hMenu, ID_INPUT_BACKGROUNDKEYBOARDHOTKEYS, FALSE, &mii);
+
+	mii.fState = Settings.HideSuperScopeCrosshair ? MFS_CHECKED : MFS_UNCHECKED;
+	SetMenuItemInfo(GUI.hMenu, ID_INPUT_HIDESUPERSCOPECROSSHAIR, FALSE, &mii);
 
 	UINT validFlag;
     ControllerOptionsFromControllers();
