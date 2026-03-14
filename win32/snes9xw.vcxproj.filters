@@ -372,6 +372,9 @@
     <ClInclude Include="..\filter\sharpbilinear_flexible.h">
       <Filter>Filter</Filter>
     </ClInclude>
+    <ClInclude Include="CCheatGroupDialog.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\bsx.cpp">
@@ -796,6 +799,9 @@
     </ClCompile>
     <ClCompile Include="..\filter\sharpbilinear_flexible.cpp">
       <Filter>Filter</Filter>
+    </ClCompile>
+    <ClCompile Include="CCheatGroupDialog.cpp">
+      <Filter>GUI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
