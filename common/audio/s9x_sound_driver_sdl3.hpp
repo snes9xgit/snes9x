@@ -11,7 +11,7 @@
 #undef bool
 
 #include "s9x_sound_driver.hpp"
-#include "../../apu/resampler.h"
+#include "../../common/audio/atomic_ring_buffer.hpp"
 
 #include <mutex>
 #include <vector>
@@ -35,7 +35,6 @@ class S9xSDL3SoundDriver : public S9xSoundDriver
 
     SDL_AudioStream *stream;
     SDL_AudioSpec audiospec;
-    Resampler buffer;
-    std::mutex mutex;
+    atomic_ring_buffer<int16_t> buffer;
     std::vector<int16_t> tmp;
 };
