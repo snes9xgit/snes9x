@@ -483,4 +483,6 @@ void FreezeUnfreeze(const char *filename, bool8 freeze);
 bool UnfreezeScreenshotSlot(int slot, uint16 **image_buffer, int &width, int &height);
 void S9xWinRemoveRegistryKeys();
 
+#define CHEAT_SIZE 32767
+
 #endif // !defined(SNES9X_H_INCLUDED)

@@ -464,6 +464,7 @@
     <ClInclude Include="..\common\video\vulkan\vulkan_texture.hpp" />
     <ClInclude Include="AVIOutput.h" />
     <ClInclude Include="CCGShader.h" />
+    <ClInclude Include="CCheatGroupDialog.h" />
     <ClInclude Include="CD3DCG.h" />
     <CustomBuild Include="CDirect3D.h" />
     <ClInclude Include="CDirectDraw.h" />
@@ -528,7 +529,9 @@
     <ClCompile Include="..\external\imgui\imgui_impl_vulkan.cpp" />
     <ClCompile Include="..\external\imgui\imgui_tables.cpp" />
     <ClCompile Include="..\external\imgui\imgui_widgets.cpp" />
-    <ClCompile Include="..\external\imgui\snes9x_imgui.cpp" />
+    <ClCompile Include="..\external\imgui\snes9x_imgui.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'">/utf-8 %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
     <ClCompile Include="..\external\stb\stb_image_implementation.cpp" />
     <ClCompile Include="..\filter\2xsai.cpp" />
     <ClCompile Include="..\filter\blit.cpp" />
@@ -637,6 +640,7 @@
     <ClCompile Include="..\common\video\vulkan\vulkan_texture.cpp" />
     <ClCompile Include="AVIOutput.cpp" />
     <ClCompile Include="CCGShader.cpp" />
+    <ClCompile Include="CCheatGroupDialog.cpp" />
     <ClCompile Include="CD3DCG.cpp" />
     <ClCompile Include="CDirect3D.cpp" />
     <ClCompile Include="CDirectDraw.cpp" />
