@@ -39,7 +39,7 @@ vk::AccessFlags get_access_flags(vk::ImageLayout layout)
     case vk::ImageLayout::eFragmentShadingRateAttachmentOptimalKHR:
         return vk::AccessFlagBits::eFragmentShadingRateAttachmentReadKHR;
     case vk::ImageLayout::eShaderReadOnlyOptimal:
-        return vk::AccessFlagBits::eShaderRead | vk::AccessFlagBits::eShaderWrite;
+        return vk::AccessFlagBits::eShaderRead;
     case vk::ImageLayout::eTransferSrcOptimal:
         return vk::AccessFlagBits::eTransferRead;
     case vk::ImageLayout::eTransferDstOptimal:
