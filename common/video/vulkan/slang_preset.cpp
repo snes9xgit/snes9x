@@ -52,8 +52,6 @@ bool SlangPreset::load_preset_file(const string &filename)
     if (name == "")
         name = get_basename(filename);
 
-    printf("Shader name: \"%s\"\n", name.c_str());
-
     int num_passes = conf.get_int("shaders", 0);
 
     if (num_passes <= 0)
