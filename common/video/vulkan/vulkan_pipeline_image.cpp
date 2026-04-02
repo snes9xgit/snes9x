@@ -172,7 +172,10 @@ void PipelineImage::create(int width, int height, vk::Format fmt, vk::RenderPass
         .setSamples(vk::SampleCountFlagBits::e1)
         .setSharingMode(vk::SharingMode::eExclusive);
 
-    std::tie(image, image_allocation) = allocator.createImage(image_create_info, allocation_create_info).value;
+    auto result = allocator.createImage(image_create_info, allocation_create_info);
+    assert(result.has_value());
+    image = std::get<vk::Image>(result.value);
+    image_allocation = std::get<vma::Allocation>(result.value);
 
     auto subresource_range = vk::ImageSubresourceRange{}
         .setAspectMask(vk::ImageAspectFlagBits::eColor)
