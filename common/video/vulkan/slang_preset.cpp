@@ -17,6 +17,27 @@
 using std::string;
 using std::to_string;
 
+static string get_basename(const string &filename)
+{
+    auto basename_start_index = filename.rfind("/") + 1;
+    if (basename_start_index == string::npos)
+        basename_start_index = 0;
+    return filename.substr(basename_start_index, filename.rfind(".") - basename_start_index);
+}
+
+string SlangPreset::get_name_from_file(const string &filename)
+{
+    IniFile conf;
+    if (!ends_with(filename, ".slangp") || !conf.load_file(filename))
+        return "";
+
+    string name = conf.get_string("name", "");
+    if (name == "")
+        name = get_basename(filename);
+
+    return name;
+}
+
 bool SlangPreset::load_preset_file(const string &filename)
 {
     if (!ends_with(filename, ".slangp"))
@@ -26,6 +47,12 @@ bool SlangPreset::load_preset_file(const string &filename)
 
     if (!conf.load_file(filename))
         return false;
+
+    name = conf.get_string("name", "");
+    if (name == "")
+        name = get_basename(filename);
+
+    printf("Shader name: \"%s\"\n", name.c_str());
 
     int num_passes = conf.get_int("shaders", 0);
 
@@ -662,6 +689,7 @@ bool SlangPreset::save_to_file(const std::string& filename)
     auto outb = [&](const std::string &key, bool value) { outs(key, value ? "true" : "false"); };
     auto outa = [&](const std::string &key, auto value) { outs(key, to_string(value)); };
 
+    outs("name", name);
     outa("shaders", passes.size());
 
     for (size_t i = 0; i < passes.size(); i++)

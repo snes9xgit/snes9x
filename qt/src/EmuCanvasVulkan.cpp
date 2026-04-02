@@ -320,9 +320,13 @@ void EmuCanvasVulkan::showParametersDialog()
 
     auto parameters = reinterpret_cast<std::vector<EmuCanvas::Parameter> *>(&shader_chain->preset->parameters);
 
+    ShaderProperties properties;
+    properties.name = &shader_chain->preset->name;
+    properties.parameters = parameters;
+
     if (!shader_parameters_dialog)
         shader_parameters_dialog =
-            std::make_unique<ShaderParametersDialog>(this, parameters);
+            std::make_unique<ShaderParametersDialog>(this, properties);
 
     shader_parameters_dialog->show();
 }
