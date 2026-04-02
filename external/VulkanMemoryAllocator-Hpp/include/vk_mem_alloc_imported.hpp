@@ -1,0 +1,30 @@
+// Generated from the list of VMA-Hpp headers (vk_mem_alloc*.hpp).
+// See https://clang.llvm.org/docs/StandardCPlusPlusModules.html#providing-a-header-to-skip-parsing-redundant-headers
+
+#ifndef VULKAN_MEMORY_ALLOCATOR_HPP
+#define VULKAN_MEMORY_ALLOCATOR_HPP
+#endif
+
+#ifndef VULKAN_MEMORY_ALLOCATOR_ENUMS_HPP
+#define VULKAN_MEMORY_ALLOCATOR_ENUMS_HPP
+#endif
+
+#ifndef VULKAN_MEMORY_ALLOCATOR_FUNCS_HPP
+#define VULKAN_MEMORY_ALLOCATOR_FUNCS_HPP
+#endif
+
+#ifndef VULKAN_MEMORY_ALLOCATOR_HANDLES_HPP
+#define VULKAN_MEMORY_ALLOCATOR_HANDLES_HPP
+#endif
+
+#ifndef VULKAN_MEMORY_ALLOCATOR_RAII_HPP
+#define VULKAN_MEMORY_ALLOCATOR_RAII_HPP
+#endif
+
+#ifndef VULKAN_MEMORY_ALLOCATOR_STRUCTS_HPP
+#define VULKAN_MEMORY_ALLOCATOR_STRUCTS_HPP
+#endif
+
+#ifndef VULKAN_MEMORY_ALLOCATOR_TO_STRING_HPP
+#define VULKAN_MEMORY_ALLOCATOR_TO_STRING_HPP
+#endif
