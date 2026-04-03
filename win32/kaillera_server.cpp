@@ -1242,9 +1242,31 @@ static void ParsePacket(const uint8_t *data, int dataLen, const sockaddr_in &fro
 
     if (clientIdx < 0)
     {
-        KSLog("Packet from unknown client %s:%d (not HELLO/PING), ignoring",
-              inet_ntoa(fromAddr.sin_addr), ntohs(fromAddr.sin_port));
-        return;
+        // After HELLOD00D, the client reconnects its socket so the source port changes.
+        // Try to match by IP address only - find a client from the same IP that hasn't
+        // completed the login handshake yet (ackCount == 0, no username).
+        for (int i = 0; i < KAILLERA_MAX_CLIENTS; i++)
+        {
+            if (KServer.clients[i].active &&
+                KServer.clients[i].addr.sin_addr.s_addr == fromAddr.sin_addr.s_addr &&
+                KServer.clients[i].ackCount == 0 &&
+                KServer.clients[i].username[0] == '\0')
+            {
+                clientIdx = i;
+                // Update the stored address to the new port
+                KServer.clients[i].addr = fromAddr;
+                KSLog("Matched reconnecting client slot %d by IP (new port %d)",
+                      i, ntohs(fromAddr.sin_port));
+                break;
+            }
+        }
+
+        if (clientIdx < 0)
+        {
+            KSLog("Packet from unknown client %s:%d (not HELLO/PING), ignoring",
+                  inet_ntoa(fromAddr.sin_addr), ntohs(fromAddr.sin_port));
+            return;
+        }
     }
 
     KailleraClient &client = KServer.clients[clientIdx];
