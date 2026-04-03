@@ -1292,12 +1292,10 @@ static void ParsePacket(const uint8_t *data, int dataLen, const sockaddr_in &fro
 
     // Parse message envelope: [count][messages...]
     uint8_t msgCount = data[0];
-    KSLog("Envelope from client %d ('%s'): %d messages, dataLen=%d",
-          clientIdx, client.username, msgCount, dataLen);
     const uint8_t *p = data + 1;
     const uint8_t *end = data + dataLen;
 
-    // Messages are newest-first; collect and process oldest-first
+    // Messages are newest-first; collect them, then process only NEW ones oldest-first
     struct MsgEntry {
         uint16_t seq;
         uint8_t type;
@@ -1315,7 +1313,7 @@ static void ParsePacket(const uint8_t *data, int dataLen, const sockaddr_in &fro
         int payloadLen = msgLen - 1;
         const uint8_t *payload = p + 5;
 
-        if (payload + payloadLen > end)
+        if (payloadLen < 0 || payload + payloadLen > end)
             break;
 
         entries[numEntries].seq = seq;
@@ -1327,22 +1325,20 @@ static void ParsePacket(const uint8_t *data, int dataLen, const sockaddr_in &fro
         p = payload + payloadLen;
     }
 
-    // Process from oldest to newest (reversed)
+    // Process from oldest to newest (reversed), skipping already-seen sequences
     for (int i = numEntries - 1; i >= 0; i--)
     {
-        // Skip already-processed messages
-        if (client.ackCount > 0 || entries[i].type == KM_USER_LOGIN)
-        {
-            // Simple duplicate check: skip if seq <= last processed
-            // (For the login message, always process it)
-            if (entries[i].type != KM_USER_LOGIN &&
-                entries[i].type != KM_CLIENT_ACK &&
-                numEntries > 1 && i > 0)
-            {
-                // Only process the newest unprocessed message
-                // This is a simplification; a full implementation tracks recvSeq
-            }
-        }
+        // Sequence-based deduplication: skip messages we've already processed.
+        // recvSeq tracks the next expected sequence number.
+        // Handle uint16 wraparound: if seq appears to be "behind" recvSeq, skip it.
+        int16_t seqDiff = (int16_t)(entries[i].seq - client.recvSeq);
+        if (seqDiff < 0)
+            continue; // already processed this message
+
+        client.recvSeq = entries[i].seq + 1;
+
+        KSLog("  Dispatch msg type=0x%02X seq=%d from client %d ('%s')",
+              entries[i].type, entries[i].seq, clientIdx, client.username);
 
         switch (entries[i].type)
         {
