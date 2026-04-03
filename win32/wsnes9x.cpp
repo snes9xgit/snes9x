@@ -100,6 +100,7 @@ LRESULT CALLBACK DlgChildSplitProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lP
 INT_PTR CALLBACK DlgNPProgress(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
 INT_PTR CALLBACK DlgNetConnect(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
 INT_PTR CALLBACK DlgNPOptions(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
+INT_PTR CALLBACK DlgKailleraServer(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
 INT_PTR CALLBACK DlgFunky(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
 INT_PTR CALLBACK DlgInputConfig(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
 INT_PTR CALLBACK DlgHotkeyConfig(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -1998,25 +1999,9 @@ LRESULT CALLBACK WinProc(
 			KailleraOpenDialog(hWnd);
 			break;
 		case ID_KAILLERA_HOST_SERVER:
-			if (KailleraServerIsRunning())
-			{
-				KailleraServerStop();
-				MessageBox(hWnd, TEXT("Kaillera Server stopped."),
-					TEXT("Kaillera Server"), MB_OK | MB_ICONINFORMATION);
-			}
-			else
-			{
-				if (KailleraServerStart())
-				{
-					MessageBox(hWnd, TEXT("Kaillera Server started on port 27888.\n\nConnect to 127.0.0.1 from the Kaillera client dialog."),
-						TEXT("Kaillera Server"), MB_OK | MB_ICONINFORMATION);
-				}
-				else
-				{
-					MessageBox(hWnd, TEXT("Failed to start Kaillera Server.\n\nPort 27888 may already be in use."),
-						TEXT("Kaillera Server"), MB_OK | MB_ICONERROR);
-				}
-			}
+			RestoreGUIDisplay();
+			DialogBox(g_hInst, MAKEINTRESOURCE(IDD_KAILLERA_SERVER), hWnd, DlgKailleraServer);
+			RestoreSNESDisplay();
 			break;
 #endif
 
@@ -7541,6 +7526,144 @@ INT_PTR CALLBACK DlgNPOptions(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 				return TRUE;
 			}
 		}
+	}
+	return FALSE;
+}
+#endif
+
+#ifdef KAILLERA_SUPPORT
+static void KailleraServerDlgUpdateStatus(HWND hDlg)
+{
+	bool running = KailleraServerIsRunning();
+	SetDlgItemText(hDlg, IDC_KAILLERA_START_STOP,
+		running ? TEXT("Stop Server") : TEXT("Start Server"));
+	SetDlgItemText(hDlg, IDC_KAILLERA_STATUS,
+		running ? TEXT("Server is RUNNING.") : TEXT("Server is stopped."));
+
+	// Disable settings while running
+	EnableWindow(GetDlgItem(hDlg, IDC_KAILLERA_SERVER_NAME), !running);
+	EnableWindow(GetDlgItem(hDlg, IDC_KAILLERA_PORT), !running);
+	EnableWindow(GetDlgItem(hDlg, IDC_KAILLERA_PORT_SPIN), !running);
+	EnableWindow(GetDlgItem(hDlg, IDC_KAILLERA_MAX_CLIENTS), !running);
+	EnableWindow(GetDlgItem(hDlg, IDC_KAILLERA_MAX_CLIENTS_SPIN), !running);
+}
+
+static void KailleraServerDlgRefreshLog(HWND hDlg)
+{
+	// Read last lines from kaillera_server.log
+	FILE *f = fopen("kaillera_server.log", "r");
+	if (!f)
+	{
+		SetDlgItemText(hDlg, IDC_KAILLERA_LOG, TEXT("(no log file)"));
+		return;
+	}
+
+	// Read entire file and keep last ~2KB
+	char buf[4096] = {};
+	int total = 0;
+	int ch;
+	while ((ch = fgetc(f)) != EOF && total < (int)sizeof(buf) - 1)
+		buf[total++] = (char)ch;
+	fclose(f);
+	buf[total] = '\0';
+
+	// Show last portion if too long
+	const char *start = buf;
+	if (total > 2000)
+		start = buf + total - 2000;
+
+	// Convert \n to \r\n for the edit control
+	TCHAR display[4096];
+	int dpos = 0;
+	for (const char *p = start; *p && dpos < 4090; p++)
+	{
+		if (*p == '\n' && (p == start || *(p-1) != '\r'))
+			display[dpos++] = '\r';
+		display[dpos++] = (TCHAR)*p;
+	}
+	display[dpos] = '\0';
+
+	SetDlgItemText(hDlg, IDC_KAILLERA_LOG, display);
+
+	// Scroll to bottom
+	HWND hLog = GetDlgItem(hDlg, IDC_KAILLERA_LOG);
+	SendMessage(hLog, EM_SETSEL, dpos, dpos);
+	SendMessage(hLog, EM_SCROLLCARET, 0, 0);
+}
+
+INT_PTR CALLBACK DlgKailleraServer(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
+{
+	switch (msg)
+	{
+	case WM_INITDIALOG:
+		SetDlgItemText(hDlg, IDC_KAILLERA_SERVER_NAME, TEXT("Snes9x Kaillera Server"));
+		SetDlgItemInt(hDlg, IDC_KAILLERA_PORT, KAILLERA_SERVER_PORT, FALSE);
+		SetDlgItemInt(hDlg, IDC_KAILLERA_MAX_CLIENTS, 8, FALSE);
+
+		SendDlgItemMessage(hDlg, IDC_KAILLERA_PORT_SPIN, UDM_SETRANGE, 0, MAKELPARAM(65535, 1024));
+		SendDlgItemMessage(hDlg, IDC_KAILLERA_MAX_CLIENTS_SPIN, UDM_SETRANGE, 0, MAKELPARAM(8, 2));
+
+		KailleraServerDlgUpdateStatus(hDlg);
+		KailleraServerDlgRefreshLog(hDlg);
+
+		// Set a timer to refresh the log every 2 seconds
+		SetTimer(hDlg, 1, 2000, NULL);
+		return TRUE;
+
+	case WM_TIMER:
+		if (wParam == 1)
+		{
+			KailleraServerDlgRefreshLog(hDlg);
+			KailleraServerDlgUpdateStatus(hDlg);
+		}
+		return TRUE;
+
+	case WM_COMMAND:
+		switch (LOWORD(wParam))
+		{
+		case IDC_KAILLERA_START_STOP:
+			if (KailleraServerIsRunning())
+			{
+				KailleraServerStop();
+			}
+			else
+			{
+				BOOL ok;
+				uint16_t port = (uint16_t)GetDlgItemInt(hDlg, IDC_KAILLERA_PORT, &ok, FALSE);
+				if (!ok || port == 0) port = KAILLERA_SERVER_PORT;
+
+				TCHAR nameW[128];
+				GetDlgItemText(hDlg, IDC_KAILLERA_SERVER_NAME, nameW, 128);
+				const char *name = _tToChar(nameW);
+				char nameBuf[128];
+				if (!name || name[0] == '\0')
+					strcpy(nameBuf, "Snes9x Kaillera Server");
+				else
+				{
+					strncpy(nameBuf, name, sizeof(nameBuf) - 1);
+					nameBuf[sizeof(nameBuf) - 1] = '\0';
+				}
+
+				if (!KailleraServerStart(port, nameBuf))
+				{
+					MessageBox(hDlg, TEXT("Failed to start server.\nPort may already be in use."),
+						TEXT("Kaillera Server"), MB_OK | MB_ICONERROR);
+				}
+			}
+			KailleraServerDlgUpdateStatus(hDlg);
+			KailleraServerDlgRefreshLog(hDlg);
+			return TRUE;
+
+		case IDCANCEL:
+			KillTimer(hDlg, 1);
+			EndDialog(hDlg, 0);
+			return TRUE;
+		}
+		break;
+
+	case WM_DESTROY:
+		KillTimer(hDlg, 1);
+		break;
 	}
 	return FALSE;
 }

@@ -556,15 +556,24 @@
 #define IDM_MACSRIFLE_TOGGLE            44332
 #define ID_KAILLERA_NETPLAY             44333
 #define ID_KAILLERA_HOST_SERVER         44334
+#define IDD_KAILLERA_SERVER             170
+#define IDC_KAILLERA_SERVER_NAME        3044
+#define IDC_KAILLERA_PORT               3045
+#define IDC_KAILLERA_PORT_SPIN          3046
+#define IDC_KAILLERA_MAX_CLIENTS        3047
+#define IDC_KAILLERA_MAX_CLIENTS_SPIN   3048
+#define IDC_KAILLERA_START_STOP         3049
+#define IDC_KAILLERA_STATUS             3050
+#define IDC_KAILLERA_LOG                3051
 #define IDC_STATIC                      -1
 
 // Next default values for new objects
-// 
+//
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        169
+#define _APS_NEXT_RESOURCE_VALUE        171
 #define _APS_NEXT_COMMAND_VALUE         40189
-#define _APS_NEXT_CONTROL_VALUE         3044
+#define _APS_NEXT_CONTROL_VALUE         3052
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif
