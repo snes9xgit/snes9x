@@ -1085,6 +1085,8 @@ BEGIN
     END
     POPUP "&Netplay",                       0,MFT_STRING,MFS_ENABLED
     BEGIN
+        MENUITEM "&Kaillera Netplay...",        ID_KAILLERA_NETPLAY,MFT_STRING,MFS_ENABLED
+        MENUITEM MFT_SEPARATOR
         MENUITEM "&Connect to Server...",       ID_NETPLAY_CONNECT,MFT_STRING,MFS_ENABLED
         MENUITEM "&Disconnect from Server",     ID_NETPLAY_DISCONNECT,MFT_STRING,MFS_ENABLED
         MENUITEM MFT_SEPARATOR

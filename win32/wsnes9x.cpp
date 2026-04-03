@@ -42,6 +42,7 @@
 #include "../display.h"
 #include "../cheats.h"
 #include "../netplay.h"
+#include "kaillera.h"
 #include "../apu/apu.h"
 #include "../movie.h"
 #include "../controls.h"
@@ -1991,6 +1992,12 @@ LRESULT CALLBACK WinProc(
                 SetMenu( GUI.hWnd, NULL);
             break;
 
+#ifdef KAILLERA_SUPPORT
+		case ID_KAILLERA_NETPLAY:
+			KailleraOpenDialog(hWnd);
+			break;
+#endif
+
 #ifdef NETPLAY_SUPPORT
 		case ID_NETPLAY_SERVER:
             S9xRestoreWindowTitle ();
@@ -2670,6 +2677,89 @@ LRESULT CALLBACK WinProc(
 			RestoreSNESDisplay ();
 		}
 #endif
+		break;
+#endif
+
+#ifdef KAILLERA_SUPPORT
+	case WM_KAILLERA_GAME_START:
+		{
+			// Called via PostMessage from Kaillera's game callback thread
+			// lParam = pointer to game name string (in Kaillera.GameName)
+			const char *gameName = (const char *)lParam;
+			if (gameName && gameName[0])
+			{
+				// Try to find and load the ROM matching this game name
+				// If a ROM is already loaded with the matching name, just reset
+				if (!Settings.StopEmulation && strcmp(Memory.ROMName, gameName) == 0)
+				{
+					S9xReset();
+				}
+				else
+				{
+					// Search for ROM file in ROM directory
+					TCHAR romPath[MAX_PATH];
+					_stprintf(romPath, TEXT("%s\\%s"), GUI.RomDir, _tFromChar(gameName));
+
+					// Try common extensions
+					const TCHAR *extensions[] = {
+						TEXT(".smc"), TEXT(".sfc"), TEXT(".fig"), TEXT(".swc"),
+						TEXT(".zip"), TEXT(".7z"), TEXT(".gz"),
+						TEXT(".SMC"), TEXT(".SFC"), TEXT(".FIG"), TEXT(".SWC"),
+						TEXT(".ZIP"), TEXT(".7Z"), TEXT(".GZ"),
+						NULL
+					};
+
+					bool loaded = false;
+					// First try exact name
+					if (GetFileAttributes(romPath) != INVALID_FILE_ATTRIBUTES)
+					{
+						// LoadROM is static, so we post the load via menu command approach
+						// For now, use Memory.LoadROM directly
+						SetCurrentDirectory(S9xGetDirectoryT(ROM_DIR));
+						if (Memory.LoadROM(_tToChar(romPath)))
+						{
+							Settings.StopEmulation = FALSE;
+							ReInitSound();
+							ResetFrameTimer();
+							loaded = true;
+						}
+					}
+
+					if (!loaded)
+					{
+						for (int i = 0; extensions[i] != NULL; i++)
+						{
+							TCHAR tryPath[MAX_PATH];
+							_stprintf(tryPath, TEXT("%s%s"), romPath, extensions[i]);
+							if (GetFileAttributes(tryPath) != INVALID_FILE_ATTRIBUTES)
+							{
+								SetCurrentDirectory(S9xGetDirectoryT(ROM_DIR));
+								if (Memory.LoadROM(_tToChar(tryPath)))
+								{
+									Settings.StopEmulation = FALSE;
+									ReInitSound();
+									ResetFrameTimer();
+									loaded = true;
+									break;
+								}
+							}
+						}
+					}
+
+					if (!loaded)
+					{
+						char msg[512];
+						sprintf(msg, "Kaillera: Could not find ROM for game '%s' in ROM directory", gameName);
+						S9xMessage(S9X_ERROR, S9X_ROM_INFO, msg);
+						KailleraStopGame();
+					}
+				}
+			}
+		}
+		break;
+
+	case WM_KAILLERA_GAME_END:
+		KailleraStopGame();
 		break;
 #endif
 	}

@@ -554,6 +554,7 @@
 #define ID_FILE_LOAD_OOPS               44330
 #define ID_FILE_LOAD_FILE               44331
 #define IDM_MACSRIFLE_TOGGLE            44332
+#define ID_KAILLERA_NETPLAY             44333
 #define IDC_STATIC                      -1
 
 // Next default values for new objects

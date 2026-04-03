@@ -17,6 +17,7 @@
 #include "../netplay.h"
 
 #include "wsnes9x.h"
+#include "kaillera.h"
 #include "win32_sound.h"
 #include "win32_display.h"
 
@@ -798,6 +799,31 @@ void S9xWinScanJoypads ()
 			joypads[J] = S9xNPGetJoypad (J);
 	}
 #endif
+
+#ifdef KAILLERA_SUPPORT
+    if (Kaillera.GameActive)
+    {
+        // Send local player's input and receive all players' input via Kaillera
+        int localIdx = Kaillera.PlayerNumber - 1;
+        if (localIdx < 0) localIdx = 0;
+
+        unsigned short localInput = (unsigned short)(joypads[localIdx] & 0xFFFF);
+        unsigned short allInputs[8] = {};
+
+        int numPlayers = KailleraExchangeInput(localInput, allInputs, 8);
+        if (numPlayers < 0)
+        {
+            // Network error - stop game
+            PostMessage(GUI.hWnd, WM_KAILLERA_GAME_END, 0, 0);
+        }
+        else
+        {
+            // Apply received inputs to all joypads
+            for (int J = 0; J < numPlayers && J < 8; J++)
+                joypads[J] = (uint32)allInputs[J] | 0x80000000;
+        }
+    }
+#endif
 }
 
 void S9xDetectJoypads()
@@ -846,6 +872,9 @@ void InitSnes9x( void)
 }
 void DeinitS9x()
 {
+#ifdef KAILLERA_SUPPORT
+	KailleraUnloadDLL();
+#endif
 	DeleteCriticalSection(&GUI.SoundCritSect);
     CloseHandle(GUI.SoundSyncEvent);
 	CoUninitialize();
