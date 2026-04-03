@@ -13,10 +13,28 @@
 #include "kaillera_server.h"
 #include "../display.h"
 #include <stdio.h>
+#include <stdarg.h>
 #include <string.h>
 #include <process.h>
 
 #pragma comment(lib, "ws2_32.lib")
+
+// Debug logging to file
+static void KSLog(const char *fmt, ...)
+{
+    FILE *f = fopen("kaillera_server.log", "a");
+    if (!f) return;
+    SYSTEMTIME st;
+    GetLocalTime(&st);
+    fprintf(f, "[%02d:%02d:%02d.%03d] ", st.wHour, st.wMinute, st.wSecond, st.wMilliseconds);
+    va_list ap;
+    va_start(ap, fmt);
+    vfprintf(f, fmt, ap);
+    va_end(ap);
+    fprintf(f, "\n");
+    fflush(f);
+    fclose(f);
+}
 
 // ---------------------------------------------------------------------------
 // Internal constants and structures (not exposed in header)
@@ -615,6 +633,8 @@ static void HandleUserLogin(int clientIdx, const uint8_t *payload, int len)
     c.sendSeq = 0;
     c.recvSeq = 0;
 
+    KSLog("User login: '%s' emulator='%s' connType=%d", username, emulator, connType);
+
     // Start ACK handshake
     SendServerACK(clientIdx);
 }
@@ -1180,18 +1200,20 @@ static void ParsePacket(const uint8_t *data, int dataLen, const sockaddr_in &fro
     int clientIdx = FindClientByAddr(fromAddr);
 
     // Handle pre-protocol messages
-    if (dataLen >= 10 && memcmp(data, "HELLO0.83", 9) == 0)
+    if (dataLen >= 9 && memcmp(data, "HELLO0.83", 9) == 0)
     {
+        KSLog("HELLO received from %s:%d", inet_ntoa(fromAddr.sin_addr), ntohs(fromAddr.sin_port));
+
         // Allocate a new client session
         if (clientIdx >= 0)
         {
-            // Client reconnecting, reset
             KServer.clients[clientIdx].active = false;
         }
 
         clientIdx = AllocClient();
         if (clientIdx < 0)
         {
+            KSLog("Server full, sending TOO");
             SendRaw(fromAddr, "TOO\0", 4);
             return;
         }
@@ -1203,27 +1225,35 @@ static void ParsePacket(const uint8_t *data, int dataLen, const sockaddr_in &fro
         c.userId = ++KServer.nextUserId;
         c.lastActivity = GetTickCount();
 
-        // Send port redirect (same port)
         char response[32];
         sprintf(response, "HELLOD00D%d", KServer.port);
         int rlen = (int)strlen(response) + 1;
+        KSLog("Sending response: '%s' (%d bytes) to client slot %d", response, rlen, clientIdx);
         SendRaw(fromAddr, response, rlen);
         return;
     }
 
-    if (dataLen >= 5 && memcmp(data, "PING", 4) == 0)
+    if (dataLen >= 4 && memcmp(data, "PING", 4) == 0)
     {
+        KSLog("PING received, sending PONG");
         SendRaw(fromAddr, "PONG\0", 5);
         return;
     }
 
-    if (clientIdx < 0) return; // unknown client
+    if (clientIdx < 0)
+    {
+        KSLog("Packet from unknown client %s:%d (not HELLO/PING), ignoring",
+              inet_ntoa(fromAddr.sin_addr), ntohs(fromAddr.sin_port));
+        return;
+    }
 
     KailleraClient &client = KServer.clients[clientIdx];
     client.lastActivity = GetTickCount();
 
     // Parse message envelope: [count][messages...]
     uint8_t msgCount = data[0];
+    KSLog("Envelope from client %d ('%s'): %d messages, dataLen=%d",
+          clientIdx, client.username, msgCount, dataLen);
     const uint8_t *p = data + 1;
     const uint8_t *end = data + dataLen;
 
@@ -1383,7 +1413,19 @@ static unsigned __stdcall KailleraServerThread(void *param)
             int received = recvfrom(KServer.sock, (char *)buf, sizeof(buf), 0,
                                     (sockaddr *)&fromAddr, &fromLen);
             if (received > 0)
+            {
+                KSLog("Received %d bytes from %s:%d, first bytes: %02X %02X %02X %02X '%.*s'",
+                      received,
+                      inet_ntoa(fromAddr.sin_addr), ntohs(fromAddr.sin_port),
+                      received > 0 ? buf[0] : 0, received > 1 ? buf[1] : 0,
+                      received > 2 ? buf[2] : 0, received > 3 ? buf[3] : 0,
+                      received < 32 ? received : 32, (char*)buf);
                 ParsePacket(buf, received, fromAddr);
+            }
+        }
+        else if (sel == SOCKET_ERROR)
+        {
+            KSLog("select() error: %d", WSAGetLastError());
         }
 
         // Periodic cleanup every 3 seconds
@@ -1455,6 +1497,8 @@ bool KailleraServerStart(uint16_t port, const char *name)
         S9xMessage(S9X_ERROR, S9X_ROM_INFO, "Kaillera Server: Failed to start thread");
         return false;
     }
+
+    KSLog("=== Kaillera Server started on port %d ===", port);
 
     char msg[128];
     sprintf(msg, "Kaillera Server started on port %d", port);
