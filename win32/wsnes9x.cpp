@@ -7537,8 +7537,32 @@ static void KailleraServerDlgUpdateStatus(HWND hDlg)
 	bool running = KailleraServerIsRunning();
 	SetDlgItemText(hDlg, IDC_KAILLERA_START_STOP,
 		running ? TEXT("Stop Server") : TEXT("Start Server"));
-	SetDlgItemText(hDlg, IDC_KAILLERA_STATUS,
-		running ? TEXT("Server is RUNNING.") : TEXT("Server is stopped."));
+
+	if (running)
+	{
+		// Show IP and port in the status line
+		char hostName[256] = {};
+		char ipStr[64] = "127.0.0.1";
+		gethostname(hostName, sizeof(hostName));
+		struct hostent *he = gethostbyname(hostName);
+		if (he && he->h_addr_list[0])
+		{
+			struct in_addr addr;
+			memcpy(&addr, he->h_addr_list[0], sizeof(addr));
+			strncpy(ipStr, inet_ntoa(addr), sizeof(ipStr) - 1);
+		}
+		BOOL ok;
+		int port = GetDlgItemInt(hDlg, IDC_KAILLERA_PORT, &ok, FALSE);
+		if (!ok) port = KAILLERA_SERVER_PORT;
+
+		TCHAR statusBuf[256];
+		_stprintf(statusBuf, TEXT("Server is RUNNING at %s:%d"), _tFromChar(ipStr), port);
+		SetDlgItemText(hDlg, IDC_KAILLERA_STATUS, statusBuf);
+	}
+	else
+	{
+		SetDlgItemText(hDlg, IDC_KAILLERA_STATUS, TEXT("Server is stopped."));
+	}
 
 	// Disable settings while running
 	EnableWindow(GetDlgItem(hDlg, IDC_KAILLERA_SERVER_NAME), !running);
