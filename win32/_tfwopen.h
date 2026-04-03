@@ -88,14 +88,12 @@ public:
 		: std::ifstream() {}
 
 	explicit __CLR_OR_THIS_CALL u8nifstream(const char *_Filename,
-		ios_base::openmode _Mode = ios_base::in,
-		int _Prot = (int)ios_base::_Openprot)
+		ios_base::openmode _Mode = ios_base::in)
 		: std::ifstream(Utf8ToWide(_Filename),_Mode) {}
 
 	explicit __CLR_OR_THIS_CALL u8nifstream(const wchar_t *_Filename,
-		ios_base::openmode _Mode = ios_base::in,
-		int _Prot = (int)ios_base::_Openprot)
-		: std::ifstream(_Filename,_Mode,_Prot) {}
+		ios_base::openmode _Mode = ios_base::in)
+		: std::ifstream(_Filename,_Mode) {}
 
 	explicit __CLR_OR_THIS_CALL u8nifstream(FILE *_File)
 		: std::ifstream(_File) {}
