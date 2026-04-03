@@ -11,7 +11,6 @@
 #include "../snes9x.h"
 #include "../memmap.h"
 #include "../display.h"
-#include <winsock2.h>
 #include <stdio.h>
 #include <string.h>
 #include <process.h>
@@ -303,30 +302,27 @@ static int BuildGameList(char *gameList, int maxSize)
 // doesn't actually send any packets. This pre-flight nudges winsock.
 static void KailleraWarmup()
 {
-    WSADATA wsa;
-    WSAStartup(MAKEWORD(2, 2), &wsa);
-    SOCKET s = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
-    if (s != INVALID_SOCKET)
-    {
-        sockaddr_in addr = {};
-        addr.sin_family = AF_INET;
-        addr.sin_addr.s_addr = inet_addr("127.0.0.1");
-        addr.sin_port = htons(KAILLERA_SERVER_PORT);
-        const char ping[] = "PING\0";
-        sendto(s, ping, 5, 0, (sockaddr *)&addr, sizeof(addr));
-        // Wait briefly for PONG
-        fd_set fds;
-        FD_ZERO(&fds);
-        FD_SET(s, &fds);
-        timeval tv = { 0, 100000 }; // 100ms
-        if (select(0, &fds, NULL, NULL, &tv) > 0)
-        {
-            char buf[32];
-            recvfrom(s, buf, sizeof(buf), 0, NULL, NULL);
-        }
-        closesocket(s);
-    }
-    WSACleanup();
+    // Use a simple blocking send+recv with timeout via setsockopt
+    SOCKET s = socket(AF_INET, SOCK_DGRAM, 0);
+    if (s == INVALID_SOCKET) return;
+
+    // Set 200ms receive timeout
+    DWORD timeout = 200;
+    setsockopt(s, SOL_SOCKET, SO_RCVTIMEO, (const char *)&timeout, sizeof(timeout));
+
+    struct sockaddr_in addr;
+    memset(&addr, 0, sizeof(addr));
+    addr.sin_family = AF_INET;
+    addr.sin_addr.s_addr = htonl(0x7F000001); // 127.0.0.1
+    addr.sin_port = htons(27888);
+
+    const char ping[] = "PING";
+    sendto(s, ping, 5, 0, (struct sockaddr *)&addr, sizeof(addr));
+
+    char buf[32];
+    recvfrom(s, buf, sizeof(buf), 0, NULL, NULL);
+
+    closesocket(s);
 }
 
 void KailleraOpenDialog(HWND hWnd)
