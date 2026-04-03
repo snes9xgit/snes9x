@@ -11,6 +11,7 @@
 #include "../snes9x.h"
 #include "../memmap.h"
 #include "../display.h"
+#include <winsock2.h>
 #include <stdio.h>
 #include <string.h>
 #include <process.h>
@@ -297,6 +298,37 @@ static int BuildGameList(char *gameList, int maxSize)
     return pos;
 }
 
+// Send a dummy PING to warm up the Kaillera DLL's winsock state.
+// The v0.84 DLL has a quirk where the first connection attempt
+// doesn't actually send any packets. This pre-flight nudges winsock.
+static void KailleraWarmup()
+{
+    WSADATA wsa;
+    WSAStartup(MAKEWORD(2, 2), &wsa);
+    SOCKET s = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+    if (s != INVALID_SOCKET)
+    {
+        sockaddr_in addr = {};
+        addr.sin_family = AF_INET;
+        addr.sin_addr.s_addr = inet_addr("127.0.0.1");
+        addr.sin_port = htons(KAILLERA_SERVER_PORT);
+        const char ping[] = "PING\0";
+        sendto(s, ping, 5, 0, (sockaddr *)&addr, sizeof(addr));
+        // Wait briefly for PONG
+        fd_set fds;
+        FD_ZERO(&fds);
+        FD_SET(s, &fds);
+        timeval tv = { 0, 100000 }; // 100ms
+        if (select(0, &fds, NULL, NULL, &tv) > 0)
+        {
+            char buf[32];
+            recvfrom(s, buf, sizeof(buf), 0, NULL, NULL);
+        }
+        closesocket(s);
+    }
+    WSACleanup();
+}
+
 void KailleraOpenDialog(HWND hWnd)
 {
     if (!Kaillera.DLLLoaded)
@@ -304,6 +336,9 @@ void KailleraOpenDialog(HWND hWnd)
         if (!KailleraLoadDLL())
             return;
     }
+
+    // Warm up winsock/loopback before the DLL tries to connect
+    KailleraWarmup();
 
     KailleraDialogThreadData *data = new KailleraDialogThreadData();
     data->hWnd = hWnd;
