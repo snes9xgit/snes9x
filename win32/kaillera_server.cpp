@@ -320,8 +320,11 @@ static void SendMessageToClient(int clientIdx, uint8_t msgType,
         pos += c.sentHistoryLen[i];
     }
 
-    sendto(KServer.sock, (const char *)packet, pos, 0,
+    int sent = sendto(KServer.sock, (const char *)packet, pos, 0,
            (sockaddr *)&c.addr, sizeof(c.addr));
+    KSLog("  -> Sent msg type=0x%02X seq=%d (%d bytes, sendto=%d) to client %d at %s:%d",
+          msgType, c.sendSeq - 1, pos, sent,
+          clientIdx, inet_ntoa(c.addr.sin_addr), ntohs(c.addr.sin_port));
 }
 
 // Send raw bytes (pre-protocol messages like HELLOD00D)
@@ -662,6 +665,8 @@ static void HandleClientACK(int clientIdx, const uint8_t *payload, int len)
     else if (c.ackCount == 3)
     {
         // Handshake complete - send server status, user joined notification, MOTD
+        KSLog("ACK handshake complete for client %d ('%s'), ping=%dms, sending status",
+              clientIdx, c.username, c.ping);
         SendServerStatus(clientIdx);
         SendUserJoined(clientIdx);
 
