@@ -18,6 +18,7 @@
 
 #include "wsnes9x.h"
 #include "kaillera.h"
+#include "kaillera_server.h"
 #include "win32_sound.h"
 #include "win32_display.h"
 
@@ -873,6 +874,7 @@ void InitSnes9x( void)
 void DeinitS9x()
 {
 #ifdef KAILLERA_SUPPORT
+	KailleraServerStop();
 	KailleraUnloadDLL();
 #endif
 	DeleteCriticalSection(&GUI.SoundCritSect);

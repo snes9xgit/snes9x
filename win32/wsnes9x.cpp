@@ -43,6 +43,7 @@
 #include "../cheats.h"
 #include "../netplay.h"
 #include "kaillera.h"
+#include "kaillera_server.h"
 #include "../apu/apu.h"
 #include "../movie.h"
 #include "../controls.h"
@@ -1995,6 +1996,18 @@ LRESULT CALLBACK WinProc(
 #ifdef KAILLERA_SUPPORT
 		case ID_KAILLERA_NETPLAY:
 			KailleraOpenDialog(hWnd);
+			break;
+		case ID_KAILLERA_HOST_SERVER:
+			if (KailleraServerIsRunning())
+			{
+				KailleraServerStop();
+				S9xMessage(S9X_INFO, S9X_ROM_INFO, "Kaillera Server stopped");
+			}
+			else
+			{
+				if (KailleraServerStart())
+					S9xMessage(S9X_INFO, S9X_ROM_INFO, "Kaillera Server started on port 27888");
+			}
 			break;
 #endif
 
