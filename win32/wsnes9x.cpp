@@ -7649,6 +7649,23 @@ INT_PTR CALLBACK DlgKailleraServer(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lP
 					MessageBox(hDlg, TEXT("Failed to start server.\nPort may already be in use."),
 						TEXT("Kaillera Server"), MB_OK | MB_ICONERROR);
 				}
+				else
+				{
+					// Show hosting info on the emulator screen with LAN IP
+					char hostName[256] = {};
+					char ipStr[64] = "127.0.0.1";
+					gethostname(hostName, sizeof(hostName));
+					struct hostent *he = gethostbyname(hostName);
+					if (he && he->h_addr_list[0])
+					{
+						struct in_addr addr;
+						memcpy(&addr, he->h_addr_list[0], sizeof(addr));
+						strncpy(ipStr, inet_ntoa(addr), sizeof(ipStr) - 1);
+					}
+					char osd[384];
+					sprintf(osd, "Hosting Kaillera at %s:%d", ipStr, port);
+					S9xSetInfoString(osd);
+				}
 			}
 			KailleraServerDlgUpdateStatus(hDlg);
 			KailleraServerDlgRefreshLog(hDlg);
