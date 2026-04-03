@@ -1204,10 +1204,24 @@ static void ParsePacket(const uint8_t *data, int dataLen, const sockaddr_in &fro
     {
         KSLog("HELLO received from %s:%d", inet_ntoa(fromAddr.sin_addr), ntohs(fromAddr.sin_port));
 
-        // Allocate a new client session
+        // Clean up this exact address match
         if (clientIdx >= 0)
         {
             KServer.clients[clientIdx].active = false;
+        }
+
+        // Also clean up any stale pending slots from the same IP that never
+        // completed login (e.g. from a previous failed connection attempt).
+        // Without this, the reconnection IP-match picks up the stale slot.
+        for (int i = 0; i < KAILLERA_MAX_CLIENTS; i++)
+        {
+            if (KServer.clients[i].active &&
+                KServer.clients[i].addr.sin_addr.s_addr == fromAddr.sin_addr.s_addr &&
+                KServer.clients[i].ackCount < 3)
+            {
+                KSLog("Cleaning up stale pending slot %d from same IP", i);
+                KServer.clients[i].active = false;
+            }
         }
 
         clientIdx = AllocClient();
@@ -1243,22 +1257,26 @@ static void ParsePacket(const uint8_t *data, int dataLen, const sockaddr_in &fro
     if (clientIdx < 0)
     {
         // After HELLOD00D, the client reconnects its socket so the source port changes.
-        // Try to match by IP address only - find a client from the same IP that hasn't
-        // completed the login handshake yet (ackCount == 0, no username).
+        // Try to match by IP address only - find the most recent client from the same
+        // IP that hasn't completed the login handshake yet (ackCount == 0, no username).
+        DWORD newestTime = 0;
         for (int i = 0; i < KAILLERA_MAX_CLIENTS; i++)
         {
             if (KServer.clients[i].active &&
                 KServer.clients[i].addr.sin_addr.s_addr == fromAddr.sin_addr.s_addr &&
                 KServer.clients[i].ackCount == 0 &&
-                KServer.clients[i].username[0] == '\0')
+                KServer.clients[i].username[0] == '\0' &&
+                KServer.clients[i].lastActivity >= newestTime)
             {
                 clientIdx = i;
-                // Update the stored address to the new port
-                KServer.clients[i].addr = fromAddr;
-                KSLog("Matched reconnecting client slot %d by IP (new port %d)",
-                      i, ntohs(fromAddr.sin_port));
-                break;
+                newestTime = KServer.clients[i].lastActivity;
             }
+        }
+        if (clientIdx >= 0)
+        {
+            KServer.clients[clientIdx].addr = fromAddr;
+            KSLog("Matched reconnecting client slot %d by IP (new port %d)",
+                  clientIdx, ntohs(fromAddr.sin_port));
         }
 
         if (clientIdx < 0)
