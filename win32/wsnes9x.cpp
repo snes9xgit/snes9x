@@ -2001,12 +2001,21 @@ LRESULT CALLBACK WinProc(
 			if (KailleraServerIsRunning())
 			{
 				KailleraServerStop();
-				S9xMessage(S9X_INFO, S9X_ROM_INFO, "Kaillera Server stopped");
+				MessageBox(hWnd, TEXT("Kaillera Server stopped."),
+					TEXT("Kaillera Server"), MB_OK | MB_ICONINFORMATION);
 			}
 			else
 			{
 				if (KailleraServerStart())
-					S9xMessage(S9X_INFO, S9X_ROM_INFO, "Kaillera Server started on port 27888");
+				{
+					MessageBox(hWnd, TEXT("Kaillera Server started on port 27888.\n\nConnect to 127.0.0.1 from the Kaillera client dialog."),
+						TEXT("Kaillera Server"), MB_OK | MB_ICONINFORMATION);
+				}
+				else
+				{
+					MessageBox(hWnd, TEXT("Failed to start Kaillera Server.\n\nPort 27888 may already be in use."),
+						TEXT("Kaillera Server"), MB_OK | MB_ICONERROR);
+				}
 			}
 			break;
 #endif
