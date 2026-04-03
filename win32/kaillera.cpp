@@ -7,6 +7,7 @@
 #ifdef KAILLERA_SUPPORT
 
 #include "kaillera.h"
+#include "kaillera_server.h"
 #include "wsnes9x.h"
 #include "../snes9x.h"
 #include "../memmap.h"
@@ -297,34 +298,6 @@ static int BuildGameList(char *gameList, int maxSize)
     return pos;
 }
 
-// Send a dummy PING to warm up the Kaillera DLL's winsock state.
-// The v0.84 DLL has a quirk where the first connection attempt
-// doesn't actually send any packets. This pre-flight nudges winsock.
-static void KailleraWarmup()
-{
-    // Use a simple blocking send+recv with timeout via setsockopt
-    SOCKET s = socket(AF_INET, SOCK_DGRAM, 0);
-    if (s == INVALID_SOCKET) return;
-
-    // Set 200ms receive timeout
-    DWORD timeout = 200;
-    setsockopt(s, SOL_SOCKET, SO_RCVTIMEO, (const char *)&timeout, sizeof(timeout));
-
-    struct sockaddr_in addr;
-    memset(&addr, 0, sizeof(addr));
-    addr.sin_family = AF_INET;
-    addr.sin_addr.s_addr = htonl(0x7F000001); // 127.0.0.1
-    addr.sin_port = htons(27888);
-
-    const char ping[] = "PING";
-    sendto(s, ping, 5, 0, (struct sockaddr *)&addr, sizeof(addr));
-
-    char buf[32];
-    recvfrom(s, buf, sizeof(buf), 0, NULL, NULL);
-
-    closesocket(s);
-}
-
 void KailleraOpenDialog(HWND hWnd)
 {
     if (!Kaillera.DLLLoaded)
@@ -332,9 +305,6 @@ void KailleraOpenDialog(HWND hWnd)
         if (!KailleraLoadDLL())
             return;
     }
-
-    // Warm up winsock/loopback before the DLL tries to connect
-    KailleraWarmup();
 
     KailleraDialogThreadData *data = new KailleraDialogThreadData();
     data->hWnd = hWnd;
@@ -355,6 +325,17 @@ void KailleraOpenDialog(HWND hWnd)
         delete[] data->gameList;
         delete data;
         return;
+    }
+
+    // Tip: the Kaillera DLL has a known quirk where the first Connect
+    // may fail while it's still fetching the master server list.
+    // Show a hint if a local server is running.
+    if (KailleraServerIsRunning())
+    {
+        MessageBox(hWnd,
+            TEXT("Tip: Wait for the server list to finish loading before\n")
+            TEXT("clicking Connect. If the first attempt fails, cancel and retry."),
+            TEXT("Kaillera Netplay"), MB_OK | MB_ICONINFORMATION);
     }
 
     // Run the server dialog on a worker thread so it doesn't block the
