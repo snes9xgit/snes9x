@@ -74,6 +74,8 @@ bool KailleraLoadDLL(const char *dllPath)
     Kaillera.DLLLoaded = true;
     Kaillera.GameActive = false;
     Kaillera.GameEndEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
+    Kaillera.InputReadyEvent = CreateEvent(NULL, FALSE, FALSE, NULL);  // auto-reset
+    Kaillera.OutputReadyEvent = CreateEvent(NULL, FALSE, FALSE, NULL); // auto-reset
 
     pKailleraInit();
 
@@ -97,11 +99,9 @@ void KailleraUnloadDLL()
     pKailleraShutdown();
     FreeLibrary(Kaillera.hDLL);
 
-    if (Kaillera.GameEndEvent)
-    {
-        CloseHandle(Kaillera.GameEndEvent);
-        Kaillera.GameEndEvent = NULL;
-    }
+    if (Kaillera.GameEndEvent)  { CloseHandle(Kaillera.GameEndEvent);  Kaillera.GameEndEvent = NULL; }
+    if (Kaillera.InputReadyEvent)  { CloseHandle(Kaillera.InputReadyEvent);  Kaillera.InputReadyEvent = NULL; }
+    if (Kaillera.OutputReadyEvent) { CloseHandle(Kaillera.OutputReadyEvent); Kaillera.OutputReadyEvent = NULL; }
 
     Kaillera.hDLL = NULL;
     Kaillera.DLLLoaded = false;
@@ -124,18 +124,51 @@ static int WINAPI KailleraGameCallback(char *game, int player, int numplayers)
     Kaillera.GameName[sizeof(Kaillera.GameName) - 1] = '\0';
     Kaillera.PlayerNumber = player;
     Kaillera.NumPlayers = numplayers;
+    Kaillera.OutputPlayerCount = 0;
 
     ResetEvent(Kaillera.GameEndEvent);
     Kaillera.GameActive = true;
 
     // Tell the main window to load the ROM and start emulation.
-    // Use PostMessage so we don't block - the main thread's message loop
-    // will pick this up and load the ROM. The game name is stored in
-    // Kaillera.GameName which persists for the lifetime of the game session.
     PostMessage(GUI.hWnd, WM_KAILLERA_GAME_START, 0, (LPARAM)Kaillera.GameName);
 
-    // Block here until the game ends
-    WaitForSingleObject(Kaillera.GameEndEvent, INFINITE);
+    // Run the input exchange loop on THIS thread (the Kaillera callback thread).
+    // kailleraModifyPlayValues MUST be called from this thread context.
+    // The main thread communicates with us via InputReadyEvent/OutputReadyEvent.
+    while (Kaillera.GameActive)
+    {
+        // Wait for the main thread to provide local input, or for game end
+        HANDLE waitHandles[2] = { Kaillera.InputReadyEvent, Kaillera.GameEndEvent };
+        DWORD waitResult = WaitForMultipleObjects(2, waitHandles, FALSE, INFINITE);
+
+        if (waitResult == WAIT_OBJECT_0 + 1 || !Kaillera.GameActive)
+            break; // game ended
+
+        if (waitResult == WAIT_OBJECT_0)
+        {
+            // Main thread has written Kaillera.LocalInput - call the DLL
+            unsigned short buffer[8] = {};
+            buffer[0] = Kaillera.LocalInput;
+
+            int result = pKailleraModifyPlayValues(buffer, sizeof(unsigned short));
+
+            if (result < 0)
+            {
+                Kaillera.OutputPlayerCount = -1;
+            }
+            else
+            {
+                int numReceived = result / (int)sizeof(unsigned short);
+                if (numReceived > 8) numReceived = 8;
+                for (int i = 0; i < numReceived; i++)
+                    Kaillera.AllInputs[i] = buffer[i];
+                Kaillera.OutputPlayerCount = numReceived;
+            }
+
+            // Signal the main thread that output is ready
+            SetEvent(Kaillera.OutputReadyEvent);
+        }
+    }
 
     Kaillera.GameActive = false;
     return 0;
@@ -311,33 +344,40 @@ void KailleraStopGame()
     if (!Kaillera.DLLLoaded || !Kaillera.GameActive)
         return;
 
-    pKailleraEndGame();
-    SetEvent(Kaillera.GameEndEvent);
     Kaillera.GameActive = false;
+    SetEvent(Kaillera.GameEndEvent);
+    // Wake the callback thread if it's waiting for input
+    SetEvent(Kaillera.InputReadyEvent);
+    // Wake the main thread if it's waiting for output
+    SetEvent(Kaillera.OutputReadyEvent);
+    pKailleraEndGame();
 }
 
 int KailleraExchangeInput(unsigned short localInput, unsigned short *allInputs, int maxPlayers)
 {
-    if (!Kaillera.DLLLoaded || !Kaillera.GameActive || !pKailleraModifyPlayValues)
+    if (!Kaillera.DLLLoaded || !Kaillera.GameActive)
         return -1;
 
-    // Prepare buffer: our input first, space for up to 8 players
-    unsigned short buffer[8] = {};
-    buffer[0] = localInput;
+    // Pass our local input to the Kaillera callback thread
+    Kaillera.LocalInput = localInput;
+    SetEvent(Kaillera.InputReadyEvent);
 
-    int result = pKailleraModifyPlayValues(buffer, sizeof(unsigned short));
-    if (result < 0)
+    // Wait for the callback thread to return synchronized input
+    DWORD waitResult = WaitForSingleObject(Kaillera.OutputReadyEvent, 5000);
+    if (waitResult != WAIT_OBJECT_0)
+        return -1; // timeout or error
+
+    int count = Kaillera.OutputPlayerCount;
+    if (count < 0)
         return -1;
 
-    // Copy received inputs
-    int numReceived = result / (int)sizeof(unsigned short);
-    if (numReceived > maxPlayers)
-        numReceived = maxPlayers;
+    if (count > maxPlayers)
+        count = maxPlayers;
 
-    for (int i = 0; i < numReceived; i++)
-        allInputs[i] = buffer[i];
+    for (int i = 0; i < count; i++)
+        allInputs[i] = Kaillera.AllInputs[i];
 
-    return numReceived;
+    return count;
 }
 
 #endif // KAILLERA_SUPPORT

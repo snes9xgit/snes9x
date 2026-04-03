@@ -34,12 +34,20 @@ typedef int  (WINAPI *pfn_kailleraEndGame)(void);
 // Kaillera integration state
 struct SKailleraState {
     bool     DLLLoaded;
-    bool     GameActive;
+    volatile bool GameActive;
     int      PlayerNumber;   // 1-based player number (1-8), 0 = spectator
     int      NumPlayers;
     char     GameName[256];
     HANDLE   GameEndEvent;   // signaled when game should end
     HMODULE  hDLL;
+
+    // Thread-safe input exchange between main thread and Kaillera callback thread.
+    // The DLL requires kailleraModifyPlayValues to be called from the callback thread.
+    HANDLE   InputReadyEvent;   // main thread signals: local input is available
+    HANDLE   OutputReadyEvent;  // callback thread signals: synced output is available
+    volatile unsigned short LocalInput;
+    unsigned short AllInputs[8];
+    volatile int   OutputPlayerCount;  // -1 = error
 };
 
 extern SKailleraState Kaillera;
