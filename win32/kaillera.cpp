@@ -156,9 +156,11 @@ static void WINAPI KailleraClientDroppedCallback(char *nick, int playernb)
 }
 
 // Worker thread data for the Kaillera server dialog
+#define KAILLERA_GAMELIST_SIZE (64 * 1024)
+
 struct KailleraDialogThreadData {
     HWND hWnd;
-    char gameList[512];
+    char *gameList;
 };
 
 static unsigned __stdcall KailleraDialogThread(void *param)
@@ -176,8 +178,90 @@ static unsigned __stdcall KailleraDialogThread(void *param)
     pKailleraSetInfos(&infos);
     pKailleraSelectServerDialog(data->hWnd);
 
+    delete[] data->gameList;
     delete data;
     return 0;
+}
+
+// Strip file extension from a filename
+static void StripExtension(char *name)
+{
+    char *dot = strrchr(name, '.');
+    if (dot) *dot = '\0';
+}
+
+// Check if a filename has a SNES ROM extension
+static bool IsSNESRomFile(const TCHAR *filename)
+{
+    const TCHAR *ext = _tcsrchr(filename, TEXT('.'));
+    if (!ext) return false;
+    ext++;
+    return (_tcsicmp(ext, TEXT("smc")) == 0 ||
+            _tcsicmp(ext, TEXT("sfc")) == 0 ||
+            _tcsicmp(ext, TEXT("fig")) == 0 ||
+            _tcsicmp(ext, TEXT("swc")) == 0 ||
+            _tcsicmp(ext, TEXT("zip")) == 0 ||
+            _tcsicmp(ext, TEXT("7z")) == 0 ||
+            _tcsicmp(ext, TEXT("gz")) == 0);
+}
+
+// Scan the ROM directory and build a null-separated, double-null-terminated game list
+static int BuildGameList(char *gameList, int maxSize)
+{
+    int pos = 0;
+
+    // First add the currently loaded ROM if any
+    if (!Settings.StopEmulation && Memory.ROMName[0])
+    {
+        int len = (int)strlen(Memory.ROMName);
+        if (pos + len + 2 < maxSize)
+        {
+            memcpy(gameList + pos, Memory.ROMName, len);
+            pos += len + 1; // null separator included
+        }
+    }
+
+    // Scan ROM directory for ROM files
+    TCHAR searchPath[MAX_PATH];
+    _stprintf(searchPath, TEXT("%s\\*"), GUI.RomDir);
+
+    WIN32_FIND_DATA findData;
+    HANDLE hFind = FindFirstFile(searchPath, &findData);
+    if (hFind != INVALID_HANDLE_VALUE)
+    {
+        do
+        {
+            if (findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+                continue;
+            if (!IsSNESRomFile(findData.cFileName))
+                continue;
+
+            // Convert filename to char, strip extension to get game name
+            const char *fname = _tToChar(findData.cFileName);
+            char gameName[256];
+            strncpy(gameName, fname, sizeof(gameName) - 1);
+            gameName[sizeof(gameName) - 1] = '\0';
+            StripExtension(gameName);
+
+            // Skip if already in list (e.g. matches currently loaded ROM)
+            if (!Settings.StopEmulation && Memory.ROMName[0] &&
+                strcmp(gameName, Memory.ROMName) == 0)
+                continue;
+
+            int len = (int)strlen(gameName);
+            if (pos + len + 2 >= maxSize)
+                break; // list full
+
+            memcpy(gameList + pos, gameName, len);
+            pos += len + 1;
+
+        } while (FindNextFile(hFind, &findData));
+
+        FindClose(hFind);
+    }
+
+    gameList[pos] = '\0'; // double-null terminator
+    return pos;
 }
 
 void KailleraOpenDialog(HWND hWnd)
@@ -188,20 +272,26 @@ void KailleraOpenDialog(HWND hWnd)
             return;
     }
 
-    // Build game list from the currently loaded ROM (or empty if no ROM loaded)
-    // Format: null-separated strings, double-null terminated
     KailleraDialogThreadData *data = new KailleraDialogThreadData();
     data->hWnd = hWnd;
-    memset(data->gameList, 0, sizeof(data->gameList));
-    int pos = 0;
+    data->gameList = new char[KAILLERA_GAMELIST_SIZE];
+    memset(data->gameList, 0, KAILLERA_GAMELIST_SIZE);
 
-    if (!Settings.StopEmulation && Memory.ROMName[0])
+    int count = BuildGameList(data->gameList, KAILLERA_GAMELIST_SIZE);
+
+    if (count == 0)
     {
-        int len = (int)strlen(Memory.ROMName);
-        memcpy(data->gameList + pos, Memory.ROMName, len);
-        pos += len + 1; // include null separator
+        // No ROMs found - add a placeholder message
+        // (user must have ROMs in the ROM directory)
+        MessageBox(hWnd,
+            TEXT("No SNES ROM files found in the ROM directory.\n\n")
+            TEXT("Please load a ROM first or set the ROM directory\n")
+            TEXT("in Options -> Settings to a folder containing ROMs."),
+            TEXT("Kaillera Netplay"), MB_OK | MB_ICONWARNING);
+        delete[] data->gameList;
+        delete data;
+        return;
     }
-    data->gameList[pos] = '\0'; // double-null terminator
 
     // Run the server dialog on a worker thread so it doesn't block the
     // main message loop (which drives the emulation)
@@ -210,7 +300,10 @@ void KailleraOpenDialog(HWND hWnd)
     if (hThread)
         CloseHandle(hThread);
     else
+    {
+        delete[] data->gameList;
         delete data;
+    }
 }
 
 void KailleraStopGame()
