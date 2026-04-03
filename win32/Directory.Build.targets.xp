@@ -2,10 +2,10 @@
   Windows XP compatibility override.
 
   To build with Windows XP support (requires VS2017 with v141_xp toolset):
-    1. Rename this file to Directory.Build.props
+    1. Rename this file to Directory.Build.targets
     2. Open the solution in VS2017 and build
 
-  This restores the v141_xp toolset and Windows 8.1 SDK for XP targeting.
+  .targets files are imported AFTER vcxproj, so they override the defaults.
 -->
 <Project>
   <PropertyGroup>
