@@ -718,6 +718,25 @@ void S9xRestoreWindowTitle ()
     else
         _stprintf(buf, TEXT("%s %s"), WINDOW_TITLE, TEXT(VERSION));
 
+#ifdef KAILLERA_SUPPORT
+    if (KailleraServerIsRunning())
+    {
+        char hostName[256] = {};
+        char ipStr[64] = "127.0.0.1";
+        gethostname(hostName, sizeof(hostName));
+        struct hostent *he = gethostbyname(hostName);
+        if (he && he->h_addr_list[0])
+        {
+            struct in_addr addr;
+            memcpy(&addr, he->h_addr_list[0], sizeof(addr));
+            strncpy(ipStr, inet_ntoa(addr), sizeof(ipStr) - 1);
+        }
+        TCHAR kbuf[256];
+        _stprintf(kbuf, TEXT(" | Hosting Kaillera at %s:%d"), _tFromChar(ipStr), KAILLERA_SERVER_PORT);
+        _tcscat(buf, kbuf);
+    }
+#endif
+
     SetWindowText (GUI.hWnd, buf);
 }
 
@@ -7673,24 +7692,8 @@ INT_PTR CALLBACK DlgKailleraServer(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lP
 					MessageBox(hDlg, TEXT("Failed to start server.\nPort may already be in use."),
 						TEXT("Kaillera Server"), MB_OK | MB_ICONERROR);
 				}
-				else
-				{
-					// Show hosting info on the emulator screen with LAN IP
-					char hostName[256] = {};
-					char ipStr[64] = "127.0.0.1";
-					gethostname(hostName, sizeof(hostName));
-					struct hostent *he = gethostbyname(hostName);
-					if (he && he->h_addr_list[0])
-					{
-						struct in_addr addr;
-						memcpy(&addr, he->h_addr_list[0], sizeof(addr));
-						strncpy(ipStr, inet_ntoa(addr), sizeof(ipStr) - 1);
-					}
-					char osd[384];
-					sprintf(osd, "Hosting Kaillera at %s:%d", ipStr, port);
-					S9xSetInfoString(osd);
-				}
 			}
+			S9xRestoreWindowTitle();
 			KailleraServerDlgUpdateStatus(hDlg);
 			KailleraServerDlgRefreshLog(hDlg);
 			return TRUE;
