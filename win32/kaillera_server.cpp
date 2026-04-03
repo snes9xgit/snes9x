@@ -626,12 +626,18 @@ static void HandleUserLogin(int clientIdx, const uint8_t *payload, int len)
     p = ReadNBStr(p, end, emulator, sizeof(emulator));
     uint8_t connType = (p < end) ? *p : KCONN_LAN;
 
+    // Ignore duplicate login (already logged in)
+    if (c.username[0] != '\0')
+    {
+        KSLog("Ignoring duplicate login from '%s'", username);
+        return;
+    }
+
     strncpy(c.username, username, sizeof(c.username) - 1);
     strncpy(c.emulator, emulator, sizeof(c.emulator) - 1);
     c.connType = connType;
     c.ackCount = 0;
-    c.sendSeq = 0;
-    c.recvSeq = 0;
+    // Don't reset sendSeq/recvSeq - they were initialized to 0 by the HELLO handler
 
     KSLog("User login: '%s' emulator='%s' connType=%d", username, emulator, connType);
 
