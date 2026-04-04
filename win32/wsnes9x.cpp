@@ -7935,13 +7935,14 @@ static void KCPopulateServerListView(HWND hDlg)
     ListView_DeleteAllItems(hLV);
 
     // Add Localhost if a Kaillera server is running locally
-    // Check built-in server first, then try a quick UDP PING
+    // Check built-in server first, then try UDP PING (for external/other-instance servers)
     bool localServerRunning = KailleraServerIsRunning();
     if (!localServerRunning) {
-        // Quick UDP PING to detect external server on localhost
+        WSADATA wsa;
+        WSAStartup(MAKEWORD(2, 2), &wsa);
         SOCKET s = socket(AF_INET, SOCK_DGRAM, 0);
         if (s != INVALID_SOCKET) {
-            DWORD timeout = 200; // 200ms - fast enough for localhost
+            DWORD timeout = 300;
             setsockopt(s, SOL_SOCKET, SO_RCVTIMEO, (const char *)&timeout, sizeof(timeout));
             struct sockaddr_in addr;
             memset(&addr, 0, sizeof(addr));
@@ -7955,17 +7956,25 @@ static void KCPopulateServerListView(HWND hDlg)
             localServerRunning = (r > 0);
             closesocket(s);
         }
+        WSACleanup();
     }
     if (localServerRunning) {
+        TCHAR displayName[256];
+        if (KailleraServerIsRunning()) {
+            const char *srvName = KailleraServerGetName();
+            _stprintf(displayName, TEXT("%s (Localhost)"), _tFromChar(srvName));
+        } else {
+            _tcscpy(displayName, TEXT("Localhost"));
+        }
         LVITEM lvi = {};
         lvi.mask = LVIF_TEXT | LVIF_PARAM;
         lvi.iItem = 0;
-        lvi.lParam = (LPARAM)-1; // special index for localhost
-        lvi.pszText = (TCHAR *)TEXT("Localhost");
+        lvi.lParam = (LPARAM)-1;
+        lvi.pszText = displayName;
         int idx = ListView_InsertItem(hLV, &lvi);
-        ListView_SetItemText(hLV, idx, 1, (TCHAR *)TEXT("Local"));
+        ListView_SetItemText(hLV, idx, 1, (TCHAR *)TEXT("Localhost"));
         ListView_SetItemText(hLV, idx, 2, (TCHAR *)TEXT("0"));
-        ListView_SetItemText(hLV, idx, 3, (TCHAR *)TEXT("-"));
+        ListView_SetItemText(hLV, idx, 3, (TCHAR *)TEXT("Snes9x"));
         ListView_SetItemText(hLV, idx, 4, (TCHAR *)TEXT("-"));
     }
 
