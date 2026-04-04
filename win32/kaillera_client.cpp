@@ -824,7 +824,20 @@ static unsigned __stdcall KailleraClientThread(void *param)
 
 bool KailleraClientConnect(const char *ip, uint16_t port, const char *username, uint8_t connType, int timeoutSec)
 {
-    if (KClient.state != KCLIENT_DISCONNECTED) return false;
+    // Clean up any leftover state from a previous failed connection
+    if (KClient.state != KCLIENT_DISCONNECTED)
+        KailleraClientDisconnect();
+
+    // Close leaked resources from previous timeout
+    if (kSock != INVALID_SOCKET) {
+        closesocket(kSock);
+        kSock = INVALID_SOCKET;
+    }
+    if (KClient.thread) {
+        WaitForSingleObject(KClient.thread, 1000);
+        CloseHandle(KClient.thread);
+        KClient.thread = NULL;
+    }
 
     WSADATA wsa;
     WSAStartup(MAKEWORD(2, 2), &wsa);

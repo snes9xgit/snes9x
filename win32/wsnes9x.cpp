@@ -7938,8 +7938,6 @@ static void KCPopulateServerListView(HWND hDlg)
     // Check built-in server first, then try UDP PING (for external/other-instance servers)
     bool localServerRunning = KailleraServerIsRunning();
     if (!localServerRunning) {
-        WSADATA wsa;
-        WSAStartup(MAKEWORD(2, 2), &wsa);
         SOCKET s = socket(AF_INET, SOCK_DGRAM, 0);
         if (s != INVALID_SOCKET) {
             DWORD timeout = 300;
@@ -7956,7 +7954,6 @@ static void KCPopulateServerListView(HWND hDlg)
             localServerRunning = (r > 0);
             closesocket(s);
         }
-        WSACleanup();
     }
     if (localServerRunning) {
         TCHAR displayName[256];
@@ -8118,6 +8115,10 @@ INT_PTR CALLBACK DlgKailleraClient(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lP
     switch (msg)
     {
     case WM_INITDIALOG:
+        {
+            WSADATA wsa;
+            WSAStartup(MAKEWORD(2, 2), &wsa); // ensure winsock is ready for localhost ping
+        }
         SetDlgItemText(hDlg, IDC_KC_SERVER_IP, TEXT("127.0.0.1:27888"));
         {
             TCHAR defaultName[32];
@@ -8331,6 +8332,7 @@ INT_PTR CALLBACK DlgKailleraClient(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lP
         KillTimer(hDlg, 1);
         kServerListFetching = false;
         kServerDlgHwnd = NULL;
+        WSACleanup();
         break;
     }
     return FALSE;
