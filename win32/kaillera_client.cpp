@@ -703,6 +703,7 @@ static void ProcessPacket(const uint8_t *data, int dataLen)
 static unsigned __stdcall KailleraClientThread(void *param)
 {
     DWORD lastKeepAlive = GetTickCount();
+    DWORD connectStart = GetTickCount();
 
     // Send HELLO
     SendRaw("HELLO0.83\0", 10);
@@ -752,7 +753,6 @@ static unsigned __stdcall KailleraClientThread(void *param)
 
         // Connection timeout
         if (KClient.state == KCLIENT_CONNECTING) {
-            static DWORD connectStart = GetTickCount();
             if (GetTickCount() - connectStart > 5000) {
                 sprintf(KClient.errorMsg, "Connection timed out");
                 KClient.state = KCLIENT_DISCONNECTED;
@@ -793,9 +793,12 @@ bool KailleraClientConnect(const char *ip, uint16_t port, const char *username, 
     KClient.connType = connType;
     KClient.currentGameId = 0;
     KClient.numGames = 0;
+    KClient.numUsers = 0;
     KClient.numRoomPlayers = 0;
     KClient.errorMsg[0] = '\0';
     KClient.serverMessage[0] = '\0';
+    KClient.chatLog[0] = '\0';
+    KClient.chatUpdated = true;
     KClient.isOwner = false;
 
     kSendSeq = 0;
