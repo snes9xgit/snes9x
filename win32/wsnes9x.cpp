@@ -7931,34 +7931,15 @@ static bool kSortAscending = true;
 
 // Fake entry used for localhost in sort comparisons
 static KServerListEntry kLocalhostEntry = { "Localhost", "127.0.0.1", 27888, 0, 8, 0, "Snes9x", "Localhost", 0 };
+static volatile bool kLocalhostDetected = false;
 
 static void KCPopulateServerListView(HWND hDlg)
 {
     HWND hLV = GetDlgItem(hDlg, IDC_KC_SERVERLIST);
     ListView_DeleteAllItems(hLV);
 
-    // Add Localhost if a Kaillera server is running locally
-    // Check built-in server first, then try UDP PING (for external/other-instance servers)
-    bool localServerRunning = KailleraServerIsRunning();
-    if (!localServerRunning) {
-        SOCKET s = socket(AF_INET, SOCK_DGRAM, 0);
-        if (s != INVALID_SOCKET) {
-            DWORD timeout = 300;
-            setsockopt(s, SOL_SOCKET, SO_RCVTIMEO, (const char *)&timeout, sizeof(timeout));
-            struct sockaddr_in addr;
-            memset(&addr, 0, sizeof(addr));
-            addr.sin_family = AF_INET;
-            addr.sin_addr.s_addr = htonl(0x7F000001);
-            addr.sin_port = htons(27888);
-            const char ping[] = "PING";
-            sendto(s, ping, 5, 0, (struct sockaddr *)&addr, sizeof(addr));
-            char buf[32];
-            int r = recvfrom(s, buf, sizeof(buf), 0, NULL, NULL);
-            localServerRunning = (r > 0);
-            closesocket(s);
-        }
-    }
-    if (localServerRunning) {
+    // Add Localhost if detected by the background thread
+    if (kLocalhostDetected) {
         TCHAR displayName[256];
         TCHAR usersStr[16];
         if (KailleraServerIsRunning()) {
@@ -7967,7 +7948,6 @@ static void KCPopulateServerListView(HWND hDlg)
             int users, maxUsers, games;
             KailleraServerGetStats(&users, &maxUsers, &games);
             _stprintf(usersStr, TEXT("%d/%d"), users, maxUsers);
-            // Update the sort helper too
             kLocalhostEntry.users = users;
             kLocalhostEntry.maxUsers = maxUsers;
         } else {
@@ -8041,6 +8021,18 @@ static unsigned __stdcall KCFetchServerListThread(void *param)
     // Stops when connected to a server or dialog closes
     while (kServerListFetching && kServerDlgHwnd)
     {
+        // Detect localhost server (built-in or external)
+        if (KailleraServerIsRunning()) {
+            kLocalhostDetected = true;
+        } else {
+            KServerListEntry probe = {};
+            strcpy(probe.ip, "127.0.0.1");
+            probe.port = 27888;
+            probe.ping = 999;
+            KailleraPingServer(&probe);
+            kLocalhostDetected = (probe.ping < 999);
+        }
+
         for (int i = 0; i < kServerListCount && kServerListFetching; i++) {
             KailleraPingServer(&kServerList[i]);
             if (kServerDlgHwnd)
