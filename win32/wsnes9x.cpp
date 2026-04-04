@@ -2026,6 +2026,17 @@ LRESULT CALLBACK WinProc(
 			DialogBox(g_hInst, MAKEINTRESOURCE(IDD_KAILLERA_SERVER), hWnd, DlgKailleraServer);
 			RestoreSNESDisplay();
 			break;
+		case ID_KAILLERA_END_GAME:
+			if (KailleraClientIsPlaying() || KailleraClientGetState() >= KCLIENT_IN_GAME_ROOM)
+			{
+				KailleraClientEndGame();
+				S9xSetInfoString("Kaillera game ended");
+				// Reopen the lobby dialog
+				RestoreGUIDisplay();
+				DialogBox(g_hInst, MAKEINTRESOURCE(IDD_KAILLERA_CLIENT), hWnd, DlgKailleraClient);
+				RestoreSNESDisplay();
+			}
+			break;
 #endif
 
 #ifdef NETPLAY_SUPPORT
@@ -2447,6 +2458,9 @@ LRESULT CALLBACK WinProc(
 		break;
 
 	case WM_DESTROY:
+#ifdef KAILLERA_SUPPORT
+		KailleraClientDisconnect();
+#endif
 		Memory.SaveSRAM(S9xGetFilename(".srm", SRAM_DIR).c_str());
 		GUI.hWnd = NULL;
 		PostQuitMessage (0);
@@ -4086,6 +4100,15 @@ static void CheckMenuStates ()
 
 	mii.dwTypeData = (TCHAR *)(!GUI.AVIOut ? TEXT("Start AVI Recording...") : TEXT("Stop AVI Recording"));
 	SetMenuItemInfo (GUI.hMenu, ID_FILE_AVI_RECORDING, FALSE, &mii);
+
+#ifdef KAILLERA_SUPPORT
+	memset(&mii, 0, sizeof(mii));
+	mii.cbSize = sizeof(mii);
+	mii.fMask = MIIM_STATE;
+	mii.fState = (KailleraClientIsPlaying() || KailleraClientGetState() >= KCLIENT_IN_GAME_ROOM)
+		? MFS_ENABLED : MFS_DISABLED;
+	SetMenuItemInfo(GUI.hMenu, ID_KAILLERA_END_GAME, FALSE, &mii);
+#endif
 }
 
 static void ResetFrameTimer ()
