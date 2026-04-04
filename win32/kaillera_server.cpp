@@ -12,10 +12,13 @@
 
 #include "kaillera_server.h"
 #include "../display.h"
+#include <wininet.h>
 #include <stdio.h>
 #include <stdarg.h>
 #include <string.h>
 #include <process.h>
+
+#pragma comment(lib, "wininet.lib")
 
 #pragma comment(lib, "ws2_32.lib")
 
@@ -1584,6 +1587,99 @@ bool KailleraServerIsRunning()
 const char *KailleraServerGetName()
 {
     return KServer.serverName;
+}
+
+// ---------------------------------------------------------------------------
+// Master server registration
+// ---------------------------------------------------------------------------
+
+static HANDLE kPublishThread = NULL;
+static volatile bool kPublishing = false;
+static char kPublishLocation[64] = {};
+
+static void UrlEncode(const char *src, char *dst, int dstSize)
+{
+    int pos = 0;
+    for (; *src && pos < dstSize - 4; src++) {
+        if ((*src >= 'A' && *src <= 'Z') || (*src >= 'a' && *src <= 'z') ||
+            (*src >= '0' && *src <= '9') || *src == '-' || *src == '_' || *src == '.' || *src == '~')
+            dst[pos++] = *src;
+        else {
+            sprintf(dst + pos, "%%%02X", (unsigned char)*src);
+            pos += 3;
+        }
+    }
+    dst[pos] = '\0';
+}
+
+static void TouchMasterServer(const char *url, const char *params)
+{
+    HINTERNET hInet = InternetOpenA("Snes9x-Server", INTERNET_OPEN_TYPE_PRECONFIG, NULL, NULL, 0);
+    if (!hInet) return;
+
+    char fullUrl[2048];
+    sprintf(fullUrl, "%s?%s", url, params);
+
+    HINTERNET hUrl = InternetOpenUrlA(hInet, fullUrl, NULL, 0,
+        INTERNET_FLAG_RELOAD | INTERNET_FLAG_NO_CACHE_WRITE, 0);
+    if (hUrl) {
+        // Read response (discard it)
+        char buf[256];
+        DWORD bytesRead;
+        InternetReadFile(hUrl, buf, sizeof(buf), &bytesRead);
+        InternetCloseHandle(hUrl);
+    }
+    InternetCloseHandle(hInet);
+}
+
+static unsigned __stdcall KailleraPublishThread(void *param)
+{
+    while (kPublishing && KServer.running) {
+        int numUsers = 0, numGames = 0;
+        for (int i = 0; i < KAILLERA_MAX_CLIENTS; i++)
+            if (KServer.clients[i].active && KServer.clients[i].ackCount >= 3) numUsers++;
+        for (int i = 0; i < KAILLERA_MAX_GAMES; i++)
+            if (KServer.games[i].active) numGames++;
+
+        char encName[256], encLoc[128];
+        UrlEncode(KServer.serverName, encName, sizeof(encName));
+        UrlEncode(kPublishLocation, encLoc, sizeof(encLoc));
+
+        // Touch kaillera.com
+        char params[1024];
+        sprintf(params, "servername=%s&port=%d&nbusers=%d&maxconn=%d&version=%s&nbgames=%d&location=%s",
+            encName, KServer.port, numUsers, KAILLERA_MAX_CLIENTS, "Snes9x", numGames, encLoc);
+        TouchMasterServer("http://www.kaillera.com/touch_server.php", params);
+
+        // Touch kaillerareborn
+        sprintf(params, "serverName=%s&port=%d&numUsers=%d&maxUsers=%d&version=%s&numGames=%d&maxGames=%d&location=%s",
+            encName, KServer.port, numUsers, KAILLERA_MAX_CLIENTS, "Snes9x", numGames, KAILLERA_MAX_GAMES, encLoc);
+        TouchMasterServer("http://kaillerareborn.2manygames.fr/touch_list.php", params);
+
+        // Re-register every 60 seconds
+        for (int i = 0; i < 60 && kPublishing && KServer.running; i++)
+            Sleep(1000);
+    }
+    return 0;
+}
+
+void KailleraServerPublish(const char *location)
+{
+    if (kPublishing) return;
+    strncpy(kPublishLocation, location, sizeof(kPublishLocation) - 1);
+    kPublishing = true;
+    unsigned tid;
+    kPublishThread = (HANDLE)_beginthreadex(NULL, 0, KailleraPublishThread, NULL, 0, &tid);
+}
+
+void KailleraServerUnpublish()
+{
+    kPublishing = false;
+    if (kPublishThread) {
+        WaitForSingleObject(kPublishThread, 3000);
+        CloseHandle(kPublishThread);
+        kPublishThread = NULL;
+    }
 }
 
 #endif // KAILLERA_SUPPORT

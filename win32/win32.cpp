@@ -893,6 +893,7 @@ void InitSnes9x( void)
 void DeinitS9x()
 {
 #ifdef KAILLERA_SUPPORT
+	KailleraServerUnpublish();
 	KailleraServerStop();
 	KailleraUnloadDLL();
 #endif

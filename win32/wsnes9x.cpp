@@ -7684,6 +7684,7 @@ INT_PTR CALLBACK DlgKailleraServer(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lP
 		SetDlgItemText(hDlg, IDC_KAILLERA_SERVER_NAME, TEXT("Snes9x Kaillera Server"));
 		SetDlgItemInt(hDlg, IDC_KAILLERA_PORT, KAILLERA_SERVER_PORT, FALSE);
 		SetDlgItemInt(hDlg, IDC_KAILLERA_MAX_CLIENTS, 8, FALSE);
+		SetDlgItemText(hDlg, IDC_KAILLERA_LOCATION, TEXT(""));
 
 		SendDlgItemMessage(hDlg, IDC_KAILLERA_PORT_SPIN, UDM_SETRANGE, 0, MAKELPARAM(65535, 1024));
 		SendDlgItemMessage(hDlg, IDC_KAILLERA_MAX_CLIENTS_SPIN, UDM_SETRANGE, 0, MAKELPARAM(8, 2));
@@ -7709,6 +7710,7 @@ INT_PTR CALLBACK DlgKailleraServer(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lP
 		case IDC_KAILLERA_START_STOP:
 			if (KailleraServerIsRunning())
 			{
+				KailleraServerUnpublish();
 				KailleraServerStop();
 			}
 			else
@@ -7733,6 +7735,13 @@ INT_PTR CALLBACK DlgKailleraServer(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lP
 				{
 					MessageBox(hDlg, TEXT("Failed to start server.\nPort may already be in use."),
 						TEXT("Kaillera Server"), MB_OK | MB_ICONERROR);
+				}
+				else if (IsDlgButtonChecked(hDlg, IDC_KAILLERA_PUBLISH) == BST_CHECKED)
+				{
+					TCHAR locW[64];
+					GetDlgItemText(hDlg, IDC_KAILLERA_LOCATION, locW, 64);
+					const char *loc = _tToChar(locW);
+					KailleraServerPublish(loc ? loc : "");
 				}
 			}
 			S9xRestoreWindowTitle();
