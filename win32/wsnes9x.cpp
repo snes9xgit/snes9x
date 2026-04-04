@@ -7835,8 +7835,11 @@ static void KCUpdateUI(HWND hDlg)
     }
 
     if (KClient.errorMsg[0]) {
-        MessageBox(hDlg, _tFromChar(KClient.errorMsg), TEXT("Kaillera"), MB_OK | MB_ICONERROR);
-        KClient.errorMsg[0] = '\0';
+        char errCopy[256];
+        strncpy(errCopy, KClient.errorMsg, sizeof(errCopy) - 1);
+        errCopy[sizeof(errCopy) - 1] = '\0';
+        KClient.errorMsg[0] = '\0'; // clear BEFORE showing MessageBox
+        MessageBox(hDlg, _tFromChar(errCopy), TEXT("Kaillera"), MB_OK | MB_ICONERROR);
     }
 }
 
