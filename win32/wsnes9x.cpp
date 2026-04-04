@@ -7784,6 +7784,16 @@ static void KCUpdateUI(HWND hDlg)
     EnableWindow(GetDlgItem(hDlg, IDC_KC_CHATSEND), connected);
     EnableWindow(GetDlgItem(hDlg, IDC_KC_ROMLIST), connected && !inRoom);
 
+    // Clear lists when disconnected
+    if (!connected && !connecting) {
+        HWND hList = GetDlgItem(hDlg, IDC_KC_GAMELIST);
+        if (SendMessage(hList, LB_GETCOUNT, 0, 0) > 0)
+            SendMessage(hList, LB_RESETCONTENT, 0, 0);
+        HWND hUsers = GetDlgItem(hDlg, IDC_KC_USERLIST);
+        if (SendMessage(hUsers, LB_GETCOUNT, 0, 0) > 0)
+            SendMessage(hUsers, LB_RESETCONTENT, 0, 0);
+    }
+
     if (KClient.statusUpdated) {
         // Update game list
         HWND hList = GetDlgItem(hDlg, IDC_KC_GAMELIST);
