@@ -588,6 +588,7 @@
 #define IDC_KAILLERA_PUBLISH            3071
 #define IDC_KAILLERA_LOCATION           3072
 #define IDC_KAILLERA_MOTD               3073
+#define IDC_KC_ABOUT                    3074
 #define ID_KAILLERA_END_GAME            44335
 #define IDC_STATIC                      -1
 

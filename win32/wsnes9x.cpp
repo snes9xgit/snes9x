@@ -8337,6 +8337,17 @@ INT_PTR CALLBACK DlgKailleraClient(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lP
             return TRUE;
         }
 
+        case IDC_KC_ABOUT:
+            ShellExecute(hDlg, TEXT("open"), TEXT("https://github.com/shanytc/"), NULL, NULL, SW_SHOWNORMAL);
+            MessageBox(hDlg,
+                TEXT("Kaillera Native Implementation\n\n")
+                TEXT("By Shanytc\n")
+                TEXT("https://github.com/shanytc/\n\n")
+                TEXT("Kaillera protocol compatible with all Kaillera servers.\n")
+                TEXT("No external DLL required."),
+                TEXT("About Kaillera Netplay"), MB_OK | MB_ICONINFORMATION);
+            return TRUE;
+
         case IDCANCEL:
             KillTimer(hDlg, 1);
             EndDialog(hDlg, 0);
