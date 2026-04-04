@@ -8029,7 +8029,12 @@ INT_PTR CALLBACK DlgKailleraClient(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lP
     {
     case WM_INITDIALOG:
         SetDlgItemText(hDlg, IDC_KC_SERVER_IP, TEXT("127.0.0.1:27888"));
-        SetDlgItemText(hDlg, IDC_KC_USERNAME, TEXT("Player"));
+        {
+            TCHAR defaultName[32];
+            srand(GetTickCount());
+            _stprintf(defaultName, TEXT("Player%d"), 10000 + rand() % 90000);
+            SetDlgItemText(hDlg, IDC_KC_USERNAME, defaultName);
+        }
         SetDlgItemInt(hDlg, IDC_KC_TIMEOUT, 10, FALSE);
         KCInitServerListView(hDlg);
         KCPopulateRomList(hDlg);
