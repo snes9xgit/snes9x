@@ -18,6 +18,7 @@ bool KailleraServerStart(uint16_t port = KAILLERA_SERVER_PORT, const char *name 
 void KailleraServerStop();
 bool KailleraServerIsRunning();
 const char *KailleraServerGetName();
+void KailleraServerSetMOTD(const char *motd);
 void KailleraServerPublish(const char *location);
 void KailleraServerUnpublish();
 

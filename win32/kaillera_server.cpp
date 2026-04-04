@@ -144,6 +144,7 @@ struct KailleraServerState {
     uint16_t        nextUserId;
     uint32_t        nextGameId;
     char            serverName[128];
+    char            motd[1024];
     KailleraClient  clients[KAILLERA_MAX_CLIENTS];
     KailleraGame    games[KAILLERA_MAX_GAMES];
 };
@@ -673,9 +674,22 @@ static void HandleClientACK(int clientIdx, const uint8_t *payload, int len)
         SendServerStatus(clientIdx);
         SendUserJoined(clientIdx);
 
-        char motd[256];
-        sprintf(motd, "Welcome to %s!", KServer.serverName);
-        SendServerInfo(clientIdx, motd);
+        // Send MOTD - each line as a separate Server Info message
+        SendServerInfo(clientIdx, KServer.serverName);
+        if (KServer.motd[0]) {
+            char motdCopy[1024];
+            strncpy(motdCopy, KServer.motd, sizeof(motdCopy) - 1);
+            motdCopy[sizeof(motdCopy) - 1] = '\0';
+            char *line = strtok(motdCopy, "\n");
+            while (line) {
+                // Strip \r
+                char *cr = strchr(line, '\r');
+                if (cr) *cr = '\0';
+                if (line[0])
+                    SendServerInfo(clientIdx, line);
+                line = strtok(NULL, "\n");
+            }
+        }
     }
 }
 
@@ -1587,6 +1601,12 @@ bool KailleraServerIsRunning()
 const char *KailleraServerGetName()
 {
     return KServer.serverName;
+}
+
+void KailleraServerSetMOTD(const char *motd)
+{
+    strncpy(KServer.motd, motd ? motd : "", sizeof(KServer.motd) - 1);
+    KServer.motd[sizeof(KServer.motd) - 1] = '\0';
 }
 
 // ---------------------------------------------------------------------------
