@@ -394,7 +394,26 @@ static void HandleCreateGameNotif(const uint8_t *pl, int len)
 
 static void HandleJoinGameNotif(const uint8_t *pl, int len)
 {
-    // Just update status
+    const uint8_t *p = pl, *end = pl + len;
+    char dummy[2];
+    p = ReadStr(p, end, dummy, sizeof(dummy)); // empty string
+    if (end - p < 4) { KClient.statusUpdated = true; return; }
+    uint32_t gameId = ReadLE32(p); p += 4;
+    char playerName[128];
+    p = ReadStr(p, end, playerName, sizeof(playerName));
+
+    // Find game name
+    const char *gameName = "a game";
+    for (int i = 0; i < KClient.numGames; i++) {
+        if (KClient.games[i].gameId == gameId) {
+            gameName = KClient.games[i].gameName;
+            break;
+        }
+    }
+
+    char msg[512];
+    sprintf(msg, "*** %s joined the game '%s'", playerName, gameName);
+    ChatAppend(msg);
     KClient.statusUpdated = true;
 }
 
