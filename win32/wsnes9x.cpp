@@ -8163,6 +8163,9 @@ INT_PTR CALLBACK DlgKailleraClient(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lP
             return TRUE;
         case IDC_KC_DISCONNECT:
             KailleraClientDisconnect();
+            SendMessage(GetDlgItem(hDlg, IDC_KC_USERLIST), LB_RESETCONTENT, 0, 0);
+            SendMessage(GetDlgItem(hDlg, IDC_KC_GAMELIST), LB_RESETCONTENT, 0, 0);
+            SetDlgItemText(hDlg, IDC_KC_CHATLOG, TEXT(""));
             KCUpdateUI(hDlg);
             return TRUE;
 
