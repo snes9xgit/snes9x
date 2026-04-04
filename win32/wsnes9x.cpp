@@ -7929,6 +7929,9 @@ static volatile bool kServerListFetching = false;
 static int kSortColumn = -1;
 static bool kSortAscending = true;
 
+// Fake entry used for localhost in sort comparisons
+static KServerListEntry kLocalhostEntry = { "Localhost", "127.0.0.1", 27888, 0, 8, 0, "Snes9x", "Localhost", 0 };
+
 static void KCPopulateServerListView(HWND hDlg)
 {
     HWND hLV = GetDlgItem(hDlg, IDC_KC_SERVERLIST);
@@ -8080,9 +8083,6 @@ static void KCRefreshServerList(HWND hDlg)
         EnableWindow(GetDlgItem(hDlg, IDC_KC_REFRESH), TRUE);
     }
 }
-
-// Fake entry used for localhost in sort comparisons
-static KServerListEntry kLocalhostEntry = { "Localhost", "127.0.0.1", 27888, 0, 8, 0, "Snes9x", "Localhost", 0 };
 
 static int CALLBACK KCServerListCompare(LPARAM lp1, LPARAM lp2, LPARAM sortParam)
 {
