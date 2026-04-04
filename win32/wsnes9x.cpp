@@ -8009,9 +8009,29 @@ static void KCUpdateServerPing(HWND hDlg, int serverIdx)
     }
 }
 
+static void KCDetectLocalhost()
+{
+    if (KailleraServerIsRunning()) {
+        kLocalhostDetected = true;
+    } else {
+        KServerListEntry probe = {};
+        strcpy(probe.ip, "127.0.0.1");
+        probe.port = 27888;
+        probe.ping = 999;
+        KailleraPingServer(&probe);
+        kLocalhostDetected = (probe.ping < 999);
+    }
+}
+
 static unsigned __stdcall KCFetchServerListThread(void *param)
 {
+    WSADATA wsa;
+    WSAStartup(MAKEWORD(2, 2), &wsa);
+
     kServerListCount = KailleraFetchServerList(kServerList, KAILLERA_MAX_SERVERS);
+
+    // Detect localhost before first populate so it shows immediately
+    KCDetectLocalhost();
 
     // Show all servers immediately (with ping=999)
     if (kServerDlgHwnd)
@@ -8021,17 +8041,7 @@ static unsigned __stdcall KCFetchServerListThread(void *param)
     // Stops when connected to a server or dialog closes
     while (kServerListFetching && kServerDlgHwnd)
     {
-        // Detect localhost server (built-in or external)
-        if (KailleraServerIsRunning()) {
-            kLocalhostDetected = true;
-        } else {
-            KServerListEntry probe = {};
-            strcpy(probe.ip, "127.0.0.1");
-            probe.port = 27888;
-            probe.ping = 999;
-            KailleraPingServer(&probe);
-            kLocalhostDetected = (probe.ping < 999);
-        }
+        KCDetectLocalhost();
 
         for (int i = 0; i < kServerListCount && kServerListFetching; i++) {
             KailleraPingServer(&kServerList[i]);
@@ -8053,6 +8063,7 @@ static unsigned __stdcall KCFetchServerListThread(void *param)
     }
 
     kServerListFetching = false;
+    WSACleanup();
     return 0;
 }
 
