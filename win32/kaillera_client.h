@@ -66,6 +66,7 @@ struct SKailleraClient {
     uint16_t    serverPort;
     char        username[128];
     uint8_t     connType;        // 1=LAN .. 6=Bad
+    int         timeoutMs;       // connection timeout in ms
 
     // Assigned by server
     uint16_t    myUserId;
@@ -111,7 +112,7 @@ struct SKailleraClient {
 extern SKailleraClient KClient;
 
 // Public API
-bool KailleraClientConnect(const char *ip, uint16_t port, const char *username, uint8_t connType = 1);
+bool KailleraClientConnect(const char *ip, uint16_t port, const char *username, uint8_t connType = 1, int timeoutSec = 10);
 void KailleraClientDisconnect();
 bool KailleraClientCreateGame(const char *gameName);
 bool KailleraClientJoinGame(uint32_t gameId);

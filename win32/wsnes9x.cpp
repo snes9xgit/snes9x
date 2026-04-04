@@ -7757,10 +7757,12 @@ static void KCUpdateUI(HWND hDlg)
     bool inRoom = (st >= KCLIENT_IN_GAME_ROOM);
     bool playing = (st == KCLIENT_PLAYING);
 
-    EnableWindow(GetDlgItem(hDlg, IDC_KC_SERVER_IP), !connected);
-    EnableWindow(GetDlgItem(hDlg, IDC_KC_USERNAME), !connected);
-    EnableWindow(GetDlgItem(hDlg, IDC_KC_CONNECT), !connected);
-    EnableWindow(GetDlgItem(hDlg, IDC_KC_DISCONNECT), connected);
+    bool connecting = (st == KCLIENT_CONNECTING || st == KCLIENT_LOGGING_IN);
+    EnableWindow(GetDlgItem(hDlg, IDC_KC_SERVER_IP), !connected && !connecting);
+    EnableWindow(GetDlgItem(hDlg, IDC_KC_USERNAME), !connected && !connecting);
+    EnableWindow(GetDlgItem(hDlg, IDC_KC_CONNECT), !connected && !connecting);
+    EnableWindow(GetDlgItem(hDlg, IDC_KC_DISCONNECT), connected || connecting);
+    EnableWindow(GetDlgItem(hDlg, IDC_KC_TIMEOUT), !connected && !connecting);
     EnableWindow(GetDlgItem(hDlg, IDC_KC_CREATE), connected && !inRoom);
     EnableWindow(GetDlgItem(hDlg, IDC_KC_JOIN), connected && !inRoom);
     EnableWindow(GetDlgItem(hDlg, IDC_KC_START), inRoom && KClient.isOwner && !playing);
@@ -8000,6 +8002,7 @@ INT_PTR CALLBACK DlgKailleraClient(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lP
     case WM_INITDIALOG:
         SetDlgItemText(hDlg, IDC_KC_SERVER_IP, TEXT("127.0.0.1:27888"));
         SetDlgItemText(hDlg, IDC_KC_USERNAME, TEXT("Player"));
+        SetDlgItemInt(hDlg, IDC_KC_TIMEOUT, 10, FALSE);
         KCInitServerListView(hDlg);
         KCPopulateRomList(hDlg);
         KCUpdateUI(hDlg);
@@ -8104,7 +8107,12 @@ INT_PTR CALLBACK DlgKailleraClient(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lP
             nameBuf[sizeof(nameBuf) - 1] = '\0';
             if (nameBuf[0] == '\0') strcpy(nameBuf, "Player");
 
-            KailleraClientConnect(ipBuf, port, nameBuf, 1);
+            BOOL okTimeout;
+            int timeoutSec = GetDlgItemInt(hDlg, IDC_KC_TIMEOUT, &okTimeout, FALSE);
+            if (!okTimeout || timeoutSec < 1) timeoutSec = 10;
+            if (timeoutSec > 60) timeoutSec = 60;
+
+            KailleraClientConnect(ipBuf, port, nameBuf, 1, timeoutSec);
             KCUpdateUI(hDlg);
             return TRUE;
         }

@@ -804,10 +804,10 @@ static unsigned __stdcall KailleraClientThread(void *param)
             }
         }
 
-        // Connection timeout
-        if (KClient.state == KCLIENT_CONNECTING) {
-            if (GetTickCount() - connectStart > 5000) {
-                sprintf(KClient.errorMsg, "Connection timed out");
+        // Connection timeout (applies to CONNECTING and LOGGING_IN states)
+        if (KClient.state == KCLIENT_CONNECTING || KClient.state == KCLIENT_LOGGING_IN) {
+            if ((int)(GetTickCount() - connectStart) > KClient.timeoutMs) {
+                sprintf(KClient.errorMsg, "Connection timed out after %d seconds", KClient.timeoutMs / 1000);
                 KClient.state = KCLIENT_DISCONNECTED;
                 KClient.statusUpdated = true;
                 break;
@@ -822,7 +822,7 @@ static unsigned __stdcall KailleraClientThread(void *param)
 // Public API
 // ---------------------------------------------------------------------------
 
-bool KailleraClientConnect(const char *ip, uint16_t port, const char *username, uint8_t connType)
+bool KailleraClientConnect(const char *ip, uint16_t port, const char *username, uint8_t connType, int timeoutSec)
 {
     if (KClient.state != KCLIENT_DISCONNECTED) return false;
 
@@ -844,6 +844,7 @@ bool KailleraClientConnect(const char *ip, uint16_t port, const char *username, 
     KClient.serverPort = port;
     strncpy(KClient.username, username, sizeof(KClient.username) - 1);
     KClient.connType = connType;
+    KClient.timeoutMs = timeoutSec * 1000;
     KClient.currentGameId = 0;
     KClient.numGames = 0;
     KClient.numUsers = 0;
