@@ -364,15 +364,32 @@ static void HandleCreateGameNotif(const uint8_t *pl, int len)
     if (end - p < 4) return;
     uint32_t gameId = ReadLE32(p);
 
-    // If we created this game, store the ID
+    // Add to game list
+    if (KClient.numGames < 16) {
+        KClientGameInfo &g = KClient.games[KClient.numGames];
+        strncpy(g.gameName, game, sizeof(g.gameName) - 1);
+        strncpy(g.emulator, emu, sizeof(g.emulator) - 1);
+        strncpy(g.ownerName, owner, sizeof(g.ownerName) - 1);
+        g.gameId = gameId;
+        g.numPlayers = 1;
+        g.maxPlayers = 8;
+        g.status = 0; // waiting
+        KClient.numGames++;
+    }
+
+    // If we created this game, enter the room
     if (strcmp(owner, KClient.username) == 0) {
         KClient.currentGameId = gameId;
         KClient.isOwner = true;
         KClient.state = KCLIENT_IN_GAME_ROOM;
         strncpy(KClient.gameName, game, sizeof(KClient.gameName) - 1);
-        sprintf(KClient.statusMsg, "Created game '%s' (ID %d)", game, gameId);
-        KClient.statusUpdated = true;
+        sprintf(KClient.statusMsg, "Created game '%s'", game);
     }
+
+    char msg[384];
+    sprintf(msg, "*** %s created game '%s'", owner, game);
+    ChatAppend(msg);
+    KClient.statusUpdated = true;
 }
 
 static void HandleJoinGameNotif(const uint8_t *pl, int len)
@@ -412,11 +429,21 @@ static void HandleUpdateGameStatus(const uint8_t *pl, int len)
     uint8_t numP = *p++;
     uint8_t maxP = *p++;
 
+    // Update in game list
+    for (int i = 0; i < KClient.numGames; i++) {
+        if (KClient.games[i].gameId == gameId) {
+            KClient.games[i].status = status;
+            KClient.games[i].numPlayers = numP;
+            KClient.games[i].maxPlayers = maxP;
+            break;
+        }
+    }
+
     if (gameId == KClient.currentGameId) {
         KClient.numPlayers = numP;
         sprintf(KClient.statusMsg, "Game room: %d/%d players", numP, maxP);
-        KClient.statusUpdated = true;
     }
+    KClient.statusUpdated = true;
 }
 
 static void HandleStartGameNotif(const uint8_t *pl, int len)
@@ -506,13 +533,31 @@ static void HandleGameCache(const uint8_t *pl, int len)
 
 static void HandleCloseGame(const uint8_t *pl, int len)
 {
-    KClient.state = KCLIENT_CONNECTED;
-    KClient.currentGameId = 0;
-    sprintf(KClient.statusMsg, "Game closed by owner");
+    const uint8_t *p = pl, *end = pl + len;
+    p++; // skip empty string
+    uint32_t gameId = (end - p >= 4) ? ReadLE32(p) : 0;
+
+    // Remove from game list
+    for (int i = 0; i < KClient.numGames; i++) {
+        if (KClient.games[i].gameId == gameId) {
+            memmove(&KClient.games[i], &KClient.games[i+1],
+                    (KClient.numGames - i - 1) * sizeof(KClientGameInfo));
+            KClient.numGames--;
+            break;
+        }
+    }
+
+    if (gameId == KClient.currentGameId || KClient.currentGameId == 0) {
+        KClient.state = KCLIENT_CONNECTED;
+        KClient.currentGameId = 0;
+        sprintf(KClient.statusMsg, "Game closed");
+        KClient.OutputPlayerCount = -1;
+        SetEvent(KClient.OutputReadyEvent);
+        SetEvent(KClient.GameEndEvent);
+    }
+
+    ChatAppend("*** A game room was closed");
     KClient.statusUpdated = true;
-    KClient.OutputPlayerCount = -1;
-    SetEvent(KClient.OutputReadyEvent);
-    SetEvent(KClient.GameEndEvent);
 }
 
 static void HandleQuitGameNotif(const uint8_t *pl, int len)
