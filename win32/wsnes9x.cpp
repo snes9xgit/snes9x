@@ -7899,6 +7899,20 @@ static void KCPopulateServerListView(HWND hDlg)
     HWND hLV = GetDlgItem(hDlg, IDC_KC_SERVERLIST);
     ListView_DeleteAllItems(hLV);
 
+    // Always add Localhost as the first entry
+    {
+        LVITEM lvi = {};
+        lvi.mask = LVIF_TEXT | LVIF_PARAM;
+        lvi.iItem = 0;
+        lvi.lParam = (LPARAM)-1; // special index for localhost
+        lvi.pszText = (TCHAR *)TEXT("Localhost");
+        int idx = ListView_InsertItem(hLV, &lvi);
+        ListView_SetItemText(hLV, idx, 1, (TCHAR *)TEXT("Local"));
+        ListView_SetItemText(hLV, idx, 2, (TCHAR *)TEXT("0"));
+        ListView_SetItemText(hLV, idx, 3, (TCHAR *)TEXT("-"));
+        ListView_SetItemText(hLV, idx, 4, (TCHAR *)TEXT("-"));
+    }
+
     for (int i = 0; i < kServerListCount; i++) {
         LVITEM lvi = {};
         lvi.mask = LVIF_TEXT | LVIF_PARAM;
@@ -8082,6 +8096,27 @@ INT_PTR CALLBACK DlgKailleraClient(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lP
                 ListView_SortItems(hLV, KCServerListCompare, 0);
                 return TRUE;
             }
+            if (pnm->code == LVN_ITEMCHANGED) {
+                // Selection changed - update IP field to match
+                NMLISTVIEW *pnmlv = (NMLISTVIEW *)lParam;
+                if (pnmlv->uNewState & LVIS_SELECTED) {
+                    LVITEM lvi = {};
+                    lvi.mask = LVIF_PARAM;
+                    lvi.iItem = pnmlv->iItem;
+                    ListView_GetItem(GetDlgItem(hDlg, IDC_KC_SERVERLIST), &lvi);
+                    int idx = (int)lvi.lParam;
+                    if (idx == -1) {
+                        // Localhost
+                        SetDlgItemText(hDlg, IDC_KC_SERVER_IP, TEXT("127.0.0.1:27888"));
+                    } else if (idx >= 0 && idx < kServerListCount) {
+                        TCHAR ipPort[80];
+                        _stprintf(ipPort, TEXT("%s:%d"),
+                            _tFromChar(kServerList[idx].ip), kServerList[idx].port);
+                        SetDlgItemText(hDlg, IDC_KC_SERVER_IP, ipPort);
+                    }
+                }
+                return TRUE;
+            }
             if (pnm->code == NM_DBLCLK) {
                 // Double-click to connect
                 PostMessage(hDlg, WM_COMMAND, MAKEWPARAM(IDC_KC_CONNECT, BN_CLICKED), 0);
@@ -8113,22 +8148,8 @@ INT_PTR CALLBACK DlgKailleraClient(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lP
             char ipBuf[64] = {};
             uint16_t port = 27888;
 
-            // Check if a server is selected in the ListView
-            HWND hLV = GetDlgItem(hDlg, IDC_KC_SERVERLIST);
-            int sel = ListView_GetNextItem(hLV, -1, LVNI_SELECTED);
-            if (sel >= 0) {
-                // Get the original index from lParam
-                LVITEM lvi = {};
-                lvi.mask = LVIF_PARAM;
-                lvi.iItem = sel;
-                ListView_GetItem(hLV, &lvi);
-                int idx = (int)lvi.lParam;
-                if (idx >= 0 && idx < kServerListCount) {
-                    strncpy(ipBuf, kServerList[idx].ip, sizeof(ipBuf) - 1);
-                    port = kServerList[idx].port;
-                }
-            }
-            if (ipBuf[0] == '\0') {
+            // Use IP from the text field (updated by selection or manual entry)
+            {
                 // Use manual IP field
                 TCHAR ipW[64];
                 GetDlgItemText(hDlg, IDC_KC_SERVER_IP, ipW, 64);
