@@ -103,7 +103,8 @@ void KailleraClientDisconnect();
 bool KailleraClientCreateGame(const char *gameName);
 bool KailleraClientJoinGame(uint32_t gameId);
 bool KailleraClientStartGame();
-void KailleraClientEndGame();
+void KailleraClientEndGame();   // stop match, stay in room
+void KailleraClientLeaveGame(); // leave room entirely
 int  KailleraClientExchangeInput(unsigned short localInput, unsigned short *allInputs, int maxPlayers);
 void KailleraClientSendChat(const char *message);
 bool KailleraClientIsConnected();

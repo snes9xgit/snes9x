@@ -223,6 +223,15 @@ static void SendGameChat(const char *text)
     SendMsg(KM_GAME_CHAT, pl, pos);
 }
 
+static void SendDropGame()
+{
+    uint8_t pl[2];
+    int pos = 0;
+    pl[pos++] = '\0';
+    pl[pos++] = 0x00;
+    SendMsg(KM_DROP_GAME, pl, pos);
+}
+
 static void SendKeepAlive()
 {
     uint8_t pl[1] = { '\0' };
@@ -600,13 +609,16 @@ static void HandleDropGameNotif(const uint8_t *pl, int len)
     char msg[256];
     sprintf(msg, "*** %s dropped from the game", name);
     ChatAppend(msg);
-    sprintf(KClient.statusMsg, "Player '%s' dropped", name);
+    sprintf(KClient.statusMsg, "Match ended - waiting in room");
     KClient.statusUpdated = true;
 
-    // Signal game end so the remaining player returns to lobby
-    KClient.OutputPlayerCount = -1;
-    SetEvent(KClient.OutputReadyEvent);
-    SetEvent(KClient.GameEndEvent);
+    // Stop the emulation but stay in the room
+    if (KClient.state == KCLIENT_PLAYING || KClient.state == KCLIENT_GAME_STARTING) {
+        KClient.state = KCLIENT_IN_GAME_ROOM;
+        KClient.OutputPlayerCount = -1;
+        SetEvent(KClient.OutputReadyEvent);
+        SetEvent(KClient.GameEndEvent);
+    }
 }
 
 static void HandleGlobalChatRecv(const uint8_t *pl, int len)
@@ -921,13 +933,46 @@ bool KailleraClientStartGame()
 void KailleraClientEndGame()
 {
     if (KClient.state < KCLIENT_IN_GAME_ROOM) return;
+
+    bool wasPlaying = (KClient.state == KCLIENT_PLAYING || KClient.state == KCLIENT_GAME_STARTING);
+
+    // Signal the main thread to stop the emulation loop
     KClient.OutputPlayerCount = -1;
     SetEvent(KClient.OutputReadyEvent);
     SetEvent(KClient.GameEndEvent);
+
+    if (wasPlaying) {
+        // Send DropGame - stops the match but stays in the room
+        SendDropGame();
+        KClient.state = KCLIENT_IN_GAME_ROOM;
+        sprintf(KClient.statusMsg, "Game ended - waiting in room");
+    } else {
+        // Not playing, just leave the room entirely
+        SendQuitGame();
+        KClient.state = KCLIENT_CONNECTED;
+        KClient.currentGameId = 0;
+        KClient.isOwner = false;
+        sprintf(KClient.statusMsg, "Left game room");
+    }
+    KClient.statusUpdated = true;
+}
+
+// Leave the game room entirely (go back to lobby)
+void KailleraClientLeaveGame()
+{
+    if (KClient.state < KCLIENT_IN_GAME_ROOM) return;
+
+    if (KClient.state == KCLIENT_PLAYING || KClient.state == KCLIENT_GAME_STARTING) {
+        KClient.OutputPlayerCount = -1;
+        SetEvent(KClient.OutputReadyEvent);
+        SetEvent(KClient.GameEndEvent);
+    }
+
     SendQuitGame();
     KClient.state = KCLIENT_CONNECTED;
     KClient.currentGameId = 0;
-    sprintf(KClient.statusMsg, "Left game");
+    KClient.isOwner = false;
+    sprintf(KClient.statusMsg, "Left game room");
     KClient.statusUpdated = true;
 }
 

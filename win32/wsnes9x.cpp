@@ -2027,11 +2027,11 @@ LRESULT CALLBACK WinProc(
 			RestoreSNESDisplay();
 			break;
 		case ID_KAILLERA_END_GAME:
-			if (KailleraClientIsPlaying() || KailleraClientGetState() >= KCLIENT_IN_GAME_ROOM)
+			if (KailleraClientIsPlaying() || KailleraClientGetState() == KCLIENT_GAME_STARTING)
 			{
-				KailleraClientEndGame();
-				S9xSetInfoString("Kaillera game ended");
-				// Reopen the lobby dialog
+				KailleraClientEndGame(); // sends DropGame, stays in room
+				S9xSetInfoString("Kaillera match ended");
+				// Reopen dialog - player stays in game room
 				RestoreGUIDisplay();
 				DialogBox(g_hInst, MAKEINTRESOURCE(IDD_KAILLERA_CLIENT), hWnd, DlgKailleraClient);
 				RestoreSNESDisplay();
@@ -2803,19 +2803,16 @@ LRESULT CALLBACK WinProc(
 		break;
 
 	case WM_KAILLERA_GAME_END:
-		if (KailleraClientGetState() >= KCLIENT_IN_GAME_ROOM)
+		if (KailleraClientGetState() == KCLIENT_PLAYING ||
+		    KailleraClientGetState() == KCLIENT_GAME_STARTING)
 		{
-			KailleraClientEndGame();
-			S9xSetInfoString("Kaillera game ended");
-			// Reopen the lobby so the player can rejoin or create a new game
-			RestoreGUIDisplay();
-			DialogBox(g_hInst, MAKEINTRESOURCE(IDD_KAILLERA_CLIENT), hWnd, DlgKailleraClient);
-			RestoreSNESDisplay();
+			KailleraClientEndGame(); // sends DropGame, stays in room
 		}
-		else
-		{
-			KailleraStopGame(); // legacy DLL fallback
-		}
+		S9xSetInfoString("Kaillera match ended");
+		// Reopen the dialog (shows room or lobby depending on state)
+		RestoreGUIDisplay();
+		DialogBox(g_hInst, MAKEINTRESOURCE(IDD_KAILLERA_CLIENT), hWnd, DlgKailleraClient);
+		RestoreSNESDisplay();
 		break;
 #endif
 	}
@@ -7984,7 +7981,7 @@ INT_PTR CALLBACK DlgKailleraClient(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lP
             return TRUE;
 
         case IDC_KC_LEAVE:
-            KailleraClientEndGame();
+            KailleraClientLeaveGame();
             KCUpdateUI(hDlg);
             return TRUE;
 
