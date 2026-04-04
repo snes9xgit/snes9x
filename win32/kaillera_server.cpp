@@ -1603,6 +1603,23 @@ const char *KailleraServerGetName()
     return KServer.serverName;
 }
 
+uint16_t KailleraServerGetPort()
+{
+    return KServer.port;
+}
+
+void KailleraServerGetStats(int *users, int *maxUsers, int *games)
+{
+    int u = 0, g = 0;
+    for (int i = 0; i < KAILLERA_MAX_CLIENTS; i++)
+        if (KServer.clients[i].active && KServer.clients[i].ackCount >= 3) u++;
+    for (int i = 0; i < KAILLERA_MAX_GAMES; i++)
+        if (KServer.games[i].active) g++;
+    if (users) *users = u;
+    if (maxUsers) *maxUsers = KAILLERA_MAX_CLIENTS;
+    if (games) *games = g;
+}
+
 void KailleraServerSetMOTD(const char *motd)
 {
     strncpy(KServer.motd, motd ? motd : "", sizeof(KServer.motd) - 1);

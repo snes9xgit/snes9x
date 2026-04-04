@@ -7957,11 +7957,19 @@ static void KCPopulateServerListView(HWND hDlg)
     }
     if (localServerRunning) {
         TCHAR displayName[256];
+        TCHAR usersStr[16];
         if (KailleraServerIsRunning()) {
             const char *srvName = KailleraServerGetName();
             _stprintf(displayName, TEXT("%s (Localhost)"), _tFromChar(srvName));
+            int users, maxUsers, games;
+            KailleraServerGetStats(&users, &maxUsers, &games);
+            _stprintf(usersStr, TEXT("%d/%d"), users, maxUsers);
+            // Update the sort helper too
+            kLocalhostEntry.users = users;
+            kLocalhostEntry.maxUsers = maxUsers;
         } else {
             _tcscpy(displayName, TEXT("Localhost"));
+            _tcscpy(usersStr, TEXT("-"));
         }
         LVITEM lvi = {};
         lvi.mask = LVIF_TEXT | LVIF_PARAM;
@@ -7972,7 +7980,7 @@ static void KCPopulateServerListView(HWND hDlg)
         ListView_SetItemText(hLV, idx, 1, (TCHAR *)TEXT("Localhost"));
         ListView_SetItemText(hLV, idx, 2, (TCHAR *)TEXT("0"));
         ListView_SetItemText(hLV, idx, 3, (TCHAR *)TEXT("Snes9x"));
-        ListView_SetItemText(hLV, idx, 4, (TCHAR *)TEXT("-"));
+        ListView_SetItemText(hLV, idx, 4, usersStr);
     }
 
     for (int i = 0; i < kServerListCount; i++) {
@@ -8073,11 +8081,16 @@ static void KCRefreshServerList(HWND hDlg)
     }
 }
 
+// Fake entry used for localhost in sort comparisons
+static KServerListEntry kLocalhostEntry = { "Localhost", "127.0.0.1", 27888, 0, 8, 0, "Snes9x", "Localhost", 0 };
+
 static int CALLBACK KCServerListCompare(LPARAM lp1, LPARAM lp2, LPARAM sortParam)
 {
     int i1 = (int)lp1, i2 = (int)lp2;
-    if (i1 < 0 || i1 >= kServerListCount || i2 < 0 || i2 >= kServerListCount) return 0;
-    KServerListEntry &a = kServerList[i1], &b = kServerList[i2];
+    KServerListEntry &a = (i1 == -1) ? kLocalhostEntry : kServerList[i1];
+    KServerListEntry &b = (i2 == -1) ? kLocalhostEntry : kServerList[i2];
+    if (i1 != -1 && (i1 < 0 || i1 >= kServerListCount)) return 0;
+    if (i2 != -1 && (i2 < 0 || i2 >= kServerListCount)) return 0;
     int result = 0;
     switch (kSortColumn) {
     case 0: result = _stricmp(a.name, b.name); break;
