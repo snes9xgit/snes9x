@@ -2803,7 +2803,19 @@ LRESULT CALLBACK WinProc(
 		break;
 
 	case WM_KAILLERA_GAME_END:
-		KailleraStopGame();
+		if (KailleraClientGetState() >= KCLIENT_IN_GAME_ROOM)
+		{
+			KailleraClientEndGame();
+			S9xSetInfoString("Kaillera game ended");
+			// Reopen the lobby so the player can rejoin or create a new game
+			RestoreGUIDisplay();
+			DialogBox(g_hInst, MAKEINTRESOURCE(IDD_KAILLERA_CLIENT), hWnd, DlgKailleraClient);
+			RestoreSNESDisplay();
+		}
+		else
+		{
+			KailleraStopGame(); // legacy DLL fallback
+		}
 		break;
 #endif
 	}

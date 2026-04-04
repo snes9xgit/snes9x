@@ -581,7 +581,13 @@ static void HandleCloseGame(const uint8_t *pl, int len)
 
 static void HandleQuitGameNotif(const uint8_t *pl, int len)
 {
-    // A player left the game room
+    const uint8_t *p = pl, *end = pl + len;
+    char name[128];
+    p = ReadStr(p, end, name, sizeof(name));
+
+    char msg[256];
+    sprintf(msg, "*** %s left the game", name);
+    ChatAppend(msg);
     KClient.statusUpdated = true;
 }
 
@@ -590,8 +596,17 @@ static void HandleDropGameNotif(const uint8_t *pl, int len)
     const uint8_t *p = pl, *end = pl + len;
     char name[128];
     p = ReadStr(p, end, name, sizeof(name));
+
+    char msg[256];
+    sprintf(msg, "*** %s dropped from the game", name);
+    ChatAppend(msg);
     sprintf(KClient.statusMsg, "Player '%s' dropped", name);
     KClient.statusUpdated = true;
+
+    // Signal game end so the remaining player returns to lobby
+    KClient.OutputPlayerCount = -1;
+    SetEvent(KClient.OutputReadyEvent);
+    SetEvent(KClient.GameEndEvent);
 }
 
 static void HandleGlobalChatRecv(const uint8_t *pl, int len)
