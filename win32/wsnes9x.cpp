@@ -8338,15 +8338,28 @@ INT_PTR CALLBACK DlgKailleraClient(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lP
         }
 
         case IDC_KC_ABOUT:
-            ShellExecute(hDlg, TEXT("open"), TEXT("https://github.com/shanytc/"), NULL, NULL, SW_SHOWNORMAL);
-            MessageBox(hDlg,
-                TEXT("Kaillera Native Implementation\n\n")
-                TEXT("By Shanytc\n")
-                TEXT("https://github.com/shanytc/\n\n")
+        {
+            TASKDIALOGCONFIG tdc = {};
+            tdc.cbSize = sizeof(tdc);
+            tdc.hwndParent = hDlg;
+            tdc.hInstance = g_hInst;
+            tdc.dwFlags = TDF_ENABLE_HYPERLINKS | TDF_USE_COMMAND_LINKS_NO_ICON;
+            tdc.dwCommonButtons = TDCBF_OK_BUTTON;
+            tdc.pszWindowTitle = TEXT("About Kaillera Netplay");
+            tdc.pszMainIcon = TD_INFORMATION_ICON;
+            tdc.pszMainInstruction = TEXT("Kaillera Native Implementation");
+            tdc.pszContent =
+                TEXT("By <a href=\"https://github.com/shanytc/\">Shanytc</a>\n\n")
                 TEXT("Kaillera protocol compatible with all Kaillera servers.\n")
-                TEXT("No external DLL required."),
-                TEXT("About Kaillera Netplay"), MB_OK | MB_ICONINFORMATION);
+                TEXT("No external DLL required.");
+            tdc.pfCallback = [](HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam, LONG_PTR lpRefData) -> HRESULT {
+                if (msg == TDN_HYPERLINK_CLICKED)
+                    ShellExecute(hwnd, TEXT("open"), (LPCTSTR)lParam, NULL, NULL, SW_SHOWNORMAL);
+                return S_OK;
+            };
+            TaskDialogIndirect(&tdc, NULL, NULL, NULL);
             return TRUE;
+        }
 
         case IDCANCEL:
             KillTimer(hDlg, 1);
