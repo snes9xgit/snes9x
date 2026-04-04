@@ -7921,19 +7921,47 @@ static void KCPopulateServerListView(HWND hDlg)
     }
 }
 
+// WM_USER+100: server list fetched, populate all rows
+// WM_USER+101: wParam = server index that was just pinged, update its ping cell
+
+static void KCUpdateServerPing(HWND hDlg, int serverIdx)
+{
+    HWND hLV = GetDlgItem(hDlg, IDC_KC_SERVERLIST);
+    int itemCount = ListView_GetItemCount(hLV);
+    for (int i = 0; i < itemCount; i++) {
+        LVITEM lvi = {};
+        lvi.mask = LVIF_PARAM;
+        lvi.iItem = i;
+        ListView_GetItem(hLV, &lvi);
+        if ((int)lvi.lParam == serverIdx) {
+            TCHAR pingStr[16];
+            _stprintf(pingStr, TEXT("%d"), kServerList[serverIdx].ping);
+            ListView_SetItemText(hLV, i, 2, pingStr);
+            break;
+        }
+    }
+}
+
 static unsigned __stdcall KCFetchServerListThread(void *param)
 {
     kServerListCount = KailleraFetchServerList(kServerList, KAILLERA_MAX_SERVERS);
 
-    // Ping servers in batches
-    for (int i = 0; i < kServerListCount && kServerListFetching; i++)
+    // Show all servers immediately (with ping=999)
+    if (kServerDlgHwnd)
+        PostMessage(kServerDlgHwnd, WM_USER + 100, 0, 0);
+
+    // Ping servers one by one, updating the UI after each
+    for (int i = 0; i < kServerListCount && kServerListFetching; i++) {
         KailleraPingServer(&kServerList[i]);
+        if (kServerDlgHwnd)
+            PostMessage(kServerDlgHwnd, WM_USER + 101, (WPARAM)i, 0);
+    }
 
     kServerListFetching = false;
 
-    // Notify dialog to update (use WM_USER+100 as a custom message)
+    // Final status update
     if (kServerDlgHwnd)
-        PostMessage(kServerDlgHwnd, WM_USER + 100, 0, 0);
+        PostMessage(kServerDlgHwnd, WM_USER + 100, 1, 0); // wParam=1 means "done pinging"
 
     return 0;
 }
@@ -8013,14 +8041,23 @@ INT_PTR CALLBACK DlgKailleraClient(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lP
         return TRUE;
 
     case WM_USER + 100:
-        // Server list fetch completed (from background thread)
-        KCPopulateServerListView(hDlg);
-        EnableWindow(GetDlgItem(hDlg, IDC_KC_REFRESH), TRUE);
-        {
+        // wParam=0: list fetched, populate rows. wParam=1: pinging done.
+        if (wParam == 0) {
+            KCPopulateServerListView(hDlg);
+            TCHAR status[64];
+            _stprintf(status, TEXT("Found %d servers. Pinging..."), kServerListCount);
+            SetDlgItemText(hDlg, IDC_KC_STATUS, status);
+        } else {
+            EnableWindow(GetDlgItem(hDlg, IDC_KC_REFRESH), TRUE);
             TCHAR status[64];
             _stprintf(status, TEXT("Found %d online servers."), kServerListCount);
             SetDlgItemText(hDlg, IDC_KC_STATUS, status);
         }
+        return TRUE;
+
+    case WM_USER + 101:
+        // A single server was pinged, update its row
+        KCUpdateServerPing(hDlg, (int)wParam);
         return TRUE;
 
     case WM_NOTIFY:
