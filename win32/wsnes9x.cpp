@@ -7758,6 +7758,66 @@ static void KCUpdateUI(HWND hDlg)
     }
 }
 
+static bool IsSNESRom(const TCHAR *filename)
+{
+    const TCHAR *ext = _tcsrchr(filename, TEXT('.'));
+    if (!ext) return false;
+    ext++;
+    return (_tcsicmp(ext, TEXT("smc")) == 0 || _tcsicmp(ext, TEXT("sfc")) == 0 ||
+            _tcsicmp(ext, TEXT("fig")) == 0 || _tcsicmp(ext, TEXT("swc")) == 0 ||
+            _tcsicmp(ext, TEXT("zip")) == 0 || _tcsicmp(ext, TEXT("7z")) == 0 ||
+            _tcsicmp(ext, TEXT("gz")) == 0);
+}
+
+static void KCPopulateRomList(HWND hDlg)
+{
+    HWND hCombo = GetDlgItem(hDlg, IDC_KC_ROMLIST);
+    SendMessage(hCombo, CB_RESETCONTENT, 0, 0);
+
+    // Add currently loaded ROM first
+    int selIdx = -1;
+    if (!Settings.StopEmulation && Memory.ROMName[0]) {
+        TCHAR name[256];
+        _stprintf(name, TEXT("%s (loaded)"), _tFromChar(Memory.ROMName));
+        int idx = (int)SendMessage(hCombo, CB_ADDSTRING, 0, (LPARAM)name);
+        SendMessage(hCombo, CB_SETITEMDATA, idx, (LPARAM)0); // tag: 0 = loaded ROM
+        selIdx = idx;
+    }
+
+    // Scan ROM directory
+    TCHAR searchPath[MAX_PATH];
+    _stprintf(searchPath, TEXT("%s\\*"), GUI.RomDir);
+    WIN32_FIND_DATA fd;
+    HANDLE hFind = FindFirstFile(searchPath, &fd);
+    if (hFind != INVALID_HANDLE_VALUE) {
+        do {
+            if (fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) continue;
+            if (!IsSNESRom(fd.cFileName)) continue;
+
+            // Strip extension for display name
+            TCHAR display[256];
+            _tcscpy(display, fd.cFileName);
+            TCHAR *dot = _tcsrchr(display, TEXT('.'));
+            if (dot) *dot = '\0';
+
+            // Skip if same as loaded ROM
+            if (!Settings.StopEmulation && Memory.ROMName[0]) {
+                const char *dispChar = _tToChar(display);
+                if (strcmp(dispChar, Memory.ROMName) == 0) continue;
+            }
+
+            int idx = (int)SendMessage(hCombo, CB_ADDSTRING, 0, (LPARAM)display);
+            SendMessage(hCombo, CB_SETITEMDATA, idx, (LPARAM)1); // tag: 1 = from directory
+        } while (FindNextFile(hFind, &fd));
+        FindClose(hFind);
+    }
+
+    if (selIdx >= 0)
+        SendMessage(hCombo, CB_SETCURSEL, selIdx, 0);
+    else if (SendMessage(hCombo, CB_GETCOUNT, 0, 0) > 0)
+        SendMessage(hCombo, CB_SETCURSEL, 0, 0);
+}
+
 INT_PTR CALLBACK DlgKailleraClient(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 {
     switch (msg)
@@ -7765,6 +7825,7 @@ INT_PTR CALLBACK DlgKailleraClient(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lP
     case WM_INITDIALOG:
         SetDlgItemText(hDlg, IDC_KC_SERVER_IP, TEXT("127.0.0.1:27888"));
         SetDlgItemText(hDlg, IDC_KC_USERNAME, TEXT("Player"));
+        KCPopulateRomList(hDlg);
         KCUpdateUI(hDlg);
         SetTimer(hDlg, 1, 500, NULL);
         return TRUE;
@@ -7821,15 +7882,19 @@ INT_PTR CALLBACK DlgKailleraClient(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lP
 
         case IDC_KC_CREATE:
         {
-            // Use currently loaded ROM name, or prompt
-            char gameName[256] = {};
-            if (!Settings.StopEmulation && Memory.ROMName[0])
-                strncpy(gameName, Memory.ROMName, sizeof(gameName) - 1);
-            else {
-                MessageBox(hDlg, TEXT("Please load a ROM first."), TEXT("Kaillera"), MB_OK | MB_ICONWARNING);
+            HWND hCombo = GetDlgItem(hDlg, IDC_KC_ROMLIST);
+            int sel = (int)SendMessage(hCombo, CB_GETCURSEL, 0, 0);
+            if (sel < 0) {
+                MessageBox(hDlg, TEXT("Select a ROM to create a game."), TEXT("Kaillera"), MB_OK | MB_ICONWARNING);
                 return TRUE;
             }
-            KailleraClientCreateGame(gameName);
+            TCHAR romNameW[256];
+            SendMessage(hCombo, CB_GETLBTEXT, sel, (LPARAM)romNameW);
+            // Strip " (loaded)" suffix if present
+            TCHAR *suffix = _tcsstr(romNameW, TEXT(" (loaded)"));
+            if (suffix) *suffix = '\0';
+            const char *romName = _tToChar(romNameW);
+            KailleraClientCreateGame(romName);
             return TRUE;
         }
         case IDC_KC_JOIN:

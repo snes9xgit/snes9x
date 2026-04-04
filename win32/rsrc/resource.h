@@ -575,6 +575,7 @@
 #define IDC_KC_JOIN                     3058
 #define IDC_KC_START                    3059
 #define IDC_KC_DISCONNECT               3060
+#define IDC_KC_ROMLIST                  3061
 #define IDC_STATIC                      -1
 
 // Next default values for new objects
