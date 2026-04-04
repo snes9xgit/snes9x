@@ -8020,19 +8020,30 @@ static unsigned __stdcall KCFetchServerListThread(void *param)
     if (kServerDlgHwnd)
         PostMessage(kServerDlgHwnd, WM_USER + 100, 0, 0);
 
-    // Ping servers one by one, updating the UI after each
-    for (int i = 0; i < kServerListCount && kServerListFetching; i++) {
-        KailleraPingServer(&kServerList[i]);
+    // Ping loop: ping all servers, then wait 30s and repeat
+    // Stops when connected to a server or dialog closes
+    while (kServerListFetching && kServerDlgHwnd)
+    {
+        for (int i = 0; i < kServerListCount && kServerListFetching; i++) {
+            KailleraPingServer(&kServerList[i]);
+            if (kServerDlgHwnd)
+                PostMessage(kServerDlgHwnd, WM_USER + 101, (WPARAM)i, 0);
+        }
+
+        // Update status after a full round
         if (kServerDlgHwnd)
-            PostMessage(kServerDlgHwnd, WM_USER + 101, (WPARAM)i, 0);
+            PostMessage(kServerDlgHwnd, WM_USER + 100, 1, 0);
+
+        // Stop pinging if connected to a server
+        if (KailleraClientIsConnected())
+            break;
+
+        // Wait 30 seconds before re-pinging (check every second for early exit)
+        for (int s = 0; s < 30 && kServerListFetching && kServerDlgHwnd; s++)
+            Sleep(1000);
     }
 
     kServerListFetching = false;
-
-    // Final status update
-    if (kServerDlgHwnd)
-        PostMessage(kServerDlgHwnd, WM_USER + 100, 1, 0); // wParam=1 means "done pinging"
-
     return 0;
 }
 
