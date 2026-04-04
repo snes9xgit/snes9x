@@ -8057,7 +8057,7 @@ static void KCRefreshServerList(HWND hDlg)
 {
     if (kServerListFetching) return;
 
-    SetDlgItemText(hDlg, IDC_KC_STATUS, TEXT("Fetching server list..."));
+    SetDlgItemText(hDlg, IDC_KC_STATUS, TEXT("Refreshing server list..."));
     EnableWindow(GetDlgItem(hDlg, IDC_KC_REFRESH), FALSE);
 
     kServerDlgHwnd = hDlg;
