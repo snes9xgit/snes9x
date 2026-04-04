@@ -52,6 +52,7 @@
 #include "../statemanager.h"
 #include "AVIOutput.h"
 #include "InputCustom.h"
+#include <process.h>
 #include <vector>
 #include <string>
 
