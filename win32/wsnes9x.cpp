@@ -734,8 +734,9 @@ void S9xRestoreWindowTitle ()
             memcpy(&addr, he->h_addr_list[0], sizeof(addr));
             strncpy(ipStr, inet_ntoa(addr), sizeof(ipStr) - 1);
         }
-        TCHAR kbuf[256];
-        _stprintf(kbuf, TEXT(" | Hosting Kaillera at %s:%d"), _tFromChar(ipStr), KAILLERA_SERVER_PORT);
+        TCHAR kbuf[512];
+        const char *srvName = KailleraServerGetName();
+        _stprintf(kbuf, TEXT(" | Hosting '%s' at %s:%d"), _tFromChar(srvName), _tFromChar(ipStr), KAILLERA_SERVER_PORT);
         _tcscat(buf, kbuf);
     }
 #endif
@@ -4119,6 +4120,9 @@ static void CheckMenuStates ()
 	mii.fState = (KailleraClientIsPlaying() || KailleraClientGetState() >= KCLIENT_IN_GAME_ROOM)
 		? MFS_ENABLED : MFS_DISABLED;
 	SetMenuItemInfo(GUI.hMenu, ID_KAILLERA_END_GAME, FALSE, &mii);
+
+	mii.fState = KailleraServerIsRunning() ? MFS_CHECKED : MFS_UNCHECKED;
+	SetMenuItemInfo(GUI.hMenu, ID_KAILLERA_HOST_SERVER, FALSE, &mii);
 #endif
 }
 

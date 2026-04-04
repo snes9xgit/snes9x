@@ -1581,4 +1581,9 @@ bool KailleraServerIsRunning()
     return KServer.running;
 }
 
+const char *KailleraServerGetName()
+{
+    return KServer.serverName;
+}
+
 #endif // KAILLERA_SUPPORT

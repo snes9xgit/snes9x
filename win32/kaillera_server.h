@@ -17,6 +17,7 @@
 bool KailleraServerStart(uint16_t port = KAILLERA_SERVER_PORT, const char *name = "Snes9x Kaillera Server");
 void KailleraServerStop();
 bool KailleraServerIsRunning();
+const char *KailleraServerGetName();
 
 #endif // KAILLERA_SUPPORT
 #endif // KAILLERA_SERVER_H
