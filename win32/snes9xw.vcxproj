@@ -483,6 +483,7 @@
     <ClInclude Include="IS9xDisplayOutput.h" />
     <ClInclude Include="IS9xSoundOutput.h" />
     <ClInclude Include="kaillera.h" />
+    <ClInclude Include="kaillera_client.h" />
     <ClInclude Include="kaillera_server.h" />
     <ClInclude Include="render.h" />
     <ClInclude Include="rsrc\resource.h" />
@@ -656,6 +657,7 @@
     <ClCompile Include="image_functions.cpp" />
     <ClCompile Include="InputCustom.cpp" />
     <ClCompile Include="kaillera.cpp" />
+    <ClCompile Include="kaillera_client.cpp" />
     <ClCompile Include="kaillera_server.cpp" />
     <ClCompile Include="render.cpp" />
     <ClCompile Include="wconfig.cpp" />

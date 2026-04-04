@@ -43,6 +43,7 @@
 #include "../cheats.h"
 #include "../netplay.h"
 #include "kaillera.h"
+#include "kaillera_client.h"
 #include "kaillera_server.h"
 #include "../apu/apu.h"
 #include "../movie.h"
@@ -101,6 +102,7 @@ INT_PTR CALLBACK DlgNPProgress(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam
 INT_PTR CALLBACK DlgNetConnect(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
 INT_PTR CALLBACK DlgNPOptions(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
 INT_PTR CALLBACK DlgKailleraServer(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
+INT_PTR CALLBACK DlgKailleraClient(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
 INT_PTR CALLBACK DlgFunky(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
 INT_PTR CALLBACK DlgInputConfig(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
 INT_PTR CALLBACK DlgHotkeyConfig(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -2015,7 +2017,9 @@ LRESULT CALLBACK WinProc(
 
 #ifdef KAILLERA_SUPPORT
 		case ID_KAILLERA_NETPLAY:
-			KailleraOpenDialog(hWnd);
+			RestoreGUIDisplay();
+			DialogBox(g_hInst, MAKEINTRESOURCE(IDD_KAILLERA_CLIENT), hWnd, DlgKailleraClient);
+			RestoreSNESDisplay();
 			break;
 		case ID_KAILLERA_HOST_SERVER:
 			RestoreGUIDisplay();
@@ -7710,6 +7714,154 @@ INT_PTR CALLBACK DlgKailleraServer(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lP
 		break;
 	}
 	return FALSE;
+}
+
+static void KCUpdateUI(HWND hDlg)
+{
+    KClientState st = KailleraClientGetState();
+    bool connected = (st >= KCLIENT_CONNECTED);
+    bool inRoom = (st >= KCLIENT_IN_GAME_ROOM);
+    bool playing = (st == KCLIENT_PLAYING);
+
+    EnableWindow(GetDlgItem(hDlg, IDC_KC_SERVER_IP), !connected);
+    EnableWindow(GetDlgItem(hDlg, IDC_KC_USERNAME), !connected);
+    EnableWindow(GetDlgItem(hDlg, IDC_KC_CONNECT), !connected);
+    EnableWindow(GetDlgItem(hDlg, IDC_KC_DISCONNECT), connected);
+    EnableWindow(GetDlgItem(hDlg, IDC_KC_CREATE), connected && !inRoom);
+    EnableWindow(GetDlgItem(hDlg, IDC_KC_JOIN), connected && !inRoom);
+    EnableWindow(GetDlgItem(hDlg, IDC_KC_START), inRoom && KClient.isOwner && !playing);
+
+    // Update game list
+    if (connected && KClient.statusUpdated) {
+        HWND hList = GetDlgItem(hDlg, IDC_KC_GAMELIST);
+        SendMessage(hList, LB_RESETCONTENT, 0, 0);
+        for (int i = 0; i < KClient.numGames; i++) {
+            TCHAR item[300];
+            _stprintf(item, TEXT("%s (%s) [%d/%d]"),
+                _tFromChar(KClient.games[i].gameName),
+                _tFromChar(KClient.games[i].ownerName),
+                KClient.games[i].numPlayers,
+                KClient.games[i].maxPlayers);
+            SendMessage(hList, LB_ADDSTRING, 0, (LPARAM)item);
+        }
+    }
+
+    // Update status
+    if (KClient.statusUpdated) {
+        SetDlgItemText(hDlg, IDC_KC_STATUS, _tFromChar(KClient.statusMsg));
+        KClient.statusUpdated = false;
+    }
+
+    if (KClient.errorMsg[0]) {
+        MessageBox(hDlg, _tFromChar(KClient.errorMsg), TEXT("Kaillera"), MB_OK | MB_ICONERROR);
+        KClient.errorMsg[0] = '\0';
+    }
+}
+
+INT_PTR CALLBACK DlgKailleraClient(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
+{
+    switch (msg)
+    {
+    case WM_INITDIALOG:
+        SetDlgItemText(hDlg, IDC_KC_SERVER_IP, TEXT("127.0.0.1:27888"));
+        SetDlgItemText(hDlg, IDC_KC_USERNAME, TEXT("Player"));
+        KCUpdateUI(hDlg);
+        SetTimer(hDlg, 1, 500, NULL);
+        return TRUE;
+
+    case WM_TIMER:
+        if (wParam == 1) {
+            KCUpdateUI(hDlg);
+
+            // Auto-close dialog when game starts to let emulation run
+            if (KailleraClientIsPlaying()) {
+                KillTimer(hDlg, 1);
+                // Post ROM load message to main window
+                PostMessage(GUI.hWnd, WM_KAILLERA_GAME_START, 0, (LPARAM)KClient.gameName);
+                EndDialog(hDlg, 1);
+            }
+        }
+        return TRUE;
+
+    case WM_COMMAND:
+        switch (LOWORD(wParam))
+        {
+        case IDC_KC_CONNECT:
+        {
+            TCHAR ipW[64], nameW[128];
+            GetDlgItemText(hDlg, IDC_KC_SERVER_IP, ipW, 64);
+            GetDlgItemText(hDlg, IDC_KC_USERNAME, nameW, 128);
+            const char *ip = _tToChar(ipW);
+            const char *name = _tToChar(nameW);
+
+            // Parse IP:port
+            char ipBuf[64];
+            strncpy(ipBuf, ip, sizeof(ipBuf) - 1);
+            ipBuf[sizeof(ipBuf) - 1] = '\0';
+            uint16_t port = 27888;
+            char *colon = strchr(ipBuf, ':');
+            if (colon) {
+                *colon = '\0';
+                port = (uint16_t)atoi(colon + 1);
+            }
+
+            char nameBuf[128];
+            strncpy(nameBuf, name, sizeof(nameBuf) - 1);
+            nameBuf[sizeof(nameBuf) - 1] = '\0';
+            if (nameBuf[0] == '\0') strcpy(nameBuf, "Player");
+
+            KailleraClientConnect(ipBuf, port, nameBuf, 1);
+            KCUpdateUI(hDlg);
+            return TRUE;
+        }
+        case IDC_KC_DISCONNECT:
+            KailleraClientDisconnect();
+            KCUpdateUI(hDlg);
+            return TRUE;
+
+        case IDC_KC_CREATE:
+        {
+            // Use currently loaded ROM name, or prompt
+            char gameName[256] = {};
+            if (!Settings.StopEmulation && Memory.ROMName[0])
+                strncpy(gameName, Memory.ROMName, sizeof(gameName) - 1);
+            else {
+                MessageBox(hDlg, TEXT("Please load a ROM first."), TEXT("Kaillera"), MB_OK | MB_ICONWARNING);
+                return TRUE;
+            }
+            KailleraClientCreateGame(gameName);
+            return TRUE;
+        }
+        case IDC_KC_JOIN:
+        {
+            HWND hList = GetDlgItem(hDlg, IDC_KC_GAMELIST);
+            int sel = (int)SendMessage(hList, LB_GETCURSEL, 0, 0);
+            if (sel < 0 || sel >= KClient.numGames) {
+                MessageBox(hDlg, TEXT("Select a game to join."), TEXT("Kaillera"), MB_OK);
+                return TRUE;
+            }
+            KailleraClientJoinGame(KClient.games[sel].gameId);
+            KClient.state = KCLIENT_IN_GAME_ROOM;
+            strncpy(KClient.gameName, KClient.games[sel].gameName, sizeof(KClient.gameName) - 1);
+            KCUpdateUI(hDlg);
+            return TRUE;
+        }
+        case IDC_KC_START:
+            KailleraClientStartGame();
+            return TRUE;
+
+        case IDCANCEL:
+            KillTimer(hDlg, 1);
+            EndDialog(hDlg, 0);
+            return TRUE;
+        }
+        break;
+
+    case WM_DESTROY:
+        KillTimer(hDlg, 1);
+        break;
+    }
+    return FALSE;
 }
 #endif
 

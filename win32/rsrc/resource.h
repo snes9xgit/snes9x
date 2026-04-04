@@ -565,15 +565,25 @@
 #define IDC_KAILLERA_START_STOP         3049
 #define IDC_KAILLERA_STATUS             3050
 #define IDC_KAILLERA_LOG                3051
+#define IDD_KAILLERA_CLIENT             171
+#define IDC_KC_SERVER_IP                3052
+#define IDC_KC_USERNAME                 3053
+#define IDC_KC_CONNECT                  3054
+#define IDC_KC_STATUS                   3055
+#define IDC_KC_GAMELIST                 3056
+#define IDC_KC_CREATE                   3057
+#define IDC_KC_JOIN                     3058
+#define IDC_KC_START                    3059
+#define IDC_KC_DISCONNECT               3060
 #define IDC_STATIC                      -1
 
 // Next default values for new objects
 //
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        171
+#define _APS_NEXT_RESOURCE_VALUE        172
 #define _APS_NEXT_COMMAND_VALUE         40189
-#define _APS_NEXT_CONTROL_VALUE         3052
+#define _APS_NEXT_CONTROL_VALUE         3061
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

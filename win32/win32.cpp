@@ -18,6 +18,7 @@
 
 #include "wsnes9x.h"
 #include "kaillera.h"
+#include "kaillera_client.h"
 #include "kaillera_server.h"
 #include "win32_sound.h"
 #include "win32_display.h"
@@ -802,9 +803,29 @@ void S9xWinScanJoypads ()
 #endif
 
 #ifdef KAILLERA_SUPPORT
-    if (Kaillera.GameActive)
+    // Native Kaillera client input exchange
+    if (KailleraClientIsPlaying())
     {
-        // Send local player's input and receive all players' input via Kaillera
+        int localIdx = KClient.playerNumber - 1;
+        if (localIdx < 0) localIdx = 0;
+
+        unsigned short localInput = (unsigned short)(joypads[localIdx] & 0xFFFF);
+        unsigned short allInputs[8] = {};
+
+        int numPlayers = KailleraClientExchangeInput(localInput, allInputs, 8);
+        if (numPlayers < 0)
+        {
+            PostMessage(GUI.hWnd, WM_KAILLERA_GAME_END, 0, 0);
+        }
+        else
+        {
+            for (int J = 0; J < numPlayers && J < 8; J++)
+                joypads[J] = (uint32)allInputs[J] | 0x80000000;
+        }
+    }
+    // Legacy DLL-based Kaillera (fallback)
+    else if (Kaillera.GameActive)
+    {
         int localIdx = Kaillera.PlayerNumber - 1;
         if (localIdx < 0) localIdx = 0;
 
@@ -814,12 +835,10 @@ void S9xWinScanJoypads ()
         int numPlayers = KailleraExchangeInput(localInput, allInputs, 8);
         if (numPlayers < 0)
         {
-            // Network error - stop game
             PostMessage(GUI.hWnd, WM_KAILLERA_GAME_END, 0, 0);
         }
         else
         {
-            // Apply received inputs to all joypads
             for (int J = 0; J < numPlayers && J < 8; J++)
                 joypads[J] = (uint32)allInputs[J] | 0x80000000;
         }
