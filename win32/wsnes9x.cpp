@@ -8127,9 +8127,10 @@ INT_PTR CALLBACK DlgKailleraClient(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lP
         return TRUE;
 
     case WM_USER + 100:
-        // wParam=0: list fetched, populate rows. wParam=1: pinging done.
+        // wParam=0: list fetched, populate rows. wParam=1: ping round done.
+        // Both repopulate the list (re-checks localhost each time)
+        KCPopulateServerListView(hDlg);
         if (wParam == 0) {
-            KCPopulateServerListView(hDlg);
             TCHAR status[64];
             _stprintf(status, TEXT("Found %d servers. Pinging..."), kServerListCount);
             SetDlgItemText(hDlg, IDC_KC_STATUS, status);
