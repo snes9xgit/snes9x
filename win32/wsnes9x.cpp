@@ -7886,41 +7886,110 @@ static void KCPopulateRomList(HWND hDlg)
 
 static KServerListEntry kServerList[KAILLERA_MAX_SERVERS];
 static int kServerListCount = 0;
+static HWND kServerDlgHwnd = NULL;
+static volatile bool kServerListFetching = false;
+static int kSortColumn = -1;
+static bool kSortAscending = true;
+
+static void KCPopulateServerListView(HWND hDlg)
+{
+    HWND hLV = GetDlgItem(hDlg, IDC_KC_SERVERLIST);
+    ListView_DeleteAllItems(hLV);
+
+    for (int i = 0; i < kServerListCount; i++) {
+        LVITEM lvi = {};
+        lvi.mask = LVIF_TEXT | LVIF_PARAM;
+        lvi.iItem = i;
+        lvi.lParam = (LPARAM)i; // index into kServerList
+        lvi.pszText = (TCHAR *)_tFromChar(kServerList[i].name);
+        int idx = ListView_InsertItem(hLV, &lvi);
+
+        ListView_SetItemText(hLV, idx, 1, (TCHAR *)_tFromChar(kServerList[i].location));
+
+        TCHAR pingStr[16];
+        _stprintf(pingStr, TEXT("%d"), kServerList[i].ping);
+        ListView_SetItemText(hLV, idx, 2, pingStr);
+
+        ListView_SetItemText(hLV, idx, 3, (TCHAR *)_tFromChar(kServerList[i].version));
+
+        TCHAR usersStr[16];
+        _stprintf(usersStr, TEXT("%d/%d"), kServerList[i].users, kServerList[i].maxUsers);
+        ListView_SetItemText(hLV, idx, 4, usersStr);
+    }
+}
+
+static unsigned __stdcall KCFetchServerListThread(void *param)
+{
+    kServerListCount = KailleraFetchServerList(kServerList, KAILLERA_MAX_SERVERS);
+
+    // Ping servers in batches
+    for (int i = 0; i < kServerListCount && kServerListFetching; i++)
+        KailleraPingServer(&kServerList[i]);
+
+    kServerListFetching = false;
+
+    // Notify dialog to update (use WM_USER+100 as a custom message)
+    if (kServerDlgHwnd)
+        PostMessage(kServerDlgHwnd, WM_USER + 100, 0, 0);
+
+    return 0;
+}
 
 static void KCRefreshServerList(HWND hDlg)
 {
+    if (kServerListFetching) return;
+
     SetDlgItemText(hDlg, IDC_KC_STATUS, TEXT("Fetching server list..."));
+    EnableWindow(GetDlgItem(hDlg, IDC_KC_REFRESH), FALSE);
 
-    kServerListCount = KailleraFetchServerList(kServerList, KAILLERA_MAX_SERVERS);
+    kServerDlgHwnd = hDlg;
+    kServerListFetching = true;
 
-    // Ping first few servers (ping all would be too slow)
-    int pingCount = kServerListCount < 20 ? kServerListCount : 20;
-    for (int i = 0; i < pingCount; i++)
-        KailleraPingServer(&kServerList[i]);
-
-    // Populate listbox with tab-separated columns
-    HWND hList = GetDlgItem(hDlg, IDC_KC_SERVERLIST);
-
-    // Set tab stops for columns
-    int tabs[] = { 120, 180, 210, 240, 270 };
-    SendMessage(hList, LB_SETTABSTOPS, 5, (LPARAM)tabs);
-    SendMessage(hList, LB_RESETCONTENT, 0, 0);
-
-    for (int i = 0; i < kServerListCount; i++) {
-        TCHAR item[512];
-        _stprintf(item, TEXT("%s\t%s\t%dms\t%s\t%d/%d"),
-            _tFromChar(kServerList[i].name),
-            _tFromChar(kServerList[i].location),
-            kServerList[i].ping,
-            _tFromChar(kServerList[i].version),
-            kServerList[i].users,
-            kServerList[i].maxUsers);
-        SendMessage(hList, LB_ADDSTRING, 0, (LPARAM)item);
+    unsigned tid;
+    HANDLE hThread = (HANDLE)_beginthreadex(NULL, 0, KCFetchServerListThread, NULL, 0, &tid);
+    if (hThread)
+        CloseHandle(hThread);
+    else {
+        kServerListFetching = false;
+        EnableWindow(GetDlgItem(hDlg, IDC_KC_REFRESH), TRUE);
     }
+}
 
-    TCHAR status[64];
-    _stprintf(status, TEXT("Found %d online servers."), kServerListCount);
-    SetDlgItemText(hDlg, IDC_KC_STATUS, status);
+static int CALLBACK KCServerListCompare(LPARAM lp1, LPARAM lp2, LPARAM sortParam)
+{
+    int i1 = (int)lp1, i2 = (int)lp2;
+    if (i1 < 0 || i1 >= kServerListCount || i2 < 0 || i2 >= kServerListCount) return 0;
+    KServerListEntry &a = kServerList[i1], &b = kServerList[i2];
+    int result = 0;
+    switch (kSortColumn) {
+    case 0: result = _stricmp(a.name, b.name); break;
+    case 1: result = _stricmp(a.location, b.location); break;
+    case 2: result = (int)a.ping - (int)b.ping; break;
+    case 3: result = _stricmp(a.version, b.version); break;
+    case 4: result = a.users - b.users; break;
+    default: result = 0;
+    }
+    return kSortAscending ? result : -result;
+}
+
+static void KCInitServerListView(HWND hDlg)
+{
+    HWND hLV = GetDlgItem(hDlg, IDC_KC_SERVERLIST);
+    ListView_SetExtendedListViewStyle(hLV, LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES);
+
+    LVCOLUMN col = {};
+    col.mask = LVCF_TEXT | LVCF_WIDTH | LVCF_SUBITEM;
+
+    col.cx = 160; col.pszText = (TCHAR *)TEXT("Server Name"); col.iSubItem = 0;
+    ListView_InsertColumn(hLV, 0, &col);
+    col.cx = 100; col.pszText = (TCHAR *)TEXT("Location"); col.iSubItem = 1;
+    ListView_InsertColumn(hLV, 1, &col);
+    col.cx = 50;  col.pszText = (TCHAR *)TEXT("Ping"); col.iSubItem = 2;
+    ListView_InsertColumn(hLV, 2, &col);
+    col.cx = 60;  col.pszText = (TCHAR *)TEXT("Version"); col.iSubItem = 3;
+    ListView_InsertColumn(hLV, 3, &col);
+    col.cx = 50;  col.pszText = (TCHAR *)TEXT("Users"); col.iSubItem = 4;
+    ListView_InsertColumn(hLV, 4, &col);
 }
 
 INT_PTR CALLBACK DlgKailleraClient(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
@@ -7930,13 +7999,51 @@ INT_PTR CALLBACK DlgKailleraClient(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lP
     case WM_INITDIALOG:
         SetDlgItemText(hDlg, IDC_KC_SERVER_IP, TEXT("127.0.0.1:27888"));
         SetDlgItemText(hDlg, IDC_KC_USERNAME, TEXT("Player"));
+        KCInitServerListView(hDlg);
         KCPopulateRomList(hDlg);
         KCUpdateUI(hDlg);
         SetTimer(hDlg, 1, 500, NULL);
         // Auto-refresh server list if not connected
         if (!KailleraClientIsConnected())
-            PostMessage(hDlg, WM_COMMAND, MAKEWPARAM(IDC_KC_REFRESH, BN_CLICKED), 0);
+            KCRefreshServerList(hDlg);
         return TRUE;
+
+    case WM_USER + 100:
+        // Server list fetch completed (from background thread)
+        KCPopulateServerListView(hDlg);
+        EnableWindow(GetDlgItem(hDlg, IDC_KC_REFRESH), TRUE);
+        {
+            TCHAR status[64];
+            _stprintf(status, TEXT("Found %d online servers."), kServerListCount);
+            SetDlgItemText(hDlg, IDC_KC_STATUS, status);
+        }
+        return TRUE;
+
+    case WM_NOTIFY:
+    {
+        NMHDR *pnm = (NMHDR *)lParam;
+        if (pnm->idFrom == IDC_KC_SERVERLIST) {
+            if (pnm->code == LVN_COLUMNCLICK) {
+                // Sort by clicked column
+                NMLISTVIEW *pnmlv = (NMLISTVIEW *)lParam;
+                if (kSortColumn == pnmlv->iSubItem)
+                    kSortAscending = !kSortAscending;
+                else {
+                    kSortColumn = pnmlv->iSubItem;
+                    kSortAscending = true;
+                }
+                HWND hLV = GetDlgItem(hDlg, IDC_KC_SERVERLIST);
+                ListView_SortItems(hLV, KCServerListCompare, 0);
+                return TRUE;
+            }
+            if (pnm->code == NM_DBLCLK) {
+                // Double-click to connect
+                PostMessage(hDlg, WM_COMMAND, MAKEWPARAM(IDC_KC_CONNECT, BN_CLICKED), 0);
+                return TRUE;
+            }
+        }
+        break;
+    }
 
     case WM_TIMER:
         if (wParam == 1) {
@@ -7960,13 +8067,22 @@ INT_PTR CALLBACK DlgKailleraClient(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lP
             char ipBuf[64] = {};
             uint16_t port = 27888;
 
-            // Check if a server is selected in the list
-            HWND hSrvList = GetDlgItem(hDlg, IDC_KC_SERVERLIST);
-            int sel = (int)SendMessage(hSrvList, LB_GETCURSEL, 0, 0);
-            if (sel >= 0 && sel < kServerListCount) {
-                strncpy(ipBuf, kServerList[sel].ip, sizeof(ipBuf) - 1);
-                port = kServerList[sel].port;
-            } else {
+            // Check if a server is selected in the ListView
+            HWND hLV = GetDlgItem(hDlg, IDC_KC_SERVERLIST);
+            int sel = ListView_GetNextItem(hLV, -1, LVNI_SELECTED);
+            if (sel >= 0) {
+                // Get the original index from lParam
+                LVITEM lvi = {};
+                lvi.mask = LVIF_PARAM;
+                lvi.iItem = sel;
+                ListView_GetItem(hLV, &lvi);
+                int idx = (int)lvi.lParam;
+                if (idx >= 0 && idx < kServerListCount) {
+                    strncpy(ipBuf, kServerList[idx].ip, sizeof(ipBuf) - 1);
+                    port = kServerList[idx].port;
+                }
+            }
+            if (ipBuf[0] == '\0') {
                 // Use manual IP field
                 TCHAR ipW[64];
                 GetDlgItemText(hDlg, IDC_KC_SERVER_IP, ipW, 64);
@@ -8061,6 +8177,8 @@ INT_PTR CALLBACK DlgKailleraClient(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lP
 
     case WM_DESTROY:
         KillTimer(hDlg, 1);
+        kServerListFetching = false;
+        kServerDlgHwnd = NULL;
         break;
     }
     return FALSE;
