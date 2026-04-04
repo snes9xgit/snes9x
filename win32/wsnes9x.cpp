@@ -7899,8 +7899,8 @@ static void KCPopulateServerListView(HWND hDlg)
     HWND hLV = GetDlgItem(hDlg, IDC_KC_SERVERLIST);
     ListView_DeleteAllItems(hLV);
 
-    // Always add Localhost as the first entry
-    {
+    // Add Localhost if the built-in server is running
+    if (KailleraServerIsRunning()) {
         LVITEM lvi = {};
         lvi.mask = LVIF_TEXT | LVIF_PARAM;
         lvi.iItem = 0;
