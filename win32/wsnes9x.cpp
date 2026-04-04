@@ -7899,8 +7899,29 @@ static void KCPopulateServerListView(HWND hDlg)
     HWND hLV = GetDlgItem(hDlg, IDC_KC_SERVERLIST);
     ListView_DeleteAllItems(hLV);
 
-    // Add Localhost if the built-in server is running
-    if (KailleraServerIsRunning()) {
+    // Add Localhost if a Kaillera server is running locally
+    // Check built-in server first, then try a quick UDP PING
+    bool localServerRunning = KailleraServerIsRunning();
+    if (!localServerRunning) {
+        // Quick UDP PING to detect external server on localhost
+        SOCKET s = socket(AF_INET, SOCK_DGRAM, 0);
+        if (s != INVALID_SOCKET) {
+            DWORD timeout = 200; // 200ms - fast enough for localhost
+            setsockopt(s, SOL_SOCKET, SO_RCVTIMEO, (const char *)&timeout, sizeof(timeout));
+            struct sockaddr_in addr;
+            memset(&addr, 0, sizeof(addr));
+            addr.sin_family = AF_INET;
+            addr.sin_addr.s_addr = htonl(0x7F000001);
+            addr.sin_port = htons(27888);
+            const char ping[] = "PING";
+            sendto(s, ping, 5, 0, (struct sockaddr *)&addr, sizeof(addr));
+            char buf[32];
+            int r = recvfrom(s, buf, sizeof(buf), 0, NULL, NULL);
+            localServerRunning = (r > 0);
+            closesocket(s);
+        }
+    }
+    if (localServerRunning) {
         LVITEM lvi = {};
         lvi.mask = LVIF_TEXT | LVIF_PARAM;
         lvi.iItem = 0;
