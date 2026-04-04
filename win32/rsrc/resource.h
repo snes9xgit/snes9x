@@ -576,6 +576,10 @@
 #define IDC_KC_START                    3059
 #define IDC_KC_DISCONNECT               3060
 #define IDC_KC_ROMLIST                  3061
+#define IDC_KC_CHATLOG                  3062
+#define IDC_KC_CHATINPUT                3063
+#define IDC_KC_CHATSEND                 3064
+#define IDC_KC_USERLIST                 3065
 #define ID_KAILLERA_END_GAME            44335
 #define IDC_STATIC                      -1
 

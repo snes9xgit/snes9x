@@ -7753,26 +7753,58 @@ static void KCUpdateUI(HWND hDlg)
     EnableWindow(GetDlgItem(hDlg, IDC_KC_CREATE), connected && !inRoom);
     EnableWindow(GetDlgItem(hDlg, IDC_KC_JOIN), connected && !inRoom);
     EnableWindow(GetDlgItem(hDlg, IDC_KC_START), inRoom && KClient.isOwner && !playing);
+    EnableWindow(GetDlgItem(hDlg, IDC_KC_CHATINPUT), connected);
+    EnableWindow(GetDlgItem(hDlg, IDC_KC_CHATSEND), connected);
+    EnableWindow(GetDlgItem(hDlg, IDC_KC_ROMLIST), connected && !inRoom);
 
-    // Update game list
-    if (connected && KClient.statusUpdated) {
+    if (KClient.statusUpdated) {
+        // Update game list
         HWND hList = GetDlgItem(hDlg, IDC_KC_GAMELIST);
         SendMessage(hList, LB_RESETCONTENT, 0, 0);
         for (int i = 0; i < KClient.numGames; i++) {
             TCHAR item[300];
-            _stprintf(item, TEXT("%s (%s) [%d/%d]"),
+            _stprintf(item, TEXT("%s (%s) [%d/%d] %s"),
                 _tFromChar(KClient.games[i].gameName),
                 _tFromChar(KClient.games[i].ownerName),
                 KClient.games[i].numPlayers,
-                KClient.games[i].maxPlayers);
+                KClient.games[i].maxPlayers,
+                KClient.games[i].status == 1 ? TEXT("Playing") : TEXT("Waiting"));
             SendMessage(hList, LB_ADDSTRING, 0, (LPARAM)item);
         }
-    }
 
-    // Update status
-    if (KClient.statusUpdated) {
+        // Update user list
+        HWND hUsers = GetDlgItem(hDlg, IDC_KC_USERLIST);
+        SendMessage(hUsers, LB_RESETCONTENT, 0, 0);
+        for (int i = 0; i < KClient.numUsers; i++) {
+            TCHAR item[200];
+            _stprintf(item, TEXT("%s (%dms)"),
+                _tFromChar(KClient.allUsers[i].username),
+                KClient.allUsers[i].ping);
+            SendMessage(hUsers, LB_ADDSTRING, 0, (LPARAM)item);
+        }
+
+        // Update status
         SetDlgItemText(hDlg, IDC_KC_STATUS, _tFromChar(KClient.statusMsg));
         KClient.statusUpdated = false;
+    }
+
+    // Update chat log
+    if (KClient.chatUpdated) {
+        // Convert \n to \r\n for the edit control
+        const char *src = KClient.chatLog;
+        TCHAR display[8192];
+        int dpos = 0;
+        for (; *src && dpos < 8180; src++) {
+            if (*src == '\n') display[dpos++] = '\r';
+            display[dpos++] = (TCHAR)*src;
+        }
+        display[dpos] = '\0';
+        SetDlgItemText(hDlg, IDC_KC_CHATLOG, display);
+        // Scroll to bottom
+        HWND hChat = GetDlgItem(hDlg, IDC_KC_CHATLOG);
+        SendMessage(hChat, EM_SETSEL, dpos, dpos);
+        SendMessage(hChat, EM_SCROLLCARET, 0, 0);
+        KClient.chatUpdated = false;
     }
 
     if (KClient.errorMsg[0]) {
@@ -7937,6 +7969,19 @@ INT_PTR CALLBACK DlgKailleraClient(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lP
         case IDC_KC_START:
             KailleraClientStartGame();
             return TRUE;
+
+        case IDC_KC_CHATSEND:
+        {
+            TCHAR msgW[512];
+            GetDlgItemText(hDlg, IDC_KC_CHATINPUT, msgW, 512);
+            const char *msg = _tToChar(msgW);
+            if (msg && msg[0]) {
+                KailleraClientSendChat(msg);
+                SetDlgItemText(hDlg, IDC_KC_CHATINPUT, TEXT(""));
+            }
+            SetFocus(GetDlgItem(hDlg, IDC_KC_CHATINPUT));
+            return TRUE;
+        }
 
         case IDCANCEL:
             KillTimer(hDlg, 1);

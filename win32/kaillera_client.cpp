@@ -205,6 +205,24 @@ static void SendGameData(const uint8_t *data, int len)
     SendMsg(KM_GAME_DATA, pl, pos);
 }
 
+static void SendGlobalChat(const char *text)
+{
+    uint8_t pl[512];
+    int pos = 0;
+    pl[pos++] = '\0';
+    pos += WriteStr(pl+pos, text);
+    SendMsg(KM_GLOBAL_CHAT, pl, pos);
+}
+
+static void SendGameChat(const char *text)
+{
+    uint8_t pl[512];
+    int pos = 0;
+    pl[pos++] = '\0';
+    pos += WriteStr(pl+pos, text);
+    SendMsg(KM_GAME_CHAT, pl, pos);
+}
+
 static void SendKeepAlive()
 {
     uint8_t pl[1] = { '\0' };
@@ -235,6 +253,27 @@ static void SendUserQuit()
 // ---------------------------------------------------------------------------
 static int kAckCount = 0;
 
+// Append a line to the chat log
+static void ChatAppend(const char *line)
+{
+    int logLen = (int)strlen(KClient.chatLog);
+    int lineLen = (int)strlen(line);
+    // If log is getting full, trim from the start
+    if (logLen + lineLen + 2 >= (int)sizeof(KClient.chatLog)) {
+        const char *cut = strchr(KClient.chatLog + lineLen + 2, '\n');
+        if (cut) {
+            memmove(KClient.chatLog, cut + 1, strlen(cut + 1) + 1);
+            logLen = (int)strlen(KClient.chatLog);
+        } else {
+            KClient.chatLog[0] = '\0';
+            logLen = 0;
+        }
+    }
+    if (logLen > 0) { KClient.chatLog[logLen++] = '\n'; KClient.chatLog[logLen] = '\0'; }
+    strcat(KClient.chatLog, line);
+    KClient.chatUpdated = true;
+}
+
 static void HandleServerACK(const uint8_t *pl, int len)
 {
     SendClientACK();
@@ -251,14 +290,17 @@ static void HandleServerStatus(const uint8_t *pl, int len)
     uint32_t numUsers = ReadLE32(p); p += 4;
     uint32_t numGames = ReadLE32(p); p += 4;
 
-    // Skip user list
-    for (uint32_t i = 0; i < numUsers && p < end; i++) {
-        char name[128]; p = ReadStr(p, end, name, sizeof(name));
+    // Parse user list
+    KClient.numUsers = 0;
+    for (uint32_t i = 0; i < numUsers && p < end && KClient.numUsers < 32; i++) {
+        KClientPlayerInfo &u = KClient.allUsers[KClient.numUsers];
+        p = ReadStr(p, end, u.username, sizeof(u.username));
         if (end - p < 8) break;
-        p += 4; // ping
-        p += 1; // connType
-        p += 2; // userId
-        p += 1; // status
+        u.ping = ReadLE32(p); p += 4;
+        u.connType = *p++;
+        u.userId = ReadLE16(p); p += 2;
+        p++; // status
+        KClient.numUsers++;
     }
 
     // Parse game list
@@ -291,11 +333,25 @@ static void HandleUserJoined(const uint8_t *pl, int len)
     uint16_t userId = ReadLE16(p); p += 2;
     uint32_t ping = ReadLE32(p); p += 4;
 
-    // If this is us, save our userId
     if (strcmp(name, KClient.username) == 0) {
         KClient.myUserId = userId;
         KClient.myPing = ping;
     }
+
+    // Add to user list
+    if (KClient.numUsers < 32) {
+        KClientPlayerInfo &u = KClient.allUsers[KClient.numUsers];
+        strncpy(u.username, name, sizeof(u.username) - 1);
+        u.userId = userId;
+        u.ping = ping;
+        if (end - p >= 1) u.connType = *p;
+        KClient.numUsers++;
+    }
+
+    char msg[256];
+    sprintf(msg, "*** %s joined the server", name);
+    ChatAppend(msg);
+    KClient.statusUpdated = true;
 }
 
 static void HandleCreateGameNotif(const uint8_t *pl, int len)
@@ -474,6 +530,48 @@ static void HandleDropGameNotif(const uint8_t *pl, int len)
     KClient.statusUpdated = true;
 }
 
+static void HandleGlobalChatRecv(const uint8_t *pl, int len)
+{
+    const uint8_t *p = pl, *end = pl + len;
+    char nick[128], text[512];
+    p = ReadStr(p, end, nick, sizeof(nick));
+    ReadStr(p, end, text, sizeof(text));
+    char line[700];
+    sprintf(line, "<%s> %s", nick, text);
+    ChatAppend(line);
+}
+
+static void HandleGameChatRecv(const uint8_t *pl, int len)
+{
+    const uint8_t *p = pl, *end = pl + len;
+    char nick[128], text[512];
+    p = ReadStr(p, end, nick, sizeof(nick));
+    ReadStr(p, end, text, sizeof(text));
+    char line[700];
+    sprintf(line, "[Game] <%s> %s", nick, text);
+    ChatAppend(line);
+}
+
+static void HandleUserQuitRecv(const uint8_t *pl, int len)
+{
+    const uint8_t *p = pl, *end = pl + len;
+    char name[128];
+    p = ReadStr(p, end, name, sizeof(name));
+    // Remove from user list
+    for (int i = 0; i < KClient.numUsers; i++) {
+        if (strcmp(KClient.allUsers[i].username, name) == 0) {
+            memmove(&KClient.allUsers[i], &KClient.allUsers[i+1],
+                    (KClient.numUsers - i - 1) * sizeof(KClientPlayerInfo));
+            KClient.numUsers--;
+            break;
+        }
+    }
+    char line[256];
+    sprintf(line, "*** %s left the server", name);
+    ChatAppend(line);
+    KClient.statusUpdated = true;
+}
+
 static void HandleServerInfo(const uint8_t *pl, int len)
 {
     const uint8_t *p = pl, *end = pl + len;
@@ -481,6 +579,9 @@ static void HandleServerInfo(const uint8_t *pl, int len)
     p = ReadStr(p, end, sender, sizeof(sender));
     ReadStr(p, end, msg, sizeof(msg));
     strncpy(KClient.serverMessage, msg, sizeof(KClient.serverMessage) - 1);
+    char line[700];
+    sprintf(line, "[Server] %s", msg);
+    ChatAppend(line);
 }
 
 // ---------------------------------------------------------------------------
@@ -529,9 +630,12 @@ static void ProcessPacket(const uint8_t *data, int dataLen)
         kRecvSeq = msgs[i].seq + 1;
 
         switch (msgs[i].type) {
+        case KM_USER_QUIT:      HandleUserQuitRecv(msgs[i].pl, msgs[i].plLen); break;
         case KM_SERVER_ACK:     HandleServerACK(msgs[i].pl, msgs[i].plLen); break;
         case KM_SERVER_STATUS:  HandleServerStatus(msgs[i].pl, msgs[i].plLen); break;
         case KM_USER_JOINED:    HandleUserJoined(msgs[i].pl, msgs[i].plLen); break;
+        case KM_GLOBAL_CHAT:    HandleGlobalChatRecv(msgs[i].pl, msgs[i].plLen); break;
+        case KM_GAME_CHAT:      HandleGameChatRecv(msgs[i].pl, msgs[i].plLen); break;
         case KM_CREATE_GAME:    HandleCreateGameNotif(msgs[i].pl, msgs[i].plLen); break;
         case KM_JOIN_GAME:      HandleJoinGameNotif(msgs[i].pl, msgs[i].plLen); break;
         case KM_PLAYER_INFO:    HandlePlayerInfo(msgs[i].pl, msgs[i].plLen); break;
@@ -761,6 +865,15 @@ int KailleraClientExchangeInput(unsigned short localInput, unsigned short *allIn
     for (int i = 0; i < count; i++)
         allInputs[i] = KClient.AllInputs[i];
     return count;
+}
+
+void KailleraClientSendChat(const char *message)
+{
+    if (KClient.state < KCLIENT_CONNECTED) return;
+    if (KClient.state >= KCLIENT_IN_GAME_ROOM)
+        SendGameChat(message);
+    else
+        SendGlobalChat(message);
 }
 
 bool KailleraClientIsConnected()

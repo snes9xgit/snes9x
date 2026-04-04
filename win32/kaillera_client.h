@@ -71,9 +71,15 @@ struct SKailleraClient {
     int         numGames;
     KClientPlayerInfo players[8]; // players in current game room
     int         numRoomPlayers;
+    KClientPlayerInfo allUsers[32]; // all users on server
+    int         numUsers;
 
     // Server info
     char        serverMessage[512];
+
+    // Chat log (circular buffer of recent messages)
+    char        chatLog[8192];
+    volatile bool chatUpdated;
 
     // Thread-safe input exchange (same pattern as before)
     HANDLE      InputReadyEvent;
@@ -99,6 +105,7 @@ bool KailleraClientJoinGame(uint32_t gameId);
 bool KailleraClientStartGame();
 void KailleraClientEndGame();
 int  KailleraClientExchangeInput(unsigned short localInput, unsigned short *allInputs, int maxPlayers);
+void KailleraClientSendChat(const char *message);
 bool KailleraClientIsConnected();
 bool KailleraClientIsPlaying();
 KClientState KailleraClientGetState();
