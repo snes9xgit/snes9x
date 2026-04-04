@@ -580,6 +580,7 @@
 #define IDC_KC_CHATINPUT                3063
 #define IDC_KC_CHATSEND                 3064
 #define IDC_KC_USERLIST                 3065
+#define IDC_KC_LEAVE                    3066
 #define ID_KAILLERA_END_GAME            44335
 #define IDC_STATIC                      -1
 

@@ -7765,6 +7765,7 @@ static void KCUpdateUI(HWND hDlg)
     EnableWindow(GetDlgItem(hDlg, IDC_KC_CREATE), connected && !inRoom);
     EnableWindow(GetDlgItem(hDlg, IDC_KC_JOIN), connected && !inRoom);
     EnableWindow(GetDlgItem(hDlg, IDC_KC_START), inRoom && KClient.isOwner && !playing);
+    EnableWindow(GetDlgItem(hDlg, IDC_KC_LEAVE), inRoom && !playing);
     EnableWindow(GetDlgItem(hDlg, IDC_KC_CHATINPUT), connected);
     EnableWindow(GetDlgItem(hDlg, IDC_KC_CHATSEND), connected);
     EnableWindow(GetDlgItem(hDlg, IDC_KC_ROMLIST), connected && !inRoom);
@@ -7980,6 +7981,11 @@ INT_PTR CALLBACK DlgKailleraClient(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lP
         }
         case IDC_KC_START:
             KailleraClientStartGame();
+            return TRUE;
+
+        case IDC_KC_LEAVE:
+            KailleraClientEndGame();
+            KCUpdateUI(hDlg);
             return TRUE;
 
         case IDC_KC_CHATSEND:
