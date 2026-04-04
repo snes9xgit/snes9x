@@ -2030,7 +2030,7 @@ LRESULT CALLBACK WinProc(
 			if (KailleraClientIsPlaying() || KailleraClientGetState() == KCLIENT_GAME_STARTING)
 			{
 				KailleraClientEndGame(); // sends DropGame, stays in room
-				S9xSetInfoString("Kaillera match ended");
+				Settings.StopEmulation = TRUE; // clear the screen
 				// Reopen dialog - player stays in game room
 				RestoreGUIDisplay();
 				DialogBox(g_hInst, MAKEINTRESOURCE(IDD_KAILLERA_CLIENT), hWnd, DlgKailleraClient);
@@ -2808,7 +2808,8 @@ LRESULT CALLBACK WinProc(
 		{
 			KailleraClientEndGame(); // sends DropGame, stays in room
 		}
-		S9xSetInfoString("Kaillera match ended");
+		// Stop emulation so the screen goes blank
+		Settings.StopEmulation = TRUE;
 		// Reopen the dialog (shows room or lobby depending on state)
 		RestoreGUIDisplay();
 		DialogBox(g_hInst, MAKEINTRESOURCE(IDD_KAILLERA_CLIENT), hWnd, DlgKailleraClient);

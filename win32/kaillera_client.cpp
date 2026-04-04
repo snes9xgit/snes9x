@@ -609,16 +609,20 @@ static void HandleDropGameNotif(const uint8_t *pl, int len)
     char msg[256];
     sprintf(msg, "*** %s dropped from the game", name);
     ChatAppend(msg);
-    sprintf(KClient.statusMsg, "Match ended - waiting in room");
-    KClient.statusUpdated = true;
 
-    // Stop the emulation but stay in the room
+    // When another player drops, leave the game room entirely
+    // so the other player goes back to the lobby
     if (KClient.state == KCLIENT_PLAYING || KClient.state == KCLIENT_GAME_STARTING) {
-        KClient.state = KCLIENT_IN_GAME_ROOM;
         KClient.OutputPlayerCount = -1;
         SetEvent(KClient.OutputReadyEvent);
         SetEvent(KClient.GameEndEvent);
+        SendQuitGame();
+        KClient.state = KCLIENT_CONNECTED;
+        KClient.currentGameId = 0;
+        KClient.isOwner = false;
+        sprintf(KClient.statusMsg, "Game ended by another player");
     }
+    KClient.statusUpdated = true;
 }
 
 static void HandleGlobalChatRecv(const uint8_t *pl, int len)
