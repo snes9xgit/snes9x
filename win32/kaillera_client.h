@@ -34,6 +34,19 @@ struct KClientGameInfo {
     uint8_t     status; // 0=waiting, 1=playing
 };
 
+// Server list entry (from master server)
+struct KServerListEntry {
+    char        name[128];
+    char        ip[64];
+    uint16_t    port;
+    int         users;
+    int         maxUsers;
+    int         gameCount;
+    char        version[32];
+    char        location[64];
+    uint32_t    ping;
+};
+
 // Player info
 struct KClientPlayerInfo {
     char        username[128];
@@ -107,6 +120,11 @@ void KailleraClientEndGame();   // stop match, stay in room
 void KailleraClientLeaveGame(); // leave room entirely
 int  KailleraClientExchangeInput(unsigned short localInput, unsigned short *allInputs, int maxPlayers);
 void KailleraClientSendChat(const char *message);
+
+// Server list browsing
+#define KAILLERA_MAX_SERVERS 128
+int  KailleraFetchServerList(KServerListEntry *servers, int maxServers);
+void KailleraPingServer(KServerListEntry *server);
 bool KailleraClientIsConnected();
 bool KailleraClientIsPlaying();
 KClientState KailleraClientGetState();

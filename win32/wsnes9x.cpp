@@ -7884,6 +7884,45 @@ static void KCPopulateRomList(HWND hDlg)
         SendMessage(hCombo, CB_SETCURSEL, 0, 0);
 }
 
+static KServerListEntry kServerList[KAILLERA_MAX_SERVERS];
+static int kServerListCount = 0;
+
+static void KCRefreshServerList(HWND hDlg)
+{
+    SetDlgItemText(hDlg, IDC_KC_STATUS, TEXT("Fetching server list..."));
+
+    kServerListCount = KailleraFetchServerList(kServerList, KAILLERA_MAX_SERVERS);
+
+    // Ping first few servers (ping all would be too slow)
+    int pingCount = kServerListCount < 20 ? kServerListCount : 20;
+    for (int i = 0; i < pingCount; i++)
+        KailleraPingServer(&kServerList[i]);
+
+    // Populate listbox with tab-separated columns
+    HWND hList = GetDlgItem(hDlg, IDC_KC_SERVERLIST);
+
+    // Set tab stops for columns
+    int tabs[] = { 120, 180, 210, 240, 270 };
+    SendMessage(hList, LB_SETTABSTOPS, 5, (LPARAM)tabs);
+    SendMessage(hList, LB_RESETCONTENT, 0, 0);
+
+    for (int i = 0; i < kServerListCount; i++) {
+        TCHAR item[512];
+        _stprintf(item, TEXT("%s\t%s\t%dms\t%s\t%d/%d"),
+            _tFromChar(kServerList[i].name),
+            _tFromChar(kServerList[i].location),
+            kServerList[i].ping,
+            _tFromChar(kServerList[i].version),
+            kServerList[i].users,
+            kServerList[i].maxUsers);
+        SendMessage(hList, LB_ADDSTRING, 0, (LPARAM)item);
+    }
+
+    TCHAR status[64];
+    _stprintf(status, TEXT("Found %d online servers."), kServerListCount);
+    SetDlgItemText(hDlg, IDC_KC_STATUS, status);
+}
+
 INT_PTR CALLBACK DlgKailleraClient(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 {
     switch (msg)
@@ -7894,6 +7933,9 @@ INT_PTR CALLBACK DlgKailleraClient(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lP
         KCPopulateRomList(hDlg);
         KCUpdateUI(hDlg);
         SetTimer(hDlg, 1, 500, NULL);
+        // Auto-refresh server list if not connected
+        if (!KailleraClientIsConnected())
+            PostMessage(hDlg, WM_COMMAND, MAKEWPARAM(IDC_KC_REFRESH, BN_CLICKED), 0);
         return TRUE;
 
     case WM_TIMER:
@@ -7915,23 +7957,31 @@ INT_PTR CALLBACK DlgKailleraClient(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lP
         {
         case IDC_KC_CONNECT:
         {
-            TCHAR ipW[64], nameW[128];
-            GetDlgItemText(hDlg, IDC_KC_SERVER_IP, ipW, 64);
-            GetDlgItemText(hDlg, IDC_KC_USERNAME, nameW, 128);
-            const char *ip = _tToChar(ipW);
-            const char *name = _tToChar(nameW);
-
-            // Parse IP:port
-            char ipBuf[64];
-            strncpy(ipBuf, ip, sizeof(ipBuf) - 1);
-            ipBuf[sizeof(ipBuf) - 1] = '\0';
+            char ipBuf[64] = {};
             uint16_t port = 27888;
-            char *colon = strchr(ipBuf, ':');
-            if (colon) {
-                *colon = '\0';
-                port = (uint16_t)atoi(colon + 1);
+
+            // Check if a server is selected in the list
+            HWND hSrvList = GetDlgItem(hDlg, IDC_KC_SERVERLIST);
+            int sel = (int)SendMessage(hSrvList, LB_GETCURSEL, 0, 0);
+            if (sel >= 0 && sel < kServerListCount) {
+                strncpy(ipBuf, kServerList[sel].ip, sizeof(ipBuf) - 1);
+                port = kServerList[sel].port;
+            } else {
+                // Use manual IP field
+                TCHAR ipW[64];
+                GetDlgItemText(hDlg, IDC_KC_SERVER_IP, ipW, 64);
+                const char *ip = _tToChar(ipW);
+                strncpy(ipBuf, ip, sizeof(ipBuf) - 1);
+                char *colon = strchr(ipBuf, ':');
+                if (colon) {
+                    *colon = '\0';
+                    port = (uint16_t)atoi(colon + 1);
+                }
             }
 
+            TCHAR nameW[128];
+            GetDlgItemText(hDlg, IDC_KC_USERNAME, nameW, 128);
+            const char *name = _tToChar(nameW);
             char nameBuf[128];
             strncpy(nameBuf, name, sizeof(nameBuf) - 1);
             nameBuf[sizeof(nameBuf) - 1] = '\0';
@@ -7941,6 +7991,9 @@ INT_PTR CALLBACK DlgKailleraClient(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lP
             KCUpdateUI(hDlg);
             return TRUE;
         }
+        case IDC_KC_REFRESH:
+            KCRefreshServerList(hDlg);
+            return TRUE;
         case IDC_KC_DISCONNECT:
             KailleraClientDisconnect();
             KCUpdateUI(hDlg);

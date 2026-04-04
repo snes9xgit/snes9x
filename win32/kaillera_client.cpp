@@ -11,10 +11,13 @@
 
 #include "kaillera_client.h"
 #include "../display.h"
+#include <wininet.h>
 #include <stdio.h>
 #include <stdarg.h>
 #include <string.h>
 #include <process.h>
+
+#pragma comment(lib, "wininet.lib")
 
 #pragma comment(lib, "ws2_32.lib")
 
@@ -1020,6 +1023,145 @@ bool KailleraClientIsPlaying()
 KClientState KailleraClientGetState()
 {
     return KClient.state;
+}
+
+// ---------------------------------------------------------------------------
+// Server list browsing
+// ---------------------------------------------------------------------------
+
+#define KAILLERA_MASTER_URL "http://www.kaillera.com/raw_server_list2.php"
+#define KAILLERA_MASTER_URL2 "http://kaillerareborn.2manygames.fr/server_list.php"
+
+int KailleraFetchServerList(KServerListEntry *servers, int maxServers)
+{
+    HINTERNET hInet = InternetOpenA("Snes9x", INTERNET_OPEN_TYPE_PRECONFIG, NULL, NULL, 0);
+    if (!hInet) return 0;
+
+    HINTERNET hUrl = InternetOpenUrlA(hInet, KAILLERA_MASTER_URL, NULL, 0,
+        INTERNET_FLAG_RELOAD | INTERNET_FLAG_NO_CACHE_WRITE, 0);
+    if (!hUrl) {
+        // Try fallback
+        hUrl = InternetOpenUrlA(hInet, KAILLERA_MASTER_URL2, NULL, 0,
+            INTERNET_FLAG_RELOAD | INTERNET_FLAG_NO_CACHE_WRITE, 0);
+    }
+    if (!hUrl) { InternetCloseHandle(hInet); return 0; }
+
+    // Read entire response
+    char *buf = (char *)malloc(256 * 1024);
+    if (!buf) { InternetCloseHandle(hUrl); InternetCloseHandle(hInet); return 0; }
+    int totalRead = 0;
+    DWORD bytesRead;
+    while (InternetReadFile(hUrl, buf + totalRead, 256 * 1024 - totalRead - 1, &bytesRead) && bytesRead > 0)
+        totalRead += bytesRead;
+    buf[totalRead] = '\0';
+
+    InternetCloseHandle(hUrl);
+    InternetCloseHandle(hInet);
+
+    // Parse: two lines per server
+    // Line 1: ServerName
+    // Line 2: IP:Port;Users/MaxUsers;GameCount;Version;Location
+    int count = 0;
+    char *line = buf;
+    while (*line && count < maxServers) {
+        // Read server name (line 1)
+        char *eol = strchr(line, '\n');
+        if (!eol) break;
+        int nameLen = (int)(eol - line);
+        if (nameLen > 0 && line[nameLen - 1] == '\r') nameLen--;
+        if (nameLen <= 0) { line = eol + 1; continue; }
+
+        KServerListEntry &s = servers[count];
+        memset(&s, 0, sizeof(s));
+        int copyLen = nameLen < (int)sizeof(s.name) - 1 ? nameLen : (int)sizeof(s.name) - 1;
+        memcpy(s.name, line, copyLen);
+        s.name[copyLen] = '\0';
+        line = eol + 1;
+
+        // Read data line (line 2)
+        eol = strchr(line, '\n');
+        if (!eol) eol = line + strlen(line);
+        int dataLen = (int)(eol - line);
+        if (dataLen > 0 && line[dataLen - 1] == '\r') dataLen--;
+
+        char data[512];
+        copyLen = dataLen < (int)sizeof(data) - 1 ? dataLen : (int)sizeof(data) - 1;
+        memcpy(data, line, copyLen);
+        data[copyLen] = '\0';
+        line = *eol ? eol + 1 : eol;
+
+        // Parse: IP:Port;Users/MaxUsers;GameCount;Version;Location
+        char *fields[5] = {};
+        int nf = 0;
+        char *fp = data;
+        fields[nf++] = fp;
+        while (*fp && nf < 5) {
+            if (*fp == ';') { *fp = '\0'; fields[nf++] = fp + 1; }
+            fp++;
+        }
+
+        if (nf >= 4) {
+            // Parse IP:Port
+            char *colon = strrchr(fields[0], ':');
+            if (colon) {
+                *colon = '\0';
+                strncpy(s.ip, fields[0], sizeof(s.ip) - 1);
+                s.port = (uint16_t)atoi(colon + 1);
+            } else {
+                strncpy(s.ip, fields[0], sizeof(s.ip) - 1);
+                s.port = 27888;
+            }
+
+            // Users/MaxUsers
+            sscanf(fields[1], "%d/%d", &s.users, &s.maxUsers);
+
+            // GameCount
+            s.gameCount = atoi(fields[2]);
+
+            // Version (field 3) and Location (field 4) for v2 format
+            if (nf >= 5) {
+                strncpy(s.version, fields[3], sizeof(s.version) - 1);
+                strncpy(s.location, fields[4], sizeof(s.location) - 1);
+            } else {
+                // v1 format: field 3 is location
+                strncpy(s.location, fields[3], sizeof(s.location) - 1);
+            }
+
+            s.ping = 999;
+            count++;
+        }
+    }
+
+    free(buf);
+    return count;
+}
+
+void KailleraPingServer(KServerListEntry *server)
+{
+    SOCKET s = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+    if (s == INVALID_SOCKET) return;
+
+    DWORD timeout = 1000;
+    setsockopt(s, SOL_SOCKET, SO_RCVTIMEO, (const char *)&timeout, sizeof(timeout));
+
+    struct sockaddr_in addr;
+    memset(&addr, 0, sizeof(addr));
+    addr.sin_family = AF_INET;
+    addr.sin_addr.s_addr = inet_addr(server->ip);
+    addr.sin_port = htons(server->port);
+
+    DWORD start = GetTickCount();
+    const char ping[] = "PING\0";
+    sendto(s, ping, 5, 0, (struct sockaddr *)&addr, sizeof(addr));
+
+    char buf[32];
+    int r = recvfrom(s, buf, sizeof(buf), 0, NULL, NULL);
+    if (r > 0 && memcmp(buf, "PONG", 4) == 0)
+        server->ping = GetTickCount() - start;
+    else
+        server->ping = 999;
+
+    closesocket(s);
 }
 
 #endif // KAILLERA_SUPPORT
