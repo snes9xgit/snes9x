@@ -270,6 +270,19 @@ void Snes9xController::mainLoop()
                 MovieSetJoypad(j, allInputs[j]);
         }
     }
+    else if (KClient.sync.gameEnded)
+    {
+        // Game ended while emu thread was not in ExchangeInput (e.g. mid-frame
+        // when remote player dropped). Stop emulation directly on the emu thread
+        // instead of waiting for the async GUI callback.
+        {
+            std::lock_guard<std::mutex> lk(KClient.sync.mutex);
+            KClient.sync.gameEnded = false;
+        }
+        active = false;
+        Settings.StopEmulation = TRUE;
+        return;
+    }
 #endif
 
     S9xMainLoop();
