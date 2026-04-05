@@ -329,14 +329,21 @@ void Kaillera_Qt_ShowConnectDialog()
                 return item;
             };
 
+            // Detect localhost server by pinging 127.0.0.1:27888
+            KServerListEntry localhostEntry = {};
+            strncpy(localhostEntry.ip, "127.0.0.1", sizeof(localhostEntry.ip));
+            localhostEntry.port = KAILLERA_SERVER_PORT;
+            KailleraPingServer(&localhostEntry);
+            bool localhostDetected = (localhostEntry.ping > 0 && localhostEntry.ping < 999);
+
             // Show list immediately, then ping in background
-            QMetaObject::invokeMethod(QApplication::instance(), [&, count, servers, makeNumItem]() {
+            QMetaObject::invokeMethod(QApplication::instance(), [&, count, servers, makeNumItem, localhostDetected, localhostEntry]() {
                 serverTable->setSortingEnabled(false);
 
                 int offset = 0;
                 int totalRows = count;
 
-                if (KailleraServerIsRunning())
+                if (localhostDetected)
                 {
                     offset = 1;
                     totalRows = count + 1;
@@ -346,15 +353,17 @@ void Kaillera_Qt_ShowConnectDialog()
 
                 if (offset)
                 {
-                    serverTable->setItem(0, 0, new QTableWidgetItem(QString("* %1 (local)").arg(KailleraServerGetName())));
-                    serverTable->setItem(0, 1, new QTableWidgetItem(QString("127.0.0.1:%1").arg(KailleraServerGetPort())));
-                    int users, maxUsers, games;
-                    KailleraServerGetStats(&users, &maxUsers, &games);
-                    char usersStr[32];
-                    snprintf(usersStr, sizeof(usersStr), "%d/%d", users, maxUsers);
-                    serverTable->setItem(0, 2, makeNumItem(usersStr, users));
-                    serverTable->setItem(0, 3, makeNumItem(QString::number(games), games));
-                    serverTable->setItem(0, 4, makeNumItem("<1ms", 0));
+                    QString name = KailleraServerIsRunning()
+                        ? QString("* %1 (local)").arg(KailleraServerGetName())
+                        : "* Localhost";
+                    serverTable->setItem(0, 0, new QTableWidgetItem(name));
+                    serverTable->setItem(0, 1, new QTableWidgetItem(
+                        QString("127.0.0.1:%1").arg(KAILLERA_SERVER_PORT)));
+                    serverTable->setItem(0, 2, new QTableWidgetItem(""));
+                    serverTable->setItem(0, 3, new QTableWidgetItem(""));
+                    serverTable->setItem(0, 4, makeNumItem(
+                        QString::number(localhostEntry.ping) + "ms",
+                        (int)localhostEntry.ping));
                 }
 
                 for (int i = 0; i < count; i++)
@@ -379,7 +388,7 @@ void Kaillera_Qt_ShowConnectDialog()
             for (int i = 0; i < count; i++)
             {
                 KailleraPingServer(&servers[i]);
-                int offset = KailleraServerIsRunning() ? 1 : 0;
+                int offset = localhostDetected ? 1 : 0;
                 int row = i + offset;
                 uint32_t ping = servers[i].ping;
 
