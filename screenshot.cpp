@@ -33,8 +33,8 @@ bool8 S9xDoScreenshot (int width, int height)
 	current_time = localtime(&current_timet);
 
 	std::stringstream ss;
-	ss << "-" << std::put_time(current_time, "%Y-%m-%d-%H-%M-%S") << ".png";
-	std::string fname = S9xGetFilename(ss.str(), SCREENSHOT_DIR);
+	ss << "-" << std::put_time(current_time, "%Y-%m-%d-%H-%M-%S");
+	std::string fname = S9xGetFilename(ss.str() + ".png", SCREENSHOT_DIR);
 
 	for (int i = 0; i < 1000; i++)
 	{
@@ -44,7 +44,7 @@ bool8 S9xDoScreenshot (int width, int height)
 			break;
 
 		fclose(fp);
-		fname = ss.str() + "-" + std::to_string(i) + ".png";
+		fname = S9xGetFilename(ss.str() + "-" + std::to_string(i) + ".png", SCREENSHOT_DIR);
 	}
 
 	fp = fopen(fname.c_str(), "wb");
