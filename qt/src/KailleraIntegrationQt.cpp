@@ -209,9 +209,11 @@ void Kaillera_Qt_ShowConnectDialog()
     auto *serverTable = new QTableWidget(0, 5);
     serverTable->setHorizontalHeaderLabels({"Name", "IP", "Users", "Games", "Ping"});
     serverTable->horizontalHeader()->setStretchLastSection(true);
+    serverTable->horizontalHeader()->setSectionsClickable(true);
     serverTable->setSelectionBehavior(QAbstractItemView::SelectRows);
     serverTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
     serverTable->setAlternatingRowColors(true);
+    serverTable->setSortingEnabled(true);
 
     auto *refreshBtn = new QPushButton("Refresh Server List");
     layout->addWidget(refreshBtn);
@@ -276,8 +278,17 @@ void Kaillera_Qt_ShowConnectDialog()
             KServerListEntry servers[KAILLERA_MAX_SERVERS];
             int count = KailleraFetchServerList(servers, KAILLERA_MAX_SERVERS);
 
+            // Helper to create a table item with numeric sort data
+            auto makeNumItem = [](const QString &text, int sortValue) {
+                auto *item = new QTableWidgetItem(text);
+                item->setData(Qt::UserRole, sortValue);
+                return item;
+            };
+
             // Show list immediately, then ping in background
-            QMetaObject::invokeMethod(QApplication::instance(), [&, count, servers]() {
+            QMetaObject::invokeMethod(QApplication::instance(), [&, count, servers, makeNumItem]() {
+                serverTable->setSortingEnabled(false);
+
                 int offset = 0;
                 int totalRows = count;
 
@@ -297,9 +308,9 @@ void Kaillera_Qt_ShowConnectDialog()
                     KailleraServerGetStats(&users, &maxUsers, &games);
                     char usersStr[32];
                     snprintf(usersStr, sizeof(usersStr), "%d/%d", users, maxUsers);
-                    serverTable->setItem(0, 2, new QTableWidgetItem(usersStr));
-                    serverTable->setItem(0, 3, new QTableWidgetItem(QString::number(games)));
-                    serverTable->setItem(0, 4, new QTableWidgetItem("<1ms"));
+                    serverTable->setItem(0, 2, makeNumItem(usersStr, users));
+                    serverTable->setItem(0, 3, makeNumItem(QString::number(games), games));
+                    serverTable->setItem(0, 4, makeNumItem("<1ms", 0));
                 }
 
                 for (int i = 0; i < count; i++)
@@ -311,10 +322,12 @@ void Kaillera_Qt_ShowConnectDialog()
                     serverTable->setItem(row, 1, new QTableWidgetItem(addr));
                     char users[32];
                     snprintf(users, sizeof(users), "%d/%d", servers[i].users, servers[i].maxUsers);
-                    serverTable->setItem(row, 2, new QTableWidgetItem(users));
-                    serverTable->setItem(row, 3, new QTableWidgetItem(QString::number(servers[i].gameCount)));
-                    serverTable->setItem(row, 4, new QTableWidgetItem("pinging..."));
+                    serverTable->setItem(row, 2, makeNumItem(users, servers[i].users));
+                    serverTable->setItem(row, 3, makeNumItem(QString::number(servers[i].gameCount), servers[i].gameCount));
+                    serverTable->setItem(row, 4, makeNumItem("pinging...", 9999));
                 }
+
+                serverTable->setSortingEnabled(true);
                 refreshBtn->setText("Pinging...");
             }, Qt::BlockingQueuedConnection);
 
@@ -327,10 +340,12 @@ void Kaillera_Qt_ShowConnectDialog()
                 uint32_t ping = servers[i].ping;
 
                 QMetaObject::invokeMethod(QApplication::instance(), [&, row, ping]() {
-                    serverTable->setItem(row, 4, new QTableWidgetItem(
+                    auto *item = new QTableWidgetItem(
                         ping && ping < 999
                             ? QString::number(ping) + "ms"
-                            : "timeout"));
+                            : "timeout");
+                    item->setData(Qt::UserRole, (int)(ping && ping < 999 ? ping : 9999));
+                    serverTable->setItem(row, 4, item);
                 }, Qt::QueuedConnection);
             }
 
