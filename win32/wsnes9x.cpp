@@ -2412,10 +2412,12 @@ LRESULT CALLBACK WinProc(
 #ifdef RETROACHIEVEMENTS_SUPPORT
 		case ID_RA_ENABLED:
 			GUI.RAEnabled = !GUI.RAEnabled;
+			RA_SetEnabled(GUI.RAEnabled);
 			if (GUI.RAEnabled)
 			{
-				RA_Init(GUI.hWnd);
-				RA_AttemptLogin();
+				RA_Win32_RegisterCallbacks();
+				RA_Init();
+				RA_AttemptLogin(GUI.RAUsername, GUI.RAApiToken);
 				if (!Settings.StopEmulation)
 					RA_OnLoadROM();
 			}
@@ -2425,27 +2427,21 @@ LRESULT CALLBACK WinProc(
 			}
 			break;
 		case ID_RA_LOGIN:
-			RA_Init(GUI.hWnd);
+			RA_Win32_RegisterCallbacks();
+			RA_Init();
 			if (RA_IsLoggedIn())
 				RA_Logout();
 			else
-				RA_ShowLoginDialog(GUI.hWnd);
+				RA_ShowLoginDialog();
 			break;
 		case ID_RA_HARDCORE_MODE:
-			if (GUI.RAHardcoreMode)
-			{
-				// Disabling hardcore
-				GUI.RAHardcoreMode = false;
-			}
-			else
-			{
-				// Enabling hardcore requires a reset
-				GUI.RAHardcoreMode = true;
-			}
+			GUI.RAHardcoreMode = !GUI.RAHardcoreMode;
+			RA_SetHardcoreEnabled(GUI.RAHardcoreMode);
 			break;
 		case ID_RA_ACHIEVEMENTS_LIST:
-			RA_Init(GUI.hWnd);
-			RA_ShowAchievementList(GUI.hWnd);
+			RA_Win32_RegisterCallbacks();
+			RA_Init();
+			RA_ShowAchievementList();
 			break;
 #endif
 		case ID_FRAME_ADVANCE:
@@ -3628,8 +3624,11 @@ int WINAPI WinMain(
 
 	if (GUI.RAEnabled)
 	{
-		RA_Init(GUI.hWnd);
-		RA_AttemptLogin();
+		RA_Win32_RegisterCallbacks();
+		RA_Init();
+		RA_SetEnabled(true);
+		RA_SetHardcoreEnabled(GUI.RAHardcoreMode);
+		RA_AttemptLogin(GUI.RAUsername, GUI.RAApiToken);
 	}
 #endif
 

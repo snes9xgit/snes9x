@@ -3,6 +3,11 @@
 #include "EmuMainWindow.hpp"
 #include "SDLInputManager.hpp"
 
+#ifdef RETROACHIEVEMENTS_SUPPORT
+#include "RAIntegrationQt.hpp"
+#include "retroachievements.h"
+#endif
+
 #include <clocale>
 #include <qnamespace.h>
 #include <QStyle>
@@ -85,6 +90,22 @@ int main(int argc, char *argv[])
 
     emu.updateBindings();
     emu.startInputTimer();
+
+#ifdef RETROACHIEVEMENTS_SUPPORT
+    if (!emu.config->ra_enabled &&
+        !emu.config->ra_api_token.empty() && !emu.config->ra_username.empty())
+        emu.config->ra_enabled = true;
+
+    if (emu.config->ra_enabled)
+    {
+        RA_Qt_RegisterCallbacks(&emu);
+        RA_Init();
+        RA_SetEnabled(true);
+        RA_SetHardcoreEnabled(emu.config->ra_hardcore_mode);
+        RA_AttemptLogin(emu.config->ra_username.c_str(), emu.config->ra_api_token.c_str());
+    }
+#endif
+
     emu.qtapp->exec();
 
     emu.stopThread();

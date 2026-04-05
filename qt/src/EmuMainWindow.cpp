@@ -11,6 +11,10 @@
 
 #include "CheatsDialog.hpp"
 #include "EmuApplication.hpp"
+#ifdef RETROACHIEVEMENTS_SUPPORT
+#include "RAIntegrationQt.hpp"
+#include "retroachievements.h"
+#endif
 #include "EmuBinding.hpp"
 #include "EmuCanvasOpenGL.hpp"
 #include "EmuCanvasQt.hpp"
@@ -352,6 +356,62 @@ void EmuMainWindow::createWidgets()
     options_menu->addAction(shader_settings_item);
 
     menuBar()->addMenu(options_menu);
+
+#ifdef RETROACHIEVEMENTS_SUPPORT
+    auto ra_menu = new QMenu(tr("&RetroAchievements"));
+
+    ra_enabled_action = ra_menu->addAction(tr("&Enabled"));
+    ra_enabled_action->setCheckable(true);
+    ra_enabled_action->setChecked(app->config->ra_enabled);
+    connect(ra_enabled_action, &QAction::triggered, [&](bool checked) {
+        app->config->ra_enabled = checked;
+        RA_SetEnabled(checked);
+        if (checked)
+        {
+            RA_Qt_RegisterCallbacks(app);
+            RA_Init();
+            RA_AttemptLogin(app->config->ra_username.c_str(), app->config->ra_api_token.c_str());
+            if (app->isCoreActive())
+                RA_OnLoadROM();
+        }
+        else
+        {
+            RA_Shutdown();
+        }
+    });
+
+    ra_login_action = ra_menu->addAction(tr("&Login..."));
+    connect(ra_login_action, &QAction::triggered, [&] {
+        RA_Qt_RegisterCallbacks(app);
+        RA_Init();
+        if (RA_IsLoggedIn())
+        {
+            RA_Logout();
+            ra_login_action->setText(tr("&Login..."));
+        }
+        else
+        {
+            RA_ShowLoginDialog();
+        }
+    });
+
+    ra_hardcore_action = ra_menu->addAction(tr("&Hardcore Mode"));
+    ra_hardcore_action->setCheckable(true);
+    ra_hardcore_action->setChecked(app->config->ra_hardcore_mode);
+    connect(ra_hardcore_action, &QAction::triggered, [&](bool checked) {
+        app->config->ra_hardcore_mode = checked;
+        RA_SetHardcoreEnabled(checked);
+    });
+
+    ra_menu->addSeparator();
+
+    ra_achievements_action = ra_menu->addAction(tr("&Achievement List..."));
+    connect(ra_achievements_action, &QAction::triggered, [&] {
+        RA_ShowAchievementList();
+    });
+
+    menuBar()->addMenu(ra_menu);
+#endif
 
     setCoreActionsEnabled(false);
 

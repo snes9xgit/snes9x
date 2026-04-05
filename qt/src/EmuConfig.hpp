@@ -155,6 +155,12 @@ struct EmuConfig
 
     int sram_save_interval;
 
+    // RetroAchievements
+    bool ra_enabled = false;
+    bool ra_hardcore_mode = false;
+    std::string ra_username;
+    std::string ra_api_token;
+
     enum PortConfiguration
     {
         eOneController = 0,

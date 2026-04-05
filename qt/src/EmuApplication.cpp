@@ -14,6 +14,11 @@
 #include <QStyleHints>
 #include <thread>
 
+#ifdef RETROACHIEVEMENTS_SUPPORT
+#include "RAIntegrationQt.hpp"
+#include "retroachievements.h"
+#endif
+
 #undef SOUND_BUFFER_WINDOW
 
 EmuApplication::EmuApplication()
@@ -23,6 +28,9 @@ EmuApplication::EmuApplication()
 
 EmuApplication::~EmuApplication()
 {
+#ifdef RETROACHIEVEMENTS_SUPPORT
+    RA_Shutdown();
+#endif
     core->deinit();
 }
 
@@ -245,9 +253,15 @@ bool EmuApplication::openFile(const std::string &filename)
     window->gameChanging();
     updateSettings();
     suspendThread();
+#ifdef RETROACHIEVEMENTS_SUPPORT
+    RA_OnCloseROM();
+#endif
     auto result = core->openFile(filename);
     unsuspendThread();
-
+#ifdef RETROACHIEVEMENTS_SUPPORT
+    if (result)
+        RA_OnLoadROM();
+#endif
     return result;
 }
 
@@ -260,6 +274,9 @@ void EmuApplication::mainLoop()
     }
 
     core->mainLoop();
+#ifdef RETROACHIEVEMENTS_SUPPORT
+    RA_DoFrame();
+#endif
 }
 
 void EmuApplication::reportBinding(EmuBinding b, bool active)
@@ -395,6 +412,11 @@ void EmuApplication::handleBinding(const std::string &name, bool pressed)
     {
         if (name == "Rewind")
         {
+#ifdef RETROACHIEVEMENTS_SUPPORT
+            if (RA_IsHardcoreModeActive())
+                core->rewinding = false;
+            else
+#endif
             core->rewinding = pressed;
         }
         else if (pressed) // Only activate with core active and on button down
@@ -576,6 +598,10 @@ void EmuApplication::startInputTimer()
 void EmuApplication::loadState(int slot)
 {
     emu_thread->runOnThread([&, slot] {
+#ifdef RETROACHIEVEMENTS_SUPPORT
+        if (!RA_WarnDisableHardcore("Loading save states"))
+            return;
+#endif
         core->loadState(slot);
     });
 }
@@ -583,7 +609,14 @@ void EmuApplication::loadState(int slot)
 void EmuApplication::loadState(const std::string& filename)
 {
     emu_thread->runOnThread([&, filename] {
+#ifdef RETROACHIEVEMENTS_SUPPORT
+        if (!RA_WarnDisableHardcore("Loading save states"))
+            return;
+#endif
         core->loadState(filename);
+#ifdef RETROACHIEVEMENTS_SUPPORT
+        RA_OnLoadState(filename.c_str());
+#endif
     });
 }
 
@@ -598,6 +631,9 @@ void EmuApplication::saveState(const std::string& filename)
 {
     emu_thread->runOnThread([&, filename] {
         core->saveState(filename);
+#ifdef RETROACHIEVEMENTS_SUPPORT
+        RA_OnSaveState(filename.c_str());
+#endif
     });
 }
 
@@ -605,6 +641,9 @@ void EmuApplication::reset()
 {
     emu_thread->runOnThread([&] {
         core->softReset();
+#ifdef RETROACHIEVEMENTS_SUPPORT
+        RA_OnReset();
+#endif
     });
 }
 
@@ -612,6 +651,9 @@ void EmuApplication::powerCycle()
 {
     emu_thread->runOnThread([&] {
         core->reset();
+#ifdef RETROACHIEVEMENTS_SUPPORT
+        RA_OnReset();
+#endif
     });
 }
 

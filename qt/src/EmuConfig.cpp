@@ -546,6 +546,13 @@ void EmuConfig::config(const std::string &filename, bool write)
 
     Int("SRAMSaveInterval", sram_save_interval);
     EndSection();
+
+    BeginSection("RetroAchievements");
+    Bool("Enabled", ra_enabled);
+    Bool("HardcoreMode", ra_hardcore_mode);
+    String("Username", ra_username);
+    String("ApiToken", ra_api_token);
+    EndSection();
 }
 
 void EmuConfig::setVRRConfig(bool enable)

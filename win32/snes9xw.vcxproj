@@ -492,6 +492,7 @@
     <ClInclude Include="wlanguage.h" />
     <ClInclude Include="wsnes9x.h" />
     <ClInclude Include="retroachievements.h" />
+    <ClInclude Include="..\retroachievements.h" />
     <ClInclude Include="_tfwopen.h" />
   </ItemGroup>
   <ItemGroup>
@@ -693,7 +694,8 @@
     <ClCompile Include="kaillera_client.cpp" />
     <ClCompile Include="kaillera_server.cpp" />
     <ClCompile Include="render.cpp" />
-    <ClCompile Include="retroachievements.cpp" />
+    <ClCompile Include="retroachievements_win32.cpp" />
+    <ClCompile Include="..\retroachievements.cpp" />
     <ClCompile Include="wconfig.cpp" />
     <ClCompile Include="win32.cpp" />
     <ClCompile Include="win32_display.cpp" />
