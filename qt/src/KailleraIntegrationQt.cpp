@@ -307,7 +307,7 @@ void Kaillera_Qt_ShowConnectDialog()
     connRow->addWidget(refreshBtn);
     connRow->addWidget(connectBtn);
     connRow->addWidget(disconnectBtn);
-    connRow->addWidget(new QLabel("or IP:"));
+    connRow->addWidget(new QLabel("IP:"));
     connRow->addWidget(ipEdit);
     connRow->addWidget(new QLabel("Timeout:"));
     connRow->addWidget(timeoutSpin);
