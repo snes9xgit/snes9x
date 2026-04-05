@@ -120,6 +120,46 @@ static void kaillera_qt_game_started(const char *gameName, int playerNumber, int
                 name.c_str(), playerNumber, numPlayers);
         if (g_app->window && g_app->window->kaillera_end_action)
             g_app->window->kaillera_end_action->setEnabled(true);
+
+        // Check if the ROM is already loaded
+        if (!Settings.StopEmulation && Memory.ROMName[0] &&
+            name == Memory.ROMName)
+        {
+            fprintf(stderr, "[Kaillera] ROM already loaded\n");
+            return;
+        }
+
+        // Search for the ROM in the ROM directory
+        std::string romDir = g_app->config->last_rom_folder;
+        if (romDir.empty())
+        {
+            fprintf(stderr, "[Kaillera] No ROM directory configured\n");
+            return;
+        }
+
+        QDir dir(QString::fromStdString(romDir));
+        QStringList filters = {"*.smc", "*.sfc", "*.fig", "*.swc", "*.zip", "*.7z", "*.gz"};
+        auto entries = dir.entryInfoList(filters, QDir::Files);
+
+        QString romPath;
+        for (auto &entry : entries)
+        {
+            if (entry.completeBaseName() == QString::fromStdString(name))
+            {
+                romPath = entry.absoluteFilePath();
+                break;
+            }
+        }
+
+        if (romPath.isEmpty())
+        {
+            fprintf(stderr, "[Kaillera] Could not find ROM for game '%s'\n", name.c_str());
+            KailleraClientEndGame();
+            return;
+        }
+
+        fprintf(stderr, "[Kaillera] Loading ROM: %s\n", romPath.toStdString().c_str());
+        g_app->window->openFile(romPath.toStdString());
     }, Qt::QueuedConnection);
 }
 
