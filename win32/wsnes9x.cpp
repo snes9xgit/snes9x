@@ -736,7 +736,7 @@ void S9xRestoreWindowTitle ()
         }
         TCHAR kbuf[512];
         const char *srvName = KailleraServerGetName();
-        _stprintf(kbuf, TEXT(" | Hosting '%s' at %s:%d"), _tFromChar(srvName), _tFromChar(ipStr), KAILLERA_SERVER_PORT);
+        _stprintf(kbuf, TEXT(" | Hosting '%s' at %s:%d"), (wchar_t *)_tFromChar(srvName), (wchar_t *)_tFromChar(ipStr), KAILLERA_SERVER_PORT);
         _tcscat(buf, kbuf);
     }
 #endif
@@ -2749,7 +2749,7 @@ LRESULT CALLBACK WinProc(
 				{
 					// Search for ROM file in ROM directory
 					TCHAR romPath[MAX_PATH];
-					_stprintf(romPath, TEXT("%s\\%s"), GUI.RomDir, _tFromChar(gameName));
+					_stprintf(romPath, TEXT("%s\\%s"), GUI.RomDir, (wchar_t *)_tFromChar(gameName));
 
 					// Try common extensions
 					const TCHAR *extensions[] = {
@@ -7622,7 +7622,7 @@ static void KailleraServerDlgUpdateStatus(HWND hDlg)
 		if (!ok) port = KAILLERA_SERVER_PORT;
 
 		TCHAR statusBuf[256];
-		_stprintf(statusBuf, TEXT("Server is RUNNING at %s:%d"), _tFromChar(ipStr), port);
+		_stprintf(statusBuf, TEXT("Server is RUNNING at %s:%d"), (wchar_t *)_tFromChar(ipStr), port);
 		SetDlgItemText(hDlg, IDC_KAILLERA_STATUS, statusBuf);
 	}
 	else
@@ -7815,8 +7815,8 @@ static void KCUpdateUI(HWND hDlg)
         for (int i = 0; i < KClient.numGames; i++) {
             TCHAR item[300];
             _stprintf(item, TEXT("%s (%s) [%d/%d] %s"),
-                _tFromChar(KClient.games[i].gameName),
-                _tFromChar(KClient.games[i].ownerName),
+                (wchar_t *)_tFromChar(KClient.games[i].gameName),
+                (wchar_t *)_tFromChar(KClient.games[i].ownerName),
                 KClient.games[i].numPlayers,
                 KClient.games[i].maxPlayers,
                 KClient.games[i].status == 1 ? TEXT("Playing") : TEXT("Waiting"));
@@ -7829,7 +7829,7 @@ static void KCUpdateUI(HWND hDlg)
         for (int i = 0; i < KClient.numUsers; i++) {
             TCHAR item[200];
             _stprintf(item, TEXT("%s (%dms)"),
-                _tFromChar(KClient.allUsers[i].username),
+                (wchar_t *)_tFromChar(KClient.allUsers[i].username),
                 KClient.allUsers[i].ping);
             SendMessage(hUsers, LB_ADDSTRING, 0, (LPARAM)item);
         }
@@ -7887,7 +7887,7 @@ static void KCPopulateRomList(HWND hDlg)
     int selIdx = -1;
     if (!Settings.StopEmulation && Memory.ROMName[0]) {
         TCHAR name[256];
-        _stprintf(name, TEXT("%s (loaded)"), _tFromChar(Memory.ROMName));
+        _stprintf(name, TEXT("%s (loaded)"), (wchar_t *)_tFromChar(Memory.ROMName));
         int idx = (int)SendMessage(hCombo, CB_ADDSTRING, 0, (LPARAM)name);
         SendMessage(hCombo, CB_SETITEMDATA, idx, (LPARAM)0); // tag: 0 = loaded ROM
         selIdx = idx;
@@ -7949,7 +7949,7 @@ static void KCPopulateServerListView(HWND hDlg)
         TCHAR usersStr[16];
         if (KailleraServerIsRunning()) {
             const char *srvName = KailleraServerGetName();
-            _stprintf(displayName, TEXT("%s (Localhost)"), _tFromChar(srvName));
+            _stprintf(displayName, TEXT("%s (Localhost)"), (wchar_t *)_tFromChar(srvName));
             int users, maxUsers, games;
             KailleraServerGetStats(&users, &maxUsers, &games);
             _stprintf(usersStr, TEXT("%d/%d"), users, maxUsers);
@@ -8210,7 +8210,7 @@ INT_PTR CALLBACK DlgKailleraClient(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lP
                     } else if (idx >= 0 && idx < kServerListCount) {
                         TCHAR ipPort[80];
                         _stprintf(ipPort, TEXT("%s:%d"),
-                            _tFromChar(kServerList[idx].ip), kServerList[idx].port);
+                            (wchar_t *)_tFromChar(kServerList[idx].ip), kServerList[idx].port);
                         SetDlgItemText(hDlg, IDC_KC_SERVER_IP, ipPort);
                     }
                 }
