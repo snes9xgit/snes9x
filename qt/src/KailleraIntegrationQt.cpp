@@ -98,9 +98,10 @@ static void kaillera_qt_game_started(const char *gameName, int playerNumber, int
 
     std::string name(gameName);
     QMetaObject::invokeMethod(QApplication::instance(), [=]() {
-        // TODO: find ROM matching gameName and load it
         fprintf(stderr, "[Kaillera] Game started: %s (player %d of %d)\n",
                 name.c_str(), playerNumber, numPlayers);
+        if (g_app->window && g_app->window->kaillera_end_action)
+            g_app->window->kaillera_end_action->setEnabled(true);
     }, Qt::QueuedConnection);
 }
 
@@ -111,6 +112,8 @@ static void kaillera_qt_game_ended()
 
     QMetaObject::invokeMethod(QApplication::instance(), [=]() {
         fprintf(stderr, "[Kaillera] Game ended\n");
+        if (g_app->window && g_app->window->kaillera_end_action)
+            g_app->window->kaillera_end_action->setEnabled(false);
     }, Qt::QueuedConnection);
 }
 
