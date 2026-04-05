@@ -337,7 +337,7 @@ void Kaillera_Qt_ShowConnectDialog()
         refreshBtn->setEnabled(false);
         refreshBtn->setText("Fetching...");
 
-        std::thread([&]() {
+        std::thread([&, dialogAlive]() {
             KServerListEntry servers[KAILLERA_MAX_SERVERS];
             int count = KailleraFetchServerList(servers, KAILLERA_MAX_SERVERS);
 
@@ -356,7 +356,9 @@ void Kaillera_Qt_ShowConnectDialog()
             bool localhostDetected = (localhostEntry.ping > 0 && localhostEntry.ping < 999);
 
             // Show list immediately, then ping in background
-            QMetaObject::invokeMethod(QApplication::instance(), [&, count, servers, makeNumItem, localhostDetected, localhostEntry]() {
+            if (!*dialogAlive) return;
+            QMetaObject::invokeMethod(QApplication::instance(), [&, count, servers, makeNumItem, localhostDetected, localhostEntry, dialogAlive]() {
+                if (!*dialogAlive) return;
                 serverTable->setSortingEnabled(false);
 
                 int offset = 0;
@@ -425,7 +427,7 @@ void Kaillera_Qt_ShowConnectDialog()
             }, Qt::BlockingQueuedConnection);
 
             // Now ping each server and update its row individually
-            for (int i = 0; i < count; i++)
+            for (int i = 0; i < count && *dialogAlive; i++)
             {
                 KailleraPingServer(&servers[i]);
                 int offset = localhostDetected ? 1 : 0;
