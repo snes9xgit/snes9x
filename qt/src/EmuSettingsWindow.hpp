@@ -17,6 +17,7 @@ class EmuSettingsWindow
   public:
     EmuSettingsWindow(QWidget *parent, EmuApplication *app);
     void show(int page);
+    void closeEvent(QCloseEvent *event) override;
 
     EmuApplication *app;
     GeneralPanel *general_panel;

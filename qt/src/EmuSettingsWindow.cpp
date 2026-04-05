@@ -4,6 +4,7 @@
 
 #include <QScrollArea>
 #include <QWhatsThis>
+#include <QCloseEvent>
 
 EmuSettingsWindow::EmuSettingsWindow(QWidget *parent, EmuApplication *app_)
     : QDialog(parent), app(app_)
@@ -78,6 +79,12 @@ EmuSettingsWindow::EmuSettingsWindow(QWidget *parent, EmuApplication *app_)
     connect(pushButton_help, &QPushButton::clicked, [&] {
         QWhatsThis::enterWhatsThisMode();
     });
+}
+
+void EmuSettingsWindow::closeEvent(QCloseEvent *event)
+{
+    app->config->saveFile(EmuConfig::findConfigFile());
+    QDialog::closeEvent(event);
 }
 
 void EmuSettingsWindow::show(int page)
