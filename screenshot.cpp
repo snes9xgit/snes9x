@@ -33,6 +33,8 @@ bool8 S9xDoScreenshot (int width, int height)
 	current_time = localtime(&current_timet);
 
 	auto screenshot_dir = S9xGetDirectory(SCREENSHOT_DIR);
+	if (screenshot_dir.empty() || screenshot_dir.back() != SLASH_CHAR)
+		screenshot_dir += SLASH_STR;
 	std::stringstream ss;
 	ss << screenshot_dir
 	   << S9xBasenameNoExt(Memory.ROMFilename) << "-"
