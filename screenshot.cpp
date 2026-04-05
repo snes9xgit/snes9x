@@ -32,14 +32,9 @@ bool8 S9xDoScreenshot (int width, int height)
 	std::time_t current_timet = time(nullptr);
 	current_time = localtime(&current_timet);
 
-	auto screenshot_dir = S9xGetDirectory(SCREENSHOT_DIR);
-	if (screenshot_dir.empty() || screenshot_dir.back() != SLASH_CHAR)
-		screenshot_dir += SLASH_STR;
 	std::stringstream ss;
-	ss << screenshot_dir
-	   << S9xBasenameNoExt(Memory.ROMFilename) << "-"
-	   << std::put_time(current_time, "%Y-%m-%d-%H-%M-%S");
-	std::string fname = ss.str() + ".png";
+	ss << "-" << std::put_time(current_time, "%Y-%m-%d-%H-%M-%S");
+	std::string fname = S9xGetFilename(ss.str() + ".png", SCREENSHOT_DIR);
 
 	for (int i = 0; i < 1000; i++)
 	{
@@ -49,7 +44,7 @@ bool8 S9xDoScreenshot (int width, int height)
 			break;
 
 		fclose(fp);
-		fname = ss.str() + "-" + std::to_string(i) + ".png";
+		fname = S9xGetFilename(ss.str() + "-" + std::to_string(i) + ".png", SCREENSHOT_DIR);
 	}
 
 	fp = fopen(fname.c_str(), "wb");
