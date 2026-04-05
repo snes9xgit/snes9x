@@ -592,7 +592,9 @@ void Kaillera_Qt_ShowConnectDialog()
         {
             pollTimer.stop();
             autoRefreshTimer.stop();
-            dlg.accept();
+            // Defer close to avoid accessing destroyed widgets in this callback
+            QTimer::singleShot(0, &dlg, &QDialog::accept);
+            return; // stop processing this timer tick
         }
     });
 
