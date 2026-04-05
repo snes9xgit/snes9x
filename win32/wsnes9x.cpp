@@ -8243,6 +8243,15 @@ static void KCInitServerListView(HWND hDlg)
     ListView_InsertColumn(hLV, 4, &col);
 }
 
+static void KCUpdateDialogTitle(HWND hDlg)
+{
+    TCHAR nameW[128];
+    GetDlgItemText(hDlg, IDC_KC_USERNAME, nameW, 128);
+    TCHAR title[256];
+    _stprintf(title, TEXT("Kaillera Netplay - %s"), nameW);
+    SetWindowText(hDlg, title);
+}
+
 INT_PTR CALLBACK DlgKailleraClient(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 {
     switch (msg)
@@ -8263,6 +8272,7 @@ INT_PTR CALLBACK DlgKailleraClient(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lP
         KCInitServerListView(hDlg);
         KCPopulateRomList(hDlg);
         KCUpdateUI(hDlg);
+        KCUpdateDialogTitle(hDlg);
         SetTimer(hDlg, 1, 500, NULL);
         // Auto-refresh server list if not connected
         if (!KailleraClientIsConnected())
@@ -8352,6 +8362,11 @@ INT_PTR CALLBACK DlgKailleraClient(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lP
         return TRUE;
 
     case WM_COMMAND:
+        if (HIWORD(wParam) == EN_CHANGE && LOWORD(wParam) == IDC_KC_USERNAME)
+        {
+            KCUpdateDialogTitle(hDlg);
+            return TRUE;
+        }
         switch (LOWORD(wParam))
         {
         case IDC_KC_CONNECT:

@@ -247,7 +247,6 @@ void Kaillera_Qt_ShowConnectDialog()
         return;
 
     QDialog dlg(g_app->window.get());
-    dlg.setWindowTitle("Kaillera Netplay");
     dlg.resize(650, 650);
 
     // Guard for queued callbacks that may fire after dialog is destroyed
@@ -275,6 +274,13 @@ void Kaillera_Qt_ShowConnectDialog()
     auto *connectBtn = new QPushButton("Connect");
     auto *usernameEdit = new QLineEdit(QString("Player%1").arg(10000 + rand() % 90000));
     usernameEdit->setMaximumWidth(100);
+
+    // Update dialog title with player name
+    auto updateTitle = [&]() {
+        dlg.setWindowTitle(QString("Kaillera Netplay - %1").arg(usernameEdit->text()));
+    };
+    updateTitle();
+    QObject::connect(usernameEdit, &QLineEdit::textChanged, [&](const QString &) { updateTitle(); });
     auto *ipEdit = new QLineEdit("127.0.0.1:27888");
     ipEdit->setMaximumWidth(140);
     auto *timeoutSpin = new QSpinBox();
