@@ -35,6 +35,22 @@
 
 static EmuApplication *g_app = nullptr;
 
+static void kaillera_qt_update_window_title()
+{
+    if (!g_app || !g_app->window)
+        return;
+
+    QString title = "SuperSnes9x";
+    if (KailleraServerIsRunning())
+    {
+        const char *srvName = KailleraServerGetName();
+        title += QString(" | Hosting '%1' on port %2")
+            .arg(srvName)
+            .arg(KailleraServerGetPort());
+    }
+    g_app->window->setWindowTitle(title);
+}
+
 // ---------------------------------------------------------------------------
 // libcurl HTTP callbacks
 // ---------------------------------------------------------------------------
@@ -627,6 +643,7 @@ void Kaillera_Qt_ShowHostDialog()
         }
         updateStatus();
         refreshLog();
+        kaillera_qt_update_window_title();
     });
 
     QObject::connect(closeBtn, &QPushButton::clicked, &dlg, &QDialog::accept);
