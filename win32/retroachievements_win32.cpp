@@ -245,14 +245,17 @@ static void RA_PopulateAchievementList(HWND hList)
                 strncpy(sd.status, "Inactive", sizeof(sd.status));
             strncpy(sd.description, ach->description ? ach->description : "", sizeof(sd.description) - 1);
 
+            // Insert item with lParam for sorting
             LVITEMA lvi = {};
             lvi.mask = LVIF_TEXT | LVIF_PARAM;
             lvi.iItem = index;
-            lvi.lParam = (LPARAM)&sd;
-
             lvi.iSubItem = 0;
+            lvi.lParam = (LPARAM)&sd;
             lvi.pszText = sd.title;
             SendMessageA(hList, LVM_INSERTITEMA, 0, (LPARAM)&lvi);
+
+            // Set subitems (text only, no LVIF_PARAM)
+            lvi.mask = LVIF_TEXT;
 
             char pts[16];
             snprintf(pts, sizeof(pts), "%u", ach->points);
