@@ -442,7 +442,7 @@ void EmuMainWindow::createWidgets()
 
     netplay_menu->addSeparator();
 
-    kaillera_end_action = netplay_menu->addAction(tr("&End Game"));
+    kaillera_end_action = netplay_menu->addAction(tr("&End Kaillera Game"));
     kaillera_end_action->setEnabled(false);
     connect(kaillera_end_action, &QAction::triggered, [&] {
         if (KailleraClientGetState() == KCLIENT_PLAYING ||
