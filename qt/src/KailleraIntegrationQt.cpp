@@ -37,6 +37,7 @@
 #include <thread>
 
 static EmuApplication *g_app = nullptr;
+static bool g_connectDialogOpen = false;
 
 static void kaillera_qt_update_window_title()
 {
@@ -174,10 +175,7 @@ static void kaillera_qt_game_ended()
         if (g_app->window && g_app->window->kaillera_end_action)
             g_app->window->kaillera_end_action->setEnabled(false);
 
-        // Stop emulation
-        g_app->suspendThread();
-
-        // Reopen the Kaillera dialog (shows room or lobby)
+        // Reopen the Kaillera dialog (if not already open)
         Kaillera_Qt_RegisterCallbacks(g_app);
         Kaillera_Qt_ShowConnectDialog();
     }, Qt::QueuedConnection);
@@ -245,6 +243,11 @@ void Kaillera_Qt_ShowConnectDialog()
 {
     if (!g_app || !g_app->window)
         return;
+
+    // Prevent multiple dialogs from opening
+    if (g_connectDialogOpen)
+        return;
+    g_connectDialogOpen = true;
 
     QDialog dlg(g_app->window.get());
     dlg.resize(650, 650);
@@ -729,6 +732,7 @@ void Kaillera_Qt_ShowConnectDialog()
 
     // Cleanup on close — mark dialog as dead so queued callbacks don't access widgets
     *dialogAlive = false;
+    g_connectDialogOpen = false;
     autoRefreshTimer.stop();
     pollTimer.stop();
     // Only disconnect if not playing (dialog auto-closes when game starts)

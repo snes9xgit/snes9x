@@ -449,16 +449,9 @@ void EmuMainWindow::createWidgets()
             KailleraClientGetState() == KCLIENT_GAME_STARTING)
         {
             KailleraClientEndGame();
+            // on_game_ended callback will reopen the dialog
         }
         kaillera_end_action->setEnabled(false);
-
-        // Stop emulation
-        app->suspendThread();
-        app->stopThread();
-
-        // Reopen the Kaillera dialog (shows room or lobby)
-        Kaillera_Qt_RegisterCallbacks(app);
-        Kaillera_Qt_ShowConnectDialog();
     });
 
     menuBar()->addMenu(netplay_menu);
