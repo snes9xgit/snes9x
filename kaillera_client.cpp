@@ -1177,10 +1177,12 @@ int KailleraFetchServerList(KServerListEntry *servers, int maxServers)
 
 void KailleraPingServer(KServerListEntry *server)
 {
+    server->ping = 999;
+
     KSocket s = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
     if (s == K_INVALID_SOCKET) return;
 
-    k_set_recv_timeout(s, 1000);
+    k_set_recv_timeout(s, 2000);
 
     struct sockaddr_in addr;
     memset(&addr, 0, sizeof(addr));
@@ -1190,15 +1192,24 @@ void KailleraPingServer(KServerListEntry *server)
 
     auto start = std::chrono::steady_clock::now();
     const char ping[] = "PING\0";
-    sendto(s, ping, 5, 0, (struct sockaddr *)&addr, sizeof(addr));
+    int sent = sendto(s, ping, 5, 0, (struct sockaddr *)&addr, sizeof(addr));
+    if (sent <= 0) {
+        k_closesocket(s);
+        return;
+    }
 
-    char buf[32];
-    int r = recvfrom(s, buf, sizeof(buf), 0, NULL, NULL);
-    if (r > 0 && memcmp(buf, "PONG", 4) == 0) {
-        auto end = std::chrono::steady_clock::now();
-        server->ping = (uint32_t)std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
-    } else {
-        server->ping = 999;
+    // Try multiple receives in case other data arrives first
+    for (int attempt = 0; attempt < 3; attempt++)
+    {
+        char buf[64];
+        int r = recvfrom(s, buf, sizeof(buf), 0, NULL, NULL);
+        if (r >= 4 && memcmp(buf, "PONG", 4) == 0) {
+            auto end = std::chrono::steady_clock::now();
+            uint32_t ms = (uint32_t)std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+            server->ping = (ms == 0) ? 1 : ms;  // 0 means <1ms, show as 1
+            break;
+        }
+        if (r <= 0) break;  // timeout or error
     }
 
     k_closesocket(s);
