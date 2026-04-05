@@ -6,6 +6,8 @@
 #include "EmuConfig.hpp"
 #include "kaillera_client.h"
 #include "kaillera_server.h"
+#include "snes9x.h"
+#include "memmap.h"
 
 #include <curl/curl.h>
 
