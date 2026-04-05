@@ -2027,11 +2027,13 @@ LRESULT CALLBACK WinProc(
 
 #ifdef KAILLERA_SUPPORT
 		case ID_KAILLERA_NETPLAY:
+			Kaillera_Win32_RegisterCallbacks();
 			RestoreGUIDisplay();
 			DialogBox(g_hInst, MAKEINTRESOURCE(IDD_KAILLERA_CLIENT), hWnd, DlgKailleraClient);
 			RestoreSNESDisplay();
 			break;
 		case ID_KAILLERA_HOST_SERVER:
+			Kaillera_Win32_RegisterCallbacks();
 			RestoreGUIDisplay();
 			DialogBox(g_hInst, MAKEINTRESOURCE(IDD_KAILLERA_SERVER), hWnd, DlgKailleraServer);
 			RestoreSNESDisplay();
