@@ -6,7 +6,7 @@
 
 /* This is where all the GUI text strings will eventually end up */
 
-#define WINDOW_TITLE TEXT("Snes9x")
+#define WINDOW_TITLE TEXT("SuperSnes9x")
 
 // the windows registry is no longer used
 //#define MY_REG_KEY   "Software\\Emulators\\Snes9x"

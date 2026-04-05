@@ -156,7 +156,7 @@ void EmuMainWindow::setCoreActionsEnabled(bool enable)
 
 void EmuMainWindow::createWidgets()
 {
-    setWindowTitle("Snes9x");
+    setWindowTitle("SuperSnes9x");
     if (QIcon::hasThemeIcon("snes9x"))
         setWindowIcon(QIcon::fromTheme("snes9x"));
     else
