@@ -1575,6 +1575,7 @@ bool WinMoviePlay(LPCTSTR filename)
 static bool startingMovie = false;
 
 HWND cheatSearchHWND = NULL;
+HWND cheatEditorHWND = NULL;
 
 void WinShowCheatSearchDialog()
 {
@@ -1594,11 +1595,15 @@ void WinShowCheatSearchDialog()
 void WinShowCheatEditorDialog()
 {
     RestoreGUIDisplay();
-    while (DialogBox(g_hInst, MAKEINTRESOURCE(IDD_CHEATER), GUI.hWnd, DlgCheater) == NC_SEARCHDB)
+    if (!cheatEditorHWND)
     {
-        WinSearchCheatDatabase();
+        cheatEditorHWND = CreateDialog(g_hInst, MAKEINTRESOURCE(IDD_CHEATER), GUI.hWnd, DlgCheater);
+        ShowWindow(cheatEditorHWND, SW_SHOW);
     }
-    S9xSaveCheatFile(S9xGetFilename(".cht", CHEAT_DIR));
+    else
+    {
+        SetActiveWindow(cheatEditorHWND);
+    }
     RestoreSNESDisplay();
 }
 
@@ -10148,12 +10153,25 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 					}
 				}
 			case IDCANCEL:
-				EndDialog(hDlg, HIWORD(wParam) == NC_SEARCHDB ? NC_SEARCHDB : 0);
+				{
+					bool searchDB = (HIWORD(wParam) == NC_SEARCHDB);
+					DestroyWindow(hDlg);
+					if (searchDB)
+					{
+						WinSearchCheatDatabase();
+						WinShowCheatEditorDialog();
+					}
+				}
 				return true;
 			default:
 				return false;
 			}
 		}
+
+	case WM_DESTROY:
+		S9xSaveCheatFile(S9xGetFilename(".cht", CHEAT_DIR));
+		cheatEditorHWND = NULL;
+		return true;
 
 	default: return false;
 	}
