@@ -120,10 +120,11 @@ bool gtk_shader_parameters_dialog(GtkWindow *parent)
     }
 
     params = (std::vector<GLSLParam> *)S9xDisplayGetDriver()->get_parameters();
-    saved_params = *params;
 
     if (!params || params->empty())
         return false;
+
+    saved_params = *params;
 
     dialog = new Gtk::Dialog(_("Shader Parameters"), Gtk::DIALOG_DESTROY_WITH_PARENT);
     dialog->add_button(Gtk::StockID("gtk-cancel"), Gtk::RESPONSE_CANCEL);
