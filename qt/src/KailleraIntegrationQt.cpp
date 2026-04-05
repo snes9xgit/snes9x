@@ -353,14 +353,43 @@ void Kaillera_Qt_ShowConnectDialog()
 
                 if (offset)
                 {
-                    QString name = KailleraServerIsRunning()
-                        ? QString("* %1 (local)").arg(KailleraServerGetName())
-                        : "* Localhost";
+                    QString name;
+                    QString usersStr;
+                    QString gamesStr;
+
+                    if (KailleraServerIsRunning())
+                    {
+                        // In-process server — can query stats directly
+                        name = QString("* %1 (local)").arg(KailleraServerGetName());
+                        int users, maxUsers, games;
+                        KailleraServerGetStats(&users, &maxUsers, &games);
+                        usersStr = QString("%1/%2").arg(users).arg(maxUsers);
+                        gamesStr = QString::number(games);
+                    }
+                    else
+                    {
+                        // External process server — check if it appears in the master list
+                        name = "* Localhost";
+                        usersStr = "?";
+                        gamesStr = "?";
+                        for (int i = 0; i < count; i++)
+                        {
+                            if (strcmp(servers[i].ip, "127.0.0.1") == 0 &&
+                                servers[i].port == KAILLERA_SERVER_PORT)
+                            {
+                                name = QString("* %1 (local)").arg(servers[i].name);
+                                usersStr = QString("%1/%2").arg(servers[i].users).arg(servers[i].maxUsers);
+                                gamesStr = QString::number(servers[i].gameCount);
+                                break;
+                            }
+                        }
+                    }
+
                     serverTable->setItem(0, 0, new QTableWidgetItem(name));
                     serverTable->setItem(0, 1, new QTableWidgetItem(
                         QString("127.0.0.1:%1").arg(KAILLERA_SERVER_PORT)));
-                    serverTable->setItem(0, 2, new QTableWidgetItem(""));
-                    serverTable->setItem(0, 3, new QTableWidgetItem(""));
+                    serverTable->setItem(0, 2, new QTableWidgetItem(usersStr));
+                    serverTable->setItem(0, 3, new QTableWidgetItem(gamesStr));
                     serverTable->setItem(0, 4, makeNumItem(
                         QString::number(localhostEntry.ping) + "ms",
                         (int)localhostEntry.ping));
