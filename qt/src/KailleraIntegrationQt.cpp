@@ -368,21 +368,13 @@ void Kaillera_Qt_ShowConnectDialog()
                     }
                     else
                     {
-                        // External process server — check if it appears in the master list
-                        name = "* Localhost";
-                        usersStr = "?";
-                        gamesStr = "?";
-                        for (int i = 0; i < count; i++)
-                        {
-                            if (strcmp(servers[i].ip, "127.0.0.1") == 0 &&
-                                servers[i].port == KAILLERA_SERVER_PORT)
-                            {
-                                name = QString("* %1 (local)").arg(servers[i].name);
-                                usersStr = QString("%1/%2").arg(servers[i].users).arg(servers[i].maxUsers);
-                                gamesStr = QString::number(servers[i].gameCount);
-                                break;
-                            }
-                        }
+                        // External process — use stats from extended PONG response
+                        if (localhostEntry.name[0])
+                            name = QString("* %1 (local)").arg(localhostEntry.name);
+                        else
+                            name = "* Localhost";
+                        usersStr = QString("%1/%2").arg(localhostEntry.users).arg(localhostEntry.maxUsers);
+                        gamesStr = QString::number(localhostEntry.gameCount);
                     }
 
                     serverTable->setItem(0, 0, new QTableWidgetItem(name));

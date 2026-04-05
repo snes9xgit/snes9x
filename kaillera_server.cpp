@@ -1210,7 +1210,31 @@ static void ParsePacket(const uint8_t *data, int dataLen, const sockaddr_in &fro
     if (dataLen >= 4 && memcmp(data, "PING", 4) == 0)
     {
         KSLog("PING received, sending PONG");
-        SendRaw(fromAddr, "PONG\0", 5);
+        // Send extended PONG with server info: PONG\0name\0users\0maxUsers\0games\0
+        char pong[512];
+        int pos = 0;
+        memcpy(pong + pos, "PONG", 4); pos += 4;
+        pong[pos++] = '\0';
+        // Append server name
+        int nameLen = (int)strlen(KServer.name);
+        memcpy(pong + pos, KServer.name, nameLen); pos += nameLen;
+        pong[pos++] = '\0';
+        // Append users count
+        int users = 0;
+        for (int i = 0; i < KAILLERA_MAX_CLIENTS; i++)
+            if (KServer.clients[i].active) users++;
+        pos += snprintf(pong + pos, sizeof(pong) - pos, "%d", users);
+        pong[pos++] = '\0';
+        // Append max users
+        pos += snprintf(pong + pos, sizeof(pong) - pos, "%d", KServer.maxClients);
+        pong[pos++] = '\0';
+        // Append games count
+        int games = 0;
+        for (int i = 0; i < KAILLERA_MAX_GAMES; i++)
+            if (KServer.games[i].gameId != 0) games++;
+        pos += snprintf(pong + pos, sizeof(pong) - pos, "%d", games);
+        pong[pos++] = '\0';
+        SendRaw(fromAddr, pong, pos);
         return;
     }
 

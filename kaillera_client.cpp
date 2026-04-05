@@ -1201,12 +1201,38 @@ void KailleraPingServer(KServerListEntry *server)
     // Try multiple receives in case other data arrives first
     for (int attempt = 0; attempt < 3; attempt++)
     {
-        char buf[64];
+        char buf[512];
         int r = recvfrom(s, buf, sizeof(buf), 0, NULL, NULL);
         if (r >= 4 && memcmp(buf, "PONG", 4) == 0) {
             auto end = std::chrono::steady_clock::now();
             uint32_t ms = (uint32_t)std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
-            server->ping = (ms == 0) ? 1 : ms;  // 0 means <1ms, show as 1
+            server->ping = (ms == 0) ? 1 : ms;
+
+            // Parse extended PONG: PONG\0name\0users\0maxUsers\0games\0
+            if (r > 5) {
+                const uint8_t *p = (const uint8_t *)buf + 5;
+                const uint8_t *pend = (const uint8_t *)buf + r;
+                // Server name
+                char name[128] = {};
+                p = ReadStr(p, pend, name, sizeof(name));
+                if (name[0])
+                    strncpy(server->name, name, sizeof(server->name) - 1);
+                // Users
+                char usersStr[16] = {};
+                p = ReadStr(p, pend, usersStr, sizeof(usersStr));
+                if (usersStr[0])
+                    server->users = atoi(usersStr);
+                // Max users
+                char maxStr[16] = {};
+                p = ReadStr(p, pend, maxStr, sizeof(maxStr));
+                if (maxStr[0])
+                    server->maxUsers = atoi(maxStr);
+                // Games
+                char gamesStr[16] = {};
+                p = ReadStr(p, pend, gamesStr, sizeof(gamesStr));
+                if (gamesStr[0])
+                    server->gameCount = atoi(gamesStr);
+            }
             break;
         }
         if (r <= 0) break;  // timeout or error
