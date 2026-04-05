@@ -266,18 +266,40 @@ void Kaillera_Qt_ShowConnectDialog()
                 KailleraPingServer(&servers[i]);
 
             QMetaObject::invokeMethod(QApplication::instance(), [&, count, servers]() {
-                serverTable->setRowCount(count);
+                int offset = 0;
+
+                // Add local server at the top if running
+                if (KailleraServerIsRunning())
+                {
+                    serverTable->setRowCount(count + 1);
+                    serverTable->setItem(0, 0, new QTableWidgetItem(QString("* %1 (local)").arg(KailleraServerGetName())));
+                    serverTable->setItem(0, 1, new QTableWidgetItem(QString("127.0.0.1:%1").arg(KailleraServerGetPort())));
+                    int users, maxUsers, games;
+                    KailleraServerGetStats(&users, &maxUsers, &games);
+                    char usersStr[32];
+                    snprintf(usersStr, sizeof(usersStr), "%d/%d", users, maxUsers);
+                    serverTable->setItem(0, 2, new QTableWidgetItem(usersStr));
+                    serverTable->setItem(0, 3, new QTableWidgetItem(QString::number(games)));
+                    serverTable->setItem(0, 4, new QTableWidgetItem("<1ms"));
+                    offset = 1;
+                }
+                else
+                {
+                    serverTable->setRowCount(count);
+                }
+
                 for (int i = 0; i < count; i++)
                 {
+                    int row = i + offset;
                     char addr[128];
                     snprintf(addr, sizeof(addr), "%s:%d", servers[i].ip, servers[i].port);
-                    serverTable->setItem(i, 0, new QTableWidgetItem(servers[i].name));
-                    serverTable->setItem(i, 1, new QTableWidgetItem(addr));
+                    serverTable->setItem(row, 0, new QTableWidgetItem(servers[i].name));
+                    serverTable->setItem(row, 1, new QTableWidgetItem(addr));
                     char users[32];
                     snprintf(users, sizeof(users), "%d/%d", servers[i].users, servers[i].maxUsers);
-                    serverTable->setItem(i, 2, new QTableWidgetItem(users));
-                    serverTable->setItem(i, 3, new QTableWidgetItem(QString::number(servers[i].gameCount)));
-                    serverTable->setItem(i, 4, new QTableWidgetItem(
+                    serverTable->setItem(row, 2, new QTableWidgetItem(users));
+                    serverTable->setItem(row, 3, new QTableWidgetItem(QString::number(servers[i].gameCount)));
+                    serverTable->setItem(row, 4, new QTableWidgetItem(
                         servers[i].ping && servers[i].ping < 999
                             ? QString::number(servers[i].ping) + "ms"
                             : "timeout"));
@@ -290,6 +312,10 @@ void Kaillera_Qt_ShowConnectDialog()
 
     QObject::connect(refreshBtn, &QPushButton::clicked, doRefresh);
     QObject::connect(&autoRefreshTimer, &QTimer::timeout, doRefresh);
+
+    // If a local server is running, pre-fill IP
+    if (KailleraServerIsRunning())
+        ipEdit->setText(QString("127.0.0.1:%1").arg(KailleraServerGetPort()));
 
     // Auto-refresh on dialog open and start 30s timer
     doRefresh();
