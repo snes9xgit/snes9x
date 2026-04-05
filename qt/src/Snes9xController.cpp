@@ -259,7 +259,10 @@ void Snes9xController::mainLoop()
         int numPlayers = KailleraClientExchangeInput(localInput, allInputs, 8);
         if (numPlayers < 0)
         {
-            // Game ended by remote — will be handled by on_game_ended callback
+            // Game ended — stop emulation immediately for this player
+            active = false;
+            Settings.StopEmulation = TRUE;
+            return;
         }
         else
         {
