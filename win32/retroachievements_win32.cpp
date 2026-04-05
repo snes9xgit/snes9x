@@ -7,6 +7,7 @@
 #include <wininet.h>
 #include <process.h>
 #include <string>
+#include <vector>
 #include <cstdio>
 
 #include "rc_client.h"
@@ -173,9 +174,38 @@ static void RC_CCONV ra_win32_server_call(const rc_api_request_t *request,
 // ---------------------------------------------------------------------------
 // Win32 Achievement List Dialog
 // ---------------------------------------------------------------------------
+struct RAAchSortData
+{
+    char title[256];
+    uint32_t points;
+    char status[20];
+    char description[512];
+};
+
+static int raSortColumn = 0;
+static bool raSortAscending = true;
+static std::vector<RAAchSortData> raAchData;
+
+static int CALLBACK RA_AchListCompare(LPARAM lParam1, LPARAM lParam2, LPARAM)
+{
+    auto *a = reinterpret_cast<RAAchSortData *>(lParam1);
+    auto *b = reinterpret_cast<RAAchSortData *>(lParam2);
+    int result = 0;
+
+    switch (raSortColumn)
+    {
+    case 0: result = _stricmp(a->title, b->title); break;
+    case 1: result = (int)a->points - (int)b->points; break;
+    case 2: result = _stricmp(a->status, b->status); break;
+    case 3: result = _stricmp(a->description, b->description); break;
+    }
+    return raSortAscending ? result : -result;
+}
+
 static void RA_PopulateAchievementList(HWND hList)
 {
     ListView_DeleteAllItems(hList);
+    raAchData.clear();
 
     rc_client_t *client = RA_GetClient();
     if (!client)
@@ -188,6 +218,12 @@ static void RA_PopulateAchievementList(HWND hList)
     if (!list)
         return;
 
+    // Count total achievements and pre-allocate
+    int total = 0;
+    for (uint32_t b = 0; b < list->num_buckets; b++)
+        total += list->buckets[b].num_achievements;
+    raAchData.resize(total);
+
     int index = 0;
     for (uint32_t b = 0; b < list->num_buckets; b++)
     {
@@ -195,13 +231,27 @@ static void RA_PopulateAchievementList(HWND hList)
         for (uint32_t a = 0; a < bucket->num_achievements; a++)
         {
             const rc_client_achievement_t *ach = bucket->achievements[a];
+            RAAchSortData &sd = raAchData[index];
+
+            strncpy(sd.title, ach->title ? ach->title : "", sizeof(sd.title) - 1);
+            sd.points = ach->points;
+            if (ach->unlocked & RC_CLIENT_ACHIEVEMENT_UNLOCKED_HARDCORE)
+                strncpy(sd.status, "Unlocked (HC)", sizeof(sd.status));
+            else if (ach->unlocked & RC_CLIENT_ACHIEVEMENT_UNLOCKED_SOFTCORE)
+                strncpy(sd.status, "Unlocked", sizeof(sd.status));
+            else if (ach->state == RC_CLIENT_ACHIEVEMENT_STATE_ACTIVE)
+                strncpy(sd.status, "Locked", sizeof(sd.status));
+            else
+                strncpy(sd.status, "Inactive", sizeof(sd.status));
+            strncpy(sd.description, ach->description ? ach->description : "", sizeof(sd.description) - 1);
 
             LVITEMA lvi = {};
-            lvi.mask = LVIF_TEXT;
+            lvi.mask = LVIF_TEXT | LVIF_PARAM;
             lvi.iItem = index;
+            lvi.lParam = (LPARAM)&sd;
 
             lvi.iSubItem = 0;
-            lvi.pszText = const_cast<char *>(ach->title);
+            lvi.pszText = sd.title;
             SendMessageA(hList, LVM_INSERTITEMA, 0, (LPARAM)&lvi);
 
             char pts[16];
@@ -210,21 +260,12 @@ static void RA_PopulateAchievementList(HWND hList)
             lvi.pszText = pts;
             SendMessageA(hList, LVM_SETITEMA, 0, (LPARAM)&lvi);
 
-            const char *status;
-            if (ach->unlocked & RC_CLIENT_ACHIEVEMENT_UNLOCKED_HARDCORE)
-                status = "Unlocked (HC)";
-            else if (ach->unlocked & RC_CLIENT_ACHIEVEMENT_UNLOCKED_SOFTCORE)
-                status = "Unlocked";
-            else if (ach->state == RC_CLIENT_ACHIEVEMENT_STATE_ACTIVE)
-                status = "Locked";
-            else
-                status = "Inactive";
             lvi.iSubItem = 2;
-            lvi.pszText = const_cast<char *>(status);
+            lvi.pszText = sd.status;
             SendMessageA(hList, LVM_SETITEMA, 0, (LPARAM)&lvi);
 
             lvi.iSubItem = 3;
-            lvi.pszText = const_cast<char *>(ach->description);
+            lvi.pszText = sd.description;
             SendMessageA(hList, LVM_SETITEMA, 0, (LPARAM)&lvi);
 
             index++;
@@ -282,6 +323,25 @@ static INT_PTR CALLBACK DlgRAAchievementsProc(HWND hDlg, UINT msg, WPARAM wParam
         HWND hBtn = GetDlgItem(hDlg, IDCANCEL);
         MoveWindow(hBtn, (rc.right - 50) / 2, rc.bottom - 20, 50, 14, TRUE);
         return TRUE;
+    }
+
+    case WM_NOTIFY:
+    {
+        NMHDR *pnm = (NMHDR *)lParam;
+        if (pnm->idFrom == IDC_RA_ACHLIST && pnm->code == LVN_COLUMNCLICK)
+        {
+            NMLISTVIEW *pnmlv = (NMLISTVIEW *)lParam;
+            if (raSortColumn == pnmlv->iSubItem)
+                raSortAscending = !raSortAscending;
+            else
+            {
+                raSortColumn = pnmlv->iSubItem;
+                raSortAscending = true;
+            }
+            ListView_SortItems(GetDlgItem(hDlg, IDC_RA_ACHLIST), RA_AchListCompare, 0);
+            return TRUE;
+        }
+        break;
     }
 
     case WM_COMMAND:
