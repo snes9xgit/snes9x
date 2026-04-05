@@ -502,7 +502,8 @@ void Kaillera_Qt_ShowHostDialog()
 
     layout->addLayout(form);
 
-    auto *startStopBtn = new QPushButton("Start Server");
+    bool alreadyRunning = KailleraServerIsRunning();
+    auto *startStopBtn = new QPushButton(alreadyRunning ? "Stop Server" : "Start Server");
     layout->addWidget(startStopBtn);
 
     auto *logEdit = new QTextEdit();
@@ -512,11 +513,27 @@ void Kaillera_Qt_ShowHostDialog()
     auto *closeBtn = new QPushButton("Close");
     layout->addWidget(closeBtn);
 
+    // If server already running, disable config fields and show status
+    if (alreadyRunning)
+    {
+        nameEdit->setEnabled(false);
+        portSpin->setEnabled(false);
+        publishCheck->setEnabled(false);
+        locationEdit->setEnabled(false);
+        nameEdit->setText(KailleraServerGetName());
+        portSpin->setValue(KailleraServerGetPort());
+        logEdit->append(QString("Server running on port %1").arg(KailleraServerGetPort()));
+    }
+
     QObject::connect(startStopBtn, &QPushButton::clicked, [&]() {
         if (KailleraServerIsRunning())
         {
             KailleraServerStop();
             startStopBtn->setText("Start Server");
+            nameEdit->setEnabled(true);
+            portSpin->setEnabled(true);
+            publishCheck->setEnabled(true);
+            locationEdit->setEnabled(true);
             logEdit->append("Server stopped.");
         }
         else
@@ -528,6 +545,10 @@ void Kaillera_Qt_ShowHostDialog()
             if (ok)
             {
                 startStopBtn->setText("Stop Server");
+                nameEdit->setEnabled(false);
+                portSpin->setEnabled(false);
+                publishCheck->setEnabled(false);
+                locationEdit->setEnabled(false);
                 logEdit->append(QString("Server started on port %1").arg(portSpin->value()));
 
                 if (publishCheck->isChecked() && !locationEdit->text().isEmpty())
