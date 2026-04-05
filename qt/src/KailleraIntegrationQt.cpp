@@ -32,6 +32,7 @@
 #include <QGroupBox>
 #include <cstdio>
 #include <cstring>
+#include <memory>
 #include <thread>
 
 static EmuApplication *g_app = nullptr;
@@ -185,6 +186,9 @@ void Kaillera_Qt_ShowConnectDialog()
     QDialog dlg(g_app->window.get());
     dlg.setWindowTitle("Kaillera Netplay");
     dlg.resize(600, 450);
+
+    // Guard for queued callbacks that may fire after dialog is destroyed
+    auto dialogAlive = std::make_shared<bool>(true);
 
     auto *layout = new QVBoxLayout(&dlg);
 
@@ -413,7 +417,8 @@ void Kaillera_Qt_ShowConnectDialog()
                 int row = i + offset;
                 uint32_t ping = servers[i].ping;
 
-                QMetaObject::invokeMethod(QApplication::instance(), [&, row, ping]() {
+                QMetaObject::invokeMethod(QApplication::instance(), [&, row, ping, dialogAlive]() {
+                    if (!*dialogAlive) return;
                     auto *item = new QTableWidgetItem(
                         ping && ping < 999
                             ? QString::number(ping) + "ms"
@@ -423,7 +428,8 @@ void Kaillera_Qt_ShowConnectDialog()
                 }, Qt::QueuedConnection);
             }
 
-            QMetaObject::invokeMethod(QApplication::instance(), [&]() {
+            QMetaObject::invokeMethod(QApplication::instance(), [&, dialogAlive]() {
+                if (!*dialogAlive) return;
                 refreshBtn->setEnabled(true);
                 refreshBtn->setText("Refresh Server List");
             }, Qt::QueuedConnection);
@@ -602,7 +608,8 @@ void Kaillera_Qt_ShowConnectDialog()
 
     dlg.exec();
 
-    // Cleanup on close
+    // Cleanup on close — mark dialog as dead so queued callbacks don't access widgets
+    *dialogAlive = false;
     autoRefreshTimer.stop();
     pollTimer.stop();
     // Only disconnect if not playing (dialog auto-closes when game starts)
