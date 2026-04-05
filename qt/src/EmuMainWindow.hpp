@@ -63,6 +63,13 @@ class EmuMainWindow : public QMainWindow
     QAction *shader_settings_item;
     std::vector<QAction *> core_actions;
     std::vector<QAction *> recent_menu_items;
+
+#ifdef RETROACHIEVEMENTS_SUPPORT
+    QAction *ra_enabled_action = nullptr;
+    QAction *ra_login_action = nullptr;
+    QAction *ra_hardcore_action = nullptr;
+    QAction *ra_achievements_action = nullptr;
+#endif
 };
 
 #endif
