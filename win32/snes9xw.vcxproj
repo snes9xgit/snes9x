@@ -691,8 +691,8 @@
     <ClCompile Include="image_functions.cpp" />
     <ClCompile Include="InputCustom.cpp" />
     <ClCompile Include="kaillera.cpp" />
-    <ClCompile Include="kaillera_client.cpp" />
-    <ClCompile Include="kaillera_server.cpp" />
+    <ClCompile Include="..\kaillera_client.cpp" />
+    <ClCompile Include="..\kaillera_server.cpp" />
     <ClCompile Include="render.cpp" />
     <ClCompile Include="retroachievements_win32.cpp" />
     <ClCompile Include="..\retroachievements.cpp" />

@@ -15,6 +15,11 @@
 #include "RAIntegrationQt.hpp"
 #include "retroachievements.h"
 #endif
+#ifdef KAILLERA_SUPPORT
+#include "KailleraIntegrationQt.hpp"
+#include "kaillera_client.h"
+#include "kaillera_server.h"
+#endif
 #include "EmuBinding.hpp"
 #include "EmuCanvasOpenGL.hpp"
 #include "EmuCanvasQt.hpp"
@@ -414,6 +419,31 @@ void EmuMainWindow::createWidgets()
     });
 
     menuBar()->addMenu(ra_menu);
+#endif
+
+#ifdef KAILLERA_SUPPORT
+    auto netplay_menu = new QMenu(tr("&Netplay"));
+
+    auto kaillera_connect_action = netplay_menu->addAction(tr("Kaillera &Netplay..."));
+    connect(kaillera_connect_action, &QAction::triggered, [&] {
+        Kaillera_Qt_RegisterCallbacks(app);
+        Kaillera_Qt_ShowConnectDialog();
+    });
+
+    auto kaillera_host_action = netplay_menu->addAction(tr("&Host Server..."));
+    connect(kaillera_host_action, &QAction::triggered, [&] {
+        Kaillera_Qt_RegisterCallbacks(app);
+        Kaillera_Qt_ShowHostDialog();
+    });
+
+    netplay_menu->addSeparator();
+
+    auto kaillera_end_action = netplay_menu->addAction(tr("&End Game"));
+    connect(kaillera_end_action, &QAction::triggered, [&] {
+        KailleraClientEndGame();
+    });
+
+    menuBar()->addMenu(netplay_menu);
 #endif
 
     setCoreActionsEnabled(false);

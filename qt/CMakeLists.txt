@@ -274,6 +274,13 @@ list(APPEND QT_GUI_SOURCES
     ../external/rcheevos/src/rhash/cdreader.c
     ../external/rcheevos/src/rhash/md5.c)
 
+# Kaillera netplay support
+list(APPEND DEFINES KAILLERA_SUPPORT)
+list(APPEND QT_GUI_SOURCES
+    src/KailleraIntegrationQt.cpp
+    ../kaillera_client.cpp
+    ../kaillera_server.cpp)
+
 set(QT_UI_FILES
     src/GeneralPanel.ui
     src/ControllerPanel.ui

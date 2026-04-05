@@ -18,6 +18,10 @@
 #include "RAIntegrationQt.hpp"
 #include "retroachievements.h"
 #endif
+#ifdef KAILLERA_SUPPORT
+#include "kaillera_client.h"
+#include "kaillera_server.h"
+#endif
 
 #undef SOUND_BUFFER_WINDOW
 
@@ -30,6 +34,10 @@ EmuApplication::~EmuApplication()
 {
 #ifdef RETROACHIEVEMENTS_SUPPORT
     RA_Shutdown();
+#endif
+#ifdef KAILLERA_SUPPORT
+    KailleraClientDisconnect();
+    KailleraServerStop();
 #endif
     core->deinit();
 }
