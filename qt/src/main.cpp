@@ -34,8 +34,12 @@ int main(int argc, char *argv[])
 
     if (QApplication::platformName() == "windows")
     {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
         if (QApplication::styleHints()->colorScheme() == Qt::ColorScheme::Dark)
         {
+#else
+        if (false) {
+#endif
             QApplication::setStyle("fusion");
 
             const QColor darkGray(53, 53, 53);
