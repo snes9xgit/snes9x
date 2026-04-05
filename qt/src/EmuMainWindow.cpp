@@ -1,6 +1,7 @@
 #include <QTimer>
 #include <QMenu>
 #include <QMenuBar>
+#include <QActionGroup>
 #include <QFileDialog>
 #include <QtEvents>
 #include <QGuiApplication>
