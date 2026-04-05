@@ -56,6 +56,7 @@ static void ra_qt_server_call(const rc_api_request_t *request,
     // Marshal to main thread where QNetworkAccessManager lives
     QMetaObject::invokeMethod(g_nam, [=]() {
         QNetworkRequest qreq(QUrl(QString::fromStdString(url_str)));
+        qreq.setHeader(QNetworkRequest::UserAgentHeader, "snes9x");
 
         QNetworkReply *reply = nullptr;
         if (post_data.empty())
