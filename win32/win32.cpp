@@ -823,26 +823,7 @@ void S9xWinScanJoypads ()
                 joypads[J] = (uint32)allInputs[J] | 0x80000000;
         }
     }
-    // Legacy DLL-based Kaillera (fallback)
-    else if (Kaillera.GameActive)
-    {
-        int localIdx = Kaillera.PlayerNumber - 1;
-        if (localIdx < 0) localIdx = 0;
-
-        unsigned short localInput = (unsigned short)(joypads[localIdx] & 0xFFFF);
-        unsigned short allInputs[8] = {};
-
-        int numPlayers = KailleraExchangeInput(localInput, allInputs, 8);
-        if (numPlayers < 0)
-        {
-            PostMessage(GUI.hWnd, WM_KAILLERA_GAME_END, 0, 0);
-        }
-        else
-        {
-            for (int J = 0; J < numPlayers && J < 8; J++)
-                joypads[J] = (uint32)allInputs[J] | 0x80000000;
-        }
-    }
+    // Legacy DLL-based Kaillera removed — native client handles everything above
 #endif
 }
 
@@ -895,7 +876,7 @@ void DeinitS9x()
 #ifdef KAILLERA_SUPPORT
 	KailleraServerUnpublish();
 	KailleraServerStop();
-	KailleraUnloadDLL();
+	KailleraClientDisconnect();
 #endif
 	DeleteCriticalSection(&GUI.SoundCritSect);
     CloseHandle(GUI.SoundSyncEvent);

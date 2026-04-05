@@ -2857,7 +2857,7 @@ LRESULT CALLBACK WinProc(
 						char msg[512];
 						sprintf(msg, "Kaillera: Could not find ROM for game '%s' in ROM directory", gameName);
 						S9xMessage(S9X_ERROR, S9X_ROM_INFO, msg);
-						KailleraStopGame();
+						KailleraClientEndGame();
 					}
 				}
 			}
