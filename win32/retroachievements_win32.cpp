@@ -12,6 +12,7 @@
 #include "rc_client.h"
 
 #include "wsnes9x.h"
+#include "snes9x.h"
 
 #pragma comment(lib, "wininet.lib")
 
@@ -36,7 +37,13 @@ static unsigned __stdcall ra_http_thread(void *param)
     rc_api_server_response_t response = {};
     std::string response_body;
 
-    HINTERNET hInet = InternetOpenA("snes9x", INTERNET_OPEN_TYPE_PRECONFIG, NULL, NULL, 0);
+    // Build user agent: "Snes9x/VERSION rcheevos/VERSION"
+    char ua_clause[128] = {};
+    rc_client_get_user_agent_clause(RA_GetClient(), ua_clause, sizeof(ua_clause));
+    char user_agent[256];
+    snprintf(user_agent, sizeof(user_agent), "Snes9x/%s %s", VERSION, ua_clause);
+
+    HINTERNET hInet = InternetOpenA(user_agent, INTERNET_OPEN_TYPE_PRECONFIG, NULL, NULL, 0);
     if (!hInet)
     {
         response.http_status_code = RC_API_SERVER_RESPONSE_RETRYABLE_CLIENT_ERROR;
