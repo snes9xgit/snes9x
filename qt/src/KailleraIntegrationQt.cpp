@@ -269,7 +269,6 @@ void Kaillera_Qt_ShowConnectDialog()
 
     // Refresh server list function
     auto doRefresh = [&]() {
-        serverTable->setRowCount(0);
         refreshBtn->setEnabled(false);
         refreshBtn->setText("Fetching...");
 
@@ -277,17 +276,21 @@ void Kaillera_Qt_ShowConnectDialog()
             KServerListEntry servers[KAILLERA_MAX_SERVERS];
             int count = KailleraFetchServerList(servers, KAILLERA_MAX_SERVERS);
 
-            // Ping each server
-            for (int i = 0; i < count; i++)
-                KailleraPingServer(&servers[i]);
-
+            // Show list immediately, then ping in background
             QMetaObject::invokeMethod(QApplication::instance(), [&, count, servers]() {
                 int offset = 0;
+                int totalRows = count;
 
-                // Add local server at the top if running
                 if (KailleraServerIsRunning())
                 {
-                    serverTable->setRowCount(count + 1);
+                    offset = 1;
+                    totalRows = count + 1;
+                }
+
+                serverTable->setRowCount(totalRows);
+
+                if (offset)
+                {
                     serverTable->setItem(0, 0, new QTableWidgetItem(QString("* %1 (local)").arg(KailleraServerGetName())));
                     serverTable->setItem(0, 1, new QTableWidgetItem(QString("127.0.0.1:%1").arg(KailleraServerGetPort())));
                     int users, maxUsers, games;
@@ -297,11 +300,6 @@ void Kaillera_Qt_ShowConnectDialog()
                     serverTable->setItem(0, 2, new QTableWidgetItem(usersStr));
                     serverTable->setItem(0, 3, new QTableWidgetItem(QString::number(games)));
                     serverTable->setItem(0, 4, new QTableWidgetItem("<1ms"));
-                    offset = 1;
-                }
-                else
-                {
-                    serverTable->setRowCount(count);
                 }
 
                 for (int i = 0; i < count; i++)
@@ -315,11 +313,28 @@ void Kaillera_Qt_ShowConnectDialog()
                     snprintf(users, sizeof(users), "%d/%d", servers[i].users, servers[i].maxUsers);
                     serverTable->setItem(row, 2, new QTableWidgetItem(users));
                     serverTable->setItem(row, 3, new QTableWidgetItem(QString::number(servers[i].gameCount)));
-                    serverTable->setItem(row, 4, new QTableWidgetItem(
-                        servers[i].ping && servers[i].ping < 999
-                            ? QString::number(servers[i].ping) + "ms"
-                            : "timeout"));
+                    serverTable->setItem(row, 4, new QTableWidgetItem("pinging..."));
                 }
+                refreshBtn->setText("Pinging...");
+            }, Qt::BlockingQueuedConnection);
+
+            // Now ping each server and update its row individually
+            for (int i = 0; i < count; i++)
+            {
+                KailleraPingServer(&servers[i]);
+                int offset = KailleraServerIsRunning() ? 1 : 0;
+                int row = i + offset;
+                uint32_t ping = servers[i].ping;
+
+                QMetaObject::invokeMethod(QApplication::instance(), [&, row, ping]() {
+                    serverTable->setItem(row, 4, new QTableWidgetItem(
+                        ping && ping < 999
+                            ? QString::number(ping) + "ms"
+                            : "timeout"));
+                }, Qt::QueuedConnection);
+            }
+
+            QMetaObject::invokeMethod(QApplication::instance(), [&]() {
                 refreshBtn->setEnabled(true);
                 refreshBtn->setText("Refresh Server List");
             }, Qt::QueuedConnection);
