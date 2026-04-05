@@ -104,6 +104,8 @@ SetKeyRepeat = TRUE
 Fullscreen = FALSE
 Xvideo = FALSE
 MaxAspect = FALSE
+# Base width for aspect ratio (default 256). Set to 319 for 4:3, 299 for 8:7.
+AspectWidth = 256
 VideoMode = 1
 
 [Unix/X11 Controls]

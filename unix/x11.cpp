@@ -113,6 +113,7 @@ struct GUIData
 	int				scale_h;
 
 	bool8			maxaspect;
+	int			aspect_width;
 	int			imageHeight;
 
 	int				xv_format;
@@ -188,6 +189,8 @@ void S9xExtraDisplayUsage (void)
 #ifdef USE_XVIDEO
 	S9xMessage(S9X_INFO, S9X_USAGE, "-xvideo                         Hardware accelerated scaling");
 	S9xMessage(S9X_INFO, S9X_USAGE, "-maxaspect                      Try to fill the display, in fullscreen");
+	S9xMessage(S9X_INFO, S9X_USAGE, "-aspectwidth <n>                Base width for aspect ratio (default 256,");
+	S9xMessage(S9X_INFO, S9X_USAGE, "                                 use 319 for 4:3, 299 for 8:7)");
 #endif
 #ifdef USE_XINERAMA
 	S9xMessage(S9X_INFO, S9X_USAGE, "-xineramahead                   Xinerama head number for multi-monitor setups");
@@ -218,6 +221,14 @@ void S9xParseDisplayArg (char **argv, int &i, int argc)
 	else
 	if (!strcasecmp(argv[i], "-maxaspect"))
 		GUI.maxaspect = TRUE;
+	else
+	if (!strcasecmp(argv[i], "-aspectwidth"))
+	{
+		if (i + 1 < argc)
+			GUI.aspect_width = atoi(argv[++i]);
+		else
+			S9xUsage();
+	}
 	else
 #endif
 #ifdef USE_XINERAMA
@@ -393,6 +404,7 @@ const char * S9xParseDisplayConfig (ConfigFile &conf, int pass)
 #ifdef USE_XVIDEO
 	GUI.use_xvideo = conf.GetBool("Unix/X11::Xvideo", FALSE);
 	GUI.maxaspect = conf.GetBool("Unix/X11::MaxAspect", FALSE);
+	GUI.aspect_width = conf.GetUInt("Unix/X11::AspectWidth", SNES_WIDTH);
 #endif
 #ifdef USE_XINERAMA
     GUI.xinerama_head = conf.GetUInt("Unix/X11::XineramaHead", 0);
@@ -774,12 +786,12 @@ xinerama_end:
 			{
 				// Compute the maximum screen size for scaling xvideo window.
 				double screenAspect = (double)screen_w / screen_h;
-				double snesAspect = (double)SNES_WIDTH / SNES_HEIGHT_EXTENDED;
+				double snesAspect = (double)GUI.aspect_width / SNES_HEIGHT_EXTENDED;
 				double ratio = screenAspect / snesAspect;
 
-				printf("\tScreen (%dx%d) aspect %f vs SNES (%dx%d) aspect %f (ratio: %f)\n",
+				printf("\tScreen (%dx%d) aspect %f vs SNES (%dx%d, base width %d) aspect %f (ratio: %f)\n",
 					screen_w,screen_h,screenAspect,
-					SNES_WIDTH,SNES_HEIGHT_EXTENDED,snesAspect,
+					SNES_WIDTH,SNES_HEIGHT_EXTENDED,GUI.aspect_width,snesAspect,
 					ratio);
 
 				// Correct aspect ratio
