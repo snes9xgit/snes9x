@@ -16,3 +16,6 @@
 [submodule "external/cubeb"]
 	path = external/cubeb
 	url = https://github.com/mozilla/cubeb.git
+[submodule "external/rcheevos"]
+	path = external/rcheevos
+	url = https://github.com/RetroAchievements/rcheevos.git

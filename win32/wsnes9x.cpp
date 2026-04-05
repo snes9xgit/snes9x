@@ -52,6 +52,9 @@
 #include "../statemanager.h"
 #include "AVIOutput.h"
 #include "InputCustom.h"
+#ifdef RETROACHIEVEMENTS_SUPPORT
+#include "retroachievements.h"
+#endif
 #include <process.h>
 #include <vector>
 #include <string>
@@ -2318,6 +2321,9 @@ LRESULT CALLBACK WinProc(
 						S9xMovieStop (TRUE);
 					S9xSoftReset ();
 					ReInitSound();
+#ifdef RETROACHIEVEMENTS_SUPPORT
+					RA_OnReset();
+#endif
 				}
 				if(!S9xMovieRecording())
 					Settings.Paused = false;
@@ -2349,6 +2355,12 @@ LRESULT CALLBACK WinProc(
             WinShowCheatSearchDialog();
 			break;
 		case ID_CHEAT_APPLY:
+#ifdef RETROACHIEVEMENTS_SUPPORT
+			if (!Settings.ApplyCheats) { // trying to enable cheats
+				if (!RA_WarnDisableHardcore("Enabling cheats"))
+					break;
+			}
+#endif
 			Settings.ApplyCheats = !Settings.ApplyCheats;
 			if (!Settings.ApplyCheats){
 				S9xCheatsDisable ();
@@ -2383,7 +2395,12 @@ LRESULT CALLBACK WinProc(
             RestoreGUIDisplay();
 			i = DialogBox(g_hInst, MAKEINTRESOURCE(IDD_DIALOG_HACKS), hWnd, DlgEmulatorHacksProc);
             if (i == 1)
+			{
                 S9xReset();
+#ifdef RETROACHIEVEMENTS_SUPPORT
+				RA_OnReset();
+#endif
+			}
             else
                 RestoreSNESDisplay();
             break;
@@ -2392,6 +2409,45 @@ LRESULT CALLBACK WinProc(
 			DialogBox(g_hInst, MAKEINTRESOURCE(IDD_ABOUT), hWnd, DlgAboutProc);
 			RestoreSNESDisplay ();
 			break;
+#ifdef RETROACHIEVEMENTS_SUPPORT
+		case ID_RA_ENABLED:
+			GUI.RAEnabled = !GUI.RAEnabled;
+			if (GUI.RAEnabled)
+			{
+				RA_Init(GUI.hWnd);
+				RA_AttemptLogin();
+				if (!Settings.StopEmulation)
+					RA_OnLoadROM();
+			}
+			else
+			{
+				RA_Shutdown();
+			}
+			break;
+		case ID_RA_LOGIN:
+			RA_Init(GUI.hWnd);
+			if (RA_IsLoggedIn())
+				RA_Logout();
+			else
+				RA_ShowLoginDialog(GUI.hWnd);
+			break;
+		case ID_RA_HARDCORE_MODE:
+			if (GUI.RAHardcoreMode)
+			{
+				// Disabling hardcore
+				GUI.RAHardcoreMode = false;
+			}
+			else
+			{
+				// Enabling hardcore requires a reset
+				GUI.RAHardcoreMode = true;
+			}
+			break;
+		case ID_RA_ACHIEVEMENTS_LIST:
+			RA_Init(GUI.hWnd);
+			RA_ShowAchievementList(GUI.hWnd);
+			break;
+#endif
 		case ID_FRAME_ADVANCE:
 			Settings.Paused = true;
 			Settings.FrameAdvance = true;
@@ -2744,6 +2800,9 @@ LRESULT CALLBACK WinProc(
 				if (!Settings.StopEmulation && strcmp(Memory.ROMName, gameName) == 0)
 				{
 					S9xReset();
+#ifdef RETROACHIEVEMENTS_SUPPORT
+					RA_OnReset();
+#endif
 				}
 				else
 				{
@@ -3562,6 +3621,18 @@ int WINAPI WinMain(
 	S9xUnmapAllControls();
 	S9xSetupDefaultKeymap();
 
+#ifdef RETROACHIEVEMENTS_SUPPORT
+	// Auto-enable RA if a saved token exists
+	if (!GUI.RAEnabled && GUI.RAApiToken[0] && GUI.RAUsername[0])
+		GUI.RAEnabled = true;
+
+	if (GUI.RAEnabled)
+	{
+		RA_Init(GUI.hWnd);
+		RA_AttemptLogin();
+	}
+#endif
+
 	DWORD lastTime = timeGetTime();
 
     MSG msg;
@@ -3644,6 +3715,9 @@ int WINAPI WinMain(
 #ifdef NETPLAY_SUPPORT
 				&& !Settings.NetPlay
 #endif
+#ifdef RETROACHIEVEMENTS_SUPPORT
+				&& !RA_IsHardcoreModeActive()
+#endif
 				) {
 				if (Settings.Rewinding) {
 					Settings.Rewinding = stateMan.pop();
@@ -3655,6 +3729,9 @@ int WINAPI WinMain(
 			}
 
 			S9xMainLoop();
+#ifdef RETROACHIEVEMENTS_SUPPORT
+			RA_DoFrame();
+#endif
 			GUI.FrameCount++;
 			if (GUI.CursorTimer)
 			{
@@ -3678,6 +3755,10 @@ int WINAPI WinMain(
 loop_exit:
 
 	Settings.StopEmulation = TRUE;
+
+#ifdef RETROACHIEVEMENTS_SUPPORT
+	RA_Shutdown();
+#endif
 
 	// stop sound playback
 	CloseSoundDevice();
@@ -3822,25 +3903,29 @@ void FreezeUnfreeze (const char *filename, bool8 freeze)
 
     if (freeze)
 	{
-//		extern bool diagnostic_freezing;
-//		if(GetAsyncKeyState('Q') && GetAsyncKeyState('W') && GetAsyncKeyState('E') && GetAsyncKeyState('R'))
-//		{
-//			diagnostic_freezing = true;
-//		}
         S9xFreezeGame (filename);
-//
-//		diagnostic_freezing = false;
+#ifdef RETROACHIEVEMENTS_SUPPORT
+		RA_OnSaveState(filename);
+#endif
 	}
     else
     {
+#ifdef RETROACHIEVEMENTS_SUPPORT
+		if (!RA_WarnDisableHardcore("Loading save states"))
+		{
+			S9xClearPause(PAUSE_FREEZE_FILE);
+			return;
+		}
+#endif
 
         if (S9xUnfreezeGame (filename))
         {
-//	        S9xMessage (S9X_INFO, S9X_FREEZE_FILE_INFO, S9xBasename (filename));
 #ifdef NETPLAY_SUPPORT
             S9xNPServerQueueSendingFreezeFile (filename);
 #endif
-//            UpdateBackBuffer();
+#ifdef RETROACHIEVEMENTS_SUPPORT
+			RA_OnLoadState(filename);
+#endif
         }
 
 		// fix next frame advance after loading non-skipping state from a skipping state
@@ -3956,6 +4041,28 @@ static void CheckMenuStates ()
     if (Settings.StopEmulation)
         mii.fState |= MFS_DISABLED;
     SetMenuItemInfo( GUI.hMenu, ID_CHEAT_APPLY, FALSE, &mii);
+
+#ifdef RETROACHIEVEMENTS_SUPPORT
+    mii.fState = GUI.RAEnabled ? MFS_CHECKED : MFS_UNCHECKED;
+    SetMenuItemInfo(GUI.hMenu, ID_RA_ENABLED, FALSE, &mii);
+
+    mii.fState = (GUI.RAHardcoreMode && GUI.RAEnabled) ? MFS_CHECKED : MFS_UNCHECKED;
+    if (!GUI.RAEnabled)
+        mii.fState |= MFS_DISABLED;
+    SetMenuItemInfo(GUI.hMenu, ID_RA_HARDCORE_MODE, FALSE, &mii);
+
+    mii.fState = MFS_ENABLED;
+    mii.fMask = MIIM_STATE | MIIM_STRING;
+    if (RA_IsLoggedIn())
+        mii.dwTypeData = (LPTSTR)TEXT("&Logout");
+    else
+        mii.dwTypeData = (LPTSTR)TEXT("&Login...");
+    SetMenuItemInfo(GUI.hMenu, ID_RA_LOGIN, FALSE, &mii);
+    mii.fMask = MIIM_STATE;
+
+    mii.fState = Settings.StopEmulation ? MFS_DISABLED : MFS_ENABLED;
+    SetMenuItemInfo(GUI.hMenu, ID_RA_ACHIEVEMENTS_LIST, FALSE, &mii);
+#endif
 
     mii.fState = MFS_UNCHECKED;
 	if (GUI.AVIOut)
@@ -4179,6 +4286,9 @@ static bool LoadROM(const TCHAR *filename, const TCHAR *filename2 /*= NULL*/) {
 	if (!Settings.StopEmulation) {
 		Memory.SaveSRAM (S9xGetFilename (".srm", SRAM_DIR).c_str());
 		S9xSaveCheatFile (S9xGetFilename (".cht", CHEAT_DIR).c_str());
+#ifdef RETROACHIEVEMENTS_SUPPORT
+		RA_OnCloseROM();
+#endif
 	}
 
 	if(filename2)
@@ -4207,6 +4317,9 @@ static bool LoadROM(const TCHAR *filename, const TCHAR *filename2 /*= NULL*/) {
 		#endif
             stateMan.init(GUI.rewindBufferSize * 1024 * 1024);
 		}
+#ifdef RETROACHIEVEMENTS_SUPPORT
+		RA_OnLoadROM();
+#endif
 	}
 
 	if(GUI.ControllerOption == SNES_SUPERSCOPE || GUI.ControllerOption == SNES_MACSRIFLE)

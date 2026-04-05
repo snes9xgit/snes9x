@@ -951,6 +951,15 @@ void WinRegisterConfigItems()
 	AddUIntC("SuperFXClockMultiplier", Settings.SuperFXClockMultiplier, 100, "SuperFX speed, in percent (default 100)");
     AddBoolC("SeparateEchoBuffer", Settings.SeparateEchoBuffer, false, "Separate echo buffer from APU ram. For old hacks only.");
 #undef CATEGORY
+
+#ifdef RETROACHIEVEMENTS_SUPPORT
+#define CATEGORY "RetroAchievements"
+    AddBoolC("Enabled", GUI.RAEnabled, false, "true to enable RetroAchievements support");
+    AddBoolC("HardcoreMode", GUI.RAHardcoreMode, false, "true to enable hardcore mode (disables save state loading, rewind, cheats)");
+    AddStringC("Username", GUI.RAUsername, 256, "", "RetroAchievements username");
+    AddStringC("ApiToken", GUI.RAApiToken, 256, "", "RetroAchievements API token (set automatically on login)");
+#undef CATEGORY
+#endif
 }
 
 
