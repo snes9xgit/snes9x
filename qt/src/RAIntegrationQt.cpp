@@ -36,7 +36,7 @@ static EmuApplication *g_app = nullptr;
 // ---------------------------------------------------------------------------
 // libcurl HTTP Implementation (runs on background threads)
 // ---------------------------------------------------------------------------
-static size_t curl_write_callback(void *contents, size_t size, size_t nmemb, void *userp)
+static size_t ra_curl_write_cb(char *contents, size_t size, size_t nmemb, void *userp)
 {
     auto *body = static_cast<std::string *>(userp);
     body->append(static_cast<char *>(contents), size * nmemb);
@@ -68,7 +68,7 @@ static void ra_curl_http_thread(CurlHttpRequest *req)
 
     curl_easy_setopt(curl, CURLOPT_URL, req->url.c_str());
     curl_easy_setopt(curl, CURLOPT_USERAGENT, "snes9x");
-    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, curl_write_callback);
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, ra_curl_write_cb);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response_body);
     curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
     curl_easy_setopt(curl, CURLOPT_TIMEOUT, 30L);
