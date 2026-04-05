@@ -37,11 +37,11 @@ static unsigned __stdcall ra_http_thread(void *param)
     rc_api_server_response_t response = {};
     std::string response_body;
 
-    // Build user agent: "Snes9x/VERSION rcheevos/VERSION"
+    // Build user agent: "SuperSnes9x/VERSION rcheevos/VERSION"
     char ua_clause[128] = {};
     rc_client_get_user_agent_clause(RA_GetClient(), ua_clause, sizeof(ua_clause));
     char user_agent[256];
-    snprintf(user_agent, sizeof(user_agent), "Snes9x/%s %s", VERSION, ua_clause);
+    snprintf(user_agent, sizeof(user_agent), "SuperSnes9x/%s %s", VERSION, ua_clause);
 
     HINTERNET hInet = InternetOpenA(user_agent, INTERNET_OPEN_TYPE_PRECONFIG, NULL, NULL, 0);
     if (!hInet)
