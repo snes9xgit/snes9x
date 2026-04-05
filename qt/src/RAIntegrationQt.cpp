@@ -9,10 +9,6 @@
 #include "rc_client.h"
 #include "rc_api_request.h"
 
-#include <QNetworkAccessManager>
-#include <QNetworkRequest>
-#include <QNetworkReply>
-#include <QUrl>
 #include <QMessageBox>
 #include <QDialog>
 #include <QVBoxLayout>
@@ -27,68 +23,103 @@
 #include <QThread>
 #include <thread>
 #include <cstdio>
+#include <cstring>
+
+// Use libcurl if available, otherwise fall back to Qt Network
+#include <curl/curl.h>
 
 // ---------------------------------------------------------------------------
 // Statics
 // ---------------------------------------------------------------------------
 static EmuApplication *g_app = nullptr;
-static QNetworkAccessManager *g_nam = nullptr;
 
 // ---------------------------------------------------------------------------
-// Qt HTTP Implementation
+// libcurl HTTP Implementation (runs on background threads)
 // ---------------------------------------------------------------------------
-struct QtHttpContext
+static size_t curl_write_callback(void *contents, size_t size, size_t nmemb, void *userp)
 {
+    auto *body = static_cast<std::string *>(userp);
+    body->append(static_cast<char *>(contents), size * nmemb);
+    return size * nmemb;
+}
+
+struct CurlHttpRequest
+{
+    std::string url;
+    std::string post_data;
+    std::string content_type;
     rc_client_server_callback_t callback;
     void *callback_data;
 };
 
-static void ra_qt_server_call(const rc_api_request_t *request,
-                               rc_client_server_callback_t callback,
-                               void *callback_data, rc_client_t *client)
+static void ra_curl_http_thread(CurlHttpRequest *req)
 {
-    std::string url_str = request->url ? request->url : "";
-    std::string post_data = request->post_data ? request->post_data : "";
-    std::string content_type = request->content_type ? request->content_type : "";
+    rc_api_server_response_t response = {};
+    std::string response_body;
 
-    auto *ctx = new QtHttpContext{callback, callback_data};
+    CURL *curl = curl_easy_init();
+    if (!curl)
+    {
+        response.http_status_code = RC_API_SERVER_RESPONSE_RETRYABLE_CLIENT_ERROR;
+        req->callback(&response, req->callback_data);
+        delete req;
+        return;
+    }
 
-    // Marshal to main thread where QNetworkAccessManager lives
-    QMetaObject::invokeMethod(g_nam, [=]() {
-        QNetworkRequest qreq(QUrl(QString::fromStdString(url_str)));
-        qreq.setHeader(QNetworkRequest::UserAgentHeader, "snes9x");
+    curl_easy_setopt(curl, CURLOPT_URL, req->url.c_str());
+    curl_easy_setopt(curl, CURLOPT_USERAGENT, "snes9x");
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, curl_write_callback);
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response_body);
+    curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
+    curl_easy_setopt(curl, CURLOPT_TIMEOUT, 30L);
 
-        QNetworkReply *reply = nullptr;
-        if (post_data.empty())
+    if (!req->post_data.empty())
+    {
+        curl_easy_setopt(curl, CURLOPT_POSTFIELDS, req->post_data.c_str());
+        curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, (long)req->post_data.size());
+        if (!req->content_type.empty())
         {
-            reply = g_nam->get(qreq);
+            struct curl_slist *headers = nullptr;
+            std::string ct_header = "Content-Type: " + req->content_type;
+            headers = curl_slist_append(headers, ct_header.c_str());
+            curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
         }
-        else
-        {
-            QString ct = content_type.empty()
-                             ? "application/x-www-form-urlencoded"
-                             : QString::fromStdString(content_type);
-            qreq.setHeader(QNetworkRequest::ContentTypeHeader, ct);
-            reply = g_nam->post(qreq, QByteArray::fromStdString(post_data));
-        }
+    }
 
-        QObject::connect(reply, &QNetworkReply::finished, [reply, ctx]() {
-            rc_api_server_response_t response = {};
-            QByteArray body = reply->readAll();
-            response.body = body.constData();
-            response.body_length = body.size();
-            response.http_status_code = reply->attribute(
-                QNetworkRequest::HttpStatusCodeAttribute).toInt();
+    CURLcode res = curl_easy_perform(curl);
 
-            if (reply->error() != QNetworkReply::NoError && response.http_status_code == 0)
-                response.http_status_code = RC_API_SERVER_RESPONSE_RETRYABLE_CLIENT_ERROR;
+    if (res == CURLE_OK)
+    {
+        long http_code = 0;
+        curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &http_code);
+        response.http_status_code = (int)http_code;
+    }
+    else
+    {
+        response.http_status_code = RC_API_SERVER_RESPONSE_RETRYABLE_CLIENT_ERROR;
+    }
 
-            ctx->callback(&response, ctx->callback_data);
+    response.body = response_body.c_str();
+    response.body_length = response_body.size();
 
-            reply->deleteLater();
-            delete ctx;
-        });
-    }, Qt::QueuedConnection);
+    curl_easy_cleanup(curl);
+
+    req->callback(&response, req->callback_data);
+    delete req;
+}
+
+static void RC_CCONV ra_qt_server_call(const rc_api_request_t *request,
+                                        rc_client_server_callback_t callback,
+                                        void *callback_data, rc_client_t *client)
+{
+    auto *req = new CurlHttpRequest();
+    req->url = request->url ? request->url : "";
+    req->post_data = request->post_data ? request->post_data : "";
+    req->content_type = request->content_type ? request->content_type : "";
+    req->callback = callback;
+    req->callback_data = callback_data;
+
+    std::thread(ra_curl_http_thread, req).detach();
 }
 
 // ---------------------------------------------------------------------------
@@ -298,9 +329,13 @@ void RA_Qt_RegisterCallbacks(EmuApplication *app)
 {
     g_app = app;
 
-    // Create QNetworkAccessManager on the main thread
-    if (!g_nam)
-        g_nam = new QNetworkAccessManager();
+    // Initialize libcurl globally (safe to call multiple times)
+    static bool curl_initialized = false;
+    if (!curl_initialized)
+    {
+        curl_global_init(CURL_GLOBAL_DEFAULT);
+        curl_initialized = true;
+    }
 
     RAPlatformCallbacks cb = {};
     cb.server_call = ra_qt_server_call;
