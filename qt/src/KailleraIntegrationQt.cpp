@@ -247,8 +247,12 @@ void Kaillera_Qt_ShowConnectDialog()
     QTimer pollTimer;
     pollTimer.setInterval(500);
 
-    // Refresh server list
-    QObject::connect(refreshBtn, &QPushButton::clicked, [&]() {
+    // Auto-refresh timer
+    QTimer autoRefreshTimer;
+    autoRefreshTimer.setInterval(30000);
+
+    // Refresh server list function
+    auto doRefresh = [&]() {
         serverTable->setRowCount(0);
         refreshBtn->setEnabled(false);
         refreshBtn->setText("Fetching...");
@@ -256,6 +260,10 @@ void Kaillera_Qt_ShowConnectDialog()
         std::thread([&]() {
             KServerListEntry servers[KAILLERA_MAX_SERVERS];
             int count = KailleraFetchServerList(servers, KAILLERA_MAX_SERVERS);
+
+            // Ping each server
+            for (int i = 0; i < count; i++)
+                KailleraPingServer(&servers[i]);
 
             QMetaObject::invokeMethod(QApplication::instance(), [&, count, servers]() {
                 serverTable->setRowCount(count);
@@ -269,13 +277,23 @@ void Kaillera_Qt_ShowConnectDialog()
                     snprintf(users, sizeof(users), "%d/%d", servers[i].users, servers[i].maxUsers);
                     serverTable->setItem(i, 2, new QTableWidgetItem(users));
                     serverTable->setItem(i, 3, new QTableWidgetItem(QString::number(servers[i].gameCount)));
-                    serverTable->setItem(i, 4, new QTableWidgetItem(servers[i].ping ? QString::number(servers[i].ping) + "ms" : "?"));
+                    serverTable->setItem(i, 4, new QTableWidgetItem(
+                        servers[i].ping && servers[i].ping < 999
+                            ? QString::number(servers[i].ping) + "ms"
+                            : "timeout"));
                 }
                 refreshBtn->setEnabled(true);
                 refreshBtn->setText("Refresh Server List");
             }, Qt::QueuedConnection);
         }).detach();
-    });
+    };
+
+    QObject::connect(refreshBtn, &QPushButton::clicked, doRefresh);
+    QObject::connect(&autoRefreshTimer, &QTimer::timeout, doRefresh);
+
+    // Auto-refresh on dialog open and start 30s timer
+    doRefresh();
+    autoRefreshTimer.start();
 
     // Double-click server to fill IP
     QObject::connect(serverTable, &QTableWidget::cellDoubleClicked, [&](int row, int) {
@@ -415,6 +433,7 @@ void Kaillera_Qt_ShowConnectDialog()
     dlg.exec();
 
     // Cleanup on close
+    autoRefreshTimer.stop();
     pollTimer.stop();
     if (KailleraClientIsConnected())
         KailleraClientDisconnect();
