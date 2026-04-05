@@ -205,6 +205,7 @@ static void ra_qt_show_achievements()
     tree->setHeaderLabels({"Title", "Points", "Status", "Description"});
     tree->setRootIsDecorated(false);
     tree->setAlternatingRowColors(true);
+    tree->setSortingEnabled(true);
     tree->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
     tree->header()->setStretchLastSection(true);
 
