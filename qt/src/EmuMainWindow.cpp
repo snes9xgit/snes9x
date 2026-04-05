@@ -86,11 +86,14 @@ void EmuMainWindow::destroyCanvas()
 bool EmuMainWindow::createCanvas()
 {
     auto fallback = [this]() -> bool {
+        std::string failed = app->config->display_driver;
+        std::string next = (failed == "vulkan") ? "opengl" : "qt";
         QMessageBox::warning(
             this, tr("Unable to Start Display Driver"),
-            tr("Unable to create a %1 context. Attempting to use qt.")
-                .arg(QString::fromUtf8(app->config->display_driver)));
-        app->config->display_driver = "qt";
+            tr("Unable to create a %1 context. Attempting to use %2.")
+                .arg(QString::fromUtf8(failed))
+                .arg(QString::fromUtf8(next)));
+        app->config->display_driver = next;
         return createCanvas();
     };
 
