@@ -3644,7 +3644,7 @@ static bool8 ReadUPSPatch (Stream *r, long, int32 &rom_size)
 	uint32 relative = 0;
 	while(addr < size - 12) {
 		relative += XPSdecode(data, addr, size);
-		while(addr < size - 12) {
+		while(addr < size - 12 && relative < CMemory::MAX_ROM_SIZE) {
 			uint8 x = data[addr++];
 			Memory.ROM[relative++] ^= x;
 			if(!x) break;
