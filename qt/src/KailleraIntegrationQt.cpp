@@ -27,6 +27,7 @@
 #include <QMessageBox>
 #include <QApplication>
 #include <QTimer>
+#include <QDir>
 #include <QSplitter>
 #include <QGroupBox>
 #include <cstdio>
@@ -219,31 +220,74 @@ void Kaillera_Qt_ShowConnectDialog()
     layout->addWidget(refreshBtn);
     layout->addWidget(serverTable);
 
-    // Game room area
-    auto *gameGroup = new QGroupBox("Game Room");
-    auto *gameLayout = new QVBoxLayout(gameGroup);
+    // Server Lobby area
+    auto *lobbyGroup = new QGroupBox("Server Lobby");
+    auto *lobbyLayout = new QVBoxLayout(lobbyGroup);
+
+    // ROM selection row
+    auto *romRow = new QHBoxLayout();
+    auto *romCombo = new QComboBox();
+    romCombo->setMinimumWidth(250);
+    romCombo->setEnabled(false);
+
+    // Populate ROM list
+    {
+        // Add currently loaded ROM first
+        if (!Settings.StopEmulation && Memory.ROMName[0])
+            romCombo->addItem(QString("%1 (loaded)").arg(Memory.ROMName));
+
+        // Scan ROM directory for .smc/.sfc/.zip files
+        std::string romDir = g_app->config->last_rom_folder;
+        if (!romDir.empty())
+        {
+            QDir dir(QString::fromStdString(romDir));
+            QStringList filters = {"*.smc", "*.sfc", "*.fig", "*.swc", "*.zip", "*.7z", "*.gz"};
+            auto entries = dir.entryInfoList(filters, QDir::Files, QDir::Name);
+            for (auto &entry : entries)
+            {
+                QString baseName = entry.completeBaseName();
+                // Skip if same as loaded ROM
+                if (!Settings.StopEmulation && Memory.ROMName[0] &&
+                    baseName == Memory.ROMName)
+                    continue;
+                romCombo->addItem(baseName);
+            }
+        }
+
+        if (romCombo->count() > 0)
+            romCombo->setCurrentIndex(0);
+    }
+
+    romRow->addWidget(new QLabel("ROM:"));
+    romRow->addWidget(romCombo, 1);
+    auto *createBtn = new QPushButton("Create");
+    createBtn->setEnabled(false);
+    romRow->addWidget(createBtn);
+    auto *disconnectBtn2 = new QPushButton("Disconnect");
+    disconnectBtn2->setEnabled(false);
+    romRow->addWidget(disconnectBtn2);
+    lobbyLayout->addLayout(romRow);
+
+    // Game list
     auto *gameList = new QTableWidget(0, 4);
     gameList->setHorizontalHeaderLabels({"Game", "Owner", "Players", "Status"});
     gameList->horizontalHeader()->setStretchLastSection(true);
     gameList->setSelectionBehavior(QAbstractItemView::SelectRows);
     gameList->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    gameLayout->addWidget(gameList);
+    lobbyLayout->addWidget(gameList);
 
     auto *gameBtns = new QHBoxLayout();
-    auto *createBtn = new QPushButton("Create Game");
     auto *joinBtn = new QPushButton("Join Game");
     auto *startBtn = new QPushButton("Start Game");
     auto *leaveBtn = new QPushButton("Leave");
-    createBtn->setEnabled(false);
     joinBtn->setEnabled(false);
     startBtn->setEnabled(false);
     leaveBtn->setEnabled(false);
-    gameBtns->addWidget(createBtn);
     gameBtns->addWidget(joinBtn);
     gameBtns->addWidget(startBtn);
     gameBtns->addWidget(leaveBtn);
-    gameLayout->addLayout(gameBtns);
-    layout->addWidget(gameGroup);
+    lobbyLayout->addLayout(gameBtns);
+    layout->addWidget(lobbyGroup);
 
     // Chat
     auto *chatEdit = new QTextEdit();
@@ -406,10 +450,23 @@ void Kaillera_Qt_ShowConnectDialog()
         gameList->setRowCount(0);
     });
 
-    // Create game
+    // Create game from ROM combo selection
     QObject::connect(createBtn, &QPushButton::clicked, [&]() {
-        const char *romName = Memory.ROMFilename[0] ? Memory.ROMName : "Unknown Game";
-        KailleraClientCreateGame(romName);
+        if (romCombo->currentIndex() < 0)
+        {
+            QMessageBox::warning(&dlg, "Kaillera", "Select a ROM to create a game.");
+            return;
+        }
+        QString romName = romCombo->currentText();
+        // Strip " (loaded)" suffix if present
+        if (romName.endsWith(" (loaded)"))
+            romName.chop(9);
+        KailleraClientCreateGame(romName.toStdString().c_str());
+    });
+
+    // Disconnect button in lobby
+    QObject::connect(disconnectBtn2, &QPushButton::clicked, [&]() {
+        disconnectBtn->click();
     });
 
     // Join game
@@ -455,6 +512,8 @@ void Kaillera_Qt_ShowConnectDialog()
         usernameEdit->setEnabled(!connected && !connecting);
         connectBtn->setEnabled(!connected && !connecting);
         disconnectBtn->setEnabled(connected || connecting);
+        disconnectBtn2->setEnabled(connected || connecting);
+        romCombo->setEnabled(connected && !inRoom);
         createBtn->setEnabled(connected && !inRoom);
         joinBtn->setEnabled(connected && !inRoom);
         startBtn->setEnabled(inRoom && KClient.isOwner && !playing);
