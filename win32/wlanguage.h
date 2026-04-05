@@ -12,7 +12,8 @@
 //#define MY_REG_KEY   "Software\\Emulators\\Snes9x"
 //#define REG_KEY_VER  "1.31"
 
-#define DISCLAIMER_TEXT        TEXT("Snes9x v%s for Windows.\r\n\
+#define DISCLAIMER_TEXT        TEXT("SuperSnes9x v%s for Windows.\r\n\
+Based on Snes9x by Gary Henderson and Jerremy Koot.\r\n\r\n\
 (c) Copyright 1996 - 2002  Gary Henderson and Jerremy Koot (jkoot@snes9x.com)\r\n\
 (c) Copyright 2002 - 2004  Matthew Kendora\r\n\
 (c) Copyright 2002 - 2005  Peter Bortas\r\n\
@@ -22,21 +23,21 @@
 (c) Copyright 2006 - 2007  nitsuja\r\n\
 (c) Copyright 2009 - 2023  BearOso, OV2\r\n\r\n\
 Windows Port Authors: Matthew Kendora, funkyass, nitsuja, Nach, blip, OV2.\r\n\r\n\
-Snes9x is a Super Nintendo Entertainment System\r\n\
-emulator that allows you to play most games designed\r\n\
-for the SNES on your PC.\r\n\r\n\
+SuperSnes9x is a Super Nintendo Entertainment System\r\n\
+emulator with RetroAchievements support that allows you\r\n\
+to play most games designed for the SNES on your PC.\r\n\r\n\
 Please visit http://www.snes9x.com for\r\n\
 up-to-the-minute information and help on Snes9x.\r\n\r\n\
 Nintendo is a trademark.")
 
 
-#define APP_NAME TEXT("Snes9x")
+#define APP_NAME TEXT("SuperSnes9x")
 // possible global strings
-#define SNES9X_INFO TEXT("Snes9x: Information")
-#define SNES9X_WARN TEXT("Snes9x: WARNING!")
-#define SNES9X_DXS TEXT("Snes9x: DirectSound")
-#define SNES9X_SNDQ TEXT("Snes9x: Sound CPU Question")
-#define SNES9X_NP_ERROR TEXT("Snes9x: NetPlay Error")
+#define SNES9X_INFO TEXT("SuperSnes9x: Information")
+#define SNES9X_WARN TEXT("SuperSnes9x: WARNING!")
+#define SNES9X_DXS TEXT("SuperSnes9x: DirectSound")
+#define SNES9X_SNDQ TEXT("SuperSnes9x: Sound CPU Question")
+#define SNES9X_NP_ERROR TEXT("SuperSnes9x: NetPlay Error")
 #define BUTTON_OK TEXT("&OK")
 #define BUTTON_CANCEL TEXT("&Cancel")
 
