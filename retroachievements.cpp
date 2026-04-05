@@ -264,6 +264,7 @@ void RA_Init()
 
     rc_client_enable_logging(g_rcClient, RC_CLIENT_LOG_LEVEL_VERBOSE, ra_log_message);
     rc_client_set_event_handler(g_rcClient, ra_event_handler);
+    rc_client_set_allow_background_memory_reads(g_rcClient, 1);
 
     g_initialized = true;
 }
