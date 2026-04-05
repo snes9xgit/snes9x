@@ -321,11 +321,16 @@ void Kaillera_Qt_ShowConnectDialog()
     doRefresh();
     autoRefreshTimer.start();
 
-    // Double-click server to fill IP
-    QObject::connect(serverTable, &QTableWidget::cellDoubleClicked, [&](int row, int) {
+    // Server selection updates IP field (single click, like Win32)
+    QObject::connect(serverTable, &QTableWidget::currentCellChanged, [&](int row, int, int, int) {
         auto *item = serverTable->item(row, 1);
         if (item)
             ipEdit->setText(item->text());
+    });
+
+    // Double-click server to connect
+    QObject::connect(serverTable, &QTableWidget::cellDoubleClicked, [&](int, int) {
+        connectBtn->click();
     });
 
     // Connect
@@ -344,65 +349,28 @@ void Kaillera_Qt_ShowConnectDialog()
             port = (uint16_t)std::stoi(addr.substr(colon + 1));
         }
 
-        connectBtn->setEnabled(false);
-        connectBtn->setText("Connecting...");
-
-        std::thread([=, &connectBtn, &disconnectBtn, &createBtn, &joinBtn, &pollTimer]() {
-            bool ok = KailleraClientConnect(ip.c_str(), port, user.c_str());
-            QMetaObject::invokeMethod(QApplication::instance(), [=, &connectBtn, &disconnectBtn, &createBtn, &joinBtn, &pollTimer]() {
-                if (ok)
-                {
-                    connectBtn->setText("Connected");
-                    disconnectBtn->setEnabled(true);
-                    createBtn->setEnabled(true);
-                    joinBtn->setEnabled(true);
-                    pollTimer.start();
-                }
-                else
-                {
-                    connectBtn->setEnabled(true);
-                    connectBtn->setText("Connect");
-                    QMessageBox::warning(g_app->window.get(), "Kaillera", "Failed to connect to server.");
-                }
-            }, Qt::QueuedConnection);
+        std::thread([=]() {
+            KailleraClientConnect(ip.c_str(), port, user.c_str());
         }).detach();
     });
 
     // Disconnect
     QObject::connect(disconnectBtn, &QPushButton::clicked, [&]() {
         KailleraClientDisconnect();
-        connectBtn->setEnabled(true);
-        connectBtn->setText("Connect");
-        disconnectBtn->setEnabled(false);
-        createBtn->setEnabled(false);
-        joinBtn->setEnabled(false);
-        startBtn->setEnabled(false);
-        leaveBtn->setEnabled(false);
         gameList->setRowCount(0);
-        pollTimer.stop();
     });
 
     // Create game
     QObject::connect(createBtn, &QPushButton::clicked, [&]() {
-        // Use currently loaded ROM name, or ask
         const char *romName = Memory.ROMFilename[0] ? Memory.ROMName : "Unknown Game";
-        if (KailleraClientCreateGame(romName))
-        {
-            startBtn->setEnabled(true);
-            leaveBtn->setEnabled(true);
-        }
+        KailleraClientCreateGame(romName);
     });
 
     // Join game
     QObject::connect(joinBtn, &QPushButton::clicked, [&]() {
         int row = gameList->currentRow();
         if (row >= 0 && row < KClient.numGames)
-        {
-            if (KailleraClientJoinGame(KClient.games[row].gameId))
-            {
-                leaveBtn->setEnabled(true);
-            }
-        }
+            KailleraClientJoinGame(KClient.games[row].gameId);
     });
 
     // Start game
@@ -413,8 +381,6 @@ void Kaillera_Qt_ShowConnectDialog()
     // Leave game
     QObject::connect(leaveBtn, &QPushButton::clicked, [&]() {
         KailleraClientLeaveGame();
-        startBtn->setEnabled(false);
-        leaveBtn->setEnabled(false);
     });
 
     // Chat send
@@ -429,19 +395,42 @@ void Kaillera_Qt_ShowConnectDialog()
     QObject::connect(chatSendBtn, &QPushButton::clicked, sendChat);
     QObject::connect(chatInput, &QLineEdit::returnPressed, sendChat);
 
-    // Poll timer: update game list and chat
+    // Poll timer: state-driven UI update (mirrors Win32 KCUpdateUI)
+    pollTimer.start();
     QObject::connect(&pollTimer, &QTimer::timeout, [&]() {
-        if (!KailleraClientIsConnected())
-            return;
+        KClientState st = KailleraClientGetState();
+        bool connected = (st >= KCLIENT_CONNECTED);
+        bool inRoom = (st >= KCLIENT_IN_GAME_ROOM);
+        bool playing = (st == KCLIENT_PLAYING);
+        bool connecting = (st == KCLIENT_CONNECTING || st == KCLIENT_LOGGING_IN);
+
+        // Enable/disable controls based on state
+        ipEdit->setEnabled(!connected && !connecting);
+        usernameEdit->setEnabled(!connected && !connecting);
+        connectBtn->setEnabled(!connected && !connecting);
+        disconnectBtn->setEnabled(connected || connecting);
+        createBtn->setEnabled(connected && !inRoom);
+        joinBtn->setEnabled(connected && !inRoom);
+        startBtn->setEnabled(inRoom && KClient.isOwner && !playing);
+        leaveBtn->setEnabled(inRoom && !playing);
+        chatInput->setEnabled(connected);
+        chatSendBtn->setEnabled(connected);
 
         // Update game list
-        gameList->setRowCount(KClient.numGames);
-        for (int i = 0; i < KClient.numGames; i++)
+        if (KClient.statusUpdated.exchange(false))
         {
-            gameList->setItem(i, 0, new QTableWidgetItem(KClient.games[i].gameName));
-            gameList->setItem(i, 1, new QTableWidgetItem(KClient.games[i].ownerName));
-            gameList->setItem(i, 2, new QTableWidgetItem(QString::number(KClient.games[i].numPlayers)));
-            gameList->setItem(i, 3, new QTableWidgetItem(KClient.games[i].status == 0 ? "Waiting" : "Playing"));
+            gameList->setRowCount(KClient.numGames);
+            for (int i = 0; i < KClient.numGames; i++)
+            {
+                gameList->setItem(i, 0, new QTableWidgetItem(KClient.games[i].gameName));
+                gameList->setItem(i, 1, new QTableWidgetItem(KClient.games[i].ownerName));
+                char playersStr[32];
+                snprintf(playersStr, sizeof(playersStr), "%d/%d",
+                         KClient.games[i].numPlayers, KClient.games[i].maxPlayers);
+                gameList->setItem(i, 2, new QTableWidgetItem(playersStr));
+                gameList->setItem(i, 3, new QTableWidgetItem(
+                    KClient.games[i].status == 1 ? "Playing" : "Waiting"));
+            }
         }
 
         // Update chat
@@ -451,6 +440,22 @@ void Kaillera_Qt_ShowConnectDialog()
             auto cursor = chatEdit->textCursor();
             cursor.movePosition(QTextCursor::End);
             chatEdit->setTextCursor(cursor);
+        }
+
+        // Show errors
+        if (KClient.errorMsg[0])
+        {
+            char errCopy[256];
+            strncpy(errCopy, KClient.errorMsg, sizeof(errCopy) - 1);
+            errCopy[sizeof(errCopy) - 1] = '\0';
+            KClient.errorMsg[0] = '\0';
+            QMessageBox::warning(&dlg, "Kaillera", errCopy);
+        }
+
+        // Auto-close dialog when game starts (like Win32)
+        if (playing)
+        {
+            dlg.accept();
         }
     });
 
