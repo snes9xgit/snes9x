@@ -8,6 +8,10 @@
 
 #include "snes9x.h"
 #include "port.h"
+
+#ifdef RETROACHIEVEMENTS_SUPPORT
+void RA_RenderOverlay(int width, int height);
+#endif
 #include "controls.h"
 #include "movie.h"
 #include "gfx.h"
@@ -314,6 +318,10 @@ bool S9xImGuiDraw(int width, int height)
                               ImGui::DrawTextAlignment::END,
                               width - settings.spacing * 4);
     }
+
+#ifdef RETROACHIEVEMENTS_SUPPORT
+    RA_RenderOverlay(width, height);
+#endif
 
     ImGui::Render();
 

@@ -1166,12 +1166,52 @@ BEGIN
         MENUITEM MFT_SEPARATOR
         MENUITEM "&Options...",                 ID_NETPLAY_OPTIONS,MFT_STRING,MFS_ENABLED
     END
+#ifdef RETROACHIEVEMENTS_SUPPORT
+    POPUP "&RetroAchievements",             0,MFT_STRING,MFS_ENABLED
+    BEGIN
+        MENUITEM "&Enabled",                    ID_RA_ENABLED,MFT_STRING,MFS_ENABLED
+        MENUITEM "&Login...",                   ID_RA_LOGIN,MFT_STRING,MFS_ENABLED
+        MENUITEM "&Hardcore Mode",              ID_RA_HARDCORE_MODE,MFT_STRING,MFS_ENABLED
+        MENUITEM MFT_SEPARATOR
+        MENUITEM "&Achievement List...",        ID_RA_ACHIEVEMENTS_LIST,MFT_STRING,MFS_GRAYED
+    END
+#endif
     POPUP "&Help",                          0,MFT_STRING,MFS_ENABLED
     BEGIN
         MENUITEM "&About...",                   ID_HELP_ABOUT,MFT_STRING,MFS_ENABLED
     END
 END
 
+#ifdef RETROACHIEVEMENTS_SUPPORT
+/////////////////////////////////////////////////////////////////////////////
+//
+// RetroAchievements Login Dialog
+//
+
+IDD_RA_LOGIN DIALOGEX 0, 0, 220, 100
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | DS_CENTER | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "RetroAchievements Login"
+FONT 8, "MS Shell Dlg"
+BEGIN
+    LTEXT           "Username:",IDC_STATIC,10,14,40,8
+    EDITTEXT        IDC_RA_USERNAME,60,12,150,12,ES_AUTOHSCROLL
+    LTEXT           "Password:",IDC_STATIC,10,34,40,8
+    EDITTEXT        IDC_RA_PASSWORD,60,32,150,12,ES_PASSWORD | ES_AUTOHSCROLL
+    LTEXT           "Your password is only used to get an API token.\nIt is never stored.",IDC_STATIC,10,52,200,18
+    DEFPUSHBUTTON   "Login",IDOK,55,78,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,115,78,50,14
+END
+
+IDD_RA_ACHIEVEMENTS DIALOGEX 0, 0, 380, 300
+STYLE DS_SETFONT | DS_FIXEDSYS | DS_CENTER | WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
+CAPTION "RetroAchievements"
+FONT 8, "MS Shell Dlg"
+BEGIN
+    LTEXT           "",IDC_RA_GAME_TITLE,6,6,368,10
+    CONTROL         "",IDC_RA_ACHLIST,"SysListView32",LVS_REPORT | LVS_SINGLESEL | LVS_NOSORTHEADER | WS_BORDER | WS_TABSTOP,6,20,368,254
+    PUSHBUTTON      "Close",IDCANCEL,164,280,50,14
+END
+#endif
 
 /////////////////////////////////////////////////////////////////////////////
 //

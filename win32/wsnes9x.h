@@ -276,6 +276,14 @@ struct sGUI {
     unsigned int rewindGranularity;
 
 	bool AddToRegistry;
+
+#ifdef RETROACHIEVEMENTS_SUPPORT
+    // RetroAchievements
+    bool RAEnabled;
+    bool RAHardcoreMode;
+    char RAUsername[256];
+    char RAApiToken[256];
+#endif
 };
 
 //TURBO masks
