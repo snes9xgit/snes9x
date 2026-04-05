@@ -644,7 +644,11 @@ bool EmuMainWindow::event(QEvent *event)
     case QEvent::WindowDeactivate:
         if (mouse_grabbed)
             toggleMouseGrab();
-        if (app->config->pause_emulation_when_unfocused && !focus_pause)
+        if (app->config->pause_emulation_when_unfocused && !focus_pause
+#ifdef KAILLERA_SUPPORT
+            && !KailleraClientIsPlaying()
+#endif
+        )
         {
             focus_pause = true;
             app->pause();
