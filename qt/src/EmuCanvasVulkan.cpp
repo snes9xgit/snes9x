@@ -37,6 +37,12 @@ bool EmuCanvasVulkan::initImGui()
     defaults.spacing = defaults.font_size / 2.4;
     S9xImGuiInit(&defaults);
 
+    if (!VULKAN_HPP_DEFAULT_DISPATCHER.vkGetInstanceProcAddr)
+    {
+        printf("Vulkan not available for ImGui - vkGetInstanceProcAddr is null.\n");
+        return false;
+    }
+
     ImGui_ImplVulkan_LoadFunctions([](const char *function, void *instance) {
         return VULKAN_HPP_DEFAULT_DISPATCHER.vkGetInstanceProcAddr(*((VkInstance *)instance), function);
     }, &context->instance.get());
@@ -133,7 +139,13 @@ bool EmuCanvasVulkan::createContext()
 #endif
 
     if (config->display_messages == EmuConfig::eOnscreen)
-        initImGui();
+    {
+        if (!initImGui())
+        {
+            context.reset();
+            return false;
+        }
+    }
 
     tryLoadShader();
 
