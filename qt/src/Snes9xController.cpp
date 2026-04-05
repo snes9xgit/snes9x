@@ -13,6 +13,10 @@ namespace fs = std::filesystem;
 #include "controls.h"
 #include "cheats.h"
 #include "movie.h"
+
+#ifdef KAILLERA_SUPPORT
+#include "kaillera_client.h"
+#endif
 #include "display.h"
 #include "conffile.h"
 #include "statemanager.h"
@@ -241,6 +245,29 @@ void Snes9xController::mainLoop()
         else
             Settings.Mute &= ~0x80;
     }
+
+#ifdef KAILLERA_SUPPORT
+    // Kaillera input exchange — sync joypads with remote players
+    if (KailleraClientIsPlaying())
+    {
+        int localIdx = KClient.playerNumber - 1;
+        if (localIdx < 0) localIdx = 0;
+
+        unsigned short localInput = (unsigned short)(MovieGetJoypad(localIdx) & 0xFFFF);
+        unsigned short allInputs[8] = {};
+
+        int numPlayers = KailleraClientExchangeInput(localInput, allInputs, 8);
+        if (numPlayers < 0)
+        {
+            // Game ended by remote — will be handled by on_game_ended callback
+        }
+        else
+        {
+            for (int j = 0; j < numPlayers && j < 8; j++)
+                MovieSetJoypad(j, allInputs[j]);
+        }
+    }
+#endif
 
     S9xMainLoop();
 }
