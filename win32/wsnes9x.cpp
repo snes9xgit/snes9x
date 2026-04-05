@@ -8256,6 +8256,8 @@ static void KCInitServerListView(HWND hDlg)
     ListView_InsertColumn(hLV, 4, &col);
 }
 
+static TCHAR kLastUsername[128] = {};
+
 static void KCUpdateDialogTitle(HWND hDlg)
 {
     TCHAR nameW[128];
@@ -8275,6 +8277,11 @@ INT_PTR CALLBACK DlgKailleraClient(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lP
             WSAStartup(MAKEWORD(2, 2), &wsa); // ensure winsock is ready for localhost ping
         }
         SetDlgItemText(hDlg, IDC_KC_SERVER_IP, TEXT("127.0.0.1:27888"));
+        if (kLastUsername[0])
+        {
+            SetDlgItemText(hDlg, IDC_KC_USERNAME, kLastUsername);
+        }
+        else
         {
             TCHAR defaultName[32];
             srand(GetTickCount());
@@ -8366,6 +8373,7 @@ INT_PTR CALLBACK DlgKailleraClient(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lP
 
             // Auto-close dialog when game starts to let emulation run
             if (KailleraClientIsPlaying()) {
+                GetDlgItemText(hDlg, IDC_KC_USERNAME, kLastUsername, 128);
                 KillTimer(hDlg, 1);
                 // Post ROM load message to main window
                 PostMessage(GUI.hWnd, WM_KAILLERA_GAME_START, 0, (LPARAM)KClient.gameName);
@@ -8507,6 +8515,7 @@ INT_PTR CALLBACK DlgKailleraClient(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lP
         }
 
         case IDCANCEL:
+            GetDlgItemText(hDlg, IDC_KC_USERNAME, kLastUsername, 128);
             KillTimer(hDlg, 1);
             EndDialog(hDlg, 0);
             return TRUE;

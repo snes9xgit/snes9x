@@ -38,6 +38,7 @@
 
 static EmuApplication *g_app = nullptr;
 static bool g_connectDialogOpen = false;
+static std::string g_lastUsername;
 
 static void kaillera_qt_update_window_title()
 {
@@ -175,6 +176,9 @@ static void kaillera_qt_game_ended()
         if (g_app->window && g_app->window->kaillera_end_action)
             g_app->window->kaillera_end_action->setEnabled(false);
 
+        // Stop emulation
+        Settings.StopEmulation = TRUE;
+
         // Reopen the Kaillera dialog (if not already open)
         Kaillera_Qt_RegisterCallbacks(g_app);
         Kaillera_Qt_ShowConnectDialog();
@@ -275,7 +279,10 @@ void Kaillera_Qt_ShowConnectDialog()
     auto *connRow = new QHBoxLayout();
     auto *refreshBtn = new QPushButton("Refresh List");
     auto *connectBtn = new QPushButton("Connect");
-    auto *usernameEdit = new QLineEdit(QString("Player%1").arg(10000 + rand() % 90000));
+    auto *usernameEdit = new QLineEdit(
+        g_lastUsername.empty()
+            ? QString("Player%1").arg(10000 + rand() % 90000)
+            : QString::fromStdString(g_lastUsername));
     usernameEdit->setMaximumWidth(100);
 
     // Update dialog title with player name
@@ -743,6 +750,7 @@ void Kaillera_Qt_ShowConnectDialog()
     // Cleanup on close — mark dialog as dead so queued callbacks don't access widgets
     *dialogAlive = false;
     g_connectDialogOpen = false;
+    g_lastUsername = usernameEdit->text().toStdString();
     autoRefreshTimer.stop();
     pollTimer.stop();
     // Only disconnect if not playing (dialog auto-closes when game starts)
