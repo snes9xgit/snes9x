@@ -7798,11 +7798,11 @@ INT_PTR CALLBACK DlgKailleraServer(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lP
 	switch (msg)
 	{
 	case WM_INITDIALOG:
-		SetDlgItemText(hDlg, IDC_KAILLERA_SERVER_NAME, TEXT("Snes9x Kaillera Server"));
+		SetDlgItemText(hDlg, IDC_KAILLERA_SERVER_NAME, TEXT("SuperSnes9x Kaillera Server"));
 		SetDlgItemInt(hDlg, IDC_KAILLERA_PORT, KAILLERA_SERVER_PORT, FALSE);
 		SetDlgItemInt(hDlg, IDC_KAILLERA_MAX_CLIENTS, 8, FALSE);
 		SetDlgItemText(hDlg, IDC_KAILLERA_LOCATION, TEXT(""));
-		SetDlgItemText(hDlg, IDC_KAILLERA_MOTD, TEXT("Welcome!\r\nPowered by Snes9x Kaillera"));
+		SetDlgItemText(hDlg, IDC_KAILLERA_MOTD, TEXT("Welcome!\r\nPowered by SuperSnes9x Kaillera"));
 
 		SendDlgItemMessage(hDlg, IDC_KAILLERA_PORT_SPIN, UDM_SETRANGE, 0, MAKELPARAM(65535, 1024));
 		SendDlgItemMessage(hDlg, IDC_KAILLERA_MAX_CLIENTS_SPIN, UDM_SETRANGE, 0, MAKELPARAM(8, 2));
@@ -7842,7 +7842,7 @@ INT_PTR CALLBACK DlgKailleraServer(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lP
 				const char *name = _tToChar(nameW);
 				char nameBuf[128];
 				if (!name || name[0] == '\0')
-					strcpy(nameBuf, "Snes9x Kaillera Server");
+					strcpy(nameBuf, "SuperSnes9x Kaillera Server");
 				else
 				{
 					strncpy(nameBuf, name, sizeof(nameBuf) - 1);

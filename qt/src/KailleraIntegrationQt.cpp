@@ -480,18 +480,26 @@ void Kaillera_Qt_ShowHostDialog()
 
     QDialog dlg(g_app->window.get());
     dlg.setWindowTitle("Host Kaillera Server");
-    dlg.resize(400, 300);
+    dlg.resize(450, 450);
 
     auto *layout = new QVBoxLayout(&dlg);
     auto *form = new QFormLayout();
 
-    auto *nameEdit = new QLineEdit("SuperSnes9x Server");
+    auto *nameEdit = new QLineEdit("SuperSnes9x Kaillera Server");
     form->addRow("Server Name:", nameEdit);
 
     auto *portSpin = new QSpinBox();
     portSpin->setRange(1024, 65535);
-    portSpin->setValue(27888);
+    portSpin->setValue(KAILLERA_SERVER_PORT);
     form->addRow("Port:", portSpin);
+
+    auto *maxClientsSpin = new QSpinBox();
+    maxClientsSpin->setRange(2, 8);
+    maxClientsSpin->setValue(8);
+    form->addRow("Max Clients:", maxClientsSpin);
+
+    auto *motdEdit = new QLineEdit("Welcome!\nPowered by SuperSnes9x Kaillera");
+    form->addRow("MOTD:", motdEdit);
 
     auto *publishCheck = new QCheckBox("Publish to master server list");
     form->addRow(publishCheck);
@@ -502,9 +510,12 @@ void Kaillera_Qt_ShowHostDialog()
 
     layout->addLayout(form);
 
-    bool alreadyRunning = KailleraServerIsRunning();
-    auto *startStopBtn = new QPushButton(alreadyRunning ? "Stop Server" : "Start Server");
+    auto *startStopBtn = new QPushButton("Start Server");
     layout->addWidget(startStopBtn);
+
+    auto *statusLabel = new QLabel("Server is stopped.");
+    statusLabel->setStyleSheet("font-weight: bold;");
+    layout->addWidget(statusLabel);
 
     auto *logEdit = new QTextEdit();
     logEdit->setReadOnly(true);
@@ -513,60 +524,115 @@ void Kaillera_Qt_ShowHostDialog()
     auto *closeBtn = new QPushButton("Close");
     layout->addWidget(closeBtn);
 
-    // If server already running, disable config fields and show status
-    if (alreadyRunning)
-    {
-        nameEdit->setEnabled(false);
-        portSpin->setEnabled(false);
-        publishCheck->setEnabled(false);
-        locationEdit->setEnabled(false);
-        nameEdit->setText(KailleraServerGetName());
-        portSpin->setValue(KailleraServerGetPort());
-        logEdit->append(QString("Server running on port %1").arg(KailleraServerGetPort()));
-    }
+    // Update UI to reflect server state
+    auto updateStatus = [&]() {
+        bool running = KailleraServerIsRunning();
+        startStopBtn->setText(running ? "Stop Server" : "Start Server");
+        nameEdit->setEnabled(!running);
+        portSpin->setEnabled(!running);
+        maxClientsSpin->setEnabled(!running);
+        motdEdit->setEnabled(!running);
+        publishCheck->setEnabled(!running);
+        locationEdit->setEnabled(!running);
 
-    QObject::connect(startStopBtn, &QPushButton::clicked, [&]() {
-        if (KailleraServerIsRunning())
+        if (running)
         {
-            KailleraServerStop();
-            startStopBtn->setText("Start Server");
-            nameEdit->setEnabled(true);
-            portSpin->setEnabled(true);
-            publishCheck->setEnabled(true);
-            locationEdit->setEnabled(true);
-            logEdit->append("Server stopped.");
+            statusLabel->setText(QString("Server is RUNNING on port %1").arg(KailleraServerGetPort()));
         }
         else
         {
-            bool ok = KailleraServerStart(
-                (uint16_t)portSpin->value(),
-                nameEdit->text().toStdString().c_str());
+            statusLabel->setText("Server is stopped.");
+        }
+    };
 
-            if (ok)
+    // Refresh log from kaillera_server.log
+    auto refreshLog = [&]() {
+        FILE *f = fopen("kaillera_server.log", "r");
+        if (!f)
+        {
+            logEdit->setPlainText("(no log file)");
+            return;
+        }
+
+        char buf[4096] = {};
+        int total = 0;
+        int ch;
+        while ((ch = fgetc(f)) != EOF && total < (int)sizeof(buf) - 1)
+            buf[total++] = (char)ch;
+        fclose(f);
+        buf[total] = '\0';
+
+        // Show last portion if too long
+        const char *start = buf;
+        if (total > 2000)
+            start = buf + total - 2000;
+
+        logEdit->setPlainText(start);
+        auto cursor = logEdit->textCursor();
+        cursor.movePosition(QTextCursor::End);
+        logEdit->setTextCursor(cursor);
+    };
+
+    // If already running, populate fields from current state
+    if (KailleraServerIsRunning())
+    {
+        nameEdit->setText(KailleraServerGetName());
+        portSpin->setValue(KailleraServerGetPort());
+    }
+
+    updateStatus();
+    refreshLog();
+
+    // Timer to refresh log and status every 2 seconds (like Win32)
+    QTimer refreshTimer;
+    refreshTimer.setInterval(2000);
+    QObject::connect(&refreshTimer, &QTimer::timeout, [&]() {
+        updateStatus();
+        refreshLog();
+    });
+    refreshTimer.start();
+
+    // Start/Stop button
+    QObject::connect(startStopBtn, &QPushButton::clicked, [&]() {
+        if (KailleraServerIsRunning())
+        {
+            KailleraServerUnpublish();
+            KailleraServerStop();
+        }
+        else
+        {
+            uint16_t port = (uint16_t)portSpin->value();
+            auto name = nameEdit->text().toStdString();
+            if (name.empty())
+                name = "SuperSnes9x Kaillera Server";
+
+            if (!KailleraServerStart(port, name.c_str()))
             {
-                startStopBtn->setText("Stop Server");
-                nameEdit->setEnabled(false);
-                portSpin->setEnabled(false);
-                publishCheck->setEnabled(false);
-                locationEdit->setEnabled(false);
-                logEdit->append(QString("Server started on port %1").arg(portSpin->value()));
-
-                if (publishCheck->isChecked() && !locationEdit->text().isEmpty())
-                {
-                    KailleraServerPublish(locationEdit->text().toStdString().c_str());
-                    logEdit->append("Publishing to master server list...");
-                }
+                QMessageBox::warning(&dlg, "Kaillera Server",
+                    "Failed to start server.\nPort may already be in use.");
             }
             else
             {
-                QMessageBox::warning(&dlg, "Error", "Failed to start server.");
+                // Set MOTD
+                auto motd = motdEdit->text().toStdString();
+                KailleraServerSetMOTD(motd.c_str());
+
+                // Publish if checked
+                if (publishCheck->isChecked())
+                {
+                    auto loc = locationEdit->text().toStdString();
+                    KailleraServerPublish(loc.c_str());
+                }
             }
         }
+        updateStatus();
+        refreshLog();
     });
 
     QObject::connect(closeBtn, &QPushButton::clicked, &dlg, &QDialog::accept);
 
     dlg.exec();
+    refreshTimer.stop();
 }
 
 #endif // KAILLERA_SUPPORT
