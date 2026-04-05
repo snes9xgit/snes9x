@@ -431,10 +431,13 @@ void EmuMainWindow::createWidgets()
         Kaillera_Qt_ShowConnectDialog();
     });
 
-    auto kaillera_host_action = netplay_menu->addAction(tr("&Host Server..."));
+    kaillera_host_action = netplay_menu->addAction(tr("&Host Kaillera Server..."));
+    kaillera_host_action->setCheckable(true);
+    kaillera_host_action->setChecked(KailleraServerIsRunning());
     connect(kaillera_host_action, &QAction::triggered, [&] {
         Kaillera_Qt_RegisterCallbacks(app);
         Kaillera_Qt_ShowHostDialog();
+        kaillera_host_action->setChecked(KailleraServerIsRunning());
     });
 
     netplay_menu->addSeparator();

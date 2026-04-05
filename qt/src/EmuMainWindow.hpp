@@ -72,6 +72,7 @@ class EmuMainWindow : public QMainWindow
     QAction *ra_achievements_action = nullptr;
 #endif
 #ifdef KAILLERA_SUPPORT
+    QAction *kaillera_host_action = nullptr;
     QAction *kaillera_end_action = nullptr;
 #endif
 };
