@@ -651,7 +651,17 @@ void Kaillera_Qt_ShowConnectDialog()
         disconnectBtn->setEnabled(connected || connecting);
         romCombo->setEnabled(connected && !inRoom);
         createBtn->setEnabled(connected && !inRoom);
-        joinBtn->setEnabled(connected && !inRoom);
+
+        // Join enabled only when a waiting, non-full game is selected
+        bool canJoin = false;
+        if (connected && !inRoom) {
+            int row = gameList->currentRow();
+            if (row >= 0 && row < KClient.numGames) {
+                auto &g = KClient.games[row];
+                canJoin = (g.status == 0 && g.numPlayers < g.maxPlayers);
+            }
+        }
+        joinBtn->setEnabled(canJoin);
         startBtn->setEnabled(inRoom && KClient.isOwner && !playing);
         leaveBtn->setEnabled(inRoom && !playing);
         chatInput->setEnabled(connected);

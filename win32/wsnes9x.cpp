@@ -7905,7 +7905,18 @@ static void KCUpdateUI(HWND hDlg)
     EnableWindow(GetDlgItem(hDlg, IDC_KC_DISCONNECT), connected || connecting);
     EnableWindow(GetDlgItem(hDlg, IDC_KC_TIMEOUT), !connected && !connecting);
     EnableWindow(GetDlgItem(hDlg, IDC_KC_CREATE), connected && !inRoom);
-    EnableWindow(GetDlgItem(hDlg, IDC_KC_JOIN), connected && !inRoom);
+    {
+        bool canJoin = false;
+        if (connected && !inRoom) {
+            HWND hList = GetDlgItem(hDlg, IDC_KC_GAMELIST);
+            int sel = (int)SendMessage(hList, LB_GETCURSEL, 0, 0);
+            if (sel >= 0 && sel < KClient.numGames) {
+                canJoin = (KClient.games[sel].status == 0 &&
+                           KClient.games[sel].numPlayers < KClient.games[sel].maxPlayers);
+            }
+        }
+        EnableWindow(GetDlgItem(hDlg, IDC_KC_JOIN), canJoin);
+    }
     EnableWindow(GetDlgItem(hDlg, IDC_KC_START), inRoom && KClient.isOwner && !playing);
     EnableWindow(GetDlgItem(hDlg, IDC_KC_LEAVE), inRoom && !playing);
     EnableWindow(GetDlgItem(hDlg, IDC_KC_CHATINPUT), connected);
