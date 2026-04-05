@@ -8517,6 +8517,8 @@ INT_PTR CALLBACK DlgKailleraClient(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lP
         case IDCANCEL:
             GetDlgItemText(hDlg, IDC_KC_USERNAME, kLastUsername, 128);
             KillTimer(hDlg, 1);
+            if (!KailleraClientIsPlaying())
+                KailleraClientDisconnect();
             EndDialog(hDlg, 0);
             return TRUE;
         }

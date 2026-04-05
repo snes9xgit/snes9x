@@ -759,8 +759,9 @@ void Kaillera_Qt_ShowConnectDialog()
     g_lastUsername = usernameEdit->text().toStdString();
     autoRefreshTimer.stop();
     pollTimer.stop();
-    // Only disconnect if not playing (dialog auto-closes when game starts)
-    if (KailleraClientIsConnected() && !KailleraClientIsPlaying())
+    // Disconnect unless the dialog closed because a game started.
+    // Use !IsPlaying instead of IsConnected to also cover CONNECTING/LOGGING_IN states.
+    if (!KailleraClientIsPlaying())
         KailleraClientDisconnect();
 }
 

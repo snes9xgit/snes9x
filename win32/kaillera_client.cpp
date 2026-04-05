@@ -923,6 +923,14 @@ void KailleraClientDisconnect()
     if (KClient.GameEndEvent) { CloseHandle(KClient.GameEndEvent); KClient.GameEndEvent = NULL; }
 
     WSACleanup();
+
+    // Clear lobby state so stale data doesn't appear in reopened dialogs
+    KClient.numGames = 0;
+    KClient.numUsers = 0;
+    KClient.numRoomPlayers = 0;
+    KClient.currentGameId = 0;
+    KClient.isOwner = false;
+
     sprintf(KClient.statusMsg, "Disconnected");
     KClient.statusUpdated = true;
 }
