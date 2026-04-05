@@ -595,10 +595,6 @@ void Kaillera_Qt_ShowConnectDialog()
         KailleraClientCreateGame(romName.toStdString().c_str());
     });
 
-    // Disconnect button in lobby
-    QObject::connect(disconnectBtn2, &QPushButton::clicked, [&]() {
-        disconnectBtn->click();
-    });
 
     // Join game
     QObject::connect(joinBtn, &QPushButton::clicked, [&]() {
