@@ -11,6 +11,7 @@
 
 #include "CheatsDialog.hpp"
 #include "EmuApplication.hpp"
+#include "snes9x.h"
 #ifdef RETROACHIEVEMENTS_SUPPORT
 #include "RAIntegrationQt.hpp"
 #include "retroachievements.h"
@@ -161,7 +162,7 @@ void EmuMainWindow::setCoreActionsEnabled(bool enable)
 
 void EmuMainWindow::createWidgets()
 {
-    setWindowTitle("SuperSnes9x");
+    setWindowTitle(QString("SuperSnes9x %1").arg(VERSION));
     if (QIcon::hasThemeIcon("snes9x"))
         setWindowIcon(QIcon::fromTheme("snes9x"));
     else
