@@ -28,6 +28,7 @@
 #include <QApplication>
 #include <QTimer>
 #include <QDir>
+#include <QListWidget>
 #include <QSplitter>
 #include <QGroupBox>
 #include <cstdio>
@@ -247,62 +248,66 @@ void Kaillera_Qt_ShowConnectDialog()
 
     QDialog dlg(g_app->window.get());
     dlg.setWindowTitle("Kaillera Netplay");
-    dlg.resize(600, 450);
+    dlg.resize(650, 650);
 
     // Guard for queued callbacks that may fire after dialog is destroyed
     auto dialogAlive = std::make_shared<bool>(true);
 
     auto *layout = new QVBoxLayout(&dlg);
 
-    // Connection bar
-    auto *connForm = new QHBoxLayout();
-    auto *usernameEdit = new QLineEdit(QString("Player%1").arg(10000 + rand() % 90000));
-    usernameEdit->setPlaceholderText("Username");
-    usernameEdit->setMaximumWidth(150);
-    auto *ipEdit = new QLineEdit();
-    ipEdit->setPlaceholderText("Server IP:Port");
-    auto *connectBtn = new QPushButton("Connect");
-    auto *disconnectBtn = new QPushButton("Disconnect");
-    disconnectBtn->setEnabled(false);
-    connForm->addWidget(new QLabel("Name:"));
-    connForm->addWidget(usernameEdit);
-    connForm->addWidget(new QLabel("Server:"));
-    connForm->addWidget(ipEdit);
-    connForm->addWidget(connectBtn);
-    connForm->addWidget(disconnectBtn);
-    layout->addLayout(connForm);
+    // === Online Servers group ===
+    auto *serversGroup = new QGroupBox("Online Servers");
+    auto *serversLayout = new QVBoxLayout(serversGroup);
 
-    // Server list
     auto *serverTable = new QTableWidget(0, 5);
-    serverTable->setHorizontalHeaderLabels({"Name", "IP", "Users", "Games", "Ping"});
+    serverTable->setHorizontalHeaderLabels({"Server Name", "Location", "Ping", "Version", "Users"});
     serverTable->horizontalHeader()->setStretchLastSection(true);
     serverTable->horizontalHeader()->setSectionsClickable(true);
     serverTable->setSelectionBehavior(QAbstractItemView::SelectRows);
     serverTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
     serverTable->setAlternatingRowColors(true);
     serverTable->setSortingEnabled(true);
+    serversLayout->addWidget(serverTable);
 
-    auto *refreshBtn = new QPushButton("Refresh Server List");
-    layout->addWidget(refreshBtn);
-    layout->addWidget(serverTable);
+    // Refresh + Connect row + Name + IP + Timeout
+    auto *connRow = new QHBoxLayout();
+    auto *refreshBtn = new QPushButton("Refresh List");
+    auto *connectBtn = new QPushButton("Connect");
+    auto *usernameEdit = new QLineEdit(QString("Player%1").arg(10000 + rand() % 90000));
+    usernameEdit->setMaximumWidth(100);
+    auto *ipEdit = new QLineEdit("127.0.0.1:27888");
+    ipEdit->setMaximumWidth(140);
+    auto *timeoutSpin = new QSpinBox();
+    timeoutSpin->setRange(1, 60);
+    timeoutSpin->setValue(10);
+    timeoutSpin->setMaximumWidth(45);
+    connRow->addWidget(refreshBtn);
+    connRow->addWidget(connectBtn);
+    connRow->addWidget(new QLabel("Name:"));
+    connRow->addWidget(usernameEdit);
+    connRow->addWidget(new QLabel("or IP:"));
+    connRow->addWidget(ipEdit);
+    connRow->addWidget(new QLabel("Timeout:"));
+    connRow->addWidget(timeoutSpin);
+    connRow->addWidget(new QLabel("s"));
+    serversLayout->addLayout(connRow);
 
-    // Server Lobby area
+    layout->addWidget(serversGroup);
+
+    // === Server Lobby group ===
     auto *lobbyGroup = new QGroupBox("Server Lobby");
     auto *lobbyLayout = new QVBoxLayout(lobbyGroup);
 
-    // ROM selection row
+    // ROM + Create + Disconnect row
     auto *romRow = new QHBoxLayout();
     auto *romCombo = new QComboBox();
-    romCombo->setMinimumWidth(250);
     romCombo->setEnabled(false);
 
     // Populate ROM list
     {
-        // Add currently loaded ROM first
         if (!Settings.StopEmulation && Memory.ROMName[0])
             romCombo->addItem(QString("%1 (loaded)").arg(Memory.ROMName));
 
-        // Scan ROM directory for .smc/.sfc/.zip files
         std::string romDir = g_app->config->last_rom_folder;
         if (!romDir.empty())
         {
@@ -312,14 +317,12 @@ void Kaillera_Qt_ShowConnectDialog()
             for (auto &entry : entries)
             {
                 QString baseName = entry.completeBaseName();
-                // Skip if same as loaded ROM
                 if (!Settings.StopEmulation && Memory.ROMName[0] &&
                     baseName == Memory.ROMName)
                     continue;
                 romCombo->addItem(baseName);
             }
         }
-
         if (romCombo->count() > 0)
             romCombo->setCurrentIndex(0);
     }
@@ -329,47 +332,65 @@ void Kaillera_Qt_ShowConnectDialog()
     auto *createBtn = new QPushButton("Create");
     createBtn->setEnabled(false);
     romRow->addWidget(createBtn);
-    auto *disconnectBtn2 = new QPushButton("Disconnect");
-    disconnectBtn2->setEnabled(false);
-    romRow->addWidget(disconnectBtn2);
+    auto *disconnectBtn = new QPushButton("Disconnect");
+    disconnectBtn->setEnabled(false);
+    romRow->addWidget(disconnectBtn);
     lobbyLayout->addLayout(romRow);
 
-    // Game list
+    // Game list + User list side by side
+    auto *listsRow = new QHBoxLayout();
     auto *gameList = new QTableWidget(0, 4);
     gameList->setHorizontalHeaderLabels({"Game", "Owner", "Players", "Status"});
     gameList->horizontalHeader()->setStretchLastSection(true);
     gameList->setSelectionBehavior(QAbstractItemView::SelectRows);
     gameList->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    lobbyLayout->addWidget(gameList);
 
+    auto *userList = new QListWidget();
+    userList->setMaximumWidth(150);
+
+    listsRow->addWidget(gameList, 2);
+    listsRow->addWidget(userList, 1);
+    lobbyLayout->addLayout(listsRow);
+
+    // Join + Start + Leave buttons
     auto *gameBtns = new QHBoxLayout();
-    auto *joinBtn = new QPushButton("Join Game");
+    auto *joinBtn = new QPushButton("Join");
     auto *startBtn = new QPushButton("Start Game");
-    auto *leaveBtn = new QPushButton("Leave");
+    auto *leaveBtn = new QPushButton("Leave Game");
     joinBtn->setEnabled(false);
     startBtn->setEnabled(false);
     leaveBtn->setEnabled(false);
     gameBtns->addWidget(joinBtn);
     gameBtns->addWidget(startBtn);
     gameBtns->addWidget(leaveBtn);
+    gameBtns->addStretch();
     lobbyLayout->addLayout(gameBtns);
+
     layout->addWidget(lobbyGroup);
 
-    // Chat
+    // === Chat group ===
+    auto *chatGroup = new QGroupBox("Chat");
+    auto *chatGroupLayout = new QVBoxLayout(chatGroup);
     auto *chatEdit = new QTextEdit();
     chatEdit->setReadOnly(true);
-    chatEdit->setMaximumHeight(100);
+    chatGroupLayout->addWidget(chatEdit);
+    auto *chatInputRow = new QHBoxLayout();
     auto *chatInput = new QLineEdit();
-    chatInput->setPlaceholderText("Type chat message...");
-    auto *chatLayout = new QHBoxLayout();
-    chatLayout->addWidget(chatInput);
     auto *chatSendBtn = new QPushButton("Send");
-    chatLayout->addWidget(chatSendBtn);
-    layout->addWidget(chatEdit);
-    layout->addLayout(chatLayout);
+    chatInputRow->addWidget(chatInput);
+    chatInputRow->addWidget(chatSendBtn);
+    chatGroupLayout->addLayout(chatInputRow);
+    layout->addWidget(chatGroup);
 
+    // === Status + About + Close row ===
+    auto *statusLabel = new QLabel("Found 0 online servers.");
+    auto *bottomRow = new QHBoxLayout();
+    bottomRow->addWidget(statusLabel, 1);
+    auto *aboutBtn = new QPushButton("About");
     auto *closeBtn = new QPushButton("Close");
-    layout->addWidget(closeBtn);
+    bottomRow->addWidget(aboutBtn);
+    bottomRow->addWidget(closeBtn);
+    layout->addLayout(bottomRow);
 
     // Timer for polling state
     QTimer pollTimer;
@@ -445,28 +466,33 @@ void Kaillera_Qt_ShowConnectDialog()
                         gamesStr = QString::number(localhostEntry.gameCount);
                     }
 
-                    serverTable->setItem(0, 0, new QTableWidgetItem(name));
-                    serverTable->setItem(0, 1, new QTableWidgetItem(
-                        QString("127.0.0.1:%1").arg(KAILLERA_SERVER_PORT)));
-                    serverTable->setItem(0, 2, new QTableWidgetItem(usersStr));
-                    serverTable->setItem(0, 3, new QTableWidgetItem(gamesStr));
-                    serverTable->setItem(0, 4, makeNumItem(
+                    // Columns: 0=Name, 1=Location, 2=Ping, 3=Version, 4=Users
+                    auto *nameItem0 = new QTableWidgetItem(name);
+                    nameItem0->setData(Qt::UserRole + 1, QString("127.0.0.1:%1").arg(KAILLERA_SERVER_PORT));
+                    serverTable->setItem(0, 0, nameItem0);
+                    serverTable->setItem(0, 1, new QTableWidgetItem("Localhost"));
+                    serverTable->setItem(0, 2, makeNumItem(
                         QString::number(localhostEntry.ping) + "ms",
                         (int)localhostEntry.ping));
+                    serverTable->setItem(0, 3, new QTableWidgetItem("snes9x"));
+                    serverTable->setItem(0, 4, makeNumItem(usersStr, localhostEntry.users));
                 }
 
                 for (int i = 0; i < count; i++)
                 {
                     int row = i + offset;
+                    // Columns: 0=Name, 1=Location, 2=Ping, 3=Version, 4=Users
                     char addr[128];
                     snprintf(addr, sizeof(addr), "%s:%d", servers[i].ip, servers[i].port);
-                    serverTable->setItem(row, 0, new QTableWidgetItem(servers[i].name));
-                    serverTable->setItem(row, 1, new QTableWidgetItem(addr));
+                    auto *nameItem = new QTableWidgetItem(servers[i].name);
+                    nameItem->setData(Qt::UserRole + 1, QString(addr));
+                    serverTable->setItem(row, 0, nameItem);
+                    serverTable->setItem(row, 1, new QTableWidgetItem(servers[i].location));
+                    serverTable->setItem(row, 2, makeNumItem("pinging...", 9999));
+                    serverTable->setItem(row, 3, new QTableWidgetItem(servers[i].version));
                     char users[32];
                     snprintf(users, sizeof(users), "%d/%d", servers[i].users, servers[i].maxUsers);
-                    serverTable->setItem(row, 2, makeNumItem(users, servers[i].users));
-                    serverTable->setItem(row, 3, makeNumItem(QString::number(servers[i].gameCount), servers[i].gameCount));
-                    serverTable->setItem(row, 4, makeNumItem("pinging...", 9999));
+                    serverTable->setItem(row, 4, makeNumItem(users, servers[i].users));
                 }
 
                 serverTable->setSortingEnabled(true);
@@ -488,14 +514,15 @@ void Kaillera_Qt_ShowConnectDialog()
                             ? QString::number(ping) + "ms"
                             : "timeout");
                     item->setData(Qt::UserRole, (int)(ping && ping < 999 ? ping : 9999));
-                    serverTable->setItem(row, 4, item);
+                    serverTable->setItem(row, 2, item);
                 }, Qt::QueuedConnection);
             }
 
             QMetaObject::invokeMethod(QApplication::instance(), [&, dialogAlive]() {
                 if (!*dialogAlive) return;
                 refreshBtn->setEnabled(true);
-                refreshBtn->setText("Refresh Server List");
+                refreshBtn->setText("Refresh List");
+                statusLabel->setText(QString("Found %1 online servers.").arg(count));
             }, Qt::QueuedConnection);
         }).detach();
     };
@@ -513,9 +540,12 @@ void Kaillera_Qt_ShowConnectDialog()
 
     // Server selection updates IP field (single click, like Win32)
     QObject::connect(serverTable, &QTableWidget::currentCellChanged, [&](int row, int, int, int) {
-        auto *item = serverTable->item(row, 1);
-        if (item)
-            ipEdit->setText(item->text());
+        auto *item = serverTable->item(row, 0);
+        if (item) {
+            QVariant addr = item->data(Qt::UserRole + 1);
+            if (addr.isValid())
+                ipEdit->setText(addr.toString());
+        }
     });
 
     // Double-click server to connect
@@ -539,8 +569,9 @@ void Kaillera_Qt_ShowConnectDialog()
             port = (uint16_t)std::stoi(addr.substr(colon + 1));
         }
 
+        int timeout = timeoutSpin->value();
         std::thread([=]() {
-            KailleraClientConnect(ip.c_str(), port, user.c_str());
+            KailleraClientConnect(ip.c_str(), port, user.c_str(), 1, timeout);
         }).detach();
     });
 
@@ -610,9 +641,9 @@ void Kaillera_Qt_ShowConnectDialog()
         // Enable/disable controls based on state
         ipEdit->setEnabled(!connected && !connecting);
         usernameEdit->setEnabled(!connected && !connecting);
+        timeoutSpin->setEnabled(!connected && !connecting);
         connectBtn->setEnabled(!connected && !connecting);
         disconnectBtn->setEnabled(connected || connecting);
-        disconnectBtn2->setEnabled(connected || connecting);
         romCombo->setEnabled(connected && !inRoom);
         createBtn->setEnabled(connected && !inRoom);
         joinBtn->setEnabled(connected && !inRoom);
@@ -621,7 +652,7 @@ void Kaillera_Qt_ShowConnectDialog()
         chatInput->setEnabled(connected);
         chatSendBtn->setEnabled(connected);
 
-        // Update game list
+        // Update game list and user list
         if (KClient.statusUpdated.exchange(false))
         {
             gameList->setRowCount(KClient.numGames);
@@ -636,6 +667,19 @@ void Kaillera_Qt_ShowConnectDialog()
                 gameList->setItem(i, 3, new QTableWidgetItem(
                     KClient.games[i].status == 1 ? "Playing" : "Waiting"));
             }
+
+            // Update user list
+            userList->clear();
+            for (int i = 0; i < KClient.numUsers; i++)
+            {
+                char item[200];
+                snprintf(item, sizeof(item), "%s (%dms)",
+                    KClient.allUsers[i].username, KClient.allUsers[i].ping);
+                userList->addItem(item);
+            }
+
+            // Update status
+            statusLabel->setText(KClient.statusMsg);
         }
 
         // Update chat
@@ -666,6 +710,15 @@ void Kaillera_Qt_ShowConnectDialog()
             QTimer::singleShot(0, &dlg, &QDialog::accept);
             return; // stop processing this timer tick
         }
+    });
+
+    // About button
+    QObject::connect(aboutBtn, &QPushButton::clicked, [&]() {
+        QMessageBox::about(&dlg, "About Kaillera Netplay",
+            "<b>Kaillera Native Implementation</b><br><br>"
+            "By <a href='https://github.com/shanytc/'>Shanytc</a><br><br>"
+            "Kaillera protocol compatible with all Kaillera servers.<br>"
+            "No external DLL required.");
     });
 
     QObject::connect(closeBtn, &QPushButton::clicked, &dlg, &QDialog::accept);
