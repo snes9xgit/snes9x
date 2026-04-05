@@ -38,6 +38,7 @@ EmuSettingsWindow::EmuSettingsWindow(QWidget *parent, EmuApplication *app_)
     stackedWidget->setCurrentIndex(0);
 
     connect(closeButton, &QPushButton::clicked, [&](bool) {
+        app->config->saveFile(EmuConfig::findConfigFile());
         this->close();
     });
 
