@@ -160,6 +160,7 @@ struct EmuConfig
     bool ra_hardcore_mode = false;
     std::string ra_username;
     std::string ra_api_token;
+    std::string ra_emulator_name = "SuperSnes9x";
 
     enum PortConfiguration
     {

@@ -11,6 +11,7 @@
 
 #include "CheatsDialog.hpp"
 #include "EmuApplication.hpp"
+#include "EmuConfig.hpp"
 #include "snes9x.h"
 #ifdef RETROACHIEVEMENTS_SUPPORT
 #include "RAIntegrationQt.hpp"
@@ -410,6 +411,18 @@ void EmuMainWindow::createWidgets()
     connect(ra_hardcore_action, &QAction::triggered, [&](bool checked) {
         app->config->ra_hardcore_mode = checked;
         RA_SetHardcoreEnabled(checked);
+    });
+
+    auto ra_useragent_action = ra_menu->addAction(
+        QString("&Emulator Identity: %1").arg(QString::fromStdString(app->config->ra_emulator_name)));
+    connect(ra_useragent_action, &QAction::triggered, [&, ra_useragent_action] {
+        if (app->config->ra_emulator_name == "Snes9x")
+            app->config->ra_emulator_name = "SuperSnes9x";
+        else
+            app->config->ra_emulator_name = "Snes9x";
+        ra_useragent_action->setText(
+            QString("&Emulator Identity: %1").arg(QString::fromStdString(app->config->ra_emulator_name)));
+        app->config->saveFile(EmuConfig::findConfigFile());
     });
 
     ra_menu->addSeparator();

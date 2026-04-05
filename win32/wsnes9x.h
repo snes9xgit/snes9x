@@ -283,6 +283,7 @@ struct sGUI {
     bool RAHardcoreMode;
     char RAUsername[256];
     char RAApiToken[256];
+    char RAEmulatorName[64];
 #endif
 };
 

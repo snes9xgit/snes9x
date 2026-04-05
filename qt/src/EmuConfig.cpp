@@ -552,6 +552,7 @@ void EmuConfig::config(const std::string &filename, bool write)
     Bool("HardcoreMode", ra_hardcore_mode);
     String("Username", ra_username);
     String("ApiToken", ra_api_token);
+    String("EmulatorName", ra_emulator_name);
     EndSection();
 }
 

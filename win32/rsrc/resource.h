@@ -596,6 +596,7 @@
 #define ID_RA_LOGIN                     44341
 #define ID_RA_HARDCORE_MODE             44342
 #define ID_RA_ACHIEVEMENTS_LIST         44343
+#define ID_RA_USERAGENT                 44344
 #define IDD_RA_LOGIN                    172
 #define IDD_RA_ACHIEVEMENTS             173
 #define IDC_RA_USERNAME                 3080

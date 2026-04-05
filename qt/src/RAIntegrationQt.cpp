@@ -67,11 +67,13 @@ static void ra_curl_http_thread(CurlHttpRequest *req)
         return;
     }
 
-    // Build user agent: "SuperSnes9x/VERSION rcheevos/VERSION"
+    // Build user agent: "EmulatorName/VERSION rcheevos/VERSION"
     char ua_clause[128] = {};
     rc_client_get_user_agent_clause(RA_GetClient(), ua_clause, sizeof(ua_clause));
+    const char *emuName = (g_app && !g_app->config->ra_emulator_name.empty())
+        ? g_app->config->ra_emulator_name.c_str() : "SuperSnes9x";
     char user_agent[256];
-    snprintf(user_agent, sizeof(user_agent), "SuperSnes9x/%s %s", VERSION, ua_clause);
+    snprintf(user_agent, sizeof(user_agent), "%s/%s %s", emuName, VERSION, ua_clause);
 
     curl_easy_setopt(curl, CURLOPT_URL, req->url.c_str());
     curl_easy_setopt(curl, CURLOPT_USERAGENT, user_agent);

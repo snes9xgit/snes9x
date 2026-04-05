@@ -1173,6 +1173,7 @@ BEGIN
         MENUITEM "&Enabled",                    ID_RA_ENABLED,MFT_STRING,MFS_ENABLED
         MENUITEM "&Login...",                   ID_RA_LOGIN,MFT_STRING,MFS_ENABLED
         MENUITEM "&Hardcore Mode",              ID_RA_HARDCORE_MODE,MFT_STRING,MFS_ENABLED
+        MENUITEM "&Emulator Identity: SuperSnes9x", ID_RA_USERAGENT,MFT_STRING,MFS_ENABLED
         MENUITEM MFT_SEPARATOR
         MENUITEM "&Achievement List...",        ID_RA_ACHIEVEMENTS_LIST,MFT_STRING,MFS_GRAYED
     END

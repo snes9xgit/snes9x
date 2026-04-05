@@ -958,6 +958,7 @@ void WinRegisterConfigItems()
     AddBoolC("HardcoreMode", GUI.RAHardcoreMode, false, "true to enable hardcore mode (disables save state loading, rewind, cheats)");
     AddStringC("Username", GUI.RAUsername, 256, "", "RetroAchievements username");
     AddStringC("ApiToken", GUI.RAApiToken, 256, "", "RetroAchievements API token (set automatically on login)");
+    AddStringC("EmulatorName", GUI.RAEmulatorName, 64, "SuperSnes9x", "Emulator name sent to RetroAchievements (e.g. Snes9x, SuperSnes9x)");
 #undef CATEGORY
 #endif
 }
