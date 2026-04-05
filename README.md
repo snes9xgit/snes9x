@@ -1,13 +1,17 @@
-# Snes9x
-*Snes9x - Portable Super Nintendo Entertainment System (TM) emulator*
+# SuperSnes9x
+*SuperSnes9x - Portable Super Nintendo Entertainment System (TM) emulator*
 
-This is the official source code repository for the Snes9x project.
+This is the un-official source code fork for the Snes9x project.
 
 Please check the [Wiki](https://github.com/snes9xgit/snes9x/wiki) for additional information.
 
+## SuperSnes9x Features:
+- Kaillera Server/Client
+- RetroAchievements
+
 ## Nightly builds
 
-Download nightly builds from continuous integration:
+Download official nightly builds from continuous integration:
 
 ### snes9x
 
