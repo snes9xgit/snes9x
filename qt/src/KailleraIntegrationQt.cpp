@@ -290,8 +290,11 @@ void Kaillera_Qt_ShowConnectDialog()
     timeoutSpin->setRange(1, 60);
     timeoutSpin->setValue(10);
     timeoutSpin->setMaximumWidth(45);
+    auto *disconnectBtn = new QPushButton("Disconnect");
+    disconnectBtn->setEnabled(false);
     connRow->addWidget(refreshBtn);
     connRow->addWidget(connectBtn);
+    connRow->addWidget(disconnectBtn);
     connRow->addWidget(new QLabel("Name:"));
     connRow->addWidget(usernameEdit);
     connRow->addWidget(new QLabel("or IP:"));
@@ -338,12 +341,9 @@ void Kaillera_Qt_ShowConnectDialog()
 
     romRow->addWidget(new QLabel("ROM:"));
     romRow->addWidget(romCombo, 1);
-    auto *createBtn = new QPushButton("Create");
+    auto *createBtn = new QPushButton("Host Game");
     createBtn->setEnabled(false);
     romRow->addWidget(createBtn);
-    auto *disconnectBtn = new QPushButton("Disconnect");
-    disconnectBtn->setEnabled(false);
-    romRow->addWidget(disconnectBtn);
     lobbyLayout->addLayout(romRow);
 
     // Game list + User list side by side
