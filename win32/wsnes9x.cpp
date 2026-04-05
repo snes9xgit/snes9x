@@ -2444,8 +2444,8 @@ LRESULT CALLBACK WinProc(
 			strcpy(GUI.RAEmulatorName, "SuperSnes9x");
 			WinSaveConfigFile();
 			break;
-		case ID_RA_UA_SNES9X:
-			strcpy(GUI.RAEmulatorName, "Snes9x");
+		case ID_RA_UA_RASNES9X:
+			strcpy(GUI.RAEmulatorName, "RASnes9x");
 			WinSaveConfigFile();
 			break;
 		case ID_RA_ACHIEVEMENTS_LIST:
@@ -4077,8 +4077,8 @@ static void CheckMenuStates ()
         strcpy(GUI.RAEmulatorName, "SuperSnes9x");
     mii.fState = (strcmp(GUI.RAEmulatorName, "SuperSnes9x") == 0) ? MFS_CHECKED : MFS_UNCHECKED;
     SetMenuItemInfo(GUI.hMenu, ID_RA_UA_SUPERSNES9X, FALSE, &mii);
-    mii.fState = (strcmp(GUI.RAEmulatorName, "Snes9x") == 0) ? MFS_CHECKED : MFS_UNCHECKED;
-    SetMenuItemInfo(GUI.hMenu, ID_RA_UA_SNES9X, FALSE, &mii);
+    mii.fState = (strcmp(GUI.RAEmulatorName, "RASnes9x") == 0) ? MFS_CHECKED : MFS_UNCHECKED;
+    SetMenuItemInfo(GUI.hMenu, ID_RA_UA_RASNES9X, FALSE, &mii);
 #endif
 
     mii.fState = MFS_UNCHECKED;

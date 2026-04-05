@@ -416,14 +416,17 @@ void EmuMainWindow::createWidgets()
     auto ra_ua_menu = ra_menu->addMenu(tr("&User Agent"));
     auto ra_ua_group = new QActionGroup(ra_ua_menu);
     ra_ua_group->setExclusive(true);
-    const char *ua_choices[] = { "SuperSnes9x", "Snes9x" };
-    for (auto &name : ua_choices)
+    struct { const char *name; const char *version; } ua_choices[] = {
+        { "SuperSnes9x", VERSION },
+        { "RASnes9x", "1.2" },
+    };
+    for (auto &ua : ua_choices)
     {
-        auto action = ra_ua_menu->addAction(QString("%1/%2").arg(name, VERSION));
+        auto action = ra_ua_menu->addAction(QString("%1/%2").arg(ua.name, ua.version));
         action->setCheckable(true);
-        action->setChecked(app->config->ra_emulator_name == name);
+        action->setChecked(app->config->ra_emulator_name == ua.name);
         ra_ua_group->addAction(action);
-        connect(action, &QAction::triggered, [&, name_str = std::string(name)] {
+        connect(action, &QAction::triggered, [&, name_str = std::string(ua.name)] {
             app->config->ra_emulator_name = name_str;
             app->config->saveFile(EmuConfig::findConfigFile());
         });

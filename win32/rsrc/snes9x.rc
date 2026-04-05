@@ -1176,7 +1176,7 @@ BEGIN
         POPUP "&User Agent"
         BEGIN
             MENUITEM "SuperSnes9x/1.63",        ID_RA_UA_SUPERSNES9X,MFT_STRING,MFS_ENABLED
-            MENUITEM "Snes9x/1.63",             ID_RA_UA_SNES9X,MFT_STRING,MFS_ENABLED
+            MENUITEM "RASnes9x/1.2",            ID_RA_UA_RASNES9X,MFT_STRING,MFS_ENABLED
         END
         MENUITEM MFT_SEPARATOR
         MENUITEM "&Achievement List...",        ID_RA_ACHIEVEMENTS_LIST,MFT_STRING,MFS_GRAYED
