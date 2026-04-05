@@ -286,7 +286,7 @@ static void HandleServerStatus(const uint8_t *pl, int len)
     }
 
     KClient.state = KCLIENT_CONNECTED;
-    sprintf(KClient.statusMsg, "Connected to server (%d users, %d games)", numUsers, numGames);
+    snprintf(KClient.statusMsg, sizeof(KClient.statusMsg), "Connected to server (%d users, %d games)", numUsers, numGames);
     KClient.statusUpdated = true;
     if (g_kCallbacks.on_status_changed) g_kCallbacks.on_status_changed(KClient.statusMsg);
 }
@@ -316,7 +316,7 @@ static void HandleUserJoined(const uint8_t *pl, int len)
     }
 
     char msg[256];
-    sprintf(msg, "*** %s joined the server", name);
+    snprintf(msg, sizeof(msg), "*** %s joined the server", name);
     ChatAppend(msg);
     KClient.statusUpdated = true;
 }
@@ -350,11 +350,11 @@ static void HandleCreateGameNotif(const uint8_t *pl, int len)
         KClient.isOwner = true;
         KClient.state = KCLIENT_IN_GAME_ROOM;
         strncpy(KClient.gameName, game, sizeof(KClient.gameName) - 1);
-        sprintf(KClient.statusMsg, "Created game '%s'", game);
+        snprintf(KClient.statusMsg, sizeof(KClient.statusMsg), "Created game '%s'", game);
     }
 
     char msg[384];
-    sprintf(msg, "*** %s created game '%s'", owner, game);
+    snprintf(msg, sizeof(msg), "*** %s created game '%s'", owner, game);
     ChatAppend(msg);
     KClient.statusUpdated = true;
 }
@@ -379,7 +379,7 @@ static void HandleJoinGameNotif(const uint8_t *pl, int len)
     }
 
     char msg[512];
-    sprintf(msg, "*** %s joined the game '%s'", playerName, gameName);
+    snprintf(msg, sizeof(msg), "*** %s joined the game '%s'", playerName, gameName);
     ChatAppend(msg);
     KClient.statusUpdated = true;
 }
@@ -427,7 +427,7 @@ static void HandleUpdateGameStatus(const uint8_t *pl, int len)
 
     if (gameId == KClient.currentGameId) {
         KClient.numPlayers = numP;
-        sprintf(KClient.statusMsg, "Game room: %d/%d players", numP, maxP);
+        snprintf(KClient.statusMsg, sizeof(KClient.statusMsg), "Game room: %d/%d players", numP, maxP);
     }
     KClient.statusUpdated = true;
 }
@@ -443,7 +443,7 @@ static void HandleStartGameNotif(const uint8_t *pl, int len)
     KClient.numPlayers = *p++;
 
     KClient.state = KCLIENT_GAME_STARTING;
-    sprintf(KClient.statusMsg, "Game starting! Player %d of %d (delay=%d)",
+    snprintf(KClient.statusMsg, sizeof(KClient.statusMsg), "Game starting! Player %d of %d (delay=%d)",
             KClient.playerNumber, KClient.numPlayers, KClient.frameDelay);
     KClient.statusUpdated = true;
     if (g_kCallbacks.on_status_changed) g_kCallbacks.on_status_changed(KClient.statusMsg);
@@ -469,7 +469,7 @@ static void HandleReadyToPlayNotif(const uint8_t *pl, int len)
     memset(kOutputCacheLen, 0, sizeof(kOutputCacheLen));
     kOutputCachePos = 0;
 
-    sprintf(KClient.statusMsg, "Game started! Playing as Player %d", KClient.playerNumber);
+    snprintf(KClient.statusMsg, sizeof(KClient.statusMsg), "Game started! Playing as Player %d", KClient.playerNumber);
     KClient.statusUpdated = true;
 
     if (g_kCallbacks.on_game_started)
@@ -550,7 +550,7 @@ static void HandleCloseGame(const uint8_t *pl, int len)
     if (gameId == KClient.currentGameId || KClient.currentGameId == 0) {
         KClient.state = KCLIENT_CONNECTED;
         KClient.currentGameId = 0;
-        sprintf(KClient.statusMsg, "Game closed");
+        snprintf(KClient.statusMsg, sizeof(KClient.statusMsg), "Game closed");
         KClient.OutputPlayerCount = -1;
         {
             std::lock_guard<std::mutex> lk(KClient.sync.mutex);
@@ -576,7 +576,7 @@ static void HandleQuitGameNotif(const uint8_t *pl, int len)
     p = ReadStr(p, end, name, sizeof(name));
 
     char msg[256];
-    sprintf(msg, "*** %s left the game", name);
+    snprintf(msg, sizeof(msg), "*** %s left the game", name);
     ChatAppend(msg);
     KClient.statusUpdated = true;
 }
@@ -588,7 +588,7 @@ static void HandleDropGameNotif(const uint8_t *pl, int len)
     p = ReadStr(p, end, name, sizeof(name));
 
     char msg[256];
-    sprintf(msg, "*** %s dropped from the game", name);
+    snprintf(msg, sizeof(msg), "*** %s dropped from the game", name);
     ChatAppend(msg);
 
     // When another player drops, leave the game room entirely
@@ -609,7 +609,7 @@ static void HandleDropGameNotif(const uint8_t *pl, int len)
         KClient.state = KCLIENT_CONNECTED;
         KClient.currentGameId = 0;
         KClient.isOwner = false;
-        sprintf(KClient.statusMsg, "Game ended by another player");
+        snprintf(KClient.statusMsg, sizeof(KClient.statusMsg), "Game ended by another player");
         if (g_kCallbacks.on_game_ended) g_kCallbacks.on_game_ended();
     }
     KClient.statusUpdated = true;
@@ -622,7 +622,7 @@ static void HandleGlobalChatRecv(const uint8_t *pl, int len)
     p = ReadStr(p, end, nick, sizeof(nick));
     ReadStr(p, end, text, sizeof(text));
     char line[700];
-    sprintf(line, "<%s> %s", nick, text);
+    snprintf(line, sizeof(line), "<%s> %s", nick, text);
     ChatAppend(line);
 }
 
@@ -633,7 +633,7 @@ static void HandleGameChatRecv(const uint8_t *pl, int len)
     p = ReadStr(p, end, nick, sizeof(nick));
     ReadStr(p, end, text, sizeof(text));
     char line[700];
-    sprintf(line, "[Game] <%s> %s", nick, text);
+    snprintf(line, sizeof(line), "[Game] <%s> %s", nick, text);
     ChatAppend(line);
 }
 
@@ -652,7 +652,7 @@ static void HandleUserQuitRecv(const uint8_t *pl, int len)
         }
     }
     char line[256];
-    sprintf(line, "*** %s left the server", name);
+    snprintf(line, sizeof(line), "*** %s left the server", name);
     ChatAppend(line);
     KClient.statusUpdated = true;
 }
@@ -665,7 +665,7 @@ static void HandleServerInfo(const uint8_t *pl, int len)
     ReadStr(p, end, msg, sizeof(msg));
     strncpy(KClient.serverMessage, msg, sizeof(KClient.serverMessage) - 1);
     char line[700];
-    sprintf(line, "[Server] %s", msg);
+    snprintf(line, sizeof(line), "[Server] %s", msg);
     ChatAppend(line);
 }
 
@@ -684,7 +684,7 @@ static void ProcessPacket(const uint8_t *data, int dataLen)
     }
     if (dataLen >= 4 && memcmp(data, "PONG", 4) == 0) return;
     if (dataLen >= 3 && memcmp(data, "TOO", 3) == 0) {
-        sprintf(KClient.errorMsg, "Server is full");
+        snprintf(KClient.errorMsg, sizeof(KClient.errorMsg), "Server is full");
         KClient.state = KCLIENT_DISCONNECTED;
         return;
     }
@@ -748,7 +748,7 @@ static void KailleraClientThread()
     // Send HELLO
     SendRaw("HELLO0.83\0", 10);
     KClient.state = KCLIENT_CONNECTING;
-    sprintf(KClient.statusMsg, "Connecting to %s:%d...", KClient.serverIP, KClient.serverPort);
+    snprintf(KClient.statusMsg, sizeof(KClient.statusMsg), "Connecting to %s:%d...", KClient.serverIP, KClient.serverPort);
     KClient.statusUpdated = true;
 
     while (KClient.running)
@@ -803,7 +803,7 @@ static void KailleraClientThread()
         if (KClient.state == KCLIENT_CONNECTING || KClient.state == KCLIENT_LOGGING_IN) {
             auto now = std::chrono::steady_clock::now();
             if (std::chrono::duration_cast<std::chrono::milliseconds>(now - connectStart).count() > KClient.timeoutMs) {
-                sprintf(KClient.errorMsg, "Connection timed out after %d seconds", KClient.timeoutMs / 1000);
+                snprintf(KClient.errorMsg, sizeof(KClient.errorMsg), "Connection timed out after %d seconds", KClient.timeoutMs / 1000);
                 KClient.state = KCLIENT_DISCONNECTED;
                 KClient.statusUpdated = true;
                 break;
@@ -837,7 +837,7 @@ bool KailleraClientConnect(const char *ip, uint16_t port, const char *username, 
 
     kSock = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
     if (kSock == K_INVALID_SOCKET) {
-        sprintf(KClient.errorMsg, "Failed to create socket");
+        snprintf(KClient.errorMsg, sizeof(KClient.errorMsg), "Failed to create socket");
         return false;
     }
 
@@ -926,7 +926,7 @@ void KailleraClientDisconnect()
     // Condition variables are struct members - no explicit cleanup needed
 
     k_cleanup_sockets();
-    sprintf(KClient.statusMsg, "Disconnected");
+    snprintf(KClient.statusMsg, sizeof(KClient.statusMsg), "Disconnected");
     KClient.statusUpdated = true;
 }
 
@@ -977,14 +977,14 @@ void KailleraClientEndGame()
         // Send DropGame - stops the match but stays in the room
         SendDropGame();
         KClient.state = KCLIENT_IN_GAME_ROOM;
-        sprintf(KClient.statusMsg, "Game ended - waiting in room");
+        snprintf(KClient.statusMsg, sizeof(KClient.statusMsg), "Game ended - waiting in room");
     } else {
         // Not playing, just leave the room entirely
         SendQuitGame();
         KClient.state = KCLIENT_CONNECTED;
         KClient.currentGameId = 0;
         KClient.isOwner = false;
-        sprintf(KClient.statusMsg, "Left game room");
+        snprintf(KClient.statusMsg, sizeof(KClient.statusMsg), "Left game room");
     }
     KClient.statusUpdated = true;
     if (g_kCallbacks.on_game_ended) g_kCallbacks.on_game_ended();
@@ -1013,7 +1013,7 @@ void KailleraClientLeaveGame()
     KClient.state = KCLIENT_CONNECTED;
     KClient.currentGameId = 0;
     KClient.isOwner = false;
-    sprintf(KClient.statusMsg, "Left game room");
+    snprintf(KClient.statusMsg, sizeof(KClient.statusMsg), "Left game room");
     KClient.statusUpdated = true;
 }
 
