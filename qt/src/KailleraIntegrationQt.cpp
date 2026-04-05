@@ -261,6 +261,23 @@ void Kaillera_Qt_ShowConnectDialog()
 
     auto *layout = new QVBoxLayout(&dlg);
 
+    // === Player name row (above everything) ===
+    auto *nameRow = new QHBoxLayout();
+    auto *usernameEdit = new QLineEdit(
+        g_lastUsername.empty()
+            ? QString("Player%1").arg(10000 + rand() % 90000)
+            : QString::fromStdString(g_lastUsername));
+    usernameEdit->setMaximumWidth(150);
+    auto updateTitle = [&]() {
+        dlg.setWindowTitle(QString("Kaillera Netplay - %1").arg(usernameEdit->text()));
+    };
+    updateTitle();
+    QObject::connect(usernameEdit, &QLineEdit::textChanged, [&](const QString &) { updateTitle(); });
+    nameRow->addWidget(new QLabel("Player Name:"));
+    nameRow->addWidget(usernameEdit);
+    nameRow->addStretch();
+    layout->addLayout(nameRow);
+
     // === Online Servers group ===
     auto *serversGroup = new QGroupBox("Online Servers");
     auto *serversLayout = new QVBoxLayout(serversGroup);
@@ -275,35 +292,21 @@ void Kaillera_Qt_ShowConnectDialog()
     serverTable->setSortingEnabled(true);
     serversLayout->addWidget(serverTable);
 
-    // Refresh + Connect row + Name + IP + Timeout
+    // Refresh + Connect + Disconnect + IP + Timeout
     auto *connRow = new QHBoxLayout();
     auto *refreshBtn = new QPushButton("Refresh List");
     auto *connectBtn = new QPushButton("Connect");
-    auto *usernameEdit = new QLineEdit(
-        g_lastUsername.empty()
-            ? QString("Player%1").arg(10000 + rand() % 90000)
-            : QString::fromStdString(g_lastUsername));
-    usernameEdit->setMaximumWidth(100);
-
-    // Update dialog title with player name
-    auto updateTitle = [&]() {
-        dlg.setWindowTitle(QString("Kaillera Netplay - %1").arg(usernameEdit->text()));
-    };
-    updateTitle();
-    QObject::connect(usernameEdit, &QLineEdit::textChanged, [&](const QString &) { updateTitle(); });
+    auto *disconnectBtn = new QPushButton("Disconnect");
+    disconnectBtn->setEnabled(false);
     auto *ipEdit = new QLineEdit("127.0.0.1:27888");
     ipEdit->setMaximumWidth(140);
     auto *timeoutSpin = new QSpinBox();
     timeoutSpin->setRange(1, 60);
     timeoutSpin->setValue(10);
     timeoutSpin->setMaximumWidth(45);
-    auto *disconnectBtn = new QPushButton("Disconnect");
-    disconnectBtn->setEnabled(false);
     connRow->addWidget(refreshBtn);
     connRow->addWidget(connectBtn);
     connRow->addWidget(disconnectBtn);
-    connRow->addWidget(new QLabel("Name:"));
-    connRow->addWidget(usernameEdit);
     connRow->addWidget(new QLabel("or IP:"));
     connRow->addWidget(ipEdit);
     connRow->addWidget(new QLabel("Timeout:"));
