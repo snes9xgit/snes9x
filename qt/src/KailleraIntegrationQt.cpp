@@ -663,7 +663,7 @@ void Kaillera_Qt_ShowConnectDialog()
         }
         joinBtn->setEnabled(canJoin);
         startBtn->setEnabled(inRoom && KClient.isOwner && !playing);
-        leaveBtn->setEnabled(inRoom && !playing);
+        leaveBtn->setEnabled(inRoom && !playing && !KClient.isOwner);
         chatInput->setEnabled(connected);
         chatSendBtn->setEnabled(connected);
 

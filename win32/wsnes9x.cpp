@@ -7918,7 +7918,7 @@ static void KCUpdateUI(HWND hDlg)
         EnableWindow(GetDlgItem(hDlg, IDC_KC_JOIN), canJoin);
     }
     EnableWindow(GetDlgItem(hDlg, IDC_KC_START), inRoom && KClient.isOwner && !playing);
-    EnableWindow(GetDlgItem(hDlg, IDC_KC_LEAVE), inRoom && !playing);
+    EnableWindow(GetDlgItem(hDlg, IDC_KC_LEAVE), inRoom && !playing && !KClient.isOwner);
     EnableWindow(GetDlgItem(hDlg, IDC_KC_CHATINPUT), connected);
     EnableWindow(GetDlgItem(hDlg, IDC_KC_CHATSEND), connected);
     EnableWindow(GetDlgItem(hDlg, IDC_KC_ROMLIST), connected && !inRoom);
