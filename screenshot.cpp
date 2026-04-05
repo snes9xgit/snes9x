@@ -34,7 +34,7 @@ bool8 S9xDoScreenshot (int width, int height)
 
 	auto screenshot_dir = S9xGetDirectory(SCREENSHOT_DIR);
 	std::stringstream ss;
-	ss << screenshot_dir
+	ss << screenshot_dir << SLASH_STR
 	   << S9xBasenameNoExt(Memory.ROMFilename) << "-"
 	   << std::put_time(current_time, "%Y-%m-%d-%H-%M-%S");
 	std::string fname = ss.str() + ".png";
