@@ -189,7 +189,7 @@ void Kaillera_Qt_ShowConnectDialog()
 
     // Connection bar
     auto *connForm = new QHBoxLayout();
-    auto *usernameEdit = new QLineEdit("Player");
+    auto *usernameEdit = new QLineEdit(QString("Player%1").arg(10000 + rand() % 90000));
     usernameEdit->setPlaceholderText("Username");
     usernameEdit->setMaximumWidth(150);
     auto *ipEdit = new QLineEdit();
