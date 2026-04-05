@@ -4,6 +4,7 @@
 #include "EmuApplication.hpp"
 #include "EmuMainWindow.hpp"
 #include "EmuConfig.hpp"
+#include "Snes9xController.hpp"
 #include "kaillera_client.h"
 #include "kaillera_server.h"
 #include "snes9x.h"
@@ -176,8 +177,10 @@ static void kaillera_qt_game_ended()
         if (g_app->window && g_app->window->kaillera_end_action)
             g_app->window->kaillera_end_action->setEnabled(false);
 
-        // Stop emulation
+        // Stop emulation — set active=false so the emu thread stops immediately
         Settings.StopEmulation = TRUE;
+        if (g_app->core)
+            g_app->core->active = false;
 
         // Reopen the Kaillera dialog (if not already open)
         Kaillera_Qt_RegisterCallbacks(g_app);
