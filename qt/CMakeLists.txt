@@ -73,10 +73,13 @@ set(SNES9X_CORE_SOURCES
     ../netplay.cpp
     ../server.cpp
     ../loadzip.cpp
-    ../fscompat.cpp)
+    ../fscompat.cpp
+    ../unzip/unzip.c
+    ../unzip/ioapi.c
+    ../unzip/zip.c)
 add_library(snes9x-core ${SNES9X_CORE_SOURCES})
-target_include_directories(snes9x-core PRIVATE ../)
-target_compile_definitions(snes9x-core PRIVATE ${DEFINES} ZLIB HAVE_STDINT_H HAVE_LIBPNG ALLOW_CPU_OVERCLOCK)
+target_include_directories(snes9x-core PRIVATE ../ ../unzip)
+target_compile_definitions(snes9x-core PRIVATE ${DEFINES} ZLIB UNZIP_SUPPORT HAVE_STDINT_H HAVE_LIBPNG ALLOW_CPU_OVERCLOCK)
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
     set(PREBUILT_QT "${PROJECT_SOURCE_DIR}/../external/qt6-mingw-clang-bin")
