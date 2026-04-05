@@ -172,6 +172,13 @@ static void kaillera_qt_game_ended()
         fprintf(stderr, "[Kaillera] Game ended\n");
         if (g_app->window && g_app->window->kaillera_end_action)
             g_app->window->kaillera_end_action->setEnabled(false);
+
+        // Stop emulation
+        g_app->suspendThread();
+
+        // Reopen the Kaillera dialog (shows room or lobby)
+        Kaillera_Qt_RegisterCallbacks(g_app);
+        Kaillera_Qt_ShowConnectDialog();
     }, Qt::QueuedConnection);
 }
 

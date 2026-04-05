@@ -445,8 +445,20 @@ void EmuMainWindow::createWidgets()
     kaillera_end_action = netplay_menu->addAction(tr("&End Game"));
     kaillera_end_action->setEnabled(false);
     connect(kaillera_end_action, &QAction::triggered, [&] {
-        KailleraClientEndGame();
+        if (KailleraClientGetState() == KCLIENT_PLAYING ||
+            KailleraClientGetState() == KCLIENT_GAME_STARTING)
+        {
+            KailleraClientEndGame();
+        }
         kaillera_end_action->setEnabled(false);
+
+        // Stop emulation
+        app->suspendThread();
+        app->stopThread();
+
+        // Reopen the Kaillera dialog (shows room or lobby)
+        Kaillera_Qt_RegisterCallbacks(app);
+        Kaillera_Qt_ShowConnectDialog();
     });
 
     menuBar()->addMenu(netplay_menu);
