@@ -534,7 +534,7 @@ void Kaillera_Qt_ShowConnectDialog()
                 }, Qt::QueuedConnection);
             }
 
-            QMetaObject::invokeMethod(QApplication::instance(), [&, dialogAlive]() {
+            QMetaObject::invokeMethod(QApplication::instance(), [&, dialogAlive, count]() {
                 if (!*dialogAlive) return;
                 refreshBtn->setEnabled(true);
                 refreshBtn->setText("Refresh List");
