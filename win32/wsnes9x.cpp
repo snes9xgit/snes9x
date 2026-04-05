@@ -2440,27 +2440,14 @@ LRESULT CALLBACK WinProc(
 			GUI.RAHardcoreMode = !GUI.RAHardcoreMode;
 			RA_SetHardcoreEnabled(GUI.RAHardcoreMode);
 			break;
-		case ID_RA_USERAGENT:
-		{
-			// Toggle between SuperSnes9x and Snes9x
-			if (strcmp(GUI.RAEmulatorName, "Snes9x") == 0)
-				strcpy(GUI.RAEmulatorName, "SuperSnes9x");
-			else
-				strcpy(GUI.RAEmulatorName, "Snes9x");
-
-			// Update the menu text
-			char menuText[128];
-			snprintf(menuText, sizeof(menuText), "&Emulator Identity: %s", GUI.RAEmulatorName);
-			MENUITEMINFOA miiText = {};
-			miiText.cbSize = sizeof(miiText);
-			miiText.fMask = MIIM_STRING;
-			miiText.dwTypeData = menuText;
-			SetMenuItemInfoA(GUI.hMenu, ID_RA_USERAGENT, FALSE, &miiText);
-			DrawMenuBar(GUI.hWnd);
-
+		case ID_RA_UA_SUPERSNES9X:
+			strcpy(GUI.RAEmulatorName, "SuperSnes9x");
 			WinSaveConfigFile();
 			break;
-		}
+		case ID_RA_UA_SNES9X:
+			strcpy(GUI.RAEmulatorName, "Snes9x");
+			WinSaveConfigFile();
+			break;
 		case ID_RA_ACHIEVEMENTS_LIST:
 			RA_Win32_RegisterCallbacks();
 			RA_Init();
@@ -4085,18 +4072,13 @@ static void CheckMenuStates ()
     mii.fState = Settings.StopEmulation ? MFS_DISABLED : MFS_ENABLED;
     SetMenuItemInfo(GUI.hMenu, ID_RA_ACHIEVEMENTS_LIST, FALSE, &mii);
 
-    // Update emulator identity menu text
-    {
-        if (!GUI.RAEmulatorName[0])
-            strcpy(GUI.RAEmulatorName, "SuperSnes9x");
-        char uaMenuText[128];
-        snprintf(uaMenuText, sizeof(uaMenuText), "&Emulator Identity: %s", GUI.RAEmulatorName);
-        MENUITEMINFOA miiUA = {};
-        miiUA.cbSize = sizeof(miiUA);
-        miiUA.fMask = MIIM_STRING;
-        miiUA.dwTypeData = uaMenuText;
-        SetMenuItemInfoA(GUI.hMenu, ID_RA_USERAGENT, FALSE, &miiUA);
-    }
+    // Check the active user agent radio item
+    if (!GUI.RAEmulatorName[0])
+        strcpy(GUI.RAEmulatorName, "SuperSnes9x");
+    mii.fState = (strcmp(GUI.RAEmulatorName, "SuperSnes9x") == 0) ? MFS_CHECKED : MFS_UNCHECKED;
+    SetMenuItemInfo(GUI.hMenu, ID_RA_UA_SUPERSNES9X, FALSE, &mii);
+    mii.fState = (strcmp(GUI.RAEmulatorName, "Snes9x") == 0) ? MFS_CHECKED : MFS_UNCHECKED;
+    SetMenuItemInfo(GUI.hMenu, ID_RA_UA_SNES9X, FALSE, &mii);
 #endif
 
     mii.fState = MFS_UNCHECKED;

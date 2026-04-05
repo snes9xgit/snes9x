@@ -413,17 +413,21 @@ void EmuMainWindow::createWidgets()
         RA_SetHardcoreEnabled(checked);
     });
 
-    auto ra_useragent_action = ra_menu->addAction(
-        QString("&Emulator Identity: %1").arg(QString::fromStdString(app->config->ra_emulator_name)));
-    connect(ra_useragent_action, &QAction::triggered, [&, ra_useragent_action] {
-        if (app->config->ra_emulator_name == "Snes9x")
-            app->config->ra_emulator_name = "SuperSnes9x";
-        else
-            app->config->ra_emulator_name = "Snes9x";
-        ra_useragent_action->setText(
-            QString("&Emulator Identity: %1").arg(QString::fromStdString(app->config->ra_emulator_name)));
-        app->config->saveFile(EmuConfig::findConfigFile());
-    });
+    auto ra_ua_menu = ra_menu->addMenu(tr("&User Agent"));
+    auto ra_ua_group = new QActionGroup(ra_ua_menu);
+    ra_ua_group->setExclusive(true);
+    const char *ua_choices[] = { "SuperSnes9x", "Snes9x" };
+    for (auto &name : ua_choices)
+    {
+        auto action = ra_ua_menu->addAction(QString("%1/%2").arg(name, VERSION));
+        action->setCheckable(true);
+        action->setChecked(app->config->ra_emulator_name == name);
+        ra_ua_group->addAction(action);
+        connect(action, &QAction::triggered, [&, name_str = std::string(name)] {
+            app->config->ra_emulator_name = name_str;
+            app->config->saveFile(EmuConfig::findConfigFile());
+        });
+    }
 
     ra_menu->addSeparator();
 
