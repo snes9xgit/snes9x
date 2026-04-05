@@ -95,6 +95,7 @@ bool EmuCanvasVulkan::createContext()
         return false;
     }
 #else
+#if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
     if (platform == "wayland")
     {
         auto iface = app->nativeInterface<QNativeInterface::QWaylandApplication>();
@@ -113,7 +114,9 @@ bool EmuCanvasVulkan::createContext()
             return false;
         }
     }
-    else if (platform == "xcb")
+    else
+#endif
+    if (platform == "xcb")
     {
         auto iface = app->nativeInterface<QNativeInterface::QX11Application>();
         auto display = iface->display();

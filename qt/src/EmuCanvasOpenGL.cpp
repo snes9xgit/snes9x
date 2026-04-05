@@ -132,6 +132,7 @@ bool EmuCanvasOpenGL::createContext()
     auto app = reinterpret_cast<QGuiApplication *>(QGuiApplication::instance());
     QGuiApplication::sync();
 #ifndef _WIN32
+#if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
     if (platform == "wayland")
     {
         auto iface = app->nativeInterface<QNativeInterface::QWaylandApplication>();
@@ -149,7 +150,9 @@ bool EmuCanvasOpenGL::createContext()
 
         context.reset(wayland_egl_context);
     }
-    else if (platform == "xcb")
+    else
+#endif
+    if (platform == "xcb")
     {
         auto iface = app->nativeInterface<QNativeInterface::QX11Application>();
         auto display = iface->display();
