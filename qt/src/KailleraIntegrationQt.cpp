@@ -177,6 +177,21 @@ void Kaillera_Qt_RegisterCallbacks(EmuApplication *app)
 
 // ---------------------------------------------------------------------------
 // Qt Connect Dialog
+// QTableWidgetItem that sorts by numeric UserRole data
+class NumericSortItem : public QTableWidgetItem
+{
+public:
+    using QTableWidgetItem::QTableWidgetItem;
+    bool operator<(const QTableWidgetItem &other) const override
+    {
+        QVariant myVal = data(Qt::UserRole);
+        QVariant otherVal = other.data(Qt::UserRole);
+        if (myVal.isValid() && otherVal.isValid())
+            return myVal.toInt() < otherVal.toInt();
+        return QTableWidgetItem::operator<(other);
+    }
+};
+
 // ---------------------------------------------------------------------------
 void Kaillera_Qt_ShowConnectDialog()
 {
@@ -328,7 +343,7 @@ void Kaillera_Qt_ShowConnectDialog()
 
             // Helper to create a table item with numeric sort data
             auto makeNumItem = [](const QString &text, int sortValue) {
-                auto *item = new QTableWidgetItem(text);
+                auto *item = new NumericSortItem(text);
                 item->setData(Qt::UserRole, sortValue);
                 return item;
             };
@@ -419,7 +434,7 @@ void Kaillera_Qt_ShowConnectDialog()
 
                 QMetaObject::invokeMethod(QApplication::instance(), [&, row, ping, dialogAlive]() {
                     if (!*dialogAlive) return;
-                    auto *item = new QTableWidgetItem(
+                    auto *item = new NumericSortItem(
                         ping && ping < 999
                             ? QString::number(ping) + "ms"
                             : "timeout");
