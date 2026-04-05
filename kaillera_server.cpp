@@ -1216,8 +1216,8 @@ static void ParsePacket(const uint8_t *data, int dataLen, const sockaddr_in &fro
         memcpy(pong + pos, "PONG", 4); pos += 4;
         pong[pos++] = '\0';
         // Append server name
-        int nameLen = (int)strlen(KServer.name);
-        memcpy(pong + pos, KServer.name, nameLen); pos += nameLen;
+        int nameLen = (int)strlen(KServer.serverName);
+        memcpy(pong + pos, KServer.serverName, nameLen); pos += nameLen;
         pong[pos++] = '\0';
         // Append users count
         int users = 0;
@@ -1226,7 +1226,7 @@ static void ParsePacket(const uint8_t *data, int dataLen, const sockaddr_in &fro
         pos += snprintf(pong + pos, sizeof(pong) - pos, "%d", users);
         pong[pos++] = '\0';
         // Append max users
-        pos += snprintf(pong + pos, sizeof(pong) - pos, "%d", KServer.maxClients);
+        pos += snprintf(pong + pos, sizeof(pong) - pos, "%d", KAILLERA_MAX_CLIENTS);
         pong[pos++] = '\0';
         // Append games count
         int games = 0;
