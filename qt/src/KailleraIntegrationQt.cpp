@@ -590,6 +590,8 @@ void Kaillera_Qt_ShowConnectDialog()
         // Auto-close dialog when game starts (like Win32)
         if (playing)
         {
+            pollTimer.stop();
+            autoRefreshTimer.stop();
             dlg.accept();
         }
     });
@@ -601,7 +603,8 @@ void Kaillera_Qt_ShowConnectDialog()
     // Cleanup on close
     autoRefreshTimer.stop();
     pollTimer.stop();
-    if (KailleraClientIsConnected())
+    // Only disconnect if not playing (dialog auto-closes when game starts)
+    if (KailleraClientIsConnected() && !KailleraClientIsPlaying())
         KailleraClientDisconnect();
 }
 

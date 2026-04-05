@@ -943,6 +943,17 @@ bool KailleraClientJoinGame(uint32_t gameId)
     KClient.currentGameId = gameId;
     KClient.isOwner = false;
     KClient.state = KCLIENT_IN_GAME_ROOM;
+
+    // Copy game name from the game list
+    KClient.gameName[0] = '\0';
+    for (int i = 0; i < KClient.numGames; i++) {
+        if (KClient.games[i].gameId == gameId) {
+            strncpy(KClient.gameName, KClient.games[i].gameName, sizeof(KClient.gameName) - 1);
+            KClient.gameName[sizeof(KClient.gameName) - 1] = '\0';
+            break;
+        }
+    }
+
     SendJoinGame(gameId);
     return true;
 }
