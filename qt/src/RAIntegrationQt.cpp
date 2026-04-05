@@ -276,9 +276,19 @@ static void ra_qt_credentials_changed(const char *username, const char *token)
     if (!g_app)
         return;
 
-    g_app->config->ra_username = username ? username : "";
-    g_app->config->ra_api_token = token ? token : "";
-    g_app->config->ra_enabled = (username && username[0] && token && token[0]);
+    bool logged_in = (username && username[0] && token && token[0]);
+    std::string u = username ? username : "";
+    std::string t = token ? token : "";
+
+    QMetaObject::invokeMethod(QApplication::instance(), [=]() {
+        g_app->config->ra_username = u;
+        g_app->config->ra_api_token = t;
+        g_app->config->ra_enabled = logged_in;
+
+        // Update Login/Logout menu text
+        if (g_app->window && g_app->window->ra_login_action)
+            g_app->window->ra_login_action->setText(logged_in ? "&Logout" : "&Login...");
+    }, Qt::QueuedConnection);
 }
 
 // ---------------------------------------------------------------------------
