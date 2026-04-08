@@ -11,6 +11,11 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 //--------------------------------------------------------------------------------------
 
+#include <dxgi.h>
+#include <d3d10_1.h>
+#include <d2d1.h>
+#include <dwrite.h>
+
 #include "dxerr.h"
 
 #include <stdio.h>

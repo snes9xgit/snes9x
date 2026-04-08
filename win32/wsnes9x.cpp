@@ -42,6 +42,9 @@
 #include "../display.h"
 #include "../cheats.h"
 #include "../netplay.h"
+#include "kaillera.h"
+#include "kaillera_client.h"
+#include "kaillera_server.h"
 #include "../apu/apu.h"
 #include "../movie.h"
 #include "../controls.h"
@@ -49,6 +52,7 @@
 #include "../statemanager.h"
 #include "AVIOutput.h"
 #include "InputCustom.h"
+#include <process.h>
 #include <vector>
 #include <string>
 
@@ -98,6 +102,8 @@ LRESULT CALLBACK DlgChildSplitProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lP
 INT_PTR CALLBACK DlgNPProgress(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
 INT_PTR CALLBACK DlgNetConnect(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
 INT_PTR CALLBACK DlgNPOptions(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
+INT_PTR CALLBACK DlgKailleraServer(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
+INT_PTR CALLBACK DlgKailleraClient(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
 INT_PTR CALLBACK DlgFunky(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
 INT_PTR CALLBACK DlgInputConfig(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
 INT_PTR CALLBACK DlgHotkeyConfig(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -714,6 +720,26 @@ void S9xRestoreWindowTitle ()
     }
     else
         _stprintf(buf, TEXT("%s %s"), WINDOW_TITLE, TEXT(VERSION));
+
+#ifdef KAILLERA_SUPPORT
+    if (KailleraServerIsRunning())
+    {
+        char hostName[256] = {};
+        char ipStr[64] = "127.0.0.1";
+        gethostname(hostName, sizeof(hostName));
+        struct hostent *he = gethostbyname(hostName);
+        if (he && he->h_addr_list[0])
+        {
+            struct in_addr addr;
+            memcpy(&addr, he->h_addr_list[0], sizeof(addr));
+            strncpy(ipStr, inet_ntoa(addr), sizeof(ipStr) - 1);
+        }
+        TCHAR kbuf[512];
+        const char *srvName = KailleraServerGetName();
+        _stprintf(kbuf, TEXT(" | Hosting '%s' at %s:%d"), _tFromChar(srvName), _tFromChar(ipStr), KAILLERA_SERVER_PORT);
+        _tcscat(buf, kbuf);
+    }
+#endif
 
     SetWindowText (GUI.hWnd, buf);
 }
@@ -1991,6 +2017,30 @@ LRESULT CALLBACK WinProc(
                 SetMenu( GUI.hWnd, NULL);
             break;
 
+#ifdef KAILLERA_SUPPORT
+		case ID_KAILLERA_NETPLAY:
+			RestoreGUIDisplay();
+			DialogBox(g_hInst, MAKEINTRESOURCE(IDD_KAILLERA_CLIENT), hWnd, DlgKailleraClient);
+			RestoreSNESDisplay();
+			break;
+		case ID_KAILLERA_HOST_SERVER:
+			RestoreGUIDisplay();
+			DialogBox(g_hInst, MAKEINTRESOURCE(IDD_KAILLERA_SERVER), hWnd, DlgKailleraServer);
+			RestoreSNESDisplay();
+			break;
+		case ID_KAILLERA_END_GAME:
+			if (KailleraClientIsPlaying() || KailleraClientGetState() == KCLIENT_GAME_STARTING)
+			{
+				KailleraClientEndGame(); // sends DropGame, stays in room
+				Settings.StopEmulation = TRUE; // clear the screen
+				// Reopen dialog - player stays in game room
+				RestoreGUIDisplay();
+				DialogBox(g_hInst, MAKEINTRESOURCE(IDD_KAILLERA_CLIENT), hWnd, DlgKailleraClient);
+				RestoreSNESDisplay();
+			}
+			break;
+#endif
+
 #ifdef NETPLAY_SUPPORT
 		case ID_NETPLAY_SERVER:
             S9xRestoreWindowTitle ();
@@ -2410,6 +2460,9 @@ LRESULT CALLBACK WinProc(
 		break;
 
 	case WM_DESTROY:
+#ifdef KAILLERA_SUPPORT
+		KailleraClientDisconnect();
+#endif
 		Memory.SaveSRAM(S9xGetFilename(".srm", SRAM_DIR).c_str());
 		GUI.hWnd = NULL;
 		PostQuitMessage (0);
@@ -2670,6 +2723,99 @@ LRESULT CALLBACK WinProc(
 			RestoreSNESDisplay ();
 		}
 #endif
+		break;
+#endif
+
+#ifdef KAILLERA_SUPPORT
+	case WM_KAILLERA_GAME_START:
+		{
+			// Called via PostMessage from Kaillera's game callback thread
+			// lParam = pointer to game name string (in Kaillera.GameName)
+			const char *gameName = (const char *)lParam;
+			if (gameName && gameName[0])
+			{
+				// Try to find and load the ROM matching this game name
+				// If a ROM is already loaded with the matching name, just reset
+				if (!Settings.StopEmulation && strcmp(Memory.ROMName, gameName) == 0)
+				{
+					S9xReset();
+				}
+				else
+				{
+					// Search for ROM file in ROM directory
+					TCHAR romPath[MAX_PATH];
+					_stprintf(romPath, TEXT("%s\\%s"), GUI.RomDir, _tFromChar(gameName));
+
+					// Try common extensions
+					const TCHAR *extensions[] = {
+						TEXT(".smc"), TEXT(".sfc"), TEXT(".fig"), TEXT(".swc"),
+						TEXT(".zip"), TEXT(".7z"), TEXT(".gz"),
+						TEXT(".SMC"), TEXT(".SFC"), TEXT(".FIG"), TEXT(".SWC"),
+						TEXT(".ZIP"), TEXT(".7Z"), TEXT(".GZ"),
+						NULL
+					};
+
+					bool loaded = false;
+					// First try exact name
+					if (GetFileAttributes(romPath) != INVALID_FILE_ATTRIBUTES)
+					{
+						// LoadROM is static, so we post the load via menu command approach
+						// For now, use Memory.LoadROM directly
+						SetCurrentDirectory(S9xGetDirectoryT(ROM_DIR));
+						if (Memory.LoadROM(_tToChar(romPath)))
+						{
+							Settings.StopEmulation = FALSE;
+							ReInitSound();
+							ResetFrameTimer();
+							loaded = true;
+						}
+					}
+
+					if (!loaded)
+					{
+						for (int i = 0; extensions[i] != NULL; i++)
+						{
+							TCHAR tryPath[MAX_PATH];
+							_stprintf(tryPath, TEXT("%s%s"), romPath, extensions[i]);
+							if (GetFileAttributes(tryPath) != INVALID_FILE_ATTRIBUTES)
+							{
+								SetCurrentDirectory(S9xGetDirectoryT(ROM_DIR));
+								if (Memory.LoadROM(_tToChar(tryPath)))
+								{
+									Settings.StopEmulation = FALSE;
+									ReInitSound();
+									ResetFrameTimer();
+									loaded = true;
+									break;
+								}
+							}
+						}
+					}
+
+					if (!loaded)
+					{
+						char msg[512];
+						sprintf(msg, "Kaillera: Could not find ROM for game '%s' in ROM directory", gameName);
+						S9xMessage(S9X_ERROR, S9X_ROM_INFO, msg);
+						KailleraStopGame();
+					}
+				}
+			}
+		}
+		break;
+
+	case WM_KAILLERA_GAME_END:
+		if (KailleraClientGetState() == KCLIENT_PLAYING ||
+		    KailleraClientGetState() == KCLIENT_GAME_STARTING)
+		{
+			KailleraClientEndGame(); // sends DropGame, stays in room
+		}
+		// Stop emulation so the screen goes blank
+		Settings.StopEmulation = TRUE;
+		// Reopen the dialog (shows room or lobby depending on state)
+		RestoreGUIDisplay();
+		DialogBox(g_hInst, MAKEINTRESOURCE(IDD_KAILLERA_CLIENT), hWnd, DlgKailleraClient);
+		RestoreSNESDisplay();
 		break;
 #endif
 	}
@@ -3966,6 +4112,18 @@ static void CheckMenuStates ()
 
 	mii.dwTypeData = (TCHAR *)(!GUI.AVIOut ? TEXT("Start AVI Recording...") : TEXT("Stop AVI Recording"));
 	SetMenuItemInfo (GUI.hMenu, ID_FILE_AVI_RECORDING, FALSE, &mii);
+
+#ifdef KAILLERA_SUPPORT
+	memset(&mii, 0, sizeof(mii));
+	mii.cbSize = sizeof(mii);
+	mii.fMask = MIIM_STATE;
+	mii.fState = (KailleraClientIsPlaying() || KailleraClientGetState() >= KCLIENT_IN_GAME_ROOM)
+		? MFS_ENABLED : MFS_DISABLED;
+	SetMenuItemInfo(GUI.hMenu, ID_KAILLERA_END_GAME, FALSE, &mii);
+
+	mii.fState = KailleraServerIsRunning() ? MFS_CHECKED : MFS_UNCHECKED;
+	SetMenuItemInfo(GUI.hMenu, ID_KAILLERA_HOST_SERVER, FALSE, &mii);
+#endif
 }
 
 static void ResetFrameTimer ()
@@ -7431,6 +7589,793 @@ INT_PTR CALLBACK DlgNPOptions(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 		}
 	}
 	return FALSE;
+}
+#endif
+
+#ifdef KAILLERA_SUPPORT
+static void KailleraServerDlgUpdateStatus(HWND hDlg)
+{
+	bool running = KailleraServerIsRunning();
+	SetDlgItemText(hDlg, IDC_KAILLERA_START_STOP,
+		running ? TEXT("Stop Server") : TEXT("Start Server"));
+
+	if (running)
+	{
+		// Show IP and port in the status line
+		char hostName[256] = {};
+		char ipStr[64] = "127.0.0.1";
+		gethostname(hostName, sizeof(hostName));
+		struct hostent *he = gethostbyname(hostName);
+		if (he && he->h_addr_list[0])
+		{
+			struct in_addr addr;
+			memcpy(&addr, he->h_addr_list[0], sizeof(addr));
+			strncpy(ipStr, inet_ntoa(addr), sizeof(ipStr) - 1);
+		}
+		BOOL ok;
+		int port = GetDlgItemInt(hDlg, IDC_KAILLERA_PORT, &ok, FALSE);
+		if (!ok) port = KAILLERA_SERVER_PORT;
+
+		TCHAR statusBuf[256];
+		_stprintf(statusBuf, TEXT("Server is RUNNING at %s:%d"), _tFromChar(ipStr), port);
+		SetDlgItemText(hDlg, IDC_KAILLERA_STATUS, statusBuf);
+	}
+	else
+	{
+		SetDlgItemText(hDlg, IDC_KAILLERA_STATUS, TEXT("Server is stopped."));
+	}
+
+	// Disable settings while running
+	EnableWindow(GetDlgItem(hDlg, IDC_KAILLERA_SERVER_NAME), !running);
+	EnableWindow(GetDlgItem(hDlg, IDC_KAILLERA_PORT), !running);
+	EnableWindow(GetDlgItem(hDlg, IDC_KAILLERA_PORT_SPIN), !running);
+	EnableWindow(GetDlgItem(hDlg, IDC_KAILLERA_MAX_CLIENTS), !running);
+	EnableWindow(GetDlgItem(hDlg, IDC_KAILLERA_MAX_CLIENTS_SPIN), !running);
+}
+
+static void KailleraServerDlgRefreshLog(HWND hDlg)
+{
+	// Read last lines from kaillera_server.log
+	FILE *f = fopen("kaillera_server.log", "r");
+	if (!f)
+	{
+		SetDlgItemText(hDlg, IDC_KAILLERA_LOG, TEXT("(no log file)"));
+		return;
+	}
+
+	// Read entire file and keep last ~2KB
+	char buf[4096] = {};
+	int total = 0;
+	int ch;
+	while ((ch = fgetc(f)) != EOF && total < (int)sizeof(buf) - 1)
+		buf[total++] = (char)ch;
+	fclose(f);
+	buf[total] = '\0';
+
+	// Show last portion if too long
+	const char *start = buf;
+	if (total > 2000)
+		start = buf + total - 2000;
+
+	// Convert \n to \r\n for the edit control
+	TCHAR display[4096];
+	int dpos = 0;
+	for (const char *p = start; *p && dpos < 4090; p++)
+	{
+		if (*p == '\n' && (p == start || *(p-1) != '\r'))
+			display[dpos++] = '\r';
+		display[dpos++] = (TCHAR)*p;
+	}
+	display[dpos] = '\0';
+
+	SetDlgItemText(hDlg, IDC_KAILLERA_LOG, display);
+
+	// Scroll to bottom
+	HWND hLog = GetDlgItem(hDlg, IDC_KAILLERA_LOG);
+	SendMessage(hLog, EM_SETSEL, dpos, dpos);
+	SendMessage(hLog, EM_SCROLLCARET, 0, 0);
+}
+
+INT_PTR CALLBACK DlgKailleraServer(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
+{
+	switch (msg)
+	{
+	case WM_INITDIALOG:
+		SetDlgItemText(hDlg, IDC_KAILLERA_SERVER_NAME, TEXT("Snes9x Kaillera Server"));
+		SetDlgItemInt(hDlg, IDC_KAILLERA_PORT, KAILLERA_SERVER_PORT, FALSE);
+		SetDlgItemInt(hDlg, IDC_KAILLERA_MAX_CLIENTS, 8, FALSE);
+		SetDlgItemText(hDlg, IDC_KAILLERA_LOCATION, TEXT(""));
+		SetDlgItemText(hDlg, IDC_KAILLERA_MOTD, TEXT("Welcome!\r\nPowered by Snes9x Kaillera"));
+
+		SendDlgItemMessage(hDlg, IDC_KAILLERA_PORT_SPIN, UDM_SETRANGE, 0, MAKELPARAM(65535, 1024));
+		SendDlgItemMessage(hDlg, IDC_KAILLERA_MAX_CLIENTS_SPIN, UDM_SETRANGE, 0, MAKELPARAM(8, 2));
+
+		KailleraServerDlgUpdateStatus(hDlg);
+		KailleraServerDlgRefreshLog(hDlg);
+
+		// Set a timer to refresh the log every 2 seconds
+		SetTimer(hDlg, 1, 2000, NULL);
+		return TRUE;
+
+	case WM_TIMER:
+		if (wParam == 1)
+		{
+			KailleraServerDlgRefreshLog(hDlg);
+			KailleraServerDlgUpdateStatus(hDlg);
+		}
+		return TRUE;
+
+	case WM_COMMAND:
+		switch (LOWORD(wParam))
+		{
+		case IDC_KAILLERA_START_STOP:
+			if (KailleraServerIsRunning())
+			{
+				KailleraServerUnpublish();
+				KailleraServerStop();
+			}
+			else
+			{
+				BOOL ok;
+				uint16_t port = (uint16_t)GetDlgItemInt(hDlg, IDC_KAILLERA_PORT, &ok, FALSE);
+				if (!ok || port == 0) port = KAILLERA_SERVER_PORT;
+
+				TCHAR nameW[128];
+				GetDlgItemText(hDlg, IDC_KAILLERA_SERVER_NAME, nameW, 128);
+				const char *name = _tToChar(nameW);
+				char nameBuf[128];
+				if (!name || name[0] == '\0')
+					strcpy(nameBuf, "Snes9x Kaillera Server");
+				else
+				{
+					strncpy(nameBuf, name, sizeof(nameBuf) - 1);
+					nameBuf[sizeof(nameBuf) - 1] = '\0';
+				}
+
+				if (!KailleraServerStart(port, nameBuf))
+				{
+					MessageBox(hDlg, TEXT("Failed to start server.\nPort may already be in use."),
+						TEXT("Kaillera Server"), MB_OK | MB_ICONERROR);
+				}
+				else
+				{
+					// Set MOTD
+					TCHAR motdW[1024];
+					GetDlgItemText(hDlg, IDC_KAILLERA_MOTD, motdW, 1024);
+					const char *motd = _tToChar(motdW);
+					KailleraServerSetMOTD(motd ? motd : "");
+				}
+				if (KailleraServerIsRunning() && IsDlgButtonChecked(hDlg, IDC_KAILLERA_PUBLISH) == BST_CHECKED)
+				{
+					TCHAR locW[64];
+					GetDlgItemText(hDlg, IDC_KAILLERA_LOCATION, locW, 64);
+					const char *loc = _tToChar(locW);
+					KailleraServerPublish(loc ? loc : "");
+				}
+			}
+			S9xRestoreWindowTitle();
+			KailleraServerDlgUpdateStatus(hDlg);
+			KailleraServerDlgRefreshLog(hDlg);
+			return TRUE;
+
+		case IDCANCEL:
+			KillTimer(hDlg, 1);
+			EndDialog(hDlg, 0);
+			return TRUE;
+		}
+		break;
+
+	case WM_DESTROY:
+		KillTimer(hDlg, 1);
+		break;
+	}
+	return FALSE;
+}
+
+static void KCUpdateUI(HWND hDlg)
+{
+    KClientState st = KailleraClientGetState();
+    bool connected = (st >= KCLIENT_CONNECTED);
+    bool inRoom = (st >= KCLIENT_IN_GAME_ROOM);
+    bool playing = (st == KCLIENT_PLAYING);
+
+    bool connecting = (st == KCLIENT_CONNECTING || st == KCLIENT_LOGGING_IN);
+    EnableWindow(GetDlgItem(hDlg, IDC_KC_SERVER_IP), !connected && !connecting);
+    EnableWindow(GetDlgItem(hDlg, IDC_KC_USERNAME), !connected && !connecting);
+    EnableWindow(GetDlgItem(hDlg, IDC_KC_CONNECT), !connected && !connecting);
+    EnableWindow(GetDlgItem(hDlg, IDC_KC_DISCONNECT), connected || connecting);
+    EnableWindow(GetDlgItem(hDlg, IDC_KC_TIMEOUT), !connected && !connecting);
+    EnableWindow(GetDlgItem(hDlg, IDC_KC_CREATE), connected && !inRoom);
+    EnableWindow(GetDlgItem(hDlg, IDC_KC_JOIN), connected && !inRoom);
+    EnableWindow(GetDlgItem(hDlg, IDC_KC_START), inRoom && KClient.isOwner && !playing);
+    EnableWindow(GetDlgItem(hDlg, IDC_KC_LEAVE), inRoom && !playing);
+    EnableWindow(GetDlgItem(hDlg, IDC_KC_CHATINPUT), connected);
+    EnableWindow(GetDlgItem(hDlg, IDC_KC_CHATSEND), connected);
+    EnableWindow(GetDlgItem(hDlg, IDC_KC_ROMLIST), connected && !inRoom);
+
+    // Clear lists when disconnected
+    if (!connected && !connecting) {
+        HWND hList = GetDlgItem(hDlg, IDC_KC_GAMELIST);
+        if (SendMessage(hList, LB_GETCOUNT, 0, 0) > 0)
+            SendMessage(hList, LB_RESETCONTENT, 0, 0);
+        HWND hUsers = GetDlgItem(hDlg, IDC_KC_USERLIST);
+        if (SendMessage(hUsers, LB_GETCOUNT, 0, 0) > 0)
+            SendMessage(hUsers, LB_RESETCONTENT, 0, 0);
+    }
+
+    if (KClient.statusUpdated) {
+        // Update game list
+        HWND hList = GetDlgItem(hDlg, IDC_KC_GAMELIST);
+        SendMessage(hList, LB_RESETCONTENT, 0, 0);
+        for (int i = 0; i < KClient.numGames; i++) {
+            TCHAR item[300];
+            _stprintf(item, TEXT("%s (%s) [%d/%d] %s"),
+                _tFromChar(KClient.games[i].gameName),
+                _tFromChar(KClient.games[i].ownerName),
+                KClient.games[i].numPlayers,
+                KClient.games[i].maxPlayers,
+                KClient.games[i].status == 1 ? TEXT("Playing") : TEXT("Waiting"));
+            SendMessage(hList, LB_ADDSTRING, 0, (LPARAM)item);
+        }
+
+        // Update user list
+        HWND hUsers = GetDlgItem(hDlg, IDC_KC_USERLIST);
+        SendMessage(hUsers, LB_RESETCONTENT, 0, 0);
+        for (int i = 0; i < KClient.numUsers; i++) {
+            TCHAR item[200];
+            _stprintf(item, TEXT("%s (%dms)"),
+                _tFromChar(KClient.allUsers[i].username),
+                KClient.allUsers[i].ping);
+            SendMessage(hUsers, LB_ADDSTRING, 0, (LPARAM)item);
+        }
+
+        // Update status
+        SetDlgItemText(hDlg, IDC_KC_STATUS, _tFromChar(KClient.statusMsg));
+        KClient.statusUpdated = false;
+    }
+
+    // Update chat log
+    if (KClient.chatUpdated) {
+        // Convert \n to \r\n for the edit control
+        const char *src = KClient.chatLog;
+        TCHAR display[8192];
+        int dpos = 0;
+        for (; *src && dpos < 8180; src++) {
+            if (*src == '\n') display[dpos++] = '\r';
+            display[dpos++] = (TCHAR)*src;
+        }
+        display[dpos] = '\0';
+        SetDlgItemText(hDlg, IDC_KC_CHATLOG, display);
+        // Scroll to bottom
+        HWND hChat = GetDlgItem(hDlg, IDC_KC_CHATLOG);
+        SendMessage(hChat, EM_SETSEL, dpos, dpos);
+        SendMessage(hChat, EM_SCROLLCARET, 0, 0);
+        KClient.chatUpdated = false;
+    }
+
+    if (KClient.errorMsg[0]) {
+        char errCopy[256];
+        strncpy(errCopy, KClient.errorMsg, sizeof(errCopy) - 1);
+        errCopy[sizeof(errCopy) - 1] = '\0';
+        KClient.errorMsg[0] = '\0'; // clear BEFORE showing MessageBox
+        MessageBox(hDlg, _tFromChar(errCopy), TEXT("Kaillera"), MB_OK | MB_ICONERROR);
+    }
+}
+
+static bool IsSNESRom(const TCHAR *filename)
+{
+    const TCHAR *ext = _tcsrchr(filename, TEXT('.'));
+    if (!ext) return false;
+    ext++;
+    return (_tcsicmp(ext, TEXT("smc")) == 0 || _tcsicmp(ext, TEXT("sfc")) == 0 ||
+            _tcsicmp(ext, TEXT("fig")) == 0 || _tcsicmp(ext, TEXT("swc")) == 0 ||
+            _tcsicmp(ext, TEXT("zip")) == 0 || _tcsicmp(ext, TEXT("7z")) == 0 ||
+            _tcsicmp(ext, TEXT("gz")) == 0);
+}
+
+static void KCPopulateRomList(HWND hDlg)
+{
+    HWND hCombo = GetDlgItem(hDlg, IDC_KC_ROMLIST);
+    SendMessage(hCombo, CB_RESETCONTENT, 0, 0);
+
+    // Add currently loaded ROM first
+    int selIdx = -1;
+    if (!Settings.StopEmulation && Memory.ROMName[0]) {
+        TCHAR name[256];
+        _stprintf(name, TEXT("%s (loaded)"), _tFromChar(Memory.ROMName));
+        int idx = (int)SendMessage(hCombo, CB_ADDSTRING, 0, (LPARAM)name);
+        SendMessage(hCombo, CB_SETITEMDATA, idx, (LPARAM)0); // tag: 0 = loaded ROM
+        selIdx = idx;
+    }
+
+    // Scan ROM directory
+    TCHAR searchPath[MAX_PATH];
+    _stprintf(searchPath, TEXT("%s\\*"), GUI.RomDir);
+    WIN32_FIND_DATA fd;
+    HANDLE hFind = FindFirstFile(searchPath, &fd);
+    if (hFind != INVALID_HANDLE_VALUE) {
+        do {
+            if (fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) continue;
+            if (!IsSNESRom(fd.cFileName)) continue;
+
+            // Strip extension for display name
+            TCHAR display[256];
+            _tcscpy(display, fd.cFileName);
+            TCHAR *dot = _tcsrchr(display, TEXT('.'));
+            if (dot) *dot = '\0';
+
+            // Skip if same as loaded ROM
+            if (!Settings.StopEmulation && Memory.ROMName[0]) {
+                const char *dispChar = _tToChar(display);
+                if (strcmp(dispChar, Memory.ROMName) == 0) continue;
+            }
+
+            int idx = (int)SendMessage(hCombo, CB_ADDSTRING, 0, (LPARAM)display);
+            SendMessage(hCombo, CB_SETITEMDATA, idx, (LPARAM)1); // tag: 1 = from directory
+        } while (FindNextFile(hFind, &fd));
+        FindClose(hFind);
+    }
+
+    if (selIdx >= 0)
+        SendMessage(hCombo, CB_SETCURSEL, selIdx, 0);
+    else if (SendMessage(hCombo, CB_GETCOUNT, 0, 0) > 0)
+        SendMessage(hCombo, CB_SETCURSEL, 0, 0);
+}
+
+static KServerListEntry kServerList[KAILLERA_MAX_SERVERS];
+static int kServerListCount = 0;
+static HWND kServerDlgHwnd = NULL;
+static volatile bool kServerListFetching = false;
+static int kSortColumn = -1;
+static bool kSortAscending = true;
+
+// Fake entry used for localhost in sort comparisons
+static KServerListEntry kLocalhostEntry = { "Localhost", "127.0.0.1", 27888, 0, 8, 0, "Snes9x", "Localhost", 0 };
+static volatile bool kLocalhostDetected = false;
+
+static void KCPopulateServerListView(HWND hDlg)
+{
+    HWND hLV = GetDlgItem(hDlg, IDC_KC_SERVERLIST);
+    ListView_DeleteAllItems(hLV);
+
+    // Add Localhost if detected by the background thread
+    if (kLocalhostDetected) {
+        TCHAR displayName[256];
+        TCHAR usersStr[16];
+        if (KailleraServerIsRunning()) {
+            const char *srvName = KailleraServerGetName();
+            _stprintf(displayName, TEXT("%s (Localhost)"), _tFromChar(srvName));
+            int users, maxUsers, games;
+            KailleraServerGetStats(&users, &maxUsers, &games);
+            _stprintf(usersStr, TEXT("%d/%d"), users, maxUsers);
+            kLocalhostEntry.users = users;
+            kLocalhostEntry.maxUsers = maxUsers;
+        } else {
+            _tcscpy(displayName, TEXT("Localhost"));
+            _tcscpy(usersStr, TEXT("-"));
+        }
+        LVITEM lvi = {};
+        lvi.mask = LVIF_TEXT | LVIF_PARAM;
+        lvi.iItem = 0;
+        lvi.lParam = (LPARAM)-1;
+        lvi.pszText = displayName;
+        int idx = ListView_InsertItem(hLV, &lvi);
+        ListView_SetItemText(hLV, idx, 1, (TCHAR *)TEXT("Localhost"));
+        ListView_SetItemText(hLV, idx, 2, (TCHAR *)TEXT("0"));
+        ListView_SetItemText(hLV, idx, 3, (TCHAR *)TEXT("Snes9x"));
+        ListView_SetItemText(hLV, idx, 4, usersStr);
+    }
+
+    for (int i = 0; i < kServerListCount; i++) {
+        LVITEM lvi = {};
+        lvi.mask = LVIF_TEXT | LVIF_PARAM;
+        lvi.iItem = i;
+        lvi.lParam = (LPARAM)i; // index into kServerList
+        lvi.pszText = (TCHAR *)_tFromChar(kServerList[i].name);
+        int idx = ListView_InsertItem(hLV, &lvi);
+
+        ListView_SetItemText(hLV, idx, 1, (TCHAR *)_tFromChar(kServerList[i].location));
+
+        TCHAR pingStr[16];
+        _stprintf(pingStr, TEXT("%d"), kServerList[i].ping);
+        ListView_SetItemText(hLV, idx, 2, pingStr);
+
+        ListView_SetItemText(hLV, idx, 3, (TCHAR *)_tFromChar(kServerList[i].version));
+
+        TCHAR usersStr[16];
+        _stprintf(usersStr, TEXT("%d/%d"), kServerList[i].users, kServerList[i].maxUsers);
+        ListView_SetItemText(hLV, idx, 4, usersStr);
+    }
+}
+
+// WM_USER+100: server list fetched, populate all rows
+// WM_USER+101: wParam = server index that was just pinged, update its ping cell
+
+static void KCUpdateServerPing(HWND hDlg, int serverIdx)
+{
+    HWND hLV = GetDlgItem(hDlg, IDC_KC_SERVERLIST);
+    int itemCount = ListView_GetItemCount(hLV);
+    for (int i = 0; i < itemCount; i++) {
+        LVITEM lvi = {};
+        lvi.mask = LVIF_PARAM;
+        lvi.iItem = i;
+        ListView_GetItem(hLV, &lvi);
+        if ((int)lvi.lParam == serverIdx) {
+            TCHAR pingStr[16];
+            _stprintf(pingStr, TEXT("%d"), kServerList[serverIdx].ping);
+            ListView_SetItemText(hLV, i, 2, pingStr);
+            break;
+        }
+    }
+}
+
+static void KCDetectLocalhost()
+{
+    if (KailleraServerIsRunning()) {
+        kLocalhostDetected = true;
+    } else {
+        KServerListEntry probe = {};
+        strcpy(probe.ip, "127.0.0.1");
+        probe.port = 27888;
+        probe.ping = 999;
+        KailleraPingServer(&probe);
+        kLocalhostDetected = (probe.ping < 999);
+    }
+}
+
+static unsigned __stdcall KCFetchServerListThread(void *param)
+{
+    WSADATA wsa;
+    WSAStartup(MAKEWORD(2, 2), &wsa);
+
+    kServerListCount = KailleraFetchServerList(kServerList, KAILLERA_MAX_SERVERS);
+
+    // Detect localhost before first populate so it shows immediately
+    KCDetectLocalhost();
+
+    // Show all servers immediately (with ping=999)
+    if (kServerDlgHwnd)
+        PostMessage(kServerDlgHwnd, WM_USER + 100, 0, 0);
+
+    // Ping loop: ping all servers, then wait 30s and repeat
+    // Stops when connected to a server or dialog closes
+    while (kServerListFetching && kServerDlgHwnd)
+    {
+        KCDetectLocalhost();
+
+        for (int i = 0; i < kServerListCount && kServerListFetching; i++) {
+            KailleraPingServer(&kServerList[i]);
+            if (kServerDlgHwnd)
+                PostMessage(kServerDlgHwnd, WM_USER + 101, (WPARAM)i, 0);
+        }
+
+        // Update status after a full round
+        if (kServerDlgHwnd)
+            PostMessage(kServerDlgHwnd, WM_USER + 100, 1, 0);
+
+        // Stop pinging if connected to a server
+        if (KailleraClientIsConnected())
+            break;
+
+        // Wait 30 seconds before re-pinging (check every second for early exit)
+        for (int s = 0; s < 30 && kServerListFetching && kServerDlgHwnd; s++)
+            Sleep(1000);
+    }
+
+    kServerListFetching = false;
+    WSACleanup();
+    return 0;
+}
+
+static void KCRefreshServerList(HWND hDlg)
+{
+    if (kServerListFetching) return;
+
+    SetDlgItemText(hDlg, IDC_KC_STATUS, TEXT("Refreshing server list..."));
+    EnableWindow(GetDlgItem(hDlg, IDC_KC_REFRESH), FALSE);
+
+    kServerDlgHwnd = hDlg;
+    kServerListFetching = true;
+
+    unsigned tid;
+    HANDLE hThread = (HANDLE)_beginthreadex(NULL, 0, KCFetchServerListThread, NULL, 0, &tid);
+    if (hThread)
+        CloseHandle(hThread);
+    else {
+        kServerListFetching = false;
+        EnableWindow(GetDlgItem(hDlg, IDC_KC_REFRESH), TRUE);
+    }
+}
+
+static int CALLBACK KCServerListCompare(LPARAM lp1, LPARAM lp2, LPARAM sortParam)
+{
+    int i1 = (int)lp1, i2 = (int)lp2;
+    KServerListEntry &a = (i1 == -1) ? kLocalhostEntry : kServerList[i1];
+    KServerListEntry &b = (i2 == -1) ? kLocalhostEntry : kServerList[i2];
+    if (i1 != -1 && (i1 < 0 || i1 >= kServerListCount)) return 0;
+    if (i2 != -1 && (i2 < 0 || i2 >= kServerListCount)) return 0;
+    int result = 0;
+    switch (kSortColumn) {
+    case 0: result = _stricmp(a.name, b.name); break;
+    case 1: result = _stricmp(a.location, b.location); break;
+    case 2: result = (int)a.ping - (int)b.ping; break;
+    case 3: result = _stricmp(a.version, b.version); break;
+    case 4: result = a.users - b.users; break;
+    default: result = 0;
+    }
+    return kSortAscending ? result : -result;
+}
+
+static void KCInitServerListView(HWND hDlg)
+{
+    HWND hLV = GetDlgItem(hDlg, IDC_KC_SERVERLIST);
+    ListView_SetExtendedListViewStyle(hLV, LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES);
+
+    LVCOLUMN col = {};
+    col.mask = LVCF_TEXT | LVCF_WIDTH | LVCF_SUBITEM;
+
+    col.cx = 160; col.pszText = (TCHAR *)TEXT("Server Name"); col.iSubItem = 0;
+    ListView_InsertColumn(hLV, 0, &col);
+    col.cx = 100; col.pszText = (TCHAR *)TEXT("Location"); col.iSubItem = 1;
+    ListView_InsertColumn(hLV, 1, &col);
+    col.cx = 50;  col.pszText = (TCHAR *)TEXT("Ping"); col.iSubItem = 2;
+    ListView_InsertColumn(hLV, 2, &col);
+    col.cx = 60;  col.pszText = (TCHAR *)TEXT("Version"); col.iSubItem = 3;
+    ListView_InsertColumn(hLV, 3, &col);
+    col.cx = 50;  col.pszText = (TCHAR *)TEXT("Users"); col.iSubItem = 4;
+    ListView_InsertColumn(hLV, 4, &col);
+}
+
+INT_PTR CALLBACK DlgKailleraClient(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
+{
+    switch (msg)
+    {
+    case WM_INITDIALOG:
+        {
+            WSADATA wsa;
+            WSAStartup(MAKEWORD(2, 2), &wsa); // ensure winsock is ready for localhost ping
+        }
+        SetDlgItemText(hDlg, IDC_KC_SERVER_IP, TEXT("127.0.0.1:27888"));
+        {
+            TCHAR defaultName[32];
+            srand(GetTickCount());
+            _stprintf(defaultName, TEXT("Player%d"), 10000 + rand() % 90000);
+            SetDlgItemText(hDlg, IDC_KC_USERNAME, defaultName);
+        }
+        SetDlgItemInt(hDlg, IDC_KC_TIMEOUT, 10, FALSE);
+        KCInitServerListView(hDlg);
+        KCPopulateRomList(hDlg);
+        KCUpdateUI(hDlg);
+        SetTimer(hDlg, 1, 500, NULL);
+        // Auto-refresh server list if not connected
+        if (!KailleraClientIsConnected())
+            KCRefreshServerList(hDlg);
+        return TRUE;
+
+    case WM_USER + 100:
+        // wParam=0: list fetched, populate rows. wParam=1: ping round done.
+        // Both repopulate the list (re-checks localhost each time)
+        KCPopulateServerListView(hDlg);
+        if (wParam == 0) {
+            TCHAR status[64];
+            _stprintf(status, TEXT("Found %d servers. Pinging..."), kServerListCount);
+            SetDlgItemText(hDlg, IDC_KC_STATUS, status);
+        } else {
+            EnableWindow(GetDlgItem(hDlg, IDC_KC_REFRESH), TRUE);
+            TCHAR status[64];
+            _stprintf(status, TEXT("Found %d online servers."), kServerListCount);
+            SetDlgItemText(hDlg, IDC_KC_STATUS, status);
+        }
+        return TRUE;
+
+    case WM_USER + 101:
+        // A single server was pinged, update its row
+        KCUpdateServerPing(hDlg, (int)wParam);
+        return TRUE;
+
+    case WM_NOTIFY:
+    {
+        NMHDR *pnm = (NMHDR *)lParam;
+        if (pnm->idFrom == IDC_KC_SERVERLIST) {
+            if (pnm->code == LVN_COLUMNCLICK) {
+                // Sort by clicked column
+                NMLISTVIEW *pnmlv = (NMLISTVIEW *)lParam;
+                if (kSortColumn == pnmlv->iSubItem)
+                    kSortAscending = !kSortAscending;
+                else {
+                    kSortColumn = pnmlv->iSubItem;
+                    kSortAscending = true;
+                }
+                HWND hLV = GetDlgItem(hDlg, IDC_KC_SERVERLIST);
+                ListView_SortItems(hLV, KCServerListCompare, 0);
+                return TRUE;
+            }
+            if (pnm->code == LVN_ITEMCHANGED) {
+                // Selection changed - update IP field to match
+                NMLISTVIEW *pnmlv = (NMLISTVIEW *)lParam;
+                if (pnmlv->uNewState & LVIS_SELECTED) {
+                    LVITEM lvi = {};
+                    lvi.mask = LVIF_PARAM;
+                    lvi.iItem = pnmlv->iItem;
+                    ListView_GetItem(GetDlgItem(hDlg, IDC_KC_SERVERLIST), &lvi);
+                    int idx = (int)lvi.lParam;
+                    if (idx == -1) {
+                        // Localhost
+                        SetDlgItemText(hDlg, IDC_KC_SERVER_IP, TEXT("127.0.0.1:27888"));
+                    } else if (idx >= 0 && idx < kServerListCount) {
+                        TCHAR ipPort[80];
+                        _stprintf(ipPort, TEXT("%s:%d"),
+                            _tFromChar(kServerList[idx].ip), kServerList[idx].port);
+                        SetDlgItemText(hDlg, IDC_KC_SERVER_IP, ipPort);
+                    }
+                }
+                return TRUE;
+            }
+            if (pnm->code == NM_DBLCLK) {
+                // Double-click to connect
+                PostMessage(hDlg, WM_COMMAND, MAKEWPARAM(IDC_KC_CONNECT, BN_CLICKED), 0);
+                return TRUE;
+            }
+        }
+        break;
+    }
+
+    case WM_TIMER:
+        if (wParam == 1) {
+            KCUpdateUI(hDlg);
+
+            // Auto-close dialog when game starts to let emulation run
+            if (KailleraClientIsPlaying()) {
+                KillTimer(hDlg, 1);
+                // Post ROM load message to main window
+                PostMessage(GUI.hWnd, WM_KAILLERA_GAME_START, 0, (LPARAM)KClient.gameName);
+                EndDialog(hDlg, 1);
+            }
+        }
+        return TRUE;
+
+    case WM_COMMAND:
+        switch (LOWORD(wParam))
+        {
+        case IDC_KC_CONNECT:
+        {
+            char ipBuf[64] = {};
+            uint16_t port = 27888;
+
+            // Use IP from the text field (updated by selection or manual entry)
+            {
+                // Use manual IP field
+                TCHAR ipW[64];
+                GetDlgItemText(hDlg, IDC_KC_SERVER_IP, ipW, 64);
+                const char *ip = _tToChar(ipW);
+                strncpy(ipBuf, ip, sizeof(ipBuf) - 1);
+                char *colon = strchr(ipBuf, ':');
+                if (colon) {
+                    *colon = '\0';
+                    port = (uint16_t)atoi(colon + 1);
+                }
+            }
+
+            TCHAR nameW[128];
+            GetDlgItemText(hDlg, IDC_KC_USERNAME, nameW, 128);
+            const char *name = _tToChar(nameW);
+            char nameBuf[128];
+            strncpy(nameBuf, name, sizeof(nameBuf) - 1);
+            nameBuf[sizeof(nameBuf) - 1] = '\0';
+            if (nameBuf[0] == '\0') strcpy(nameBuf, "Player");
+
+            BOOL okTimeout;
+            int timeoutSec = GetDlgItemInt(hDlg, IDC_KC_TIMEOUT, &okTimeout, FALSE);
+            if (!okTimeout || timeoutSec < 1) timeoutSec = 10;
+            if (timeoutSec > 60) timeoutSec = 60;
+
+            KailleraClientConnect(ipBuf, port, nameBuf, 1, timeoutSec);
+            KCUpdateUI(hDlg);
+            return TRUE;
+        }
+        case IDC_KC_REFRESH:
+            KCRefreshServerList(hDlg);
+            return TRUE;
+        case IDC_KC_DISCONNECT:
+            KailleraClientDisconnect();
+            SendMessage(GetDlgItem(hDlg, IDC_KC_USERLIST), LB_RESETCONTENT, 0, 0);
+            SendMessage(GetDlgItem(hDlg, IDC_KC_GAMELIST), LB_RESETCONTENT, 0, 0);
+            SetDlgItemText(hDlg, IDC_KC_CHATLOG, TEXT(""));
+            KCUpdateUI(hDlg);
+            return TRUE;
+
+        case IDC_KC_CREATE:
+        {
+            HWND hCombo = GetDlgItem(hDlg, IDC_KC_ROMLIST);
+            int sel = (int)SendMessage(hCombo, CB_GETCURSEL, 0, 0);
+            if (sel < 0) {
+                MessageBox(hDlg, TEXT("Select a ROM to create a game."), TEXT("Kaillera"), MB_OK | MB_ICONWARNING);
+                return TRUE;
+            }
+            TCHAR romNameW[256];
+            SendMessage(hCombo, CB_GETLBTEXT, sel, (LPARAM)romNameW);
+            // Strip " (loaded)" suffix if present
+            TCHAR *suffix = _tcsstr(romNameW, TEXT(" (loaded)"));
+            if (suffix) *suffix = '\0';
+            const char *romName = _tToChar(romNameW);
+            KailleraClientCreateGame(romName);
+            return TRUE;
+        }
+        case IDC_KC_JOIN:
+        {
+            HWND hList = GetDlgItem(hDlg, IDC_KC_GAMELIST);
+            int sel = (int)SendMessage(hList, LB_GETCURSEL, 0, 0);
+            if (sel < 0 || sel >= KClient.numGames) {
+                MessageBox(hDlg, TEXT("Select a game to join."), TEXT("Kaillera"), MB_OK);
+                return TRUE;
+            }
+            KailleraClientJoinGame(KClient.games[sel].gameId);
+            KClient.state = KCLIENT_IN_GAME_ROOM;
+            strncpy(KClient.gameName, KClient.games[sel].gameName, sizeof(KClient.gameName) - 1);
+            KCUpdateUI(hDlg);
+            return TRUE;
+        }
+        case IDC_KC_START:
+            KailleraClientStartGame();
+            return TRUE;
+
+        case IDC_KC_LEAVE:
+            KailleraClientLeaveGame();
+            KCUpdateUI(hDlg);
+            return TRUE;
+
+        case IDC_KC_CHATSEND:
+        {
+            TCHAR msgW[512];
+            GetDlgItemText(hDlg, IDC_KC_CHATINPUT, msgW, 512);
+            const char *msg = _tToChar(msgW);
+            if (msg && msg[0]) {
+                KailleraClientSendChat(msg);
+                SetDlgItemText(hDlg, IDC_KC_CHATINPUT, TEXT(""));
+            }
+            SetFocus(GetDlgItem(hDlg, IDC_KC_CHATINPUT));
+            return TRUE;
+        }
+
+        case IDC_KC_ABOUT:
+        {
+            TASKDIALOGCONFIG tdc = {};
+            tdc.cbSize = sizeof(tdc);
+            tdc.hwndParent = hDlg;
+            tdc.hInstance = g_hInst;
+            tdc.dwFlags = TDF_ENABLE_HYPERLINKS | TDF_USE_COMMAND_LINKS_NO_ICON;
+            tdc.dwCommonButtons = TDCBF_OK_BUTTON;
+            tdc.pszWindowTitle = TEXT("About Kaillera Netplay");
+            tdc.pszMainIcon = TD_INFORMATION_ICON;
+            tdc.pszMainInstruction = TEXT("Kaillera Native Implementation");
+            tdc.pszContent =
+                TEXT("By <a href=\"https://github.com/shanytc/\">Shanytc</a>\n\n")
+                TEXT("Kaillera protocol compatible with all Kaillera servers.\n")
+                TEXT("No external DLL required.");
+            tdc.pfCallback = [](HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam, LONG_PTR lpRefData) -> HRESULT {
+                if (msg == TDN_HYPERLINK_CLICKED)
+                    ShellExecute(hwnd, TEXT("open"), (LPCTSTR)lParam, NULL, NULL, SW_SHOWNORMAL);
+                return S_OK;
+            };
+            TaskDialogIndirect(&tdc, NULL, NULL, NULL);
+            return TRUE;
+        }
+
+        case IDCANCEL:
+            KillTimer(hDlg, 1);
+            EndDialog(hDlg, 0);
+            return TRUE;
+        }
+        break;
+
+    case WM_DESTROY:
+        KillTimer(hDlg, 1);
+        kServerListFetching = false;
+        kServerDlgHwnd = NULL;
+        WSACleanup();
+        break;
+    }
+    return FALSE;
 }
 #endif
 
