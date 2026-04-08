@@ -3198,7 +3198,7 @@ void S9xControlEOF (void)
 						DoGunLatch(superscope.x, superscope.y);
 
 					c = &superscope.crosshair;
-					if (IPPU.RenderThisFrame)
+					if (IPPU.RenderThisFrame && !Settings.HideSuperScopeCrosshair)
 						S9xDrawCrosshair(S9xGetCrosshair(c->img), c->fg, c->bg, superscope.x, superscope.y);
 				}
 

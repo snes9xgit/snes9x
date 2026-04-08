@@ -546,6 +546,7 @@
 #define ID_FILE_SAVE_PREVIEW            40186
 #define ID_FILE_SAVE_POPUP              40187
 #define ID_FILE_LOAD_POPUP              40188
+#define ID_INPUT_HIDESUPERSCOPECROSSHAIR 40189
 #define ID_FILE_SAVE0                   44000
 #define ID_FILE_SAVE_LAST               44100
 #define ID_FILE_LOAD0                   44200
@@ -561,7 +562,7 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        169
-#define _APS_NEXT_COMMAND_VALUE         40189
+#define _APS_NEXT_COMMAND_VALUE         40190
 #define _APS_NEXT_CONTROL_VALUE         3044
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
