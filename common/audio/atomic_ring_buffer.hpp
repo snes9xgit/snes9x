@@ -38,10 +38,10 @@ class atomic_ring_buffer
         auto local_start = start.load(std::memory_order_acquire);
         auto first_block_size = buffer.size() - local_start;
 
-        memcpy(dst, &buffer[local_start], std::min(amount, first_block_size) * 2);
+        memcpy(dst, &buffer[local_start], std::min(amount, first_block_size) * sizeof(T));
 
         if (amount > first_block_size)
-            memcpy(dst + first_block_size, &buffer[0], (amount - first_block_size) * 2);
+            memcpy(dst + first_block_size, &buffer[0], (amount - first_block_size) * sizeof(T));
 
         start.store((local_start + amount) % buffer.size());
 
@@ -58,10 +58,10 @@ class atomic_ring_buffer
         auto local_end = end.load(std::memory_order::acquire);
         int first_block_size = std::min(amount, buffer.size() - local_end);
 
-        memcpy(&buffer[local_end], src, first_block_size * 2);
+        memcpy(&buffer[local_end], src, first_block_size * sizeof(T));
 
         if (amount > first_block_size)
-            memcpy(&buffer[0], src + first_block_size, (amount - first_block_size) * 2);
+            memcpy(&buffer[0], src + first_block_size, (amount - first_block_size) * sizeof(T));
 
         end.store((local_end + amount) % buffer.size(), std::memory_order_release);
 
