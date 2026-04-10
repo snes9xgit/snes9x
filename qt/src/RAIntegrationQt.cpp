@@ -72,7 +72,7 @@ static void ra_curl_http_thread(CurlHttpRequest *req)
     rc_client_get_user_agent_clause(RA_GetClient(), ua_clause, sizeof(ua_clause));
     const char *emuName = (g_app && !g_app->config->ra_emulator_name.empty())
         ? g_app->config->ra_emulator_name.c_str() : "SuperSnes9x";
-    const char *emuVer = (strcmp(emuName, "RASnes9x") == 0) ? "1.2" : VERSION;
+    const char *emuVer = VERSION;
     char user_agent[256];
     snprintf(user_agent, sizeof(user_agent), "%s/%s %s", emuName, emuVer, ua_clause);
 
@@ -326,6 +326,7 @@ static void ra_qt_credentials_changed(const char *username, const char *token)
         g_app->config->ra_username = u;
         g_app->config->ra_api_token = t;
         g_app->config->ra_enabled = logged_in;
+        g_app->config->saveFile(EmuConfig::findConfigFile());
 
         // Update Login/Logout menu text
         if (g_app->window && g_app->window->ra_login_action)

@@ -2414,6 +2414,7 @@ LRESULT CALLBACK WinProc(
 #ifdef RETROACHIEVEMENTS_SUPPORT
 		case ID_RA_ENABLED:
 			GUI.RAEnabled = !GUI.RAEnabled;
+			WinSaveConfigFile();
 			RA_SetEnabled(GUI.RAEnabled);
 			if (GUI.RAEnabled)
 			{
@@ -2442,10 +2443,6 @@ LRESULT CALLBACK WinProc(
 			break;
 		case ID_RA_UA_SUPERSNES9X:
 			strcpy(GUI.RAEmulatorName, "SuperSnes9x");
-			WinSaveConfigFile();
-			break;
-		case ID_RA_UA_RASNES9X:
-			strcpy(GUI.RAEmulatorName, "RASnes9x");
 			WinSaveConfigFile();
 			break;
 		case ID_RA_ACHIEVEMENTS_LIST:
@@ -3628,10 +3625,6 @@ int WINAPI WinMain(
 	S9xSetupDefaultKeymap();
 
 #ifdef RETROACHIEVEMENTS_SUPPORT
-	// Auto-enable RA if a saved token exists
-	if (!GUI.RAEnabled && GUI.RAApiToken[0] && GUI.RAUsername[0])
-		GUI.RAEnabled = true;
-
 	if (GUI.RAEnabled)
 	{
 		RA_Win32_RegisterCallbacks();
@@ -4060,7 +4053,7 @@ static void CheckMenuStates ()
         mii.fState |= MFS_DISABLED;
     SetMenuItemInfo(GUI.hMenu, ID_RA_HARDCORE_MODE, FALSE, &mii);
 
-    mii.fState = MFS_ENABLED;
+    mii.fState = GUI.RAEnabled ? MFS_ENABLED : MFS_DISABLED;
     mii.fMask = MIIM_STATE | MIIM_STRING;
     if (RA_IsLoggedIn())
         mii.dwTypeData = (LPTSTR)TEXT("&Logout");
@@ -4072,13 +4065,11 @@ static void CheckMenuStates ()
     mii.fState = Settings.StopEmulation ? MFS_DISABLED : MFS_ENABLED;
     SetMenuItemInfo(GUI.hMenu, ID_RA_ACHIEVEMENTS_LIST, FALSE, &mii);
 
-    // Check the active user agent radio item
+    // User agent is always SuperSnes9x — keep it checked and enabled
     if (!GUI.RAEmulatorName[0])
         strcpy(GUI.RAEmulatorName, "SuperSnes9x");
-    mii.fState = (strcmp(GUI.RAEmulatorName, "SuperSnes9x") == 0) ? MFS_CHECKED : MFS_UNCHECKED;
+    mii.fState = MFS_CHECKED;
     SetMenuItemInfo(GUI.hMenu, ID_RA_UA_SUPERSNES9X, FALSE, &mii);
-    mii.fState = (strcmp(GUI.RAEmulatorName, "RASnes9x") == 0) ? MFS_CHECKED : MFS_UNCHECKED;
-    SetMenuItemInfo(GUI.hMenu, ID_RA_UA_RASNES9X, FALSE, &mii);
 #endif
 
     mii.fState = MFS_UNCHECKED;

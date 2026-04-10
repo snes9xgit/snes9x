@@ -96,10 +96,6 @@ int main(int argc, char *argv[])
     emu.startInputTimer();
 
 #ifdef RETROACHIEVEMENTS_SUPPORT
-    if (!emu.config->ra_enabled &&
-        !emu.config->ra_api_token.empty() && !emu.config->ra_username.empty())
-        emu.config->ra_enabled = true;
-
     if (emu.config->ra_enabled)
     {
         RA_Qt_RegisterCallbacks(&emu);

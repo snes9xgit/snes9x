@@ -42,7 +42,7 @@ static unsigned __stdcall ra_http_thread(void *param)
     char ua_clause[128] = {};
     rc_client_get_user_agent_clause(RA_GetClient(), ua_clause, sizeof(ua_clause));
     const char *emuName = GUI.RAEmulatorName[0] ? GUI.RAEmulatorName : "SuperSnes9x";
-    const char *emuVer = (strcmp(emuName, "RASnes9x") == 0) ? "1.2" : VERSION;
+    const char *emuVer = VERSION;
     char user_agent[256];
     snprintf(user_agent, sizeof(user_agent), "%s/%s %s", emuName, emuVer, ua_clause);
 
@@ -437,6 +437,7 @@ static void ra_win32_credentials_changed(const char *username, const char *token
     GUI.RAApiToken[sizeof(GUI.RAApiToken) - 1] = '\0';
 
     GUI.RAEnabled = (username && username[0] && token && token[0]);
+    WinSaveConfigFile();
 }
 
 // ---------------------------------------------------------------------------

@@ -715,6 +715,12 @@ void WinPostLoad(ConfigFile& conf)
 	ConfigFile::SetAlphaSort(configSort==2);
 	ConfigFile::SetTimeSort(configSort==1);
 
+#ifdef RETROACHIEVEMENTS_SUPPORT
+	// Migration: RASnes9x/1.2 user agent was removed — force default
+	if (strcmp(GUI.RAEmulatorName, "RASnes9x") == 0)
+		strcpy(GUI.RAEmulatorName, "SuperSnes9x");
+#endif
+
 	WinPostSave(conf);
 }
 
@@ -958,7 +964,7 @@ void WinRegisterConfigItems()
     AddBoolC("HardcoreMode", GUI.RAHardcoreMode, false, "true to enable hardcore mode (disables save state loading, rewind, cheats)");
     AddStringC("Username", GUI.RAUsername, 256, "", "RetroAchievements username");
     AddStringC("ApiToken", GUI.RAApiToken, 256, "", "RetroAchievements API token (set automatically on login)");
-    AddStringC("EmulatorName", GUI.RAEmulatorName, 64, "SuperSnes9x", "Emulator name sent to RetroAchievements (e.g. Snes9x, SuperSnes9x)");
+    AddStringC("EmulatorName", GUI.RAEmulatorName, 64, "SuperSnes9x", "Emulator name sent to RetroAchievements");
 #undef CATEGORY
 #endif
 }

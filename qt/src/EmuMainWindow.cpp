@@ -1,7 +1,6 @@
 #include <QTimer>
 #include <QMenu>
 #include <QMenuBar>
-#include <QActionGroup>
 #include <QFileDialog>
 #include <QtEvents>
 #include <QGuiApplication>
@@ -376,6 +375,7 @@ void EmuMainWindow::createWidgets()
     ra_enabled_action->setChecked(app->config->ra_enabled);
     connect(ra_enabled_action, &QAction::triggered, [&](bool checked) {
         app->config->ra_enabled = checked;
+        app->config->saveFile(EmuConfig::findConfigFile());
         RA_SetEnabled(checked);
         if (checked)
         {
@@ -414,24 +414,7 @@ void EmuMainWindow::createWidgets()
         RA_SetHardcoreEnabled(checked);
     });
 
-    auto ra_ua_menu = ra_menu->addMenu(tr("&User Agent"));
-    auto ra_ua_group = new QActionGroup(ra_ua_menu);
-    ra_ua_group->setExclusive(true);
-    struct { const char *name; const char *version; } ua_choices[] = {
-        { "SuperSnes9x", VERSION },
-        { "RASnes9x", "1.2" },
-    };
-    for (auto &ua : ua_choices)
-    {
-        auto action = ra_ua_menu->addAction(QString("%1/%2").arg(ua.name, ua.version));
-        action->setCheckable(true);
-        action->setChecked(app->config->ra_emulator_name == ua.name);
-        ra_ua_group->addAction(action);
-        connect(action, &QAction::triggered, [&, name_str = std::string(ua.name)] {
-            app->config->ra_emulator_name = name_str;
-            app->config->saveFile(EmuConfig::findConfigFile());
-        });
-    }
+    app->config->ra_emulator_name = "SuperSnes9x";
 
     ra_menu->addSeparator();
 
