@@ -416,6 +416,11 @@ void EmuMainWindow::createWidgets()
 
     app->config->ra_emulator_name = "SuperSnes9x";
 
+    auto ra_ua_action = ra_menu->addAction(QString("User Agent: SuperSnes9x/%1").arg(VERSION));
+    ra_ua_action->setCheckable(true);
+    ra_ua_action->setChecked(true);
+    ra_ua_action->setEnabled(true);
+
     ra_menu->addSeparator();
 
     ra_achievements_action = ra_menu->addAction(tr("&Achievement List..."));
