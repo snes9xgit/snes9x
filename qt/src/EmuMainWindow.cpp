@@ -430,7 +430,10 @@ void EmuMainWindow::createWidgets()
     });
 
     connect(ra_menu, &QMenu::aboutToShow, [this] {
-        ra_achievements_action->setEnabled(app->isCoreActive());
+        bool enabled = app->config->ra_enabled;
+        ra_login_action->setEnabled(enabled);
+        ra_hardcore_action->setEnabled(enabled);
+        ra_achievements_action->setEnabled(enabled && app->isCoreActive());
     });
 
     menuBar()->addMenu(ra_menu);
