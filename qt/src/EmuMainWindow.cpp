@@ -424,8 +424,13 @@ void EmuMainWindow::createWidgets()
     ra_menu->addSeparator();
 
     ra_achievements_action = ra_menu->addAction(tr("&Achievement List..."));
+    ra_achievements_action->setEnabled(false);
     connect(ra_achievements_action, &QAction::triggered, [&] {
         RA_ShowAchievementList();
+    });
+
+    connect(ra_menu, &QMenu::aboutToShow, [this] {
+        ra_achievements_action->setEnabled(app->isCoreActive());
     });
 
     menuBar()->addMenu(ra_menu);
