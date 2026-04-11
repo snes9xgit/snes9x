@@ -10981,6 +10981,7 @@ INT_PTR CALLBACK DlgCheatSearch(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 					int l = CheatCount(bytes);
 					ListView_SetItemCount (GetDlgItem(hDlg, IDC_ADDYS), l);
 				}
+				SetWindowText(hDlg, TEXT("Cheat Search"));
 				ListView_RedrawItems(GetDlgItem(hDlg, IDC_ADDYS),0, 0x32000);
 				//val_type=1;
 				//SendDlgItemMessage(hDlg, IDC_UNSIGNED, BM_SETCHECK, BST_CHECKED, 0);
@@ -11263,6 +11264,10 @@ INT_PTR CALLBACK DlgCheatSearch(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 				}
 				int l = CheatCount(bytes);
 				ListView_SetItemCount (GetDlgItem(hDlg, IDC_ADDYS), l);
+
+				TCHAR title[64];
+				_stprintf(title, TEXT("Cheat Search - %d Results"), l);
+				SetWindowText(hDlg, title);
 				}
 
 				// if non-modal, update "Prev. Value" column after Search
