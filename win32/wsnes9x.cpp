@@ -11096,8 +11096,14 @@ INT_PTR CALLBACK DlgCheatSearch(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 				GetWindowRect(GetDlgItem(hDlg, IDC_ADDYS), &rc);
 				pt.x = rc.left; pt.y = rc.top;
 			}
-			TrackPopupMenu(hPopup, TPM_LEFTALIGN | TPM_TOPALIGN, pt.x, pt.y, 0, hDlg, NULL);
+			int cmd = TrackPopupMenu(hPopup, TPM_LEFTALIGN | TPM_TOPALIGN | TPM_RETURNCMD, pt.x, pt.y, 0, hDlg, NULL);
 			DestroyMenu(hPopup);
+			if (cmd)
+				SendMessage(hDlg, WM_COMMAND, MAKEWPARAM(cmd, 0), 0);
+			ListView_SetItemState(GetDlgItem(hDlg, IDC_ADDYS), -1, 0, LVIS_SELECTED | LVIS_FOCUSED);
+			EnableWindow(GetDlgItem(hDlg, IDC_C_ADD), FALSE);
+			EnableWindow(GetDlgItem(hDlg, IDC_C_WATCH), FALSE);
+			SetDlgItemText(hDlg, IDC_C_ADD, TEXT("&Add Cheat"));
 			return TRUE;
 		}
 		break;
