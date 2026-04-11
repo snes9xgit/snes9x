@@ -2,6 +2,7 @@
 #include "EmuConfig.hpp"
 #include "EmuMainWindow.hpp"
 #include "SDLInputManager.hpp"
+#include "display.h"
 
 #ifdef RETROACHIEVEMENTS_SUPPORT
 #include "RAIntegrationQt.hpp"
@@ -20,8 +21,19 @@
 #ifdef _WIN32
 int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, const char *lpCmdLine, int nShowCmd)
 {
-    char **argv = nullptr;
     int argc = 0;
+    LPWSTR *argvw = CommandLineToArgvW(GetCommandLineW(), &argc);
+
+    // Convert wide args to UTF-8
+    char **argv = new char *[argc];
+    for (int i = 0; i < argc; i++)
+    {
+        int size = WideCharToMultiByte(CP_UTF8, 0, argvw[i], -1, nullptr, 0, nullptr, nullptr);
+        argv[i] = new char[size];
+        WideCharToMultiByte(CP_UTF8, 0, argvw[i], -1, argv[i], size, nullptr, nullptr);
+    }
+    LocalFree(argvw);
+
     setlocale(LC_ALL, ".utf8");
 #else
 int main(int argc, char *argv[])
@@ -94,6 +106,16 @@ int main(int argc, char *argv[])
 
     emu.updateBindings();
     emu.startInputTimer();
+
+    char *rom_filename = S9xParseArgs(argv, argc);
+    if (rom_filename)
+        emu.window->openFile(rom_filename);
+
+#ifdef _WIN32
+    for (int i = 0; i < argc; i++)
+        delete[] argv[i];
+    delete[] argv;
+#endif
 
 #ifdef RETROACHIEVEMENTS_SUPPORT
     if (emu.config->ra_enabled)
