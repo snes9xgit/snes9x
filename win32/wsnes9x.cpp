@@ -58,6 +58,8 @@
 #include <process.h>
 #include <vector>
 #include <string>
+#include <algorithm>
+#include <set>
 
 #ifdef DEBUGGER
 #include "../debug.h"
@@ -113,6 +115,7 @@ INT_PTR CALLBACK DlgHotkeyConfig(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPar
 INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
 INT_PTR CALLBACK DlgCheatSearch(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
 INT_PTR CALLBACK DlgCheatSearchAdd(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
+INT_PTR CALLBACK DlgCheatMask(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
 INT_PTR CALLBACK DlgCreateMovie(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
 INT_PTR CALLBACK DlgOpenMovie(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
 HRESULT CALLBACK EnumModesCallback( LPDDSURFACEDESC lpDDSurfaceDesc, LPVOID lpContext);
@@ -135,6 +138,7 @@ void S9xWinScanJoypads();
 
 #define TIMER_SCANJOYPADS  (99999)
 #define NC_SEARCHDB 0x8000
+#define WM_CHEATS_ADDED (WM_APP + 1)
 
 constexpr int MAX_SWITCHABLE_HOTKEY_DIALOG_ITEMS = 14;
 constexpr int MAX_SWITCHABLE_HOTKEY_DIALOG_PAGES = 5;
@@ -9952,6 +9956,20 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
             case IDC_CHEAT_LIST:
             {
                 // react only to item changes (we are interested in selection or checkbox)
+                if (((LPNMHDR)lParam)->code == LVN_KEYDOWN)
+                {
+                    NMLVKEYDOWN* key_notify = (NMLVKEYDOWN*)lParam;
+                    if (key_notify->wVKey == VK_DELETE && ListView_GetSelectedCount(GetDlgItem(hDlg, IDC_CHEAT_LIST)) > 0)
+                    {
+                        SendMessage(hDlg, WM_COMMAND, MAKEWPARAM(IDC_C_DELETE_CHEAT, 0), 0);
+                        return TRUE;
+                    }
+                    if (key_notify->wVKey == 'A' && GetKeyState(VK_CONTROL) < 0)
+                    {
+                        ListView_SetItemState(GetDlgItem(hDlg, IDC_CHEAT_LIST), -1, LVIS_SELECTED, LVIS_SELECTED);
+                        return TRUE;
+                    }
+                }
                 if (((LPNMHDR)lParam)->code == LVN_ITEMCHANGED)
                 {
                     NMLISTVIEW* listview_notify = (NMLISTVIEW*)lParam;
@@ -10021,10 +10039,108 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 			default: return false;
 			}
 		}
+	case WM_CONTEXTMENU:
+		if ((HWND)wParam == GetDlgItem(hDlg, IDC_CHEAT_LIST))
+		{
+			HWND lView = GetDlgItem(hDlg, IDC_CHEAT_LIST);
+			int selCount = ListView_GetSelectedCount(lView);
+			HMENU hPopup = CreatePopupMenu();
+			AppendMenu(hPopup, MF_STRING | (selCount > 0 ? 0 : MF_GRAYED), IDC_C_TOGGLE_CHEAT,
+				selCount > 1 ? TEXT("&Toggle Selected Cheats") : TEXT("&Toggle Selected Cheat"));
+			AppendMenu(hPopup, MF_STRING | (selCount > 0 ? 0 : MF_GRAYED), IDC_C_DELETE_CHEAT,
+				selCount > 1 ? TEXT("&Delete Selected Cheats") : TEXT("&Delete Selected Cheat"));
+			POINT pt = { (short)LOWORD(lParam), (short)HIWORD(lParam) };
+			if (pt.x == -1 && pt.y == -1)
+			{
+				RECT rc;
+				GetWindowRect(lView, &rc);
+				pt.x = rc.left; pt.y = rc.top;
+			}
+			int cmd = TrackPopupMenu(hPopup, TPM_LEFTALIGN | TPM_TOPALIGN | TPM_RETURNCMD, pt.x, pt.y, 0, hDlg, NULL);
+			DestroyMenu(hPopup);
+			if (cmd)
+				SendMessage(hDlg, WM_COMMAND, MAKEWPARAM(cmd, 0), 0);
+			return TRUE;
+		}
+		return false;
+	case WM_CHEATS_ADDED:
+		{
+			HWND lView = GetDlgItem(hDlg, IDC_CHEAT_LIST);
+			int list_count = ListView_GetItemCount(lView);
+			for (uint32 i = ct.state.size(); i < Cheat.group.size(); i++)
+			{
+				std::string code_string = S9xCheatGroupToText(i);
+				Utf8ToWide wstring(code_string.c_str());
+
+				LVITEM lvi;
+				memset(&lvi, 0, sizeof(LVITEM));
+				lvi.mask = LVIF_TEXT | LVIF_PARAM;
+				lvi.cchTextMax = CHEAT_SIZE;
+				lvi.pszText = wstring;
+				lvi.lParam = i;
+				lvi.iItem = list_count;
+				int curr_idx = ListView_InsertItem(lView, &lvi);
+				list_count++;
+
+				ct.state.push_back(Untouched);
+
+				Utf8ToWide wstring_name(Cheat.group[i].name.c_str());
+				memset(&lvi, 0, sizeof(LVITEM));
+				lvi.iItem = curr_idx;
+				lvi.iSubItem = 1;
+				lvi.mask = LVIF_TEXT;
+				lvi.cchTextMax = CHEAT_SIZE;
+				lvi.pszText = wstring_name;
+				SendDlgItemMessage(hDlg, IDC_CHEAT_LIST, LVM_SETITEM, 0, (LPARAM)&lvi);
+
+				ListView_SetCheckState(lView, curr_idx, Cheat.group[i].enabled);
+			}
+		}
+		return true;
 	case WM_COMMAND:
 		{
 			switch(LOWORD(wParam))
 			{
+			case IDC_C_TOGGLE_CHEAT:
+				{
+					HWND lView = GetDlgItem(hDlg, IDC_CHEAT_LIST);
+					auto selected_items = get_all_selected_listitems(lView);
+					// deselect all before toggling to prevent multi-select checkbox sync
+					ListView_SetItemState(lView, -1, 0, LVIS_SELECTED | LVIS_FOCUSED);
+					for (const auto &item : selected_items)
+					{
+						BOOL checked = ListView_GetCheckState(lView, item.first);
+						ListView_SetCheckState(lView, item.first, !checked);
+					}
+					sel_idx = -1;
+					internal_change = true;
+					SetDlgItemText(hDlg, IDC_CHEAT_CODE, TEXT(""));
+					SetDlgItemText(hDlg, IDC_CHEAT_DESCRIPTION, TEXT(""));
+					internal_change = false;
+					EnableWindow(GetDlgItem(hDlg, IDC_DELETE_CHEAT), false);
+					EnableWindow(GetDlgItem(hDlg, IDC_UPDATE_CHEAT), false);
+				}
+				break;
+			case IDC_C_DELETE_CHEAT:
+				{
+					HWND lView = GetDlgItem(hDlg, IDC_CHEAT_LIST);
+					auto deleted_items = get_all_selected_listitems(lView);
+					std::reverse(deleted_items.begin(), deleted_items.end());
+					for (const auto &item : deleted_items)
+					{
+						if (item.second >= 0)
+							ct.state[item.second] = Deleted;
+						ListView_DeleteItem(lView, item.first);
+					}
+					sel_idx = -1;
+					internal_change = true;
+					SetDlgItemText(hDlg, IDC_CHEAT_CODE, TEXT(""));
+					SetDlgItemText(hDlg, IDC_CHEAT_DESCRIPTION, TEXT(""));
+					internal_change = false;
+					EnableWindow(GetDlgItem(hDlg, IDC_DELETE_CHEAT), false);
+					EnableWindow(GetDlgItem(hDlg, IDC_UPDATE_CHEAT), false);
+				}
+				break;
 			case IDC_CHEAT_DESCRIPTION:
 				{
 					switch(HIWORD(wParam))
@@ -10148,7 +10264,23 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
                         ListView_DeleteItem(lView, item.first);
                     }
 
-					ListView_SetItemState(lView, old_sel, LVIS_FOCUSED | LVIS_SELECTED, LVIS_FOCUSED | LVIS_SELECTED);
+					int count = ListView_GetItemCount(lView);
+					if (count > 0)
+					{
+						if (old_sel >= count)
+							old_sel = count - 1;
+						ListView_SetItemState(lView, old_sel, LVIS_FOCUSED | LVIS_SELECTED, LVIS_FOCUSED | LVIS_SELECTED);
+					}
+					else
+					{
+						sel_idx = -1;
+						internal_change = true;
+						SetDlgItemText(hDlg, IDC_CHEAT_CODE, TEXT(""));
+						SetDlgItemText(hDlg, IDC_CHEAT_DESCRIPTION, TEXT(""));
+						internal_change = false;
+						EnableWindow(GetDlgItem(hDlg, IDC_DELETE_CHEAT), false);
+						EnableWindow(GetDlgItem(hDlg, IDC_UPDATE_CHEAT), false);
+					}
 				}
 
 				break;
@@ -10309,23 +10441,27 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 							S9xDeleteCheatGroup(l);
 						}
 					}
-				}
-			case IDCANCEL:
-				{
-					bool searchDB = (HIWORD(wParam) == NC_SEARCHDB);
-					DestroyWindow(hDlg);
-					if (searchDB)
+
+					if (HIWORD(wParam) == NC_SEARCHDB)
 					{
+						DestroyWindow(hDlg);
 						WinSearchCheatDatabase();
 						WinShowCheatEditorDialog();
 					}
+					else
+					{
+						DestroyWindow(hDlg);
+					}
 				}
+				return true;
+			case IDCANCEL:
+				SendMessage(hDlg, WM_COMMAND, MAKEWPARAM(IDOK, 0), 0);
 				return true;
 			default:
 				return false;
 			}
 		}
-
+		return false;
 	case WM_DESTROY:
 		S9xSaveCheatFile(S9xGetFilename(".cht", CHEAT_DIR));
 		cheatEditorHWND = NULL;
@@ -10336,8 +10472,33 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 }
 
 
+static void FormatNumber(int n, TCHAR *out, int outSize)
+{
+	TCHAR raw[32];
+	_stprintf(raw, TEXT("%d"), n);
+	int len = lstrlen(raw);
+	int commas = (len - 1) / 3;
+	int pos = 0, src = 0;
+	int firstGroup = len % 3;
+	if (firstGroup == 0) firstGroup = 3;
+	for (int i = 0; i < firstGroup && pos < outSize - 1; i++)
+		out[pos++] = raw[src++];
+	while (src < len && pos < outSize - 2)
+	{
+		out[pos++] = TEXT(',');
+		for (int i = 0; i < 3 && src < len && pos < outSize - 1; i++)
+			out[pos++] = raw[src++];
+	}
+	out[pos] = TEXT('\0');
+}
+
 #define TEST_BIT(a,v) \
 ((a)[(v) >> 5] & (1 << ((v) & 31)))
+
+static std::vector<int> cheatSearchAddrs;
+static int cheatSortColumn = -1;
+static bool cheatSortAscending = true;
+static std::set<int> cheatMaskedAddrs;
 
 static inline int CheatCount(int byteSub)
 {
@@ -10349,6 +10510,61 @@ static inline int CheatCount(int byteSub)
 			b++;
 	}
 	return b;
+}
+
+static int CheatGetValue(int addr, int byteSz, const uint8 *ram, const uint8 *sram, const uint8 *fillram)
+{
+	int q = 0;
+	for (int r = 0; r <= byteSz; r++)
+	{
+		if (addr < 0x20000)
+			q += ram[addr + r] << (8 * r);
+		else if (addr < 0x30000)
+			q += sram[(addr - 0x20000) + r] << (8 * r);
+		else
+			q += fillram[(addr - 0x30000) + r] << (8 * r);
+	}
+	return q;
+}
+
+static void CheatSearchBuildIndex(int byteSub)
+{
+	cheatSearchAddrs.clear();
+	for (int a = 0; a < 0x30000 - byteSub; a++)
+	{
+		if (TEST_BIT(Cheat.ALL_BITS, a) && cheatMaskedAddrs.find(a) == cheatMaskedAddrs.end())
+			cheatSearchAddrs.push_back(a);
+	}
+}
+
+static std::vector<int> CheatSearchGetSelectedAddresses(HWND hLV)
+{
+	std::vector<int> result;
+	int idx = -1;
+	while ((idx = ListView_GetNextItem(hLV, idx, LVNI_SELECTED)) != -1)
+	{
+		if (idx >= 0 && idx < (int)cheatSearchAddrs.size())
+			result.push_back(cheatSearchAddrs[idx]);
+	}
+	return result;
+}
+
+static void CheatSearchSortIndex(int column, bool ascending, int byteSz)
+{
+	std::sort(cheatSearchAddrs.begin(), cheatSearchAddrs.end(),
+		[column, ascending, byteSz](int a, int b) -> bool {
+			int va, vb;
+			if (column == 0) {
+				va = a; vb = b;
+			} else if (column == 1) {
+				va = CheatGetValue(a, byteSz, Cheat.RAM, Cheat.SRAM, Cheat.FillRAM);
+				vb = CheatGetValue(b, byteSz, Cheat.RAM, Cheat.SRAM, Cheat.FillRAM);
+			} else {
+				va = CheatGetValue(a, byteSz, Cheat.CWRAM, Cheat.CSRAM, Cheat.CIRAM);
+				vb = CheatGetValue(b, byteSz, Cheat.CWRAM, Cheat.CSRAM, Cheat.CIRAM);
+			}
+			return ascending ? (va < vb) : (va > vb);
+		});
 }
 
 
@@ -10414,6 +10630,140 @@ bool TestRange(int val_type, S9xCheatDataSize bytes,  uint32 value)
 	}
 }
 
+static std::vector<int> cheatMaskedIndex; // sorted copy for virtual list indexing
+
+static void MaskDlgRebuildIndex()
+{
+	cheatMaskedIndex.assign(cheatMaskedAddrs.begin(), cheatMaskedAddrs.end());
+}
+
+static void MaskDlgUpdateTitle(HWND hDlg)
+{
+	TCHAR title[64];
+	TCHAR numBuf[32];
+	FormatNumber((int)cheatMaskedIndex.size(), numBuf, 32);
+	_stprintf(title, TEXT("Masked Addresses - %s"), numBuf);
+	SetWindowText(hDlg, title);
+}
+
+static void MaskDlgRefresh(HWND hDlg)
+{
+	MaskDlgRebuildIndex();
+	ListView_SetItemCountEx(GetDlgItem(hDlg, IDC_MASK_LIST), (int)cheatMaskedIndex.size(), LVSICF_NOINVALIDATEALL);
+	InvalidateRect(GetDlgItem(hDlg, IDC_MASK_LIST), NULL, TRUE);
+	MaskDlgUpdateTitle(hDlg);
+}
+
+INT_PTR CALLBACK DlgCheatMask(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
+{
+	switch (msg)
+	{
+	case WM_INITDIALOG:
+	{
+		HWND hLV = GetDlgItem(hDlg, IDC_MASK_LIST);
+		ListView_SetExtendedListViewStyle(hLV, LVS_EX_FULLROWSELECT | LVS_EX_DOUBLEBUFFER);
+		LVCOLUMN col = {};
+		col.mask = LVCF_FMT | LVCF_TEXT | LVCF_WIDTH;
+		col.fmt = LVCFMT_LEFT;
+		col.cx = 170;
+		TCHAR hdr[] = TEXT("Address");
+		col.pszText = hdr;
+		ListView_InsertColumn(hLV, 0, &col);
+		MaskDlgRefresh(hDlg);
+		return TRUE;
+	}
+	case WM_NOTIFY:
+	{
+		NMHDR *nmh = (NMHDR *)lParam;
+		if (nmh->idFrom == IDC_MASK_LIST && nmh->code == LVN_GETDISPINFO)
+		{
+			NMLVDISPINFO *nmlvdi = (NMLVDISPINFO *)lParam;
+			int idx = nmlvdi->item.iItem;
+			if (idx < 0 || idx >= (int)cheatMaskedIndex.size())
+				return FALSE;
+			if (nmlvdi->item.mask & LVIF_TEXT)
+			{
+				static TCHAR buf[16];
+				int addr = cheatMaskedIndex[idx];
+				if (addr < 0x20000)
+					_stprintf(buf, TEXT("%06X"), addr + 0x7E0000);
+				else if (addr < 0x30000)
+					_stprintf(buf, TEXT("s%05X"), addr - 0x20000);
+				else
+					_stprintf(buf, TEXT("i%05X"), addr - 0x30000);
+				nmlvdi->item.pszText = buf;
+			}
+			return TRUE;
+		}
+		break;
+	}
+	case WM_COMMAND:
+		switch (LOWORD(wParam))
+		{
+		case IDC_MASK_ADD:
+		{
+			TCHAR buf[20];
+			GetDlgItemText(hDlg, IDC_MASK_ADDRESS, buf, 20);
+			uint32 address = 0;
+			if (ScanAddress(buf, address))
+			{
+				int internal;
+				if (address >= 0x7E0000 && address < 0x7E0000 + 0x20000)
+					internal = address - 0x7E0000;
+				else if (address < 0x10000)
+					internal = address + 0x20000;
+				else
+					internal = address + 0x30000;
+				cheatMaskedAddrs.insert(internal);
+				MaskDlgRefresh(hDlg);
+				SetDlgItemText(hDlg, IDC_MASK_ADDRESS, TEXT(""));
+			}
+			return TRUE;
+		}
+		case IDC_MASK_CLEAR:
+			cheatMaskedAddrs.clear();
+			MaskDlgRefresh(hDlg);
+			return TRUE;
+		case IDC_MASK_REMOVE:
+		{
+			HWND hLV = GetDlgItem(hDlg, IDC_MASK_LIST);
+			int idx = -1;
+			while ((idx = ListView_GetNextItem(hLV, idx, LVNI_SELECTED)) != -1)
+			{
+				if (idx >= 0 && idx < (int)cheatMaskedIndex.size())
+					cheatMaskedAddrs.erase(cheatMaskedIndex[idx]);
+			}
+			MaskDlgRefresh(hDlg);
+			return TRUE;
+		}
+		case IDOK:
+		case IDCANCEL:
+			EndDialog(hDlg, 0);
+			return TRUE;
+		}
+		break;
+	case WM_CONTEXTMENU:
+		if ((HWND)wParam == GetDlgItem(hDlg, IDC_MASK_LIST))
+		{
+			int selCount = ListView_GetSelectedCount(GetDlgItem(hDlg, IDC_MASK_LIST));
+			HMENU hPopup = CreatePopupMenu();
+			AppendMenu(hPopup, MF_STRING | (selCount > 0 ? 0 : MF_GRAYED), IDC_MASK_REMOVE, TEXT("&Remove Selected"));
+			AppendMenu(hPopup, MF_STRING, IDC_MASK_CLEAR, TEXT("&Clear All"));
+			POINT pt = { (short)LOWORD(lParam), (short)HIWORD(lParam) };
+			if (pt.x == -1 && pt.y == -1)
+			{
+				RECT rc;
+				GetWindowRect(GetDlgItem(hDlg, IDC_MASK_LIST), &rc);
+				pt.x = rc.left; pt.y = rc.top;
+			}
+			TrackPopupMenu(hPopup, TPM_LEFTALIGN | TPM_TOPALIGN, pt.x, pt.y, 0, hDlg, NULL);
+			DestroyMenu(hPopup);
+			return TRUE;
+		}
+		break;
+	}
+	return FALSE;
+}
 
 INT_PTR CALLBACK DlgCheatSearch(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 {
@@ -10428,7 +10778,7 @@ INT_PTR CALLBACK DlgCheatSearch(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 		WinRefreshDisplay();
 			if(val_type==0)
 				val_type=1;
-			ListView_SetExtendedListViewStyle(GetDlgItem(hDlg, IDC_ADDYS), LVS_EX_FULLROWSELECT);
+			ListView_SetExtendedListViewStyle(GetDlgItem(hDlg, IDC_ADDYS), LVS_EX_FULLROWSELECT | LVS_EX_DOUBLEBUFFER);
 
 			//defaults
 			SendDlgItemMessage(hDlg, IDC_LESS_THAN, BM_SETCHECK, BST_CHECKED, 0);
@@ -10544,16 +10894,34 @@ INT_PTR CALLBACK DlgCheatSearch(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 
 			ListView_InsertColumn(GetDlgItem(hDlg,IDC_ADDYS),    2,   &col);
 
+			CheatSearchBuildIndex(bytes);
 			{
-					int l = CheatCount(bytes);
+					int l = (int)cheatSearchAddrs.size();
 					ListView_SetItemCount (GetDlgItem(hDlg, IDC_ADDYS), l);
+
+					TCHAR title[64];
+					TCHAR numBuf[32];
+				FormatNumber(l, numBuf, 32);
+				_stprintf(title, TEXT("Cheat Search - %s Results"), numBuf);
+					SetWindowText(hDlg, title);
 			}
+
+			SetTimer(hDlg, 1, 500, NULL);
 
 		}
 		return true;
 
+		case WM_TIMER:
+			if (wParam == 1 && cheatSortColumn >= 0)
+			{
+				CheatSearchSortIndex(cheatSortColumn, cheatSortAscending, bytes);
+				InvalidateRect(GetDlgItem(hDlg, IDC_ADDYS), NULL, FALSE);
+			}
+			return true;
+
 		case WM_DESTROY:
 			{
+				KillTimer(hDlg, 1);
 				cheatSearchHWND = NULL;
 				S9xSaveCheatFile (S9xGetFilename (".cht", CHEAT_DIR));
 				break;
@@ -10574,23 +10942,58 @@ INT_PTR CALLBACK DlgCheatSearch(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 			if(wParam == IDC_ADDYS)
 			{
 				NMHDR * nmh=(NMHDR*)lParam;
+				if(nmh->code == LVN_KEYDOWN)
+				{
+					NMLVKEYDOWN* key_notify = (NMLVKEYDOWN*)lParam;
+					if (key_notify->wVKey == VK_DELETE && ListView_GetSelectedCount(GetDlgItem(hDlg, IDC_ADDYS)) > 0)
+					{
+						SendMessage(hDlg, WM_COMMAND, MAKEWPARAM(IDC_C_MASK_SELECTED, 0), 0);
+						ListView_SetItemState(GetDlgItem(hDlg, IDC_ADDYS), -1, 0, LVIS_SELECTED | LVIS_FOCUSED);
+						EnableWindow(GetDlgItem(hDlg, IDC_C_ADD), FALSE);
+						EnableWindow(GetDlgItem(hDlg, IDC_C_WATCH), FALSE);
+						SetDlgItemText(hDlg, IDC_C_ADD, TEXT("&Add Cheat"));
+						return TRUE;
+					}
+				}
+				if(nmh->code == (UINT)LVN_COLUMNCLICK)
+				{
+					NMLISTVIEW *pnmlv = (NMLISTVIEW *)lParam;
+					if (cheatSortColumn == pnmlv->iSubItem)
+						cheatSortAscending = !cheatSortAscending;
+					else
+					{
+						cheatSortColumn = pnmlv->iSubItem;
+						cheatSortAscending = true;
+					}
+					CheatSearchSortIndex(cheatSortColumn, cheatSortAscending, bytes);
+
+					HWND hLV = GetDlgItem(hDlg, IDC_ADDYS);
+					// Set sort arrow on header
+					HWND hHeader = ListView_GetHeader(hLV);
+					for (int c = 0; c < 3; c++)
+					{
+						HDITEM hdi = {};
+						hdi.mask = HDI_FORMAT;
+						Header_GetItem(hHeader, c, &hdi);
+						hdi.fmt &= ~(HDF_SORTDOWN | HDF_SORTUP);
+						if (c == cheatSortColumn)
+							hdi.fmt |= cheatSortAscending ? HDF_SORTUP : HDF_SORTDOWN;
+						Header_SetItem(hHeader, c, &hdi);
+					}
+
+					ListView_SetItemCountEx(hLV, (int)cheatSearchAddrs.size(), LVSICF_NOINVALIDATEALL);
+					InvalidateRect(hLV, NULL, TRUE);
+					return TRUE;
+				}
 				if(nmh->hwndFrom == GetDlgItem(hDlg, IDC_ADDYS) && nmh->code == LVN_GETDISPINFO)
 				{
 					static TCHAR buf[12]; // the following code assumes this variable is static
 					int i, j;
 					NMLVDISPINFO * nmlvdi=(NMLVDISPINFO*)lParam;
-					j=nmlvdi->item.iItem;
-					j++;
-					for(i=0;i<(0x32000-bytes)&& j>0;i++)
-					{
-						if(TEST_BIT(Cheat.ALL_BITS, i))
-							j--;
-					}
-					if (i>=0x32000 && j!=0)
-					{
+					int idx = nmlvdi->item.iItem;
+					if (idx < 0 || idx >= (int)cheatSearchAddrs.size())
 						return false;
-					}
-					i--;
+					i = cheatSearchAddrs[idx];
 					if(j=nmlvdi->item.iSubItem==0)
 					{
 						if(i < 0x20000)
@@ -10721,15 +11124,13 @@ INT_PTR CALLBACK DlgCheatSearch(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 					// nmlvdi->item.mask=LVIF_TEXT; // This is bad as wine relies on this to not change.
 
 				}
-				else if(nmh->hwndFrom == GetDlgItem(hDlg, IDC_ADDYS) && (nmh->code == (UINT)LVN_ITEMACTIVATE||nmh->code == (UINT)NM_CLICK))
+				else if(nmh->hwndFrom == GetDlgItem(hDlg, IDC_ADDYS) && (nmh->code == (UINT)LVN_ITEMACTIVATE||nmh->code == (UINT)NM_CLICK||nmh->code == LVN_ITEMCHANGED))
 				{
-					bool enable=true;
-					if(-1==ListView_GetSelectionMark(nmh->hwndFrom))
-					{
-						enable=false;
-					}
+					int selCount = ListView_GetSelectedCount(nmh->hwndFrom);
+					bool enable = selCount > 0;
 					EnableWindow(GetDlgItem(hDlg, IDC_C_ADD), enable);
-                    EnableWindow(GetDlgItem(hDlg, IDC_C_WATCH), enable);
+					EnableWindow(GetDlgItem(hDlg, IDC_C_WATCH), enable);
+					SetDlgItemText(hDlg, IDC_C_ADD, selCount > 1 ? TEXT("&Add Cheats") : TEXT("&Add Cheat"));
 				}
 				// allow typing in an address to jump to it
 				else if(nmh->hwndFrom == GetDlgItem(hDlg, IDC_ADDYS) && nmh->code == (UINT)LVN_ODFINDITEM)
@@ -10760,80 +11161,30 @@ INT_PTR CALLBACK DlgCheatSearch(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 					const TCHAR *searchstr = pFindInfo->lvfi.psz;
 
 					int startPos = pFindInfo->iStart;
-					//Is startPos outside the list (happens if last item is selected)
-					if(startPos >= ListView_GetItemCount(GetDlgItem(hDlg,IDC_ADDYS)))
+					int count = (int)cheatSearchAddrs.size();
+					if(startPos >= count)
 						startPos = 0;
-
-					int currentPos, addrPos;
-					for(addrPos=0,currentPos=0;addrPos<(0x32000-bytes)&&currentPos<startPos;addrPos++)
-					{
-						if(TEST_BIT(Cheat.ALL_BITS, addrPos))
-							currentPos++;
-					}
-
-					pResult=currentPos;
-
-					if (addrPos>=0x32000 && addrPos!=0)
-						break;
 
 					// ignore leading 0's
 					while(searchstr[0] == '0' && searchstr[1] != '\0')
 						searchstr++;
 
 					int searchNum = 0;
-
 					ScanAddress(searchstr, searchNum);
 
-
-//					if (searchstr[0] != '7')
-//						break; // all searchable addresses begin with a 7
-
-					bool looped = false;
-
-					// perform search
-					do
+					// search through the sorted index
+					for (int n = 0; n < count; n++)
 					{
-
-						if(addrPos == searchNum)
+						int pos = (startPos + n) % count;
+						if (cheatSearchAddrs[pos] == searchNum)
 						{
-							// select this item and stop search
-							pResult = currentPos;
+							pResult = pos;
 							break;
 						}
-						else if(addrPos > searchNum)
-						{
-							if(looped)
-							{
-								pResult = currentPos;
-								break;
-							}
-
-							// optimization: the items are ordered alphabetically, so go back to the top since we know it can't be anything further down
-							currentPos = 0;
-							addrPos = 0;
-							while(!TEST_BIT(Cheat.ALL_BITS, addrPos))
-								addrPos++;
-							looped = true;
-							continue;
-						}
-
-						//Go to next item
-						addrPos++;
-						while(!TEST_BIT(Cheat.ALL_BITS, addrPos))
-							addrPos++;
-						currentPos++;
-
-						//Need to restart at top?
-						if(currentPos >= ListView_GetItemCount(GetDlgItem(hDlg,IDC_ADDYS)))
-						{
-							currentPos = 0;
-							addrPos = 0;
-							while(!TEST_BIT(Cheat.ALL_BITS, addrPos))
-								addrPos++;
-						}
-
-					//Stop if back to start
-					}while(currentPos != startPos);
+						// if sorted by address ascending, we can find the closest match
+						if (cheatSearchAddrs[pos] > searchNum && pResult == -1)
+							pResult = pos;
+					}
 
 					foundItemOverride = pResult;
 
@@ -10867,6 +11218,42 @@ INT_PTR CALLBACK DlgCheatSearch(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 	case WM_ACTIVATE:
 		ListView_RedrawItems(GetDlgItem(hDlg, IDC_ADDYS),0, 0x32000);
 		break;
+	case WM_CONTEXTMENU:
+		if ((HWND)wParam == GetDlgItem(hDlg, IDC_ADDYS))
+		{
+			HMENU hPopup = CreatePopupMenu();
+			int selCount = ListView_GetSelectedCount(GetDlgItem(hDlg, IDC_ADDYS));
+			AppendMenu(hPopup, MF_STRING, IDC_C_SEARCH, TEXT("&Search"));
+			AppendMenu(hPopup, MF_STRING, IDC_C_RESET, TEXT("&Reset"));
+			AppendMenu(hPopup, MF_SEPARATOR, 0, NULL);
+			AppendMenu(hPopup, MF_STRING | (selCount > 0 ? 0 : MF_GRAYED), IDC_C_ADD,
+				selCount > 1 ? TEXT("Add C&heats") : TEXT("Add C&heat"));
+			AppendMenu(hPopup, MF_STRING | (selCount > 0 ? 0 : MF_GRAYED), IDC_C_WATCH,
+				TEXT("Add to &Watch"));
+			AppendMenu(hPopup, MF_SEPARATOR, 0, NULL);
+			AppendMenu(hPopup, MF_STRING | (selCount == 1 ? 0 : MF_GRAYED), IDC_C_COPY_ADDRESS,
+				TEXT("&Copy Address"));
+			AppendMenu(hPopup, MF_STRING | (selCount > 0 ? 0 : MF_GRAYED), IDC_C_MASK_SELECTED,
+				TEXT("Re&move Selected"));
+			POINT pt = { (short)LOWORD(lParam), (short)HIWORD(lParam) };
+			if (pt.x == -1 && pt.y == -1)
+			{
+				RECT rc;
+				GetWindowRect(GetDlgItem(hDlg, IDC_ADDYS), &rc);
+				pt.x = rc.left; pt.y = rc.top;
+			}
+			int cmd = TrackPopupMenu(hPopup, TPM_LEFTALIGN | TPM_TOPALIGN | TPM_RETURNCMD, pt.x, pt.y, 0, hDlg, NULL);
+			DestroyMenu(hPopup);
+			if (cmd)
+				SendMessage(hDlg, WM_COMMAND, MAKEWPARAM(cmd, 0), 0);
+			ListView_SetItemState(GetDlgItem(hDlg, IDC_ADDYS), -1, 0, LVIS_SELECTED | LVIS_FOCUSED);
+			EnableWindow(GetDlgItem(hDlg, IDC_C_ADD), FALSE);
+			EnableWindow(GetDlgItem(hDlg, IDC_C_WATCH), FALSE);
+			SetDlgItemText(hDlg, IDC_C_ADD, TEXT("&Add Cheat"));
+			return TRUE;
+		}
+		break;
+
 	case WM_COMMAND:
 		{
 			switch(LOWORD(wParam))
@@ -10902,8 +11289,11 @@ INT_PTR CALLBACK DlgCheatSearch(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 				else if(BST_CHECKED==IsDlgButtonChecked(hDlg, IDC_3_BYTE))
 					bytes=S9X_24_BITS;
 				else bytes=S9X_32_BITS;
+				CheatSearchBuildIndex(bytes);
+				if (cheatSortColumn >= 0)
+					CheatSearchSortIndex(cheatSortColumn, cheatSortAscending, bytes);
 				{
-					int l = CheatCount(bytes);
+					int l = (int)cheatSearchAddrs.size();
 					ListView_SetItemCount (GetDlgItem(hDlg, IDC_ADDYS), l);
 				}
 
@@ -10921,65 +11311,98 @@ INT_PTR CALLBACK DlgCheatSearch(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 				break;
 			case IDC_C_ADD:
 				{
-					// account for size
-					struct ICheat cht;
-//					int idx=-1;
-					LVITEM lvi;
-					static TCHAR buf[12]; // the following code assumes this variable is static, I think
-					memset(&cht, 0, sizeof(struct SCheat));
+					HWND hLV = GetDlgItem(hDlg, IDC_ADDYS);
+					std::vector<int> addrs = CheatSearchGetSelectedAddresses(hLV);
 
-					//retrieve and convert to SCheat
+					int cheatSize = 1;
+					if(bytes==S9X_16_BITS) cheatSize=2;
+					else if(bytes==S9X_24_BITS) cheatSize=3;
+					else if(bytes==S9X_32_BITS) cheatSize=4;
 
-					if(bytes==S9X_8_BITS)
-						cht.size=1;
-					else if (bytes==S9X_16_BITS)
-						cht.size=2;
-					else if (bytes==S9X_24_BITS)
-						cht.size=3;
-					else if (bytes==S9X_32_BITS)
-						cht.size=4;
-
-
-					ITEM_QUERY(lvi, IDC_ADDYS, 0, buf, 7);
-
-
-					ScanAddress(buf, cht.address);
-
-					memset(buf, 0, sizeof(TCHAR) * 7);
-					if(val_type==1)
+					if (addrs.size() == 1)
 					{
-						ITEM_QUERY(lvi, IDC_ADDYS, 1, buf, 12);
-						_stscanf(buf, TEXT("%u"), &cht.new_val);
-						memset(buf, 0, sizeof(TCHAR) * 7);
-						ITEM_QUERY(lvi, IDC_ADDYS, 2, buf, 12);
-						_stscanf(buf, TEXT("%u"), &cht.saved_val);
-					}
-					else if(val_type==3)
-					{
-						ITEM_QUERY(lvi, IDC_ADDYS, 1, buf, 12);
-						_stscanf(buf, TEXT("%x"), &cht.new_val);
-						memset(buf, 0, sizeof(TCHAR) * 7);
-						ITEM_QUERY(lvi, IDC_ADDYS, 2, buf, 12);
-						_stscanf(buf, TEXT("%x"), &cht.saved_val);
+						// Single selection: open the Add Cheat dialog
+						int addr = addrs[0];
+						struct ICheat cht;
+						memset(&cht, 0, sizeof(struct SCheat));
+						cht.size = cheatSize;
+						cht.format = val_type;
+
+						if (addr < 0x20000)
+							cht.address = addr + 0x7E0000;
+						else if (addr < 0x30000)
+							cht.address = addr - 0x20000;
+						else
+							cht.address = addr - 0x30000;
+
+						cht.new_val = CheatGetValue(addr, bytes, Cheat.RAM, Cheat.SRAM, Cheat.FillRAM);
+						cht.saved_val = CheatGetValue(addr, bytes, Cheat.CWRAM, Cheat.CSRAM, Cheat.CIRAM);
+
+						DialogBoxParam(g_hInst, MAKEINTRESOURCE(IDD_CHEAT_FROM_SEARCH), hDlg, DlgCheatSearchAdd, (LPARAM)&cht);
 					}
 					else
 					{
-						ITEM_QUERY(lvi, IDC_ADDYS, 1, buf, 12);
-						_stscanf(buf, TEXT("%d"), &cht.new_val);
-						memset(buf, 0, sizeof(TCHAR) * 7);
-						ITEM_QUERY(lvi, IDC_ADDYS, 2, buf, 12);
-						_stscanf(buf, TEXT("%d"), &cht.saved_val);
+						// Multiple selection: batch add all cheats directly
+						for (int addr : addrs)
+						{
+							uint32 address;
+							if (addr < 0x20000)
+								address = addr + 0x7E0000;
+							else if (addr < 0x30000)
+								address = addr - 0x20000;
+							else
+								address = addr - 0x30000;
+
+							int curVal = CheatGetValue(addr, bytes, Cheat.RAM, Cheat.SRAM, Cheat.FillRAM);
+
+							char name[22];
+							snprintf(name, sizeof(name), "%06X", address);
+
+							std::string code_string;
+							char code[10];
+							for (int byteIndex = 0; byteIndex < cheatSize; byteIndex++)
+							{
+								if (byteIndex > 0)
+									code_string += '+';
+								snprintf(code, 10, "%x=%x", address + byteIndex, (curVal >> (8 * byteIndex)) & 0xFF);
+								code_string += code;
+							}
+
+							int index = S9xAddCheatGroup(name, code_string.c_str());
+							if (index >= 0)
+								S9xEnableCheatGroup(index);
+						}
 					}
-					cht.format=val_type;
-					//invoke dialog
-					DialogBoxParam(g_hInst, MAKEINTRESOURCE(IDD_CHEAT_FROM_SEARCH), hDlg, DlgCheatSearchAdd, (LPARAM)&cht);
+					if (cheatEditorHWND)
+						SendMessage(cheatEditorHWND, WM_CHEATS_ADDED, 0, 0);
 				}
 				break;
 			case IDC_C_RESET:
 				S9xStartCheatSearch(&Cheat);
+				cheatSortColumn = -1;
+				cheatSortAscending = true;
+				CheatSearchBuildIndex(bytes);
 				{
-					int l = CheatCount(bytes);
+					int l = (int)cheatSearchAddrs.size();
 					ListView_SetItemCount (GetDlgItem(hDlg, IDC_ADDYS), l);
+
+					TCHAR title[64];
+					TCHAR numBuf[32];
+				FormatNumber(l, numBuf, 32);
+				_stprintf(title, TEXT("Cheat Search - %s Results"), numBuf);
+					SetWindowText(hDlg, title);
+				}
+				// Clear sort arrows
+				{
+					HWND hHeader = ListView_GetHeader(GetDlgItem(hDlg, IDC_ADDYS));
+					for (int c = 0; c < 3; c++)
+					{
+						HDITEM hdi = {};
+						hdi.mask = HDI_FORMAT;
+						Header_GetItem(hHeader, c, &hdi);
+						hdi.fmt &= ~(HDF_SORTDOWN | HDF_SORTUP);
+						Header_SetItem(hHeader, c, &hdi);
+					}
 				}
 				ListView_RedrawItems(GetDlgItem(hDlg, IDC_ADDYS),0, 0x32000);
 				//val_type=1;
@@ -11011,36 +11434,37 @@ INT_PTR CALLBACK DlgCheatSearch(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 				return true;
 			case IDC_C_WATCH:
 				{
-					uint32 address = (uint32)-1;
-					TCHAR buf [12];
-					LVITEM lvi;
-					ITEM_QUERY(lvi, IDC_ADDYS, 0, buf, 7);
-					ScanAddress(buf, address);
+					HWND hLV = GetDlgItem(hDlg, IDC_ADDYS);
+					std::vector<int> addrs = CheatSearchGetSelectedAddresses(hLV);
+					const unsigned int maxWatches = sizeof(watches)/sizeof(*watches);
+
+					int watchSize = 1;
+					if(bytes==S9X_16_BITS) watchSize=2;
+					else if(bytes==S9X_24_BITS) watchSize=3;
+					else if(bytes==S9X_32_BITS) watchSize=4;
+
+					for (size_t n = 0; n < addrs.size(); n++)
 					{
-						memset(buf, 0, sizeof(TCHAR) * 7);
+						uint32 address;
+						if (addrs[n] < 0x20000)
+							address = addrs[n] + 0x7E0000;
+						else if (addrs[n] < 0x30000)
+							address = addrs[n] - 0x20000;
+						else
+							address = addrs[n] - 0x30000;
 
 						unsigned int i;
-						for(i = 0 ; i < sizeof(watches)/sizeof(*watches) ; i++)
+						for(i = 0; i < maxWatches; i++)
 							if(!watches[i].on || watches[i].address == address)
 								break;
-						if(i >= sizeof(watches)/sizeof(*watches))
-							i = (unsigned int)(sizeof(watches)/sizeof(*watches)-1);
+						if(i >= maxWatches)
+							break; // no more watch slots
 
 						watches[i].on = true;
-
-						// account for size
-						if(bytes==S9X_8_BITS)
-							watches[i].size=1;
-						else if (bytes==S9X_16_BITS)
-							watches[i].size=2;
-						else if (bytes==S9X_24_BITS)
-							watches[i].size=3;
-						else if (bytes==S9X_32_BITS)
-							watches[i].size=4;
-
-						watches[i].format=val_type;
-						watches[i].address=address;
-						strncpy(watches[i].buf,_tToChar(buf),12);
+						watches[i].size = watchSize;
+						watches[i].format = val_type;
+						watches[i].address = address;
+						watches[i].buf[0] = '\0';
 						if(address < 0x7E0000 + 0x20000)
 							sprintf(watches[i].desc, "%6X", address);
 						else if(address < 0x7E0000 + 0x30000)
@@ -11053,6 +11477,75 @@ INT_PTR CALLBACK DlgCheatSearch(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 						GetClientRect (GUI.hWnd, &rect);
 						InvalidateRect (GUI.hWnd, &rect, true);
 					}
+				}
+				break;
+			case IDC_C_COPY_ADDRESS:
+				{
+					HWND hLV = GetDlgItem(hDlg, IDC_ADDYS);
+					int sel = ListView_GetNextItem(hLV, -1, LVNI_SELECTED);
+					if (sel >= 0 && sel < (int)cheatSearchAddrs.size())
+					{
+						int addr = cheatSearchAddrs[sel];
+						TCHAR buf[16];
+						if (addr < 0x20000)
+							_stprintf(buf, TEXT("%06X"), addr + 0x7E0000);
+						else if (addr < 0x30000)
+							_stprintf(buf, TEXT("s%05X"), addr - 0x20000);
+						else
+							_stprintf(buf, TEXT("i%05X"), addr - 0x30000);
+						if (OpenClipboard(hDlg))
+						{
+							EmptyClipboard();
+							size_t len = (lstrlen(buf) + 1) * sizeof(TCHAR);
+							HGLOBAL hMem = GlobalAlloc(GMEM_MOVEABLE, len);
+							if (hMem)
+							{
+								memcpy(GlobalLock(hMem), buf, len);
+								GlobalUnlock(hMem);
+								SetClipboardData(CF_UNICODETEXT, hMem);
+							}
+							CloseClipboard();
+						}
+					}
+				}
+				break;
+			case IDC_C_MASK_SELECTED:
+				{
+					HWND hLV = GetDlgItem(hDlg, IDC_ADDYS);
+					std::vector<int> addrs = CheatSearchGetSelectedAddresses(hLV);
+					for (int addr : addrs)
+						cheatMaskedAddrs.insert(addr);
+					CheatSearchBuildIndex(bytes);
+					if (cheatSortColumn >= 0)
+						CheatSearchSortIndex(cheatSortColumn, cheatSortAscending, bytes);
+					int l = (int)cheatSearchAddrs.size();
+					ListView_SetItemCount(hLV, l);
+					InvalidateRect(hLV, NULL, TRUE);
+
+					TCHAR title[64];
+					TCHAR numBuf[32];
+					FormatNumber(l, numBuf, 32);
+					_stprintf(title, TEXT("Cheat Search - %s Results"), numBuf);
+					SetWindowText(hDlg, title);
+				}
+				break;
+			case IDC_C_MASK:
+				{
+					DialogBox(g_hInst, MAKEINTRESOURCE(IDD_CHEAT_MASK), hDlg, DlgCheatMask);
+					// Rebuild index after mask changes
+					HWND hLV = GetDlgItem(hDlg, IDC_ADDYS);
+					CheatSearchBuildIndex(bytes);
+					if (cheatSortColumn >= 0)
+						CheatSearchSortIndex(cheatSortColumn, cheatSortAscending, bytes);
+					int l = (int)cheatSearchAddrs.size();
+					ListView_SetItemCount(hLV, l);
+					InvalidateRect(hLV, NULL, TRUE);
+
+					TCHAR title[64];
+					TCHAR numBuf[32];
+					FormatNumber(l, numBuf, 32);
+					_stprintf(title, TEXT("Cheat Search - %s Results"), numBuf);
+					SetWindowText(hDlg, title);
 				}
 				break;
 			case IDC_C_CLEARWATCH:
@@ -11261,8 +11754,17 @@ INT_PTR CALLBACK DlgCheatSearch(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 					S9xSearchForChange (&Cheat, comp_type,
                          bytes, (val_type==2), FALSE);
 				}
-				int l = CheatCount(bytes);
+				CheatSearchBuildIndex(bytes);
+				if (cheatSortColumn >= 0)
+					CheatSearchSortIndex(cheatSortColumn, cheatSortAscending, bytes);
+				int l = (int)cheatSearchAddrs.size();
 				ListView_SetItemCount (GetDlgItem(hDlg, IDC_ADDYS), l);
+
+				TCHAR title[64];
+				TCHAR numBuf[32];
+				FormatNumber(l, numBuf, 32);
+				_stprintf(title, TEXT("Cheat Search - %s Results"), numBuf);
+				SetWindowText(hDlg, title);
 				}
 
 				// if non-modal, update "Prev. Value" column after Search
