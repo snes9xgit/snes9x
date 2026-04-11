@@ -10062,7 +10062,7 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 				SendMessage(hDlg, WM_COMMAND, MAKEWPARAM(cmd, 0), 0);
 			return TRUE;
 		}
-		break;
+		return false;
 	case WM_CHEATS_ADDED:
 		{
 			HWND lView = GetDlgItem(hDlg, IDC_CHEAT_LIST);
@@ -10264,7 +10264,23 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
                         ListView_DeleteItem(lView, item.first);
                     }
 
-					ListView_SetItemState(lView, old_sel, LVIS_FOCUSED | LVIS_SELECTED, LVIS_FOCUSED | LVIS_SELECTED);
+					int count = ListView_GetItemCount(lView);
+					if (count > 0)
+					{
+						if (old_sel >= count)
+							old_sel = count - 1;
+						ListView_SetItemState(lView, old_sel, LVIS_FOCUSED | LVIS_SELECTED, LVIS_FOCUSED | LVIS_SELECTED);
+					}
+					else
+					{
+						sel_idx = -1;
+						internal_change = true;
+						SetDlgItemText(hDlg, IDC_CHEAT_CODE, TEXT(""));
+						SetDlgItemText(hDlg, IDC_CHEAT_DESCRIPTION, TEXT(""));
+						internal_change = false;
+						EnableWindow(GetDlgItem(hDlg, IDC_DELETE_CHEAT), false);
+						EnableWindow(GetDlgItem(hDlg, IDC_UPDATE_CHEAT), false);
+					}
 				}
 
 				break;
@@ -10425,23 +10441,27 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 							S9xDeleteCheatGroup(l);
 						}
 					}
-				}
-			case IDCANCEL:
-				{
-					bool searchDB = (HIWORD(wParam) == NC_SEARCHDB);
-					DestroyWindow(hDlg);
-					if (searchDB)
+
+					if (HIWORD(wParam) == NC_SEARCHDB)
 					{
+						DestroyWindow(hDlg);
 						WinSearchCheatDatabase();
 						WinShowCheatEditorDialog();
 					}
+					else
+					{
+						DestroyWindow(hDlg);
+					}
 				}
+				return true;
+			case IDCANCEL:
+				SendMessage(hDlg, WM_COMMAND, MAKEWPARAM(IDOK, 0), 0);
 				return true;
 			default:
 				return false;
 			}
 		}
-
+		return false;
 	case WM_DESTROY:
 		S9xSaveCheatFile(S9xGetFilename(".cht", CHEAT_DIR));
 		cheatEditorHWND = NULL;
