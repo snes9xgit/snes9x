@@ -9964,6 +9964,11 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
                         SendMessage(hDlg, WM_COMMAND, MAKEWPARAM(IDC_C_DELETE_CHEAT, 0), 0);
                         return TRUE;
                     }
+                    if (key_notify->wVKey == 'A' && GetKeyState(VK_CONTROL) < 0)
+                    {
+                        ListView_SetItemState(GetDlgItem(hDlg, IDC_CHEAT_LIST), -1, LVIS_SELECTED, LVIS_SELECTED);
+                        return TRUE;
+                    }
                 }
                 if (((LPNMHDR)lParam)->code == LVN_ITEMCHANGED)
                 {
