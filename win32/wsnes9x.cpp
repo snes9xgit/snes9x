@@ -138,6 +138,7 @@ void S9xWinScanJoypads();
 
 #define TIMER_SCANJOYPADS  (99999)
 #define NC_SEARCHDB 0x8000
+#define WM_CHEATS_ADDED (WM_APP + 1)
 
 constexpr int MAX_SWITCHABLE_HOTKEY_DIALOG_ITEMS = 14;
 constexpr int MAX_SWITCHABLE_HOTKEY_DIALOG_PAGES = 5;
@@ -10057,6 +10058,40 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 			return TRUE;
 		}
 		break;
+	case WM_CHEATS_ADDED:
+		{
+			HWND lView = GetDlgItem(hDlg, IDC_CHEAT_LIST);
+			int list_count = ListView_GetItemCount(lView);
+			for (uint32 i = ct.state.size(); i < Cheat.group.size(); i++)
+			{
+				std::string code_string = S9xCheatGroupToText(i);
+				Utf8ToWide wstring(code_string.c_str());
+
+				LVITEM lvi;
+				memset(&lvi, 0, sizeof(LVITEM));
+				lvi.mask = LVIF_TEXT | LVIF_PARAM;
+				lvi.cchTextMax = CHEAT_SIZE;
+				lvi.pszText = wstring;
+				lvi.lParam = i;
+				lvi.iItem = list_count;
+				int curr_idx = ListView_InsertItem(lView, &lvi);
+				list_count++;
+
+				ct.state.push_back(Untouched);
+
+				Utf8ToWide wstring_name(Cheat.group[i].name.c_str());
+				memset(&lvi, 0, sizeof(LVITEM));
+				lvi.iItem = curr_idx;
+				lvi.iSubItem = 1;
+				lvi.mask = LVIF_TEXT;
+				lvi.cchTextMax = CHEAT_SIZE;
+				lvi.pszText = wstring_name;
+				SendDlgItemMessage(hDlg, IDC_CHEAT_LIST, LVM_SETITEM, 0, (LPARAM)&lvi);
+
+				ListView_SetCheckState(lView, curr_idx, Cheat.group[i].enabled);
+			}
+		}
+		return true;
 	case WM_COMMAND:
 		{
 			switch(LOWORD(wParam))
@@ -11313,6 +11348,8 @@ INT_PTR CALLBACK DlgCheatSearch(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 								S9xEnableCheatGroup(index);
 						}
 					}
+					if (cheatEditorHWND)
+						SendMessage(cheatEditorHWND, WM_CHEATS_ADDED, 0, 0);
 				}
 				break;
 			case IDC_C_RESET:
