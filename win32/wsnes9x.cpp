@@ -11173,8 +11173,10 @@ INT_PTR CALLBACK DlgCheatSearch(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 					else if(bytes==S9X_24_BITS) cheatSize=3;
 					else if(bytes==S9X_32_BITS) cheatSize=4;
 
-					for (int addr : addrs)
+					if (addrs.size() == 1)
 					{
+						// Single selection: open the Add Cheat dialog
+						int addr = addrs[0];
 						struct ICheat cht;
 						memset(&cht, 0, sizeof(struct SCheat));
 						cht.size = cheatSize;
@@ -11191,6 +11193,39 @@ INT_PTR CALLBACK DlgCheatSearch(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 						cht.saved_val = CheatGetValue(addr, bytes, Cheat.CWRAM, Cheat.CSRAM, Cheat.CIRAM);
 
 						DialogBoxParam(g_hInst, MAKEINTRESOURCE(IDD_CHEAT_FROM_SEARCH), hDlg, DlgCheatSearchAdd, (LPARAM)&cht);
+					}
+					else
+					{
+						// Multiple selection: batch add all cheats directly
+						for (int addr : addrs)
+						{
+							uint32 address;
+							if (addr < 0x20000)
+								address = addr + 0x7E0000;
+							else if (addr < 0x30000)
+								address = addr - 0x20000;
+							else
+								address = addr - 0x30000;
+
+							int curVal = CheatGetValue(addr, bytes, Cheat.RAM, Cheat.SRAM, Cheat.FillRAM);
+
+							char name[22];
+							snprintf(name, sizeof(name), "%06X", address);
+
+							std::string code_string;
+							char code[10];
+							for (int byteIndex = 0; byteIndex < cheatSize; byteIndex++)
+							{
+								if (byteIndex > 0)
+									code_string += '+';
+								snprintf(code, 10, "%x=%x", address + byteIndex, (curVal >> (8 * byteIndex)) & 0xFF);
+								code_string += code;
+							}
+
+							int index = S9xAddCheatGroup(name, code_string.c_str());
+							if (index >= 0)
+								S9xEnableCheatGroup(index);
+						}
 					}
 				}
 				break;
