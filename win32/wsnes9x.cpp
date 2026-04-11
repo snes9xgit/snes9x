@@ -10497,26 +10497,28 @@ bool TestRange(int val_type, S9xCheatDataSize bytes,  uint32 value)
 	}
 }
 
-static void MaskDlgRefreshList(HWND hDlg)
+static std::vector<int> cheatMaskedIndex; // sorted copy for virtual list indexing
+
+static void MaskDlgRebuildIndex()
 {
-	HWND hLV = GetDlgItem(hDlg, IDC_MASK_LIST);
-	ListView_DeleteAllItems(hLV);
-	int idx = 0;
-	for (int addr : cheatMaskedAddrs)
-	{
-		TCHAR buf[16];
-		if (addr < 0x20000)
-			_stprintf(buf, TEXT("%06X"), addr + 0x7E0000);
-		else if (addr < 0x30000)
-			_stprintf(buf, TEXT("s%05X"), addr - 0x20000);
-		else
-			_stprintf(buf, TEXT("i%05X"), addr - 0x30000);
-		LVITEM lvi = {};
-		lvi.mask = LVIF_TEXT;
-		lvi.iItem = idx++;
-		lvi.pszText = buf;
-		ListView_InsertItem(hLV, &lvi);
-	}
+	cheatMaskedIndex.assign(cheatMaskedAddrs.begin(), cheatMaskedAddrs.end());
+}
+
+static void MaskDlgUpdateTitle(HWND hDlg)
+{
+	TCHAR title[64];
+	TCHAR numBuf[32];
+	FormatNumber((int)cheatMaskedIndex.size(), numBuf, 32);
+	_stprintf(title, TEXT("Masked Addresses - %s"), numBuf);
+	SetWindowText(hDlg, title);
+}
+
+static void MaskDlgRefresh(HWND hDlg)
+{
+	MaskDlgRebuildIndex();
+	ListView_SetItemCountEx(GetDlgItem(hDlg, IDC_MASK_LIST), (int)cheatMaskedIndex.size(), LVSICF_NOINVALIDATEALL);
+	InvalidateRect(GetDlgItem(hDlg, IDC_MASK_LIST), NULL, TRUE);
+	MaskDlgUpdateTitle(hDlg);
 }
 
 INT_PTR CALLBACK DlgCheatMask(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
@@ -10534,14 +10536,33 @@ INT_PTR CALLBACK DlgCheatMask(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 		TCHAR hdr[] = TEXT("Address");
 		col.pszText = hdr;
 		ListView_InsertColumn(hLV, 0, &col);
-		MaskDlgRefreshList(hDlg);
-
-		TCHAR title[64];
-		TCHAR numBuf[32];
-		FormatNumber((int)cheatMaskedAddrs.size(), numBuf, 32);
-		_stprintf(title, TEXT("Masked Addresses - %s"), numBuf);
-		SetWindowText(hDlg, title);
+		MaskDlgRefresh(hDlg);
 		return TRUE;
+	}
+	case WM_NOTIFY:
+	{
+		NMHDR *nmh = (NMHDR *)lParam;
+		if (nmh->idFrom == IDC_MASK_LIST && nmh->code == LVN_GETDISPINFO)
+		{
+			NMLVDISPINFO *nmlvdi = (NMLVDISPINFO *)lParam;
+			int idx = nmlvdi->item.iItem;
+			if (idx < 0 || idx >= (int)cheatMaskedIndex.size())
+				return FALSE;
+			if (nmlvdi->item.mask & LVIF_TEXT)
+			{
+				static TCHAR buf[16];
+				int addr = cheatMaskedIndex[idx];
+				if (addr < 0x20000)
+					_stprintf(buf, TEXT("%06X"), addr + 0x7E0000);
+				else if (addr < 0x30000)
+					_stprintf(buf, TEXT("s%05X"), addr - 0x20000);
+				else
+					_stprintf(buf, TEXT("i%05X"), addr - 0x30000);
+				nmlvdi->item.pszText = buf;
+			}
+			return TRUE;
+		}
+		break;
 	}
 	case WM_COMMAND:
 		switch (LOWORD(wParam))
@@ -10561,51 +10582,25 @@ INT_PTR CALLBACK DlgCheatMask(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 				else
 					internal = address + 0x30000;
 				cheatMaskedAddrs.insert(internal);
-				MaskDlgRefreshList(hDlg);
+				MaskDlgRefresh(hDlg);
 				SetDlgItemText(hDlg, IDC_MASK_ADDRESS, TEXT(""));
-
-				TCHAR title[64];
-				TCHAR numBuf[32];
-				FormatNumber((int)cheatMaskedAddrs.size(), numBuf, 32);
-				_stprintf(title, TEXT("Masked Addresses - %s"), numBuf);
-				SetWindowText(hDlg, title);
 			}
 			return TRUE;
 		}
 		case IDC_MASK_CLEAR:
 			cheatMaskedAddrs.clear();
-			MaskDlgRefreshList(hDlg);
-			SetWindowText(hDlg, TEXT("Masked Addresses - 0"));
+			MaskDlgRefresh(hDlg);
 			return TRUE;
 		case IDC_MASK_REMOVE:
 		{
 			HWND hLV = GetDlgItem(hDlg, IDC_MASK_LIST);
-			std::vector<int> toRemove;
 			int idx = -1;
 			while ((idx = ListView_GetNextItem(hLV, idx, LVNI_SELECTED)) != -1)
 			{
-				TCHAR buf[16];
-				ListView_GetItemText(hLV, idx, 0, buf, 16);
-				uint32 address = 0;
-				ScanAddress(buf, address);
-				int internal;
-				if (address >= 0x7E0000 && address < 0x7E0000 + 0x20000)
-					internal = address - 0x7E0000;
-				else if (address < 0x10000)
-					internal = address + 0x20000;
-				else
-					internal = address + 0x30000;
-				toRemove.push_back(internal);
+				if (idx >= 0 && idx < (int)cheatMaskedIndex.size())
+					cheatMaskedAddrs.erase(cheatMaskedIndex[idx]);
 			}
-			for (int a : toRemove)
-				cheatMaskedAddrs.erase(a);
-			MaskDlgRefreshList(hDlg);
-
-			TCHAR title[64];
-			TCHAR numBuf[32];
-			FormatNumber((int)cheatMaskedAddrs.size(), numBuf, 32);
-			_stprintf(title, TEXT("Masked Addresses - %s"), numBuf);
-			SetWindowText(hDlg, title);
+			MaskDlgRefresh(hDlg);
 			return TRUE;
 		}
 		case IDOK:
