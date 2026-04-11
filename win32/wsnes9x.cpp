@@ -58,6 +58,7 @@
 #include <process.h>
 #include <vector>
 #include <string>
+#include <algorithm>
 
 #ifdef DEBUGGER
 #include "../debug.h"
@@ -10336,8 +10337,32 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 }
 
 
+static void FormatNumber(int n, TCHAR *out, int outSize)
+{
+	TCHAR raw[32];
+	_stprintf(raw, TEXT("%d"), n);
+	int len = lstrlen(raw);
+	int commas = (len - 1) / 3;
+	int pos = 0, src = 0;
+	int firstGroup = len % 3;
+	if (firstGroup == 0) firstGroup = 3;
+	for (int i = 0; i < firstGroup && pos < outSize - 1; i++)
+		out[pos++] = raw[src++];
+	while (src < len && pos < outSize - 2)
+	{
+		out[pos++] = TEXT(',');
+		for (int i = 0; i < 3 && src < len && pos < outSize - 1; i++)
+			out[pos++] = raw[src++];
+	}
+	out[pos] = TEXT('\0');
+}
+
 #define TEST_BIT(a,v) \
 ((a)[(v) >> 5] & (1 << ((v) & 31)))
+
+static std::vector<int> cheatSearchAddrs;
+static int cheatSortColumn = -1;
+static bool cheatSortAscending = true;
 
 static inline int CheatCount(int byteSub)
 {
@@ -10349,6 +10374,49 @@ static inline int CheatCount(int byteSub)
 			b++;
 	}
 	return b;
+}
+
+static int CheatGetValue(int addr, int byteSz, const uint8 *ram, const uint8 *sram, const uint8 *fillram)
+{
+	int q = 0;
+	for (int r = 0; r <= byteSz; r++)
+	{
+		if (addr < 0x20000)
+			q += ram[addr + r] << (8 * r);
+		else if (addr < 0x30000)
+			q += sram[(addr - 0x20000) + r] << (8 * r);
+		else
+			q += fillram[(addr - 0x30000) + r] << (8 * r);
+	}
+	return q;
+}
+
+static void CheatSearchBuildIndex(int byteSub)
+{
+	cheatSearchAddrs.clear();
+	for (int a = 0; a < 0x30000 - byteSub; a++)
+	{
+		if (TEST_BIT(Cheat.ALL_BITS, a))
+			cheatSearchAddrs.push_back(a);
+	}
+}
+
+static void CheatSearchSortIndex(int column, bool ascending, int byteSz)
+{
+	std::sort(cheatSearchAddrs.begin(), cheatSearchAddrs.end(),
+		[column, ascending, byteSz](int a, int b) -> bool {
+			int va, vb;
+			if (column == 0) {
+				va = a; vb = b;
+			} else if (column == 1) {
+				va = CheatGetValue(a, byteSz, Cheat.RAM, Cheat.SRAM, Cheat.FillRAM);
+				vb = CheatGetValue(b, byteSz, Cheat.RAM, Cheat.SRAM, Cheat.FillRAM);
+			} else {
+				va = CheatGetValue(a, byteSz, Cheat.CWRAM, Cheat.CSRAM, Cheat.CIRAM);
+				vb = CheatGetValue(b, byteSz, Cheat.CWRAM, Cheat.CSRAM, Cheat.CIRAM);
+			}
+			return ascending ? (va < vb) : (va > vb);
+		});
 }
 
 
@@ -10544,9 +10612,16 @@ INT_PTR CALLBACK DlgCheatSearch(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 
 			ListView_InsertColumn(GetDlgItem(hDlg,IDC_ADDYS),    2,   &col);
 
+			CheatSearchBuildIndex(bytes);
 			{
-					int l = CheatCount(bytes);
+					int l = (int)cheatSearchAddrs.size();
 					ListView_SetItemCount (GetDlgItem(hDlg, IDC_ADDYS), l);
+
+					TCHAR title[64];
+					TCHAR numBuf[32];
+				FormatNumber(l, numBuf, 32);
+				_stprintf(title, TEXT("Cheat Search - %s Results"), numBuf);
+					SetWindowText(hDlg, title);
 			}
 
 		}
@@ -10574,23 +10649,45 @@ INT_PTR CALLBACK DlgCheatSearch(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 			if(wParam == IDC_ADDYS)
 			{
 				NMHDR * nmh=(NMHDR*)lParam;
+				if(nmh->code == (UINT)LVN_COLUMNCLICK)
+				{
+					NMLISTVIEW *pnmlv = (NMLISTVIEW *)lParam;
+					if (cheatSortColumn == pnmlv->iSubItem)
+						cheatSortAscending = !cheatSortAscending;
+					else
+					{
+						cheatSortColumn = pnmlv->iSubItem;
+						cheatSortAscending = true;
+					}
+					CheatSearchSortIndex(cheatSortColumn, cheatSortAscending, bytes);
+
+					HWND hLV = GetDlgItem(hDlg, IDC_ADDYS);
+					// Set sort arrow on header
+					HWND hHeader = ListView_GetHeader(hLV);
+					for (int c = 0; c < 3; c++)
+					{
+						HDITEM hdi = {};
+						hdi.mask = HDI_FORMAT;
+						Header_GetItem(hHeader, c, &hdi);
+						hdi.fmt &= ~(HDF_SORTDOWN | HDF_SORTUP);
+						if (c == cheatSortColumn)
+							hdi.fmt |= cheatSortAscending ? HDF_SORTUP : HDF_SORTDOWN;
+						Header_SetItem(hHeader, c, &hdi);
+					}
+
+					ListView_SetItemCountEx(hLV, (int)cheatSearchAddrs.size(), LVSICF_NOINVALIDATEALL);
+					InvalidateRect(hLV, NULL, TRUE);
+					return TRUE;
+				}
 				if(nmh->hwndFrom == GetDlgItem(hDlg, IDC_ADDYS) && nmh->code == LVN_GETDISPINFO)
 				{
 					static TCHAR buf[12]; // the following code assumes this variable is static
 					int i, j;
 					NMLVDISPINFO * nmlvdi=(NMLVDISPINFO*)lParam;
-					j=nmlvdi->item.iItem;
-					j++;
-					for(i=0;i<(0x32000-bytes)&& j>0;i++)
-					{
-						if(TEST_BIT(Cheat.ALL_BITS, i))
-							j--;
-					}
-					if (i>=0x32000 && j!=0)
-					{
+					int idx = nmlvdi->item.iItem;
+					if (idx < 0 || idx >= (int)cheatSearchAddrs.size())
 						return false;
-					}
-					i--;
+					i = cheatSearchAddrs[idx];
 					if(j=nmlvdi->item.iSubItem==0)
 					{
 						if(i < 0x20000)
@@ -10760,80 +10857,30 @@ INT_PTR CALLBACK DlgCheatSearch(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 					const TCHAR *searchstr = pFindInfo->lvfi.psz;
 
 					int startPos = pFindInfo->iStart;
-					//Is startPos outside the list (happens if last item is selected)
-					if(startPos >= ListView_GetItemCount(GetDlgItem(hDlg,IDC_ADDYS)))
+					int count = (int)cheatSearchAddrs.size();
+					if(startPos >= count)
 						startPos = 0;
-
-					int currentPos, addrPos;
-					for(addrPos=0,currentPos=0;addrPos<(0x32000-bytes)&&currentPos<startPos;addrPos++)
-					{
-						if(TEST_BIT(Cheat.ALL_BITS, addrPos))
-							currentPos++;
-					}
-
-					pResult=currentPos;
-
-					if (addrPos>=0x32000 && addrPos!=0)
-						break;
 
 					// ignore leading 0's
 					while(searchstr[0] == '0' && searchstr[1] != '\0')
 						searchstr++;
 
 					int searchNum = 0;
-
 					ScanAddress(searchstr, searchNum);
 
-
-//					if (searchstr[0] != '7')
-//						break; // all searchable addresses begin with a 7
-
-					bool looped = false;
-
-					// perform search
-					do
+					// search through the sorted index
+					for (int n = 0; n < count; n++)
 					{
-
-						if(addrPos == searchNum)
+						int pos = (startPos + n) % count;
+						if (cheatSearchAddrs[pos] == searchNum)
 						{
-							// select this item and stop search
-							pResult = currentPos;
+							pResult = pos;
 							break;
 						}
-						else if(addrPos > searchNum)
-						{
-							if(looped)
-							{
-								pResult = currentPos;
-								break;
-							}
-
-							// optimization: the items are ordered alphabetically, so go back to the top since we know it can't be anything further down
-							currentPos = 0;
-							addrPos = 0;
-							while(!TEST_BIT(Cheat.ALL_BITS, addrPos))
-								addrPos++;
-							looped = true;
-							continue;
-						}
-
-						//Go to next item
-						addrPos++;
-						while(!TEST_BIT(Cheat.ALL_BITS, addrPos))
-							addrPos++;
-						currentPos++;
-
-						//Need to restart at top?
-						if(currentPos >= ListView_GetItemCount(GetDlgItem(hDlg,IDC_ADDYS)))
-						{
-							currentPos = 0;
-							addrPos = 0;
-							while(!TEST_BIT(Cheat.ALL_BITS, addrPos))
-								addrPos++;
-						}
-
-					//Stop if back to start
-					}while(currentPos != startPos);
+						// if sorted by address ascending, we can find the closest match
+						if (cheatSearchAddrs[pos] > searchNum && pResult == -1)
+							pResult = pos;
+					}
 
 					foundItemOverride = pResult;
 
@@ -10902,8 +10949,11 @@ INT_PTR CALLBACK DlgCheatSearch(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 				else if(BST_CHECKED==IsDlgButtonChecked(hDlg, IDC_3_BYTE))
 					bytes=S9X_24_BITS;
 				else bytes=S9X_32_BITS;
+				CheatSearchBuildIndex(bytes);
+				if (cheatSortColumn >= 0)
+					CheatSearchSortIndex(cheatSortColumn, cheatSortAscending, bytes);
 				{
-					int l = CheatCount(bytes);
+					int l = (int)cheatSearchAddrs.size();
 					ListView_SetItemCount (GetDlgItem(hDlg, IDC_ADDYS), l);
 				}
 
@@ -10977,11 +11027,31 @@ INT_PTR CALLBACK DlgCheatSearch(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 				break;
 			case IDC_C_RESET:
 				S9xStartCheatSearch(&Cheat);
+				cheatSortColumn = -1;
+				cheatSortAscending = true;
+				CheatSearchBuildIndex(bytes);
 				{
-					int l = CheatCount(bytes);
+					int l = (int)cheatSearchAddrs.size();
 					ListView_SetItemCount (GetDlgItem(hDlg, IDC_ADDYS), l);
+
+					TCHAR title[64];
+					TCHAR numBuf[32];
+				FormatNumber(l, numBuf, 32);
+				_stprintf(title, TEXT("Cheat Search - %s Results"), numBuf);
+					SetWindowText(hDlg, title);
 				}
-				SetWindowText(hDlg, TEXT("Cheat Search"));
+				// Clear sort arrows
+				{
+					HWND hHeader = ListView_GetHeader(GetDlgItem(hDlg, IDC_ADDYS));
+					for (int c = 0; c < 3; c++)
+					{
+						HDITEM hdi = {};
+						hdi.mask = HDI_FORMAT;
+						Header_GetItem(hHeader, c, &hdi);
+						hdi.fmt &= ~(HDF_SORTDOWN | HDF_SORTUP);
+						Header_SetItem(hHeader, c, &hdi);
+					}
+				}
 				ListView_RedrawItems(GetDlgItem(hDlg, IDC_ADDYS),0, 0x32000);
 				//val_type=1;
 				//SendDlgItemMessage(hDlg, IDC_UNSIGNED, BM_SETCHECK, BST_CHECKED, 0);
@@ -11262,11 +11332,16 @@ INT_PTR CALLBACK DlgCheatSearch(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 					S9xSearchForChange (&Cheat, comp_type,
                          bytes, (val_type==2), FALSE);
 				}
-				int l = CheatCount(bytes);
+				CheatSearchBuildIndex(bytes);
+				if (cheatSortColumn >= 0)
+					CheatSearchSortIndex(cheatSortColumn, cheatSortAscending, bytes);
+				int l = (int)cheatSearchAddrs.size();
 				ListView_SetItemCount (GetDlgItem(hDlg, IDC_ADDYS), l);
 
 				TCHAR title[64];
-				_stprintf(title, TEXT("Cheat Search - %d Results"), l);
+				TCHAR numBuf[32];
+				FormatNumber(l, numBuf, 32);
+				_stprintf(title, TEXT("Cheat Search - %s Results"), numBuf);
 				SetWindowText(hDlg, title);
 				}
 
