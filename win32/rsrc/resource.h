@@ -605,6 +605,16 @@
 #define IDC_RA_GAME_TITLE               3083
 #endif
 
+#define IDD_CHEAT_MASK                  174
+#define IDC_C_MASK                      3090
+#define IDC_MASK_LIST                   3091
+#define IDC_MASK_CLEAR                  3092
+#define IDC_MASK_ADDRESS                3093
+#define IDC_MASK_ADD                    3094
+#define IDC_MASK_REMOVE                 3095
+#define IDC_C_MASK_SELECTED             3096
+#define IDC_C_COPY_ADDRESS              3097
+
 #define IDC_STATIC                      -1
 
 // Next default values for new objects
