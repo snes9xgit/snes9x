@@ -614,6 +614,8 @@
 #define IDC_MASK_REMOVE                 3095
 #define IDC_C_MASK_SELECTED             3096
 #define IDC_C_COPY_ADDRESS              3097
+#define IDC_C_TOGGLE_CHEAT              3098
+#define IDC_C_DELETE_CHEAT              3099
 
 #define IDC_STATIC                      -1
 

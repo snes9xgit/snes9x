@@ -9955,6 +9955,15 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
             case IDC_CHEAT_LIST:
             {
                 // react only to item changes (we are interested in selection or checkbox)
+                if (((LPNMHDR)lParam)->code == LVN_KEYDOWN)
+                {
+                    NMLVKEYDOWN* key_notify = (NMLVKEYDOWN*)lParam;
+                    if (key_notify->wVKey == VK_DELETE && ListView_GetSelectedCount(GetDlgItem(hDlg, IDC_CHEAT_LIST)) > 0)
+                    {
+                        SendMessage(hDlg, WM_COMMAND, MAKEWPARAM(IDC_C_DELETE_CHEAT, 0), 0);
+                        return TRUE;
+                    }
+                }
                 if (((LPNMHDR)lParam)->code == LVN_ITEMCHANGED)
                 {
                     NMLISTVIEW* listview_notify = (NMLISTVIEW*)lParam;
@@ -10024,10 +10033,74 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 			default: return false;
 			}
 		}
+	case WM_CONTEXTMENU:
+		if ((HWND)wParam == GetDlgItem(hDlg, IDC_CHEAT_LIST))
+		{
+			HWND lView = GetDlgItem(hDlg, IDC_CHEAT_LIST);
+			int selCount = ListView_GetSelectedCount(lView);
+			HMENU hPopup = CreatePopupMenu();
+			AppendMenu(hPopup, MF_STRING | (selCount > 0 ? 0 : MF_GRAYED), IDC_C_TOGGLE_CHEAT,
+				selCount > 1 ? TEXT("&Toggle Selected Cheats") : TEXT("&Toggle Selected Cheat"));
+			AppendMenu(hPopup, MF_STRING | (selCount > 0 ? 0 : MF_GRAYED), IDC_C_DELETE_CHEAT,
+				selCount > 1 ? TEXT("&Delete Selected Cheats") : TEXT("&Delete Selected Cheat"));
+			POINT pt = { (short)LOWORD(lParam), (short)HIWORD(lParam) };
+			if (pt.x == -1 && pt.y == -1)
+			{
+				RECT rc;
+				GetWindowRect(lView, &rc);
+				pt.x = rc.left; pt.y = rc.top;
+			}
+			int cmd = TrackPopupMenu(hPopup, TPM_LEFTALIGN | TPM_TOPALIGN | TPM_RETURNCMD, pt.x, pt.y, 0, hDlg, NULL);
+			DestroyMenu(hPopup);
+			if (cmd)
+				SendMessage(hDlg, WM_COMMAND, MAKEWPARAM(cmd, 0), 0);
+			return TRUE;
+		}
+		break;
 	case WM_COMMAND:
 		{
 			switch(LOWORD(wParam))
 			{
+			case IDC_C_TOGGLE_CHEAT:
+				{
+					HWND lView = GetDlgItem(hDlg, IDC_CHEAT_LIST);
+					auto selected_items = get_all_selected_listitems(lView);
+					// deselect all before toggling to prevent multi-select checkbox sync
+					ListView_SetItemState(lView, -1, 0, LVIS_SELECTED | LVIS_FOCUSED);
+					for (const auto &item : selected_items)
+					{
+						BOOL checked = ListView_GetCheckState(lView, item.first);
+						ListView_SetCheckState(lView, item.first, !checked);
+					}
+					sel_idx = -1;
+					internal_change = true;
+					SetDlgItemText(hDlg, IDC_CHEAT_CODE, TEXT(""));
+					SetDlgItemText(hDlg, IDC_CHEAT_DESCRIPTION, TEXT(""));
+					internal_change = false;
+					EnableWindow(GetDlgItem(hDlg, IDC_DELETE_CHEAT), false);
+					EnableWindow(GetDlgItem(hDlg, IDC_UPDATE_CHEAT), false);
+				}
+				break;
+			case IDC_C_DELETE_CHEAT:
+				{
+					HWND lView = GetDlgItem(hDlg, IDC_CHEAT_LIST);
+					auto deleted_items = get_all_selected_listitems(lView);
+					std::reverse(deleted_items.begin(), deleted_items.end());
+					for (const auto &item : deleted_items)
+					{
+						if (item.second >= 0)
+							ct.state[item.second] = Deleted;
+						ListView_DeleteItem(lView, item.first);
+					}
+					sel_idx = -1;
+					internal_change = true;
+					SetDlgItemText(hDlg, IDC_CHEAT_CODE, TEXT(""));
+					SetDlgItemText(hDlg, IDC_CHEAT_DESCRIPTION, TEXT(""));
+					internal_change = false;
+					EnableWindow(GetDlgItem(hDlg, IDC_DELETE_CHEAT), false);
+					EnableWindow(GetDlgItem(hDlg, IDC_UPDATE_CHEAT), false);
+				}
+				break;
 			case IDC_CHEAT_DESCRIPTION:
 				{
 					switch(HIWORD(wParam))
@@ -10809,6 +10882,19 @@ INT_PTR CALLBACK DlgCheatSearch(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 			if(wParam == IDC_ADDYS)
 			{
 				NMHDR * nmh=(NMHDR*)lParam;
+				if(nmh->code == LVN_KEYDOWN)
+				{
+					NMLVKEYDOWN* key_notify = (NMLVKEYDOWN*)lParam;
+					if (key_notify->wVKey == VK_DELETE && ListView_GetSelectedCount(GetDlgItem(hDlg, IDC_ADDYS)) > 0)
+					{
+						SendMessage(hDlg, WM_COMMAND, MAKEWPARAM(IDC_C_MASK_SELECTED, 0), 0);
+						ListView_SetItemState(GetDlgItem(hDlg, IDC_ADDYS), -1, 0, LVIS_SELECTED | LVIS_FOCUSED);
+						EnableWindow(GetDlgItem(hDlg, IDC_C_ADD), FALSE);
+						EnableWindow(GetDlgItem(hDlg, IDC_C_WATCH), FALSE);
+						SetDlgItemText(hDlg, IDC_C_ADD, TEXT("&Add Cheat"));
+						return TRUE;
+					}
+				}
 				if(nmh->code == (UINT)LVN_COLUMNCLICK)
 				{
 					NMLISTVIEW *pnmlv = (NMLISTVIEW *)lParam;
