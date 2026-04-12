@@ -22,6 +22,7 @@ Based on Snes9x by Gary Henderson and Jerremy Koot.\r\n\r\n\
 (c) Copyright 2002 - 2010  Brad Jorsch, funkyass, Kris Bleakley, Nach, zones\r\n\
 (c) Copyright 2006 - 2007  nitsuja\r\n\
 (c) Copyright 2009 - 2023  BearOso, OV2\r\n\r\n\
+(c) Copyright 2026         Shanytc\r\n\r\n\
 Windows Port Authors: Matthew Kendora, funkyass, nitsuja, Nach, blip, OV2.\r\n\r\n\
 SuperSnes9x is a Super Nintendo Entertainment System\r\n\
 emulator with RetroAchievements support that allows you\r\n\
