@@ -92,6 +92,8 @@ void S9xCheatsDisable(void);
 void S9xCheatsEnable(void);
 std::string S9xCheatValidate(const std::string &cheat);
 
+uint32_t S9xCheatFlatToSNES(uint32_t flat_addr);
+
 void S9xInitCheatData (void);
 void S9xInitWatchedAddress (void);
 void S9xStartCheatSearch (SCheatData *);
