@@ -198,6 +198,48 @@ void S9xInitCheatData(void)
     Cheat.FillRAM = Memory.FillRAM;
 }
 
+uint32_t S9xCheatFlatToSNES(uint32_t flat_addr)
+{
+    if (flat_addr < 0x20000)
+    {
+        // WRAM: flat offset maps directly to SNES banks 7E-7F
+        return flat_addr + 0x7E0000;
+    }
+    else if (flat_addr < 0x30000)
+    {
+        // SRAM: convert flat offset to a SNES address based on ROM type
+        uint32_t sram_off = flat_addr - 0x20000;
+
+        if (Settings.SA1)
+        {
+            // SA-1: SRAM is directly mapped at banks 0x40-0x4F
+            return 0x400000 + sram_off;
+        }
+        else if (Memory.HiROM)
+        {
+            // HiROM/ExHiROM: SRAM at banks 0x20-0x3F, offsets 0x6000-0x7FFF
+            // Each bank provides 0x2000 bytes of SRAM
+            uint32_t bank = 0x20 + sram_off / 0x2000;
+            uint32_t offset = 0x6000 + sram_off % 0x2000;
+            return (bank << 16) | offset;
+        }
+        else
+        {
+            // LoROM: SRAM at banks 0x70-0x7D, offsets 0x0000-0x7FFF
+            // Each bank provides 0x8000 bytes of SRAM
+            uint32_t bank = 0x70 + sram_off / 0x8000;
+            uint32_t offset = sram_off % 0x8000;
+            return (bank << 16) | offset;
+        }
+    }
+    else
+    {
+        // IRAM: not commonly used for cheats; return as-is with 7E base
+        // (used by the watch system's internal encoding)
+        return flat_addr + 0x7E0000;
+    }
+}
+
 static inline std::string trim(const std::string &&string)
 {
     auto start = string.find_first_not_of(" \t\n\r");

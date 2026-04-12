@@ -11328,12 +11328,7 @@ INT_PTR CALLBACK DlgCheatSearch(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 						cht.size = cheatSize;
 						cht.format = val_type;
 
-						if (addr < 0x20000)
-							cht.address = addr + 0x7E0000;
-						else if (addr < 0x30000)
-							cht.address = addr - 0x20000;
-						else
-							cht.address = addr - 0x30000;
+						cht.address = S9xCheatFlatToSNES(addr);
 
 						cht.new_val = CheatGetValue(addr, bytes, Cheat.RAM, Cheat.SRAM, Cheat.FillRAM);
 						cht.saved_val = CheatGetValue(addr, bytes, Cheat.CWRAM, Cheat.CSRAM, Cheat.CIRAM);
@@ -11345,13 +11340,7 @@ INT_PTR CALLBACK DlgCheatSearch(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 						// Multiple selection: batch add all cheats directly
 						for (int addr : addrs)
 						{
-							uint32 address;
-							if (addr < 0x20000)
-								address = addr + 0x7E0000;
-							else if (addr < 0x30000)
-								address = addr - 0x20000;
-							else
-								address = addr - 0x30000;
+							uint32 address = S9xCheatFlatToSNES(addr);
 
 							int curVal = CheatGetValue(addr, bytes, Cheat.RAM, Cheat.SRAM, Cheat.FillRAM);
 
@@ -11446,12 +11435,7 @@ INT_PTR CALLBACK DlgCheatSearch(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 					for (size_t n = 0; n < addrs.size(); n++)
 					{
 						uint32 address;
-						if (addrs[n] < 0x20000)
-							address = addrs[n] + 0x7E0000;
-						else if (addrs[n] < 0x30000)
-							address = addrs[n] - 0x20000;
-						else
-							address = addrs[n] - 0x30000;
+						address = addrs[n] + 0x7E0000;
 
 						unsigned int i;
 						for(i = 0; i < maxWatches; i++)
