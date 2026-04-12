@@ -9870,6 +9870,62 @@ static std::vector<std::pair<int, int>> get_all_selected_listitems(HWND lView)
     return result;
 }
 
+static LRESULT CALLBACK CheatEditSubclassProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam, UINT_PTR uIdSubclass, DWORD_PTR dwRefData)
+{
+	if (msg == WM_KEYDOWN && wParam == VK_RETURN)
+	{
+		HWND hDlg = GetParent(hWnd);
+		if (IsWindowEnabled(GetDlgItem(hDlg, IDC_UPDATE_CHEAT)))
+			SendMessage(hDlg, WM_COMMAND, MAKEWPARAM(IDC_UPDATE_CHEAT, 0), 0);
+		return 0;
+	}
+	if (msg == WM_GETDLGCODE && wParam == VK_RETURN)
+	{
+		return DLGC_WANTMESSAGE;
+	}
+	if (msg == WM_CONTEXTMENU)
+	{
+		HWND hDlg = GetParent(hWnd);
+		bool canUpdate = IsWindowEnabled(GetDlgItem(hDlg, IDC_UPDATE_CHEAT));
+		HMENU hPopup = CreatePopupMenu();
+		AppendMenu(hPopup, MF_STRING | (canUpdate ? 0 : MF_GRAYED), IDC_UPDATE_CHEAT, TEXT("&Update"));
+		AppendMenu(hPopup, MF_SEPARATOR, 0, NULL);
+
+		DWORD selStart, selEnd;
+		SendMessage(hWnd, EM_GETSEL, (WPARAM)&selStart, (LPARAM)&selEnd);
+		bool hasSelection = (selStart != selEnd);
+		int textLen = GetWindowTextLength(hWnd);
+
+		AppendMenu(hPopup, MF_STRING | (hasSelection ? 0 : MF_GRAYED), WM_CUT, TEXT("Cu&t"));
+		AppendMenu(hPopup, MF_STRING | (hasSelection ? 0 : MF_GRAYED), WM_COPY, TEXT("&Copy"));
+		AppendMenu(hPopup, MF_STRING | (IsClipboardFormatAvailable(CF_UNICODETEXT) ? 0 : MF_GRAYED), WM_PASTE, TEXT("&Paste"));
+		AppendMenu(hPopup, MF_SEPARATOR, 0, NULL);
+		AppendMenu(hPopup, MF_STRING | (textLen > 0 ? 0 : MF_GRAYED), EM_SETSEL, TEXT("Select &All"));
+
+		POINT pt = { (short)LOWORD(lParam), (short)HIWORD(lParam) };
+		if (pt.x == -1 && pt.y == -1)
+		{
+			RECT rc;
+			GetWindowRect(hWnd, &rc);
+			pt.x = rc.left; pt.y = rc.top;
+		}
+		int cmd = TrackPopupMenu(hPopup, TPM_LEFTALIGN | TPM_TOPALIGN | TPM_RETURNCMD, pt.x, pt.y, 0, hWnd, NULL);
+		DestroyMenu(hPopup);
+		if (cmd == IDC_UPDATE_CHEAT)
+			SendMessage(hDlg, WM_COMMAND, MAKEWPARAM(IDC_UPDATE_CHEAT, 0), 0);
+		else if (cmd == WM_CUT)
+			SendMessage(hWnd, WM_CUT, 0, 0);
+		else if (cmd == WM_COPY)
+			SendMessage(hWnd, WM_COPY, 0, 0);
+		else if (cmd == WM_PASTE)
+			SendMessage(hWnd, WM_PASTE, 0, 0);
+		else if (cmd == EM_SETSEL)
+			SendMessage(hWnd, EM_SETSEL, 0, -1);
+		return 0;
+	}
+	return DefSubclassProc(hWnd, msg, wParam, lParam);
+}
+
 INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	static bool internal_change;
@@ -9884,6 +9940,9 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 
 			SendDlgItemMessage(hDlg, IDC_CHEAT_CODE, EM_LIMITTEXT, CHEAT_SIZE, 0);
 			SendDlgItemMessage(hDlg, IDC_CHEAT_DESCRIPTION, EM_LIMITTEXT, CHEAT_SIZE, 0);
+
+			SetWindowSubclass(GetDlgItem(hDlg, IDC_CHEAT_CODE), CheatEditSubclassProc, 0, 0);
+			SetWindowSubclass(GetDlgItem(hDlg, IDC_CHEAT_DESCRIPTION), CheatEditSubclassProc, 0, 0);
 
 			LVCOLUMN col;
 			TCHAR temp[32];
@@ -10229,7 +10288,9 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 						lvi.iItem=sel_idx;
 						lvi.cchTextMax = CHEAT_SIZE;
 						ListView_SetItem(GetDlgItem(hDlg,IDC_CHEAT_LIST), &lvi);
+						internal_change = true;
 						SetDlgItemText(hDlg, IDC_CHEAT_CODE, wstring);
+						internal_change = false;
 
 						GetDlgItemText(hDlg, IDC_CHEAT_DESCRIPTION, temp, CHEAT_SIZE);
 
@@ -11344,9 +11405,6 @@ INT_PTR CALLBACK DlgCheatSearch(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 
 							int curVal = CheatGetValue(addr, bytes, Cheat.RAM, Cheat.SRAM, Cheat.FillRAM);
 
-							char name[22];
-							snprintf(name, sizeof(name), "%06X", address);
-
 							std::string code_string;
 							char code[10];
 							for (int byteIndex = 0; byteIndex < cheatSize; byteIndex++)
@@ -11357,7 +11415,7 @@ INT_PTR CALLBACK DlgCheatSearch(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 								code_string += code;
 							}
 
-							int index = S9xAddCheatGroup(name, code_string.c_str());
+							int index = S9xAddCheatGroup("", code_string.c_str());
 							if (index >= 0)
 								S9xEnableCheatGroup(index);
 						}
