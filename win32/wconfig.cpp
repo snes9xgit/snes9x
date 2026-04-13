@@ -878,6 +878,7 @@ void WinRegisterConfigItems()
 #undef CATEGORY
 #define	CATEGORY "Controls"
 	AddBoolC("AllowLeftRight", Settings.UpAndDown, false, "true to allow left+right and up+down");
+	AddBoolC("AllowMultipleBindings", GUI.AllowMultipleBindings, true, "true to process all bindings per button, false to use only the first");
 #undef CATEGORY
 #define	CATEGORY "ROM"
 	AddBoolC("Cheat", Settings.ApplyCheats, true, "true to allow enabled cheats to be applied");
@@ -923,6 +924,34 @@ void WinRegisterConfigItems()
 #undef ADDT3
 #undef ADDTN
 #undef ADD2T2
+	// Extra bindings (multi-bind support: up to 3 additional bindings per button)
+#define ADDX(n,x,s) AddVKey("Joypad" #n ":" #x ":Extra" #s, JoypadExtra[n-1].x[s-1], JoypadExtra[n-1].x[s-1])
+#define ADDXN(n,x,n2,s) AddVKey("Joypad" #n ":" #n2 ":Extra" #s, JoypadExtra[n-1].x[s-1], JoypadExtra[n-1].x[s-1])
+#define ADDX3(n,x) ADDX(n,x,1); ADDX(n,x,2); ADDX(n,x,3)
+#define ADDXN3(n,x,n2) ADDXN(n,x,n2,1); ADDXN(n,x,n2,2); ADDXN(n,x,n2,3)
+#define ADDXALL(n) ADDX3(n,Up); ADDX3(n,Down); ADDX3(n,Left); ADDX3(n,Right); ADDX3(n,A); ADDX3(n,B); ADDX3(n,Y); ADDX3(n,X); ADDX3(n,L); ADDX3(n,R); ADDX3(n,Start); ADDX3(n,Select); ADDXN3(n,Left_Up,Left+Up); ADDXN3(n,Right_Up,Right+Up); ADDXN3(n,Right_Down,Right+Down); ADDXN3(n,Left_Down,Left+Down)
+	ADDXALL(1); ADDXALL(2); ADDXALL(3); ADDXALL(4); ADDXALL(5); ADDXALL(6); ADDXALL(7); ADDXALL(8);
+	// Extra bindings for turbo panel trigger keys
+#define ADDXT(n,x,n2,s) AddVKey("Joypad" #n "Turbo:" #n2 ":Extra" #s, JoypadExtra[n-1+8].x[s-1], JoypadExtra[n-1+8].x[s-1])
+#define ADDXT3(n,x,n2) ADDXT(n,x,n2,1); ADDXT(n,x,n2,2); ADDXT(n,x,n2,3)
+#define ADDXTALL(n) ADDXT3(n,Down,AutoFire); ADDXT3(n,Left,AutoHold); ADDXT3(n,Up,TempTurbo); ADDXT3(n,Right,ClearAll)
+	ADDXTALL(1); ADDXTALL(2); ADDXTALL(3); ADDXTALL(4); ADDXTALL(5); ADDXTALL(6); ADDXTALL(7); ADDXTALL(8);
+	// Extra bindings for turbo button keys
+#define ADDXTB(n,x,s) AddVKey("Joypad" #n "Turbo:" #x ":Extra" #s, JoypadExtra[n-1+8].x[s-1], JoypadExtra[n-1+8].x[s-1])
+#define ADDXTB3(n,x) ADDXTB(n,x,1); ADDXTB(n,x,2); ADDXTB(n,x,3)
+#define ADDXTBALL(n) ADDXTB3(n,A); ADDXTB3(n,B); ADDXTB3(n,Y); ADDXTB3(n,X); ADDXTB3(n,L); ADDXTB3(n,R); ADDXTB3(n,Start); ADDXTB3(n,Select)
+	ADDXTBALL(1); ADDXTBALL(2); ADDXTBALL(3); ADDXTBALL(4); ADDXTBALL(5); ADDXTBALL(6); ADDXTBALL(7); ADDXTBALL(8);
+#undef ADDX
+#undef ADDXN
+#undef ADDX3
+#undef ADDXN3
+#undef ADDXALL
+#undef ADDXT
+#undef ADDXT3
+#undef ADDXTALL
+#undef ADDXTB
+#undef ADDXTB3
+#undef ADDXTBALL
 	AddBool2C("Input:Background", GUI.BackgroundInput, false, "on to detect game keypresses and hotkeys while window is inactive, if PauseWhenInactive = FALSE.");
 	AddBool2C("Input:BackgroundKeyHotkeys", GUI.BackgroundKeyHotkeys, true, "on to also detect keyboard hotkeys when backgroundinput is active");
 #undef CATEGORY

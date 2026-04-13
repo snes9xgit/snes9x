@@ -346,6 +346,8 @@ SJoypad TurboToggleJoypadStorage [8] = {
 			{ false, 0, 0, 0, 0,  0, 0, 0, 0,  0, 0,  0, 0, 0, 0, 0, 0 },
 };
 
+SJoypadExtraBinds JoypadExtra[16] = {};
+
 struct SCustomKeys CustomKeys = {
 	{/*VK_OEM_PLUS*/0xBB,0}, // speed+ (=)
 	{/*VK_OEM_MINUS*/0xBD,0}, // speed- (-)
@@ -786,29 +788,37 @@ static void ShowStatusSlotInfo()
 
 int HandleKeyMessage(WPARAM wParam, LPARAM lParam)
 {
+	// Helper: returns true if wParam matches the primary binding or any extra binding
+	auto MatchesAnyBinding = [](WPARAM wParam, WORD primary, const WORD* extra) -> bool {
+		if (primary != 0 && primary != VK_ESCAPE && wParam == primary) return true;
+		if (GUI.AllowMultipleBindings) {
+			for (int i = 0; i < MAX_EXTRA_BINDS; i++) {
+				if (extra[i] != 0 && extra[i] != VK_ESCAPE && wParam == extra[i]) return true;
+			}
+		}
+		return false;
+	};
+
 	// update toggles
 	for (int J = 0; J < 5; J++)
 	{
 		extern bool S9xGetState (WORD KeyIdent);
-		if(Joypad[J].Enabled && (!S9xGetState(Joypad[J+8].Autohold))) // enabled and Togglify
+		extern bool AnyBindPressed(WORD primary, const WORD* extra);
+		if(Joypad[J].Enabled && (!S9xGetState(Joypad[J+8].Autohold) || AnyBindPressed(0, JoypadExtra[J+8].Left))) // enabled and Togglify
 		{
 			SJoypad & p = ToggleJoypadStorage[J];
-			if(wParam == Joypad[J].L) p.L = !p.L;
-			if(wParam == Joypad[J].R) p.R = !p.R;
-			if(wParam == Joypad[J].A) p.A = !p.A;
-			if(wParam == Joypad[J].B) p.B = !p.B;
-			if(wParam == Joypad[J].Y) p.Y = !p.Y;
-			if(wParam == Joypad[J].X) p.X = !p.X;
-			if(wParam == Joypad[J].Start) p.Start = !p.Start;
-			if(wParam == Joypad[J].Select) p.Select = !p.Select;
-			if(wParam == Joypad[J].Left) p.Left = !p.Left;
-			if(wParam == Joypad[J].Right) p.Right = !p.Right;
-			if(wParam == Joypad[J].Up) p.Up = !p.Up;
-			if(wParam == Joypad[J].Down) p.Down = !p.Down;
-//			if(wParam == Joypad[J].Left_Down) p.Left_Down = !p.Left_Down;
-//			if(wParam == Joypad[J].Left_Up) p.Left_Up = !p.Left_Up;
-//			if(wParam == Joypad[J].Right_Down) p.Right_Down = !p.Right_Down;
-//			if(wParam == Joypad[J].Right_Up) p.Right_Up = !p.Right_Up;
+			if(MatchesAnyBinding(wParam, Joypad[J].L, JoypadExtra[J].L)) p.L = !p.L;
+			if(MatchesAnyBinding(wParam, Joypad[J].R, JoypadExtra[J].R)) p.R = !p.R;
+			if(MatchesAnyBinding(wParam, Joypad[J].A, JoypadExtra[J].A)) p.A = !p.A;
+			if(MatchesAnyBinding(wParam, Joypad[J].B, JoypadExtra[J].B)) p.B = !p.B;
+			if(MatchesAnyBinding(wParam, Joypad[J].Y, JoypadExtra[J].Y)) p.Y = !p.Y;
+			if(MatchesAnyBinding(wParam, Joypad[J].X, JoypadExtra[J].X)) p.X = !p.X;
+			if(MatchesAnyBinding(wParam, Joypad[J].Start, JoypadExtra[J].Start)) p.Start = !p.Start;
+			if(MatchesAnyBinding(wParam, Joypad[J].Select, JoypadExtra[J].Select)) p.Select = !p.Select;
+			if(MatchesAnyBinding(wParam, Joypad[J].Left, JoypadExtra[J].Left)) p.Left = !p.Left;
+			if(MatchesAnyBinding(wParam, Joypad[J].Right, JoypadExtra[J].Right)) p.Right = !p.Right;
+			if(MatchesAnyBinding(wParam, Joypad[J].Up, JoypadExtra[J].Up)) p.Up = !p.Up;
+			if(MatchesAnyBinding(wParam, Joypad[J].Down, JoypadExtra[J].Down)) p.Down = !p.Down;
 			if(!Settings.UpAndDown)
 			{
 				if(p.Left && p.Right)
@@ -817,25 +827,21 @@ int HandleKeyMessage(WPARAM wParam, LPARAM lParam)
 					p.Up = p.Down = false;
 			}
 		}
-		if(Joypad[J].Enabled && (!S9xGetState(Joypad[J+8].Autofire))) // enabled and turbo-togglify (TurboTog)
+		if(Joypad[J].Enabled && (!S9xGetState(Joypad[J+8].Autofire) || AnyBindPressed(0, JoypadExtra[J+8].Down))) // enabled and turbo-togglify (TurboTog)
 		{
 			SJoypad & p = TurboToggleJoypadStorage[J];
-			if(wParam == Joypad[J].L) p.L = !p.L;
-			if(wParam == Joypad[J].R) p.R = !p.R;
-			if(wParam == Joypad[J].A) p.A = !p.A;
-			if(wParam == Joypad[J].B) p.B = !p.B;
-			if(wParam == Joypad[J].Y) p.Y = !p.Y;
-			if(wParam == Joypad[J].X) p.X = !p.X;
-			if(wParam == Joypad[J].Start) p.Start = !p.Start;
-			if(wParam == Joypad[J].Select) p.Select = !p.Select;
-			if(wParam == Joypad[J].Left) p.Left = !p.Left;
-			if(wParam == Joypad[J].Right) p.Right = !p.Right;
-			if(wParam == Joypad[J].Up) p.Up = !p.Up;
-			if(wParam == Joypad[J].Down) p.Down = !p.Down;
-//			if(wParam == Joypad[J].Left_Down) p.Left_Down = !p.Left_Down;
-//			if(wParam == Joypad[J].Left_Up) p.Left_Up = !p.Left_Up;
-//			if(wParam == Joypad[J].Right_Down) p.Right_Down = !p.Right_Down;
-//			if(wParam == Joypad[J].Right_Up) p.Right_Up = !p.Right_Up;
+			if(MatchesAnyBinding(wParam, Joypad[J].L, JoypadExtra[J].L)) p.L = !p.L;
+			if(MatchesAnyBinding(wParam, Joypad[J].R, JoypadExtra[J].R)) p.R = !p.R;
+			if(MatchesAnyBinding(wParam, Joypad[J].A, JoypadExtra[J].A)) p.A = !p.A;
+			if(MatchesAnyBinding(wParam, Joypad[J].B, JoypadExtra[J].B)) p.B = !p.B;
+			if(MatchesAnyBinding(wParam, Joypad[J].Y, JoypadExtra[J].Y)) p.Y = !p.Y;
+			if(MatchesAnyBinding(wParam, Joypad[J].X, JoypadExtra[J].X)) p.X = !p.X;
+			if(MatchesAnyBinding(wParam, Joypad[J].Start, JoypadExtra[J].Start)) p.Start = !p.Start;
+			if(MatchesAnyBinding(wParam, Joypad[J].Select, JoypadExtra[J].Select)) p.Select = !p.Select;
+			if(MatchesAnyBinding(wParam, Joypad[J].Left, JoypadExtra[J].Left)) p.Left = !p.Left;
+			if(MatchesAnyBinding(wParam, Joypad[J].Right, JoypadExtra[J].Right)) p.Right = !p.Right;
+			if(MatchesAnyBinding(wParam, Joypad[J].Up, JoypadExtra[J].Up)) p.Up = !p.Up;
+			if(MatchesAnyBinding(wParam, Joypad[J].Down, JoypadExtra[J].Down)) p.Down = !p.Down;
 			if(!Settings.UpAndDown)
 			{
 				if(p.Left && p.Right)
@@ -844,7 +850,7 @@ int HandleKeyMessage(WPARAM wParam, LPARAM lParam)
 					p.Up = p.Down = false;
 			}
 		}
-		if(wParam == Joypad[J+8].ClearAll) // clear all
+		if(MatchesAnyBinding(wParam, Joypad[J+8].ClearAll, JoypadExtra[J+8].Right)) // clear all
 		{
 			{
 				SJoypad & p = ToggleJoypadStorage[J];
@@ -9201,26 +9207,36 @@ INT_PTR CALLBACK DlgFunky(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 	return false;
 }
 
+// Helper: build a WORD[MAX_BIND_KEYS] array from primary + extra, then send to control
+static void SendMultiBindToControl(HWND hDlg, int idc, WORD primary, const WORD* extra)
+{
+	WORD keys[MAX_BIND_KEYS];
+	keys[0] = primary;
+	for (int i = 0; i < MAX_EXTRA_BINDS; i++)
+		keys[1 + i] = extra[i];
+	SendDlgItemMessage(hDlg, idc, WM_USER+44, (WPARAM)keys, MAX_BIND_KEYS);
+}
+
 static void set_buttoninfo(int index, HWND hDlg)
 {
-	SendDlgItemMessage(hDlg,IDC_UP,WM_USER+44,Joypad[index].Up,0);
-	SendDlgItemMessage(hDlg,IDC_LEFT,WM_USER+44,Joypad[index].Left,0);
-	SendDlgItemMessage(hDlg,IDC_DOWN,WM_USER+44,Joypad[index].Down,0);
-	SendDlgItemMessage(hDlg,IDC_RIGHT,WM_USER+44,Joypad[index].Right,0);
-	SendDlgItemMessage(hDlg,IDC_A,WM_USER+44,Joypad[index].A,0);
-	SendDlgItemMessage(hDlg,IDC_B,WM_USER+44,Joypad[index].B,0);
-	SendDlgItemMessage(hDlg,IDC_X,WM_USER+44,Joypad[index].X,0);
-	SendDlgItemMessage(hDlg,IDC_Y,WM_USER+44,Joypad[index].Y,0);
-	SendDlgItemMessage(hDlg,IDC_L,WM_USER+44,Joypad[index].L,0);
-	SendDlgItemMessage(hDlg,IDC_R,WM_USER+44,Joypad[index].R,0);
-	SendDlgItemMessage(hDlg,IDC_START,WM_USER+44,Joypad[index].Start,0);
-	SendDlgItemMessage(hDlg,IDC_SELECT,WM_USER+44,Joypad[index].Select,0);
+	SendMultiBindToControl(hDlg, IDC_UP,     Joypad[index].Up,     JoypadExtra[index].Up);
+	SendMultiBindToControl(hDlg, IDC_LEFT,   Joypad[index].Left,   JoypadExtra[index].Left);
+	SendMultiBindToControl(hDlg, IDC_DOWN,   Joypad[index].Down,   JoypadExtra[index].Down);
+	SendMultiBindToControl(hDlg, IDC_RIGHT,  Joypad[index].Right,  JoypadExtra[index].Right);
+	SendMultiBindToControl(hDlg, IDC_A,      Joypad[index].A,      JoypadExtra[index].A);
+	SendMultiBindToControl(hDlg, IDC_B,      Joypad[index].B,      JoypadExtra[index].B);
+	SendMultiBindToControl(hDlg, IDC_X,      Joypad[index].X,      JoypadExtra[index].X);
+	SendMultiBindToControl(hDlg, IDC_Y,      Joypad[index].Y,      JoypadExtra[index].Y);
+	SendMultiBindToControl(hDlg, IDC_L,      Joypad[index].L,      JoypadExtra[index].L);
+	SendMultiBindToControl(hDlg, IDC_R,      Joypad[index].R,      JoypadExtra[index].R);
+	SendMultiBindToControl(hDlg, IDC_START,  Joypad[index].Start,  JoypadExtra[index].Start);
+	SendMultiBindToControl(hDlg, IDC_SELECT, Joypad[index].Select, JoypadExtra[index].Select);
 	if(index < 5)
 	{
-		SendDlgItemMessage(hDlg,IDC_UPLEFT,WM_USER+44,Joypad[index].Left_Up,0);
-		SendDlgItemMessage(hDlg,IDC_UPRIGHT,WM_USER+44,Joypad[index].Right_Up,0);
-		SendDlgItemMessage(hDlg,IDC_DWNLEFT,WM_USER+44,Joypad[index].Left_Down,0);
-		SendDlgItemMessage(hDlg,IDC_DWNRIGHT,WM_USER+44,Joypad[index].Right_Down,0);
+		SendMultiBindToControl(hDlg, IDC_UPLEFT,   Joypad[index].Left_Up,    JoypadExtra[index].Left_Up);
+		SendMultiBindToControl(hDlg, IDC_UPRIGHT,  Joypad[index].Right_Up,   JoypadExtra[index].Right_Up);
+		SendMultiBindToControl(hDlg, IDC_DWNLEFT,  Joypad[index].Left_Down,  JoypadExtra[index].Left_Down);
+		SendMultiBindToControl(hDlg, IDC_DWNRIGHT, Joypad[index].Right_Down, JoypadExtra[index].Right_Down);
 	}
 }
 
@@ -9247,6 +9263,7 @@ INT_PTR CALLBACK DlgInputConfig(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 
 
 	static SJoypad pads[10];
+	static SJoypadExtraBinds padsExtra[10];
 
 
 	//HBRUSH g_hbrBackground;
@@ -9289,6 +9306,7 @@ switch(msg)
 			Joypad[i].Left_Up = Joypad[i].Right_Up = Joypad[i].Left_Down = Joypad[i].Right_Down = 0;
 
 		memcpy(pads, Joypad, 10*sizeof(SJoypad));
+		memcpy(padsExtra, JoypadExtra, 10*sizeof(SJoypadExtraBinds));
 
 		for( i=0;i<256;i++)
 			GetAsyncKeyState(i);
@@ -9312,6 +9330,7 @@ switch(msg)
 
 		SendDlgItemMessage(hDlg,IDC_JPTOGGLE,BM_SETCHECK, Joypad[index].Enabled ? (WPARAM)BST_CHECKED : (WPARAM)BST_UNCHECKED, 0);
 		SendDlgItemMessage(hDlg,IDC_ALLOWLEFTRIGHT,BM_SETCHECK, Settings.UpAndDown ? (WPARAM)BST_CHECKED : (WPARAM)BST_UNCHECKED, 0);
+		SendDlgItemMessage(hDlg,IDC_ALLOWMULTIBIND,BM_SETCHECK, GUI.AllowMultipleBindings ? (WPARAM)BST_CHECKED : (WPARAM)BST_UNCHECKED, 0);
 
 		set_buttoninfo(index,hDlg);
 
@@ -9333,91 +9352,58 @@ switch(msg)
 		set_buttoninfo(index,hDlg);
 		return TRUE;
 	case WM_USER+43:
+		{
 		//MessageBox(hDlg,"USER+43 CAUGHT","moo",MB_OK);
 		which = GetDlgCtrlID((HWND)lParam);
+		InputCust *icp = GetInputCustom((HWND)lParam);
+
+		// Helper macro: store multi-bind keys from control into primary + extra
+		#define STORE_MULTIBIND(idc, field) \
+			case idc: { \
+				Joypad[index].field = icp->numKeys > 0 ? icp->keys[0] : 0; \
+				for(int _i = 0; _i < MAX_EXTRA_BINDS; _i++) \
+					JoypadExtra[index].field[_i] = (_i+1) < icp->numKeys ? icp->keys[_i+1] : 0; \
+				break; \
+			}
+
 		switch(which)
 		{
-		case IDC_UP:
-			Joypad[index].Up = wParam;
-
-			break;
-		case IDC_DOWN:
-			Joypad[index].Down = wParam;
-
-			break;
-		case IDC_LEFT:
-			Joypad[index].Left = wParam;
-
-			break;
-		case IDC_RIGHT:
-			Joypad[index].Right = wParam;
-
-			break;
-		case IDC_A:
-			Joypad[index].A = wParam;
-
-			break;
-		case IDC_B:
-			Joypad[index].B = wParam;
-
-			break;
-		case IDC_X:
-			Joypad[index].X = wParam;
-
-			break;
-		case IDC_Y:
-			Joypad[index].Y = wParam;
-
-			break;
-		case IDC_L:
-			Joypad[index].L = wParam;
-			break;
-
-		case IDC_R:
-			Joypad[index].R = wParam;
-
-			break;
-		case IDC_SELECT:
-			Joypad[index].Select = wParam;
-
-			break;
-		case IDC_START:
-			Joypad[index].Start = wParam;
-
-			break;
-		case IDC_UPLEFT:
-			Joypad[index].Left_Up = wParam;
-
-			break;
-		case IDC_UPRIGHT:
-			Joypad[index].Right_Up = wParam;
-
-			break;
-		case IDC_DWNLEFT:
-			Joypad[index].Left_Down = wParam;
-
-            break;
-		case IDC_DWNRIGHT:
-			Joypad[index].Right_Down = wParam;
-
-			break;
-
+			STORE_MULTIBIND(IDC_UP, Up)
+			STORE_MULTIBIND(IDC_DOWN, Down)
+			STORE_MULTIBIND(IDC_LEFT, Left)
+			STORE_MULTIBIND(IDC_RIGHT, Right)
+			STORE_MULTIBIND(IDC_A, A)
+			STORE_MULTIBIND(IDC_B, B)
+			STORE_MULTIBIND(IDC_X, X)
+			STORE_MULTIBIND(IDC_Y, Y)
+			STORE_MULTIBIND(IDC_L, L)
+			STORE_MULTIBIND(IDC_R, R)
+			STORE_MULTIBIND(IDC_SELECT, Select)
+			STORE_MULTIBIND(IDC_START, Start)
+			STORE_MULTIBIND(IDC_UPLEFT, Left_Up)
+			STORE_MULTIBIND(IDC_UPRIGHT, Right_Up)
+			STORE_MULTIBIND(IDC_DWNLEFT, Left_Down)
+			STORE_MULTIBIND(IDC_DWNRIGHT, Right_Down)
 		}
+		#undef STORE_MULTIBIND
 
 		set_buttoninfo(index,hDlg);
 
-		PostMessage(hDlg,WM_NEXTDLGCTL,0,0);
+		// No auto-advance: user can press multiple keys for multi-bind, then Tab to next field
 		return true;
+		}
 	case WM_COMMAND:
 		switch(LOWORD(wParam))
 		{
 		case IDCANCEL:
 			memcpy(Joypad, pads, 10*sizeof(SJoypad));
+			memcpy(JoypadExtra, padsExtra, 10*sizeof(SJoypadExtraBinds));
 			EndDialog(hDlg,0);
 			break;
 
 		case IDOK:
 			Settings.UpAndDown = IsDlgButtonChecked(hDlg, IDC_ALLOWLEFTRIGHT);
+			GUI.AllowMultipleBindings = IsDlgButtonChecked(hDlg, IDC_ALLOWMULTIBIND) != 0;
 			WinSaveConfigFile();
 			EndDialog(hDlg,0);
 			break;
@@ -12690,7 +12676,7 @@ bool S9xPollButton(uint32 id, bool *pressed){
 
 	*pressed = false;
 
-#define CHECK_KEY(controller, button) (!S9xGetState(Joypad[controller].button) || (ToggleJoypadStorage[controller].button && !TurboToggleJoypadStorage[controller].button) || (IPPU.TotalEmulatedFrames%2 == ToggleJoypadStorage[controller].button && TurboToggleJoypadStorage[controller].button))
+#define CHECK_KEY(controller, button) (!S9xGetState(Joypad[controller].button) || (GUI.AllowMultipleBindings && (!S9xGetState(JoypadExtra[controller].button[0]) || !S9xGetState(JoypadExtra[controller].button[1]) || !S9xGetState(JoypadExtra[controller].button[2]))) || (ToggleJoypadStorage[controller].button && !TurboToggleJoypadStorage[controller].button) || (IPPU.TotalEmulatedFrames%2 == ToggleJoypadStorage[controller].button && TurboToggleJoypadStorage[controller].button))
 
 	extern bool S9xGetState (WORD KeyIdent);
 	if (id & k_MO)	// mouse

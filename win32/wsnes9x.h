@@ -224,6 +224,7 @@ struct sGUI {
 	int  SoundChannelEnable;
 	bool BackgroundInput;
     bool BackgroundKeyHotkeys;
+	bool AllowMultipleBindings;
 	bool JoystickHotkeys;
 	bool MovieClearSRAM;
 	bool MovieStartFromReset;
@@ -399,6 +400,28 @@ struct SJoypad {
     WORD R;
 };
 
+#define MAX_EXTRA_BINDS 3  // 3 extra + 1 primary = 4 total bindings per button
+#define MAX_BIND_KEYS (1 + MAX_EXTRA_BINDS)
+
+struct SJoypadExtraBinds {
+    WORD Left[MAX_EXTRA_BINDS];
+    WORD Right[MAX_EXTRA_BINDS];
+    WORD Up[MAX_EXTRA_BINDS];
+    WORD Down[MAX_EXTRA_BINDS];
+    WORD Left_Up[MAX_EXTRA_BINDS];
+    WORD Left_Down[MAX_EXTRA_BINDS];
+    WORD Right_Up[MAX_EXTRA_BINDS];
+    WORD Right_Down[MAX_EXTRA_BINDS];
+    WORD Start[MAX_EXTRA_BINDS];
+    WORD Select[MAX_EXTRA_BINDS];
+    WORD A[MAX_EXTRA_BINDS];
+    WORD B[MAX_EXTRA_BINDS];
+    WORD X[MAX_EXTRA_BINDS];
+    WORD Y[MAX_EXTRA_BINDS];
+    WORD L[MAX_EXTRA_BINDS];
+    WORD R[MAX_EXTRA_BINDS];
+};
+
 #define S9X_JOY_NEUTRAL 60
 
 struct SJoyState{
@@ -451,6 +474,7 @@ extern struct sLanguages Languages[];
 extern struct SJoypad Joypad[16];
 extern struct SJoypad ToggleJoypadStorage[8];
 extern struct SJoypad TurboToggleJoypadStorage[8];
+extern struct SJoypadExtraBinds JoypadExtra[16];
 extern struct SCustomKeys CustomKeys;
 
 enum
