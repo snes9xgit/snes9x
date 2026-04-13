@@ -1926,6 +1926,7 @@ LRESULT CALLBACK WinProc(
 
 		case ID_OPTIONS_JOYPAD:
             RestoreGUIDisplay ();
+            InitInputCustomControl();
 			DialogBox(g_hInst, MAKEINTRESOURCE(IDD_INPUTCONFIG), hWnd, DlgInputConfig);
             RestoreSNESDisplay ();
             ChangeInputDevice ();
@@ -1933,6 +1934,7 @@ LRESULT CALLBACK WinProc(
 
 		case ID_OPTIONS_KEYCUSTOM:
             RestoreGUIDisplay ();
+            InitKeyCustomControl();
 			DialogBox(g_hInst, MAKEINTRESOURCE(IDD_KEYCUSTOM), hWnd, DlgHotkeyConfig);
             RestoreSNESDisplay ();
             break;
@@ -8114,9 +8116,6 @@ static void set_buttoninfo(int index, HWND hDlg)
 }
 
 void TranslateKey(WORD keyz,char *out);
-//HWND funky;
-SJoyState JoystickF [16];
-
 
 #ifdef NETPLAY_SUPPORT
 INT_PTR CALLBACK DlgNPProgress(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
@@ -8140,17 +8139,8 @@ INT_PTR CALLBACK DlgInputConfig(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 
 	//HBRUSH g_hbrBackground;
 
-	InitInputCustomControl();
-switch(msg)
+    switch(msg)
 	{
-		case WM_PAINT:
-		{
-			PAINTSTRUCT ps;
-			BeginPaint (hDlg, &ps);
-
-			EndPaint (hDlg, &ps);
-		}
-		return true;
 	case WM_INITDIALOG:
 		WinRefreshDisplay();
 		SetWindowText(hDlg,INPUTCONFIG_TITLE);
@@ -8181,9 +8171,6 @@ switch(msg)
 
 		for( i=0;i<256;i++)
 			GetAsyncKeyState(i);
-
-		for( C = 0; C != 16; C ++)
-	        JoystickF[C].Attached = joyGetDevCaps( JOYSTICKID1+C, &JoystickF[C].Caps, sizeof( JOYCAPS)) == JOYERR_NOERROR;
 
 		for(i=1;i<6;i++)
 		{
@@ -8489,17 +8476,9 @@ INT_PTR CALLBACK DlgHotkeyConfig(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPar
 
 
 	//HBRUSH g_hbrBackground;
-	InitKeyCustomControl();
-switch(msg)
-	{
-		case WM_PAINT:
-		{
-			PAINTSTRUCT ps;
-			BeginPaint (hDlg, &ps);
 
-			EndPaint (hDlg, &ps);
-		}
-		return true;
+    switch(msg)
+	{
 	case WM_INITDIALOG:
 		WinRefreshDisplay();
 		SetWindowText(hDlg,HOTKEYS_TITLE);
