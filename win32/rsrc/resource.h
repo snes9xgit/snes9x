@@ -616,6 +616,9 @@
 #define IDC_C_COPY_ADDRESS              3097
 #define IDC_C_TOGGLE_CHEAT              3098
 #define IDC_C_DELETE_CHEAT              3099
+#define IDC_C_SET_VALUE                 3100
+#define IDD_SET_VALUE                   175
+#define IDC_SET_VALUE_EDIT              3101
 
 #define IDC_STATIC                      -1
 

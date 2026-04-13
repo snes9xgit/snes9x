@@ -9851,6 +9851,43 @@ int WinSearchCheatDatabase()
 						ListView_GetItem(GetDlgItem(hDlg, b), &a);
 #define CHEAT_SIZE 1024
 
+static INT_PTR CALLBACK DlgSetValue(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
+{
+	static char *result_buf;
+	switch (msg)
+	{
+	case WM_INITDIALOG:
+		result_buf = (char *)lParam;
+		SendDlgItemMessage(hDlg, IDC_SET_VALUE_EDIT, EM_SETLIMITTEXT, 2, 0);
+		return TRUE;
+	case WM_COMMAND:
+		switch (LOWORD(wParam))
+		{
+		case IDOK:
+		{
+			char buf[4];
+			GetDlgItemTextA(hDlg, IDC_SET_VALUE_EDIT, buf, sizeof(buf));
+			// validate hex
+			char *end;
+			unsigned long val = strtoul(buf, &end, 16);
+			if (end == buf || *end != '\0' || val > 0xFF)
+			{
+				MessageBox(hDlg, TEXT("Please enter a valid hex byte (00-FF)."), TEXT("Invalid Value"), MB_OK | MB_ICONWARNING);
+				return TRUE;
+			}
+			sprintf(result_buf, "%02X", (unsigned)val);
+			EndDialog(hDlg, IDOK);
+			return TRUE;
+		}
+		case IDCANCEL:
+			EndDialog(hDlg, IDCANCEL);
+			return TRUE;
+		}
+		break;
+	}
+	return FALSE;
+}
+
 /* return a vector of all selected list items with their index in the listview
 *  as first element and their lparam as second element of a pair
 */
@@ -10108,6 +10145,8 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 				selCount > 1 ? TEXT("&Toggle Selected Cheats") : TEXT("&Toggle Selected Cheat"));
 			AppendMenu(hPopup, MF_STRING | (selCount > 0 ? 0 : MF_GRAYED), IDC_C_DELETE_CHEAT,
 				selCount > 1 ? TEXT("&Delete Selected Cheats") : TEXT("&Delete Selected Cheat"));
+			AppendMenu(hPopup, MF_SEPARATOR, 0, NULL);
+			AppendMenu(hPopup, MF_STRING | (selCount > 0 ? 0 : MF_GRAYED), IDC_C_SET_VALUE, TEXT("Set &Value..."));
 			POINT pt = { (short)LOWORD(lParam), (short)HIWORD(lParam) };
 			if (pt.x == -1 && pt.y == -1)
 			{
@@ -10198,6 +10237,80 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 					internal_change = false;
 					EnableWindow(GetDlgItem(hDlg, IDC_DELETE_CHEAT), false);
 					EnableWindow(GetDlgItem(hDlg, IDC_UPDATE_CHEAT), false);
+				}
+				break;
+			case IDC_C_SET_VALUE:
+				{
+					char new_val[4] = {};
+					if (DialogBoxParam(g_hInst, MAKEINTRESOURCE(IDD_SET_VALUE), hDlg, DlgSetValue, (LPARAM)new_val) == IDOK)
+					{
+						HWND lView = GetDlgItem(hDlg, IDC_CHEAT_LIST);
+						auto selected_items = get_all_selected_listitems(lView);
+						for (const auto &item : selected_items)
+						{
+							char code[CHEAT_SIZE];
+							LVITEMA lvia = {};
+							lvia.mask = LVIF_TEXT;
+							lvia.iItem = item.first;
+							lvia.pszText = code;
+							lvia.cchTextMax = CHEAT_SIZE;
+							SendDlgItemMessageA(hDlg, IDC_CHEAT_LIST, LVM_GETITEMA, 0, (LPARAM)&lvia);
+
+							// replace value byte in each entry: XXXXXX=YY or XXXXXX=CC?YY
+							std::string result;
+							char *ctx = NULL;
+							char *token = strtok_s(code, "+", &ctx);
+							while (token)
+							{
+								if (!result.empty())
+									result += "+";
+								std::string entry(token);
+								size_t qmark = entry.find('?');
+								if (qmark != std::string::npos)
+								{
+									// conditional: replace after '?'
+									entry = entry.substr(0, qmark + 1) + new_val;
+								}
+								else
+								{
+									size_t eq = entry.find('=');
+									if (eq != std::string::npos)
+										entry = entry.substr(0, eq + 1) + new_val;
+								}
+								result += entry;
+								token = strtok_s(NULL, "+", &ctx);
+							}
+
+							std::string validated = S9xCheatValidate(result);
+							if (!validated.empty())
+							{
+								Utf8ToWide wcode(validated.c_str());
+								LVITEM lvi = {};
+								lvi.mask = LVIF_TEXT;
+								lvi.iItem = item.first;
+								lvi.pszText = wcode;
+								lvi.cchTextMax = CHEAT_SIZE;
+								ListView_SetItem(lView, &lvi);
+
+								if (item.second >= 0)
+									ct.state[item.second] = Modified;
+							}
+						}
+						// refresh edit fields if a single item is selected
+						if (sel_idx >= 0)
+						{
+							char code[CHEAT_SIZE];
+							LVITEMA lvia = {};
+							lvia.mask = LVIF_TEXT;
+							lvia.iItem = sel_idx;
+							lvia.pszText = code;
+							lvia.cchTextMax = CHEAT_SIZE;
+							SendDlgItemMessageA(hDlg, IDC_CHEAT_LIST, LVM_GETITEMA, 0, (LPARAM)&lvia);
+							internal_change = true;
+							SetDlgItemTextA(hDlg, IDC_CHEAT_CODE, code);
+							internal_change = false;
+						}
+					}
 				}
 				break;
 			case IDC_CHEAT_DESCRIPTION:
