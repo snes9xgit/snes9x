@@ -431,6 +431,20 @@ void TranslateKey(WORD keyz,char *out)
 
 }
 
+// Format multiple bindings as comma-separated text
+void TranslateMultiKey(WORD *keys, int numKeys, char *out)
+{
+	out[0] = '\0';
+	for (int i = 0; i < numKeys; i++) {
+		if (keys[i] == 0 || keys[i] == VK_ESCAPE) continue;
+		if (out[0] != '\0') strcat(out, ", ");
+		char temp[128];
+		TranslateKey(keys[i], temp);
+		strcat(out, temp);
+	}
+	if (out[0] == '\0') TranslateKey(0, out); // "Disabled"
+}
+
 bool IsReserved (WORD Key, int modifiers)
 {
 	// keys that do other stuff in Windows
@@ -534,6 +548,7 @@ int GetNumButtonsAssignedTo (WORD Key)
 		if(!Joypad[J%5].Enabled || Key == 0 || Key == VK_ESCAPE)
 			continue;
 
+		// Check primary bindings
 		if(Key == Joypad[J].Left)       count++;
 		if(Key == Joypad[J].Right)      count++;
 		if(Key == Joypad[J].Left_Up)    count++;
@@ -550,6 +565,27 @@ int GetNumButtonsAssignedTo (WORD Key)
 		if(Key == Joypad[J].Y)          count++;
 		if(Key == Joypad[J].L)          count++;
 		if(Key == Joypad[J].R)          count++;
+
+		// Check extra bindings
+		for(int e = 0; e < MAX_EXTRA_BINDS; e++)
+		{
+			if(Key == JoypadExtra[J].Left[e])       count++;
+			if(Key == JoypadExtra[J].Right[e])      count++;
+			if(Key == JoypadExtra[J].Left_Up[e])    count++;
+			if(Key == JoypadExtra[J].Left_Down[e])  count++;
+			if(Key == JoypadExtra[J].Right_Up[e])   count++;
+			if(Key == JoypadExtra[J].Right_Down[e]) count++;
+			if(Key == JoypadExtra[J].Up[e])         count++;
+			if(Key == JoypadExtra[J].Down[e])       count++;
+			if(Key == JoypadExtra[J].Start[e])      count++;
+			if(Key == JoypadExtra[J].Select[e])     count++;
+			if(Key == JoypadExtra[J].A[e])          count++;
+			if(Key == JoypadExtra[J].B[e])          count++;
+			if(Key == JoypadExtra[J].X[e])          count++;
+			if(Key == JoypadExtra[J].Y[e])          count++;
+			if(Key == JoypadExtra[J].L[e])          count++;
+			if(Key == JoypadExtra[J].R[e])          count++;
+		}
     }
 	return count;
 }
@@ -725,7 +761,7 @@ static LRESULT CALLBACK InputCustomWndProc(HWND hwnd, UINT msg, WPARAM wParam, L
 
 	static HWND selectedItem = NULL;
 
-	char temp[100];
+	char temp[512];
 	COLORREF col;
     switch(msg)
     {
@@ -748,6 +784,8 @@ static LRESULT CALLBACK InputCustomWndProc(HWND hwnd, UINT msg, WPARAM wParam, L
         icp->crForeGnd = GetSysColor(COLOR_WINDOWTEXT);
         icp->crBackGnd = GetSysColor(COLOR_WINDOW);
         icp->hFont     = (HFONT__ *) GetStockObject(DEFAULT_GUI_FONT);
+        memset(icp->keys, 0, sizeof(icp->keys));
+        icp->numKeys   = 0;
 
         // Assign the window text specified in the call to CreateWindow.
         SetWindowText(hwnd, ((CREATESTRUCT *)lParam)->lpszName);
@@ -794,8 +832,34 @@ static LRESULT CALLBACK InputCustomWndProc(HWND hwnd, UINT msg, WPARAM wParam, L
             break;
         }
 
-        TranslateKey(wParam, temp);
-        col = CheckButtonKey(wParam);
+        if (wParam == VK_ESCAPE)
+        {
+            // Escape clears all bindings
+            memset(icp->keys, 0, sizeof(icp->keys));
+            icp->numKeys = 0;
+        }
+        else if (wParam == VK_DELETE && icp->numKeys > 0)
+        {
+            // Delete removes the last binding
+            icp->numKeys--;
+            icp->keys[icp->numKeys] = 0;
+        }
+        else if (icp->numKeys < MAX_BIND_KEYS)
+        {
+            // Check for duplicates
+            bool duplicate = false;
+            for (int i = 0; i < icp->numKeys; i++) {
+                if (icp->keys[i] == (WORD)wParam) { duplicate = true; break; }
+            }
+            if (!duplicate) {
+                icp->keys[icp->numKeys] = (WORD)wParam;
+                icp->numKeys++;
+            }
+        }
+
+        // Update display with all bindings
+        TranslateMultiKey(icp->keys, icp->numKeys, temp);
+        col = icp->numKeys > 0 ? CheckButtonKey(icp->keys[0]) : RGB(255,255,255);
 
         icp->crForeGnd = ((~col) & 0x00ffffff);
         icp->crBackGnd = col;
@@ -807,13 +871,36 @@ static LRESULT CALLBACK InputCustomWndProc(HWND hwnd, UINT msg, WPARAM wParam, L
         break;
     }
 	case WM_USER+44:
-
-		TranslateKey(wParam,temp);
-		if(IsWindowEnabled(hwnd))
+	{
+		// Multi-bind protocol: wParam = pointer to WORD[MAX_BIND_KEYS] array, lParam = count
+		// If lParam > 0, use multi-bind protocol; otherwise fall back to single key in wParam
+		if (lParam > 0 && lParam <= MAX_BIND_KEYS)
 		{
-			col = CheckButtonKey(wParam);
+			WORD *keys = (WORD *)wParam;
+			icp->numKeys = 0;
+			for (int i = 0; i < (int)lParam; i++) {
+				if (keys[i] != 0 && keys[i] != VK_ESCAPE) {
+					icp->keys[icp->numKeys++] = keys[i];
+				}
+			}
+			// Clear remaining slots
+			for (int i = icp->numKeys; i < MAX_BIND_KEYS; i++)
+				icp->keys[i] = 0;
+
+			TranslateMultiKey(icp->keys, icp->numKeys, temp);
+			col = icp->numKeys > 0 ? CheckButtonKey(icp->keys[0]) : RGB(255,255,255);
 		}
 		else
+		{
+			// Legacy single-key protocol
+			TranslateKey(wParam, temp);
+			icp->numKeys = (wParam != 0 && wParam != VK_ESCAPE) ? 1 : 0;
+			icp->keys[0] = (WORD)wParam;
+			for (int i = 1; i < MAX_BIND_KEYS; i++) icp->keys[i] = 0;
+			col = CheckButtonKey(wParam);
+		}
+
+		if(!IsWindowEnabled(hwnd))
 		{
 			col = RGB( 192,192,192);
 		}
@@ -824,16 +911,20 @@ static LRESULT CALLBACK InputCustomWndProc(HWND hwnd, UINT msg, WPARAM wParam, L
 		UpdateWindow(icp->hwnd);
 
 		break;
+	}
 
 	case WM_SETFOCUS:
 	{
 		selectedItem = hwnd;
+		// Reset accumulation - start fresh for new key capture
+		icp->numKeys = 0;
+		memset(icp->keys, 0, sizeof(icp->keys));
 		col = RGB( 0,255,0);
 		icp->crForeGnd = ((~col) & 0x00ffffff);
 		icp->crBackGnd = col;
+		SetWindowText(hwnd, _T("..."));
 		InvalidateRect(icp->hwnd, NULL, FALSE);
 		UpdateWindow(icp->hwnd);
-//		tid = wParam;
 
 		break;
 	}
