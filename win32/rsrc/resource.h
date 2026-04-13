@@ -620,6 +620,7 @@
 #define IDD_SET_VALUE                   175
 #define IDC_SET_VALUE_EDIT              3101
 
+#define IDC_ALLOWMULTIBIND              3102
 #define IDC_STATIC                      -1
 
 // Next default values for new objects

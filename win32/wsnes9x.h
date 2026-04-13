@@ -224,6 +224,7 @@ struct sGUI {
 	int  SoundChannelEnable;
 	bool BackgroundInput;
     bool BackgroundKeyHotkeys;
+	bool AllowMultipleBindings;
 	bool JoystickHotkeys;
 	bool MovieClearSRAM;
 	bool MovieStartFromReset;

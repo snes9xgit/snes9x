@@ -544,9 +544,11 @@ bool S9xGetState (WORD KeyIdent)
 bool AnyBindPressed(WORD primary, const WORD* extra)
 {
     if (!S9xGetState(primary)) return true;
-    for (int i = 0; i < MAX_EXTRA_BINDS; i++) {
-        if (extra[i] != 0 && extra[i] != VK_ESCAPE && !S9xGetState(extra[i]))
-            return true;
+    if (GUI.AllowMultipleBindings) {
+        for (int i = 0; i < MAX_EXTRA_BINDS; i++) {
+            if (extra[i] != 0 && extra[i] != VK_ESCAPE && !S9xGetState(extra[i]))
+                return true;
+        }
     }
     return false;
 }

@@ -791,8 +791,10 @@ int HandleKeyMessage(WPARAM wParam, LPARAM lParam)
 	// Helper: returns true if wParam matches the primary binding or any extra binding
 	auto MatchesAnyBinding = [](WPARAM wParam, WORD primary, const WORD* extra) -> bool {
 		if (primary != 0 && primary != VK_ESCAPE && wParam == primary) return true;
-		for (int i = 0; i < MAX_EXTRA_BINDS; i++) {
-			if (extra[i] != 0 && extra[i] != VK_ESCAPE && wParam == extra[i]) return true;
+		if (GUI.AllowMultipleBindings) {
+			for (int i = 0; i < MAX_EXTRA_BINDS; i++) {
+				if (extra[i] != 0 && extra[i] != VK_ESCAPE && wParam == extra[i]) return true;
+			}
 		}
 		return false;
 	};
@@ -9328,6 +9330,7 @@ switch(msg)
 
 		SendDlgItemMessage(hDlg,IDC_JPTOGGLE,BM_SETCHECK, Joypad[index].Enabled ? (WPARAM)BST_CHECKED : (WPARAM)BST_UNCHECKED, 0);
 		SendDlgItemMessage(hDlg,IDC_ALLOWLEFTRIGHT,BM_SETCHECK, Settings.UpAndDown ? (WPARAM)BST_CHECKED : (WPARAM)BST_UNCHECKED, 0);
+		SendDlgItemMessage(hDlg,IDC_ALLOWMULTIBIND,BM_SETCHECK, GUI.AllowMultipleBindings ? (WPARAM)BST_CHECKED : (WPARAM)BST_UNCHECKED, 0);
 
 		set_buttoninfo(index,hDlg);
 
@@ -9400,6 +9403,7 @@ switch(msg)
 
 		case IDOK:
 			Settings.UpAndDown = IsDlgButtonChecked(hDlg, IDC_ALLOWLEFTRIGHT);
+			GUI.AllowMultipleBindings = IsDlgButtonChecked(hDlg, IDC_ALLOWMULTIBIND) != 0;
 			WinSaveConfigFile();
 			EndDialog(hDlg,0);
 			break;
@@ -12672,7 +12676,7 @@ bool S9xPollButton(uint32 id, bool *pressed){
 
 	*pressed = false;
 
-#define CHECK_KEY(controller, button) (!S9xGetState(Joypad[controller].button) || !S9xGetState(JoypadExtra[controller].button[0]) || !S9xGetState(JoypadExtra[controller].button[1]) || !S9xGetState(JoypadExtra[controller].button[2]) || (ToggleJoypadStorage[controller].button && !TurboToggleJoypadStorage[controller].button) || (IPPU.TotalEmulatedFrames%2 == ToggleJoypadStorage[controller].button && TurboToggleJoypadStorage[controller].button))
+#define CHECK_KEY(controller, button) (!S9xGetState(Joypad[controller].button) || (GUI.AllowMultipleBindings && (!S9xGetState(JoypadExtra[controller].button[0]) || !S9xGetState(JoypadExtra[controller].button[1]) || !S9xGetState(JoypadExtra[controller].button[2]))) || (ToggleJoypadStorage[controller].button && !TurboToggleJoypadStorage[controller].button) || (IPPU.TotalEmulatedFrames%2 == ToggleJoypadStorage[controller].button && TurboToggleJoypadStorage[controller].button))
 
 	extern bool S9xGetState (WORD KeyIdent);
 	if (id & k_MO)	// mouse
