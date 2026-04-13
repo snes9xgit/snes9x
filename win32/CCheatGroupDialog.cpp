@@ -60,8 +60,7 @@ int CCheatGroupDialog::OnInitDialog()
 {
     editHandle = GetDlgItem(windowHandle, IDC_EDIT_CHEATS);
     std::string tempCheatCodes = ReplaceText(cheatCodes, delimiter, linebreak);
-    std::wstring editText(tempCheatCodes.begin(), tempCheatCodes.end());
-    Edit_SetText(editHandle, editText.c_str());
+    Edit_SetText(editHandle, Utf8ToWide(tempCheatCodes.c_str()));
     Edit_LimitText(editHandle, CHEAT_SIZE);
     SetFocus(editHandle);
     return FALSE;
@@ -69,9 +68,9 @@ int CCheatGroupDialog::OnInitDialog()
 void CCheatGroupDialog::OnOK()
 {
     int textSize = GetWindowTextLength(editHandle);
-    std::wstring editText(textSize + 1, L'\0');
+    std::vector<wchar_t> editText(textSize + 1);
     Edit_GetText(editHandle, editText.data(), textSize + 1);
-    std::string tempCheatCodes(editText.begin(), editText.end());
+    std::string tempCheatCodes(WideToUtf8(editText.data()));
 
     bool isCheatValid = ValidateCheatCodes(tempCheatCodes);
     
@@ -96,16 +95,15 @@ bool CCheatGroupDialog::ValidateCheatCodes(std::string tempCheatCodes)
         if (valid_cheat.empty())
         {
             std::wostringstream ss;
-            ss << L"Line " << std::to_wstring(i + 1) << L" has invalid code :" << std::wstring(
+            ss << L"Line " << std::to_wstring(i + 1) << L" has invalid code: " << std::wstring(
                 parts[i].begin(), parts[i].end()) << std::endl;
             std::wstring prompt = ss.str();
-            (MessageBox(windowHandle,
+            MessageBox(windowHandle,
                 prompt.c_str(),
                 TEXT("Validation Failed"),
-                MB_OK | MB_ICONWARNING));
+                MB_OK | MB_ICONWARNING);
             return FALSE;
         }
     }
     return TRUE;
-
 }
