@@ -401,7 +401,6 @@ struct SJoypad {
 };
 
 #define MAX_EXTRA_BINDS 3  // 3 extra + 1 primary = 4 total bindings per button
-#define MAX_BIND_KEYS (1 + MAX_EXTRA_BINDS)
 
 struct SJoypadExtraBinds {
     WORD Left[MAX_EXTRA_BINDS];
