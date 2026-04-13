@@ -536,29 +536,6 @@ bool RA_IsHardcoreModeActive()
     return rc_client_get_hardcore_enabled(g_rcClient) != 0;
 }
 
-bool RA_WarnDisableHardcore(const char *activity)
-{
-    if (!RA_IsHardcoreModeActive())
-        return true;
-
-    char msg[512];
-    snprintf(msg, sizeof(msg),
-             "%s is not allowed in Hardcore mode.\n\n"
-             "Disable Hardcore mode to proceed?\n"
-             "(Achievement progress for the current session will be lost)",
-             activity);
-
-    int res = MessageBoxA(g_hWnd, msg, "RetroAchievements - Hardcore Mode",
-                          MB_YESNO | MB_ICONWARNING);
-    if (res == IDYES)
-    {
-        rc_client_set_hardcore_enabled(g_rcClient, 0);
-        GUI.RAHardcoreMode = false;
-        return true;
-    }
-    return false;
-}
-
 // ---------------------------------------------------------------------------
 // Public API: Login
 // ---------------------------------------------------------------------------

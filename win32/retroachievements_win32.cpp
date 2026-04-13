@@ -420,7 +420,18 @@ static bool ra_win32_confirm_disable_hardcore(const char *activity)
 
     int res = MessageBoxA(GUI.hWnd, msg, "RetroAchievements - Hardcore Mode",
                           MB_YESNO | MB_ICONWARNING);
-    return (res == IDYES);
+    if (res == IDYES)
+    {
+        GUI.RAHardcoreMode = false;
+        MENUITEMINFO mii = {};
+        mii.cbSize = sizeof(mii);
+        mii.fMask = MIIM_STATE;
+        mii.fState = MFS_UNCHECKED;
+        SetMenuItemInfo(GUI.hMenu, ID_RA_HARDCORE_MODE, FALSE, &mii);
+        S9xRestoreWindowTitle();
+        return true;
+    }
+    return false;
 }
 
 static void ra_win32_log(const char *message)

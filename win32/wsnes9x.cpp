@@ -730,6 +730,11 @@ void S9xRestoreWindowTitle ()
     else
         _stprintf(buf, TEXT("%s %s"), WINDOW_TITLE, TEXT(VERSION));
 
+#ifdef RETROACHIEVEMENTS_SUPPORT
+    if (GUI.RAHardcoreMode)
+        _tcscat(buf, TEXT(" [Hardcore]"));
+#endif
+
 #ifdef KAILLERA_SUPPORT
     if (KailleraServerIsRunning())
     {
@@ -995,6 +1000,14 @@ int HandleKeyMessage(WPARAM wParam, LPARAM lParam)
 		if(wParam == CustomKeys.FrameAdvance.key
 		&& modifiers == CustomKeys.FrameAdvance.modifiers)
 		{
+#ifdef RETROACHIEVEMENTS_SUPPORT
+			if (RA_IsHardcoreModeActive())
+			{
+				hitHotKey = true;
+			}
+			else
+#endif
+			{
 			static DWORD lastTime = 0;
 			if((timeGetTime() - lastTime) > 20)
 			{
@@ -1021,6 +1034,7 @@ int HandleKeyMessage(WPARAM wParam, LPARAM lParam)
 			}
 
 			hitHotKey = true;
+			}
 		}
 		if(wParam == CustomKeys.FrameCount.key
 		&& modifiers == CustomKeys.FrameCount.modifiers)
@@ -1058,21 +1072,31 @@ int HandleKeyMessage(WPARAM wParam, LPARAM lParam)
 		if(wParam == CustomKeys.FastForward.key
 		&& modifiers == CustomKeys.FastForward.modifiers)
 		{
-			if(!Settings.TurboMode)
-				S9xMessage (S9X_INFO, S9X_TURBO_MODE, WINPROC_TURBOMODE_TEXT);
-			Settings.TurboMode = TRUE;
+#ifdef RETROACHIEVEMENTS_SUPPORT
+			if (!RA_IsHardcoreModeActive())
+#endif
+			{
+				if(!Settings.TurboMode)
+					S9xMessage (S9X_INFO, S9X_TURBO_MODE, WINPROC_TURBOMODE_TEXT);
+				Settings.TurboMode = TRUE;
+			}
 			hitHotKey = true;
 		}
 		if(wParam == CustomKeys.FastForwardToggle.key
 		&& modifiers == CustomKeys.FastForwardToggle.modifiers)
 		{
-			Settings.TurboMode ^= TRUE;
-			if (Settings.TurboMode)
-				S9xMessage (S9X_INFO, S9X_TURBO_MODE,
-				WINPROC_TURBOMODE_ON);
-			else
-				S9xMessage (S9X_INFO, S9X_TURBO_MODE,
-				WINPROC_TURBOMODE_OFF);
+#ifdef RETROACHIEVEMENTS_SUPPORT
+			if (!RA_IsHardcoreModeActive())
+#endif
+			{
+				Settings.TurboMode ^= TRUE;
+				if (Settings.TurboMode)
+					S9xMessage (S9X_INFO, S9X_TURBO_MODE,
+					WINPROC_TURBOMODE_ON);
+				else
+					S9xMessage (S9X_INFO, S9X_TURBO_MODE,
+					WINPROC_TURBOMODE_OFF);
+			}
 			hitHotKey = true;
 		}
 		if(wParam == CustomKeys.ShowPressed.key
@@ -1145,32 +1169,38 @@ int HandleKeyMessage(WPARAM wParam, LPARAM lParam)
 		if(wParam == CustomKeys.SpeedDown.key
 		&& modifiers == CustomKeys.SpeedDown.modifiers)
 		{
-			// Increase emulated frame time
-			int i;
-			for(i=1; FrameTimings[i]<Settings.FrameTime; ++i)
-				;
-			Settings.FrameTime = FrameTimings[i+1];
-			ResetFrameTimer ();
-//					sprintf (InfoString, WINPROC_EMUFRAMETIME,
-//						Settings.FrameTime / 1);
-			sprintf (InfoString, "Speed: %.0f%% (%.1f ms/frame)", ((Settings.PAL?Settings.FrameTimePAL:Settings.FrameTimeNTSC) * 100.0f) / (float)Settings.FrameTime, Settings.FrameTime*0.001f);
-			S9xSetInfoString (InfoString);
+#ifdef RETROACHIEVEMENTS_SUPPORT
+			if (!RA_IsHardcoreModeActive())
+#endif
+			{
+				// Increase emulated frame time
+				int i;
+				for(i=1; FrameTimings[i]<Settings.FrameTime; ++i)
+					;
+				Settings.FrameTime = FrameTimings[i+1];
+				ResetFrameTimer ();
+				sprintf (InfoString, "Speed: %.0f%% (%.1f ms/frame)", ((Settings.PAL?Settings.FrameTimePAL:Settings.FrameTimeNTSC) * 100.0f) / (float)Settings.FrameTime, Settings.FrameTime*0.001f);
+				S9xSetInfoString (InfoString);
+			}
 			hitHotKey = true;
 		}
 		if(wParam == CustomKeys.SpeedUp.key
 		&& modifiers == CustomKeys.SpeedUp.modifiers)
 		{
-			// Decrease emulated frame time
-			int i;
-			for(i=1; FrameTimings[i]<Settings.FrameTime; ++i)
-				;
-			Settings.FrameTime = FrameTimings[i-1];
+#ifdef RETROACHIEVEMENTS_SUPPORT
+			if (!RA_IsHardcoreModeActive())
+#endif
+			{
+				// Decrease emulated frame time
+				int i;
+				for(i=1; FrameTimings[i]<Settings.FrameTime; ++i)
+					;
+				Settings.FrameTime = FrameTimings[i-1];
 
-			ResetFrameTimer ();
-//					sprintf (InfoString, WINPROC_EMUFRAMETIME,
-//						Settings.FrameTime / 1);
-			sprintf (InfoString, "Speed: %.0f%% (%.1f ms/frame)", ((Settings.PAL?Settings.FrameTimePAL:Settings.FrameTimeNTSC) * 100.0f) / (float)Settings.FrameTime, Settings.FrameTime*0.001f);
-			S9xSetInfoString (InfoString);
+				ResetFrameTimer ();
+				sprintf (InfoString, "Speed: %.0f%% (%.1f ms/frame)", ((Settings.PAL?Settings.FrameTimePAL:Settings.FrameTimeNTSC) * 100.0f) / (float)Settings.FrameTime, Settings.FrameTime*0.001f);
+				S9xSetInfoString (InfoString);
+			}
 			hitHotKey = true;
 		}
 		if(wParam == CustomKeys.BGL1.key
@@ -1515,6 +1545,10 @@ static bool DoOpenRomDialog(TCHAR filename [_MAX_PATH], bool noCustomDlg = false
 
 bool WinMoviePlay(LPCTSTR filename)
 {
+#ifdef RETROACHIEVEMENTS_SUPPORT
+	if (!RA_WarnDisableHardcore("Movie playback"))
+		return false;
+#endif
 	struct MovieInfo info;
 	int err;
 
@@ -1764,6 +1798,10 @@ LRESULT CALLBACK WinProc(
 			break;
 		case ID_FILE_MOVIE_PLAY:
 			{
+#ifdef RETROACHIEVEMENTS_SUPPORT
+				if (!RA_WarnDisableHardcore("Movie playback"))
+					break;
+#endif
 				RestoreGUIDisplay ();  //exit DirectX
 				OpenMovieParams op;
 				memset(&op, 0, sizeof(op));
@@ -1794,6 +1832,10 @@ LRESULT CALLBACK WinProc(
 			break;
 		case ID_FILE_MOVIE_RECORD:
 			{
+#ifdef RETROACHIEVEMENTS_SUPPORT
+				if (!RA_WarnDisableHardcore("Movie recording"))
+					break;
+#endif
 				RestoreGUIDisplay ();  //exit DirectX
 				OpenMovieParams op;
 				memset(&op, 0, sizeof(op));
@@ -2361,9 +2403,17 @@ LRESULT CALLBACK WinProc(
             FreezeUnfreezeDialogPreview(TRUE);
             break;
 		case ID_CHEAT_ENTER:
+#ifdef RETROACHIEVEMENTS_SUPPORT
+			if (!RA_WarnDisableHardcore("Cheat editor"))
+				break;
+#endif
             WinShowCheatEditorDialog();
 			break;
 		case ID_CHEAT_SEARCH:
+#ifdef RETROACHIEVEMENTS_SUPPORT
+			if (!RA_WarnDisableHardcore("Cheat search"))
+				break;
+#endif
             WinShowCheatSearchDialog();
 			break;
 		case ID_CHEAT_APPLY:
@@ -2450,6 +2500,16 @@ LRESULT CALLBACK WinProc(
 		case ID_RA_HARDCORE_MODE:
 			GUI.RAHardcoreMode = !GUI.RAHardcoreMode;
 			RA_SetHardcoreEnabled(GUI.RAHardcoreMode);
+			if (GUI.RAHardcoreMode && !Settings.StopEmulation)
+			{
+				S9xMovieUpdateOnReset();
+				if (S9xMoviePlaying())
+					S9xMovieStop(TRUE);
+				S9xSoftReset();
+				ReInitSound();
+				RA_OnReset();
+			}
+			S9xRestoreWindowTitle();
 			break;
 		case ID_RA_UA_SUPERSNES9X:
 			strcpy(GUI.RAEmulatorName, "SuperSnes9x");
@@ -2462,8 +2522,13 @@ LRESULT CALLBACK WinProc(
 			break;
 #endif
 		case ID_FRAME_ADVANCE:
-			Settings.Paused = true;
-			Settings.FrameAdvance = true;
+#ifdef RETROACHIEVEMENTS_SUPPORT
+			if (!RA_IsHardcoreModeActive())
+#endif
+			{
+				Settings.Paused = true;
+				Settings.FrameAdvance = true;
+			}
 			break;
 #ifdef DEBUGGER
 		case ID_DEBUG_TRACE:

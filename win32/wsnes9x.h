@@ -497,6 +497,7 @@ enum
 /*****************************************************************************/
 
 void S9xSetWinPixelFormat ();
+void S9xRestoreWindowTitle ();
 //int CheckKey( WORD Key, int OldJoypad);
 //void TranslateKey(WORD keyz,char *out);
 
