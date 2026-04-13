@@ -8869,20 +8869,21 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
                                     sel_idx = listview_notify->iItem;
                                     internal_change = true; // do not enable update button
 
+                                    std::vector<wchar_t> buf(CHEAT_SIZE);
+
                                     // we can't use the ITEM_QUERY macro, since the selection mark is not yet updated,
                                     // and we also already know which id the newly selected item has
                                     auto item_query = [&](int sel_id, int sub_id)
                                         {
-											std::wstring buf(CHEAT_SIZE,L'\0');
                                             LV_ITEM lvi;
                                             memset(&lvi, 0, sizeof(LV_ITEM));
                                             lvi.iItem = sel_id;
                                             lvi.iSubItem = sub_id;
                                             lvi.mask = LVIF_TEXT;
                                             lvi.pszText = buf.data();
-                                            lvi.cchTextMax = CHEAT_SIZE;
+                                            lvi.cchTextMax = buf.size();
                                             ListView_GetItem(GetDlgItem(hDlg, IDC_CHEAT_LIST), &lvi);
-                                            return buf;
+                                            return std::wstring(lvi.pszText);
                                         };
 
                                     /* Code */
@@ -8938,10 +8939,9 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 				}
 			case IDC_ADD_CHEAT:
 				{
-					std::string temp(CHEAT_SIZE,'\0');
-					std::wstring tempDesc(CHEAT_SIZE,L'\0');
-					GetDlgItemTextA(hDlg, IDC_CHEAT_CODE, temp.data(), CHEAT_SIZE);
-					GetDlgItemText(hDlg, IDC_CHEAT_DESCRIPTION, tempDesc.data(), CHEAT_SIZE);
+					std::string temp = WideToUtf8(GetDlgItemTextWstring(hDlg, IDC_CHEAT_CODE).c_str());
+					std::wstring tempDesc = GetDlgItemTextWstring(hDlg, IDC_CHEAT_DESCRIPTION);
+                    int s = tempDesc.length();
 
 					std::string valid_cheat = S9xCheatValidate(temp);
 
@@ -8979,16 +8979,13 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 			case IDC_UPDATE_CHEAT:
 				{
 					unsigned int j;
-					std::wstring temp(CHEAT_SIZE, L'\0');
-					std::string code(CHEAT_SIZE, '\0');
-					GetDlgItemTextA(hDlg, IDC_CHEAT_CODE, code.data(), CHEAT_SIZE);
+					std::wstring code = GetDlgItemTextWstring(hDlg, IDC_CHEAT_CODE);
+                    std::string codeUtf8 = WideToUtf8(code.c_str());
 
-					std::string valid_cheat = S9xCheatValidate(code);
+					std::string valid_cheat = S9xCheatValidate(codeUtf8);
 
 					if(!valid_cheat.empty())
 					{
-						Utf8ToWide wstring(code.c_str());
-
 						LVITEM lvi;
 
 						// get index in internal cheat list, if present mark as modified
@@ -9001,19 +8998,18 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 
 						memset(&lvi, 0, sizeof(LVITEM));
 						lvi.mask=LVIF_TEXT;
-						lvi.pszText=wstring;
+						lvi.pszText=code.data();
 						lvi.iItem=sel_idx;
 						lvi.cchTextMax = CHEAT_SIZE;
 						ListView_SetItem(GetDlgItem(hDlg,IDC_CHEAT_LIST), &lvi);
-						SetDlgItemText(hDlg, IDC_CHEAT_CODE, wstring);
 
-						GetDlgItemText(hDlg, IDC_CHEAT_DESCRIPTION, temp.data(), CHEAT_SIZE);
+                        auto desc = GetDlgItemTextWstring(hDlg, IDC_CHEAT_DESCRIPTION);
 
 						memset(&lvi, 0, sizeof(LVITEM));
 						lvi.iItem=sel_idx;
 						lvi.iSubItem = 1;
 						lvi.mask=LVIF_TEXT;
-						lvi.pszText=temp.data();
+						lvi.pszText= desc.data();
 						lvi.cchTextMax = CHEAT_SIZE;
 						SendDlgItemMessage(hDlg,IDC_CHEAT_LIST, LVM_SETITEM, 0, (LPARAM)&lvi);
 
@@ -9089,9 +9085,7 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 						{
 							return true;
 						}
-						std::string temp(CHEAT_SIZE,'\0');
-						char *valid_cheat = NULL;
-						GetDlgItemTextA(hDlg, IDC_CHEAT_CODE, temp.data(), CHEAT_SIZE);
+                        std::string temp = WideToUtf8(GetDlgItemTextWstring(hDlg, IDC_CHEAT_CODE).c_str());
 
 						if (temp[0] && (!S9xCheatValidate(temp).empty()))
 						{
@@ -9100,7 +9094,6 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 							else
 								EnableWindow(GetDlgItem(hDlg, IDC_UPDATE_CHEAT), false);
 							EnableWindow(GetDlgItem(hDlg, IDC_ADD_CHEAT), true);
-							delete[] valid_cheat;
 						}
 						else
 						{
@@ -9113,19 +9106,13 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 					break;
 				}
 			case IDC_BUTTON_EDIT_CHEATGROUP:
-
 				{
-					HWND editHandle = GetDlgItem(hDlg, IDC_CHEAT_CODE);
-					int textSize = GetWindowTextLength(editHandle);
-					std::wstring editText(textSize + 1, L'\0');
-					Edit_GetText(editHandle, editText.data(), textSize + 1);
-					std::string tempCheatCodes(editText.begin(), editText.end());
-					CCheatGroupDialog dialog(tempCheatCodes);
+                    std::wstring editText = GetDlgItemTextWstring(hDlg, IDC_CHEAT_CODE);
+					CCheatGroupDialog dialog(editText);
 					if (dialog.DoModal(hDlg) == IDOK)
 					{
-						tempCheatCodes = dialog.GetCheatCodes();
-						std::wstring newEditText(tempCheatCodes.begin(), tempCheatCodes.end());
-						Edit_SetText(editHandle, newEditText.c_str());
+						std::wstring newEditText = dialog.GetCheatCodes();
+                        SetDlgItemText(hDlg, IDC_CHEAT_CODE, newEditText.c_str());
 					}
 				}
 				break;
@@ -9145,30 +9132,30 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 
 						int internal_index = lvi.lParam;
 
+                        std::vector<wchar_t> buffer(CHEAT_SIZE);
+
 						if(internal_index >= 0)
 						{
 							if(ct.state[internal_index]==(unsigned long)Modified) // modified in GUI, change in core
 							{
-								std::wstring wcode(CHEAT_SIZE,L'\0');
-								std::wstring wdescription(CHEAT_SIZE, L'\0');
-
 								memset(&lvi, 0, sizeof(LV_ITEM));
 								lvi.iItem = k;
 								lvi.mask = LVIF_TEXT;
-								lvi.pszText = wcode.data();
-								lvi.cchTextMax = CHEAT_SIZE;
+								lvi.pszText = buffer.data();
+								lvi.cchTextMax = buffer.size();
 								ListView_GetItem(GetDlgItem(hDlg, IDC_CHEAT_LIST), &lvi);
+
+                                WideToUtf8 code(buffer.data());
 
 								memset(&lvi, 0, sizeof(LV_ITEM));
 								lvi.iItem = k;
 								lvi.iSubItem = 1;
 								lvi.mask=LVIF_TEXT;
-								lvi.pszText = wdescription.data();
-								lvi.cchTextMax = CHEAT_SIZE;
+								lvi.pszText = buffer.data();
+								lvi.cchTextMax = buffer.size();
 								ListView_GetItem(GetDlgItem(hDlg, IDC_CHEAT_LIST), &lvi);
 
-								WideToUtf8 code(wcode.c_str());
-								WideToUtf8 description(wdescription.c_str());
+								WideToUtf8 description(buffer.data());
 
 								S9xModifyCheatGroup(internal_index, std::string(description), std::string(code));
 							}
@@ -9181,27 +9168,25 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 						}
 						else // new cheat, add
 						{
-							std::wstring wcode(CHEAT_SIZE, L'\0');
-							std::wstring wdescription(CHEAT_SIZE, L'\0');
-
 							LV_ITEM lvi;
 							memset(&lvi, 0, sizeof(LV_ITEM));
 							lvi.iItem = k;
 							lvi.mask = LVIF_TEXT;
-							lvi.pszText = wcode.data();
-							lvi.cchTextMax = CHEAT_SIZE;
-							ListView_GetItem(GetDlgItem(hDlg, IDC_CHEAT_LIST), &lvi);
+							lvi.pszText = buffer.data();
+							lvi.cchTextMax = buffer.size();
+                            ListView_GetItem(GetDlgItem(hDlg, IDC_CHEAT_LIST), &lvi);
+
+                            WideToUtf8 code(buffer.data());
 
 							memset(&lvi, 0, sizeof(LV_ITEM));
 							lvi.iItem = k;
 							lvi.iSubItem = 1;
 							lvi.mask = LVIF_TEXT;
-							lvi.pszText = wdescription.data();
-							lvi.cchTextMax = CHEAT_SIZE;
+							lvi.pszText = buffer.data();
+							lvi.cchTextMax = buffer.size();
 							ListView_GetItem(GetDlgItem(hDlg, IDC_CHEAT_LIST), &lvi);
 
-							WideToUtf8 code(wcode.c_str());
-							WideToUtf8 description(wdescription.c_str());
+							WideToUtf8 description(buffer.data());
 
 							int index = S9xAddCheatGroup(std::string(description), std::string(code));
 
@@ -11147,4 +11132,18 @@ void S9xPostRomInit()
 	// black out the screen
  	for (uint32 y = 0; y < (uint32)IPPU.RenderedScreenHeight; y++)
 		memset(GFX.Screen + y * GFX.RealPPL, 0, GFX.RealPPL*2);
+}
+
+std::wstring GetDlgItemTextWstring(HWND hDlg, int nIDDlgItem)
+{
+    return GetTextWstring(GetDlgItem(hDlg, nIDDlgItem));
+}
+
+std::wstring GetTextWstring(HWND hWnd)
+{
+    int text_length = GetWindowTextLength(hWnd);
+    std::wstring edit_text(text_length + 1, 0);
+    GetWindowText(hWnd, edit_text.data(), text_length + 1);
+    edit_text.resize(text_length); // need to resize, otherwise length is +1 and string contains terminator
+    return edit_text;
 }

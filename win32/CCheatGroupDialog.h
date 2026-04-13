@@ -1,3 +1,9 @@
+/*****************************************************************************\
+     Snes9x - Portable Super Nintendo Entertainment System (TM) emulator.
+                This file is licensed under the Snes9x License.
+   For further information, consult the LICENSE file in the root directory.
+\*****************************************************************************/
+
 #pragma once
 
 #include "windows.h"
@@ -5,11 +11,11 @@
 class CCheatGroupDialog
 {
 public:
-	CCheatGroupDialog(std::string cheatCodes)
+	CCheatGroupDialog(std::wstring cheatCodes)
 	{
 		this->cheatCodes = cheatCodes;
 	}
-	std::string GetCheatCodes() 
+	std::wstring GetCheatCodes()
 	{
 		return cheatCodes; 
 	}
@@ -17,11 +23,11 @@ public:
 	static INT_PTR CALLBACK DlgEditCheatGroup(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
 	int OnInitDialog();
 	void OnOK();
-	std::string ReplaceText(std::string text, std::string from, std::string to);
+	std::wstring ReplaceText(std::wstring text, std::wstring from, std::wstring to);
 private:
-	std::string cheatCodes;
+	std::wstring cheatCodes;
 	HWND windowHandle;
 	HWND editHandle;
-	bool ValidateCheatCodes(std::string cheatCodes);
+	bool ValidateCheatCodes(std::wstring cheatCodes);
 };
 
