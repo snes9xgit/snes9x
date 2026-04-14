@@ -2502,6 +2502,11 @@ LRESULT CALLBACK WinProc(
 			RA_SetHardcoreEnabled(GUI.RAHardcoreMode);
 			if (GUI.RAHardcoreMode && !Settings.StopEmulation)
 			{
+				if (Settings.ApplyCheats)
+				{
+					Settings.ApplyCheats = false;
+					S9xCheatsDisable();
+				}
 				S9xMovieUpdateOnReset();
 				if (S9xMoviePlaying())
 					S9xMovieStop(TRUE);
