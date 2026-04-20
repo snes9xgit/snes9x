@@ -46,6 +46,7 @@
 #define IDI_ICON4                       162
 #define IDD_DIALOG_HACKS                164
 #define IDD_DIALOG_LOAD_PREVIEW         167
+#define IDD_CHEAT_GROUP                 169
 #define IDC_DRIVER                      1001
 #define IDC_BUFLEN                      1002
 #define IDC_RATE                        1003
@@ -111,6 +112,7 @@
 #define IDC_MULTICART_EDITA             1090
 #define IDC_INRATEEDIT                  1090
 #define IDC_SHADER_HLSL_FILE            1090
+#define IDC_EDIT_CHEATS                 1090
 #define IDC_PAUSEINTERVAL               1091
 #define IDC_UPRIGHT                     1091
 #define IDC_MULTICART_BIOSEDIT          1091
@@ -418,6 +420,7 @@
 #define IDC_NO_SPRITE_LIMIT             3037
 #define IDC_SET_DEFAULTS                3038
 #define IDC_BUTTON_SLOT_1               3039
+#define IDC_BUTTON_EDIT_CHEATGROUP      3039
 #define IDC_OSD_SCALE                   3041
 #define IDC_SPIN_OSD_SIZE               3042
 #define IDC_STATIC_SLOT_1               3059
@@ -560,9 +563,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        169
+#define _APS_NEXT_RESOURCE_VALUE        171
 #define _APS_NEXT_COMMAND_VALUE         40189
-#define _APS_NEXT_CONTROL_VALUE         3044
+#define _APS_NEXT_CONTROL_VALUE         3045
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

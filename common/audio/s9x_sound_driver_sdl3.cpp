@@ -9,44 +9,32 @@
 #include <cstdio>
 #include <vector>
 
-bool S9xSDL3SoundDriver::write_samples(int16_t *data, int samples)
+bool S9xSDL3SoundDriver::write_samples(int16_t *sample_data, int num_samples)
 {
-    bool retval = true;
-
-    mutex.lock();
-    auto empty = buffer.space_empty();
-    if (samples > empty)
+    if (!buffer.push(sample_data, num_samples))
     {
-        retval = false;
-        buffer.dump(buffer.buffer_size / 2 - empty);
+        return buffer.push(sample_data, buffer.space_empty() / 2);
     }
-    buffer.push(data, samples);
-    mutex.unlock();
-
-    return retval;
+    return true;
 }
 
-void S9xSDL3SoundDriver::mix(int req, int total)
+void S9xSDL3SoundDriver::mix(int requested_bytes, int total)
 {
-    if (tmp.size() < req / 2)
-        tmp.resize(req / 2);
+    const int requested_samples = requested_bytes / 2;
 
-    mutex.lock();
-    if (buffer.avail() >= req / 2)
+    if (tmp.size() < requested_samples)
+        tmp.resize(requested_samples);
+
+    if (buffer.avail() >= requested_samples)
     {
-
-        buffer.read((int16_t *)(tmp.data()), req / 2);
-        mutex.unlock();
-        SDL_PutAudioStreamData(stream, tmp.data(), req);
+        buffer.pull((int16_t *)(tmp.data()), requested_samples);
+        SDL_PutAudioStreamData(stream, tmp.data(), requested_bytes);
     }
     else
     {
-        auto avail = buffer.avail();
-        buffer.read((int16_t *)(tmp.data()), avail);
-        buffer.add_silence(buffer.buffer_size / 2);
-        mutex.unlock();
-        SDL_PutAudioStreamData(stream, tmp.data(), avail * 2);
-
+        auto available_space = buffer.avail();
+        buffer.pull((int16_t *)(tmp.data()), available_space);
+        SDL_PutAudioStreamData(stream, tmp.data(), available_space * 2);
     }
 }
 
@@ -115,6 +103,6 @@ int S9xSDL3SoundDriver::space_free()
 
 std::pair<int, int> S9xSDL3SoundDriver::buffer_level()
 {
-    std::pair<int, int> level = { buffer.space_empty(), buffer.buffer_size };
+    std::pair<int, int> level = { buffer.space_empty(), buffer.size() };
     return level;
 }

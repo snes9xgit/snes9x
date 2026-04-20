@@ -7,6 +7,7 @@
 #include <QScrollArea>
 #include <QFileDialog>
 #include <QResizeEvent>
+#include <QLineEdit>
 
 static bool is_simple(const EmuCanvas::Parameter &p)
 {
@@ -18,12 +19,23 @@ static bool is_pointless(const EmuCanvas::Parameter &p)
     return (p.min == p.max);
 }
 
-ShaderParametersDialog::ShaderParametersDialog(EmuCanvas *parent_, std::vector<EmuCanvas::Parameter> *parameters_)
-    : QDialog(parent_), parameters(parameters_), canvas(parent_), config(parent_->config)
+ShaderParametersDialog::ShaderParametersDialog(EmuCanvas *parent_, EmuCanvas::ShaderProperties properties_)
+    : QDialog(parent_), properties(properties_), parameters(properties.parameters), canvas(parent_), config(parent_->config)
 {
     setWindowTitle(tr("Shader Parameters"));
     setMinimumSize(600, 200);
     auto layout = new QVBoxLayout(this);
+
+    auto name_label = new QLabel(tr("Preset name:"), this);
+    auto name_entry = new QLineEdit(this);
+    name_entry->setText(properties.name->c_str());
+    connect(name_entry, &QLineEdit::textChanged, [&] (const QString &new_string) {
+        *properties.name = new_string.toStdString();
+    });
+    saved_name = *properties.name;
+    auto name_box = new QHBoxLayout();
+    name_box->addWidget(name_label, 0);
+    name_box->addWidget(name_entry, 1);
 
     auto scroll_area = new QScrollArea(this);
     scroll_area->setFrameShape(QFrame::Shape::StyledPanel);
@@ -127,6 +139,7 @@ ShaderParametersDialog::ShaderParametersDialog(EmuCanvas *parent_, std::vector<E
 
     buttonbox->addWidget(closebutton);
     scroll_area->setWidget(scroll_area_widget_contents);
+    layout->addLayout(name_box, 0);
     layout->addWidget(scroll_area);
     layout->addLayout(buttonbox, 0);
 
@@ -136,7 +149,8 @@ ShaderParametersDialog::ShaderParametersDialog(EmuCanvas *parent_, std::vector<E
 
 void ShaderParametersDialog::save()
 {
-    if (std::equal(parameters->begin(), parameters->end(), saved_parameters.begin()))
+    if (std::equal(parameters->begin(), parameters->end(), saved_parameters.begin()) &&
+        *properties.name == saved_name)
         return;
 
     QString shadername(config->shader.c_str());
@@ -147,6 +161,7 @@ void ShaderParametersDialog::save()
         extension = ".glslp";
 
     saved_parameters = *parameters;
+    saved_name = *properties.name;
 
     QDir dir(EmuConfig::findConfigDir().c_str());
     auto filename = dir.absoluteFilePath(QString::fromStdString("customized_shader" + extension));

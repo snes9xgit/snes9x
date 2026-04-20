@@ -34,6 +34,8 @@
 #include "mac-os.h"
 #include "mac-joypad.h"
 
+static const int32 CARDINAL_DIR_COUNT = 4;
+
 std::unordered_set<JoypadDevice> allDevices;
 std::unordered_map<JoypadDevice, std::map<uint8, std::map<int8, S9xButtonCode>>> defaultAxes;
 std::unordered_map<JoypadDevice, std::map<uint8, S9xButtonCode>> defaultButtons;
@@ -220,43 +222,59 @@ void gamepadAction(void *inContext, IOReturn inResult, void *inSender, IOHIDValu
         {
             int32 value = inputStruct.value;
 
-            for (int i = info.min; i <= info.max; i++)
+            int32 logicalMin = info.min;
+            int32 logicalMax = info.max;
+            int32 numDirections = logicalMax - logicalMin + 1;
+
+            // If not evenly divisible by the number of cardinal directions then we assume neutral
+            // values at the upper end of the range. A neutral value at the lower end is possible
+            // but very unlikely and against the HID spec.
+            int32 numNeutral = numDirections % CARDINAL_DIR_COUNT;
+            numDirections -= numNeutral;
+            logicalMax -= numNeutral;
+
+            int32 quadrantSize = numDirections / CARDINAL_DIR_COUNT;
+
+            // Unset all directional buttons (up, right, down, left).
+            for (int32 i = logicalMin; i <= logicalMax; i += quadrantSize)
             {
                 inputStruct.value = i;
-                if (buttonCodeByJoypadInput.find(inputStruct) != buttonCodeByJoypadInput.end())
+                auto iterator = buttonCodeByJoypadInput.find(inputStruct);
+                if (iterator != buttonCodeByJoypadInput.end())
                 {
-                     pressedGamepadButtons[playerNum][buttonCodeByJoypadInput[inputStruct]] = false;
+                    pressedGamepadButtons[playerNum][iterator->second] = false;
                 }
             }
 
-			if (value % 2 == 0)
-			{
-				inputStruct.value = value;
-				if (buttonCodeByJoypadInput.find(inputStruct) != buttonCodeByJoypadInput.end())
-				{
-					pressedGamepadButtons[playerNum][buttonCodeByJoypadInput[inputStruct]] = true;
-				}
-			}
-			else
-			{
-				for (int i = value - 1; i <= value + 1; i++)
-				{
-					int button = i;
-					if (i < info.min)
-					{
-						button = info.max;
-					}
-					else if (i > info.max)
-					{
-						button = info.min;
-					}
-					inputStruct.value = button;
-					if (buttonCodeByJoypadInput.find(inputStruct) != buttonCodeByJoypadInput.end())
-					{
-						pressedGamepadButtons[playerNum][buttonCodeByJoypadInput[inputStruct]] = true;
-					}
-				}
-			}
+            // If value is within the logical range then it represents a direction starting at up
+            // and winding in clockwise direction.
+            // Decompose the directional value into one or two cardinal directions.
+            if (value >= logicalMin && value <= logicalMax)
+            {
+                int32 valueZeroBased = value - logicalMin;
+
+                int32 firstDirection = valueZeroBased / quadrantSize;
+
+                inputStruct.value = logicalMin + firstDirection * quadrantSize;
+                auto firstIterator = buttonCodeByJoypadInput.find(inputStruct);
+                if (firstIterator != buttonCodeByJoypadInput.end())
+                {
+                    pressedGamepadButtons[playerNum][firstIterator->second] = true;
+                }
+
+                // If directional vector is not parallel to an axis we have an additional direction.
+                if ((valueZeroBased % quadrantSize) != 0)
+                {
+                    int32 secondDirection = (firstDirection + 1) % CARDINAL_DIR_COUNT;
+
+                    inputStruct.value = logicalMin + secondDirection * quadrantSize;
+                    auto secondIterator = buttonCodeByJoypadInput.find(inputStruct);
+                    if (secondIterator != buttonCodeByJoypadInput.end())
+                    {
+                        pressedGamepadButtons[playerNum][secondIterator->second] = true;
+                    }
+                }
+            }
         }
         else
         {

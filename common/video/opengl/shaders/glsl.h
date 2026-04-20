@@ -174,6 +174,7 @@ struct GLSLShader
     void register_uniforms();
 
     IniFile ini;
+    std::string name;
 
     std::vector<GLSLPass> pass;
     std::vector<GLSLLut> lut;

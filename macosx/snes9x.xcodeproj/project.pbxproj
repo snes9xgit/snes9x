@@ -12,7 +12,6 @@
 		3000A9D123418852007DC37F /* freeze_defrost.aiff in Resources */ = {isa = PBXBuildFile; fileRef = EA85C3560B4ECBD900F5F9C9 /* freeze_defrost.aiff */; };
 		302EEC9C22DAD0AB006D1502 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 302EEC9A22DAD0AB006D1502 /* AudioToolbox.framework */; };
 		302EEC9D22DAD0AB006D1502 /* AudioUnit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 302EEC9B22DAD0AB006D1502 /* AudioUnit.framework */; };
-		302EEC9F22DAD0B1006D1502 /* AGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 302EEC9E22DAD0B1006D1502 /* AGL.framework */; };
 		302EECA322DAD0C5006D1502 /* CoreImage.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 302EECA222DAD0C5006D1502 /* CoreImage.framework */; };
 		302EECA522DAD1B9006D1502 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 302EECA422DAD1B9006D1502 /* CoreAudio.framework */; };
 		3042F7E3232E9BDD00C03F5E /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3042F7E2232E9BDD00C03F5E /* Carbon.framework */; };
@@ -594,7 +593,6 @@
 				308092F72320B041006A2860 /* CoreGraphics.framework in Frameworks */,
 				302EECA522DAD1B9006D1502 /* CoreAudio.framework in Frameworks */,
 				302EECA322DAD0C5006D1502 /* CoreImage.framework in Frameworks */,
-				302EEC9F22DAD0B1006D1502 /* AGL.framework in Frameworks */,
 				302EEC9C22DAD0AB006D1502 /* AudioToolbox.framework in Frameworks */,
 				302EEC9D22DAD0AB006D1502 /* AudioUnit.framework in Frameworks */,
 				307C861D22D29DD2001B879E /* GLUT.framework in Frameworks */,

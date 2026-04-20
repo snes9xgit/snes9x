@@ -367,6 +367,7 @@ set(LIBJMA_SOURCES
 add_library(jma ${LIBJMA_SOURCES})
 target_include_directories(jma PRIVATE ${INCLUDES})
 target_compile_options(jma PUBLIC ${ARGS})
+target_compile_definitions(jma PRIVATE ${DEFINES})
 list(APPEND LIBS jma)
 
 add_executable(sourcify src/sourcify.c)

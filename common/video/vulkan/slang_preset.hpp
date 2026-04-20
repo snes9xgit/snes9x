@@ -8,6 +8,7 @@
 struct SlangPreset
 {
     void print();
+    static std::string get_name_from_file(const std::string &filename);
     bool load_preset_file(const std::string &filename);
     bool introspect();
     bool introspect_shader(SlangShader &s, int index, SlangShader::Stage stage);
@@ -25,6 +26,7 @@ struct SlangPreset
         bool linear;
     };
 
+    std::string name;
     std::vector<SlangShader> passes;
     std::vector<Texture> textures;
     std::vector<SlangShader::Parameter> parameters;

@@ -268,7 +268,11 @@ bool ShaderChain::load_shader_preset(const std::string &filename)
         .setFlags(vma::AllocationCreateFlagBits::eHostAccessSequentialWrite)
         .setRequiredFlags(vk::MemoryPropertyFlagBits::eHostVisible);
 
-    std::tie(vertex_buffer, vertex_buffer_allocation) = context->allocator.createBuffer(buffer_create_info, allocation_create_info).value;
+    auto result = context->allocator.createBuffer(buffer_create_info, allocation_create_info);
+    if (!result.has_value())
+        return false;
+    vertex_buffer = std::get<vk::Buffer>(result.value);
+    vertex_buffer_allocation = std::get<vma::Allocation>(result.value);
 
     auto vertex_buffer_memory = context->allocator.mapMemory(vertex_buffer_allocation).value;
     memcpy(vertex_buffer_memory, vertex_data, sizeof(vertex_data));

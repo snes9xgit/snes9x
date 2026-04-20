@@ -10,7 +10,7 @@
 class ShaderParametersDialog : public QDialog
 {
   public:
-    ShaderParametersDialog(EmuCanvas *parent_, std::vector<EmuCanvas::Parameter> *parameters_);
+    ShaderParametersDialog(EmuCanvas *parent_, EmuCanvas::ShaderProperties properties_);
 
     void refreshWidgets();
     void showEvent(QShowEvent *event) override;
@@ -20,6 +20,8 @@ class ShaderParametersDialog : public QDialog
     void saveAs();
 
     std::vector<std::tuple<QSlider *, QDoubleSpinBox *, QCheckBox *>> widgets;
+    EmuCanvas::ShaderProperties properties;
+    std::string saved_name;
     std::vector<EmuCanvas::Parameter> saved_parameters;
     std::vector<EmuCanvas::Parameter> *parameters;
 

@@ -56,6 +56,12 @@ class EmuCanvas : public QWidget
         int significant_digits;
     };
 
+    struct ShaderProperties
+    {
+        std::string *name;
+        std::vector<Parameter> *parameters;
+    };
+
     virtual void showParametersDialog() {};
     virtual void shaderChanged() {};
     virtual void saveParameters(std::string filename) {};

@@ -33,11 +33,9 @@ static LRESULT CALLBACK InputCustomWndProc(HWND hwnd, UINT msg, WPARAM wParam, L
 static LRESULT CALLBACK HotInputCustomWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 
-extern SJoyState JoystickF [16];
+SJoyState JoystickF [16];
 
 HWND funky;
-//WPARAM tid;
-
 
 void JoystickChanged( short ID, short Movement)
 {
@@ -600,9 +598,18 @@ COLORREF CheckHotKey( WORD Key, int modifiers)
     return white;
 }
 
+void InitJoystickStruct()
+{
+    for (short C = 0; C != 16; C++)
+        JoystickF[C].Attached = joyGetDevCaps(JOYSTICKID1 + C, &JoystickF[C].Caps, sizeof(JOYCAPS)) == JOYERR_NOERROR;
+
+    // call FunkyJoyStickTimer once to initialize the JoystickF states to the current joypad state, this prevents
+    // immediately triggering on first entry into an edit field
+    FunkyJoyStickTimer();
+}
+
 void InitInputCustomControl()
 {
-
     WNDCLASSEX wc;
 
     wc.cbSize         = sizeof(wc);
@@ -618,13 +625,13 @@ void InitInputCustomControl()
     wc.cbWndExtra     = sizeof(InputCust *);
     wc.hIconSm        = 0;
 
-
     RegisterClassEx(&wc);
 
+    InitJoystickStruct();
 }
+
 void InitKeyCustomControl()
 {
-
     WNDCLASSEX wc;
 
     wc.cbSize         = sizeof(wc);
@@ -640,10 +647,11 @@ void InitKeyCustomControl()
     wc.cbWndExtra     = sizeof(InputCust *);
     wc.hIconSm        = 0;
 
-
     RegisterClassEx(&wc);
 
+    InitJoystickStruct();
 }
+
 HWND CreateInputCustom(HWND hwndParent)
 {
     HWND hwndCtrl;

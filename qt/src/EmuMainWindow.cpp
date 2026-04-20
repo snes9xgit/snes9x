@@ -4,7 +4,6 @@
 #include <QFileDialog>
 #include <QtEvents>
 #include <QGuiApplication>
-#include <qnamespace.h>
 
 #ifdef Q_OS_WIN
 #include <dwmapi.h>
@@ -73,23 +72,10 @@ void EmuMainWindow::destroyCanvas()
     if (!central_widget)
         return;
 
-    if (using_stacked_widget)
-    {
-        auto stackwidget = (QStackedWidget *)central_widget;
-        if (auto widget = (EmuCanvas *)stackwidget->widget(0))
-        {
-            widget->deinit();
-            stackwidget->removeWidget(widget);
-        }
+    auto widget = (EmuCanvas *)takeCentralWidget();
+    widget->deinit();
+    delete widget;
 
-        delete takeCentralWidget();
-    }
-    else
-    {
-        auto widget = (EmuCanvas *)takeCentralWidget();
-        widget->deinit();
-        delete widget;
-    }
     canvas = nullptr;
 }
 
@@ -129,7 +115,16 @@ bool EmuMainWindow::createCanvas()
         canvas = new EmuCanvasQt(app->config.get(), this);
 
     setCentralWidget(canvas);
-    using_stacked_widget = false;
+    
+    if (QGuiApplication::platformName() == "wayland")
+    {
+        // Qt 6.10+ has a bug with delayed widget repositioning, causing us to get
+        // incorrect coordinates respective to the parent on Wayland.
+        // This forces widget reflow.
+        auto saved_width = width(), saved_height = height();
+        resize(width() + 1, height());
+        resize(saved_width, saved_height);
+    }
 
     return true;
 }

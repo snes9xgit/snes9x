@@ -7,19 +7,13 @@
 #include "s9x_sound_driver_cubeb.hpp"
 #include <cstdio>
 
-bool S9xCubebSoundDriver::write_samples(int16_t *data, int samples)
+bool S9xCubebSoundDriver::write_samples(int16_t *sample_data, int num_samples)
 {
-    bool retval = true;
-    auto empty = buffer.space_empty();
-    if (samples > empty)
+    if (!buffer.push(sample_data, num_samples))
     {
-        retval = false;
-        buffer.dump(buffer.buffer_size / 2 - empty);
+        return buffer.push(sample_data, buffer.space_empty() / 2);
     }
-
-    buffer.push(data, samples);
-
-    return retval;
+    return true;
 }
 
 S9xCubebSoundDriver::~S9xCubebSoundDriver()
@@ -73,21 +67,21 @@ long data_callback(cubeb_stream *stream, void *user_ptr,
     return ((S9xCubebSoundDriver *)user_ptr)->data_callback(stream, input_buffer, output_buffer, nframes);
 }
 
-long S9xCubebSoundDriver::data_callback(cubeb_stream *stream, void const *input_buffer, void *output_buffer, long nframes)
+long S9xCubebSoundDriver::data_callback(cubeb_stream *stream, void const *input_buffer, void *output_buffer, long num_frames)
 {
-    auto avail = buffer.avail();
-    if (avail < nframes * 2)
+    auto available_samples = buffer.avail();
+    if (available_samples >= num_frames * 2)
     {
-        auto zeroed_samples = nframes * 2 - avail;
-        memset(output_buffer, 0, zeroed_samples);
-        buffer.read((int16_t *)output_buffer + zeroed_samples, nframes * 2 - zeroed_samples);
-        buffer.add_silence(buffer.buffer_size / 2);
+        buffer.pull((int16_t *)output_buffer, num_frames * 2);
     }
     else
     {
-        buffer.read((int16_t *)output_buffer, nframes * 2);
+        auto zeroed_samples = num_frames * 2 - available_samples;
+        memset(output_buffer, 0, zeroed_samples);
+        buffer.pull((int16_t *)output_buffer + zeroed_samples, num_frames * 2 - zeroed_samples);
     }
-    return nframes;
+
+    return num_frames;
 }
 
 bool S9xCubebSoundDriver::open_device(int playback_rate, int buffer_size)
@@ -130,5 +124,5 @@ int S9xCubebSoundDriver::space_free()
 
 std::pair<int, int> S9xCubebSoundDriver::buffer_level()
 {
-    return { buffer.space_empty(), buffer.buffer_size };
+    return { buffer.space_empty(), buffer.size() };
 }

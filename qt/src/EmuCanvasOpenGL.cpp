@@ -380,10 +380,14 @@ void EmuCanvasOpenGL::showParametersDialog()
     }
 
     auto parameters = reinterpret_cast<std::vector<EmuCanvas::Parameter> *>(&shader->param);
+    ShaderProperties properties = {
+        .name = &shader->name,
+        .parameters = parameters
+    };
 
     if (!shader_parameters_dialog)
         shader_parameters_dialog =
-            std::make_unique<ShaderParametersDialog>(this, parameters);
+            std::make_unique<ShaderParametersDialog>(this, properties);
 
     shader_parameters_dialog->show();
 }

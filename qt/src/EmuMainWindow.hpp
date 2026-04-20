@@ -54,7 +54,6 @@ class EmuMainWindow : public QMainWindow
     bool manual_pause = false;
     bool focus_pause = false;
     bool minimized_pause = false;
-    bool using_stacked_widget = false;
     bool mouse_grabbed = false;
     QMenu *load_state_menu;
     QMenu *save_state_menu;

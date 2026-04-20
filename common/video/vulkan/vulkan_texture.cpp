@@ -196,7 +196,12 @@ void Texture::create(int width, int height, vk::Format fmt, vk::SamplerAddressMo
         .setSamples(vk::SampleCountFlagBits::e1)
         .setSharingMode(vk::SharingMode::eExclusive);
 
-    std::tie(image, image_allocation) = allocator.createImage(ici, aci).value;
+    {
+        auto result = allocator.createImage(ici, aci);
+        assert(result.has_value());
+        image = std::get<vk::Image>(result.value);
+        image_allocation = std::get<vma::Allocation>(result.value);
+    }
 
     buffer_size = width * height * 4;
     if (format == vk::Format::eR5G6B5UnormPack16)
@@ -209,7 +214,12 @@ void Texture::create(int width, int height, vk::Format fmt, vk::SamplerAddressMo
         .setFlags(vma::AllocationCreateFlagBits::eHostAccessSequentialWrite)
         .setUsage(vma::MemoryUsage::eAutoPreferHost);
 
-    std::tie(buffer, buffer_allocation) = allocator.createBuffer(bci, aci).value;
+    {
+        auto result = allocator.createBuffer(bci, aci);
+        assert(result.has_value());
+        buffer = std::get<vk::Buffer>(result.value);
+        buffer_allocation = std::get<vma::Allocation>(result.value);
+    }
 
     auto isrr = vk::ImageSubresourceRange{}
         .setAspectMask(vk::ImageAspectFlagBits::eColor)

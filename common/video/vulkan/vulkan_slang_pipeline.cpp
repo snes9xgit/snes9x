@@ -339,7 +339,10 @@ bool SlangPipeline::generate_frame_resources(vk::DescriptorPool pool)
             .setFlags(vma::AllocationCreateFlagBits::eHostAccessSequentialWrite)
             .setRequiredFlags(vk::MemoryPropertyFlagBits::eHostVisible);
 
-        std::tie(uniform_buffer, uniform_buffer_allocation) = context->allocator.createBuffer(buffer_create_info, allocation_create_info).value;
+        auto result = context->allocator.createBuffer(buffer_create_info, allocation_create_info);
+        assert(result.has_value());
+        uniform_buffer = std::get<vk::Buffer>(result.value);
+        uniform_buffer_allocation = std::get<vma::Allocation>(result.value);
     }
     else
     {
