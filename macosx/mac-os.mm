@@ -64,6 +64,8 @@
 
 #define	kRecentMenu_MAX		20
 
+NSNotificationName const S9xInputDeviceListChangeNotification = @"S9xInputDeviceListChangeNotification";
+
 volatile bool8		running             = false;
 volatile bool8		s9xthreadrunning    = false;
 
@@ -2500,6 +2502,11 @@ static void ChangeAutofireSettings (int player, int btn)
     S9xSetInfoString(msg);
 }
 
+static void PostDeviceListChange(void *)
+{
+	[[NSNotificationCenter defaultCenter] postNotificationName:S9xInputDeviceListChangeNotification object:nil];
+}
+
 static void ChangeTurboRate (int d)
 {
     static char    msg[64];
@@ -2566,6 +2573,8 @@ static void Initialize (void)
 	InitMacSound();
 	SetUpHID();
 
+	RegisterDeviceListChangeCallback(PostDeviceListChange, NULL);
+
 	autofire = (autofireRec[0].buttonMask || autofireRec[1].buttonMask) ? true : false;
 	for (int a = 0; a < MAC_MAX_PLAYERS; a++)
 		for (int b = 0; b < 12; b++)
@@ -2592,6 +2601,8 @@ static void Initialize (void)
 static void Deinitialize (void)
 {
 	deviceSetting = deviceSettingMaster;
+
+	UnregisterDeviceListChangeCallback(PostDeviceListChange);
 
 	ReleaseHID();
 	DeinitGraphics();
