@@ -334,6 +334,7 @@ struct SCustomKey {
 struct SCustomKeys {
 	SCustomKey SpeedUp;
 	SCustomKey SpeedDown;
+	SCustomKey ResetSpeed;
 	SCustomKey Pause;
 	SCustomKey FrameAdvance;
 	SCustomKey SkipUp;
@@ -388,6 +389,7 @@ struct SCustomKeyExtra {
 struct SCustomKeysExtra {
 	SCustomKeyExtra SpeedUp;
 	SCustomKeyExtra SpeedDown;
+	SCustomKeyExtra ResetSpeed;
 	SCustomKeyExtra Pause;
 	SCustomKeyExtra FrameAdvance;
 	SCustomKeyExtra SkipUp;

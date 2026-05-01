@@ -360,6 +360,7 @@
 #define IDC_PLAYWARN                    1257
 #define IDC_LABEL_HK14                  1257
 #define IDC_REDUCEINPUTLAG              1258
+#define IDC_LABEL_HK15                  1258
 #define IDC_INTEGERSCALING              1259
 #define IDC_NTSCSCANLINES               1260
 #define IDC_HOTKEY1                     2000
@@ -376,6 +377,7 @@
 #define IDC_HOTKEY12                    2011
 #define IDC_HOTKEY13                    2012
 #define IDC_HOTKEY14                    2013
+#define IDC_HOTKEY15                    2014
 #define IDC_PREV                        2147
 #define IDC_ENTERED                     2148
 #define IDC_ENTEREDADDRESS              2157

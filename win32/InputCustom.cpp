@@ -308,6 +308,7 @@ int GetNumHotKeysAssignedTo (WORD Key, int modifiers)
 
 		if(MATCHES_KEY(SpeedUp))           count++;
 		if(MATCHES_KEY(SpeedDown))         count++;
+		if(MATCHES_KEY(ResetSpeed))        count++;
 		if(MATCHES_KEY(Pause))             count++;
 		if(MATCHES_KEY(FrameAdvance))      count++;
 		if(MATCHES_KEY(SkipUp))            count++;

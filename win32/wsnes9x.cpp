@@ -149,7 +149,7 @@ void S9xWinScanJoypads();
 #define NC_SEARCHDB 0x8000
 #define WM_CHEATS_ADDED (WM_APP + 1)
 
-constexpr int MAX_SWITCHABLE_HOTKEY_DIALOG_ITEMS = 14;
+constexpr int MAX_SWITCHABLE_HOTKEY_DIALOG_ITEMS = 15;
 constexpr int MAX_SWITCHABLE_HOTKEY_DIALOG_PAGES = 5;
 
 #ifdef UNICODE
@@ -362,6 +362,7 @@ struct SCustomKeysExtra CustomKeysExtra = {};
 struct SCustomKeys CustomKeys = {
 	{/*VK_OEM_PLUS*/0xBB,0}, // speed+ (=)
 	{/*VK_OEM_MINUS*/0xBD,0}, // speed- (-)
+	{0,0}, // reset speed (disabled by default)
 	{VK_PAUSE,0}, // pause (PAUSE)
 	{/*VK_OEM_5*/0xDC,0}, // frame advance (\)
 	{/*VK_OEM_PLUS*/0xBB,CUSTKEY_SHIFT_MASK}, // skip+ (_)
@@ -1243,6 +1244,19 @@ int HandleKeyMessage(WPARAM wParam, LPARAM lParam)
 
 				ResetFrameTimer ();
 				sprintf (InfoString, "Speed: %.0f%% (%.1f ms/frame)", ((Settings.PAL?Settings.FrameTimePAL:Settings.FrameTimeNTSC) * 100.0f) / (float)Settings.FrameTime, Settings.FrameTime*0.001f);
+				S9xSetInfoString (InfoString);
+			}
+			hitHotKey = true;
+		}
+		if(HKmatch(ResetSpeed))
+		{
+#ifdef RETROACHIEVEMENTS_SUPPORT
+			if (!RA_IsHardcoreModeActive())
+#endif
+			{
+				Settings.FrameTime = Settings.PAL ? Settings.FrameTimePAL : Settings.FrameTimeNTSC;
+				ResetFrameTimer ();
+				sprintf (InfoString, "Speed: 100%% (%.1f ms/frame)", Settings.FrameTime*0.001f);
 				S9xSetInfoString (InfoString);
 			}
 			hitHotKey = true;
@@ -10130,18 +10144,19 @@ static hotkey_dialog_item hotkey_dialog_items[MAX_SWITCHABLE_HOTKEY_DIALOG_PAGES
     {
         { &CustomKeys.SpeedUp, &CustomKeysExtra.SpeedUp, HOTKEYS_LABEL_1_1 },
         { &CustomKeys.SpeedDown, &CustomKeysExtra.SpeedDown, HOTKEYS_LABEL_1_2 },
-        { &CustomKeys.Pause, &CustomKeysExtra.Pause, HOTKEYS_LABEL_1_3 },
-        { &CustomKeys.FastForwardToggle, &CustomKeysExtra.FastForwardToggle, HOTKEYS_LABEL_1_4 },
-        { &CustomKeys.FastForward, &CustomKeysExtra.FastForward, HOTKEYS_LABEL_1_5 },
-        { &CustomKeys.Rewind, &CustomKeysExtra.Rewind, HOTKEYS_LABEL_1_6 },
-        { &CustomKeys.SkipUp, &CustomKeysExtra.SkipUp, HOTKEYS_LABEL_1_7 },
-        { &CustomKeys.SkipDown, &CustomKeysExtra.SkipDown, HOTKEYS_LABEL_1_8 },
-        { &CustomKeys.Mute, &CustomKeysExtra.Mute, HOTKEYS_LABEL_1_9 },
-        { &CustomKeys.ToggleCheats, &CustomKeysExtra.ToggleCheats, HOTKEYS_LABEL_1_10 },
-        { &CustomKeys.QuitS9X, &CustomKeysExtra.QuitS9X, HOTKEYS_LABEL_1_11 },
-        { &CustomKeys.ResetGame, &CustomKeysExtra.ResetGame, HOTKEYS_LABEL_1_12 },
-        { &CustomKeys.SaveScreenShot, &CustomKeysExtra.SaveScreenShot, HOTKEYS_LABEL_1_13 },
-		{ &CustomKeys.FrameAdvance, &CustomKeysExtra.FrameAdvance, HOTKEYS_LABEL_1_14 },
+        { &CustomKeys.ResetSpeed, &CustomKeysExtra.ResetSpeed, HOTKEYS_LABEL_1_3 },
+        { &CustomKeys.Pause, &CustomKeysExtra.Pause, HOTKEYS_LABEL_1_4 },
+        { &CustomKeys.FastForwardToggle, &CustomKeysExtra.FastForwardToggle, HOTKEYS_LABEL_1_5 },
+        { &CustomKeys.FastForward, &CustomKeysExtra.FastForward, HOTKEYS_LABEL_1_6 },
+        { &CustomKeys.Rewind, &CustomKeysExtra.Rewind, HOTKEYS_LABEL_1_7 },
+        { &CustomKeys.SkipUp, &CustomKeysExtra.SkipUp, HOTKEYS_LABEL_1_8 },
+        { &CustomKeys.SkipDown, &CustomKeysExtra.SkipDown, HOTKEYS_LABEL_1_9 },
+        { &CustomKeys.Mute, &CustomKeysExtra.Mute, HOTKEYS_LABEL_1_10 },
+        { &CustomKeys.ToggleCheats, &CustomKeysExtra.ToggleCheats, HOTKEYS_LABEL_1_11 },
+        { &CustomKeys.QuitS9X, &CustomKeysExtra.QuitS9X, HOTKEYS_LABEL_1_12 },
+        { &CustomKeys.ResetGame, &CustomKeysExtra.ResetGame, HOTKEYS_LABEL_1_13 },
+        { &CustomKeys.SaveScreenShot, &CustomKeysExtra.SaveScreenShot, HOTKEYS_LABEL_1_14 },
+		{ &CustomKeys.FrameAdvance, &CustomKeysExtra.FrameAdvance, HOTKEYS_LABEL_1_15 },
     },
     {
         { &CustomKeys.BGL1, &CustomKeysExtra.BGL1, HOTKEYS_LABEL_2_1 },
@@ -10158,6 +10173,7 @@ static hotkey_dialog_item hotkey_dialog_items[MAX_SWITCHABLE_HOTKEY_DIALOG_PAGES
         { &CustomKeys.ShowPressed, &CustomKeysExtra.ShowPressed, HOTKEYS_LABEL_2_12 },
         { &CustomKeys.FrameCount, &CustomKeysExtra.FrameCount, HOTKEYS_LABEL_2_13 },
 		{ &CustomKeys.ReadOnly, &CustomKeysExtra.ReadOnly, HOTKEYS_LABEL_2_14 },
+		{ NULL, NULL, _T("") },
     },
     {
         { &CustomKeys.TurboA, &CustomKeysExtra.TurboA, HOTKEYS_LABEL_3_1 },
@@ -10173,6 +10189,7 @@ static hotkey_dialog_item hotkey_dialog_items[MAX_SWITCHABLE_HOTKEY_DIALOG_PAGES
         { &CustomKeys.TurboRight, &CustomKeysExtra.TurboRight, HOTKEYS_LABEL_3_11 },
         { &CustomKeys.TurboDown, &CustomKeysExtra.TurboDown, HOTKEYS_LABEL_3_12 },
 		{ &CustomKeys.ScopeTurbo, &CustomKeysExtra.ScopeTurbo, HOTKEYS_LABEL_3_13 },
+		{ NULL, NULL, _T("") },
 		{ NULL, NULL, _T("") },
     },
     {
@@ -10190,11 +10207,13 @@ static hotkey_dialog_item hotkey_dialog_items[MAX_SWITCHABLE_HOTKEY_DIALOG_PAGES
         { &CustomKeys.LoadFileSelect, &CustomKeysExtra.LoadFileSelect, HOTKEYS_LABEL_4_12 },
 		{ NULL, NULL, _T("") },
 		{ NULL, NULL, _T("") },
+		{ NULL, NULL, _T("") },
     },
     {
         { &CustomKeys.AspectRatio, &CustomKeysExtra.AspectRatio, HOTKEYS_SWITCH_ASPECT_RATIO },
         { &CustomKeys.CheatEditorDialog, &CustomKeysExtra.CheatEditorDialog, HOTKEYS_CHEAT_EDITOR_DIALOG },
         { &CustomKeys.CheatSearchDialog, &CustomKeysExtra.CheatSearchDialog, HOTKEYS_CHEAT_SEARCH_DIALOG },
+        { NULL, NULL, _T("") },
         { NULL, NULL, _T("") },
         { NULL, NULL, _T("") },
         { NULL, NULL, _T("") },

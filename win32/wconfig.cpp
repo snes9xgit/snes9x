@@ -987,7 +987,7 @@ void WinRegisterConfigItems()
 	AddVKMod("Mods:MasterHotkey", CustomKeys.MasterHotkey.modifiers, CustomKeys.MasterHotkey.modifiers);
 #define ADD(x) AddVKey("Key:" #x , CustomKeys.x.key, CustomKeys.x.key); AddVKMod("Mods:" #x, CustomKeys.x.modifiers, CustomKeys.x.modifiers)
 #define ADDN(x,n2) AddVKey("Key:" #n2, CustomKeys.x.key, CustomKeys.x.key); AddVKMod("Mods:" #n2, CustomKeys.x.modifiers, CustomKeys.x.modifiers)
-	ADD(SpeedUp); ADD(SpeedDown); ADD(Pause); ADD(FrameAdvance);
+	ADD(SpeedUp); ADD(SpeedDown); ADD(ResetSpeed); ADD(Pause); ADD(FrameAdvance);
 	ADD(SkipUp); ADD(SkipDown); ADD(ScopeTurbo); ADD(ScopePause);
 	ADD(FrameCount); ADD(ReadOnly); ADD(FastForward); ADD(FastForwardToggle); ADD(ShowPressed);
 	ADDN(Save[0],SaveSlot0); ADDN(Save[1],SaveSlot1); ADDN(Save[2],SaveSlot2); ADDN(Save[3],SaveSlot3); ADDN(Save[4],SaveSlot4); ADDN(Save[5],SaveSlot5); ADDN(Save[6],SaveSlot6); ADDN(Save[7],SaveSlot7); ADDN(Save[8],SaveSlot8); ADDN(Save[9],SaveSlot9);
@@ -1013,7 +1013,7 @@ void WinRegisterConfigItems()
 #define ADDXN(x,n2,s) AddVKey("Key:" #n2 ":Extra" #s, CustomKeysExtra.x.extra[s-1].key, CustomKeysExtra.x.extra[s-1].key); AddVKMod("Mods:" #n2 ":Extra" #s, CustomKeysExtra.x.extra[s-1].modifiers, CustomKeysExtra.x.extra[s-1].modifiers)
 #define ADDXALL(x) ADDX(x,1); ADDX(x,2); ADDX(x,3)
 #define ADDXALLN(x,n2) ADDXN(x,n2,1); ADDXN(x,n2,2); ADDXN(x,n2,3)
-	ADDXALL(SpeedUp); ADDXALL(SpeedDown); ADDXALL(Pause); ADDXALL(FrameAdvance);
+	ADDXALL(SpeedUp); ADDXALL(SpeedDown); ADDXALL(ResetSpeed); ADDXALL(Pause); ADDXALL(FrameAdvance);
 	ADDXALL(SkipUp); ADDXALL(SkipDown); ADDXALL(ScopeTurbo); ADDXALL(ScopePause);
 	ADDXALL(FrameCount); ADDXALL(ReadOnly); ADDXALL(FastForward); ADDXALL(FastForwardToggle); ADDXALL(ShowPressed);
 	ADDXALLN(Save[0],SaveSlot0); ADDXALLN(Save[1],SaveSlot1); ADDXALLN(Save[2],SaveSlot2); ADDXALLN(Save[3],SaveSlot3); ADDXALLN(Save[4],SaveSlot4);

@@ -531,7 +531,7 @@ BEGIN
     CONTROL         "Clear SRAM",IDC_CLEARSRAM,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,12,96,70,10
 END
 
-IDD_KEYCUSTOM DIALOGEX 0, 0, 409, 316
+IDD_KEYCUSTOM DIALOGEX 0, 0, 409, 331
 STYLE DS_SETFONT | DS_MODALFRAME | DS_3DLOOK | DS_FIXEDSYS | DS_CENTER | WS_POPUP | WS_CLIPCHILDREN | WS_CAPTION
 CAPTION "Customize Special Keys"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
@@ -543,8 +543,8 @@ BEGIN
     RTEXT           "Key:",IDC_LABEL_MASTERHOTKEY,224,4,16,10
     CONTROL         "",IDC_MASTERHOTKEY_BIND,"InputCustomHot",WS_TABSTOP,244,2,60,12,WS_EX_CLIENTEDGE
     COMBOBOX        IDC_HKCOMBO,6,28,60,60,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
-    PUSHBUTTON      "Cancel",IDCANCEL,354,296,48,14
-    PUSHBUTTON      "OK",IDOK,300,296,48,14
+    PUSHBUTTON      "Cancel",IDCANCEL,354,311,48,14
+    PUSHBUTTON      "OK",IDOK,300,311,48,14
     RTEXT           "Speed +:",IDC_LABEL_HK1,12,50,72,12
     RTEXT           "Frame advance:",IDC_LABEL_HK4,12,95,72,12
     RTEXT           "Speed -:",IDC_LABEL_HK2,12,65,72,12
@@ -569,6 +569,7 @@ BEGIN
     CONTROL         "",IDC_HOTKEY12,"InputCustomHot",WS_TABSTOP,90,215,60,12,WS_EX_CLIENTEDGE
     CONTROL         "",IDC_HOTKEY13,"InputCustomHot",WS_TABSTOP,90,230,60,12,WS_EX_CLIENTEDGE
     CONTROL         "",IDC_HOTKEY14,"InputCustomHot",WS_TABSTOP,90,245,60,12,WS_EX_CLIENTEDGE
+    CONTROL         "",IDC_HOTKEY15,"InputCustomHot",WS_TABSTOP,90,260,60,12,WS_EX_CLIENTEDGE
     CONTROL         "",IDC_SAVE1,"InputCustomHot",WS_TABSTOP,217,50,60,12,WS_EX_CLIENTEDGE
     RTEXT           "Save 1:",IDC_LABEL_UP2,181,65,30,12
     CONTROL         "",IDC_SAVE2,"InputCustomHot",WS_TABSTOP,217,65,60,12,WS_EX_CLIENTEDGE
@@ -628,10 +629,11 @@ BEGIN
     CONTROL         "",IDC_SLOTSAVE,"InputCustomHot",WS_TABSTOP,217,245,60,12,WS_EX_CLIENTEDGE
     RTEXT           "Load #:",IDC_LABEL_UP25,300,245,30,12
     CONTROL         "",IDC_SLOTLOAD,"InputCustomHot",WS_TABSTOP,336,245,60,12,WS_EX_CLIENTEDGE
-    LTEXT           "Blue means the hotkey is already mapped. Pink means it conflicts with a game button. Red means it's reserved by Windows. Escape clears bindings.\nPress multiple keys for multi-bind. Delete removes last.",IDC_LABEL_BLUE,7,276,269,34
-    GROUPBOX        "",IDC_STATIC,6,41,149,226,0,WS_EX_TRANSPARENT
-    GROUPBOX        "Save States",IDC_STATIC,161,41,241,226,0,WS_EX_TRANSPARENT
+    LTEXT           "Blue means the hotkey is already mapped. Pink means it conflicts with a game button. Red means it's reserved by Windows. Escape clears bindings.\nPress multiple keys for multi-bind. Delete removes last.",IDC_LABEL_BLUE,7,291,269,34
+    GROUPBOX        "",IDC_STATIC,6,41,149,241,0,WS_EX_TRANSPARENT
+    GROUPBOX        "Save States",IDC_STATIC,161,41,241,241,0,WS_EX_TRANSPARENT
     RTEXT           "Save screenshot:",IDC_LABEL_HK14,11,245,72,12
+    RTEXT           "Reset speed:",IDC_LABEL_HK15,11,260,72,12
 END
 
 IDD_MULTICART DIALOGEX 0, 0, 390, 90
