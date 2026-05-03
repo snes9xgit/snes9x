@@ -538,6 +538,7 @@ INT_PTR CALLBACK DlgTilemapViewer(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPa
                        &st->viewX, &st->viewY,
                        &st->zoom, &st->curSrcW, &st->curSrcH);
         Render(hDlg);
+        DlgApplySavedPos(hDlg, GUI.tilemapViewerPos);
         return TRUE;
     }
 
@@ -671,11 +672,16 @@ INT_PTR CALLBACK DlgTilemapViewer(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPa
         break;
     }
 
+    case WM_EXITSIZEMOVE:
+        DlgSavePos(hDlg, GUI.tilemapViewerPos, false);
+        return FALSE;
+
     case WM_CLOSE:
         DestroyWindow(hDlg);
         return TRUE;
 
     case WM_DESTROY: {
+        DlgSavePos(hDlg, GUI.tilemapViewerPos, false);
         TMVState *st = GetState(hDlg);
         UninstallDragPan(GetDlgItem(hDlg, IDC_TMV_CANVAS));
         DebugViewers_Unregister(hDlg);

@@ -489,6 +489,7 @@ INT_PTR CALLBACK DlgVRAMViewer(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam
                        &st->zoom, &st->curSrcW, &st->curSrcH);
         RedrawPalette(hDlg);
         RedrawTiles(hDlg);
+        DlgApplySavedPos(hDlg, GUI.vramViewerPos);
         return TRUE;
     }
 
@@ -688,11 +689,16 @@ INT_PTR CALLBACK DlgVRAMViewer(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam
         break;
     }
 
+    case WM_EXITSIZEMOVE:
+        DlgSavePos(hDlg, GUI.vramViewerPos, false);
+        return FALSE;
+
     case WM_CLOSE:
         DestroyWindow(hDlg);
         return TRUE;
 
     case WM_DESTROY: {
+        DlgSavePos(hDlg, GUI.vramViewerPos, false);
         VRAMState *st = GetState(hDlg);
         UninstallDragPan(GetDlgItem(hDlg, IDC_VRAMV_CANVAS));
         DebugViewers_Unregister(hDlg);

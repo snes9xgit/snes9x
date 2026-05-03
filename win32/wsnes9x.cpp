@@ -1663,6 +1663,51 @@ static bool startingMovie = false;
 HWND cheatSearchHWND = NULL;
 HWND cheatEditorHWND = NULL;
 
+void DlgApplySavedPos(HWND hDlg, const sDialogPos& pos)
+{
+	if (!hDlg) return;
+	if (pos.x == SDIALOGPOS_UNSET_X || pos.y == SDIALOGPOS_UNSET_Y)
+		return;
+
+	RECT wr;
+	if (!GetWindowRect(hDlg, &wr)) return;
+	int curW = wr.right - wr.left;
+	int curH = wr.bottom - wr.top;
+	int w = (pos.w > 0) ? pos.w : curW;
+	int h = (pos.h > 0) ? pos.h : curH;
+	int x = pos.x;
+	int y = pos.y;
+
+	POINT pt = { x + w / 2, y + 16 };
+	HMONITOR hm = MonitorFromPoint(pt, MONITOR_DEFAULTTONEAREST);
+	MONITORINFO mi = { sizeof(mi) };
+	if (hm && GetMonitorInfo(hm, &mi)) {
+		const int margin = 16;
+		if (x > mi.rcWork.right  - margin) x = mi.rcWork.right  - margin;
+		if (x + w < mi.rcWork.left + margin) x = mi.rcWork.left + margin - w;
+		if (y > mi.rcWork.bottom - margin) y = mi.rcWork.bottom - margin;
+		if (y < mi.rcWork.top)             y = mi.rcWork.top;
+	}
+
+	UINT flags = SWP_NOZORDER | SWP_NOACTIVATE;
+	if (pos.w <= 0 || pos.h <= 0) flags |= SWP_NOSIZE;
+	SetWindowPos(hDlg, NULL, x, y, w, h, flags);
+}
+
+void DlgSavePos(HWND hDlg, sDialogPos& pos, bool saveSize)
+{
+	if (!hDlg) return;
+	WINDOWPLACEMENT wp = {};
+	wp.length = sizeof(wp);
+	if (!GetWindowPlacement(hDlg, &wp)) return;
+	pos.x = wp.rcNormalPosition.left;
+	pos.y = wp.rcNormalPosition.top;
+	if (saveSize) {
+		pos.w = wp.rcNormalPosition.right  - wp.rcNormalPosition.left;
+		pos.h = wp.rcNormalPosition.bottom - wp.rcNormalPosition.top;
+	}
+}
+
 void WinShowCheatSearchDialog()
 {
     RestoreGUIDisplay();
@@ -10830,6 +10875,7 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 				if (desc_w > 50)
 					ListView_SetColumnWidth(lv, 1, desc_w);
 			}
+			DlgApplySavedPos(hDlg, GUI.cheatEditorPos);
 		return true;
 	case WM_SIZE:
 		if (cheat_initial_w > 0 && cheat_initial_h > 0)
@@ -10866,6 +10912,9 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 				ListView_SetColumnWidth(lv, 1, desc_w);
 		}
 		return TRUE;
+	case WM_EXITSIZEMOVE:
+		DlgSavePos(hDlg, GUI.cheatEditorPos, true);
+		return FALSE;
 	case WM_GETMINMAXINFO:
 		if (cheat_initial_w > 0 && cheat_initial_h > 0)
 		{
@@ -11480,6 +11529,7 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 		}
 		return false;
 	case WM_DESTROY:
+		DlgSavePos(hDlg, GUI.cheatEditorPos, true);
 		S9xSaveCheatFile(S9xGetFilename(".cht", CHEAT_DIR));
 		cheatEditorHWND = NULL;
 		return true;
@@ -11925,6 +11975,7 @@ INT_PTR CALLBACK DlgCheatSearch(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 
 			SetTimer(hDlg, 1, 500, NULL);
 
+			DlgApplySavedPos(hDlg, GUI.cheatSearchPos);
 		}
 		return true;
 
@@ -11936,8 +11987,13 @@ INT_PTR CALLBACK DlgCheatSearch(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 			}
 			return true;
 
+		case WM_EXITSIZEMOVE:
+			DlgSavePos(hDlg, GUI.cheatSearchPos, false);
+			return false;
+
 		case WM_DESTROY:
 			{
+				DlgSavePos(hDlg, GUI.cheatSearchPos, false);
 				KillTimer(hDlg, 1);
 				cheatSearchHWND = NULL;
 				S9xSaveCheatFile (S9xGetFilename (".cht", CHEAT_DIR));

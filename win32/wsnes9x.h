@@ -13,6 +13,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <limits.h>
 #ifndef STRICT
 #define STRICT
 #endif
@@ -146,6 +147,19 @@ struct sCustomRomDlgSettings {
 	bool window_maximized;
 };
 
+struct sDialogPos {
+	int x;
+	int y;
+	int w;
+	int h;
+};
+
+#define SDIALOGPOS_UNSET_X (INT_MIN)
+#define SDIALOGPOS_UNSET_Y (INT_MIN)
+
+void DlgApplySavedPos(HWND hDlg, const sDialogPos& pos);
+void DlgSavePos(HWND hDlg, sDialogPos& pos, bool saveSize);
+
 struct sGUI {
     HWND hWnd;
     HMENU hMenu;
@@ -189,6 +203,12 @@ struct sGUI {
     RECT window_size;
 	bool window_maximized;
 	sCustomRomDlgSettings customRomDlgSettings;
+
+	sDialogPos cheatEditorPos;
+	sDialogPos cheatSearchPos;
+	sDialogPos vramViewerPos;
+	sDialogPos tilemapViewerPos;
+	sDialogPos spriteViewerPos;
 
     int  MouseX;
     int  MouseY;

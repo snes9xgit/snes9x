@@ -796,6 +796,18 @@ void WinRegisterConfigItems()
 	AddIntC("CustomRomDialog:DescColumnWidth", GUI.customRomDlgSettings.columnDescription, 112, "");
 	AddIntC("CustomRomDialog:FilenameColumnWidth", GUI.customRomDlgSettings.columnFilename, 196, "");
 	AddIntC("CustomRomDialog:SizeColumnWidth", GUI.customRomDlgSettings.columnSize, 67, "");
+	AddIntC("CheatEditor:Left",   GUI.cheatEditorPos.x, INT_MIN, "saved left position in screen pixels (INT_MIN = use default)");
+	AddIntC("CheatEditor:Top",    GUI.cheatEditorPos.y, INT_MIN, "saved top position in screen pixels (INT_MIN = use default)");
+	AddIntC("CheatEditor:Width",  GUI.cheatEditorPos.w, 0, "saved width (0 = use default)");
+	AddIntC("CheatEditor:Height", GUI.cheatEditorPos.h, 0, "saved height (0 = use default)");
+	AddIntC("CheatSearch:Left",   GUI.cheatSearchPos.x, INT_MIN, "saved left position in screen pixels (INT_MIN = use default)");
+	AddIntC("CheatSearch:Top",    GUI.cheatSearchPos.y, INT_MIN, "saved top position in screen pixels (INT_MIN = use default)");
+	AddIntC("TileViewer:Left",    GUI.vramViewerPos.x,  INT_MIN, "saved left position in screen pixels (INT_MIN = use default)");
+	AddIntC("TileViewer:Top",     GUI.vramViewerPos.y,  INT_MIN, "saved top position in screen pixels (INT_MIN = use default)");
+	AddIntC("TilemapViewer:Left", GUI.tilemapViewerPos.x, INT_MIN, "saved left position in screen pixels (INT_MIN = use default)");
+	AddIntC("TilemapViewer:Top",  GUI.tilemapViewerPos.y, INT_MIN, "saved top position in screen pixels (INT_MIN = use default)");
+	AddIntC("SpriteViewer:Left",  GUI.spriteViewerPos.x, INT_MIN, "saved left position in screen pixels (INT_MIN = use default)");
+	AddIntC("SpriteViewer:Top",   GUI.spriteViewerPos.y, INT_MIN, "saved top position in screen pixels (INT_MIN = use default)");
 	AddBoolC("Stretch:Enabled", GUI.Stretch, true, "true to stretch the game image to fill the window or screen");
 	AddBoolC("Stretch:MaintainAspectRatio", GUI.AspectRatio, true, "prevents stretching from changing the aspect ratio");
 	AddBoolC("Stretch:IntegerScaling", GUI.IntegerScaling, false, "scales image height to exact integer multiples");
