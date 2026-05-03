@@ -398,6 +398,49 @@ void PopulateBitDepth(HWND hCombo) {
     SendMessage(hCombo, CB_SETCURSEL, BD_4BPP, 0);
 }
 
+constexpr UINT_PTR kAutoRepeatTimerStart  = 0xAB01;
+constexpr UINT_PTR kAutoRepeatTimerRepeat = 0xAB02;
+constexpr UINT     kAutoRepeatStartDelayMs  = 250;
+constexpr UINT     kAutoRepeatRepeatRateMs  = 50;
+
+LRESULT CALLBACK AutoRepeatBtnProc(HWND hBtn, UINT msg, WPARAM wParam, LPARAM lParam,
+                                   UINT_PTR uIdSubclass, DWORD_PTR /*dwRefData*/) {
+    switch (msg) {
+    case WM_LBUTTONDOWN: {
+        LRESULT r = DefSubclassProc(hBtn, msg, wParam, lParam);
+        SetTimer(hBtn, kAutoRepeatTimerStart, kAutoRepeatStartDelayMs, NULL);
+        return r;
+    }
+    case WM_LBUTTONUP:
+    case WM_CAPTURECHANGED:
+    case WM_KILLFOCUS:
+        KillTimer(hBtn, kAutoRepeatTimerStart);
+        KillTimer(hBtn, kAutoRepeatTimerRepeat);
+        break;
+    case WM_TIMER:
+        if (wParam == kAutoRepeatTimerStart) {
+            KillTimer(hBtn, kAutoRepeatTimerStart);
+            SetTimer(hBtn, kAutoRepeatTimerRepeat, kAutoRepeatRepeatRateMs, NULL);
+            return 0;
+        }
+        if (wParam == kAutoRepeatTimerRepeat) {
+            if (SendMessage(hBtn, BM_GETSTATE, 0, 0) & BST_PUSHED) {
+                HWND hParent = GetParent(hBtn);
+                LONG id = GetWindowLong(hBtn, GWL_ID);
+                SendMessage(hParent, WM_COMMAND, MAKEWPARAM(id, BN_CLICKED), (LPARAM)hBtn);
+            }
+            return 0;
+        }
+        break;
+    case WM_NCDESTROY:
+        KillTimer(hBtn, kAutoRepeatTimerStart);
+        KillTimer(hBtn, kAutoRepeatTimerRepeat);
+        RemoveWindowSubclass(hBtn, AutoRepeatBtnProc, uIdSubclass);
+        break;
+    }
+    return DefSubclassProc(hBtn, msg, wParam, lParam);
+}
+
 void StepAddress(HWND hDlg, VRAMState *st, bool forward) {
     if (IsMode7(st->bitDepth)) return;
     uint32 step = BytesPerTile(st->bitDepth) * (uint32)st->widthTiles;
@@ -489,6 +532,8 @@ INT_PTR CALLBACK DlgVRAMViewer(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam
                        &st->zoom, &st->curSrcW, &st->curSrcH);
         RedrawPalette(hDlg);
         RedrawTiles(hDlg);
+        SetWindowSubclass(GetDlgItem(hDlg, IDC_VRAMV_PREV), AutoRepeatBtnProc, 1, 0);
+        SetWindowSubclass(GetDlgItem(hDlg, IDC_VRAMV_NEXT), AutoRepeatBtnProc, 2, 0);
         DlgApplySavedPos(hDlg, GUI.vramViewerPos);
         return TRUE;
     }
