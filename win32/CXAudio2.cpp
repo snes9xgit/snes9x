@@ -315,6 +315,8 @@ void CXAudio2::ProcessSound()
         // no sound sync when speed is not set to 100%
         while((freeBytes >> 1) < availableSamples)
         {
+            if (bufferCount == 0)
+                break;
             ResetEvent(GUI.SoundSyncEvent);
             if(!GUI.AllowSoundSync || WaitForSingleObject(GUI.SoundSyncEvent, 1000) != WAIT_OBJECT_0)
             {
