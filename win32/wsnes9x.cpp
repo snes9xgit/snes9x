@@ -503,6 +503,8 @@ void RestoreGUIDisplay ();
 void RestoreSNESDisplay ();
 void CheckDirectoryIsWritable (const char *filename);
 static void CheckMenuStates ();
+static int  ClampLogoIndex (int n);
+static void ApplyLogoIcon  (HWND hWnd, HINSTANCE hInst, int n);
 static void ResetFrameTimer ();
 static bool LoadROM (const TCHAR *filename, const TCHAR *filename2 = NULL);
 static bool LoadROMMulti (const TCHAR *filename, const TCHAR *filename2);
@@ -2641,6 +2643,20 @@ LRESULT CALLBACK WinProc(
 				}
 			}
 			break;
+		case ID_FILE_LOGO_1:
+		case ID_FILE_LOGO_2:
+		case ID_FILE_LOGO_3:
+		case ID_FILE_LOGO_4:
+			{
+				const int picked = (LOWORD(wParam) - ID_FILE_LOGO_1) + 1;
+				if (picked != GUI.IconIndex)
+				{
+					GUI.IconIndex = picked;
+					ApplyLogoIcon(GUI.hWnd, GUI.hInstance, GUI.IconIndex);
+					WinSaveConfigFile();
+				}
+			}
+			break;
 		case ID_OPTIONS_SETTINGS:
 			RestoreGUIDisplay ();
 			DialogBox(g_hInst, MAKEINTRESOURCE(IDD_EMU_SETTINGS), hWnd, DlgEmulatorProc);
@@ -3173,6 +3189,82 @@ LRESULT CALLBACK WinProc(
     return DefWindowProc (hWnd, uMsg, wParam, lParam);
 }
 
+static int ClampLogoIndex(int n)
+{
+	return (n < 1 || n > 4) ? 1 : n;
+}
+
+static UINT LogoIndexToResource(int n)
+{
+	switch (ClampLogoIndex(n))
+	{
+		default:
+		case 1: return IDI_ICON1;
+		case 2: return IDI_ICON2;
+		case 3: return IDI_ICON3;
+		case 4: return IDI_ICON4;
+	}
+}
+
+static HICON LoadLogoIcon(HINSTANCE hInst, int n)
+{
+	return LoadIcon(hInst, MAKEINTRESOURCE(LogoIndexToResource(n)));
+}
+
+static HBITMAP IconResourceToMenuBitmap(HINSTANCE hInst, UINT rsrcId)
+{
+	const int cx = GetSystemMetrics(SM_CXSMICON);
+	const int cy = GetSystemMetrics(SM_CYSMICON);
+	HICON hIcon = (HICON)LoadImage(hInst, MAKEINTRESOURCE(rsrcId), IMAGE_ICON, cx, cy, LR_DEFAULTCOLOR);
+	if (!hIcon)
+		return NULL;
+
+	HDC hdcScreen = GetDC(NULL);
+	HDC hdcMem = CreateCompatibleDC(hdcScreen);
+
+	BITMAPINFO bi = {};
+	bi.bmiHeader.biSize        = sizeof(BITMAPINFOHEADER);
+	bi.bmiHeader.biWidth       = cx;
+	bi.bmiHeader.biHeight      = -cy;
+	bi.bmiHeader.biPlanes      = 1;
+	bi.bmiHeader.biBitCount    = 32;
+	bi.bmiHeader.biCompression = BI_RGB;
+
+	void *pbits = NULL;
+	HBITMAP hbm = CreateDIBSection(hdcScreen, &bi, DIB_RGB_COLORS, &pbits, NULL, 0);
+	if (hbm && pbits)
+	{
+		memset(pbits, 0, (size_t)cx * cy * 4);
+		HGDIOBJ hOld = SelectObject(hdcMem, hbm);
+		DrawIconEx(hdcMem, 0, 0, hIcon, cx, cy, 0, NULL, DI_NORMAL);
+		SelectObject(hdcMem, hOld);
+	}
+
+	DeleteDC(hdcMem);
+	ReleaseDC(NULL, hdcScreen);
+	DestroyIcon(hIcon);
+	return hbm;
+}
+
+static void ApplyLogoIcon(HWND hWnd, HINSTANCE hInst, int n)
+{
+	const UINT rsrcId = LogoIndexToResource(n);
+	HICON hBig   = (HICON)LoadImage(hInst, MAKEINTRESOURCE(rsrcId), IMAGE_ICON,
+	                                GetSystemMetrics(SM_CXICON),   GetSystemMetrics(SM_CYICON),   LR_SHARED);
+	HICON hSmall = (HICON)LoadImage(hInst, MAKEINTRESOURCE(rsrcId), IMAGE_ICON,
+	                                GetSystemMetrics(SM_CXSMICON), GetSystemMetrics(SM_CYSMICON), LR_SHARED);
+	if (hBig)
+	{
+		SetClassLongPtr(hWnd, GCLP_HICON, (LONG_PTR)hBig);
+		SendMessage(hWnd, WM_SETICON, ICON_BIG, (LPARAM)hBig);
+	}
+	if (hSmall)
+	{
+		SetClassLongPtr(hWnd, GCLP_HICONSM, (LONG_PTR)hSmall);
+		SendMessage(hWnd, WM_SETICON, ICON_SMALL, (LPARAM)hSmall);
+	}
+}
+
 /*****************************************************************************/
 /* WinInit                                                                   */
 /*****************************************************************************/
@@ -3185,7 +3277,7 @@ BOOL WinInit( HINSTANCE hInstance)
     wndclass.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
     wndclass.lpfnWndProc = WinProc;
     wndclass.hInstance = hInstance;
-    wndclass.hIcon = LoadIcon (hInstance, MAKEINTRESOURCE(IDI_ICON1));
+    wndclass.hIcon = LoadLogoIcon(hInstance, GUI.IconIndex);
     wndclass.hIconSm = NULL;
     wndclass.hCursor = NULL;
     wndclass.lpszMenuName = NULL;
@@ -3240,6 +3332,24 @@ BOOL WinInit( HINSTANCE hInstance)
 		mii.hSubMenu = bank_menu_load;
 		InsertMenuItem(parent_menu_load, i, TRUE, &mii);
 	}
+	if (GUI.hMenu)
+	{
+		const int logoIds[4] = { ID_FILE_LOGO_1, ID_FILE_LOGO_2, ID_FILE_LOGO_3, ID_FILE_LOGO_4 };
+		const UINT logoRsrc[4] = { IDI_ICON1, IDI_ICON2, IDI_ICON3, IDI_ICON4 };
+		for (int i = 0; i < 4; i++)
+		{
+			HBITMAP hbm = IconResourceToMenuBitmap(GUI.hInstance, logoRsrc[i]);
+			if (hbm)
+			{
+				MENUITEMINFO bmii = {};
+				bmii.cbSize  = sizeof(bmii);
+				bmii.fMask   = MIIM_BITMAP;
+				bmii.hbmpItem = hbm;
+				SetMenuItemInfo(GUI.hMenu, logoIds[i], FALSE, &bmii);
+			}
+		}
+	}
+
 #ifdef DEBUGGER
 	if(GUI.hMenu) {
 		InsertMenu(GUI.hMenu,ID_OPTIONS_SETTINGS,MF_BYCOMMAND | MF_STRING | MF_ENABLED,ID_DEBUG_FRAME_ADVANCE,TEXT("&Debug Frame Advance"));
@@ -4353,6 +4463,16 @@ static void CheckMenuStates ()
 
 	mii.fState = (Settings.Paused && !Settings.StopEmulation) ? MFS_CHECKED : MFS_UNCHECKED;
     SetMenuItemInfo (GUI.hMenu, ID_FILE_PAUSE, FALSE, &mii);
+
+	{
+		const int logoIds[4] = { ID_FILE_LOGO_1, ID_FILE_LOGO_2, ID_FILE_LOGO_3, ID_FILE_LOGO_4 };
+		const int active = ClampLogoIndex(GUI.IconIndex) - 1;
+		for (int i = 0; i < 4; i++)
+		{
+			mii.fState = (i == active) ? MFS_CHECKED : MFS_UNCHECKED;
+			SetMenuItemInfo(GUI.hMenu, logoIds[i], FALSE, &mii);
+		}
+	}
 
 	mii.fState = (GUI.InactivePause) ? MFS_CHECKED : MFS_UNCHECKED;
     SetMenuItemInfo (GUI.hMenu, ID_EMULATION_PAUSEWHENINACTIVE, FALSE, &mii);

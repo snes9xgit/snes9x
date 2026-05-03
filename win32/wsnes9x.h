@@ -202,6 +202,7 @@ struct sGUI {
     bool IgnoreNextMouseMove;
     RECT window_size;
 	bool window_maximized;
+	int  IconIndex;
 	sCustomRomDlgSettings customRomDlgSettings;
 
 	sDialogPos cheatEditorPos;

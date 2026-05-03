@@ -648,6 +648,12 @@
 #define ID_EMULATION_BIOS_SGB1          44347
 #define ID_EMULATION_BIOS_SGB2          44348
 
+#define ID_FILE_LOGO_POPUP              44360
+#define ID_FILE_LOGO_1                  44361
+#define ID_FILE_LOGO_2                  44362
+#define ID_FILE_LOGO_3                  44363
+#define ID_FILE_LOGO_4                  44364
+
 #define IDD_COLORCORRECTION             176
 #define IDC_COLOR_CORRECTION_ENABLE     3111
 #define IDC_SLIDER_GAMMA                3112

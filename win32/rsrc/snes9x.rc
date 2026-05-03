@@ -1238,6 +1238,14 @@ BEGIN
         MENUITEM MFT_SEPARATOR
         MENUITEM "AVI Recording",               ID_FILE_AVI_RECORDING,MFT_STRING,MFS_ENABLED
         MENUITEM MFT_SEPARATOR
+        POPUP "Choose &Logo",                   ID_FILE_LOGO_POPUP,MFT_STRING,MFS_ENABLED
+        BEGIN
+            MENUITEM "Icon &1",                     ID_FILE_LOGO_1,MFT_STRING,MFS_ENABLED
+            MENUITEM "Icon &2",                     ID_FILE_LOGO_2,MFT_STRING,MFS_ENABLED
+            MENUITEM "Icon &3",                     ID_FILE_LOGO_3,MFT_STRING,MFS_ENABLED
+            MENUITEM "Icon &4",                     ID_FILE_LOGO_4,MFT_STRING,MFS_ENABLED
+        END
+        MENUITEM MFT_SEPARATOR
         MENUITEM "&Reset Game",                 ID_FILE_RESET,MFT_STRING,MFS_ENABLED
         MENUITEM "E&xit\tAlt+F4",               ID_FILE_EXIT,MFT_STRING,MFS_ENABLED
     END
