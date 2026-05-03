@@ -215,18 +215,51 @@ void CWaveOut::SubmitBlock(WAVEHDR &header)
 
     if (frames > 0)
     {
-        if (InterlockedExchange(&fade_in_pending, 0))
-            fade_in_pos = 0;
-
-        if (fade_in_pos < kFadeFrames)
+        // Defer fade-in firing until the buffer actually has audio content,
+        // so silent boot-time buffers (BIOS code setup before the chime) don't
+        // consume the flag and leave the chime onset unfaded. Once content is
+        // found we start the ramp at the onset frame within the buffer.
+        UINT32 fade_start_frame = 0;
+        if (fade_in_pending)
         {
-            const UINT32 frames_left   = kFadeFrames - fade_in_pos;
-            const UINT32 frames_to_fade = (frames_left < frames) ? frames_left : frames;
+            UINT32 onset = frames;
+            for (UINT32 i = 0; i < frames; ++i)
+            {
+                const int16 l = samples[i*2];
+                const int16 r = samples[i*2 + 1];
+                if (l > 64 || l < -64 || r > 64 || r < -64)
+                {
+                    onset = i;
+                    break;
+                }
+            }
+            if (onset < frames)
+            {
+                InterlockedExchange(&fade_in_pending, 0);
+                fade_in_pos = 0;
+                fade_start_frame = onset;
+                // Zero sub-threshold pre-onset samples so the seam to the
+                // gain-0 onset is exactly 0->0 instead of ±63->0 (audible
+                // single-sample "tak").
+                for (UINT32 i = 0; i < onset; ++i)
+                {
+                    samples[i*2]     = 0;
+                    samples[i*2 + 1] = 0;
+                }
+            }
+        }
+
+        if (fade_in_pos < kFadeFrames && fade_start_frame < frames)
+        {
+            const UINT32 frames_avail   = frames - fade_start_frame;
+            const UINT32 frames_left    = kFadeFrames - fade_in_pos;
+            const UINT32 frames_to_fade = (frames_left < frames_avail) ? frames_left : frames_avail;
             for (UINT32 i = 0; i < frames_to_fade; ++i)
             {
-                const int32 gain_q15 = CosineGainQ15(fade_in_pos + i, kFadeFrames, true);
-                samples[i*2]     = (int16)(((int32)samples[i*2]     * gain_q15) >> 15);
-                samples[i*2 + 1] = (int16)(((int32)samples[i*2 + 1] * gain_q15) >> 15);
+                const int32  gain_q15 = CosineGainQ15(fade_in_pos + i, kFadeFrames, true);
+                const UINT32 idx      = fade_start_frame + i;
+                samples[idx*2]     = (int16)(((int32)samples[idx*2]     * gain_q15) >> 15);
+                samples[idx*2 + 1] = (int16)(((int32)samples[idx*2 + 1] * gain_q15) >> 15);
             }
             fade_in_pos += frames_to_fade;
         }

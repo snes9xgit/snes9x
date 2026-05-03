@@ -263,28 +263,63 @@ void CXAudio2::PushBuffer(UINT32 AudioBytes,BYTE *pAudioData,void *pContext)
 {
 	// Fade-in the head of the first buffer pushed after silence so audio
 	// doesn't kick back in on a non-zero sample. Skip for the fade-out tail
-	// itself (it's already a ramp). The trigger flag is consumed once and
-	// resets fade_in_pos to 0; subsequent calls advance the position until
-	// kFadeFrames is reached. This is necessary because a single audio block
-	// (~441 frames at default settings) is shorter than the fade window —
-	// stuffing the whole 23ms ramp into 10ms of buffer compresses it back
-	// into the audible band.
+	// itself (it's already a ramp).
+	//
+	// The trigger flag is consumed only when the buffer actually has audio
+	// content — first boot in particular pushes ~tens of ms of silent buffers
+	// while the SPC runs BIOS setup before the chime hits, and consuming the
+	// fade-in flag on those would leave the chime onset unfaded. Once content
+	// is detected we start the fade *at the onset frame within the buffer*,
+	// not at frame 0, so the silence-to-audio step itself is the moment the
+	// ramp begins.
 	if (pContext != kFadeoutContext)
 	{
-		if (InterlockedExchange(&fade_in_pending, 0))
-			fade_in_pos = 0;
+		int16 *samples = (int16*)pAudioData;
+		const UINT32 frames_in_buf = AudioBytes / (2 * sizeof(int16));
+		UINT32 fade_start_frame = 0;
 
-		if (fade_in_pos < kFadeFrames)
+		if (fade_in_pending)
 		{
-			int16 *samples = (int16*)pAudioData;
-			const UINT32 frames_in_buf = AudioBytes / (2 * sizeof(int16));
-			const UINT32 frames_left   = kFadeFrames - fade_in_pos;
-			const UINT32 frames_to_fade = (frames_left < frames_in_buf) ? frames_left : frames_in_buf;
+			UINT32 onset = frames_in_buf;
+			for (UINT32 i = 0; i < frames_in_buf; ++i)
+			{
+				const int16 l = samples[i*2];
+				const int16 r = samples[i*2 + 1];
+				if (l > 64 || l < -64 || r > 64 || r < -64)
+				{
+					onset = i;
+					break;
+				}
+			}
+			if (onset < frames_in_buf)
+			{
+				InterlockedExchange(&fade_in_pending, 0);
+				fade_in_pos = 0;
+				fade_start_frame = onset;
+				// Pre-onset samples were below the detection threshold but
+				// can still be non-zero (sub-threshold tail of a slow
+				// envelope ramp). Zero them so the seam to the gain-0 onset
+				// is exactly 0->0; otherwise the (±63 -> 0) step is heard
+				// as a single-sample "tak".
+				for (UINT32 i = 0; i < onset; ++i)
+				{
+					samples[i*2]     = 0;
+					samples[i*2 + 1] = 0;
+				}
+			}
+		}
+
+		if (fade_in_pos < kFadeFrames && fade_start_frame < frames_in_buf)
+		{
+			const UINT32 frames_avail   = frames_in_buf - fade_start_frame;
+			const UINT32 frames_left    = kFadeFrames - fade_in_pos;
+			const UINT32 frames_to_fade = (frames_left < frames_avail) ? frames_left : frames_avail;
 			for (UINT32 i = 0; i < frames_to_fade; ++i)
 			{
-				const int32 gain_q15 = CosineGainQ15(fade_in_pos + i, kFadeFrames, true);
-				samples[i*2]     = (int16)(((int32)samples[i*2]     * gain_q15) >> 15);
-				samples[i*2 + 1] = (int16)(((int32)samples[i*2 + 1] * gain_q15) >> 15);
+				const int32  gain_q15 = CosineGainQ15(fade_in_pos + i, kFadeFrames, true);
+				const UINT32 idx      = fade_start_frame + i;
+				samples[idx*2]     = (int16)(((int32)samples[idx*2]     * gain_q15) >> 15);
+				samples[idx*2 + 1] = (int16)(((int32)samples[idx*2 + 1] * gain_q15) >> 15);
 			}
 			fade_in_pos += frames_to_fade;
 		}
