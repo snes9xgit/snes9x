@@ -26,7 +26,7 @@
 extern FILE	*trace;
 #endif
 
-#define S9X_CONF_FILE_NAME	"snes9x.conf"
+#define S9X_CONF_FILE_NAME	"super-snes9x.conf"
 
 static char	*rom_filename = NULL;
 

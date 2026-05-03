@@ -589,7 +589,7 @@ void S9xRestoreWindowTitle ();
 //int CheckKey( WORD Key, int OldJoypad);
 //void TranslateKey(WORD keyz,char *out);
 
-#define S9X_CONF_FILE_NAME "snes9x.conf"
+#define S9X_CONF_FILE_NAME "super-snes9x.conf"
 
 const char* GetFilterName(RenderFilter filterID);
 int GetFilterScale(RenderFilter filterID);

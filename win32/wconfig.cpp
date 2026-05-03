@@ -269,7 +269,7 @@ const TCHAR*	WinParseCommandLineAndLoadConfigFile (TCHAR *line)
 			for(int i=0; i<2; i++)
 			{
 				fname=S9xGetDirectory(DEFAULT_DIR);
-				if(i == 0)      fname+=SLASH_STR "snes9x.conf";
+				if(i == 0)      fname+=SLASH_STR S9X_CONF_FILE_NAME;
 				else if(i == 1) fname+=SLASH_STR "snes9x.cfg";
 
 				tempfile = fopen((fname + ".autobak").c_str(), "rb");
@@ -1083,7 +1083,7 @@ void WinLockConfigFile ()
 
 	static std::string fname;
 	fname=S9xGetDirectory(DEFAULT_DIR);
-	fname+=SLASH_STR "snes9x.conf";
+	fname+=SLASH_STR S9X_CONF_FILE_NAME;
 	STREAM fp;
 	if((fp=OPEN_STREAM(fname.c_str(), "r"))!=NULL){
 		CLOSE_STREAM(fp);
