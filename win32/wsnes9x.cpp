@@ -10720,6 +10720,27 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 	static bool internal_change;
 	static int  sel_idx = -1;
 	static CheatTracker ct;
+
+	enum { CHEAT_AR = 1, CHEAT_AB = 2, CHEAT_EW = 4, CHEAT_EH = 8 };
+	struct CheatCtrlAnchor { int id; int flags; RECT orig; };
+	static int cheat_initial_w = 0, cheat_initial_h = 0;
+	static CheatCtrlAnchor cheat_anchors[] = {
+		{ IDC_CHEAT_LIST,              CHEAT_EW | CHEAT_EH, {0} },
+		{ IDC_ADD_CHEAT,               CHEAT_AR,            {0} },
+		{ IDC_UPDATE_CHEAT,            CHEAT_AR,            {0} },
+		{ IDC_CLEAR_CHEATS,            CHEAT_AR,            {0} },
+		{ IDC_DELETE_CHEAT,            CHEAT_AR,            {0} },
+		{ IDC_DELETE_ALL,              CHEAT_AR,            {0} },
+		{ IDC_SEARCH_DB,               CHEAT_AR,            {0} },
+		{ IDC_BUTTON_EDIT_CHEATGROUP,  CHEAT_AR | CHEAT_AB, {0} },
+		{ IDC_LABEL_CHEAT_CODE,        CHEAT_AB,            {0} },
+		{ IDC_LABEL_CHEAT_DESCRIPTION, CHEAT_AB,            {0} },
+		{ IDC_CHEAT_CODE,              CHEAT_AB | CHEAT_EW, {0} },
+		{ IDC_CHEAT_DESCRIPTION,       CHEAT_AB | CHEAT_EW, {0} },
+		{ IDOK,                        CHEAT_AR | CHEAT_AB, {0} },
+		{ IDCANCEL,                    CHEAT_AR | CHEAT_AB, {0} },
+	};
+
 	switch(msg)
 	{
 	case WM_INITDIALOG:
@@ -10788,7 +10809,77 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 				ListView_SetCheckState(GetDlgItem(hDlg,IDC_CHEAT_LIST), curr_idx, Cheat.group[counter].enabled);
 
 			}
+
+			{
+				RECT cr;
+				GetClientRect(hDlg, &cr);
+				cheat_initial_w = cr.right;
+				cheat_initial_h = cr.bottom;
+				for (size_t i = 0; i < sizeof(cheat_anchors)/sizeof(cheat_anchors[0]); i++) {
+					HWND ctrl = GetDlgItem(hDlg, cheat_anchors[i].id);
+					if (!ctrl) continue;
+					GetWindowRect(ctrl, &cheat_anchors[i].orig);
+					MapWindowPoints(NULL, hDlg, (POINT*)&cheat_anchors[i].orig, 2);
+				}
+
+				HWND lv = GetDlgItem(hDlg, IDC_CHEAT_LIST);
+				RECT lvc;
+				GetClientRect(lv, &lvc);
+				int code_w = ListView_GetColumnWidth(lv, 0);
+				int desc_w = lvc.right - code_w;
+				if (desc_w > 50)
+					ListView_SetColumnWidth(lv, 1, desc_w);
+			}
 		return true;
+	case WM_SIZE:
+		if (cheat_initial_w > 0 && cheat_initial_h > 0)
+		{
+			int new_w = LOWORD(lParam);
+			int new_h = HIWORD(lParam);
+			int dw = new_w - cheat_initial_w;
+			int dh = new_h - cheat_initial_h;
+			const int n = sizeof(cheat_anchors)/sizeof(cheat_anchors[0]);
+			HDWP hdwp = BeginDeferWindowPos(n);
+			for (int i = 0; i < n; i++) {
+				HWND ctrl = GetDlgItem(hDlg, cheat_anchors[i].id);
+				if (!ctrl) continue;
+				int x = cheat_anchors[i].orig.left;
+				int y = cheat_anchors[i].orig.top;
+				int w = cheat_anchors[i].orig.right - cheat_anchors[i].orig.left;
+				int h = cheat_anchors[i].orig.bottom - cheat_anchors[i].orig.top;
+				int f = cheat_anchors[i].flags;
+				if (f & CHEAT_AR) x += dw;
+				if (f & CHEAT_AB) y += dh;
+				if (f & CHEAT_EW) w += dw;
+				if (f & CHEAT_EH) h += dh;
+				hdwp = DeferWindowPos(hdwp, ctrl, NULL, x, y, w, h,
+					SWP_NOZORDER | SWP_NOACTIVATE);
+			}
+			EndDeferWindowPos(hdwp);
+
+			HWND lv = GetDlgItem(hDlg, IDC_CHEAT_LIST);
+			RECT lvc;
+			GetClientRect(lv, &lvc);
+			int code_w = ListView_GetColumnWidth(lv, 0);
+			int desc_w = lvc.right - code_w;
+			if (desc_w > 50)
+				ListView_SetColumnWidth(lv, 1, desc_w);
+		}
+		return TRUE;
+	case WM_GETMINMAXINFO:
+		if (cheat_initial_w > 0 && cheat_initial_h > 0)
+		{
+			MINMAXINFO* mmi = (MINMAXINFO*)lParam;
+			RECT cr, wr;
+			GetClientRect(hDlg, &cr);
+			GetWindowRect(hDlg, &wr);
+			int nc_w = (wr.right - wr.left) - cr.right;
+			int nc_h = (wr.bottom - wr.top) - cr.bottom;
+			mmi->ptMinTrackSize.x = cheat_initial_w + nc_w;
+			mmi->ptMinTrackSize.y = cheat_initial_h + nc_h;
+			return TRUE;
+		}
+		return FALSE;
 	case WM_PAINT:
 		{
 		PAINTSTRUCT ps;
