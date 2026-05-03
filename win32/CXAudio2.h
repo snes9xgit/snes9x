@@ -31,10 +31,26 @@ private:
 	UINT32 partialOffset;					// offset into non-complete block
 	uint8 *soundBuffer;						// the buffer itself
 
+	// Click suppression at queue underrun / pause boundaries. last_sample_l/r
+	// hold the trailing stereo frame of the most recently submitted buffer so a
+	// fade-out tail can start where real audio left off. fade_in_pending is the
+	// trigger flag (set by OnBufferEnd on underrun or by OnPauseRequested);
+	// fade_in_pos tracks how far along the head ramp we are across multiple
+	// PushBuffer calls — a single audio block is typically smaller than the
+	// full ramp window so the fade has to span buffers to stay sub-audible.
+	// fadeout_in_flight blocks reuse of fadeoutBuffer until XAudio2 is done
+	// reading it.
+	int16 last_sample_l;
+	int16 last_sample_r;
+	volatile LONG fade_in_pending;
+	UINT32 fade_in_pos;
+	volatile LONG fadeout_in_flight;
+	int16 *fadeoutBuffer;
+
 	bool InitVoices(void);
 	void DeInitVoices(void);
 
-	void PushBuffer(UINT32 AudioBytes,BYTE *pAudioData,void *pContext);	
+	void PushBuffer(UINT32 AudioBytes,BYTE *pAudioData,void *pContext);
 	void BeginPlayback(void);
 	void StopPlayback(void);
 	void ProcessSound(void);
@@ -80,6 +96,8 @@ public:
 	void SetVolume(double volume);
 	std::vector<std::wstring> GetDeviceList();
 	int FindDeviceIndex(TCHAR *audio_device);
+	void OnPauseRequested();
+	void OnResumeRequested();
 };
 
 #endif

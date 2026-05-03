@@ -67,6 +67,57 @@ static void SPCSnapshotCallback(void);
 static inline int S9xAPUGetClock(int32);
 static inline int S9xAPUGetClockRemainder(int32);
 
+namespace {
+// Smooth the SGB audio source switch (BIOS animation finish flips
+// gb_owns_audio false->true). The pre-flip buffer ended on some SPC sample
+// V_spc; the post-flip buffer starts with whatever GB is producing — and at
+// the instant the BIOS releases the GB, the GB APU has *no* samples queued
+// yet, so the new buffer is zeros. A naïve fade-in ramping zero->zero stays
+// zero and leaves the V_spc->0 buffer-boundary discontinuity intact, which
+// the speaker hears as a bass kick.
+//
+// Instead: capture the trailing output sample across calls and cross-fade
+// from that DC value to the new source. With raised-cosine alpha:
+//   out'[i] = V_last * (1 - alpha[i]) + out[i] * alpha[i]
+// At alpha=0 we reproduce V_last (continuous with the prior buffer); at
+// alpha=1 we're fully on the new source. When the new source is silent
+// this degenerates to a slow V_last->0 DC ramp, which is sub-audible at
+// 1024 frames (~23ms; fundamental ~22Hz).
+bool  g_prev_gb_owns_audio = false;
+int   g_source_fade_remaining = 0;
+int16 g_last_out_l = 0;
+int16 g_last_out_r = 0;
+constexpr int    kSourceFadeFrames = 1024;
+constexpr double kSourcePi         = 3.14159265358979323846;
+
+inline void ApplySourceCrossFade(int16 *out, int sample_count_int16s)
+{
+    if (g_source_fade_remaining <= 0) return;
+    const int frames = sample_count_int16s / 2;
+    for (int f = 0; f < frames && g_source_fade_remaining > 0; ++f)
+    {
+        const int    frame_pos     = kSourceFadeFrames - g_source_fade_remaining;
+        const double t             = (double)frame_pos / (double)(kSourceFadeFrames - 1);
+        const int    alpha_q15     = (int)(16384.0 * (1.0 - std::cos(kSourcePi * t)) + 0.5);
+        const int    inv_alpha_q15 = 32768 - alpha_q15;
+        out[f*2]     = (int16)(((int32)g_last_out_l * inv_alpha_q15 +
+                                 (int32)out[f*2]     * alpha_q15) >> 15);
+        out[f*2 + 1] = (int16)(((int32)g_last_out_r * inv_alpha_q15 +
+                                 (int32)out[f*2 + 1] * alpha_q15) >> 15);
+        --g_source_fade_remaining;
+    }
+}
+
+inline void CaptureLastOut(const int16 *out, int sample_count_int16s)
+{
+    if (sample_count_int16s >= 2)
+    {
+        g_last_out_l = out[sample_count_int16s - 2];
+        g_last_out_r = out[sample_count_int16s - 1];
+    }
+}
+} // namespace
+
 bool8 S9xMixSamples(uint8 *dest, int sample_count)
 {
     int16 *out = (int16 *)dest;
@@ -87,12 +138,17 @@ bool8 S9xMixSamples(uint8 *dest, int sample_count)
         (Settings.SGB_BIOSModeActive && S9xSGBBIOSGBIsReleased());
     const bool mix_spc_under_gb = Settings.SGB_BIOSModeActive &&
                                    S9xSGBBIOSGBIsReleased();
+
+    if (gb_owns_audio != g_prev_gb_owns_audio)
+        g_source_fade_remaining = kSourceFadeFrames;
+    g_prev_gb_owns_audio = gb_owns_audio;
     if (gb_owns_audio)
     {
         if (Settings.Mute)
         {
             memset(out, 0, sample_count << 1);
             S9xClearSamples();
+            CaptureLastOut(out, sample_count);
             return true;
         }
 
@@ -130,6 +186,8 @@ bool8 S9xMixSamples(uint8 *dest, int sample_count)
             // keep the scanline-driver gate firing at its natural cadence.
             S9xClearSamples();
         }
+        ApplySourceCrossFade(out, sample_count);
+        CaptureLastOut(out, sample_count);
         return true;
     }
 
@@ -138,12 +196,14 @@ bool8 S9xMixSamples(uint8 *dest, int sample_count)
         memset(out, 0, sample_count << 1);
         S9xClearSamples();
         spc::sound_in_sync = true;
+        CaptureLastOut(out, sample_count);
         return true;
     }
 
     if (spc::resampler.avail() < sample_count)
     {
         memset(out, 0, sample_count << 1);
+        CaptureLastOut(out, sample_count);
         return false;
     }
 
@@ -168,6 +228,8 @@ bool8 S9xMixSamples(uint8 *dest, int sample_count)
     else
         spc::sound_in_sync = false;
 
+    ApplySourceCrossFade(out, sample_count);
+    CaptureLastOut(out, sample_count);
     return true;
 }
 

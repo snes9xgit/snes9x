@@ -19,6 +19,7 @@ class CWaveOut : public IS9xSoundOutput
     void ProcessSound(void);
     int GetAvailableBytes();
     void RecoverFromUnderrun();
+    void SubmitBlock(WAVEHDR &header);
 
     HWAVEOUT hWaveOut;
     bool initDone;
@@ -31,7 +32,22 @@ class CWaveOut : public IS9xSoundOutput
     UINT32 writeOffset;
     UINT32 partialOffset;
     std::vector<WAVEHDR> waveHeaders;
-  
+
+    // Click suppression at queue underrun / pause boundaries (see CXAudio2 for
+    // the rationale). last_sample_l/r ride at the trailing frame of the most
+    // recent submission so a fade-out tail can begin where audio stopped;
+    // fade_in_pending is the trigger flag, fade_in_pos tracks position across
+    // multiple SubmitBlock calls because a single audio block is shorter than
+    // the full ramp window.
+    int16 last_sample_l;
+    int16 last_sample_r;
+    volatile LONG fade_in_pending;
+    UINT32 fade_in_pos;
+    volatile LONG fadeout_in_flight;
+    WAVEHDR fadeoutHeader;
+    int16 *fadeoutBuffer;
+    bool fadeoutPrepared;
+
   public:
     CWaveOut(void);
     ~CWaveOut(void);
@@ -43,6 +59,8 @@ class CWaveOut : public IS9xSoundOutput
     void SetVolume(double volume);
 	std::vector<std::wstring> GetDeviceList();
 	int FindDeviceIndex(TCHAR *audio_device);
+	void OnPauseRequested();
+	void OnResumeRequested();
 
 	static void CALLBACK WaveCallback(HWAVEOUT hWave, UINT uMsg, DWORD_PTR dwUser, DWORD_PTR dw1, DWORD_PTR dw2);
 };
