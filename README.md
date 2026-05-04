@@ -3,21 +3,22 @@
 
 This is the un-official source code fork for the Snes9x project.
 
-Please check the [Wiki](https://github.com/snes9xgit/snes9x/wiki) for additional information.
+Please check the the official [Wiki](https://github.com/snes9xgit/snes9x/wiki) for additional information.
 
 ## SuperSnes9x Features:
 - Kaillera Server/Client
 - RetroAchievements
 - S-PPU Sprite/Tile/Tiles viewers
-- Multi-Controller support
+- Multi-Bind-Controller support
 - SDL Support
 - Run-Ahead Support
 - Color Correction Support
 - Enhanced Cheat Search / Cheat Editor
+- Supports GameBoy, GameBoy Color, Super GameBoy
 
 ## Nightly builds
 
-Download official nightly builds from continuous integration:
+Download _official_ nightly builds from continuous integration:
 
 ### snes9x
 
