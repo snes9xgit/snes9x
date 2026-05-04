@@ -531,7 +531,7 @@ BEGIN
     CONTROL         "Clear SRAM",IDC_CLEARSRAM,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,12,96,70,10
 END
 
-IDD_KEYCUSTOM DIALOGEX 0, 0, 410, 400
+IDD_KEYCUSTOM DIALOGEX 0, 0, 410, 420
 STYLE DS_SETFONT | DS_MODALFRAME | DS_3DLOOK | DS_FIXEDSYS | DS_CENTER | WS_POPUP | WS_CLIPCHILDREN | WS_CAPTION
 CAPTION "Customize Special Keys"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
@@ -539,9 +539,8 @@ BEGIN
     GROUPBOX        "Binding",IDC_STATIC,5,0,142,24,0,WS_EX_TRANSPARENT
     COMBOBOX        IDC_BINDINGCOMBO_HK,12,8,60,40,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
     CONTROL         "Enabled",IDC_ALLOWMULTIBIND_HK,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,80,10,50,10
-    CONTROL         "Master Hotkey",IDC_MASTERHOTKEY_ENABLE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,160,4,62,10
-    RTEXT           "Key:",IDC_LABEL_MASTERHOTKEY,224,4,16,10
-    CONTROL         "",IDC_MASTERHOTKEY_BIND,"InputCustomHot",WS_TABSTOP,244,2,60,12
+    CONTROL         "Master Hotkey",IDC_MASTERHOTKEY_ENABLE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,160,9,62,10
+    CONTROL         "",IDC_MASTERHOTKEY_BIND,"InputCustomHot",WS_TABSTOP,224,8,60,12
 
     // Tab control with 3 tabs (Emulation / Turbo / Display & Tools).
     // Switchable IDC_HOTKEY1..18 generic slots live INSIDE the tab content area.
@@ -675,9 +674,9 @@ BEGIN
     RTEXT           "Load File:",IDC_LABEL_LOADFROMFILE,304,348,52,10
     CONTROL         "",IDC_LOADFROMFILE,"InputCustomHot",WS_TABSTOP,358,348,42,12
 
-    LTEXT           "Blue means the hotkey is already mapped. Pink means it conflicts with a game button. Red means it's reserved by Windows. Escape clears bindings.\nPress multiple keys for multi-bind. Delete removes last.",IDC_LABEL_BLUE,7,370,290,28
-    PUSHBUTTON      "OK",IDOK,300,383,48,14
-    PUSHBUTTON      "Cancel",IDCANCEL,354,383,48,14
+    LTEXT           "Blue means the hotkey is already mapped. Pink means it conflicts with a game button. Red means it's reserved by Windows. Escape clears bindings.\nPress multiple keys for multi-bind. Delete removes last.",IDC_LABEL_BLUE,7,370,290,48
+    PUSHBUTTON      "OK",IDOK,300,400,48,14
+    PUSHBUTTON      "Cancel",IDCANCEL,354,400,48,14
 END
 
 IDD_MULTICART DIALOGEX 0, 0, 390, 90
