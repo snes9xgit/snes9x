@@ -103,7 +103,11 @@ void MemWrite(Memory &m, uint16_t addr, uint8_t value)
 	}
 	if (addr < 0xA000)
 	{
-		if (m.ppu) m.ppu->vram[addr - 0x8000] = value;
+		if (m.ppu)
+		{
+			m.ppu->vram[addr - 0x8000] = value;
+			m.ppu->vram_writes++;
+		}
 		return;
 	}
 	if (addr < 0xC000)

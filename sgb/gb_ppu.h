@@ -100,6 +100,8 @@ struct Ppu
 	uint8_t  raw_framebuffer[GB_SCREEN_WIDTH * GB_SCREEN_HEIGHT];
 
 	bool     frame_ready = false;
+
+	uint64_t vram_writes = 0;
 };
 
 void PpuReset(Ppu &p);

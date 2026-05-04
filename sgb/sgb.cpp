@@ -299,6 +299,7 @@ struct Emulator::Impl
 	// DE=$0000, HL=$C060).
 	bool     boot_handoff_captured = false;
 	CpuRegs  boot_handoff_regs{};
+	uint64_t boot_handoff_vram_writes = 0;
 };
 
 // File-local trampoline — lets the process-global SgbCommandCallback
@@ -356,6 +357,7 @@ void Emulator::Reset()
 	impl_->border_fade_frames   = 0;
 	impl_->boot_handoff_captured = false;
 	impl_->boot_handoff_regs     = {};
+	impl_->boot_handoff_vram_writes = 0;
 	IrqServicedReset();
 	std::memset(&impl_->icd2, 0, sizeof impl_->icd2);
 	// 4-bank LCD ring starts at $00 (matches Mesen2 SuperGameboy::Reset).
@@ -918,6 +920,7 @@ void Emulator::RunCycles(int32_t tcycles)
 			{
 				impl_->boot_handoff_captured = true;
 				impl_->boot_handoff_regs     = impl_->cpu.State().r;
+				impl_->boot_handoff_vram_writes = impl_->ppu.vram_writes;
 			}
 
 			TimerStep(impl_->timer, impl_->mem, consumed);
@@ -1023,6 +1026,11 @@ uint8_t Emulator::GetICD2(uint16_t addr)
 		icd.read_position  = static_cast<uint16_t>((icd.read_position + 1) & 0x1FF);
 		if (pos >= 320)
 			return 0xFF;
+
+		if (impl_->mem.boot_rom_enabled ||
+		    (impl_->boot_handoff_captured &&
+		     impl_->ppu.vram_writes - impl_->boot_handoff_vram_writes < 256))
+			return 0x00;
 
 		const uint8_t bank  = static_cast<uint8_t>(icd.lcd_row_select & 0x03);
 		const uint8_t row   = static_cast<uint8_t>((pos >> 1) & 0x07);
