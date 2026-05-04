@@ -3,7 +3,7 @@
 
 This is the un-official source code fork for the Snes9x project.
 
-Please check the the official [Wiki](https://github.com/snes9xgit/snes9x/wiki) for additional information.
+Please check the official [Wiki](https://github.com/snes9xgit/snes9x/wiki) for additional information.
 
 ## SuperSnes9x Features:
 - Kaillera Server/Client
