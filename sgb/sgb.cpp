@@ -139,6 +139,7 @@ struct Emulator::Impl
 		uint8_t  joypad[4];
 		uint8_t  input_value;   // last $FF00 write from GB (for edge detect)
 		uint8_t  input_index;   // 0..3 — current MLT_REQ player slot
+		uint8_t  mlt_players;   // 1, 2, or 4 — set when game issues MLT_REQ
 
 		// Packet assembler. GB bit-bangs SGB commands over $FF00:
 		//   $00 (P14+P15 both active) = reset/start pulse
@@ -923,6 +924,9 @@ void Emulator::RunCycles(int32_t tcycles)
 				impl_->boot_handoff_captured = true;
 				impl_->boot_handoff_regs     = impl_->cpu.State().r;
 				impl_->boot_handoff_vram_writes = impl_->ppu.vram_writes;
+				if (impl_->has_rom &&
+				    impl_->cart.header.sgb_flag == 0x03)
+					impl_->icd2.mlt_players = 2;
 			}
 
 			TimerStep(impl_->timer, impl_->mem, consumed);
@@ -1029,7 +1033,9 @@ uint8_t Emulator::GetICD2(uint16_t addr)
 		if (pos >= 320)
 			return 0xFF;
 
-		if (impl_->mem.boot_rom_enabled)
+		if (impl_->mem.boot_rom_enabled ||
+		    (impl_->boot_handoff_captured &&
+		     impl_->ppu.vram_writes - impl_->boot_handoff_vram_writes < 256))
 			return 0x00;
 
 		const uint8_t bank  = static_cast<uint8_t>(icd.lcd_row_select & 0x03);
@@ -1429,8 +1435,11 @@ static void IcdFeedJoypad(Emulator::Impl::Icd2 &icd, uint8_t value)
 		if (p15_rose)
 		{
 			const uint8_t mlt_bits = static_cast<uint8_t>((icd.control >> 4) & 0x03);
-			const uint8_t players  = (mlt_bits == 0) ? 1u
-			                       : (mlt_bits == 1) ? 2u : 4u;
+			const uint8_t ctrl_players = (mlt_bits == 0) ? 1u
+			                           : (mlt_bits == 1) ? 2u : 4u;
+			const uint8_t pkt_players  = icd.mlt_players ? icd.mlt_players : 1u;
+			const uint8_t players      = pkt_players > ctrl_players
+			                             ? pkt_players : ctrl_players;
 			icd.input_index = static_cast<uint8_t>(
 				(icd.input_index + 1) % players);
 		}
@@ -1520,6 +1529,13 @@ void Emulator::OnJoyserWrite(uint8_t value)
 void Emulator::OnSgbCommandInternal(uint8_t cmd, const uint8_t *data, uint32_t len)
 {
 	DbgPushCmd(cmd);
+
+	if (cmd == 0x11 && len > 1)
+	{
+		const uint8_t mode = static_cast<uint8_t>(data[1] & 0x03);
+		impl_->icd2.mlt_players = (mode == 1) ? 2u
+		                       : (mode == 3) ? 4u : 1u;
+	}
 
 	if (cmd == 0x13 || cmd == 0x14)
 	{
