@@ -12,14 +12,43 @@
 #include "../apu/apu.h"
 #include "wsnes9x.h"
 #include <map>
+#include <math.h>
 
 #define DRV_QUERYFUNCTIONINSTANCEID       (DRV_RESERVED + 17)
 #define DRV_QUERYFUNCTIONINSTANCEIDSIZE   (DRV_RESERVED + 18)
+
+// Length of the click-suppression ramps applied at audio output transitions.
+// 1024 stereo frames ~= 23ms at 44.1kHz: pushes the fade's spectral fundamental
+// below ~22Hz so it can't be heard as a bass kick. Cosine-shaped (Hann half-
+// window) so the endpoints have zero derivative and don't radiate broadband
+// splatter the way a linear ramp does.
+static const UINT32 kFadeFrames = 1024;
+static const UINT32 kFadeBytes  = kFadeFrames * 2 * sizeof(int16);
+static const double kPi         = 3.14159265358979323846;
+static const DWORD_PTR kFadeoutMarker = 0x57415645; // 'WAVE' in dwUser to flag the tail header
+
+static inline int CosineGainQ15(UINT32 pos, UINT32 len, bool rising)
+{
+    if (len < 2)        return rising ? 32768 : 0;
+    if (pos >= len - 1) return rising ? 32768 : 0;
+    const double t = (double)pos / (double)(len - 1);
+    const double c = cos(kPi * t);
+    const double g = rising ? 0.5 * (1.0 - c) : 0.5 * (1.0 + c);
+    return (int)(g * 32768.0 + 0.5);
+}
 
 CWaveOut::CWaveOut(void)
 {
     hWaveOut = NULL;
     initDone = false;
+    last_sample_l = 0;
+    last_sample_r = 0;
+    fade_in_pending = 0;
+    fade_in_pos = kFadeFrames;  // "done" — no fade in progress
+    fadeout_in_flight = 0;
+    fadeoutBuffer = NULL;
+    fadeoutPrepared = false;
+    ZeroMemory(&fadeoutHeader, sizeof(fadeoutHeader));
 }
 
 CWaveOut::~CWaveOut(void)
@@ -32,7 +61,12 @@ void CALLBACK CWaveOut::WaveCallback(HWAVEOUT hWave, UINT uMsg, DWORD_PTR dwUser
 	CWaveOut *wo = (CWaveOut*)dwUser;
     if (uMsg == WOM_DONE)
     {
-        InterlockedDecrement(&wo->bufferCount);
+        WAVEHDR *hdr = (WAVEHDR*)dw1;
+        if (hdr && hdr->dwUser == kFadeoutMarker)
+            InterlockedExchange(&wo->fadeout_in_flight, 0);
+        LONG remaining = InterlockedDecrement(&wo->bufferCount);
+        if (remaining == 0)
+            InterlockedExchange(&wo->fade_in_pending, 1);
         SetEvent(GUI.SoundSyncEvent);
     }
 	else if (uMsg == WOM_CLOSE) // also sent on device removals
@@ -83,6 +117,20 @@ bool CWaveOut::SetupSound()
         w.reserved = 0;
         waveOutPrepareHeader(hWaveOut, &w, sizeof(WAVEHDR));
     }
+
+    fadeoutBuffer = (int16*)LocalAlloc(LMEM_FIXED, kFadeBytes);
+    ZeroMemory(&fadeoutHeader, sizeof(fadeoutHeader));
+    fadeoutHeader.lpData = (LPSTR)fadeoutBuffer;
+    fadeoutHeader.dwBufferLength = kFadeBytes;
+    fadeoutHeader.dwUser = kFadeoutMarker;
+    waveOutPrepareHeader(hWaveOut, &fadeoutHeader, sizeof(WAVEHDR));
+    fadeoutPrepared = true;
+
+    // Fade in the first real-audio block so cold start doesn't kick from
+    // silence to a non-zero sample. RecoverFromUnderrun's silence padding
+    // bypasses SubmitBlock so this flag survives until the first real push.
+    InterlockedExchange(&fade_in_pending, 1);
+
     initDone = true;
 
     return true;
@@ -123,6 +171,22 @@ void CWaveOut::DeInitSoundOutput()
     }
     waveHeaders.clear();
 
+    if (fadeoutPrepared)
+    {
+        waveOutUnprepareHeader(hWaveOut, &fadeoutHeader, sizeof(WAVEHDR));
+        fadeoutPrepared = false;
+    }
+    if (fadeoutBuffer)
+    {
+        LocalFree(fadeoutBuffer);
+        fadeoutBuffer = NULL;
+    }
+    last_sample_l = 0;
+    last_sample_r = 0;
+    InterlockedExchange(&fade_in_pending, 0);
+    fade_in_pos = kFadeFrames;
+    InterlockedExchange(&fadeout_in_flight, 0);
+
     waveOutClose(hWaveOut);
 	hWaveOut = NULL;
 
@@ -137,6 +201,109 @@ void CWaveOut::StopPlayback()
 int CWaveOut::GetAvailableBytes()
 {
     return ((blockCount - bufferCount) * singleBufferBytes) - partialOffset;
+}
+
+// Submit a fully-filled normal block. Applies a fade-in ramp to the head if
+// fade_in_pending was set (queue underran or just resumed from a pause-time
+// fade-out tail) and captures the trailing stereo frame for any future
+// fade-out tail. RecoverFromUnderrun's silence pushes deliberately bypass
+// this to keep fade_in_pending armed for the eventual real-audio block.
+void CWaveOut::SubmitBlock(WAVEHDR &header)
+{
+    int16 *samples = (int16*)header.lpData;
+    const UINT32 frames = header.dwBufferLength / (2 * sizeof(int16));
+
+    if (frames > 0)
+    {
+        // Defer fade-in firing until the buffer actually has audio content,
+        // so silent boot-time buffers (BIOS code setup before the chime) don't
+        // consume the flag and leave the chime onset unfaded. Once content is
+        // found we start the ramp at the onset frame within the buffer.
+        UINT32 fade_start_frame = 0;
+        if (fade_in_pending)
+        {
+            UINT32 onset = frames;
+            for (UINT32 i = 0; i < frames; ++i)
+            {
+                const int16 l = samples[i*2];
+                const int16 r = samples[i*2 + 1];
+                if (l > 64 || l < -64 || r > 64 || r < -64)
+                {
+                    onset = i;
+                    break;
+                }
+            }
+            if (onset < frames)
+            {
+                InterlockedExchange(&fade_in_pending, 0);
+                fade_in_pos = 0;
+                fade_start_frame = onset;
+                // Zero sub-threshold pre-onset samples so the seam to the
+                // gain-0 onset is exactly 0->0 instead of ±63->0 (audible
+                // single-sample "tak").
+                for (UINT32 i = 0; i < onset; ++i)
+                {
+                    samples[i*2]     = 0;
+                    samples[i*2 + 1] = 0;
+                }
+            }
+        }
+
+        if (fade_in_pos < kFadeFrames && fade_start_frame < frames)
+        {
+            const UINT32 frames_avail   = frames - fade_start_frame;
+            const UINT32 frames_left    = kFadeFrames - fade_in_pos;
+            const UINT32 frames_to_fade = (frames_left < frames_avail) ? frames_left : frames_avail;
+            for (UINT32 i = 0; i < frames_to_fade; ++i)
+            {
+                const int32  gain_q15 = CosineGainQ15(fade_in_pos + i, kFadeFrames, true);
+                const UINT32 idx      = fade_start_frame + i;
+                samples[idx*2]     = (int16)(((int32)samples[idx*2]     * gain_q15) >> 15);
+                samples[idx*2 + 1] = (int16)(((int32)samples[idx*2 + 1] * gain_q15) >> 15);
+            }
+            fade_in_pos += frames_to_fade;
+        }
+    }
+
+    if (frames > 0)
+    {
+        const UINT32 last = (frames - 1) * 2;
+        last_sample_l = samples[last];
+        last_sample_r = samples[last + 1];
+    }
+
+    waveOutWrite(hWaveOut, &header, sizeof(WAVEHDR));
+    InterlockedIncrement(&bufferCount);
+}
+
+void CWaveOut::OnPauseRequested()
+{
+    if (!initDone || !hWaveOut || !fadeoutBuffer || !fadeoutPrepared)
+        return;
+    // Skip if a previous fade-out tail is still in the queue — re-submitting
+    // the same WAVEHDR would race with the audio thread reading from it.
+    if (InterlockedCompareExchange(&fadeout_in_flight, 1, 0) != 0)
+        return;
+
+    for (UINT32 i = 0; i < kFadeFrames; ++i)
+    {
+        const int32 gain_q15 = CosineGainQ15(i, kFadeFrames, false);
+        fadeoutBuffer[i*2]     = (int16)(((int32)last_sample_l * gain_q15) >> 15);
+        fadeoutBuffer[i*2 + 1] = (int16)(((int32)last_sample_r * gain_q15) >> 15);
+    }
+
+    waveOutWrite(hWaveOut, &fadeoutHeader, sizeof(WAVEHDR));
+    InterlockedIncrement(&bufferCount);
+
+    last_sample_l = 0;
+    last_sample_r = 0;
+    InterlockedExchange(&fade_in_pending, 1);
+}
+
+void CWaveOut::OnResumeRequested()
+{
+    // fade_in_pending already armed in OnPauseRequested or in WaveCallback on
+    // underrun; nothing to do here.
 }
 
 // Fill the set of blocks preceding writeOffset with silence and write them
@@ -216,8 +383,7 @@ void CWaveOut::ProcessSound()
             S9xMixSamples(offsetBuffer, samplesleftinblock);
             partialOffset = 0;
             availableSamples -= samplesleftinblock;
-            waveOutWrite(hWaveOut, &waveHeaders[writeOffset], sizeof(WAVEHDR));
-            InterlockedIncrement(&bufferCount);
+            SubmitBlock(waveHeaders[writeOffset]);
             writeOffset++;
             writeOffset %= blockCount;
         }
@@ -226,8 +392,7 @@ void CWaveOut::ProcessSound()
     while (availableSamples >= singleBufferSamples && bufferCount < blockCount) {
         BYTE *curBuffer = (BYTE *)waveHeaders[writeOffset].lpData;
         S9xMixSamples(curBuffer, singleBufferSamples);
-        waveOutWrite(hWaveOut, &waveHeaders[writeOffset], sizeof(WAVEHDR));
-        InterlockedIncrement(&bufferCount);
+        SubmitBlock(waveHeaders[writeOffset]);
         writeOffset++;
         writeOffset %= blockCount;
         availableSamples -= singleBufferSamples;

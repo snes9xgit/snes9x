@@ -87,6 +87,8 @@
 #include "../language.h"
 
 #include <commctrl.h>
+#include <uxtheme.h>
+#pragma comment(lib, "uxtheme.lib")
 #include <io.h>
 #include <time.h>
 #include <direct.h>
@@ -149,8 +151,12 @@ void S9xWinScanJoypads();
 #define NC_SEARCHDB 0x8000
 #define WM_CHEATS_ADDED (WM_APP + 1)
 
-constexpr int MAX_SWITCHABLE_HOTKEY_DIALOG_ITEMS = 14;
-constexpr int MAX_SWITCHABLE_HOTKEY_DIALOG_PAGES = 5;
+constexpr int MAX_SWITCHABLE_HOTKEY_DIALOG_ITEMS = 18;
+constexpr int MAX_SWITCHABLE_HOTKEY_DIALOG_PAGES = 4;
+constexpr int HOTKEY_TAB_EMULATION  = 0;
+constexpr int HOTKEY_TAB_SAVESTATES = 1;
+constexpr int HOTKEY_TAB_TURBO      = 2;
+constexpr int HOTKEY_TAB_DISPLAY    = 3;
 
 #ifdef UNICODE
 #define S9XW_SHARD_PATH SHARD_PATHW
@@ -362,6 +368,7 @@ struct SCustomKeysExtra CustomKeysExtra = {};
 struct SCustomKeys CustomKeys = {
 	{/*VK_OEM_PLUS*/0xBB,0}, // speed+ (=)
 	{/*VK_OEM_MINUS*/0xBD,0}, // speed- (-)
+	{0,0}, // reset speed (disabled by default)
 	{VK_PAUSE,0}, // pause (PAUSE)
 	{/*VK_OEM_5*/0xDC,0}, // frame advance (\)
 	{/*VK_OEM_PLUS*/0xBB,CUSTKEY_SHIFT_MASK}, // skip+ (_)
@@ -502,6 +509,8 @@ void RestoreGUIDisplay ();
 void RestoreSNESDisplay ();
 void CheckDirectoryIsWritable (const char *filename);
 static void CheckMenuStates ();
+static int  ClampLogoIndex (int n);
+static void ApplyLogoIcon  (HWND hWnd, HINSTANCE hInst, int n);
 static void ResetFrameTimer ();
 static bool LoadROM (const TCHAR *filename, const TCHAR *filename2 = NULL);
 static bool LoadROMMulti (const TCHAR *filename, const TCHAR *filename2);
@@ -1247,6 +1256,19 @@ int HandleKeyMessage(WPARAM wParam, LPARAM lParam)
 			}
 			hitHotKey = true;
 		}
+		if(HKmatch(ResetSpeed))
+		{
+#ifdef RETROACHIEVEMENTS_SUPPORT
+			if (!RA_IsHardcoreModeActive())
+#endif
+			{
+				Settings.FrameTime = Settings.PAL ? Settings.FrameTimePAL : Settings.FrameTimeNTSC;
+				ResetFrameTimer ();
+				sprintf (InfoString, "Speed: 100%% (%.1f ms/frame)", Settings.FrameTime*0.001f);
+				S9xSetInfoString (InfoString);
+			}
+			hitHotKey = true;
+		}
 		if(HKmatch(BGL1))
 		{
 			Settings.BG_Forced ^= 1;
@@ -1648,6 +1670,51 @@ static bool startingMovie = false;
 
 HWND cheatSearchHWND = NULL;
 HWND cheatEditorHWND = NULL;
+
+void DlgApplySavedPos(HWND hDlg, const sDialogPos& pos)
+{
+	if (!hDlg) return;
+	if (pos.x == SDIALOGPOS_UNSET_X || pos.y == SDIALOGPOS_UNSET_Y)
+		return;
+
+	RECT wr;
+	if (!GetWindowRect(hDlg, &wr)) return;
+	int curW = wr.right - wr.left;
+	int curH = wr.bottom - wr.top;
+	int w = (pos.w > 0) ? pos.w : curW;
+	int h = (pos.h > 0) ? pos.h : curH;
+	int x = pos.x;
+	int y = pos.y;
+
+	POINT pt = { x + w / 2, y + 16 };
+	HMONITOR hm = MonitorFromPoint(pt, MONITOR_DEFAULTTONEAREST);
+	MONITORINFO mi = { sizeof(mi) };
+	if (hm && GetMonitorInfo(hm, &mi)) {
+		const int margin = 16;
+		if (x > mi.rcWork.right  - margin) x = mi.rcWork.right  - margin;
+		if (x + w < mi.rcWork.left + margin) x = mi.rcWork.left + margin - w;
+		if (y > mi.rcWork.bottom - margin) y = mi.rcWork.bottom - margin;
+		if (y < mi.rcWork.top)             y = mi.rcWork.top;
+	}
+
+	UINT flags = SWP_NOZORDER | SWP_NOACTIVATE;
+	if (pos.w <= 0 || pos.h <= 0) flags |= SWP_NOSIZE;
+	SetWindowPos(hDlg, NULL, x, y, w, h, flags);
+}
+
+void DlgSavePos(HWND hDlg, sDialogPos& pos, bool saveSize)
+{
+	if (!hDlg) return;
+	WINDOWPLACEMENT wp = {};
+	wp.length = sizeof(wp);
+	if (!GetWindowPlacement(hDlg, &wp)) return;
+	pos.x = wp.rcNormalPosition.left;
+	pos.y = wp.rcNormalPosition.top;
+	if (saveSize) {
+		pos.w = wp.rcNormalPosition.right  - wp.rcNormalPosition.left;
+		pos.h = wp.rcNormalPosition.bottom - wp.rcNormalPosition.top;
+	}
+}
 
 void WinShowCheatSearchDialog()
 {
@@ -2095,6 +2162,10 @@ LRESULT CALLBACK WinProc(
 		case ID_OPTIONS_KEYCUSTOM:
             RestoreGUIDisplay ();
             InitKeyCustomControl();
+			{
+				INITCOMMONCONTROLSEX icex = { sizeof(INITCOMMONCONTROLSEX), ICC_TAB_CLASSES };
+				InitCommonControlsEx(&icex);
+			}
 			DialogBox(g_hInst, MAKEINTRESOURCE(IDD_KEYCUSTOM), hWnd, DlgHotkeyConfig);
             RestoreSNESDisplay ();
             break;
@@ -2579,6 +2650,20 @@ LRESULT CALLBACK WinProc(
 					RestoreGUIDisplay();
 					LoadROM(wpath);
 					RestoreSNESDisplay();
+				}
+			}
+			break;
+		case ID_FILE_LOGO_1:
+		case ID_FILE_LOGO_2:
+		case ID_FILE_LOGO_3:
+		case ID_FILE_LOGO_4:
+			{
+				const int picked = (LOWORD(wParam) - ID_FILE_LOGO_1) + 1;
+				if (picked != GUI.IconIndex)
+				{
+					GUI.IconIndex = picked;
+					ApplyLogoIcon(GUI.hWnd, GUI.hInstance, GUI.IconIndex);
+					WinSaveConfigFile();
 				}
 			}
 			break;
@@ -3114,6 +3199,82 @@ LRESULT CALLBACK WinProc(
     return DefWindowProc (hWnd, uMsg, wParam, lParam);
 }
 
+static int ClampLogoIndex(int n)
+{
+	return (n < 1 || n > 4) ? 1 : n;
+}
+
+static UINT LogoIndexToResource(int n)
+{
+	switch (ClampLogoIndex(n))
+	{
+		default:
+		case 1: return IDI_ICON1;
+		case 2: return IDI_ICON2;
+		case 3: return IDI_ICON3;
+		case 4: return IDI_ICON4;
+	}
+}
+
+static HICON LoadLogoIcon(HINSTANCE hInst, int n)
+{
+	return LoadIcon(hInst, MAKEINTRESOURCE(LogoIndexToResource(n)));
+}
+
+static HBITMAP IconResourceToMenuBitmap(HINSTANCE hInst, UINT rsrcId)
+{
+	const int cx = GetSystemMetrics(SM_CXSMICON);
+	const int cy = GetSystemMetrics(SM_CYSMICON);
+	HICON hIcon = (HICON)LoadImage(hInst, MAKEINTRESOURCE(rsrcId), IMAGE_ICON, cx, cy, LR_DEFAULTCOLOR);
+	if (!hIcon)
+		return NULL;
+
+	HDC hdcScreen = GetDC(NULL);
+	HDC hdcMem = CreateCompatibleDC(hdcScreen);
+
+	BITMAPINFO bi = {};
+	bi.bmiHeader.biSize        = sizeof(BITMAPINFOHEADER);
+	bi.bmiHeader.biWidth       = cx;
+	bi.bmiHeader.biHeight      = -cy;
+	bi.bmiHeader.biPlanes      = 1;
+	bi.bmiHeader.biBitCount    = 32;
+	bi.bmiHeader.biCompression = BI_RGB;
+
+	void *pbits = NULL;
+	HBITMAP hbm = CreateDIBSection(hdcScreen, &bi, DIB_RGB_COLORS, &pbits, NULL, 0);
+	if (hbm && pbits)
+	{
+		memset(pbits, 0, (size_t)cx * cy * 4);
+		HGDIOBJ hOld = SelectObject(hdcMem, hbm);
+		DrawIconEx(hdcMem, 0, 0, hIcon, cx, cy, 0, NULL, DI_NORMAL);
+		SelectObject(hdcMem, hOld);
+	}
+
+	DeleteDC(hdcMem);
+	ReleaseDC(NULL, hdcScreen);
+	DestroyIcon(hIcon);
+	return hbm;
+}
+
+static void ApplyLogoIcon(HWND hWnd, HINSTANCE hInst, int n)
+{
+	const UINT rsrcId = LogoIndexToResource(n);
+	HICON hBig   = (HICON)LoadImage(hInst, MAKEINTRESOURCE(rsrcId), IMAGE_ICON,
+	                                GetSystemMetrics(SM_CXICON),   GetSystemMetrics(SM_CYICON),   LR_SHARED);
+	HICON hSmall = (HICON)LoadImage(hInst, MAKEINTRESOURCE(rsrcId), IMAGE_ICON,
+	                                GetSystemMetrics(SM_CXSMICON), GetSystemMetrics(SM_CYSMICON), LR_SHARED);
+	if (hBig)
+	{
+		SetClassLongPtr(hWnd, GCLP_HICON, (LONG_PTR)hBig);
+		SendMessage(hWnd, WM_SETICON, ICON_BIG, (LPARAM)hBig);
+	}
+	if (hSmall)
+	{
+		SetClassLongPtr(hWnd, GCLP_HICONSM, (LONG_PTR)hSmall);
+		SendMessage(hWnd, WM_SETICON, ICON_SMALL, (LPARAM)hSmall);
+	}
+}
+
 /*****************************************************************************/
 /* WinInit                                                                   */
 /*****************************************************************************/
@@ -3126,7 +3287,7 @@ BOOL WinInit( HINSTANCE hInstance)
     wndclass.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
     wndclass.lpfnWndProc = WinProc;
     wndclass.hInstance = hInstance;
-    wndclass.hIcon = LoadIcon (hInstance, MAKEINTRESOURCE(IDI_ICON1));
+    wndclass.hIcon = LoadLogoIcon(hInstance, GUI.IconIndex);
     wndclass.hIconSm = NULL;
     wndclass.hCursor = NULL;
     wndclass.lpszMenuName = NULL;
@@ -3181,6 +3342,24 @@ BOOL WinInit( HINSTANCE hInstance)
 		mii.hSubMenu = bank_menu_load;
 		InsertMenuItem(parent_menu_load, i, TRUE, &mii);
 	}
+	if (GUI.hMenu)
+	{
+		const int logoIds[4] = { ID_FILE_LOGO_1, ID_FILE_LOGO_2, ID_FILE_LOGO_3, ID_FILE_LOGO_4 };
+		const UINT logoRsrc[4] = { IDI_ICON1, IDI_ICON2, IDI_ICON3, IDI_ICON4 };
+		for (int i = 0; i < 4; i++)
+		{
+			HBITMAP hbm = IconResourceToMenuBitmap(GUI.hInstance, logoRsrc[i]);
+			if (hbm)
+			{
+				MENUITEMINFO bmii = {};
+				bmii.cbSize  = sizeof(bmii);
+				bmii.fMask   = MIIM_BITMAP;
+				bmii.hbmpItem = hbm;
+				SetMenuItemInfo(GUI.hMenu, logoIds[i], FALSE, &bmii);
+			}
+		}
+	}
+
 #ifdef DEBUGGER
 	if(GUI.hMenu) {
 		InsertMenu(GUI.hMenu,ID_OPTIONS_SETTINGS,MF_BYCOMMAND | MF_STRING | MF_ENABLED,ID_DEBUG_FRAME_ADVANCE,TEXT("&Debug Frame Advance"));
@@ -4294,6 +4473,16 @@ static void CheckMenuStates ()
 
 	mii.fState = (Settings.Paused && !Settings.StopEmulation) ? MFS_CHECKED : MFS_UNCHECKED;
     SetMenuItemInfo (GUI.hMenu, ID_FILE_PAUSE, FALSE, &mii);
+
+	{
+		const int logoIds[4] = { ID_FILE_LOGO_1, ID_FILE_LOGO_2, ID_FILE_LOGO_3, ID_FILE_LOGO_4 };
+		const int active = ClampLogoIndex(GUI.IconIndex) - 1;
+		for (int i = 0; i < 4; i++)
+		{
+			mii.fState = (i == active) ? MFS_CHECKED : MFS_UNCHECKED;
+			SetMenuItemInfo(GUI.hMenu, logoIds[i], FALSE, &mii);
+		}
+	}
 
 	mii.fState = (GUI.InactivePause) ? MFS_CHECKED : MFS_UNCHECKED;
     SetMenuItemInfo (GUI.hMenu, ID_EMULATION_PAUSEWHENINACTIVE, FALSE, &mii);
@@ -10124,90 +10313,110 @@ struct hotkey_dialog_item {
     TCHAR *description;
 };
 
-// this structure defines the four sub pages in the hotkey config dialog
-// to keep an entry blank, set the SCustomKey pointer to NULL and the text to an empty string
+// Per-tab table for the IDC_HOTKEY1..18 switchable slots. NULL entries map to
+// hidden slots — the dialog template lays out 18 of them in a 2x9 grid; tabs that
+// have fewer items leave the trailing ones hidden.
 static hotkey_dialog_item hotkey_dialog_items[MAX_SWITCHABLE_HOTKEY_DIALOG_PAGES][MAX_SWITCHABLE_HOTKEY_DIALOG_ITEMS] = {
+    // Tab 0: Emulation (15 items)
     {
-        { &CustomKeys.SpeedUp, &CustomKeysExtra.SpeedUp, HOTKEYS_LABEL_1_1 },
-        { &CustomKeys.SpeedDown, &CustomKeysExtra.SpeedDown, HOTKEYS_LABEL_1_2 },
-        { &CustomKeys.Pause, &CustomKeysExtra.Pause, HOTKEYS_LABEL_1_3 },
-        { &CustomKeys.FastForwardToggle, &CustomKeysExtra.FastForwardToggle, HOTKEYS_LABEL_1_4 },
-        { &CustomKeys.FastForward, &CustomKeysExtra.FastForward, HOTKEYS_LABEL_1_5 },
-        { &CustomKeys.Rewind, &CustomKeysExtra.Rewind, HOTKEYS_LABEL_1_6 },
-        { &CustomKeys.SkipUp, &CustomKeysExtra.SkipUp, HOTKEYS_LABEL_1_7 },
-        { &CustomKeys.SkipDown, &CustomKeysExtra.SkipDown, HOTKEYS_LABEL_1_8 },
-        { &CustomKeys.Mute, &CustomKeysExtra.Mute, HOTKEYS_LABEL_1_9 },
-        { &CustomKeys.ToggleCheats, &CustomKeysExtra.ToggleCheats, HOTKEYS_LABEL_1_10 },
-        { &CustomKeys.QuitS9X, &CustomKeysExtra.QuitS9X, HOTKEYS_LABEL_1_11 },
-        { &CustomKeys.ResetGame, &CustomKeysExtra.ResetGame, HOTKEYS_LABEL_1_12 },
-        { &CustomKeys.SaveScreenShot, &CustomKeysExtra.SaveScreenShot, HOTKEYS_LABEL_1_13 },
-		{ &CustomKeys.FrameAdvance, &CustomKeysExtra.FrameAdvance, HOTKEYS_LABEL_1_14 },
+        // Column 1
+        { &CustomKeys.SpeedUp,           &CustomKeysExtra.SpeedUp,           HOTKEYS_LABEL_1_1 },
+        { &CustomKeys.SpeedDown,         &CustomKeysExtra.SpeedDown,         HOTKEYS_LABEL_1_2 },
+        { &CustomKeys.ResetSpeed,        &CustomKeysExtra.ResetSpeed,        HOTKEYS_LABEL_1_3 },
+        { &CustomKeys.Pause,             &CustomKeysExtra.Pause,             HOTKEYS_LABEL_1_4 },
+        { &CustomKeys.FastForwardToggle, &CustomKeysExtra.FastForwardToggle, HOTKEYS_LABEL_1_5 },
+        { &CustomKeys.FastForward,       &CustomKeysExtra.FastForward,       HOTKEYS_LABEL_1_6 },
+        { &CustomKeys.Rewind,            &CustomKeysExtra.Rewind,            HOTKEYS_LABEL_1_7 },
+        { &CustomKeys.FrameAdvance,      &CustomKeysExtra.FrameAdvance,      HOTKEYS_LABEL_1_15 },
+        { &CustomKeys.SkipUp,            &CustomKeysExtra.SkipUp,            HOTKEYS_LABEL_1_8 },
+        // Column 2
+        { &CustomKeys.SkipDown,          &CustomKeysExtra.SkipDown,          HOTKEYS_LABEL_1_9 },
+        { &CustomKeys.Mute,              &CustomKeysExtra.Mute,              HOTKEYS_LABEL_1_10 },
+        { &CustomKeys.ToggleCheats,      &CustomKeysExtra.ToggleCheats,      HOTKEYS_LABEL_1_11 },
+        { &CustomKeys.ResetGame,         &CustomKeysExtra.ResetGame,         HOTKEYS_LABEL_1_13 },
+        { &CustomKeys.SaveScreenShot,    &CustomKeysExtra.SaveScreenShot,    HOTKEYS_LABEL_1_14 },
+        { &CustomKeys.QuitS9X,           &CustomKeysExtra.QuitS9X,           HOTKEYS_LABEL_1_12 },
+        { NULL, NULL, _T("") }, { NULL, NULL, _T("") }, { NULL, NULL, _T("") },
     },
+    // Tab 1: States — uses dedicated controls (g_savestatesControls), no entries here.
     {
-        { &CustomKeys.BGL1, &CustomKeysExtra.BGL1, HOTKEYS_LABEL_2_1 },
-        { &CustomKeys.BGL2, &CustomKeysExtra.BGL2, HOTKEYS_LABEL_2_2 },
-        { &CustomKeys.BGL3, &CustomKeysExtra.BGL3, HOTKEYS_LABEL_2_3 },
-        { &CustomKeys.BGL4, &CustomKeysExtra.BGL4, HOTKEYS_LABEL_2_4 },
-        { &CustomKeys.BGL5, &CustomKeysExtra.BGL5, HOTKEYS_LABEL_2_5 },
-        { &CustomKeys.ClippingWindows, &CustomKeysExtra.ClippingWindows, HOTKEYS_LABEL_2_6 },
-        { &CustomKeys.Transparency, &CustomKeysExtra.Transparency, HOTKEYS_LABEL_2_7 },
-		{ &CustomKeys.ToggleBackdrop, &CustomKeysExtra.ToggleBackdrop, HOTKEYS_LABEL_2_8 },
-        { &CustomKeys.ScopePause, &CustomKeysExtra.ScopePause, HOTKEYS_LABEL_2_9 },
-        { &CustomKeys.SwitchControllers, &CustomKeysExtra.SwitchControllers, HOTKEYS_LABEL_2_10 },
-        { &CustomKeys.JoypadSwap, &CustomKeysExtra.JoypadSwap, HOTKEYS_LABEL_2_11 },
-        { &CustomKeys.ShowPressed, &CustomKeysExtra.ShowPressed, HOTKEYS_LABEL_2_12 },
-        { &CustomKeys.FrameCount, &CustomKeysExtra.FrameCount, HOTKEYS_LABEL_2_13 },
-		{ &CustomKeys.ReadOnly, &CustomKeysExtra.ReadOnly, HOTKEYS_LABEL_2_14 },
+        { NULL, NULL, _T("") }, { NULL, NULL, _T("") }, { NULL, NULL, _T("") }, { NULL, NULL, _T("") },
+        { NULL, NULL, _T("") }, { NULL, NULL, _T("") }, { NULL, NULL, _T("") }, { NULL, NULL, _T("") },
+        { NULL, NULL, _T("") }, { NULL, NULL, _T("") }, { NULL, NULL, _T("") }, { NULL, NULL, _T("") },
+        { NULL, NULL, _T("") }, { NULL, NULL, _T("") }, { NULL, NULL, _T("") }, { NULL, NULL, _T("") },
+        { NULL, NULL, _T("") }, { NULL, NULL, _T("") },
     },
+    // Tab 2: Turbo (13 items)
     {
-        { &CustomKeys.TurboA, &CustomKeysExtra.TurboA, HOTKEYS_LABEL_3_1 },
-        { &CustomKeys.TurboB, &CustomKeysExtra.TurboB, HOTKEYS_LABEL_3_2 },
-        { &CustomKeys.TurboY, &CustomKeysExtra.TurboY, HOTKEYS_LABEL_3_3 },
-        { &CustomKeys.TurboX, &CustomKeysExtra.TurboX, HOTKEYS_LABEL_3_4 },
-        { &CustomKeys.TurboL, &CustomKeysExtra.TurboL, HOTKEYS_LABEL_3_5 },
-        { &CustomKeys.TurboR, &CustomKeysExtra.TurboR, HOTKEYS_LABEL_3_6 },
-        { &CustomKeys.TurboStart, &CustomKeysExtra.TurboStart, HOTKEYS_LABEL_3_7 },
+        // Column 1
+        { &CustomKeys.TurboA,      &CustomKeysExtra.TurboA,      HOTKEYS_LABEL_3_1 },
+        { &CustomKeys.TurboB,      &CustomKeysExtra.TurboB,      HOTKEYS_LABEL_3_2 },
+        { &CustomKeys.TurboY,      &CustomKeysExtra.TurboY,      HOTKEYS_LABEL_3_3 },
+        { &CustomKeys.TurboX,      &CustomKeysExtra.TurboX,      HOTKEYS_LABEL_3_4 },
+        { &CustomKeys.TurboL,      &CustomKeysExtra.TurboL,      HOTKEYS_LABEL_3_5 },
+        { &CustomKeys.TurboR,      &CustomKeysExtra.TurboR,      HOTKEYS_LABEL_3_6 },
+        { &CustomKeys.TurboStart,  &CustomKeysExtra.TurboStart,  HOTKEYS_LABEL_3_7 },
         { &CustomKeys.TurboSelect, &CustomKeysExtra.TurboSelect, HOTKEYS_LABEL_3_8 },
-        { &CustomKeys.TurboLeft, &CustomKeysExtra.TurboLeft, HOTKEYS_LABEL_3_9 },
-        { &CustomKeys.TurboUp, &CustomKeysExtra.TurboUp, HOTKEYS_LABEL_3_10 },
-        { &CustomKeys.TurboRight, &CustomKeysExtra.TurboRight, HOTKEYS_LABEL_3_11 },
-        { &CustomKeys.TurboDown, &CustomKeysExtra.TurboDown, HOTKEYS_LABEL_3_12 },
-		{ &CustomKeys.ScopeTurbo, &CustomKeysExtra.ScopeTurbo, HOTKEYS_LABEL_3_13 },
-		{ NULL, NULL, _T("") },
+        { NULL, NULL, _T("") },
+        // Column 2
+        { &CustomKeys.TurboUp,     &CustomKeysExtra.TurboUp,     HOTKEYS_LABEL_3_10 },
+        { &CustomKeys.TurboDown,   &CustomKeysExtra.TurboDown,   HOTKEYS_LABEL_3_12 },
+        { &CustomKeys.TurboLeft,   &CustomKeysExtra.TurboLeft,   HOTKEYS_LABEL_3_9 },
+        { &CustomKeys.TurboRight,  &CustomKeysExtra.TurboRight,  HOTKEYS_LABEL_3_11 },
+        { &CustomKeys.ScopeTurbo,  &CustomKeysExtra.ScopeTurbo,  HOTKEYS_LABEL_3_13 },
+        { NULL, NULL, _T("") }, { NULL, NULL, _T("") }, { NULL, NULL, _T("") }, { NULL, NULL, _T("") },
     },
+    // Tab 2: Display & Tools (17 items in 2 columns of 9 + 8)
     {
-        { &CustomKeys.SelectSave[0], &CustomKeysExtra.SelectSave[0], HOTKEYS_LABEL_4_1 },
-        { &CustomKeys.SelectSave[1], &CustomKeysExtra.SelectSave[1], HOTKEYS_LABEL_4_2 },
-        { &CustomKeys.SelectSave[2], &CustomKeysExtra.SelectSave[2], HOTKEYS_LABEL_4_3 },
-        { &CustomKeys.SelectSave[3], &CustomKeysExtra.SelectSave[3], HOTKEYS_LABEL_4_4 },
-        { &CustomKeys.SelectSave[4], &CustomKeysExtra.SelectSave[4], HOTKEYS_LABEL_4_5 },
-        { &CustomKeys.SelectSave[5], &CustomKeysExtra.SelectSave[5], HOTKEYS_LABEL_4_6 },
-        { &CustomKeys.SelectSave[6], &CustomKeysExtra.SelectSave[6], HOTKEYS_LABEL_4_7 },
-        { &CustomKeys.SelectSave[7], &CustomKeysExtra.SelectSave[7], HOTKEYS_LABEL_4_8 },
-        { &CustomKeys.SelectSave[8], &CustomKeysExtra.SelectSave[8], HOTKEYS_LABEL_4_9 },
-        { &CustomKeys.SelectSave[9], &CustomKeysExtra.SelectSave[9], HOTKEYS_LABEL_4_10 },
-        { &CustomKeys.SaveFileSelect, &CustomKeysExtra.SaveFileSelect, HOTKEYS_LABEL_4_11 },
-        { &CustomKeys.LoadFileSelect, &CustomKeysExtra.LoadFileSelect, HOTKEYS_LABEL_4_12 },
-		{ NULL, NULL, _T("") },
-		{ NULL, NULL, _T("") },
-    },
-    {
-        { &CustomKeys.AspectRatio, &CustomKeysExtra.AspectRatio, HOTKEYS_SWITCH_ASPECT_RATIO },
+        // Column 1
+        { &CustomKeys.BGL1,              &CustomKeysExtra.BGL1,              HOTKEYS_LABEL_2_1 },
+        { &CustomKeys.BGL2,              &CustomKeysExtra.BGL2,              HOTKEYS_LABEL_2_2 },
+        { &CustomKeys.BGL3,              &CustomKeysExtra.BGL3,              HOTKEYS_LABEL_2_3 },
+        { &CustomKeys.BGL4,              &CustomKeysExtra.BGL4,              HOTKEYS_LABEL_2_4 },
+        { &CustomKeys.BGL5,              &CustomKeysExtra.BGL5,              HOTKEYS_LABEL_2_5 },
+        { &CustomKeys.ClippingWindows,   &CustomKeysExtra.ClippingWindows,   HOTKEYS_LABEL_2_6 },
+        { &CustomKeys.Transparency,      &CustomKeysExtra.Transparency,      HOTKEYS_LABEL_2_7 },
+        { &CustomKeys.ToggleBackdrop,    &CustomKeysExtra.ToggleBackdrop,    HOTKEYS_LABEL_2_8 },
+        { &CustomKeys.AspectRatio,       &CustomKeysExtra.AspectRatio,       HOTKEYS_SWITCH_ASPECT_RATIO },
+        // Column 2
+        { &CustomKeys.ScopePause,        &CustomKeysExtra.ScopePause,        HOTKEYS_LABEL_2_9 },
+        { &CustomKeys.SwitchControllers, &CustomKeysExtra.SwitchControllers, HOTKEYS_LABEL_2_10 },
+        { &CustomKeys.JoypadSwap,        &CustomKeysExtra.JoypadSwap,        HOTKEYS_LABEL_2_11 },
+        { &CustomKeys.ShowPressed,       &CustomKeysExtra.ShowPressed,       HOTKEYS_LABEL_2_12 },
+        { &CustomKeys.FrameCount,        &CustomKeysExtra.FrameCount,        HOTKEYS_LABEL_2_13 },
+        { &CustomKeys.ReadOnly,          &CustomKeysExtra.ReadOnly,          HOTKEYS_LABEL_2_14 },
         { &CustomKeys.CheatEditorDialog, &CustomKeysExtra.CheatEditorDialog, HOTKEYS_CHEAT_EDITOR_DIALOG },
         { &CustomKeys.CheatSearchDialog, &CustomKeysExtra.CheatSearchDialog, HOTKEYS_CHEAT_SEARCH_DIALOG },
         { NULL, NULL, _T("") },
-        { NULL, NULL, _T("") },
-        { NULL, NULL, _T("") },
-        { NULL, NULL, _T("") },
-        { NULL, NULL, _T("") },
-        { NULL, NULL, _T("") },
-        { NULL, NULL, _T("") },
-        { NULL, NULL, _T("") },
-        { NULL, NULL, _T("") },
-        { NULL, NULL, _T("") },
-        { NULL, NULL, _T("") },
     },
 };
+
+// Save States dedicated controls + their labels. Visible only on the Save States tab.
+struct savestates_tab_control { int idc; int label_idc; };
+static const savestates_tab_control g_savestatesControls[] = {
+    { IDC_SAVE1,  IDC_LABEL_UP11 }, { IDC_SAVE2,  IDC_LABEL_UP2  },
+    { IDC_SAVE3,  IDC_LABEL_UP3  }, { IDC_SAVE4,  IDC_LABEL_UP4  },
+    { IDC_SAVE5,  IDC_LABEL_UP5  }, { IDC_SAVE6,  IDC_LABEL_UP6  },
+    { IDC_SAVE7,  IDC_LABEL_UP7  }, { IDC_SAVE8,  IDC_LABEL_UP8  },
+    { IDC_SAVE9,  IDC_LABEL_UP9  }, { IDC_SAVE10, IDC_LABEL_UP10 },
+    { IDC_SAVE11, IDC_LABEL_UP21 }, { IDC_SAVE12, IDC_LABEL_UP12 },
+    { IDC_SAVE13, IDC_LABEL_UP13 }, { IDC_SAVE14, IDC_LABEL_UP14 },
+    { IDC_SAVE15, IDC_LABEL_UP15 }, { IDC_SAVE16, IDC_LABEL_UP16 },
+    { IDC_SAVE17, IDC_LABEL_UP17 }, { IDC_SAVE18, IDC_LABEL_UP18 },
+    { IDC_SAVE19, IDC_LABEL_UP19 }, { IDC_SAVE20, IDC_LABEL_UP20 },
+    { IDC_SELSLOT_0, IDC_LABEL_SELSLOT_0 }, { IDC_SELSLOT_1, IDC_LABEL_SELSLOT_1 },
+    { IDC_SELSLOT_2, IDC_LABEL_SELSLOT_2 }, { IDC_SELSLOT_3, IDC_LABEL_SELSLOT_3 },
+    { IDC_SELSLOT_4, IDC_LABEL_SELSLOT_4 }, { IDC_SELSLOT_5, IDC_LABEL_SELSLOT_5 },
+    { IDC_SELSLOT_6, IDC_LABEL_SELSLOT_6 }, { IDC_SELSLOT_7, IDC_LABEL_SELSLOT_7 },
+    { IDC_SELSLOT_8, IDC_LABEL_SELSLOT_8 }, { IDC_SELSLOT_9, IDC_LABEL_SELSLOT_9 },
+    { IDC_SLOTSAVE,    IDC_LABEL_UP24 }, { IDC_SLOTLOAD,    IDC_LABEL_UP25 },
+    { IDC_SLOTPLUS,    IDC_LABEL_UP23 }, { IDC_SLOTMINUS,   IDC_LABEL_UP22 },
+    { IDC_BANKPLUS,    IDC_LABEL_UP29 }, { IDC_BANKMINUS,   IDC_LABEL_UP28 },
+    { IDC_DIALOGSAVE,  IDC_LABEL_UP26 }, { IDC_DIALOGLOAD,  IDC_LABEL_UP27 },
+    { IDC_SAVETOFILE,  IDC_LABEL_SAVETOFILE  },
+    { IDC_LOADFROMFILE,IDC_LABEL_LOADFROMFILE },
+};
+static constexpr int g_savestatesControlsCount = sizeof(g_savestatesControls) / sizeof(g_savestatesControls[0]);
 
 // Helper: build a SCustomKey[MAX_BIND_KEYS] array from primary + extra, then send to control
 static void SendMultiBindHotkeyToControl(HWND hDlg, int idc, SCustomKey *primary, SCustomKeyExtra *extra)
@@ -10222,20 +10431,12 @@ static void SendMultiBindHotkeyToControl(HWND hDlg, int idc, SCustomKey *primary
 // Helper: set maxKeys on all InputCustomHot controls in the hotkey dialog
 static void SetHotkeyMaxKeys(HWND hDlg, int maxKeys)
 {
+	// IDC_HOTKEY1..18 sit at 2000..2017 (sequential).
 	for (int i = 0; i < MAX_SWITCHABLE_HOTKEY_DIALOG_ITEMS; i++)
 		SendDlgItemMessage(hDlg, IDC_HOTKEY1 + i, WM_USER+47, maxKeys, 0);
 
-	static const int fixedControls[] = {
-		IDC_SLOTPLUS, IDC_SLOTMINUS, IDC_SLOTSAVE, IDC_SLOTLOAD,
-		IDC_DIALOGSAVE, IDC_DIALOGLOAD, IDC_BANKPLUS, IDC_BANKMINUS
-	};
-	for (int i = 0; i < sizeof(fixedControls)/sizeof(fixedControls[0]); i++)
-		SendDlgItemMessage(hDlg, fixedControls[i], WM_USER+47, maxKeys, 0);
-
-	for (int i = 0; i < SAVE_SLOTS_PER_BANK; i++) {
-		SendDlgItemMessage(hDlg, IDC_SAVE1+i, WM_USER+47, maxKeys, 0);
-		SendDlgItemMessage(hDlg, IDC_SAVE11+i, WM_USER+47, maxKeys, 0);
-	}
+	for (int i = 0; i < g_savestatesControlsCount; i++)
+		SendDlgItemMessage(hDlg, g_savestatesControls[i].idc, WM_USER+47, maxKeys, 0);
 }
 
 static void set_hotkeyinfo(HWND hDlg); // forward declaration
@@ -10251,52 +10452,87 @@ static void UpdateHotkeyBindingMode(HWND hDlg)
 	set_hotkeyinfo(hDlg);
 }
 
+// Maps slot index -> dialog control IDs. IDC_HOTKEY1..15 are 2000..2014 (sequential),
+// IDC_HOTKEY16..18 are 2015..2017 (sequential, but in a different IDC_LABEL_HKn range).
+// Use lookup tables so IDs don't need to be contiguous across both control + label.
+static const int g_hotkeyControlIds[MAX_SWITCHABLE_HOTKEY_DIALOG_ITEMS] = {
+	IDC_HOTKEY1,  IDC_HOTKEY2,  IDC_HOTKEY3,  IDC_HOTKEY4,  IDC_HOTKEY5,  IDC_HOTKEY6,
+	IDC_HOTKEY7,  IDC_HOTKEY8,  IDC_HOTKEY9,  IDC_HOTKEY10, IDC_HOTKEY11, IDC_HOTKEY12,
+	IDC_HOTKEY13, IDC_HOTKEY14, IDC_HOTKEY15, IDC_HOTKEY16, IDC_HOTKEY17, IDC_HOTKEY18,
+};
+static const int g_hotkeyLabelIds[MAX_SWITCHABLE_HOTKEY_DIALOG_ITEMS] = {
+	IDC_LABEL_HK1,  IDC_LABEL_HK2,  IDC_LABEL_HK3,  IDC_LABEL_HK4,  IDC_LABEL_HK5,  IDC_LABEL_HK6,
+	IDC_LABEL_HK7,  IDC_LABEL_HK8,  IDC_LABEL_HK9,  IDC_LABEL_HK10, IDC_LABEL_HK11, IDC_LABEL_HK12,
+	IDC_LABEL_HK13, IDC_LABEL_HK14, IDC_LABEL_HK15, IDC_LABEL_HK16, IDC_LABEL_HK17, IDC_LABEL_HK18,
+};
+
 static void set_hotkeyinfo(HWND hDlg)
 {
-	int index = SendDlgItemMessage(hDlg,IDC_HKCOMBO,CB_GETCURSEL,0,0);
+	int index = (int)SendDlgItemMessage(hDlg, IDC_HOTKEY_TABS, TCM_GETCURSEL, 0, 0);
+	if (index < 0 || index >= MAX_SWITCHABLE_HOTKEY_DIALOG_PAGES)
+		index = 0;
 
-    for (int i = 0; i < MAX_SWITCHABLE_HOTKEY_DIALOG_ITEMS; i++)
-    {
-        int flags = SW_SHOWNOACTIVATE;
-        if (hotkey_dialog_items[index][i].key_entry == NULL)
-            flags = SW_HIDE;
-        ShowWindow(GetDlgItem(hDlg, IDC_HOTKEY1 + i), flags);
-        ShowWindow(GetDlgItem(hDlg, IDC_LABEL_HK1 + i), flags);
+	const bool savestates = (index == HOTKEY_TAB_SAVESTATES);
 
-        if (hotkey_dialog_items[index][i].key_entry)
-        {
-            SendMultiBindHotkeyToControl(hDlg, IDC_HOTKEY1 + i, hotkey_dialog_items[index][i].key_entry, hotkey_dialog_items[index][i].extra_entry);
-        }
-        else
-        {
-            SendDlgItemMessage(hDlg, IDC_HOTKEY1 + i, WM_USER + 44, 0, 0);
-        }
-    }
+	// Generic IDC_HOTKEY slots: shown for every tab except States.
+	for (int i = 0; i < MAX_SWITCHABLE_HOTKEY_DIALOG_ITEMS; i++)
+	{
+		const hotkey_dialog_item &item = hotkey_dialog_items[index][i];
+		const int flags = (!savestates && item.key_entry) ? SW_SHOWNOACTIVATE : SW_HIDE;
+		ShowWindow(GetDlgItem(hDlg, g_hotkeyControlIds[i]), flags);
+		ShowWindow(GetDlgItem(hDlg, g_hotkeyLabelIds[i]),   flags);
 
-	SendMultiBindHotkeyToControl(hDlg,IDC_SLOTPLUS,&CustomKeys.SlotPlus,&CustomKeysExtra.SlotPlus);
-	SendMultiBindHotkeyToControl(hDlg,IDC_SLOTMINUS,&CustomKeys.SlotMinus,&CustomKeysExtra.SlotMinus);
-	SendMultiBindHotkeyToControl(hDlg,IDC_SLOTSAVE,&CustomKeys.SlotSave,&CustomKeysExtra.SlotSave);
-	SendMultiBindHotkeyToControl(hDlg,IDC_SLOTLOAD,&CustomKeys.SlotLoad,&CustomKeysExtra.SlotLoad);
-	SendMultiBindHotkeyToControl(hDlg,IDC_DIALOGSAVE,&CustomKeys.DialogSave,&CustomKeysExtra.DialogSave);
-	SendMultiBindHotkeyToControl(hDlg,IDC_DIALOGLOAD,&CustomKeys.DialogLoad,&CustomKeysExtra.DialogLoad);
-	SendMultiBindHotkeyToControl(hDlg,IDC_BANKPLUS,&CustomKeys.BankPlus,&CustomKeysExtra.BankPlus);
-	SendMultiBindHotkeyToControl(hDlg,IDC_BANKMINUS,&CustomKeys.BankMinus,&CustomKeysExtra.BankMinus);
-	int i;
-	for(i = 0 ; i < SAVE_SLOTS_PER_BANK; i++) SendMultiBindHotkeyToControl(hDlg,IDC_SAVE1+i,&CustomKeys.Save[i],&CustomKeysExtra.Save[i]);
-	for(i = 0 ; i < SAVE_SLOTS_PER_BANK; i++) SendMultiBindHotkeyToControl(hDlg,IDC_SAVE11+i,&CustomKeys.Load[i],&CustomKeysExtra.Load[i]);
+		if (!savestates && item.key_entry)
+		{
+			SendMultiBindHotkeyToControl(hDlg, g_hotkeyControlIds[i], item.key_entry, item.extra_entry);
+			SetDlgItemText(hDlg, g_hotkeyLabelIds[i], item.description);
+		}
+		else
+		{
+			SendDlgItemMessage(hDlg, g_hotkeyControlIds[i], WM_USER + 44, 0, 0);
+		}
+	}
 
-    for(int i = 0; i < MAX_SWITCHABLE_HOTKEY_DIALOG_ITEMS; i++)
-    {
-        SetDlgItemText(hDlg, IDC_LABEL_HK1 + i, hotkey_dialog_items[index][i].description);
-    }
+	// Save States dedicated controls: shown only on the States tab. They share
+	// the same y range as the generic slots (overlap), so we always toggle the
+	// two sets in opposite states.
+	const int ssFlag = savestates ? SW_SHOWNOACTIVATE : SW_HIDE;
+	for (int i = 0; i < g_savestatesControlsCount; i++)
+	{
+		ShowWindow(GetDlgItem(hDlg, g_savestatesControls[i].idc),       ssFlag);
+		ShowWindow(GetDlgItem(hDlg, g_savestatesControls[i].label_idc), ssFlag);
+	}
+
+	// Always push current bindings into every Save States control so its display
+	// matches the in-memory state on first show.
+	for (int i = 0; i < SAVE_SLOTS_PER_BANK; i++)
+	{
+		SendMultiBindHotkeyToControl(hDlg, IDC_SAVE1  + i,    &CustomKeys.Save[i],       &CustomKeysExtra.Save[i]);
+		SendMultiBindHotkeyToControl(hDlg, IDC_SAVE11 + i,    &CustomKeys.Load[i],       &CustomKeysExtra.Load[i]);
+		SendMultiBindHotkeyToControl(hDlg, IDC_SELSLOT_0 + i, &CustomKeys.SelectSave[i], &CustomKeysExtra.SelectSave[i]);
+	}
+	SendMultiBindHotkeyToControl(hDlg, IDC_SLOTPLUS,    &CustomKeys.SlotPlus,       &CustomKeysExtra.SlotPlus);
+	SendMultiBindHotkeyToControl(hDlg, IDC_SLOTMINUS,   &CustomKeys.SlotMinus,      &CustomKeysExtra.SlotMinus);
+	SendMultiBindHotkeyToControl(hDlg, IDC_SLOTSAVE,    &CustomKeys.SlotSave,       &CustomKeysExtra.SlotSave);
+	SendMultiBindHotkeyToControl(hDlg, IDC_SLOTLOAD,    &CustomKeys.SlotLoad,       &CustomKeysExtra.SlotLoad);
+	SendMultiBindHotkeyToControl(hDlg, IDC_DIALOGSAVE,  &CustomKeys.DialogSave,     &CustomKeysExtra.DialogSave);
+	SendMultiBindHotkeyToControl(hDlg, IDC_DIALOGLOAD,  &CustomKeys.DialogLoad,     &CustomKeysExtra.DialogLoad);
+	SendMultiBindHotkeyToControl(hDlg, IDC_BANKPLUS,    &CustomKeys.BankPlus,       &CustomKeysExtra.BankPlus);
+	SendMultiBindHotkeyToControl(hDlg, IDC_BANKMINUS,   &CustomKeys.BankMinus,      &CustomKeysExtra.BankMinus);
+	SendMultiBindHotkeyToControl(hDlg, IDC_SAVETOFILE,  &CustomKeys.SaveFileSelect, &CustomKeysExtra.SaveFileSelect);
+	SendMultiBindHotkeyToControl(hDlg, IDC_LOADFROMFILE,&CustomKeys.LoadFileSelect, &CustomKeysExtra.LoadFileSelect);
+
+	// Force every child control to repaint. Without this, controls that just
+	// transitioned from SW_HIDE to SW_SHOWNOACTIVATE sometimes miss their WM_PAINT
+	// because the dialog body's themed-texture erase can land between the show and
+	// the InvalidateRect we send via WM_USER+44.
+	RedrawWindow(hDlg, NULL, NULL, RDW_INVALIDATE | RDW_ALLCHILDREN | RDW_UPDATENOW);
 }
 
 // DlgHotkeyConfig
 INT_PTR CALLBACK DlgHotkeyConfig(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	int i, which;
-	static int index=0;
-
 
 	static SCustomKeys keys;
 	static SCustomKeysExtra keysExtra;
@@ -10310,15 +10546,27 @@ INT_PTR CALLBACK DlgHotkeyConfig(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPar
 		WinRefreshDisplay();
 		SetWindowText(hDlg,HOTKEYS_TITLE);
 
-		// insert hotkey page list items
-		for(i=1 ; i <= MAX_SWITCHABLE_HOTKEY_DIALOG_PAGES; i++)
+		// Insert tabs.
 		{
-			TCHAR temp[256];
-			_stprintf(temp,HOTKEYS_HKCOMBO,i);
-			SendDlgItemMessage(hDlg,IDC_HKCOMBO,CB_ADDSTRING,0,(LPARAM)(LPCTSTR)temp);
+			HWND hTabs = GetDlgItem(hDlg, IDC_HOTKEY_TABS);
+			TCITEM tie = {};
+			tie.mask = TCIF_TEXT;
+			static TCHAR tabTexts[][24] = {
+				TEXT("Emulation"), TEXT("States"), TEXT("Turbo"), TEXT("Display && Tools")
+			};
+			for (i = 0; i < MAX_SWITCHABLE_HOTKEY_DIALOG_PAGES; i++)
+			{
+				tie.pszText = tabTexts[i];
+				TabCtrl_InsertItem(hTabs, i, &tie);
+			}
+			TabCtrl_SetCurSel(hTabs, 0);
 		}
 
-		SendDlgItemMessage(hDlg,IDC_HKCOMBO,CB_SETCURSEL,(WPARAM)0,0);
+		// Use the tab control's themed page background (soft gray) instead of the
+		// default WC_DIALOG white fill. Safe because the InputCustomHot controls
+		// draw their own DrawEdge border in WM_PAINT, independent of the OS's
+		// WS_EX_CLIENTEDGE rendering (which the texture would otherwise suppress).
+		EnableThemeDialogTexture(hDlg, ETDT_ENABLETAB);
 
 		memcpy(&keys, &CustomKeys, sizeof(SCustomKeys));
 		memcpy(&keysExtra, &CustomKeysExtra, sizeof(SCustomKeysExtra));
@@ -10349,9 +10597,7 @@ INT_PTR CALLBACK DlgHotkeyConfig(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPar
 
 		set_hotkeyinfo(hDlg);
 
-		PostMessage(hDlg,WM_COMMAND, MAKEWPARAM(IDC_JPCOMBO, CBN_SELCHANGE), 0);
-
-		SetFocus(GetDlgItem(hDlg,IDC_HKCOMBO));
+		SetFocus(GetDlgItem(hDlg,IDC_HOTKEY_TABS));
 
 
 		return true;
@@ -10359,9 +10605,21 @@ INT_PTR CALLBACK DlgHotkeyConfig(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPar
 	case WM_CLOSE:
 		EndDialog(hDlg, 0);
 		return TRUE;
+	case WM_NOTIFY:
+		if (((LPNMHDR)lParam)->idFrom == IDC_HOTKEY_TABS && ((LPNMHDR)lParam)->code == TCN_SELCHANGE)
+		{
+			// Move focus off any capturing InputCustomHot before refreshing — its
+			// WM_KILLFOCUS clears the capturing flag so set_hotkeyinfo's WM_USER+44
+			// can repaint the control with its real binding instead of the green
+			// "capturing" highlight. Without this, the slot at the same index in the
+			// new tab inherits the highlighted look.
+			SetFocus(GetDlgItem(hDlg, IDC_HOTKEY_TABS));
+			set_hotkeyinfo(hDlg);
+			return TRUE;
+		}
+		return FALSE;
 	case WM_USER+46:
 		// refresh command, for clicking away from a selected field
-		index = SendDlgItemMessage(hDlg,IDC_HKCOMBO,CB_GETCURSEL,0,0);
 		set_hotkeyinfo(hDlg);
 		return TRUE;
 	case WM_USER+43:
@@ -10381,7 +10639,8 @@ INT_PTR CALLBACK DlgHotkeyConfig(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPar
 				break; \
 			}
 
-		int index = SendDlgItemMessage(hDlg,IDC_HKCOMBO,CB_GETCURSEL,0,0);
+		int index = (int)SendDlgItemMessage(hDlg, IDC_HOTKEY_TABS, TCM_GETCURSEL, 0, 0);
+		if (index < 0 || index >= MAX_SWITCHABLE_HOTKEY_DIALOG_PAGES) index = 0;
 
 		switch(which)
 		{
@@ -10393,6 +10652,8 @@ INT_PTR CALLBACK DlgHotkeyConfig(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPar
 			STORE_HOTKEY_MULTIBIND(IDC_DIALOGLOAD, DialogLoad)
 			STORE_HOTKEY_MULTIBIND(IDC_BANKPLUS, BankPlus)
 			STORE_HOTKEY_MULTIBIND(IDC_BANKMINUS, BankMinus)
+			STORE_HOTKEY_MULTIBIND(IDC_SAVETOFILE, SaveFileSelect)
+			STORE_HOTKEY_MULTIBIND(IDC_LOADFROMFILE, LoadFileSelect)
 			case IDC_MASTERHOTKEY_BIND:
 			{
 				CustomKeys.MasterHotkey.key = icp->numKeys > 0 ? icp->keys[0] : 0;
@@ -10401,7 +10662,7 @@ INT_PTR CALLBACK DlgHotkeyConfig(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPar
 			}
 		}
 
-        if(which >= IDC_HOTKEY1 && which <= IDC_HOTKEY14)
+        if(which >= IDC_HOTKEY1 && which < IDC_HOTKEY1 + MAX_SWITCHABLE_HOTKEY_DIALOG_ITEMS)
         {
             int offset = which - IDC_HOTKEY1;
             SCustomKey *primary = hotkey_dialog_items[index][offset].key_entry;
@@ -10434,6 +10695,16 @@ INT_PTR CALLBACK DlgHotkeyConfig(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPar
 			for(int _i = 0; _i < MAX_EXTRA_BINDS; _i++) {
 				CustomKeysExtra.Load[li].extra[_i].key = (_i+1) < icp->numKeys ? icp->keys[_i+1] : 0;
 				CustomKeysExtra.Load[li].extra[_i].modifiers = (_i+1) < icp->numKeys ? icp->mods[_i+1] : 0;
+			}
+		}
+		if(which >= IDC_SELSLOT_0 && which <= IDC_SELSLOT_9)
+		{
+			int si = which - IDC_SELSLOT_0;
+			CustomKeys.SelectSave[si].key       = icp->numKeys > 0 ? icp->keys[0] : 0;
+			CustomKeys.SelectSave[si].modifiers = icp->numKeys > 0 ? icp->mods[0] : 0;
+			for(int _i = 0; _i < MAX_EXTRA_BINDS; _i++) {
+				CustomKeysExtra.SelectSave[si].extra[_i].key       = (_i+1) < icp->numKeys ? icp->keys[_i+1] : 0;
+				CustomKeysExtra.SelectSave[si].extra[_i].modifiers = (_i+1) < icp->numKeys ? icp->mods[_i+1] : 0;
 			}
 		}
 
@@ -10475,19 +10746,6 @@ INT_PTR CALLBACK DlgHotkeyConfig(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPar
 			if(HIWORD(wParam) == CBN_SELCHANGE)
 				UpdateHotkeyBindingMode(hDlg);
 			break;
-		}
-		switch(HIWORD(wParam))
-		{
-			case CBN_SELCHANGE:
-				if(LOWORD(wParam) != IDC_HKCOMBO) break;
-				index = SendDlgItemMessage(hDlg,IDC_HKCOMBO,CB_GETCURSEL,0,0);
-				SendDlgItemMessage(hDlg,IDC_HKCOMBO,CB_SETCURSEL,(WPARAM)index,0);
-
-				set_hotkeyinfo(hDlg);
-
-				SetFocus(GetDlgItem(hDlg,IDC_HKCOMBO));
-
-				break;
 		}
 		return FALSE;
 
@@ -10701,6 +10959,27 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 	static bool internal_change;
 	static int  sel_idx = -1;
 	static CheatTracker ct;
+
+	enum { CHEAT_AR = 1, CHEAT_AB = 2, CHEAT_EW = 4, CHEAT_EH = 8 };
+	struct CheatCtrlAnchor { int id; int flags; RECT orig; };
+	static int cheat_initial_w = 0, cheat_initial_h = 0;
+	static CheatCtrlAnchor cheat_anchors[] = {
+		{ IDC_CHEAT_LIST,              CHEAT_EW | CHEAT_EH, {0} },
+		{ IDC_ADD_CHEAT,               CHEAT_AR,            {0} },
+		{ IDC_UPDATE_CHEAT,            CHEAT_AR,            {0} },
+		{ IDC_CLEAR_CHEATS,            CHEAT_AR,            {0} },
+		{ IDC_DELETE_CHEAT,            CHEAT_AR,            {0} },
+		{ IDC_DELETE_ALL,              CHEAT_AR,            {0} },
+		{ IDC_SEARCH_DB,               CHEAT_AR,            {0} },
+		{ IDC_BUTTON_EDIT_CHEATGROUP,  CHEAT_AR | CHEAT_AB, {0} },
+		{ IDC_LABEL_CHEAT_CODE,        CHEAT_AB,            {0} },
+		{ IDC_LABEL_CHEAT_DESCRIPTION, CHEAT_AB,            {0} },
+		{ IDC_CHEAT_CODE,              CHEAT_AB | CHEAT_EW, {0} },
+		{ IDC_CHEAT_DESCRIPTION,       CHEAT_AB | CHEAT_EW, {0} },
+		{ IDOK,                        CHEAT_AR | CHEAT_AB, {0} },
+		{ IDCANCEL,                    CHEAT_AR | CHEAT_AB, {0} },
+	};
+
 	switch(msg)
 	{
 	case WM_INITDIALOG:
@@ -10769,7 +11048,81 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 				ListView_SetCheckState(GetDlgItem(hDlg,IDC_CHEAT_LIST), curr_idx, Cheat.group[counter].enabled);
 
 			}
+
+			{
+				RECT cr;
+				GetClientRect(hDlg, &cr);
+				cheat_initial_w = cr.right;
+				cheat_initial_h = cr.bottom;
+				for (size_t i = 0; i < sizeof(cheat_anchors)/sizeof(cheat_anchors[0]); i++) {
+					HWND ctrl = GetDlgItem(hDlg, cheat_anchors[i].id);
+					if (!ctrl) continue;
+					GetWindowRect(ctrl, &cheat_anchors[i].orig);
+					MapWindowPoints(NULL, hDlg, (POINT*)&cheat_anchors[i].orig, 2);
+				}
+
+				HWND lv = GetDlgItem(hDlg, IDC_CHEAT_LIST);
+				RECT lvc;
+				GetClientRect(lv, &lvc);
+				int code_w = ListView_GetColumnWidth(lv, 0);
+				int desc_w = lvc.right - code_w;
+				if (desc_w > 50)
+					ListView_SetColumnWidth(lv, 1, desc_w);
+			}
+			DlgApplySavedPos(hDlg, GUI.cheatEditorPos);
 		return true;
+	case WM_SIZE:
+		if (cheat_initial_w > 0 && cheat_initial_h > 0)
+		{
+			int new_w = LOWORD(lParam);
+			int new_h = HIWORD(lParam);
+			int dw = new_w - cheat_initial_w;
+			int dh = new_h - cheat_initial_h;
+			const int n = sizeof(cheat_anchors)/sizeof(cheat_anchors[0]);
+			HDWP hdwp = BeginDeferWindowPos(n);
+			for (int i = 0; i < n; i++) {
+				HWND ctrl = GetDlgItem(hDlg, cheat_anchors[i].id);
+				if (!ctrl) continue;
+				int x = cheat_anchors[i].orig.left;
+				int y = cheat_anchors[i].orig.top;
+				int w = cheat_anchors[i].orig.right - cheat_anchors[i].orig.left;
+				int h = cheat_anchors[i].orig.bottom - cheat_anchors[i].orig.top;
+				int f = cheat_anchors[i].flags;
+				if (f & CHEAT_AR) x += dw;
+				if (f & CHEAT_AB) y += dh;
+				if (f & CHEAT_EW) w += dw;
+				if (f & CHEAT_EH) h += dh;
+				hdwp = DeferWindowPos(hdwp, ctrl, NULL, x, y, w, h,
+					SWP_NOZORDER | SWP_NOACTIVATE);
+			}
+			EndDeferWindowPos(hdwp);
+
+			HWND lv = GetDlgItem(hDlg, IDC_CHEAT_LIST);
+			RECT lvc;
+			GetClientRect(lv, &lvc);
+			int code_w = ListView_GetColumnWidth(lv, 0);
+			int desc_w = lvc.right - code_w;
+			if (desc_w > 50)
+				ListView_SetColumnWidth(lv, 1, desc_w);
+		}
+		return TRUE;
+	case WM_EXITSIZEMOVE:
+		DlgSavePos(hDlg, GUI.cheatEditorPos, true);
+		return FALSE;
+	case WM_GETMINMAXINFO:
+		if (cheat_initial_w > 0 && cheat_initial_h > 0)
+		{
+			MINMAXINFO* mmi = (MINMAXINFO*)lParam;
+			RECT cr, wr;
+			GetClientRect(hDlg, &cr);
+			GetWindowRect(hDlg, &wr);
+			int nc_w = (wr.right - wr.left) - cr.right;
+			int nc_h = (wr.bottom - wr.top) - cr.bottom;
+			mmi->ptMinTrackSize.x = cheat_initial_w + nc_w;
+			mmi->ptMinTrackSize.y = cheat_initial_h + nc_h;
+			return TRUE;
+		}
+		return FALSE;
 	case WM_PAINT:
 		{
 		PAINTSTRUCT ps;
@@ -11370,6 +11723,7 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 		}
 		return false;
 	case WM_DESTROY:
+		DlgSavePos(hDlg, GUI.cheatEditorPos, true);
 		S9xSaveCheatFile(S9xGetFilename(".cht", CHEAT_DIR));
 		cheatEditorHWND = NULL;
 		return true;
@@ -11815,6 +12169,7 @@ INT_PTR CALLBACK DlgCheatSearch(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 
 			SetTimer(hDlg, 1, 500, NULL);
 
+			DlgApplySavedPos(hDlg, GUI.cheatSearchPos);
 		}
 		return true;
 
@@ -11826,8 +12181,13 @@ INT_PTR CALLBACK DlgCheatSearch(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 			}
 			return true;
 
+		case WM_EXITSIZEMOVE:
+			DlgSavePos(hDlg, GUI.cheatSearchPos, false);
+			return false;
+
 		case WM_DESTROY:
 			{
+				DlgSavePos(hDlg, GUI.cheatSearchPos, false);
 				KillTimer(hDlg, 1);
 				cheatSearchHWND = NULL;
 				S9xSaveCheatFile (S9xGetFilename (".cht", CHEAT_DIR));

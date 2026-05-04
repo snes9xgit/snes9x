@@ -13,6 +13,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <limits.h>
 #ifndef STRICT
 #define STRICT
 #endif
@@ -146,6 +147,19 @@ struct sCustomRomDlgSettings {
 	bool window_maximized;
 };
 
+struct sDialogPos {
+	int x;
+	int y;
+	int w;
+	int h;
+};
+
+#define SDIALOGPOS_UNSET_X (INT_MIN)
+#define SDIALOGPOS_UNSET_Y (INT_MIN)
+
+void DlgApplySavedPos(HWND hDlg, const sDialogPos& pos);
+void DlgSavePos(HWND hDlg, sDialogPos& pos, bool saveSize);
+
 struct sGUI {
     HWND hWnd;
     HMENU hMenu;
@@ -188,7 +202,14 @@ struct sGUI {
     bool IgnoreNextMouseMove;
     RECT window_size;
 	bool window_maximized;
+	int  IconIndex;
 	sCustomRomDlgSettings customRomDlgSettings;
+
+	sDialogPos cheatEditorPos;
+	sDialogPos cheatSearchPos;
+	sDialogPos vramViewerPos;
+	sDialogPos tilemapViewerPos;
+	sDialogPos spriteViewerPos;
 
     int  MouseX;
     int  MouseY;
@@ -334,6 +355,7 @@ struct SCustomKey {
 struct SCustomKeys {
 	SCustomKey SpeedUp;
 	SCustomKey SpeedDown;
+	SCustomKey ResetSpeed;
 	SCustomKey Pause;
 	SCustomKey FrameAdvance;
 	SCustomKey SkipUp;
@@ -388,6 +410,7 @@ struct SCustomKeyExtra {
 struct SCustomKeysExtra {
 	SCustomKeyExtra SpeedUp;
 	SCustomKeyExtra SpeedDown;
+	SCustomKeyExtra ResetSpeed;
 	SCustomKeyExtra Pause;
 	SCustomKeyExtra FrameAdvance;
 	SCustomKeyExtra SkipUp;
@@ -566,7 +589,7 @@ void S9xRestoreWindowTitle ();
 //int CheckKey( WORD Key, int OldJoypad);
 //void TranslateKey(WORD keyz,char *out);
 
-#define S9X_CONF_FILE_NAME "snes9x.conf"
+#define S9X_CONF_FILE_NAME "super-snes9x.conf"
 
 const char* GetFilterName(RenderFilter filterID);
 int GetFilterScale(RenderFilter filterID);

@@ -47,6 +47,14 @@ public:
         return 0;
     }
 
+    // Pause/resume hooks. Pause is called just before the main loop stops feeding
+    // samples (window move, menu open, focus loss); the backend can use it to push
+    // a fade-out tail so the buffer queue drains to silence smoothly instead of
+    // cutting off mid-waveform. Resume primes a fade-in for the next produced
+    // buffer so audio doesn't kick back in on a non-zero sample.
+    virtual void OnPauseRequested() {}
+    virtual void OnResumeRequested() {}
+
 };
 
 #endif

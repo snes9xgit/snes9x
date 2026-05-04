@@ -12,6 +12,7 @@
 #include "dxerr.h"
 #include "commctrl.h"
 #include <assert.h>
+#include <math.h>
 
 /* CXAudio2
 	Implements audio output through XAudio2.
@@ -23,6 +24,34 @@
 
 /*  Construction/Destruction
 */
+// Length of the click-suppression ramps applied at audio output transitions.
+// 1024 stereo frames ~= 23ms at 44.1kHz: long enough that the fade's own
+// spectral fundamental sits below ~22Hz (sub-audible — speakers can't push
+// enough cone displacement to be heard), and short enough that pause/resume
+// still feels instantaneous. A shorter window (e.g. 256 frames / 5.8ms)
+// places the fundamental around 170Hz and is itself audible as a bass kick.
+static const UINT32 kFadeFrames = 1024;
+static const UINT32 kFadeBytes  = kFadeFrames * 2 * sizeof(int16);
+static const double kPi         = 3.14159265358979323846;
+
+// Raised-cosine ("Hann half-window") gain in Q15 at position pos in [0..len-1].
+// rising = true gives a 0->1 ramp, false gives 1->0. Cosine-shaped because a
+// linear ramp has a derivative discontinuity at each endpoint that radiates
+// broadband splatter on top of the fade's fundamental.
+static inline int CosineGainQ15(UINT32 pos, UINT32 len, bool rising)
+{
+    if (len < 2)        return rising ? 32768 : 0;
+    if (pos >= len - 1) return rising ? 32768 : 0;
+    const double t  = (double)pos / (double)(len - 1);
+    const double c  = cos(kPi * t);
+    const double g  = rising ? 0.5 * (1.0 - c) : 0.5 * (1.0 + c);
+    return (int)(g * 32768.0 + 0.5);
+}
+
+// Sentinel passed as buffer context so OnBufferEnd can recognize the pause-time
+// fade-out tail and clear fadeout_in_flight when XAudio2 is done with it.
+static void * const kFadeoutContext = (void*)0x1;
+
 CXAudio2::CXAudio2(void)
 {
 	pXAudio2 = NULL;
@@ -33,6 +62,13 @@ CXAudio2::CXAudio2(void)
 		= singleBufferSamples = blockCount = 0;
 	soundBuffer = NULL;
 	initDone = false;
+
+	last_sample_l = 0;
+	last_sample_r = 0;
+	fade_in_pending = 0;
+	fade_in_pos = kFadeFrames;  // "done" — no fade in progress
+	fadeout_in_flight = 0;
+	fadeoutBuffer = NULL;
 }
 
 CXAudio2::~CXAudio2(void)
@@ -189,16 +225,30 @@ void CXAudio2::DeInitVoices(void)
 		delete [] soundBuffer;
 		soundBuffer = NULL;
 	}
+	if(fadeoutBuffer) {
+		delete [] fadeoutBuffer;
+		fadeoutBuffer = NULL;
+	}
+	last_sample_l = 0;
+	last_sample_r = 0;
+	InterlockedExchange(&fade_in_pending, 0);
+	fade_in_pos = kFadeFrames;
+	InterlockedExchange(&fadeout_in_flight, 0);
 }
 
 /*  CXAudio2::OnBufferEnd
 callback function called by the source voice
 IN:
-pBufferContext		-	unused
+pBufferContext		-	NULL for normal buffers, kFadeoutContext for the
+                        pause-time fade-out tail
 */
 void CXAudio2::OnBufferEnd(void *pBufferContext)
 {
-	InterlockedDecrement(&bufferCount);
+	LONG remaining = InterlockedDecrement(&bufferCount);
+	if (pBufferContext == kFadeoutContext)
+		InterlockedExchange(&fadeout_in_flight, 0);
+	if (remaining == 0)
+		InterlockedExchange(&fade_in_pending, 1);
     SetEvent(GUI.SoundSyncEvent);
 }
 
@@ -211,12 +261,131 @@ pContext		-	context passed to the callback, currently unused
 */
 void CXAudio2::PushBuffer(UINT32 AudioBytes,BYTE *pAudioData,void *pContext)
 {
+	// Fade-in the head of the first buffer pushed after silence so audio
+	// doesn't kick back in on a non-zero sample. Skip for the fade-out tail
+	// itself (it's already a ramp).
+	//
+	// The trigger flag is consumed only when the buffer actually has audio
+	// content — first boot in particular pushes ~tens of ms of silent buffers
+	// while the SPC runs BIOS setup before the chime hits, and consuming the
+	// fade-in flag on those would leave the chime onset unfaded. Once content
+	// is detected we start the fade *at the onset frame within the buffer*,
+	// not at frame 0, so the silence-to-audio step itself is the moment the
+	// ramp begins.
+	if (pContext != kFadeoutContext)
+	{
+		int16 *samples = (int16*)pAudioData;
+		const UINT32 frames_in_buf = AudioBytes / (2 * sizeof(int16));
+		UINT32 fade_start_frame = 0;
+
+		if (fade_in_pending)
+		{
+			UINT32 onset = frames_in_buf;
+			for (UINT32 i = 0; i < frames_in_buf; ++i)
+			{
+				const int16 l = samples[i*2];
+				const int16 r = samples[i*2 + 1];
+				if (l > 64 || l < -64 || r > 64 || r < -64)
+				{
+					onset = i;
+					break;
+				}
+			}
+			if (onset < frames_in_buf)
+			{
+				InterlockedExchange(&fade_in_pending, 0);
+				fade_in_pos = 0;
+				fade_start_frame = onset;
+				// Pre-onset samples were below the detection threshold but
+				// can still be non-zero (sub-threshold tail of a slow
+				// envelope ramp). Zero them so the seam to the gain-0 onset
+				// is exactly 0->0; otherwise the (±63 -> 0) step is heard
+				// as a single-sample "tak".
+				for (UINT32 i = 0; i < onset; ++i)
+				{
+					samples[i*2]     = 0;
+					samples[i*2 + 1] = 0;
+				}
+			}
+		}
+
+		if (fade_in_pos < kFadeFrames && fade_start_frame < frames_in_buf)
+		{
+			const UINT32 frames_avail   = frames_in_buf - fade_start_frame;
+			const UINT32 frames_left    = kFadeFrames - fade_in_pos;
+			const UINT32 frames_to_fade = (frames_left < frames_avail) ? frames_left : frames_avail;
+			for (UINT32 i = 0; i < frames_to_fade; ++i)
+			{
+				const int32  gain_q15 = CosineGainQ15(fade_in_pos + i, kFadeFrames, true);
+				const UINT32 idx      = fade_start_frame + i;
+				samples[idx*2]     = (int16)(((int32)samples[idx*2]     * gain_q15) >> 15);
+				samples[idx*2 + 1] = (int16)(((int32)samples[idx*2 + 1] * gain_q15) >> 15);
+			}
+			fade_in_pos += frames_to_fade;
+		}
+	}
+
+	// Capture trailing stereo frame so a later fade-out tail can start where
+	// real audio stopped, avoiding a discontinuity at the seam.
+	if (AudioBytes >= 2 * sizeof(int16))
+	{
+		const int16 *samples = (const int16*)pAudioData;
+		const UINT32 last = (AudioBytes / sizeof(int16)) - 2;
+		last_sample_l = samples[last];
+		last_sample_r = samples[last + 1];
+	}
+
 	XAUDIO2_BUFFER xa2buffer={0};
 	xa2buffer.AudioBytes=AudioBytes;
 	xa2buffer.pAudioData=pAudioData;
 	xa2buffer.pContext=pContext;
 	InterlockedIncrement(&bufferCount);
 	pSourceVoice->SubmitSourceBuffer(&xa2buffer);
+}
+
+// Build and submit a short ramp from the trailing real-audio sample down to
+// silence. Called from S9xSetPause when the main loop is about to stop feeding
+// the queue (menu open, window move, focus loss). The tail rides the back of
+// any in-flight buffers so the queue drains to zero smoothly. Resuming after
+// pause is handled implicitly: OnBufferEnd flips fade_in_pending when the
+// queue empties, and the next normal push gets a head ramp.
+void CXAudio2::OnPauseRequested()
+{
+	if (!initDone || !pSourceVoice)
+		return;
+	if (!fadeoutBuffer)
+		return;
+	// Skip if we already have a fade-out tail in the queue. Re-submitting
+	// would race with XAudio2 still reading from fadeoutBuffer.
+	if (InterlockedCompareExchange(&fadeout_in_flight, 1, 0) != 0)
+		return;
+
+	for (UINT32 i = 0; i < kFadeFrames; ++i)
+	{
+		const int32 gain_q15 = CosineGainQ15(i, kFadeFrames, false);
+		fadeoutBuffer[i*2]     = (int16)(((int32)last_sample_l * gain_q15) >> 15);
+		fadeoutBuffer[i*2 + 1] = (int16)(((int32)last_sample_r * gain_q15) >> 15);
+	}
+
+	XAUDIO2_BUFFER xa2buffer = {0};
+	xa2buffer.AudioBytes = kFadeBytes;
+	xa2buffer.pAudioData = (BYTE*)fadeoutBuffer;
+	xa2buffer.pContext   = kFadeoutContext;
+	InterlockedIncrement(&bufferCount);
+	pSourceVoice->SubmitSourceBuffer(&xa2buffer);
+
+	last_sample_l = 0;
+	last_sample_r = 0;
+	// Arm fade-in for the next normal buffer regardless of whether the queue
+	// fully drains before resume — the fade-out itself ends at zero, so the
+	// successor needs to ramp up from zero either way.
+	InterlockedExchange(&fade_in_pending, 1);
+}
+
+void CXAudio2::OnResumeRequested()
+{
+	// Resume path is covered by fade_in_pending set in OnPauseRequested or
+	// OnBufferEnd-on-underrun; nothing to do here.
 }
 
 /*  CXAudio2::SetupSound
@@ -242,8 +411,12 @@ bool CXAudio2::SetupSound()
     if (InitVoices())
     {
 		soundBuffer = new uint8[sum_bufferSize];
+		fadeoutBuffer = new int16[kFadeFrames * 2];
 		writeOffset = 0;
 		partialOffset = 0;
+		// Fade in the first buffer so cold start doesn't kick from silence
+		// to a non-zero sample.
+		InterlockedExchange(&fade_in_pending, 1);
     }
 	else {
 		DeInitVoices();
@@ -315,6 +488,8 @@ void CXAudio2::ProcessSound()
         // no sound sync when speed is not set to 100%
         while((freeBytes >> 1) < availableSamples)
         {
+            if (bufferCount == 0)
+                break;
             ResetEvent(GUI.SoundSyncEvent);
             if(!GUI.AllowSoundSync || WaitForSingleObject(GUI.SoundSyncEvent, 1000) != WAIT_OBJECT_0)
             {

@@ -67,6 +67,123 @@ static void SPCSnapshotCallback(void);
 static inline int S9xAPUGetClock(int32);
 static inline int S9xAPUGetClockRemainder(int32);
 
+namespace {
+// Smooth the SGB audio source switch (BIOS animation finish flips
+// gb_owns_audio false->true). The pre-flip buffer ended on some SPC sample
+// V_spc; the post-flip buffer starts with whatever GB is producing — and at
+// the instant the BIOS releases the GB, the GB APU has *no* samples queued
+// yet, so the new buffer is zeros. A naïve fade-in ramping zero->zero stays
+// zero and leaves the V_spc->0 buffer-boundary discontinuity intact, which
+// the speaker hears as a bass kick.
+//
+// Instead: capture the trailing output sample across calls and cross-fade
+// from that DC value to the new source. With raised-cosine alpha:
+//   out'[i] = V_last * (1 - alpha[i]) + out[i] * alpha[i]
+// At alpha=0 we reproduce V_last (continuous with the prior buffer); at
+// alpha=1 we're fully on the new source. When the new source is silent
+// this degenerates to a slow V_last->0 DC ramp, which is sub-audible at
+// 1024 frames (~23ms; fundamental ~22Hz).
+bool  g_prev_gb_owns_audio = false;
+int   g_source_fade_remaining = 0;
+int16 g_last_out_l = 0;
+int16 g_last_out_r = 0;
+constexpr int    kSourceFadeFrames = 1024;
+constexpr double kSourcePi         = 3.14159265358979323846;
+
+inline void ApplySourceCrossFade(int16 *out, int sample_count_int16s)
+{
+    if (g_source_fade_remaining <= 0) return;
+    const int frames = sample_count_int16s / 2;
+    for (int f = 0; f < frames && g_source_fade_remaining > 0; ++f)
+    {
+        const int    frame_pos     = kSourceFadeFrames - g_source_fade_remaining;
+        const double t             = (double)frame_pos / (double)(kSourceFadeFrames - 1);
+        const int    alpha_q15     = (int)(16384.0 * (1.0 - std::cos(kSourcePi * t)) + 0.5);
+        const int    inv_alpha_q15 = 32768 - alpha_q15;
+        out[f*2]     = (int16)(((int32)g_last_out_l * inv_alpha_q15 +
+                                 (int32)out[f*2]     * alpha_q15) >> 15);
+        out[f*2 + 1] = (int16)(((int32)g_last_out_r * inv_alpha_q15 +
+                                 (int32)out[f*2 + 1] * alpha_q15) >> 15);
+        --g_source_fade_remaining;
+    }
+}
+
+inline void CaptureLastOut(const int16 *out, int sample_count_int16s)
+{
+    if (sample_count_int16s >= 2)
+    {
+        g_last_out_l = out[sample_count_int16s - 2];
+        g_last_out_r = out[sample_count_int16s - 1];
+    }
+}
+
+// One-pole DC blocker (HPF at ~14Hz) on the rendered output. Removes the
+// slow-varying DC bias that SPC envelopes and GB waveform generators inject
+// into the stream, so the speaker doesn't have to swing through a non-zero
+// rest position at pause/resume/source-switch boundaries — without that, the
+// fade ramp itself is audible as a sub-bass kick because V_last can be ±20k.
+// y[n] = x[n] - x[n-1] + R * y[n-1]
+// R = 0.998 -> -3dB at ~14Hz at 44.1kHz; transient settles in ~11ms.
+//
+// On the very first call (or first call after reset), the natural step
+// response of the filter would let ~11ms of unfiltered DC through. The
+// audio backend fade-in then amplitude-modulates that DC, producing a
+// 22Hz half-cycle of magnitude V — the boot-time bass kick. Avoid it by
+// seeding x_prev = first_sample so y[0] = x[0] - x[0] = 0 and the filter
+// is "already tracking" from sample zero.
+constexpr double kDcBlockR = 0.998;
+bool   g_dc_initialized = false;
+double g_dc_in_prev_l  = 0.0;
+double g_dc_in_prev_r  = 0.0;
+double g_dc_out_prev_l = 0.0;
+double g_dc_out_prev_r = 0.0;
+
+inline void ApplyDCBlocker(int16 *out, int sample_count_int16s)
+{
+    const int frames = sample_count_int16s / 2;
+    if (frames <= 0) return;
+
+    if (!g_dc_initialized)
+    {
+        g_dc_in_prev_l  = (double)out[0];
+        g_dc_in_prev_r  = (double)out[1];
+        g_dc_out_prev_l = 0.0;
+        g_dc_out_prev_r = 0.0;
+        g_dc_initialized = true;
+    }
+
+    for (int f = 0; f < frames; ++f)
+    {
+        const double in_l  = (double)out[f*2];
+        const double out_l = in_l - g_dc_in_prev_l + kDcBlockR * g_dc_out_prev_l;
+        g_dc_in_prev_l  = in_l;
+        g_dc_out_prev_l = out_l;
+        int32 clamped_l = (int32)out_l;
+        if (clamped_l >  32767) clamped_l =  32767;
+        if (clamped_l < -32768) clamped_l = -32768;
+        out[f*2] = (int16)clamped_l;
+
+        const double in_r  = (double)out[f*2 + 1];
+        const double out_r = in_r - g_dc_in_prev_r + kDcBlockR * g_dc_out_prev_r;
+        g_dc_in_prev_r  = in_r;
+        g_dc_out_prev_r = out_r;
+        int32 clamped_r = (int32)out_r;
+        if (clamped_r >  32767) clamped_r =  32767;
+        if (clamped_r < -32768) clamped_r = -32768;
+        out[f*2 + 1] = (int16)clamped_r;
+    }
+}
+
+inline void ResetDCBlocker()
+{
+    g_dc_initialized = false;
+    g_dc_in_prev_l  = 0.0;
+    g_dc_in_prev_r  = 0.0;
+    g_dc_out_prev_l = 0.0;
+    g_dc_out_prev_r = 0.0;
+}
+} // namespace
+
 bool8 S9xMixSamples(uint8 *dest, int sample_count)
 {
     int16 *out = (int16 *)dest;
@@ -87,12 +204,17 @@ bool8 S9xMixSamples(uint8 *dest, int sample_count)
         (Settings.SGB_BIOSModeActive && S9xSGBBIOSGBIsReleased());
     const bool mix_spc_under_gb = Settings.SGB_BIOSModeActive &&
                                    S9xSGBBIOSGBIsReleased();
+
+    if (gb_owns_audio != g_prev_gb_owns_audio)
+        g_source_fade_remaining = kSourceFadeFrames;
+    g_prev_gb_owns_audio = gb_owns_audio;
     if (gb_owns_audio)
     {
         if (Settings.Mute)
         {
             memset(out, 0, sample_count << 1);
             S9xClearSamples();
+            CaptureLastOut(out, sample_count);
             return true;
         }
 
@@ -130,6 +252,9 @@ bool8 S9xMixSamples(uint8 *dest, int sample_count)
             // keep the scanline-driver gate firing at its natural cadence.
             S9xClearSamples();
         }
+        ApplySourceCrossFade(out, sample_count);
+        ApplyDCBlocker(out, sample_count);
+        CaptureLastOut(out, sample_count);
         return true;
     }
 
@@ -138,12 +263,14 @@ bool8 S9xMixSamples(uint8 *dest, int sample_count)
         memset(out, 0, sample_count << 1);
         S9xClearSamples();
         spc::sound_in_sync = true;
+        CaptureLastOut(out, sample_count);
         return true;
     }
 
     if (spc::resampler.avail() < sample_count)
     {
         memset(out, 0, sample_count << 1);
+        CaptureLastOut(out, sample_count);
         return false;
     }
 
@@ -168,6 +295,9 @@ bool8 S9xMixSamples(uint8 *dest, int sample_count)
     else
         spc::sound_in_sync = false;
 
+    ApplySourceCrossFade(out, sample_count);
+    ApplyDCBlocker(out, sample_count);
+    CaptureLastOut(out, sample_count);
     return true;
 }
 
@@ -410,6 +540,7 @@ void S9xResetAPU(void)
     SNES::dsp.spc_dsp.set_spc_snapshot_callback(SPCSnapshotCallback);
 
     S9xClearSamples();
+    ResetDCBlocker();
 }
 
 void S9xSoftResetAPU(void)
@@ -421,6 +552,7 @@ void S9xSoftResetAPU(void)
     SNES::dsp.reset();
 
     S9xClearSamples();
+    ResetDCBlocker();
 }
 
 void S9xAPUSaveState(uint8 *block)

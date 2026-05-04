@@ -10,6 +10,9 @@
 #include <vector>
 #include <string>
 
+class IS9xSoundOutput;
+extern IS9xSoundOutput *S9xSoundOutput;
+
 bool ReInitSound();
 void S9xSoundCallback(void *data);
 void CloseSoundDevice();

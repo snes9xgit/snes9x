@@ -308,6 +308,7 @@ int GetNumHotKeysAssignedTo (WORD Key, int modifiers)
 
 		if(MATCHES_KEY(SpeedUp))           count++;
 		if(MATCHES_KEY(SpeedDown))         count++;
+		if(MATCHES_KEY(ResetSpeed))        count++;
 		if(MATCHES_KEY(Pause))             count++;
 		if(MATCHES_KEY(FrameAdvance))      count++;
 		if(MATCHES_KEY(SkipUp))            count++;
@@ -565,13 +566,17 @@ LRESULT InputCustom_OnPaint(InputCust *ccp, WPARAM wParam, LPARAM lParam)
     // Work out where to draw
     GetClientRect(ccp->hwnd, &rect);
 
+    // Draw a sunken 3D edge around the client rect. This matches the visual style
+    // of WS_EX_CLIENTEDGE but works reliably regardless of whether the OS renders
+    // the extended frame (which can be suppressed for siblings inside a SysTabControl32).
+    DrawEdge(hdc, &rect, EDGE_SUNKEN, BF_RECT | BF_ADJUST);
 
     // Find out how big the text will be
     GetTextExtentPoint32(hdc, szText, lstrlen(szText), &sz);
 
-    // Center the text
-    x = (rect.right  - sz.cx) / 2;
-    y = (rect.bottom - sz.cy) / 2;
+    // Center the text inside the inner rect (DrawEdge with BF_ADJUST shrunk `rect`).
+    x = rect.left + ((rect.right - rect.left) - sz.cx) / 2;
+    y = rect.top  + ((rect.bottom - rect.top) - sz.cy) / 2;
 
     // Draw the text
     ExtTextOut(hdc, x, y, ETO_OPAQUE, &rect, szText, lstrlen(szText), 0);

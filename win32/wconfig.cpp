@@ -269,7 +269,7 @@ const TCHAR*	WinParseCommandLineAndLoadConfigFile (TCHAR *line)
 			for(int i=0; i<2; i++)
 			{
 				fname=S9xGetDirectory(DEFAULT_DIR);
-				if(i == 0)      fname+=SLASH_STR "snes9x.conf";
+				if(i == 0)      fname+=SLASH_STR S9X_CONF_FILE_NAME;
 				else if(i == 1) fname+=SLASH_STR "snes9x.cfg";
 
 				tempfile = fopen((fname + ".autobak").c_str(), "rb");
@@ -787,6 +787,7 @@ void WinRegisterConfigItems()
 	AddIntC("Window:Left", GUI.window_size.left, 0, "in pixels from left edge of screen");
 	AddIntC("Window:Top", GUI.window_size.top, 0, "in pixels from top edge of screen");
 	AddBool("Window:Maximized", GUI.window_maximized, false);
+	AddIntC("Window:Icon", GUI.IconIndex, 1, "selected window/taskbar icon (1-4), choose via File > Choose Logo");
 	AddIntC("CustomRomDialog:Width", GUI.customRomDlgSettings.window_size.right, 660, "");
 	AddIntC("CustomRomDialog:Height", GUI.customRomDlgSettings.window_size.bottom, 400, "");
 	AddIntC("CustomRomDialog:Left", GUI.customRomDlgSettings.window_size.left, 50, "in pixels from left edge of screen");
@@ -796,6 +797,18 @@ void WinRegisterConfigItems()
 	AddIntC("CustomRomDialog:DescColumnWidth", GUI.customRomDlgSettings.columnDescription, 112, "");
 	AddIntC("CustomRomDialog:FilenameColumnWidth", GUI.customRomDlgSettings.columnFilename, 196, "");
 	AddIntC("CustomRomDialog:SizeColumnWidth", GUI.customRomDlgSettings.columnSize, 67, "");
+	AddIntC("CheatEditor:Left",   GUI.cheatEditorPos.x, INT_MIN, "saved left position in screen pixels (INT_MIN = use default)");
+	AddIntC("CheatEditor:Top",    GUI.cheatEditorPos.y, INT_MIN, "saved top position in screen pixels (INT_MIN = use default)");
+	AddIntC("CheatEditor:Width",  GUI.cheatEditorPos.w, 0, "saved width (0 = use default)");
+	AddIntC("CheatEditor:Height", GUI.cheatEditorPos.h, 0, "saved height (0 = use default)");
+	AddIntC("CheatSearch:Left",   GUI.cheatSearchPos.x, INT_MIN, "saved left position in screen pixels (INT_MIN = use default)");
+	AddIntC("CheatSearch:Top",    GUI.cheatSearchPos.y, INT_MIN, "saved top position in screen pixels (INT_MIN = use default)");
+	AddIntC("TileViewer:Left",    GUI.vramViewerPos.x,  INT_MIN, "saved left position in screen pixels (INT_MIN = use default)");
+	AddIntC("TileViewer:Top",     GUI.vramViewerPos.y,  INT_MIN, "saved top position in screen pixels (INT_MIN = use default)");
+	AddIntC("TilemapViewer:Left", GUI.tilemapViewerPos.x, INT_MIN, "saved left position in screen pixels (INT_MIN = use default)");
+	AddIntC("TilemapViewer:Top",  GUI.tilemapViewerPos.y, INT_MIN, "saved top position in screen pixels (INT_MIN = use default)");
+	AddIntC("SpriteViewer:Left",  GUI.spriteViewerPos.x, INT_MIN, "saved left position in screen pixels (INT_MIN = use default)");
+	AddIntC("SpriteViewer:Top",   GUI.spriteViewerPos.y, INT_MIN, "saved top position in screen pixels (INT_MIN = use default)");
 	AddBoolC("Stretch:Enabled", GUI.Stretch, true, "true to stretch the game image to fill the window or screen");
 	AddBoolC("Stretch:MaintainAspectRatio", GUI.AspectRatio, true, "prevents stretching from changing the aspect ratio");
 	AddBoolC("Stretch:IntegerScaling", GUI.IntegerScaling, false, "scales image height to exact integer multiples");
@@ -987,7 +1000,7 @@ void WinRegisterConfigItems()
 	AddVKMod("Mods:MasterHotkey", CustomKeys.MasterHotkey.modifiers, CustomKeys.MasterHotkey.modifiers);
 #define ADD(x) AddVKey("Key:" #x , CustomKeys.x.key, CustomKeys.x.key); AddVKMod("Mods:" #x, CustomKeys.x.modifiers, CustomKeys.x.modifiers)
 #define ADDN(x,n2) AddVKey("Key:" #n2, CustomKeys.x.key, CustomKeys.x.key); AddVKMod("Mods:" #n2, CustomKeys.x.modifiers, CustomKeys.x.modifiers)
-	ADD(SpeedUp); ADD(SpeedDown); ADD(Pause); ADD(FrameAdvance);
+	ADD(SpeedUp); ADD(SpeedDown); ADD(ResetSpeed); ADD(Pause); ADD(FrameAdvance);
 	ADD(SkipUp); ADD(SkipDown); ADD(ScopeTurbo); ADD(ScopePause);
 	ADD(FrameCount); ADD(ReadOnly); ADD(FastForward); ADD(FastForwardToggle); ADD(ShowPressed);
 	ADDN(Save[0],SaveSlot0); ADDN(Save[1],SaveSlot1); ADDN(Save[2],SaveSlot2); ADDN(Save[3],SaveSlot3); ADDN(Save[4],SaveSlot4); ADDN(Save[5],SaveSlot5); ADDN(Save[6],SaveSlot6); ADDN(Save[7],SaveSlot7); ADDN(Save[8],SaveSlot8); ADDN(Save[9],SaveSlot9);
@@ -1013,7 +1026,7 @@ void WinRegisterConfigItems()
 #define ADDXN(x,n2,s) AddVKey("Key:" #n2 ":Extra" #s, CustomKeysExtra.x.extra[s-1].key, CustomKeysExtra.x.extra[s-1].key); AddVKMod("Mods:" #n2 ":Extra" #s, CustomKeysExtra.x.extra[s-1].modifiers, CustomKeysExtra.x.extra[s-1].modifiers)
 #define ADDXALL(x) ADDX(x,1); ADDX(x,2); ADDX(x,3)
 #define ADDXALLN(x,n2) ADDXN(x,n2,1); ADDXN(x,n2,2); ADDXN(x,n2,3)
-	ADDXALL(SpeedUp); ADDXALL(SpeedDown); ADDXALL(Pause); ADDXALL(FrameAdvance);
+	ADDXALL(SpeedUp); ADDXALL(SpeedDown); ADDXALL(ResetSpeed); ADDXALL(Pause); ADDXALL(FrameAdvance);
 	ADDXALL(SkipUp); ADDXALL(SkipDown); ADDXALL(ScopeTurbo); ADDXALL(ScopePause);
 	ADDXALL(FrameCount); ADDXALL(ReadOnly); ADDXALL(FastForward); ADDXALL(FastForwardToggle); ADDXALL(ShowPressed);
 	ADDXALLN(Save[0],SaveSlot0); ADDXALLN(Save[1],SaveSlot1); ADDXALLN(Save[2],SaveSlot2); ADDXALLN(Save[3],SaveSlot3); ADDXALLN(Save[4],SaveSlot4);
@@ -1070,7 +1083,7 @@ void WinLockConfigFile ()
 
 	static std::string fname;
 	fname=S9xGetDirectory(DEFAULT_DIR);
-	fname+=SLASH_STR "snes9x.conf";
+	fname+=SLASH_STR S9X_CONF_FILE_NAME;
 	STREAM fp;
 	if((fp=OPEN_STREAM(fname.c_str(), "r"))!=NULL){
 		CLOSE_STREAM(fp);

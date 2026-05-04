@@ -682,6 +682,7 @@ INT_PTR CALLBACK DlgSpriteViewer(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPar
 
         DebugViewers_Register(hDlg, &st->autoUpdate);
         Refresh(hDlg);
+        DlgApplySavedPos(hDlg, GUI.spriteViewerPos);
         return TRUE;
     }
 
@@ -882,11 +883,16 @@ INT_PTR CALLBACK DlgSpriteViewer(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPar
         break;
     }
 
+    case WM_EXITSIZEMOVE:
+        DlgSavePos(hDlg, GUI.spriteViewerPos, false);
+        return FALSE;
+
     case WM_CLOSE:
         DestroyWindow(hDlg);
         return TRUE;
 
     case WM_DESTROY: {
+        DlgSavePos(hDlg, GUI.spriteViewerPos, false);
         SPVState *st = GetState(hDlg);
         UninstallDragPan(GetDlgItem(hDlg, IDC_SPV_SCREEN));
         DebugViewers_Unregister(hDlg);

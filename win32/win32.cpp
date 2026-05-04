@@ -21,6 +21,7 @@
 #include "kaillera_client.h"
 #include "kaillera_server.h"
 #include "win32_sound.h"
+#include "IS9xSoundOutput.h"
 #include "win32_display.h"
 
 #include "render.h"
@@ -827,15 +828,24 @@ void S9xAutoSaveSRAM ()
 
 void S9xSetPause (uint32 mask)
 {
+    const bool was_paused = (Settings.ForcedPause != 0);
     Settings.ForcedPause |= mask;
 	S9xSetSoundMute(TRUE);
+    // Push a fade-out tail on the leading edge of pause so the queue drains
+    // to silence smoothly. Menu open, window move, and focus loss all funnel
+    // here; the audio thread otherwise underruns mid-waveform and clicks.
+    if (!was_paused && S9xSoundOutput)
+        S9xSoundOutput->OnPauseRequested();
 }
 
 void S9xClearPause (uint32 mask)
 {
+    const bool was_paused = (Settings.ForcedPause != 0);
     Settings.ForcedPause &= ~mask;
     if (!Settings.ForcedPause)
     {
+        if (was_paused && S9xSoundOutput)
+            S9xSoundOutput->OnResumeRequested();
         // Wake up the main loop thread just if its blocked in a GetMessage call.
         PostMessage (GUI.hWnd, WM_NULL, 0, 0);
     }

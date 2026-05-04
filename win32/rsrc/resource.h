@@ -360,6 +360,7 @@
 #define IDC_PLAYWARN                    1257
 #define IDC_LABEL_HK14                  1257
 #define IDC_REDUCEINPUTLAG              1258
+#define IDC_LABEL_HK15                  1258
 #define IDC_INTEGERSCALING              1259
 #define IDC_NTSCSCANLINES               1260
 #define IDC_HOTKEY1                     2000
@@ -376,6 +377,7 @@
 #define IDC_HOTKEY12                    2011
 #define IDC_HOTKEY13                    2012
 #define IDC_HOTKEY14                    2013
+#define IDC_HOTKEY15                    2014
 #define IDC_PREV                        2147
 #define IDC_ENTERED                     2148
 #define IDC_ENTEREDADDRESS              2157
@@ -646,6 +648,12 @@
 #define ID_EMULATION_BIOS_SGB1          44347
 #define ID_EMULATION_BIOS_SGB2          44348
 
+#define ID_FILE_LOGO_POPUP              44360
+#define ID_FILE_LOGO_1                  44361
+#define ID_FILE_LOGO_2                  44362
+#define ID_FILE_LOGO_3                  44363
+#define ID_FILE_LOGO_4                  44364
+
 #define IDD_COLORCORRECTION             176
 #define IDC_COLOR_CORRECTION_ENABLE     3111
 #define IDC_SLIDER_GAMMA                3112
@@ -732,6 +740,39 @@
 #define IDC_SPV_RATE                    3180
 #define IDC_USEDIRECTINPUT              3181
 
+// Hotkey dialog (tabbed)
+#define IDC_HOTKEY_TABS                 3221
+#define IDC_HOTKEY16                    2015
+#define IDC_HOTKEY17                    2016
+#define IDC_HOTKEY18                    2017
+#define IDC_LABEL_HK16                  3222
+#define IDC_LABEL_HK17                  3223
+#define IDC_LABEL_HK18                  3248
+#define IDC_SELSLOT_0                   3224
+#define IDC_SELSLOT_1                   3225
+#define IDC_SELSLOT_2                   3226
+#define IDC_SELSLOT_3                   3227
+#define IDC_SELSLOT_4                   3228
+#define IDC_SELSLOT_5                   3229
+#define IDC_SELSLOT_6                   3230
+#define IDC_SELSLOT_7                   3231
+#define IDC_SELSLOT_8                   3232
+#define IDC_SELSLOT_9                   3233
+#define IDC_LABEL_SELSLOT_0             3234
+#define IDC_LABEL_SELSLOT_1             3235
+#define IDC_LABEL_SELSLOT_2             3236
+#define IDC_LABEL_SELSLOT_3             3237
+#define IDC_LABEL_SELSLOT_4             3238
+#define IDC_LABEL_SELSLOT_5             3239
+#define IDC_LABEL_SELSLOT_6             3240
+#define IDC_LABEL_SELSLOT_7             3241
+#define IDC_LABEL_SELSLOT_8             3242
+#define IDC_LABEL_SELSLOT_9             3243
+#define IDC_SAVETOFILE                  3244
+#define IDC_LOADFROMFILE                3245
+#define IDC_LABEL_SAVETOFILE            3246
+#define IDC_LABEL_LOADFROMFILE          3247
+
 #define IDC_STATIC                      -1
 
 // Next default values for new objects
@@ -740,7 +781,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        180
 #define _APS_NEXT_COMMAND_VALUE         40203
-#define _APS_NEXT_CONTROL_VALUE         3221
+#define _APS_NEXT_CONTROL_VALUE         3252
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif
