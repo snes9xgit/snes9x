@@ -10439,7 +10439,7 @@ static void SetHotkeyMaxKeys(HWND hDlg, int maxKeys)
 		SendDlgItemMessage(hDlg, g_savestatesControls[i].idc, WM_USER+47, maxKeys, 0);
 }
 
-static void set_hotkeyinfo(HWND hDlg); // forward declaration
+static void set_hotkeyinfo(HWND hDlg, bool layoutChanged); // forward declaration
 
 // Helper: update hotkey binding mode UI
 static void UpdateHotkeyBindingMode(HWND hDlg)
@@ -10449,7 +10449,7 @@ static void UpdateHotkeyBindingMode(HWND hDlg)
 	ShowWindow(GetDlgItem(hDlg, IDC_ALLOWMULTIBIND_HK), isMulti ? SW_SHOW : SW_HIDE);
 	int maxKeys = (isMulti && IsDlgButtonChecked(hDlg, IDC_ALLOWMULTIBIND_HK)) ? MAX_BIND_KEYS : 1;
 	SetHotkeyMaxKeys(hDlg, maxKeys);
-	set_hotkeyinfo(hDlg);
+	set_hotkeyinfo(hDlg, true);
 }
 
 // Maps slot index -> dialog control IDs. IDC_HOTKEY1..15 are 2000..2014 (sequential),
@@ -10466,7 +10466,7 @@ static const int g_hotkeyLabelIds[MAX_SWITCHABLE_HOTKEY_DIALOG_ITEMS] = {
 	IDC_LABEL_HK13, IDC_LABEL_HK14, IDC_LABEL_HK15, IDC_LABEL_HK16, IDC_LABEL_HK17, IDC_LABEL_HK18,
 };
 
-static void set_hotkeyinfo(HWND hDlg)
+static void set_hotkeyinfo(HWND hDlg, bool layoutChanged)
 {
 	int index = (int)SendDlgItemMessage(hDlg, IDC_HOTKEY_TABS, TCM_GETCURSEL, 0, 0);
 	if (index < 0 || index >= MAX_SWITCHABLE_HOTKEY_DIALOG_PAGES)
@@ -10525,8 +10525,11 @@ static void set_hotkeyinfo(HWND hDlg)
 	// Force every child control to repaint. Without this, controls that just
 	// transitioned from SW_HIDE to SW_SHOWNOACTIVATE sometimes miss their WM_PAINT
 	// because the dialog body's themed-texture erase can land between the show and
-	// the InvalidateRect we send via WM_USER+44.
-	RedrawWindow(hDlg, NULL, NULL, RDW_INVALIDATE | RDW_ALLCHILDREN | RDW_UPDATENOW);
+	// the InvalidateRect we send via WM_USER+44. Only needed when visibility
+	// actually changed (tab switch, init, mode toggle); skipping it for plain
+	// refreshes (click-away, post-keypress) avoids a full-dialog flash.
+	if (layoutChanged)
+		RedrawWindow(hDlg, NULL, NULL, RDW_INVALIDATE | RDW_ALLCHILDREN | RDW_UPDATENOW);
 }
 
 // DlgHotkeyConfig
@@ -10595,7 +10598,7 @@ INT_PTR CALLBACK DlgHotkeyConfig(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPar
 
 		SetDlgItemText(hDlg,IDC_LABEL_BLUE,HOTKEYS_LABEL_BLUE);
 
-		set_hotkeyinfo(hDlg);
+		set_hotkeyinfo(hDlg, true);
 
 		SetFocus(GetDlgItem(hDlg,IDC_HOTKEY_TABS));
 
@@ -10614,13 +10617,13 @@ INT_PTR CALLBACK DlgHotkeyConfig(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPar
 			// "capturing" highlight. Without this, the slot at the same index in the
 			// new tab inherits the highlighted look.
 			SetFocus(GetDlgItem(hDlg, IDC_HOTKEY_TABS));
-			set_hotkeyinfo(hDlg);
+			set_hotkeyinfo(hDlg, true);
 			return TRUE;
 		}
 		return FALSE;
 	case WM_USER+46:
 		// refresh command, for clicking away from a selected field
-		set_hotkeyinfo(hDlg);
+		set_hotkeyinfo(hDlg, false);
 		return TRUE;
 	case WM_USER+43:
 	{
@@ -10710,7 +10713,7 @@ INT_PTR CALLBACK DlgHotkeyConfig(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPar
 
 		#undef STORE_HOTKEY_MULTIBIND
 
-		set_hotkeyinfo(hDlg);
+		set_hotkeyinfo(hDlg, false);
 
 		// In single mode, auto-advance to next field
 		if(icp->maxKeys == 1)
