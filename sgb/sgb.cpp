@@ -241,6 +241,8 @@ struct Emulator::Impl
 		// both get zeroed on VBlank entry. $6000 = (row & 0xF8) | bank.
 		uint8_t  sgb_row;
 		uint8_t  sgb_bank;
+		uint8_t  sgb_bank_latched;
+		uint8_t  sgb_row_latched;
 
 		// Per-pixel capture ring — 4 banks × 8 rows × 160 pixels (palette
 		// indices 0..3). Mesen2 SuperGameboy::WriteLcdColor writes into
@@ -1051,7 +1053,7 @@ uint8_t Emulator::GetICD2(uint16_t addr)
 			// bank counter (cycles 0→1→2→3→0 every 8 GB scanlines). The
 			// BIOS uses the bank rotation to detect when a fresh bank is
 			// ready to drain.
-			return static_cast<uint8_t>((icd.sgb_row & 0xF8) | (icd.sgb_bank & 0x03));
+			return static_cast<uint8_t>((icd.sgb_row_latched & 0xF8) | (icd.sgb_bank_latched & 0x03));
 		case 0x6002:
 		{
 			// Lazy-stage the next synth packet if queue's empty (no-op
@@ -1257,6 +1259,8 @@ void Emulator::CaptureScanline(const uint8_t *pixels)
 	const uint8_t bank = static_cast<uint8_t>(icd.sgb_bank & 0x03);
 	const uint8_t row  = static_cast<uint8_t>(icd.sgb_row  & 0x07);
 	std::memcpy(&icd.lcd_ring[bank][row * 160], pixels, 160);
+	icd.sgb_bank_latched = icd.sgb_bank;
+	icd.sgb_row_latched  = icd.sgb_row;
 }
 
 static inline uint16_t BgrToHost(uint16_t bgr)
