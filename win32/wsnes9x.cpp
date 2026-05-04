@@ -152,10 +152,11 @@ void S9xWinScanJoypads();
 #define WM_CHEATS_ADDED (WM_APP + 1)
 
 constexpr int MAX_SWITCHABLE_HOTKEY_DIALOG_ITEMS = 18;
-constexpr int MAX_SWITCHABLE_HOTKEY_DIALOG_PAGES = 3;
-constexpr int HOTKEY_TAB_EMULATION = 0;
-constexpr int HOTKEY_TAB_TURBO     = 1;
-constexpr int HOTKEY_TAB_DISPLAY   = 2;
+constexpr int MAX_SWITCHABLE_HOTKEY_DIALOG_PAGES = 4;
+constexpr int HOTKEY_TAB_EMULATION  = 0;
+constexpr int HOTKEY_TAB_SAVESTATES = 1;
+constexpr int HOTKEY_TAB_TURBO      = 2;
+constexpr int HOTKEY_TAB_DISPLAY    = 3;
 
 #ifdef UNICODE
 #define S9XW_SHARD_PATH SHARD_PATHW
@@ -10337,7 +10338,15 @@ static hotkey_dialog_item hotkey_dialog_items[MAX_SWITCHABLE_HOTKEY_DIALOG_PAGES
         { &CustomKeys.QuitS9X,           &CustomKeysExtra.QuitS9X,           HOTKEYS_LABEL_1_12 },
         { NULL, NULL, _T("") }, { NULL, NULL, _T("") }, { NULL, NULL, _T("") },
     },
-    // Tab 1: Turbo (13 items)
+    // Tab 1: States — uses dedicated controls (g_savestatesControls), no entries here.
+    {
+        { NULL, NULL, _T("") }, { NULL, NULL, _T("") }, { NULL, NULL, _T("") }, { NULL, NULL, _T("") },
+        { NULL, NULL, _T("") }, { NULL, NULL, _T("") }, { NULL, NULL, _T("") }, { NULL, NULL, _T("") },
+        { NULL, NULL, _T("") }, { NULL, NULL, _T("") }, { NULL, NULL, _T("") }, { NULL, NULL, _T("") },
+        { NULL, NULL, _T("") }, { NULL, NULL, _T("") }, { NULL, NULL, _T("") }, { NULL, NULL, _T("") },
+        { NULL, NULL, _T("") }, { NULL, NULL, _T("") },
+    },
+    // Tab 2: Turbo (13 items)
     {
         // Column 1
         { &CustomKeys.TurboA,      &CustomKeysExtra.TurboA,      HOTKEYS_LABEL_3_1 },
@@ -10463,17 +10472,17 @@ static void set_hotkeyinfo(HWND hDlg)
 	if (index < 0 || index >= MAX_SWITCHABLE_HOTKEY_DIALOG_PAGES)
 		index = 0;
 
-	// Show or hide each switchable slot based on the active tab's table. Save
-	// States controls live in their own panel below the tabs and are never
-	// touched here — they're laid out statically in the .rc and stay visible.
+	const bool savestates = (index == HOTKEY_TAB_SAVESTATES);
+
+	// Generic IDC_HOTKEY slots: shown for every tab except States.
 	for (int i = 0; i < MAX_SWITCHABLE_HOTKEY_DIALOG_ITEMS; i++)
 	{
 		const hotkey_dialog_item &item = hotkey_dialog_items[index][i];
-		const int flags = item.key_entry ? SW_SHOWNOACTIVATE : SW_HIDE;
+		const int flags = (!savestates && item.key_entry) ? SW_SHOWNOACTIVATE : SW_HIDE;
 		ShowWindow(GetDlgItem(hDlg, g_hotkeyControlIds[i]), flags);
 		ShowWindow(GetDlgItem(hDlg, g_hotkeyLabelIds[i]),   flags);
 
-		if (item.key_entry)
+		if (!savestates && item.key_entry)
 		{
 			SendMultiBindHotkeyToControl(hDlg, g_hotkeyControlIds[i], item.key_entry, item.extra_entry);
 			SetDlgItemText(hDlg, g_hotkeyLabelIds[i], item.description);
@@ -10484,8 +10493,18 @@ static void set_hotkeyinfo(HWND hDlg)
 		}
 	}
 
-	// Push current bindings into every Save States control. They're always
-	// visible so this is just a state refresh.
+	// Save States dedicated controls: shown only on the States tab. They share
+	// the same y range as the generic slots (overlap), so we always toggle the
+	// two sets in opposite states.
+	const int ssFlag = savestates ? SW_SHOWNOACTIVATE : SW_HIDE;
+	for (int i = 0; i < g_savestatesControlsCount; i++)
+	{
+		ShowWindow(GetDlgItem(hDlg, g_savestatesControls[i].idc),       ssFlag);
+		ShowWindow(GetDlgItem(hDlg, g_savestatesControls[i].label_idc), ssFlag);
+	}
+
+	// Always push current bindings into every Save States control so its display
+	// matches the in-memory state on first show.
 	for (int i = 0; i < SAVE_SLOTS_PER_BANK; i++)
 	{
 		SendMultiBindHotkeyToControl(hDlg, IDC_SAVE1  + i,    &CustomKeys.Save[i],       &CustomKeysExtra.Save[i]);
@@ -10533,7 +10552,7 @@ INT_PTR CALLBACK DlgHotkeyConfig(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPar
 			TCITEM tie = {};
 			tie.mask = TCIF_TEXT;
 			static TCHAR tabTexts[][24] = {
-				TEXT("Emulation"), TEXT("Turbo"), TEXT("Display && Tools")
+				TEXT("Emulation"), TEXT("States"), TEXT("Turbo"), TEXT("Display && Tools")
 			};
 			for (i = 0; i < MAX_SWITCHABLE_HOTKEY_DIALOG_PAGES; i++)
 			{

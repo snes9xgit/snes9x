@@ -531,7 +531,7 @@ BEGIN
     CONTROL         "Clear SRAM",IDC_CLEARSRAM,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,12,96,70,10
 END
 
-IDD_KEYCUSTOM DIALOGEX 0, 0, 410, 420
+IDD_KEYCUSTOM DIALOGEX 0, 0, 410, 255
 STYLE DS_SETFONT | DS_MODALFRAME | DS_3DLOOK | DS_FIXEDSYS | DS_CENTER | WS_POPUP | WS_CLIPCHILDREN | WS_CAPTION
 CAPTION "Customize Special Keys"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
@@ -544,7 +544,7 @@ BEGIN
 
     // Tab control with 3 tabs (Emulation / Turbo / Display & Tools).
     // Switchable IDC_HOTKEY1..18 generic slots live INSIDE the tab content area.
-    CONTROL         "",IDC_HOTKEY_TABS,"SysTabControl32",WS_TABSTOP,5,28,400,170
+    CONTROL         "",IDC_HOTKEY_TABS,"SysTabControl32",WS_TABSTOP,5,28,400,175
 
     // Tab content: 2 columns x 9 rows of generic switchable slots.
     // Column 1: label x=10..82, control x=86..146
@@ -586,97 +586,97 @@ BEGIN
     CONTROL         "",IDC_HOTKEY17,"InputCustomHot",WS_TABSTOP,281,150,60,12
     CONTROL         "",IDC_HOTKEY18,"InputCustomHot",WS_TABSTOP,281,164,60,12
 
-    // Save States panel — always visible. Lives BELOW the tab control so its
-    // controls never overlap the switchable IDC_HOTKEY slots, no show/hide cycles.
-    GROUPBOX        "Save States",IDC_STATIC,5,205,400,160,0,WS_EX_TRANSPARENT
+    // States tab content — same y range as the IDC_HOTKEY slots (overlap is OK,
+    // set_hotkeyinfo hides one set / shows the other; InputCustomHot's own DrawEdge
+    // in WM_PAINT redraws each control fully on show, so paint stays clean).
     // Col 1 — Save 0..9
-    RTEXT           "Save 0:",IDC_LABEL_UP11,12,222,30,10
-    RTEXT           "Save 1:",IDC_LABEL_UP2,12,236,30,10
-    RTEXT           "Save 2:",IDC_LABEL_UP3,12,250,30,10
-    RTEXT           "Save 3:",IDC_LABEL_UP4,12,264,30,10
-    RTEXT           "Save 4:",IDC_LABEL_UP5,12,278,30,10
-    RTEXT           "Save 5:",IDC_LABEL_UP6,12,292,30,10
-    RTEXT           "Save 6:",IDC_LABEL_UP7,12,306,30,10
-    RTEXT           "Save 7:",IDC_LABEL_UP8,12,320,30,10
-    RTEXT           "Save 8:",IDC_LABEL_UP9,12,334,30,10
-    RTEXT           "Save 9:",IDC_LABEL_UP10,12,348,30,10
-    CONTROL         "",IDC_SAVE1,"InputCustomHot",WS_TABSTOP,46,222,55,12
-    CONTROL         "",IDC_SAVE2,"InputCustomHot",WS_TABSTOP,46,236,55,12
-    CONTROL         "",IDC_SAVE3,"InputCustomHot",WS_TABSTOP,46,250,55,12
-    CONTROL         "",IDC_SAVE4,"InputCustomHot",WS_TABSTOP,46,264,55,12
-    CONTROL         "",IDC_SAVE5,"InputCustomHot",WS_TABSTOP,46,278,55,12
-    CONTROL         "",IDC_SAVE6,"InputCustomHot",WS_TABSTOP,46,292,55,12
-    CONTROL         "",IDC_SAVE7,"InputCustomHot",WS_TABSTOP,46,306,55,12
-    CONTROL         "",IDC_SAVE8,"InputCustomHot",WS_TABSTOP,46,320,55,12
-    CONTROL         "",IDC_SAVE9,"InputCustomHot",WS_TABSTOP,46,334,55,12
-    CONTROL         "",IDC_SAVE10,"InputCustomHot",WS_TABSTOP,46,348,55,12
+    RTEXT           "Save 0:",IDC_LABEL_UP11,8,52,30,10
+    RTEXT           "Save 1:",IDC_LABEL_UP2,8,66,30,10
+    RTEXT           "Save 2:",IDC_LABEL_UP3,8,80,30,10
+    RTEXT           "Save 3:",IDC_LABEL_UP4,8,94,30,10
+    RTEXT           "Save 4:",IDC_LABEL_UP5,8,108,30,10
+    RTEXT           "Save 5:",IDC_LABEL_UP6,8,122,30,10
+    RTEXT           "Save 6:",IDC_LABEL_UP7,8,136,30,10
+    RTEXT           "Save 7:",IDC_LABEL_UP8,8,150,30,10
+    RTEXT           "Save 8:",IDC_LABEL_UP9,8,164,30,10
+    RTEXT           "Save 9:",IDC_LABEL_UP10,8,178,30,10
+    CONTROL         "",IDC_SAVE1,"InputCustomHot",WS_TABSTOP,42,52,52,12
+    CONTROL         "",IDC_SAVE2,"InputCustomHot",WS_TABSTOP,42,66,52,12
+    CONTROL         "",IDC_SAVE3,"InputCustomHot",WS_TABSTOP,42,80,52,12
+    CONTROL         "",IDC_SAVE4,"InputCustomHot",WS_TABSTOP,42,94,52,12
+    CONTROL         "",IDC_SAVE5,"InputCustomHot",WS_TABSTOP,42,108,52,12
+    CONTROL         "",IDC_SAVE6,"InputCustomHot",WS_TABSTOP,42,122,52,12
+    CONTROL         "",IDC_SAVE7,"InputCustomHot",WS_TABSTOP,42,136,52,12
+    CONTROL         "",IDC_SAVE8,"InputCustomHot",WS_TABSTOP,42,150,52,12
+    CONTROL         "",IDC_SAVE9,"InputCustomHot",WS_TABSTOP,42,164,52,12
+    CONTROL         "",IDC_SAVE10,"InputCustomHot",WS_TABSTOP,42,178,52,12
     // Col 2 — Load 0..9
-    RTEXT           "Load 0:",IDC_LABEL_UP21,108,222,30,10
-    RTEXT           "Load 1:",IDC_LABEL_UP12,108,236,30,10
-    RTEXT           "Load 2:",IDC_LABEL_UP13,108,250,30,10
-    RTEXT           "Load 3:",IDC_LABEL_UP14,108,264,30,10
-    RTEXT           "Load 4:",IDC_LABEL_UP15,108,278,30,10
-    RTEXT           "Load 5:",IDC_LABEL_UP16,108,292,30,10
-    RTEXT           "Load 6:",IDC_LABEL_UP17,108,306,30,10
-    RTEXT           "Load 7:",IDC_LABEL_UP18,108,320,30,10
-    RTEXT           "Load 8:",IDC_LABEL_UP19,108,334,30,10
-    RTEXT           "Load 9:",IDC_LABEL_UP20,108,348,30,10
-    CONTROL         "",IDC_SAVE11,"InputCustomHot",WS_TABSTOP,142,222,55,12
-    CONTROL         "",IDC_SAVE12,"InputCustomHot",WS_TABSTOP,142,236,55,12
-    CONTROL         "",IDC_SAVE13,"InputCustomHot",WS_TABSTOP,142,250,55,12
-    CONTROL         "",IDC_SAVE14,"InputCustomHot",WS_TABSTOP,142,264,55,12
-    CONTROL         "",IDC_SAVE15,"InputCustomHot",WS_TABSTOP,142,278,55,12
-    CONTROL         "",IDC_SAVE16,"InputCustomHot",WS_TABSTOP,142,292,55,12
-    CONTROL         "",IDC_SAVE17,"InputCustomHot",WS_TABSTOP,142,306,55,12
-    CONTROL         "",IDC_SAVE18,"InputCustomHot",WS_TABSTOP,142,320,55,12
-    CONTROL         "",IDC_SAVE19,"InputCustomHot",WS_TABSTOP,142,334,55,12
-    CONTROL         "",IDC_SAVE20,"InputCustomHot",WS_TABSTOP,142,348,55,12
+    RTEXT           "Load 0:",IDC_LABEL_UP21,100,52,30,10
+    RTEXT           "Load 1:",IDC_LABEL_UP12,100,66,30,10
+    RTEXT           "Load 2:",IDC_LABEL_UP13,100,80,30,10
+    RTEXT           "Load 3:",IDC_LABEL_UP14,100,94,30,10
+    RTEXT           "Load 4:",IDC_LABEL_UP15,100,108,30,10
+    RTEXT           "Load 5:",IDC_LABEL_UP16,100,122,30,10
+    RTEXT           "Load 6:",IDC_LABEL_UP17,100,136,30,10
+    RTEXT           "Load 7:",IDC_LABEL_UP18,100,150,30,10
+    RTEXT           "Load 8:",IDC_LABEL_UP19,100,164,30,10
+    RTEXT           "Load 9:",IDC_LABEL_UP20,100,178,30,10
+    CONTROL         "",IDC_SAVE11,"InputCustomHot",WS_TABSTOP,134,52,52,12
+    CONTROL         "",IDC_SAVE12,"InputCustomHot",WS_TABSTOP,134,66,52,12
+    CONTROL         "",IDC_SAVE13,"InputCustomHot",WS_TABSTOP,134,80,52,12
+    CONTROL         "",IDC_SAVE14,"InputCustomHot",WS_TABSTOP,134,94,52,12
+    CONTROL         "",IDC_SAVE15,"InputCustomHot",WS_TABSTOP,134,108,52,12
+    CONTROL         "",IDC_SAVE16,"InputCustomHot",WS_TABSTOP,134,122,52,12
+    CONTROL         "",IDC_SAVE17,"InputCustomHot",WS_TABSTOP,134,136,52,12
+    CONTROL         "",IDC_SAVE18,"InputCustomHot",WS_TABSTOP,134,150,52,12
+    CONTROL         "",IDC_SAVE19,"InputCustomHot",WS_TABSTOP,134,164,52,12
+    CONTROL         "",IDC_SAVE20,"InputCustomHot",WS_TABSTOP,134,178,52,12
     // Col 3 — Select Slot 0..9
-    RTEXT           "Select 0:",IDC_LABEL_SELSLOT_0,204,222,40,10
-    RTEXT           "Select 1:",IDC_LABEL_SELSLOT_1,204,236,40,10
-    RTEXT           "Select 2:",IDC_LABEL_SELSLOT_2,204,250,40,10
-    RTEXT           "Select 3:",IDC_LABEL_SELSLOT_3,204,264,40,10
-    RTEXT           "Select 4:",IDC_LABEL_SELSLOT_4,204,278,40,10
-    RTEXT           "Select 5:",IDC_LABEL_SELSLOT_5,204,292,40,10
-    RTEXT           "Select 6:",IDC_LABEL_SELSLOT_6,204,306,40,10
-    RTEXT           "Select 7:",IDC_LABEL_SELSLOT_7,204,320,40,10
-    RTEXT           "Select 8:",IDC_LABEL_SELSLOT_8,204,334,40,10
-    RTEXT           "Select 9:",IDC_LABEL_SELSLOT_9,204,348,40,10
-    CONTROL         "",IDC_SELSLOT_0,"InputCustomHot",WS_TABSTOP,248,222,55,12
-    CONTROL         "",IDC_SELSLOT_1,"InputCustomHot",WS_TABSTOP,248,236,55,12
-    CONTROL         "",IDC_SELSLOT_2,"InputCustomHot",WS_TABSTOP,248,250,55,12
-    CONTROL         "",IDC_SELSLOT_3,"InputCustomHot",WS_TABSTOP,248,264,55,12
-    CONTROL         "",IDC_SELSLOT_4,"InputCustomHot",WS_TABSTOP,248,278,55,12
-    CONTROL         "",IDC_SELSLOT_5,"InputCustomHot",WS_TABSTOP,248,292,55,12
-    CONTROL         "",IDC_SELSLOT_6,"InputCustomHot",WS_TABSTOP,248,306,55,12
-    CONTROL         "",IDC_SELSLOT_7,"InputCustomHot",WS_TABSTOP,248,320,55,12
-    CONTROL         "",IDC_SELSLOT_8,"InputCustomHot",WS_TABSTOP,248,334,55,12
-    CONTROL         "",IDC_SELSLOT_9,"InputCustomHot",WS_TABSTOP,248,348,55,12
+    RTEXT           "Select 0:",IDC_LABEL_SELSLOT_0,192,52,40,10
+    RTEXT           "Select 1:",IDC_LABEL_SELSLOT_1,192,66,40,10
+    RTEXT           "Select 2:",IDC_LABEL_SELSLOT_2,192,80,40,10
+    RTEXT           "Select 3:",IDC_LABEL_SELSLOT_3,192,94,40,10
+    RTEXT           "Select 4:",IDC_LABEL_SELSLOT_4,192,108,40,10
+    RTEXT           "Select 5:",IDC_LABEL_SELSLOT_5,192,122,40,10
+    RTEXT           "Select 6:",IDC_LABEL_SELSLOT_6,192,136,40,10
+    RTEXT           "Select 7:",IDC_LABEL_SELSLOT_7,192,150,40,10
+    RTEXT           "Select 8:",IDC_LABEL_SELSLOT_8,192,164,40,10
+    RTEXT           "Select 9:",IDC_LABEL_SELSLOT_9,192,178,40,10
+    CONTROL         "",IDC_SELSLOT_0,"InputCustomHot",WS_TABSTOP,236,52,52,12
+    CONTROL         "",IDC_SELSLOT_1,"InputCustomHot",WS_TABSTOP,236,66,52,12
+    CONTROL         "",IDC_SELSLOT_2,"InputCustomHot",WS_TABSTOP,236,80,52,12
+    CONTROL         "",IDC_SELSLOT_3,"InputCustomHot",WS_TABSTOP,236,94,52,12
+    CONTROL         "",IDC_SELSLOT_4,"InputCustomHot",WS_TABSTOP,236,108,52,12
+    CONTROL         "",IDC_SELSLOT_5,"InputCustomHot",WS_TABSTOP,236,122,52,12
+    CONTROL         "",IDC_SELSLOT_6,"InputCustomHot",WS_TABSTOP,236,136,52,12
+    CONTROL         "",IDC_SELSLOT_7,"InputCustomHot",WS_TABSTOP,236,150,52,12
+    CONTROL         "",IDC_SELSLOT_8,"InputCustomHot",WS_TABSTOP,236,164,52,12
+    CONTROL         "",IDC_SELSLOT_9,"InputCustomHot",WS_TABSTOP,236,178,52,12
     // Col 4 — Tools
-    RTEXT           "Save #:",IDC_LABEL_UP24,310,222,46,10
-    CONTROL         "",IDC_SLOTSAVE,"InputCustomHot",WS_TABSTOP,358,222,42,12
-    RTEXT           "Load #:",IDC_LABEL_UP25,310,236,46,10
-    CONTROL         "",IDC_SLOTLOAD,"InputCustomHot",WS_TABSTOP,358,236,42,12
-    RTEXT           "Slot +:",IDC_LABEL_UP23,310,250,46,10
-    CONTROL         "",IDC_SLOTPLUS,"InputCustomHot",WS_TABSTOP,358,250,42,12
-    RTEXT           "Slot -:",IDC_LABEL_UP22,310,264,46,10
-    CONTROL         "",IDC_SLOTMINUS,"InputCustomHot",WS_TABSTOP,358,264,42,12
-    RTEXT           "Bank +:",IDC_LABEL_UP29,310,278,46,10
-    CONTROL         "",IDC_BANKPLUS,"InputCustomHot",WS_TABSTOP,358,278,42,12
-    RTEXT           "Bank -:",IDC_LABEL_UP28,310,292,46,10
-    CONTROL         "",IDC_BANKMINUS,"InputCustomHot",WS_TABSTOP,358,292,42,12
-    RTEXT           "Save Dlg:",IDC_LABEL_UP26,304,306,52,10
-    CONTROL         "",IDC_DIALOGSAVE,"InputCustomHot",WS_TABSTOP,358,306,42,12
-    RTEXT           "Load Dlg:",IDC_LABEL_UP27,304,320,52,10
-    CONTROL         "",IDC_DIALOGLOAD,"InputCustomHot",WS_TABSTOP,358,320,42,12
-    RTEXT           "Save File:",IDC_LABEL_SAVETOFILE,304,334,52,10
-    CONTROL         "",IDC_SAVETOFILE,"InputCustomHot",WS_TABSTOP,358,334,42,12
-    RTEXT           "Load File:",IDC_LABEL_LOADFROMFILE,304,348,52,10
-    CONTROL         "",IDC_LOADFROMFILE,"InputCustomHot",WS_TABSTOP,358,348,42,12
+    RTEXT           "Save #:",IDC_LABEL_UP24,295,52,46,10
+    CONTROL         "",IDC_SLOTSAVE,"InputCustomHot",WS_TABSTOP,343,52,55,12
+    RTEXT           "Load #:",IDC_LABEL_UP25,295,66,46,10
+    CONTROL         "",IDC_SLOTLOAD,"InputCustomHot",WS_TABSTOP,343,66,55,12
+    RTEXT           "Slot +:",IDC_LABEL_UP23,295,80,46,10
+    CONTROL         "",IDC_SLOTPLUS,"InputCustomHot",WS_TABSTOP,343,80,55,12
+    RTEXT           "Slot -:",IDC_LABEL_UP22,295,94,46,10
+    CONTROL         "",IDC_SLOTMINUS,"InputCustomHot",WS_TABSTOP,343,94,55,12
+    RTEXT           "Bank +:",IDC_LABEL_UP29,295,108,46,10
+    CONTROL         "",IDC_BANKPLUS,"InputCustomHot",WS_TABSTOP,343,108,55,12
+    RTEXT           "Bank -:",IDC_LABEL_UP28,295,122,46,10
+    CONTROL         "",IDC_BANKMINUS,"InputCustomHot",WS_TABSTOP,343,122,55,12
+    RTEXT           "Save Dlg:",IDC_LABEL_UP26,289,136,52,10
+    CONTROL         "",IDC_DIALOGSAVE,"InputCustomHot",WS_TABSTOP,343,136,55,12
+    RTEXT           "Load Dlg:",IDC_LABEL_UP27,289,150,52,10
+    CONTROL         "",IDC_DIALOGLOAD,"InputCustomHot",WS_TABSTOP,343,150,55,12
+    RTEXT           "Save File:",IDC_LABEL_SAVETOFILE,289,164,52,10
+    CONTROL         "",IDC_SAVETOFILE,"InputCustomHot",WS_TABSTOP,343,164,55,12
+    RTEXT           "Load File:",IDC_LABEL_LOADFROMFILE,289,178,52,10
+    CONTROL         "",IDC_LOADFROMFILE,"InputCustomHot",WS_TABSTOP,343,178,55,12
 
-    LTEXT           "Blue means the hotkey is already mapped. Pink means it conflicts with a game button. Red means it's reserved by Windows. Escape clears bindings.\nPress multiple keys for multi-bind. Delete removes last.",IDC_LABEL_BLUE,7,370,290,48
-    PUSHBUTTON      "OK",IDOK,300,400,48,14
-    PUSHBUTTON      "Cancel",IDCANCEL,354,400,48,14
+    LTEXT           "Blue means the hotkey is already mapped. Pink means it conflicts with a game button. Red means it's reserved by Windows. Escape clears bindings.\nPress multiple keys for multi-bind. Delete removes last.",IDC_LABEL_BLUE,7,208,290,40
+    PUSHBUTTON      "OK",IDOK,300,237,48,14
+    PUSHBUTTON      "Cancel",IDCANCEL,354,237,48,14
 END
 
 IDD_MULTICART DIALOGEX 0, 0, 390, 90
