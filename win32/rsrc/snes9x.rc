@@ -344,22 +344,22 @@ BEGIN
     LTEXT           "",IDC_DEVICENAME,210,36,165,8
     COMBOBOX        IDC_BINDINGCOMBO,12,40,60,40,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
     CONTROL         "Enabled",IDC_ALLOWMULTIBIND,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,80,42,50,10
-    CONTROL         "WOG!",IDC_UP,"InputCustom",WS_TABSTOP,50,64,100,12,WS_EX_CLIENTEDGE
-    CONTROL         "",IDC_LEFT,"InputCustom",WS_TABSTOP,50,77,100,12,WS_EX_CLIENTEDGE
-    CONTROL         "",IDC_DOWN,"InputCustom",WS_TABSTOP,50,90,100,12,WS_EX_CLIENTEDGE
-    CONTROL         "",IDC_RIGHT,"InputCustom",WS_TABSTOP,50,103,100,12,WS_EX_CLIENTEDGE
-    CONTROL         "",IDC_B,"InputCustom",WS_TABSTOP,50,116,100,12,WS_EX_CLIENTEDGE
-    CONTROL         "",IDC_A,"InputCustom",WS_TABSTOP,50,129,100,12,WS_EX_CLIENTEDGE
-    CONTROL         "",IDC_Y,"InputCustom",WS_TABSTOP,50,142,100,12,WS_EX_CLIENTEDGE
-    CONTROL         "",IDC_X,"InputCustom",WS_TABSTOP,50,155,100,12,WS_EX_CLIENTEDGE
-    CONTROL         " ",IDC_START,"InputCustom",WS_TABSTOP,190,64,100,12,WS_EX_CLIENTEDGE
-    CONTROL         " ",IDC_SELECT,"InputCustom",WS_TABSTOP,190,77,100,12,WS_EX_CLIENTEDGE
-    CONTROL         " ",IDC_L,"InputCustom",WS_TABSTOP,190,90,100,12,WS_EX_CLIENTEDGE
-    CONTROL         " ",IDC_R,"InputCustom",WS_TABSTOP,190,103,100,12,WS_EX_CLIENTEDGE
-    CONTROL         " ",IDC_UPLEFT,"InputCustom",WS_DISABLED | WS_TABSTOP,190,116,100,12,WS_EX_CLIENTEDGE
-    CONTROL         " ",IDC_UPRIGHT,"InputCustom",WS_DISABLED | WS_TABSTOP,190,129,100,12,WS_EX_CLIENTEDGE
-    CONTROL         " ",IDC_DWNRIGHT,"InputCustom",WS_DISABLED | WS_TABSTOP,190,142,100,12,WS_EX_CLIENTEDGE
-    CONTROL         " ",IDC_DWNLEFT,"InputCustom",WS_DISABLED | WS_TABSTOP,190,155,100,12,WS_EX_CLIENTEDGE
+    CONTROL         "WOG!",IDC_UP,"InputCustom",WS_TABSTOP,50,64,100,12
+    CONTROL         "",IDC_LEFT,"InputCustom",WS_TABSTOP,50,77,100,12
+    CONTROL         "",IDC_DOWN,"InputCustom",WS_TABSTOP,50,90,100,12
+    CONTROL         "",IDC_RIGHT,"InputCustom",WS_TABSTOP,50,103,100,12
+    CONTROL         "",IDC_B,"InputCustom",WS_TABSTOP,50,116,100,12
+    CONTROL         "",IDC_A,"InputCustom",WS_TABSTOP,50,129,100,12
+    CONTROL         "",IDC_Y,"InputCustom",WS_TABSTOP,50,142,100,12
+    CONTROL         "",IDC_X,"InputCustom",WS_TABSTOP,50,155,100,12
+    CONTROL         " ",IDC_START,"InputCustom",WS_TABSTOP,190,64,100,12
+    CONTROL         " ",IDC_SELECT,"InputCustom",WS_TABSTOP,190,77,100,12
+    CONTROL         " ",IDC_L,"InputCustom",WS_TABSTOP,190,90,100,12
+    CONTROL         " ",IDC_R,"InputCustom",WS_TABSTOP,190,103,100,12
+    CONTROL         " ",IDC_UPLEFT,"InputCustom",WS_DISABLED | WS_TABSTOP,190,116,100,12
+    CONTROL         " ",IDC_UPRIGHT,"InputCustom",WS_DISABLED | WS_TABSTOP,190,129,100,12
+    CONTROL         " ",IDC_DWNRIGHT,"InputCustom",WS_DISABLED | WS_TABSTOP,190,142,100,12
+    CONTROL         " ",IDC_DWNLEFT,"InputCustom",WS_DISABLED | WS_TABSTOP,190,155,100,12
     PUSHBUTTON      "Cancel",IDCANCEL,326,192,48,14
     PUSHBUTTON      "OK",IDOK,272,192,48,14
     LTEXT           "Blue means already mapped. Pink conflicts with hotkey.\nRed is reserved by Windows. Escape clears bindings.\nPress multiple keys for multi-bind. Delete removes last.",IDC_LABEL_BLUE,155,0,220,26
@@ -531,109 +531,153 @@ BEGIN
     CONTROL         "Clear SRAM",IDC_CLEARSRAM,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,12,96,70,10
 END
 
-IDD_KEYCUSTOM DIALOGEX 0, 0, 409, 331
+IDD_KEYCUSTOM DIALOGEX 0, 0, 410, 400
 STYLE DS_SETFONT | DS_MODALFRAME | DS_3DLOOK | DS_FIXEDSYS | DS_CENTER | WS_POPUP | WS_CLIPCHILDREN | WS_CAPTION
 CAPTION "Customize Special Keys"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
+    GROUPBOX        "Binding",IDC_STATIC,5,0,142,24,0,WS_EX_TRANSPARENT
     COMBOBOX        IDC_BINDINGCOMBO_HK,12,8,60,40,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
     CONTROL         "Enabled",IDC_ALLOWMULTIBIND_HK,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,80,10,50,10
-    GROUPBOX        "Binding",IDC_STATIC,5,0,142,24,0,WS_EX_TRANSPARENT
     CONTROL         "Master Hotkey",IDC_MASTERHOTKEY_ENABLE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,160,4,62,10
     RTEXT           "Key:",IDC_LABEL_MASTERHOTKEY,224,4,16,10
-    CONTROL         "",IDC_MASTERHOTKEY_BIND,"InputCustomHot",WS_TABSTOP,244,2,60,12,WS_EX_CLIENTEDGE
-    COMBOBOX        IDC_HKCOMBO,6,28,60,60,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
-    PUSHBUTTON      "Cancel",IDCANCEL,354,311,48,14
-    PUSHBUTTON      "OK",IDOK,300,311,48,14
-    RTEXT           "Speed +:",IDC_LABEL_HK1,12,50,72,12
-    RTEXT           "Frame advance:",IDC_LABEL_HK4,12,95,72,12
-    RTEXT           "Speed -:",IDC_LABEL_HK2,12,65,72,12
-    RTEXT           "Pause:",IDC_LABEL_HK3,12,80,72,12
-    RTEXT           "Frameskip +:",IDC_LABEL_HK6,12,125,72,12
-    RTEXT           "Movie frame count:",IDC_LABEL_HK11,12,200,72,12
-    RTEXT           "SuperScope turbo:",IDC_LABEL_HK8,12,155,72,12
-    RTEXT           "Movie read-only:",IDC_LABEL_HK12,12,215,72,12
-    RTEXT           "SuperScope pause:",IDC_LABEL_HK9,12,170,72,12
-    RTEXT           "Frameskip -:",IDC_LABEL_HK7,12,140,72,12
-    CONTROL         "",IDC_HOTKEY1,"InputCustomHot",WS_TABSTOP,90,50,60,12,WS_EX_CLIENTEDGE
-    CONTROL         "",IDC_HOTKEY2,"InputCustomHot",WS_TABSTOP,90,65,60,12,WS_EX_CLIENTEDGE
-    CONTROL         "",IDC_HOTKEY3,"InputCustomHot",WS_TABSTOP,90,80,60,12,WS_EX_CLIENTEDGE
-    CONTROL         "",IDC_HOTKEY4,"InputCustomHot",WS_TABSTOP,90,95,60,12,WS_EX_CLIENTEDGE
-    CONTROL         "",IDC_HOTKEY5,"InputCustomHot",WS_TABSTOP,90,110,60,12,WS_EX_CLIENTEDGE
-    CONTROL         "",IDC_HOTKEY6,"InputCustomHot",WS_TABSTOP,90,125,60,12,WS_EX_CLIENTEDGE
-    CONTROL         "",IDC_HOTKEY7,"InputCustomHot",WS_TABSTOP,90,140,60,12,WS_EX_CLIENTEDGE
-    CONTROL         "",IDC_HOTKEY8,"InputCustomHot",WS_TABSTOP,90,155,60,12,WS_EX_CLIENTEDGE
-    CONTROL         "",IDC_HOTKEY9,"InputCustomHot",WS_TABSTOP,90,170,60,12,WS_EX_CLIENTEDGE
-    CONTROL         "",IDC_HOTKEY10,"InputCustomHot",WS_TABSTOP,90,185,60,12,WS_EX_CLIENTEDGE
-    CONTROL         "",IDC_HOTKEY11,"InputCustomHot",WS_TABSTOP,90,200,60,12,WS_EX_CLIENTEDGE
-    CONTROL         "",IDC_HOTKEY12,"InputCustomHot",WS_TABSTOP,90,215,60,12,WS_EX_CLIENTEDGE
-    CONTROL         "",IDC_HOTKEY13,"InputCustomHot",WS_TABSTOP,90,230,60,12,WS_EX_CLIENTEDGE
-    CONTROL         "",IDC_HOTKEY14,"InputCustomHot",WS_TABSTOP,90,245,60,12,WS_EX_CLIENTEDGE
-    CONTROL         "",IDC_HOTKEY15,"InputCustomHot",WS_TABSTOP,90,260,60,12,WS_EX_CLIENTEDGE
-    CONTROL         "",IDC_SAVE1,"InputCustomHot",WS_TABSTOP,217,50,60,12,WS_EX_CLIENTEDGE
-    RTEXT           "Save 1:",IDC_LABEL_UP2,181,65,30,12
-    CONTROL         "",IDC_SAVE2,"InputCustomHot",WS_TABSTOP,217,65,60,12,WS_EX_CLIENTEDGE
-    RTEXT           "Save 2:",IDC_LABEL_UP3,181,80,30,12
-    CONTROL         "",IDC_SAVE3,"InputCustomHot",WS_TABSTOP,217,80,60,12,WS_EX_CLIENTEDGE
-    RTEXT           "Save 3:",IDC_LABEL_UP4,181,95,30,12
-    CONTROL         "",IDC_SAVE4,"InputCustomHot",WS_TABSTOP,217,95,60,12,WS_EX_CLIENTEDGE
-    RTEXT           "Save 4:",IDC_LABEL_UP5,181,110,30,12
-    CONTROL         "",IDC_SAVE5,"InputCustomHot",WS_TABSTOP,217,110,60,12,WS_EX_CLIENTEDGE
-    RTEXT           "Save 5:",IDC_LABEL_UP6,181,125,30,12
-    CONTROL         "",IDC_SAVE6,"InputCustomHot",WS_TABSTOP,217,125,60,12,WS_EX_CLIENTEDGE
-    RTEXT           "Save 6:",IDC_LABEL_UP7,181,140,30,12
-    CONTROL         "",IDC_SAVE7,"InputCustomHot",WS_TABSTOP,217,140,60,12,WS_EX_CLIENTEDGE
-    RTEXT           "Save 7:",IDC_LABEL_UP8,181,155,30,12
-    CONTROL         "",IDC_SAVE8,"InputCustomHot",WS_TABSTOP,217,155,60,12,WS_EX_CLIENTEDGE
-    RTEXT           "Save 8:",IDC_LABEL_UP9,181,170,30,12
-    CONTROL         "",IDC_SAVE9,"InputCustomHot",WS_TABSTOP,217,170,60,12,WS_EX_CLIENTEDGE
-    RTEXT           "Save 9:",IDC_LABEL_UP10,181,185,30,12
-    CONTROL         "",IDC_SAVE10,"InputCustomHot",WS_TABSTOP,217,185,60,12,WS_EX_CLIENTEDGE
-    RTEXT           "Save 0:",IDC_LABEL_UP11,181,50,30,12
-    CONTROL         "",IDC_SAVE11,"InputCustomHot",WS_TABSTOP,336,50,60,12,WS_EX_CLIENTEDGE
-    RTEXT           "Load 1:",IDC_LABEL_UP12,300,65,30,12
-    CONTROL         "",IDC_SAVE12,"InputCustomHot",WS_TABSTOP,336,65,60,12,WS_EX_CLIENTEDGE
-    RTEXT           "Load 2:",IDC_LABEL_UP13,300,80,30,12
-    CONTROL         "",IDC_SAVE13,"InputCustomHot",WS_TABSTOP,336,80,60,12,WS_EX_CLIENTEDGE
-    RTEXT           "Load 3:",IDC_LABEL_UP14,300,95,30,12
-    CONTROL         "",IDC_SAVE14,"InputCustomHot",WS_TABSTOP,336,95,60,12,WS_EX_CLIENTEDGE
-    RTEXT           "Load 4:",IDC_LABEL_UP15,300,110,30,12
-    CONTROL         "",IDC_SAVE15,"InputCustomHot",WS_TABSTOP,336,110,60,12,WS_EX_CLIENTEDGE
-    RTEXT           "Load 5:",IDC_LABEL_UP16,300,125,30,12
-    CONTROL         "",IDC_SAVE16,"InputCustomHot",WS_TABSTOP,336,125,60,12,WS_EX_CLIENTEDGE
-    RTEXT           "Load 6:",IDC_LABEL_UP17,300,140,30,12
-    CONTROL         "",IDC_SAVE17,"InputCustomHot",WS_TABSTOP,336,140,60,12,WS_EX_CLIENTEDGE
-    RTEXT           "Load 7:",IDC_LABEL_UP18,300,155,30,12
-    CONTROL         "",IDC_SAVE18,"InputCustomHot",WS_TABSTOP,336,155,60,12,WS_EX_CLIENTEDGE
-    RTEXT           "Load 8:",IDC_LABEL_UP19,300,170,30,12
-    CONTROL         "",IDC_SAVE19,"InputCustomHot",WS_TABSTOP,336,170,60,12,WS_EX_CLIENTEDGE
-    RTEXT           "Load 9:",IDC_LABEL_UP20,300,185,30,12
-    CONTROL         "",IDC_SAVE20,"InputCustomHot",WS_TABSTOP,336,185,60,12,WS_EX_CLIENTEDGE
-    RTEXT           "Load 0:",IDC_LABEL_UP21,300,50,30,12
-    CONTROL         "",IDC_BANKMINUS,"InputCustomHot",WS_TABSTOP,217,200,60,12,WS_EX_CLIENTEDGE
-    RTEXT           "Bank -:",IDC_LABEL_UP28,165,200,46,12
-    CONTROL         "",IDC_BANKPLUS,"InputCustomHot",WS_TABSTOP,336,200,60,12,WS_EX_CLIENTEDGE
-    RTEXT           "Bank +:",IDC_LABEL_UP29,284,200,46,12
-    RTEXT           "Save Dialog:",IDC_LABEL_UP26,165,215,46,12
-    CONTROL         "",IDC_DIALOGSAVE,"InputCustomHot",WS_TABSTOP,217,215,60,12,WS_EX_CLIENTEDGE
-    CONTROL         "",IDC_DIALOGLOAD,"InputCustomHot",WS_TABSTOP,336,215,60,12,WS_EX_CLIENTEDGE
-    RTEXT           "Load Dialog:",IDC_LABEL_UP27,284,215,46,12
-    RTEXT           "Fast-forward:",IDC_LABEL_HK5,12,110,72,12
-    RTEXT           "Show pressed keys:",IDC_LABEL_HK10,12,185,72,12
-    RTEXT           "Save screenshot:",IDC_LABEL_HK13,12,230,72,12
-    RTEXT           "Slot -:",IDC_LABEL_UP22,181,230,30,12
-    CONTROL         "",IDC_SLOTMINUS,"InputCustomHot",WS_TABSTOP,217,230,60,12,WS_EX_CLIENTEDGE
-    RTEXT           "Slot +:",IDC_LABEL_UP23,300,230,30,12
-    CONTROL         "",IDC_SLOTPLUS,"InputCustomHot",WS_TABSTOP,336,230,60,12,WS_EX_CLIENTEDGE
-    RTEXT           "Save #:",IDC_LABEL_UP24,181,245,30,12
-    CONTROL         "",IDC_SLOTSAVE,"InputCustomHot",WS_TABSTOP,217,245,60,12,WS_EX_CLIENTEDGE
-    RTEXT           "Load #:",IDC_LABEL_UP25,300,245,30,12
-    CONTROL         "",IDC_SLOTLOAD,"InputCustomHot",WS_TABSTOP,336,245,60,12,WS_EX_CLIENTEDGE
-    LTEXT           "Blue means the hotkey is already mapped. Pink means it conflicts with a game button. Red means it's reserved by Windows. Escape clears bindings.\nPress multiple keys for multi-bind. Delete removes last.",IDC_LABEL_BLUE,7,291,269,34
-    GROUPBOX        "",IDC_STATIC,6,41,149,241,0,WS_EX_TRANSPARENT
-    GROUPBOX        "Save States",IDC_STATIC,161,41,241,241,0,WS_EX_TRANSPARENT
-    RTEXT           "Save screenshot:",IDC_LABEL_HK14,11,245,72,12
-    RTEXT           "Reset speed:",IDC_LABEL_HK15,11,260,72,12
+    CONTROL         "",IDC_MASTERHOTKEY_BIND,"InputCustomHot",WS_TABSTOP,244,2,60,12
+
+    // Tab control with 3 tabs (Emulation / Turbo / Display & Tools).
+    // Switchable IDC_HOTKEY1..18 generic slots live INSIDE the tab content area.
+    CONTROL         "",IDC_HOTKEY_TABS,"SysTabControl32",WS_TABSTOP,5,28,400,170
+
+    // Tab content: 2 columns x 9 rows of generic switchable slots.
+    // Column 1: label x=10..82, control x=86..146
+    // Column 2: label x=205..277, control x=281..341
+    RTEXT           "",IDC_LABEL_HK1,10,52,72,10
+    RTEXT           "",IDC_LABEL_HK2,10,66,72,10
+    RTEXT           "",IDC_LABEL_HK3,10,80,72,10
+    RTEXT           "",IDC_LABEL_HK4,10,94,72,10
+    RTEXT           "",IDC_LABEL_HK5,10,108,72,10
+    RTEXT           "",IDC_LABEL_HK6,10,122,72,10
+    RTEXT           "",IDC_LABEL_HK7,10,136,72,10
+    RTEXT           "",IDC_LABEL_HK8,10,150,72,10
+    RTEXT           "",IDC_LABEL_HK9,10,164,72,10
+    RTEXT           "",IDC_LABEL_HK10,205,52,72,10
+    RTEXT           "",IDC_LABEL_HK11,205,66,72,10
+    RTEXT           "",IDC_LABEL_HK12,205,80,72,10
+    RTEXT           "",IDC_LABEL_HK13,205,94,72,10
+    RTEXT           "",IDC_LABEL_HK14,205,108,72,10
+    RTEXT           "",IDC_LABEL_HK15,205,122,72,10
+    RTEXT           "",IDC_LABEL_HK16,205,136,72,10
+    RTEXT           "",IDC_LABEL_HK17,205,150,72,10
+    RTEXT           "",IDC_LABEL_HK18,205,164,72,10
+    CONTROL         "",IDC_HOTKEY1,"InputCustomHot",WS_TABSTOP,86,52,60,12
+    CONTROL         "",IDC_HOTKEY2,"InputCustomHot",WS_TABSTOP,86,66,60,12
+    CONTROL         "",IDC_HOTKEY3,"InputCustomHot",WS_TABSTOP,86,80,60,12
+    CONTROL         "",IDC_HOTKEY4,"InputCustomHot",WS_TABSTOP,86,94,60,12
+    CONTROL         "",IDC_HOTKEY5,"InputCustomHot",WS_TABSTOP,86,108,60,12
+    CONTROL         "",IDC_HOTKEY6,"InputCustomHot",WS_TABSTOP,86,122,60,12
+    CONTROL         "",IDC_HOTKEY7,"InputCustomHot",WS_TABSTOP,86,136,60,12
+    CONTROL         "",IDC_HOTKEY8,"InputCustomHot",WS_TABSTOP,86,150,60,12
+    CONTROL         "",IDC_HOTKEY9,"InputCustomHot",WS_TABSTOP,86,164,60,12
+    CONTROL         "",IDC_HOTKEY10,"InputCustomHot",WS_TABSTOP,281,52,60,12
+    CONTROL         "",IDC_HOTKEY11,"InputCustomHot",WS_TABSTOP,281,66,60,12
+    CONTROL         "",IDC_HOTKEY12,"InputCustomHot",WS_TABSTOP,281,80,60,12
+    CONTROL         "",IDC_HOTKEY13,"InputCustomHot",WS_TABSTOP,281,94,60,12
+    CONTROL         "",IDC_HOTKEY14,"InputCustomHot",WS_TABSTOP,281,108,60,12
+    CONTROL         "",IDC_HOTKEY15,"InputCustomHot",WS_TABSTOP,281,122,60,12
+    CONTROL         "",IDC_HOTKEY16,"InputCustomHot",WS_TABSTOP,281,136,60,12
+    CONTROL         "",IDC_HOTKEY17,"InputCustomHot",WS_TABSTOP,281,150,60,12
+    CONTROL         "",IDC_HOTKEY18,"InputCustomHot",WS_TABSTOP,281,164,60,12
+
+    // Save States panel — always visible. Lives BELOW the tab control so its
+    // controls never overlap the switchable IDC_HOTKEY slots, no show/hide cycles.
+    GROUPBOX        "Save States",IDC_STATIC,5,205,400,160,0,WS_EX_TRANSPARENT
+    // Col 1 — Save 0..9
+    RTEXT           "Save 0:",IDC_LABEL_UP11,12,222,30,10
+    RTEXT           "Save 1:",IDC_LABEL_UP2,12,236,30,10
+    RTEXT           "Save 2:",IDC_LABEL_UP3,12,250,30,10
+    RTEXT           "Save 3:",IDC_LABEL_UP4,12,264,30,10
+    RTEXT           "Save 4:",IDC_LABEL_UP5,12,278,30,10
+    RTEXT           "Save 5:",IDC_LABEL_UP6,12,292,30,10
+    RTEXT           "Save 6:",IDC_LABEL_UP7,12,306,30,10
+    RTEXT           "Save 7:",IDC_LABEL_UP8,12,320,30,10
+    RTEXT           "Save 8:",IDC_LABEL_UP9,12,334,30,10
+    RTEXT           "Save 9:",IDC_LABEL_UP10,12,348,30,10
+    CONTROL         "",IDC_SAVE1,"InputCustomHot",WS_TABSTOP,46,222,55,12
+    CONTROL         "",IDC_SAVE2,"InputCustomHot",WS_TABSTOP,46,236,55,12
+    CONTROL         "",IDC_SAVE3,"InputCustomHot",WS_TABSTOP,46,250,55,12
+    CONTROL         "",IDC_SAVE4,"InputCustomHot",WS_TABSTOP,46,264,55,12
+    CONTROL         "",IDC_SAVE5,"InputCustomHot",WS_TABSTOP,46,278,55,12
+    CONTROL         "",IDC_SAVE6,"InputCustomHot",WS_TABSTOP,46,292,55,12
+    CONTROL         "",IDC_SAVE7,"InputCustomHot",WS_TABSTOP,46,306,55,12
+    CONTROL         "",IDC_SAVE8,"InputCustomHot",WS_TABSTOP,46,320,55,12
+    CONTROL         "",IDC_SAVE9,"InputCustomHot",WS_TABSTOP,46,334,55,12
+    CONTROL         "",IDC_SAVE10,"InputCustomHot",WS_TABSTOP,46,348,55,12
+    // Col 2 — Load 0..9
+    RTEXT           "Load 0:",IDC_LABEL_UP21,108,222,30,10
+    RTEXT           "Load 1:",IDC_LABEL_UP12,108,236,30,10
+    RTEXT           "Load 2:",IDC_LABEL_UP13,108,250,30,10
+    RTEXT           "Load 3:",IDC_LABEL_UP14,108,264,30,10
+    RTEXT           "Load 4:",IDC_LABEL_UP15,108,278,30,10
+    RTEXT           "Load 5:",IDC_LABEL_UP16,108,292,30,10
+    RTEXT           "Load 6:",IDC_LABEL_UP17,108,306,30,10
+    RTEXT           "Load 7:",IDC_LABEL_UP18,108,320,30,10
+    RTEXT           "Load 8:",IDC_LABEL_UP19,108,334,30,10
+    RTEXT           "Load 9:",IDC_LABEL_UP20,108,348,30,10
+    CONTROL         "",IDC_SAVE11,"InputCustomHot",WS_TABSTOP,142,222,55,12
+    CONTROL         "",IDC_SAVE12,"InputCustomHot",WS_TABSTOP,142,236,55,12
+    CONTROL         "",IDC_SAVE13,"InputCustomHot",WS_TABSTOP,142,250,55,12
+    CONTROL         "",IDC_SAVE14,"InputCustomHot",WS_TABSTOP,142,264,55,12
+    CONTROL         "",IDC_SAVE15,"InputCustomHot",WS_TABSTOP,142,278,55,12
+    CONTROL         "",IDC_SAVE16,"InputCustomHot",WS_TABSTOP,142,292,55,12
+    CONTROL         "",IDC_SAVE17,"InputCustomHot",WS_TABSTOP,142,306,55,12
+    CONTROL         "",IDC_SAVE18,"InputCustomHot",WS_TABSTOP,142,320,55,12
+    CONTROL         "",IDC_SAVE19,"InputCustomHot",WS_TABSTOP,142,334,55,12
+    CONTROL         "",IDC_SAVE20,"InputCustomHot",WS_TABSTOP,142,348,55,12
+    // Col 3 — Select Slot 0..9
+    RTEXT           "Select 0:",IDC_LABEL_SELSLOT_0,204,222,40,10
+    RTEXT           "Select 1:",IDC_LABEL_SELSLOT_1,204,236,40,10
+    RTEXT           "Select 2:",IDC_LABEL_SELSLOT_2,204,250,40,10
+    RTEXT           "Select 3:",IDC_LABEL_SELSLOT_3,204,264,40,10
+    RTEXT           "Select 4:",IDC_LABEL_SELSLOT_4,204,278,40,10
+    RTEXT           "Select 5:",IDC_LABEL_SELSLOT_5,204,292,40,10
+    RTEXT           "Select 6:",IDC_LABEL_SELSLOT_6,204,306,40,10
+    RTEXT           "Select 7:",IDC_LABEL_SELSLOT_7,204,320,40,10
+    RTEXT           "Select 8:",IDC_LABEL_SELSLOT_8,204,334,40,10
+    RTEXT           "Select 9:",IDC_LABEL_SELSLOT_9,204,348,40,10
+    CONTROL         "",IDC_SELSLOT_0,"InputCustomHot",WS_TABSTOP,248,222,55,12
+    CONTROL         "",IDC_SELSLOT_1,"InputCustomHot",WS_TABSTOP,248,236,55,12
+    CONTROL         "",IDC_SELSLOT_2,"InputCustomHot",WS_TABSTOP,248,250,55,12
+    CONTROL         "",IDC_SELSLOT_3,"InputCustomHot",WS_TABSTOP,248,264,55,12
+    CONTROL         "",IDC_SELSLOT_4,"InputCustomHot",WS_TABSTOP,248,278,55,12
+    CONTROL         "",IDC_SELSLOT_5,"InputCustomHot",WS_TABSTOP,248,292,55,12
+    CONTROL         "",IDC_SELSLOT_6,"InputCustomHot",WS_TABSTOP,248,306,55,12
+    CONTROL         "",IDC_SELSLOT_7,"InputCustomHot",WS_TABSTOP,248,320,55,12
+    CONTROL         "",IDC_SELSLOT_8,"InputCustomHot",WS_TABSTOP,248,334,55,12
+    CONTROL         "",IDC_SELSLOT_9,"InputCustomHot",WS_TABSTOP,248,348,55,12
+    // Col 4 — Tools
+    RTEXT           "Save #:",IDC_LABEL_UP24,310,222,46,10
+    CONTROL         "",IDC_SLOTSAVE,"InputCustomHot",WS_TABSTOP,358,222,42,12
+    RTEXT           "Load #:",IDC_LABEL_UP25,310,236,46,10
+    CONTROL         "",IDC_SLOTLOAD,"InputCustomHot",WS_TABSTOP,358,236,42,12
+    RTEXT           "Slot +:",IDC_LABEL_UP23,310,250,46,10
+    CONTROL         "",IDC_SLOTPLUS,"InputCustomHot",WS_TABSTOP,358,250,42,12
+    RTEXT           "Slot -:",IDC_LABEL_UP22,310,264,46,10
+    CONTROL         "",IDC_SLOTMINUS,"InputCustomHot",WS_TABSTOP,358,264,42,12
+    RTEXT           "Bank +:",IDC_LABEL_UP29,310,278,46,10
+    CONTROL         "",IDC_BANKPLUS,"InputCustomHot",WS_TABSTOP,358,278,42,12
+    RTEXT           "Bank -:",IDC_LABEL_UP28,310,292,46,10
+    CONTROL         "",IDC_BANKMINUS,"InputCustomHot",WS_TABSTOP,358,292,42,12
+    RTEXT           "Save Dlg:",IDC_LABEL_UP26,304,306,52,10
+    CONTROL         "",IDC_DIALOGSAVE,"InputCustomHot",WS_TABSTOP,358,306,42,12
+    RTEXT           "Load Dlg:",IDC_LABEL_UP27,304,320,52,10
+    CONTROL         "",IDC_DIALOGLOAD,"InputCustomHot",WS_TABSTOP,358,320,42,12
+    RTEXT           "Save File:",IDC_LABEL_SAVETOFILE,304,334,52,10
+    CONTROL         "",IDC_SAVETOFILE,"InputCustomHot",WS_TABSTOP,358,334,42,12
+    RTEXT           "Load File:",IDC_LABEL_LOADFROMFILE,304,348,52,10
+    CONTROL         "",IDC_LOADFROMFILE,"InputCustomHot",WS_TABSTOP,358,348,42,12
+
+    LTEXT           "Blue means the hotkey is already mapped. Pink means it conflicts with a game button. Red means it's reserved by Windows. Escape clears bindings.\nPress multiple keys for multi-bind. Delete removes last.",IDC_LABEL_BLUE,7,370,290,28
+    PUSHBUTTON      "OK",IDOK,300,383,48,14
+    PUSHBUTTON      "Cancel",IDCANCEL,354,383,48,14
 END
 
 IDD_MULTICART DIALOGEX 0, 0, 390, 90
