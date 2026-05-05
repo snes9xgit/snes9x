@@ -305,6 +305,10 @@ struct Emulator::Impl
 	bool     boot_handoff_captured = false;
 	CpuRegs  boot_handoff_regs{};
 	uint64_t boot_handoff_vram_writes = 0;
+	// GB frames elapsed since boot-ROM handoff. Used by OnPpuVBlank to
+	// re-zero BG1 tilemap + OAM for the first 30 frames so the SGB
+	// BIOS's transient sequential-tilemap setup doesn't bleed through
+	// as stripe artifacts before the game's own PCT_TRN takes over.
 	uint32_t handoff_frames           = 0;
 };
 
@@ -1261,6 +1265,19 @@ void Emulator::OnPpuVBlank()
 	impl_->icd2.sgb_row = 0;
 	impl_->icd2.frame_6001_count = 0;
 
+	// Suppress the SGB BIOS's transient post-handoff display state.
+	// The BIOS sets up a default sequential BG1 tilemap (tile 0 -> blank,
+	// tile 1 -> top-left captured 8x8 of GB frame, etc.) and may also
+	// stage placeholder sprites in OAM. With Tetris Plus' palette-fade
+	// transition, the captured tile content rendered as stripey/textured
+	// artifacts in the GB display area for a handful of frames before
+	// the game issued its own PCT_TRN/CHR_TRN. Re-zero BG1 tilemap and
+	// OAM each frame for 30 GB frames after handoff — long enough to
+	// cover the BIOS setup window, short enough that the game's actual
+	// rendering takes over once it lands. Mesen ends up with all-zero
+	// BG1 tilemap at this point (verified by VRAM dump comparison);
+	// matching that state directly is simpler than trying to mirror
+	// whatever sequence its BIOS executes to clear it.
 	if (impl_->boot_handoff_captured && impl_->handoff_frames < 30)
 	{
 		std::memset(&::Memory.VRAM[0x7000], 0, 0x0800);
