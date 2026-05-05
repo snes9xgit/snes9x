@@ -1043,9 +1043,7 @@ uint8_t Emulator::GetICD2(uint16_t addr)
 		if (pos >= 320)
 			return 0xFF;
 
-		if (impl_->mem.boot_rom_enabled ||
-		    (impl_->boot_handoff_captured &&
-		     impl_->ppu.vram_writes - impl_->boot_handoff_vram_writes < 256))
+		if (impl_->mem.boot_rom_enabled)
 			return 0x00;
 
 		const uint8_t bank  = static_cast<uint8_t>(icd.lcd_row_select & 0x03);
