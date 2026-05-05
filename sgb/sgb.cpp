@@ -304,7 +304,6 @@ struct Emulator::Impl
 	// DE=$0000, HL=$C060).
 	bool     boot_handoff_captured = false;
 	CpuRegs  boot_handoff_regs{};
-	uint64_t boot_handoff_vram_writes = 0;
 	// GB frames elapsed since boot-ROM handoff. Used by OnPpuVBlank to
 	// re-zero BG1 tilemap + OAM for the first 30 frames so the SGB
 	// BIOS's transient sequential-tilemap setup doesn't bleed through
@@ -367,7 +366,6 @@ void Emulator::Reset()
 	impl_->border_fade_frames   = 0;
 	impl_->boot_handoff_captured = false;
 	impl_->boot_handoff_regs     = {};
-	impl_->boot_handoff_vram_writes = 0;
 	impl_->handoff_frames        = 0;
 	IrqServicedReset();
 	std::memset(&impl_->icd2, 0, sizeof impl_->icd2);
@@ -931,7 +929,6 @@ void Emulator::RunCycles(int32_t tcycles)
 			{
 				impl_->boot_handoff_captured = true;
 				impl_->boot_handoff_regs     = impl_->cpu.State().r;
-				impl_->boot_handoff_vram_writes = impl_->ppu.vram_writes;
 				if (impl_->has_rom &&
 				    impl_->cart.header.sgb_flag == 0x03)
 					impl_->icd2.mlt_players = 2;
