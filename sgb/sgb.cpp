@@ -305,6 +305,7 @@ struct Emulator::Impl
 	bool     boot_handoff_captured = false;
 	CpuRegs  boot_handoff_regs{};
 	uint64_t boot_handoff_vram_writes = 0;
+	uint32_t handoff_frames           = 0;
 };
 
 // File-local trampoline — lets the process-global SgbCommandCallback
@@ -363,6 +364,7 @@ void Emulator::Reset()
 	impl_->boot_handoff_captured = false;
 	impl_->boot_handoff_regs     = {};
 	impl_->boot_handoff_vram_writes = 0;
+	impl_->handoff_frames        = 0;
 	IrqServicedReset();
 	std::memset(&impl_->icd2, 0, sizeof impl_->icd2);
 	// 4-bank LCD ring starts at $00 (matches Mesen2 SuperGameboy::Reset).
@@ -1258,6 +1260,13 @@ void Emulator::OnPpuVBlank()
 	// across frames.
 	impl_->icd2.sgb_row = 0;
 	impl_->icd2.frame_6001_count = 0;
+
+	if (impl_->boot_handoff_captured && impl_->handoff_frames < 30)
+	{
+		std::memset(&::Memory.VRAM[0x7000], 0, 0x0800);
+		std::memset(::PPU.OAMData, 0, sizeof ::PPU.OAMData);
+		impl_->handoff_frames++;
+	}
 }
 
 void Emulator::CaptureScanline(const uint8_t *pixels)
