@@ -7,6 +7,8 @@
 #include "sgb.h"
 
 #include "../snes9x.h"   // Settings.SGB_BIOSModeActive + S9xMessage
+#include "../memmap.h"   // Memory.VRAM (BG1 tilemap zero at handoff)
+#include "../ppu.h"      // PPU.OAMData (sprite zero at handoff)
                           // (used for the border-capture diagnostic OSD,
                           // matching the pattern dropped in bd2a5479).
 #include "../messages.h" // S9X_INFO / S9X_ROM_INFO type tags.
@@ -927,6 +929,8 @@ void Emulator::RunCycles(int32_t tcycles)
 				if (impl_->has_rom &&
 				    impl_->cart.header.sgb_flag == 0x03)
 					impl_->icd2.mlt_players = 2;
+				std::memset(&::Memory.VRAM[0x7000], 0, 0x0800);
+				std::memset(::PPU.OAMData, 0, sizeof ::PPU.OAMData);
 			}
 
 			TimerStep(impl_->timer, impl_->mem, consumed);
