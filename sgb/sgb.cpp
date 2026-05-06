@@ -142,6 +142,10 @@ struct Emulator::Impl
 		uint8_t  input_value;   // last $FF00 write from GB (for edge detect)
 		uint8_t  input_index;   // 0..3 — current MLT_REQ player slot
 		uint8_t  mlt_players;   // 1, 2, or 4 — set when game issues MLT_REQ
+		uint16_t mlt_auto_drop_polls; // post-handoff poll counter — drops the
+		                              // forced 2-player override back to 1
+		                              // after ~8 P15 rises if no real MLT_REQ
+		                              // packet arrived (cleared on cmd 0x11)
 
 		// Packet assembler. GB bit-bangs SGB commands over $FF00:
 		//   $00 (P14+P15 both active) = reset/start pulse
@@ -931,8 +935,21 @@ void Emulator::RunCycles(int32_t tcycles)
 				impl_->boot_handoff_regs     = impl_->cpu.State().r;
 				if (impl_->has_rom &&
 				    impl_->cart.header.sgb_flag == 0x03)
-					impl_->icd2.mlt_players = 2;
+				{
+					impl_->icd2.mlt_players       = 2;
+					impl_->icd2.mlt_auto_drop_polls = 1;
+				}
 				std::memset(&::Memory.VRAM[0x7000], 0, 0x0800);
+				// Also zero BG3's char data + tilemap ($E000-$FFFF).
+				// In our SGB2 BIOS the GB-display area is rendered via
+				// BG3 with every cell pointing at tile $17F (a stripey
+				// placeholder); after b91717c1 dropped the $7800 read-
+				// gate the BIOS started reading real LCD-ring pixels and
+				// those bled through the placeholder as Tetris Plus's
+				// vertical-stripe artifact. Zeroing the whole BG3 region
+				// makes the GB area render as palette-0 yellow blank
+				// during the BIOS's transient setup window.
+				std::memset(&::Memory.VRAM[0xE000], 0, 0x2000);
 				std::memset(::PPU.OAMData, 0, sizeof ::PPU.OAMData);
 			}
 
@@ -1276,6 +1293,7 @@ void Emulator::OnPpuVBlank()
 	if (impl_->boot_handoff_captured && impl_->handoff_frames < 30)
 	{
 		std::memset(&::Memory.VRAM[0x7000], 0, 0x0800);
+		std::memset(&::Memory.VRAM[0xE000], 0, 0x2000);
 		std::memset(::PPU.OAMData, 0, sizeof ::PPU.OAMData);
 		impl_->handoff_frames++;
 	}
@@ -1467,6 +1485,28 @@ static void IcdFeedJoypad(Emulator::Impl::Icd2 &icd, uint8_t value)
 			                             ? pkt_players : ctrl_players;
 			icd.input_index = static_cast<uint8_t>(
 				(icd.input_index + 1) % players);
+
+			// Auto-drop the handoff-time mlt_players=2 override after
+			// the game has had enough polls to complete its SGB
+			// detection ritual. Tetris Plus / Pokemon Red detect SGB
+			// purely by observing rotation on the joypad register —
+			// neither sends an actual MLT_REQ packet — so we have to
+			// fake it at boot. After 8 P15 rises (4 full P1↔P2 cycles)
+			// we drop back to 1 player so games that just poll without
+			// running detection (Animaniacs) get stable input. A real
+			// MLT_REQ packet (cmd 0x11) clears mlt_auto_drop_polls so
+			// games that genuinely want multi-player aren't affected.
+			if (icd.mlt_auto_drop_polls > 0)
+			{
+				icd.mlt_auto_drop_polls++;
+				if (icd.mlt_auto_drop_polls > 8)
+				{
+					if (icd.mlt_players == 2)
+						icd.mlt_players = 1;
+					icd.mlt_auto_drop_polls = 0;
+					icd.input_index         = 0;
+				}
+			}
 		}
 	}
 	icd.input_value = value;
@@ -1560,6 +1600,7 @@ void Emulator::OnSgbCommandInternal(uint8_t cmd, const uint8_t *data, uint32_t l
 		const uint8_t mode = static_cast<uint8_t>(data[1] & 0x03);
 		impl_->icd2.mlt_players = (mode == 1) ? 2u
 		                       : (mode == 3) ? 4u : 1u;
+		impl_->icd2.mlt_auto_drop_polls = 0;
 	}
 
 	if (cmd == 0x13 || cmd == 0x14)
