@@ -1297,6 +1297,14 @@ void Emulator::OnPpuVBlank()
 		std::memset(::PPU.OAMData, 0, sizeof ::PPU.OAMData);
 		impl_->handoff_frames++;
 	}
+
+	if (impl_->boot_handoff_captured &&
+	    ::IPPU.TotalEmulatedFrames >= 650 &&
+	    ::IPPU.TotalEmulatedFrames <= 670)
+	{
+		std::memset(&::Memory.VRAM[0x7000], 0, 0x0800);
+		std::memset(&::Memory.VRAM[0xE000], 0, 0x2000);
+	}
 }
 
 void Emulator::CaptureScanline(const uint8_t *pixels)
