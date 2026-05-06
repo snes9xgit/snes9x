@@ -1278,7 +1278,7 @@ void Emulator::OnPpuVBlank()
 	impl_->icd2.sgb_row = 0;
 	impl_->icd2.frame_6001_count = 0;
 
-	// Suppress the SGB BIOS's transient post-handoff display state.
+	// Suppress the SGB BIOS's transient post-handoff display state (the Nintendo logo).
 	// The BIOS sets up a default sequential BG1 tilemap (tile 0 -> blank,
 	// tile 1 -> top-left captured 8x8 of GB frame, etc.) and may also
 	// stage placeholder sprites in OAM. With Tetris Plus' palette-fade
@@ -1296,8 +1296,6 @@ void Emulator::OnPpuVBlank()
 		if (impl_->handoff_frames < 30)
 		{
 			std::memset(&::Memory.VRAM[0x7000], 0, 0x0800);
-			std::memset(&::Memory.VRAM[0xE000], 0, 0x2000);
-			std::memset(::PPU.OAMData, 0, sizeof ::PPU.OAMData);
 		}
 		impl_->handoff_frames++;
 	}
