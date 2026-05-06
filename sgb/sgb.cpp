@@ -1267,6 +1267,7 @@ void Emulator::OnPpuHBlank()
 void Emulator::OnPpuVBlank()
 {
 	if (!impl_) return;
+
 	// Mesen2 ProcessVBlank: just `_row = 0;`. _bank is intentionally
 	// NOT reset — it persists across frames, so the bank-to-band
 	// mapping shifts each frame (frame 1 starts at bank 0, frame 2
@@ -1290,20 +1291,25 @@ void Emulator::OnPpuVBlank()
 	// BG1 tilemap at this point (verified by VRAM dump comparison);
 	// matching that state directly is simpler than trying to mirror
 	// whatever sequence its BIOS executes to clear it.
-	if (impl_->boot_handoff_captured && impl_->handoff_frames < 30)
+	if (impl_->boot_handoff_captured)
 	{
-		std::memset(&::Memory.VRAM[0x7000], 0, 0x0800);
-		std::memset(&::Memory.VRAM[0xE000], 0, 0x2000);
-		std::memset(::PPU.OAMData, 0, sizeof ::PPU.OAMData);
+		if (impl_->handoff_frames < 30)
+		{
+			std::memset(&::Memory.VRAM[0x7000], 0, 0x0800);
+			std::memset(&::Memory.VRAM[0xE000], 0, 0x2000);
+			std::memset(::PPU.OAMData, 0, sizeof ::PPU.OAMData);
+		}
 		impl_->handoff_frames++;
 	}
 
-	if (impl_->boot_handoff_captured &&
-	    ::IPPU.TotalEmulatedFrames >= 650 &&
-	    ::IPPU.TotalEmulatedFrames <= 670)
+	if (impl_->boot_handoff_captured)
 	{
-		std::memset(&::Memory.VRAM[0x7000], 0, 0x0800);
-		std::memset(&::Memory.VRAM[0xE000], 0, 0x2000);
+		static const uint8_t kBiosStagedSig[16] = {
+			0x01, 0x10, 0x02, 0x10, 0x03, 0x10, 0x04, 0x10,
+			0x05, 0x10, 0x06, 0x10, 0x07, 0x10, 0x08, 0x10
+		};
+		if (std::memcmp(&::Memory.VRAM[0xE000], kBiosStagedSig, 16) == 0)
+			std::memset(&::Memory.VRAM[0xE000], 0, 0x1400);
 	}
 }
 
