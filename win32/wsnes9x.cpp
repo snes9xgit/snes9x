@@ -2499,6 +2499,9 @@ LRESULT CALLBACK WinProc(
 		case ID_VIDEO_SHOWFRAMERATE:
 			Settings.DisplayFrameRate = !Settings.DisplayFrameRate;
 			break;
+		case ID_VIDEO_SHOWFRAMENUMBER:
+			Settings.DisplayFrameNumber = !Settings.DisplayFrameNumber;
+			break;
 		case ID_VIDEO_COLORCORRECTION:
 			RestoreGUIDisplay();
 			DialogBox(g_hInst, MAKEINTRESOURCE(IDD_COLORCORRECTION), hWnd, DlgColorCorrectionProc);
@@ -4470,6 +4473,9 @@ static void CheckMenuStates ()
 
 	mii.fState = Settings.DisplayFrameRate ? MFS_CHECKED : MFS_UNCHECKED;
     SetMenuItemInfo (GUI.hMenu, ID_VIDEO_SHOWFRAMERATE, FALSE, &mii);
+
+	mii.fState = Settings.DisplayFrameNumber ? MFS_CHECKED : MFS_UNCHECKED;
+    SetMenuItemInfo (GUI.hMenu, ID_VIDEO_SHOWFRAMENUMBER, FALSE, &mii);
 
 	mii.fState = (Settings.Paused && !Settings.StopEmulation) ? MFS_CHECKED : MFS_UNCHECKED;
     SetMenuItemInfo (GUI.hMenu, ID_FILE_PAUSE, FALSE, &mii);

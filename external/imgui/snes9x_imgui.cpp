@@ -269,6 +269,22 @@ bool S9xImGuiDraw(int width, int height)
                               ImGui::DrawTextAlignment::BEGIN);
     }
 
+    if (Settings.DisplayFrameNumber)
+    {
+        char string[32];
+        sprintf(string, "#%u", (unsigned)IPPU.TotalEmulatedFrames);
+        const float line_h = ImGui::CalcTextSize("0").y;
+        const int gap = Settings.DisplayFrameRate
+                        ? (int)(line_h * 2.0f + settings.spacing * 2 + 10)
+                        : 0;
+        ImGui_DrawTextOverlay(string,
+                              width - settings.spacing,
+                              settings.spacing + gap,
+                              settings.spacing,
+                              ImGui::DrawTextAlignment::END,
+                              ImGui::DrawTextAlignment::BEGIN);
+    }
+
     if (Settings.DisplayPressedKeys)
     {
         ImGui_DrawPressedKeys(settings.spacing / 2);
