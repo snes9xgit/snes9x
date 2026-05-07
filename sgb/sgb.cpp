@@ -1268,7 +1268,7 @@ void Emulator::OnPpuVBlank()
 {
 	if (!impl_) return;
 
-	// Mesen2 ProcessVBlank: just `_row = 0;`. _bank is intentionally
+	// ProcessVBlank: just `_row = 0;`. _bank is intentionally
 	// NOT reset — it persists across frames, so the bank-to-band
 	// mapping shifts each frame (frame 1 starts at bank 0, frame 2
 	// starts at bank 2 because 18 % 4 = 2). The SNES BIOS reads
@@ -1278,28 +1278,24 @@ void Emulator::OnPpuVBlank()
 	impl_->icd2.sgb_row = 0;
 	impl_->icd2.frame_6001_count = 0;
 
-	// Suppress the SGB BIOS's transient post-handoff display state (the Nintendo logo).
-	// The BIOS sets up a default sequential BG1 tilemap (tile 0 -> blank,
-	// tile 1 -> top-left captured 8x8 of GB frame, etc.) and may also
-	// stage placeholder sprites in OAM. With Tetris Plus' palette-fade
-	// transition, the captured tile content rendered as stripey/textured
-	// artifacts in the GB display area for a handful of frames before
-	// the game issued its own PCT_TRN/CHR_TRN. Re-zero BG1 tilemap and
-	// OAM each frame for 30 GB frames after handoff — long enough to
-	// cover the BIOS setup window, short enough that the game's actual
-	// rendering takes over once it lands. Mesen ends up with all-zero
-	// BG1 tilemap at this point (verified by VRAM dump comparison);
-	// matching that state directly is simpler than trying to mirror
-	// whatever sequence its BIOS executes to clear it.
+	// Clean up VRAM areas the BIOS uses for the boot-handoff capture and
+	// This is caused due to drifting scanline timing between the GB and SNES emulation cores.
+	// TODO: add libco for better sync and remove this hack.
 	if (impl_->boot_handoff_captured)
 	{
 		if (impl_->handoff_frames < 30)
 		{
 			std::memset(&::Memory.VRAM[0x7000], 0, 0x0800);
+			std::memset(&::Memory.VRAM[0xE000], 0, 0x2000);
+			std::memset(::PPU.OAMData, 0, sizeof ::PPU.OAMData);
 		}
 		impl_->handoff_frames++;
 	}
 
+	// Suppress visible artifact at the BIOS fade-in moment 
+	// without touching unrelated VRAM regions. Every GB VBlank, after handoff is captured,
+	// compare the first 16 bytes of BG3 char data ($E000-$E00F) against the BIOS-staged
+	// TODO: add libco for better sync and remove this hack.
 	if (impl_->boot_handoff_captured)
 	{
 		static const uint8_t kBiosStagedSig[16] = {
