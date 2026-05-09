@@ -62,6 +62,10 @@ static Resampler resampler;
 static std::vector<int16_t> resampler_buffer;
 } // namespace msu
 
+namespace gb {
+static Resampler resampler;
+} // namespace gb
+
 static void UpdatePlaybackRate(void);
 static void SPCSnapshotCallback(void);
 static inline int S9xAPUGetClock(int32);
@@ -218,38 +222,71 @@ bool8 S9xMixSamples(uint8 *dest, int sample_count)
             return true;
         }
 
-        const int32_t got = S9xSGBDrainSamples(out, sample_count);
-        if (got < sample_count)
-            memset(out + got, 0, (sample_count - got) << 1);
-
         if (mix_spc_under_gb)
         {
-            // Mix whatever the SPC has produced into the GB stream. If
-            // SPC ran short this call, the tail of `out` stays GB-only —
-            // strictly better than dropping the partial voice. Read is
-            // bounded by our scratch buffer and forced even (the resampler
-            // asserts on odd counts because it emits stereo pairs).
-            int read_count = spc::resampler.avail();
-            if (read_count > sample_count) read_count = sample_count;
-            if (read_count > 2048)         read_count = 2048;
-            if (read_count & 1)            --read_count;
-            if (read_count > 0)
+            int spc_total = spc::resampler.avail();
+            if (spc_total < 0)            spc_total = 0;
+            if (spc_total > sample_count) spc_total = sample_count;
+            if (spc_total & 1)            --spc_total;
+            if (spc_total > 0)
+                spc::resampler.read(out, spc_total);
+            if (spc_total < sample_count)
+                memset(out + spc_total, 0, (sample_count - spc_total) << 1);
+
+            int16 gb_drain_buf[2048];
+            while (gb::resampler.space_empty() >= 2)
             {
-                int16 spc_buf[2048];
-                spc::resampler.read(spc_buf, read_count);
-                for (int i = 0; i < read_count; ++i)
+                int can_push = gb::resampler.space_empty();
+                if (can_push > 2048) can_push = 2048;
+                if (can_push & 1)    --can_push;
+                if (can_push <= 0) break;
+                int32_t got = S9xSGBDrainSamples(gb_drain_buf, can_push);
+                if (got <= 0) break;
+                gb::resampler.push(gb_drain_buf, got);
+                if (got < can_push) break;
+            }
+
+            const int gb_filled = gb::resampler.space_filled();
+            const int gb_total  = gb::resampler.buffer_size;
+            if (gb_total > 0)
+            {
+                const double offset = (double)(gb_filled - gb_total / 2) /
+                                      (double)gb_total;
+                gb::resampler.time_ratio(1.0 + 0.05 * offset);
+            }
+
+            int gb_count = gb::resampler.avail();
+            if (gb_count < 0)            gb_count = 0;
+            if (gb_count > sample_count) gb_count = sample_count;
+            if (gb_count & 1)            --gb_count;
+            if (gb_count > 0)
+            {
+                int16 gb_out_buf[2048];
+                int processed = 0;
+                while (processed < gb_count)
                 {
-                    int32 mixed = (int32)out[i] + (int32)spc_buf[i];
-                    if (mixed >  32767) mixed =  32767;
-                    if (mixed < -32768) mixed = -32768;
-                    out[i] = (int16)mixed;
+                    int chunk = gb_count - processed;
+                    if (chunk > 2048) chunk = 2048;
+                    if (chunk & 1)    --chunk;
+                    if (chunk <= 0) break;
+                    gb::resampler.read(gb_out_buf, chunk);
+                    for (int i = 0; i < chunk; ++i)
+                    {
+                        int32 mixed = (int32)out[processed + i] +
+                                      ((int32)gb_out_buf[i] / 4);
+                        if (mixed >  32767) mixed =  32767;
+                        if (mixed < -32768) mixed = -32768;
+                        out[processed + i] = (int16)mixed;
+                    }
+                    processed += chunk;
                 }
             }
         }
         else
         {
-            // BIOS-less GB: SPC isn't running an SGB engine — drain to
-            // keep the scanline-driver gate firing at its natural cadence.
+            const int32_t got = S9xSGBDrainSamples(out, sample_count);
+            if (got < sample_count)
+                memset(out + got, 0, (sample_count - got) << 1);
             S9xClearSamples();
         }
         ApplySourceCrossFade(out, sample_count);
@@ -328,6 +365,8 @@ void S9xLandSamples(void)
 void S9xClearSamples(void)
 {
     spc::resampler.clear();
+    gb::resampler.clear();
+    gb::resampler.time_ratio(1.0);
     if (Settings.MSU1)
         msu::resampler.clear();
 }
@@ -410,6 +449,8 @@ bool8 S9xInitSound(int buffer_ms)
 
     spc::resampler.resize(buffer_size_samples);
     msu::resampler.resize(buffer_size_samples * 3 / 2);
+    gb::resampler.resize(buffer_size_samples * 3);
+    gb::resampler.time_ratio(1.0);
 
     SNES::dsp.spc_dsp.set_output(&spc::resampler);
     S9xMSU1SetOutput(&msu::resampler);
