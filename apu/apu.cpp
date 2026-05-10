@@ -62,10 +62,6 @@ static Resampler resampler;
 static std::vector<int16_t> resampler_buffer;
 } // namespace msu
 
-namespace gb {
-static Resampler resampler;
-} // namespace gb
-
 namespace audiowave {
 static bool enabled = false;
 constexpr int CAPTURE_FRAMES = 9600;
@@ -275,59 +271,59 @@ bool8 S9xMixSamples(uint8 *dest, int sample_count)
             return true;
         }
 
+        const int32_t got = S9xSGBDrainSamples(out, sample_count);
+        if (got < sample_count)
+            memset(out + got, 0, (sample_count - got) << 1);
+
+        if (audiowave::enabled)
+            audiowave::push(audiowave::buf_gb, audiowave::wpos_gb,
+                            out, sample_count / 2);
+
         if (mix_spc_under_gb)
         {
-            int spc_total = spc::resampler.avail();
-            if (spc_total < 0)            spc_total = 0;
-            if (spc_total > sample_count) spc_total = sample_count;
-            if (spc_total & 1)            --spc_total;
-            if (spc_total > 0)
-                spc::resampler.read(out, spc_total);
-            if (spc_total < sample_count)
-                memset(out + spc_total, 0, (sample_count - spc_total) << 1);
-
-            if (audiowave::enabled)
-                audiowave::push(audiowave::buf_spc, audiowave::wpos_spc,
-                                out, sample_count / 2);
-
-            int processed = 0;
-            int16 gb_buf[2048];
-            int gb_total_pushed = 0;
-            while (processed < sample_count)
+            // Mix whatever the SPC has produced into the GB stream. If
+            // SPC ran short this call, the tail of `out` stays GB-only —
+            // strictly better than dropping the partial voice. Read is
+            // bounded by our scratch buffer and forced even (the resampler
+            // asserts on odd counts because it emits stereo pairs).
+            int read_count = spc::resampler.avail();
+            if (read_count > sample_count) read_count = sample_count;
+            if (read_count > 2048)         read_count = 2048;
+            if (read_count & 1)            --read_count;
+            if (read_count > 0)
             {
-                int chunk = sample_count - processed;
-                if (chunk > 2048) chunk = 2048;
-                if (chunk & 1)    --chunk;
-                if (chunk <= 0) break;
-                int32_t got = S9xSGBDrainSamples(gb_buf, chunk);
-                if (got <= 0) break;
+                int16 spc_buf[2048];
+                spc::resampler.read(spc_buf, read_count);
                 if (audiowave::enabled)
                 {
-                    audiowave::push(audiowave::buf_gb, audiowave::wpos_gb,
-                                    gb_buf, got / 2);
-                    gb_total_pushed += got / 2;
+                    audiowave::push(audiowave::buf_spc, audiowave::wpos_spc,
+                                    spc_buf, read_count / 2);
+                    if (read_count < sample_count)
+                        audiowave::push_silence(audiowave::buf_spc, audiowave::wpos_spc,
+                                                (sample_count - read_count) / 2);
                 }
-                for (int i = 0; i < got; ++i)
+                for (int i = 0; i < read_count; ++i)
                 {
-                    int32 mixed = (int32)out[processed + i] +
-                                  ((int32)gb_buf[i] / 6);
+                    int32 mixed = (int32)out[i] + (int32)spc_buf[i];
                     if (mixed >  32767) mixed =  32767;
                     if (mixed < -32768) mixed = -32768;
-                    out[processed + i] = (int16)mixed;
+                    out[i] = (int16)mixed;
                 }
-                processed += got;
-                if (got < chunk) break;
             }
-            if (audiowave::enabled && gb_total_pushed < sample_count / 2)
-                audiowave::push_silence(audiowave::buf_gb, audiowave::wpos_gb,
-                                        sample_count / 2 - gb_total_pushed);
+            else if (audiowave::enabled)
+            {
+                audiowave::push_silence(audiowave::buf_spc, audiowave::wpos_spc,
+                                        sample_count / 2);
+            }
         }
         else
         {
-            const int32_t got = S9xSGBDrainSamples(out, sample_count);
-            if (got < sample_count)
-                memset(out + got, 0, (sample_count - got) << 1);
+            // BIOS-less GB: SPC isn't running an SGB engine — drain to
+            // keep the scanline-driver gate firing at its natural cadence.
             S9xClearSamples();
+            if (audiowave::enabled)
+                audiowave::push_silence(audiowave::buf_spc, audiowave::wpos_spc,
+                                        sample_count / 2);
         }
         ApplySourceCrossFade(out, sample_count);
         ApplyDCBlocker(out, sample_count);
@@ -383,11 +379,12 @@ bool8 S9xMixSamples(uint8 *dest, int sample_count)
 
 int S9xGetSampleCount(void)
 {
-	if (Settings.SuperGameBoy && !Settings.SGB_BIOSModeActive)
+	if (Settings.SuperGameBoy ||
+	    (Settings.SGB_BIOSModeActive && S9xSGBBIOSGBIsReleased()))
 		return S9xSGBGetSampleCount();
 
 	int avail = spc::resampler.avail();
-	if (Settings.MSU1)
+	if (Settings.MSU1) // return minimum available samples, otherwise we can run into the assert above due to partial sample generation in msu1
 		avail = Resampler::min(avail, msu::resampler.avail());
     return avail;
 }
@@ -407,8 +404,6 @@ void S9xLandSamples(void)
 void S9xClearSamples(void)
 {
     spc::resampler.clear();
-    gb::resampler.clear();
-    gb::resampler.time_ratio(1.0);
     if (Settings.MSU1)
         msu::resampler.clear();
 }
@@ -515,8 +510,6 @@ bool8 S9xInitSound(int buffer_ms)
 
     spc::resampler.resize(buffer_size_samples);
     msu::resampler.resize(buffer_size_samples * 3 / 2);
-    gb::resampler.resize(buffer_size_samples);
-    gb::resampler.time_ratio(1.0);
 
     SNES::dsp.spc_dsp.set_output(&spc::resampler);
     S9xMSU1SetOutput(&msu::resampler);

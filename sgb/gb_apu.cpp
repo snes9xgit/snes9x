@@ -281,20 +281,14 @@ void Mix(const Apu &a, int32_t &out_l, int32_t &out_r)
 		NoiseOutput(a.ch4)
 	};
 
-	const bool active[4] = {
-		a.ch1.enabled && a.ch1.dac_enabled,
-		a.ch2.enabled && a.ch2.dac_enabled,
-		a.ch3.enabled && a.ch3.dac_enabled,
-		a.ch4.enabled && a.ch4.dac_enabled
-	};
-
 	int32_t l = 0, r = 0;
 	for (int ch = 0; ch < 4; ++ch)
 	{
-		if (!active[ch]) continue;
-		const int32_t lvl = static_cast<int32_t>(levels[ch]) * 2 - 15;
-		if (a.nr51 & (1 << ch))       r += lvl;
-		if (a.nr51 & (1 << (ch + 4))) l += lvl;
+		// DAC: 0..15 → +7..-8 (roughly) as signed. Use linear centering
+		// around the middle (7.5), scaled to int16 range later.
+		const int32_t lvl = static_cast<int32_t>(levels[ch]) * 2 - 15;  // -15..+15
+		if (a.nr51 & (1 << ch))       r += lvl;           // right side (bits 0-3)
+		if (a.nr51 & (1 << (ch + 4))) l += lvl;           // left  side (bits 4-7)
 	}
 
 	const int32_t vol_r = static_cast<int32_t>(a.nr50 & 0x07) + 1;         // 1..8
@@ -370,32 +364,8 @@ void FlushSample(Apu &a)
 	int16_t out_l = 0, out_r = 0;
 	if (a.sample_accum_cnt > 0)
 	{
-		const double raw_l = (double)a.sample_accum_l / (double)a.sample_accum_cnt;
-		const double raw_r = (double)a.sample_accum_r / (double)a.sample_accum_cnt;
-
-		static double lpf_l = 0.0, lpf_r = 0.0;
-		constexpr double alpha = 0.25;
-		lpf_l += alpha * (raw_l - lpf_l);
-		lpf_r += alpha * (raw_r - lpf_r);
-
-		static double dc_in_l = 0.0, dc_in_r = 0.0;
-		static double dc_out_l = 0.0, dc_out_r = 0.0;
-		constexpr double r_dc = 0.997;
-		const double y_l = lpf_l - dc_in_l + r_dc * dc_out_l;
-		const double y_r = lpf_r - dc_in_r + r_dc * dc_out_r;
-		dc_in_l  = lpf_l;
-		dc_in_r  = lpf_r;
-		dc_out_l = y_l;
-		dc_out_r = y_r;
-
-		int32_t cl = (int32_t)y_l;
-		int32_t cr = (int32_t)y_r;
-		if (cl >  32767) cl =  32767;
-		if (cl < -32768) cl = -32768;
-		if (cr >  32767) cr =  32767;
-		if (cr < -32768) cr = -32768;
-		out_l = (int16_t)cl;
-		out_r = (int16_t)cr;
+		out_l = static_cast<int16_t>(a.sample_accum_l / static_cast<int32_t>(a.sample_accum_cnt));
+		out_r = static_cast<int16_t>(a.sample_accum_r / static_cast<int32_t>(a.sample_accum_cnt));
 	}
 	a.sample_accum_l   = 0;
 	a.sample_accum_r   = 0;
