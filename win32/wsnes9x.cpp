@@ -122,6 +122,10 @@ INT_PTR CALLBACK DlgKailleraClient(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lP
 INT_PTR CALLBACK DlgFunky(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
 INT_PTR CALLBACK DlgInputConfig(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
 HWND InputConfig_GetOpenHwnd();
+
+LRESULT CALLBACK AudioWaveProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp);
+static HWND g_audiowave_hwnd = NULL;
+static void ToggleAudioWaveform(HINSTANCE hInst, HWND parent);
 INT_PTR CALLBACK DlgHotkeyConfig(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
 INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
 INT_PTR CALLBACK DlgCheatSearch(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -2456,6 +2460,9 @@ LRESULT CALLBACK WinProc(
 				RestoreSNESDisplay ();
 				break;
 			}
+		case ID_SOUND_AUDIOWAVEFORM:
+			ToggleAudioWaveform(g_hInst, hWnd);
+			break;
 		case ID_WINDOW_FULLSCREEN:
 			ToggleFullScreen ();
 			break;
@@ -9328,6 +9335,166 @@ void UpdateModeComboBox(HWND hComboBox)
 		ComboBox_SetCurSel(hComboBox,ComboBox_GetCount(hComboBox)-1);
 	}
 
+}
+
+static const TCHAR kAudioWaveClass[] = TEXT("Snes9xAudioWaveform");
+static const int   kAudioWaveFrames  = 4800;
+
+static void DrawWaveformPanel(HDC hdc, const RECT &r, const TCHAR *label,
+                              const short *lr, int n, int sample_rate)
+{
+    FillRect(hdc, &r, (HBRUSH)GetStockObject(BLACK_BRUSH));
+
+    const int axisLeft = r.left + 50;
+    const int axisRight = r.right - 4;
+    const int W = axisRight - axisLeft;
+    const int H = r.bottom - r.top;
+    const int midY = (r.top + r.bottom) / 2;
+
+    int peak = 0;
+    for (int s = 0; s < n; ++s)
+    {
+        int v = ((int)lr[s * 2] + (int)lr[s * 2 + 1]) / 2;
+        if (v < 0) v = -v;
+        if (v > peak) peak = v;
+    }
+
+    HPEN penGrid = CreatePen(PS_SOLID, 1, RGB(48, 48, 48));
+    HPEN oldPen = (HPEN)SelectObject(hdc, penGrid);
+    MoveToEx(hdc, axisLeft, midY, NULL); LineTo(hdc, axisRight, midY);
+    MoveToEx(hdc, axisLeft, r.top + 2, NULL); LineTo(hdc, axisLeft, r.bottom - 2);
+    int q1 = midY - H / 4, q3 = midY + H / 4;
+    MoveToEx(hdc, axisLeft, q1, NULL); LineTo(hdc, axisRight, q1);
+    MoveToEx(hdc, axisLeft, q3, NULL); LineTo(hdc, axisRight, q3);
+    SelectObject(hdc, oldPen);
+    DeleteObject(penGrid);
+
+    if (n > 1)
+    {
+        HPEN penWave = CreatePen(PS_SOLID, 1, RGB(120, 220, 120));
+        oldPen = (HPEN)SelectObject(hdc, penWave);
+        for (int i = 0; i < W; ++i)
+        {
+            int s0 = (i * n) / W;
+            int s1 = ((i + 1) * n) / W;
+            if (s1 <= s0) s1 = s0 + 1;
+            int mn = 32767, mx = -32768;
+            for (int s = s0; s < s1 && s < n; ++s)
+            {
+                int v = ((int)lr[s * 2] + (int)lr[s * 2 + 1]) / 2;
+                if (v < mn) mn = v;
+                if (v > mx) mx = v;
+            }
+            int yMin = midY - (mx * H / 2) / 32768;
+            int yMax = midY - (mn * H / 2) / 32768;
+            MoveToEx(hdc, axisLeft + i, yMin, NULL);
+            LineTo  (hdc, axisLeft + i, yMax);
+        }
+        SelectObject(hdc, oldPen);
+        DeleteObject(penWave);
+    }
+
+    SetBkMode(hdc, TRANSPARENT);
+    SetTextColor(hdc, RGB(220, 220, 220));
+    TextOut(hdc, r.left + 4, r.top + 2, label, lstrlen(label));
+
+    SetTextColor(hdc, RGB(150, 150, 150));
+    TCHAR txt[64];
+    _stprintf(txt, TEXT("+32k"));
+    TextOut(hdc, r.left + 4, r.top + 16, txt, lstrlen(txt));
+    _stprintf(txt, TEXT("0"));
+    TextOut(hdc, r.left + 4, midY - 6, txt, lstrlen(txt));
+    _stprintf(txt, TEXT("-32k"));
+    TextOut(hdc, r.left + 4, r.bottom - 18, txt, lstrlen(txt));
+
+    double durMs = sample_rate > 0 ? (1000.0 * n / sample_rate) : 0.0;
+    _stprintf(txt, TEXT("%.0f ms"), durMs);
+    TextOut(hdc, axisRight - 50, r.bottom - 14, txt, lstrlen(txt));
+
+    _stprintf(txt, TEXT("peak %d"), peak);
+    TextOut(hdc, axisLeft + 4, r.top + 2, txt, lstrlen(txt));
+}
+
+LRESULT CALLBACK AudioWaveProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
+{
+    switch (msg)
+    {
+        case WM_CREATE:
+            SetTimer(hwnd, 1, 33, NULL);
+            return 0;
+        case WM_TIMER:
+            InvalidateRect(hwnd, NULL, FALSE);
+            return 0;
+        case WM_PAINT:
+        {
+            PAINTSTRUCT ps;
+            HDC hdc = BeginPaint(hwnd, &ps);
+            RECT cr;
+            GetClientRect(hwnd, &cr);
+            int H = (cr.bottom - cr.top) / 3;
+            short buf[kAudioWaveFrames * 2];
+
+            const TCHAR *labels[3] = { TEXT("SPC"), TEXT("GB"), TEXT("MIX") };
+            int sr = S9xAudioWaveformSampleRate();
+            for (int s = 0; s < 3; ++s)
+            {
+                int n = S9xAudioWaveformSnapshot(s, buf, kAudioWaveFrames);
+                RECT panel;
+                panel.left   = cr.left;
+                panel.right  = cr.right;
+                panel.top    = cr.top + s * H;
+                panel.bottom = (s == 2) ? cr.bottom : (cr.top + (s + 1) * H);
+                DrawWaveformPanel(hdc, panel, labels[s], buf, n, sr);
+            }
+            EndPaint(hwnd, &ps);
+            return 0;
+        }
+        case WM_CLOSE:
+            DestroyWindow(hwnd);
+            return 0;
+        case WM_DESTROY:
+            KillTimer(hwnd, 1);
+            S9xAudioWaveformEnable(false);
+            g_audiowave_hwnd = NULL;
+            return 0;
+    }
+    return DefWindowProc(hwnd, msg, wp, lp);
+}
+
+static void ToggleAudioWaveform(HINSTANCE hInst, HWND parent)
+{
+    if (g_audiowave_hwnd)
+    {
+        DestroyWindow(g_audiowave_hwnd);
+        g_audiowave_hwnd = NULL;
+        return;
+    }
+
+    static bool s_class_registered = false;
+    if (!s_class_registered)
+    {
+        WNDCLASSEX wc = {};
+        wc.cbSize        = sizeof(wc);
+        wc.style         = CS_HREDRAW | CS_VREDRAW;
+        wc.lpfnWndProc   = AudioWaveProc;
+        wc.hInstance     = hInst;
+        wc.hCursor       = LoadCursor(NULL, IDC_ARROW);
+        wc.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
+        wc.lpszClassName = kAudioWaveClass;
+        RegisterClassEx(&wc);
+        s_class_registered = true;
+    }
+
+    S9xAudioWaveformEnable(true);
+    g_audiowave_hwnd = CreateWindowEx(
+        0, kAudioWaveClass, TEXT("Audio Waveform — SPC / GB / MIX"),
+        WS_OVERLAPPEDWINDOW,
+        CW_USEDEFAULT, CW_USEDEFAULT, 800, 480,
+        parent, NULL, hInst, NULL);
+    if (g_audiowave_hwnd)
+        ShowWindow(g_audiowave_hwnd, SW_SHOW);
+    else
+        S9xAudioWaveformEnable(false);
 }
 
 static WNDPROC lpfnOldWndProc;

@@ -48,6 +48,12 @@ void S9xUpdateDynamicRate (int empty = 1, int buffer_size = 2);
 void S9xRunAheadSaveAudio (void);
 void S9xRunAheadLoadAudio (void);
 
+// Audio waveform debug capture — see Sound > Show Audio Waveform.
+// streams: 0=SPC pre-mix, 1=GB pre-mix, 2=final mix.
+void S9xAudioWaveformEnable(bool enable);
+int  S9xAudioWaveformSnapshot(int stream, short *out_lr, int max_frames);
+int  S9xAudioWaveformSampleRate(void);
+
 #define DSP_INTERPOLATION_NONE     0
 #define DSP_INTERPOLATION_LINEAR   1
 #define DSP_INTERPOLATION_GAUSSIAN 2

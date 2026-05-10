@@ -1395,6 +1395,8 @@ BEGIN
         MENUITEM "&Mute",                       ID_SOUND_MUTE,MFT_STRING,MFS_ENABLED
         MENUITEM "S&ync Sound\tAlt+]",          ID_SOUND_SYNC,MFT_STRING,MFS_ENABLED
         MENUITEM "&Settings...\tAlt+T",         ID_SOUND_OPTIONS,MFT_STRING,MFS_ENABLED
+        MENUITEM MFT_SEPARATOR
+        MENUITEM "Show Audio &Waveform",        ID_SOUND_AUDIOWAVEFORM,MFT_STRING,MFS_ENABLED
     END
     POPUP "&Video",                         0,MFT_STRING,MFS_ENABLED
     BEGIN

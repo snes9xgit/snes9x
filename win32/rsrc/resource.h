@@ -774,6 +774,8 @@
 #define IDC_LABEL_SAVETOFILE            3246
 #define IDC_LABEL_LOADFROMFILE          3247
 
+#define ID_SOUND_AUDIOWAVEFORM          40198
+
 #define IDC_STATIC                      -1
 
 // Next default values for new objects

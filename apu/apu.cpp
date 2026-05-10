@@ -66,6 +66,59 @@ namespace gb {
 static Resampler resampler;
 } // namespace gb
 
+namespace audiowave {
+static bool enabled = false;
+constexpr int CAPTURE_FRAMES = 9600;
+static int16_t buf_spc[CAPTURE_FRAMES * 2];
+static int16_t buf_gb [CAPTURE_FRAMES * 2];
+static int16_t buf_mix[CAPTURE_FRAMES * 2];
+static int     wpos_spc = 0;
+static int     wpos_gb  = 0;
+static int     wpos_mix = 0;
+
+inline void push(int16_t *ring, int &wpos, const int16_t *src, int frames)
+{
+    for (int i = 0; i < frames; ++i)
+    {
+        ring[wpos * 2 + 0] = src[i * 2 + 0];
+        ring[wpos * 2 + 1] = src[i * 2 + 1];
+        wpos = (wpos + 1) % CAPTURE_FRAMES;
+    }
+}
+
+inline void push_silence(int16_t *ring, int &wpos, int frames)
+{
+    for (int i = 0; i < frames; ++i)
+    {
+        ring[wpos * 2 + 0] = 0;
+        ring[wpos * 2 + 1] = 0;
+        wpos = (wpos + 1) % CAPTURE_FRAMES;
+    }
+}
+
+int snapshot(int stream, short *out_lr, int max_frames)
+{
+    int16_t *ring;
+    int      wpos;
+    switch (stream)
+    {
+        case 0: ring = buf_spc; wpos = wpos_spc; break;
+        case 1: ring = buf_gb;  wpos = wpos_gb;  break;
+        case 2: ring = buf_mix; wpos = wpos_mix; break;
+        default: return 0;
+    }
+    int n = (max_frames < CAPTURE_FRAMES) ? max_frames : CAPTURE_FRAMES;
+    int start = (wpos - n + CAPTURE_FRAMES) % CAPTURE_FRAMES;
+    for (int i = 0; i < n; ++i)
+    {
+        int idx = (start + i) % CAPTURE_FRAMES;
+        out_lr[i * 2 + 0] = ring[idx * 2 + 0];
+        out_lr[i * 2 + 1] = ring[idx * 2 + 1];
+    }
+    return n;
+}
+} // namespace audiowave
+
 static void UpdatePlaybackRate(void);
 static void SPCSnapshotCallback(void);
 static inline int S9xAPUGetClock(int32);
@@ -233,54 +286,41 @@ bool8 S9xMixSamples(uint8 *dest, int sample_count)
             if (spc_total < sample_count)
                 memset(out + spc_total, 0, (sample_count - spc_total) << 1);
 
-            int16 gb_drain_buf[2048];
-            while (gb::resampler.space_empty() >= 2)
+            if (audiowave::enabled)
+                audiowave::push(audiowave::buf_spc, audiowave::wpos_spc,
+                                out, sample_count / 2);
+
+            int processed = 0;
+            int16 gb_buf[2048];
+            int gb_total_pushed = 0;
+            while (processed < sample_count)
             {
-                int can_push = gb::resampler.space_empty();
-                if (can_push > 2048) can_push = 2048;
-                if (can_push & 1)    --can_push;
-                if (can_push <= 0) break;
-                int32_t got = S9xSGBDrainSamples(gb_drain_buf, can_push);
+                int chunk = sample_count - processed;
+                if (chunk > 2048) chunk = 2048;
+                if (chunk & 1)    --chunk;
+                if (chunk <= 0) break;
+                int32_t got = S9xSGBDrainSamples(gb_buf, chunk);
                 if (got <= 0) break;
-                gb::resampler.push(gb_drain_buf, got);
-                if (got < can_push) break;
-            }
-
-            const int gb_filled = gb::resampler.space_filled();
-            const int gb_total  = gb::resampler.buffer_size;
-            if (gb_total > 0)
-            {
-                const double offset = (double)(gb_filled - gb_total / 2) /
-                                      (double)gb_total;
-                gb::resampler.time_ratio(1.0 + 0.05 * offset);
-            }
-
-            int gb_count = gb::resampler.avail();
-            if (gb_count < 0)            gb_count = 0;
-            if (gb_count > sample_count) gb_count = sample_count;
-            if (gb_count & 1)            --gb_count;
-            if (gb_count > 0)
-            {
-                int16 gb_out_buf[2048];
-                int processed = 0;
-                while (processed < gb_count)
+                if (audiowave::enabled)
                 {
-                    int chunk = gb_count - processed;
-                    if (chunk > 2048) chunk = 2048;
-                    if (chunk & 1)    --chunk;
-                    if (chunk <= 0) break;
-                    gb::resampler.read(gb_out_buf, chunk);
-                    for (int i = 0; i < chunk; ++i)
-                    {
-                        int32 mixed = (int32)out[processed + i] +
-                                      ((int32)gb_out_buf[i] / 4);
-                        if (mixed >  32767) mixed =  32767;
-                        if (mixed < -32768) mixed = -32768;
-                        out[processed + i] = (int16)mixed;
-                    }
-                    processed += chunk;
+                    audiowave::push(audiowave::buf_gb, audiowave::wpos_gb,
+                                    gb_buf, got / 2);
+                    gb_total_pushed += got / 2;
                 }
+                for (int i = 0; i < got; ++i)
+                {
+                    int32 mixed = (int32)out[processed + i] +
+                                  ((int32)gb_buf[i] / 6);
+                    if (mixed >  32767) mixed =  32767;
+                    if (mixed < -32768) mixed = -32768;
+                    out[processed + i] = (int16)mixed;
+                }
+                processed += got;
+                if (got < chunk) break;
             }
+            if (audiowave::enabled && gb_total_pushed < sample_count / 2)
+                audiowave::push_silence(audiowave::buf_gb, audiowave::wpos_gb,
+                                        sample_count / 2 - gb_total_pushed);
         }
         else
         {
@@ -291,6 +331,9 @@ bool8 S9xMixSamples(uint8 *dest, int sample_count)
         }
         ApplySourceCrossFade(out, sample_count);
         ApplyDCBlocker(out, sample_count);
+        if (audiowave::enabled)
+            audiowave::push(audiowave::buf_mix, audiowave::wpos_mix,
+                            out, sample_count / 2);
         CaptureLastOut(out, sample_count);
         return true;
     }
@@ -340,12 +383,11 @@ bool8 S9xMixSamples(uint8 *dest, int sample_count)
 
 int S9xGetSampleCount(void)
 {
-	if (Settings.SuperGameBoy ||
-	    (Settings.SGB_BIOSModeActive && S9xSGBBIOSGBIsReleased()))
+	if (Settings.SuperGameBoy && !Settings.SGB_BIOSModeActive)
 		return S9xSGBGetSampleCount();
 
 	int avail = spc::resampler.avail();
-	if (Settings.MSU1) // return minimum available samples, otherwise we can run into the assert above due to partial sample generation in msu1
+	if (Settings.MSU1)
 		avail = Resampler::min(avail, msu::resampler.avail());
     return avail;
 }
@@ -369,6 +411,30 @@ void S9xClearSamples(void)
     gb::resampler.time_ratio(1.0);
     if (Settings.MSU1)
         msu::resampler.clear();
+}
+
+void S9xAudioWaveformEnable(bool enable)
+{
+    audiowave::enabled = enable;
+    if (enable)
+    {
+        memset(audiowave::buf_spc, 0, sizeof audiowave::buf_spc);
+        memset(audiowave::buf_gb,  0, sizeof audiowave::buf_gb);
+        memset(audiowave::buf_mix, 0, sizeof audiowave::buf_mix);
+        audiowave::wpos_spc = 0;
+        audiowave::wpos_gb  = 0;
+        audiowave::wpos_mix = 0;
+    }
+}
+
+int S9xAudioWaveformSnapshot(int stream, short *out_lr, int max_frames)
+{
+    return audiowave::snapshot(stream, out_lr, max_frames);
+}
+
+int S9xAudioWaveformSampleRate(void)
+{
+    return Settings.SoundPlaybackRate;
 }
 
 // Run-ahead audio state preservation. We snapshot the resampler control state
@@ -449,7 +515,7 @@ bool8 S9xInitSound(int buffer_ms)
 
     spc::resampler.resize(buffer_size_samples);
     msu::resampler.resize(buffer_size_samples * 3 / 2);
-    gb::resampler.resize(buffer_size_samples * 3);
+    gb::resampler.resize(buffer_size_samples);
     gb::resampler.time_ratio(1.0);
 
     SNES::dsp.spc_dsp.set_output(&spc::resampler);
