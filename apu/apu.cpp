@@ -281,11 +281,6 @@ bool8 S9xMixSamples(uint8 *dest, int sample_count)
 
         if (mix_spc_under_gb)
         {
-            // Mix whatever the SPC has produced into the GB stream. If
-            // SPC ran short this call, the tail of `out` stays GB-only —
-            // strictly better than dropping the partial voice. Read is
-            // bounded by our scratch buffer and forced even (the resampler
-            // asserts on odd counts because it emits stereo pairs).
             int read_count = spc::resampler.avail();
             if (read_count > sample_count) read_count = sample_count;
             if (read_count > 2048)         read_count = 2048;
@@ -318,12 +313,7 @@ bool8 S9xMixSamples(uint8 *dest, int sample_count)
         }
         else
         {
-            // BIOS-less GB: SPC isn't running an SGB engine — drain to
-            // keep the scanline-driver gate firing at its natural cadence.
             S9xClearSamples();
-            if (audiowave::enabled)
-                audiowave::push_silence(audiowave::buf_spc, audiowave::wpos_spc,
-                                        sample_count / 2);
         }
         ApplySourceCrossFade(out, sample_count);
         ApplyDCBlocker(out, sample_count);
@@ -384,7 +374,7 @@ int S9xGetSampleCount(void)
 		return S9xSGBGetSampleCount();
 
 	int avail = spc::resampler.avail();
-	if (Settings.MSU1) // return minimum available samples, otherwise we can run into the assert above due to partial sample generation in msu1
+	if (Settings.MSU1)
 		avail = Resampler::min(avail, msu::resampler.avail());
     return avail;
 }
