@@ -184,7 +184,7 @@ inline void CaptureLastOut(const int16 *out, int sample_count_int16s)
 // 22Hz half-cycle of magnitude V — the boot-time bass kick. Avoid it by
 // seeding x_prev = first_sample so y[0] = x[0] - x[0] = 0 and the filter
 // is "already tracking" from sample zero.
-constexpr double kDcBlockR = 0.998;
+constexpr double kDcBlockR = 0.99;
 bool   g_dc_initialized = false;
 double g_dc_in_prev_l  = 0.0;
 double g_dc_in_prev_r  = 0.0;

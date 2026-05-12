@@ -521,9 +521,9 @@ static void MixSpcOverGB(uint8 *dest, int sample_words)
         return;
     }
 
-    static const int GB_GAIN_Q8  = 121;
+    static const int GB_GAIN_Q8  = 242;
     static const int SPC_GAIN_Q8 = 512;
-    static const int GB_LPF_ALPHA_Q15 = 9830;
+    static const int GB_LPF_ALPHA_Q15 = 3277;
     static int32_t gb_lpf_l = 0, gb_lpf_r = 0;
 
     int16_t spc_buf[2048];
