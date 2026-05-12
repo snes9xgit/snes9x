@@ -70,6 +70,10 @@ CXAudio2::CXAudio2(void)
 	fade_in_pos = kFadeFrames;  // "done" — no fade in progress
 	fadeout_in_flight = 0;
 	fadeoutBuffer = NULL;
+
+	drainThread = NULL;
+	drainShutdown = 0;
+	drainThreadId = 0;
 }
 
 CXAudio2::~CXAudio2(void)
@@ -158,6 +162,50 @@ bool CXAudio2::InitXAudio2(void)
 	return true;
 }
 
+static void MixSpcOverGB(uint8 *dest, int sample_words);
+
+DWORD WINAPI CXAudio2::AudioDrainThreadProc(LPVOID param)
+{
+	CXAudio2 *self = (CXAudio2 *)param;
+	InterlockedExchange((LONG *)&self->drainThreadId, (LONG)GetCurrentThreadId());
+
+	HANDLE timer = CreateWaitableTimer(NULL, TRUE, NULL);
+	if (!timer) return 0;
+
+	const int64_t period_100ns =
+		(int64_t)self->singleBufferSamples * 10000000 /
+		((int64_t)Settings.SoundPlaybackRate * 2);
+
+	while (!self->drainShutdown)
+	{
+		LARGE_INTEGER li;
+		li.QuadPart = -period_100ns;
+		SetWaitableTimer(timer, &li, 0, NULL, NULL, FALSE);
+		WaitForSingleObject(timer, INFINITE);
+
+		if (self->drainShutdown) break;
+		if (!Settings.SGB_BIOSModeActive || !S9xSGBBIOSGBIsReleased()) continue;
+		if (Settings.TurboMode || Settings.Mute || !self->initDone) continue;
+		if (!self->soundBuffer) continue;
+
+		while (self->bufferCount >= (LONG)self->blockCount && !self->drainShutdown)
+		{
+			SwitchToThread();
+		}
+		if (self->drainShutdown) break;
+
+		uint8 *curBuffer = self->soundBuffer + self->writeOffset;
+		S9xMixSamples(curBuffer, self->singleBufferSamples);
+		MixSpcOverGB(curBuffer, self->singleBufferSamples);
+		self->PushBuffer(self->singleBufferBytes, curBuffer, NULL);
+		self->writeOffset += self->singleBufferBytes;
+		self->writeOffset %= self->sum_bufferSize;
+	}
+
+	CloseHandle(timer);
+	return 0;
+}
+
 /*  CXAudio2::InitVoices
 initializes the voice objects with the current audio settings
 -----
@@ -213,6 +261,14 @@ deinitializes the voice objects and buffers
 */
 void CXAudio2::DeInitVoices(void)
 {
+	if (drainThread)
+	{
+		InterlockedExchange(&drainShutdown, 1);
+		WaitForSingleObject(drainThread, 2000);
+		CloseHandle(drainThread);
+		drainThread = NULL;
+		drainThreadId = 0;
+	}
 	if(pSourceVoice) {
 		StopPlayback();
 		pSourceVoice->DestroyVoice();
@@ -428,6 +484,14 @@ bool CXAudio2::SetupSound()
 
 	BeginPlayback();
 
+	if (!drainThread)
+	{
+		InterlockedExchange(&drainShutdown, 0);
+		drainThread = CreateThread(NULL, 0, &CXAudio2::AudioDrainThreadProc, this, 0, NULL);
+		if (drainThread)
+			SetThreadPriority(drainThread, THREAD_PRIORITY_TIME_CRITICAL);
+	}
+
     return true;
 }
 
@@ -495,6 +559,12 @@ the OnBufferComplete callback.
 */
 void CXAudio2::ProcessSound()
 {
+	if (Settings.SGB_BIOSModeActive && S9xSGBBIOSGBIsReleased() &&
+	    drainThreadId != 0 && GetCurrentThreadId() != drainThreadId)
+	{
+		return;
+	}
+
 	int freeBytes = GetAvailableBytes();
 
 	if (Settings.DynamicRateControl)

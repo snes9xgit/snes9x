@@ -712,9 +712,7 @@ void WinThrottleFramerate()
 	if (Settings.SkipFrames != AUTO_FRAMERATE || Settings.TurboMode || Settings.NetPlay || Settings.NetPlayServer)
 		return;
 
-	const bool sgb_owns_audio = Settings.SuperGameBoy ||
-		(Settings.SGB_BIOSModeActive && S9xSGBBIOSGBIsReleased());
-	if (sgb_owns_audio && Settings.SoundSync && GUI.AllowSoundSync)
+	if (Settings.SuperGameBoy && Settings.SoundSync && GUI.AllowSoundSync)
 		return;
 
 	if (!throttle_timer)
