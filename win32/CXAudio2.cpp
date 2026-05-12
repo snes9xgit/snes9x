@@ -451,10 +451,6 @@ int CXAudio2::GetAvailableBytes()
     return ((blockCount - bufferCount) * singleBufferBytes) - partialOffset;
 }
 
-// SGB BIOS-released mix mode: S9xMixSamples writes GB samples only.
-// CXAudio2 pulls SPC output from spc::resampler independently and mixes it
-// on top with hard-clip. Both streams come from the same SNES clock so they
-// stay aligned; only the host-side drain cadence is decoupled.
 static void MixSpcOverGB(uint8 *dest, int sample_words)
 {
     const bool sgb_bios_mix = Settings.SGB_BIOSModeActive && S9xSGBBIOSGBIsReleased();
@@ -467,15 +463,26 @@ static void MixSpcOverGB(uint8 *dest, int sample_words)
         return;
     }
 
+    static const int GB_GAIN_Q8  = 121;
+    static const int SPC_GAIN_Q8 = 512;
+
     int16_t spc_buf[2048];
     int cap = (sample_words < 2048) ? sample_words : 2048;
     int n = S9xPullSpcOutput(spc_buf, cap);
-    for (int i = 0; i < n; ++i)
+    int i = 0;
+    for (; i < n; ++i)
     {
-        int32_t mixed = (int32_t)out16[i] + (int32_t)spc_buf[i];
+        int32_t gb  = ((int32_t)out16[i]   * GB_GAIN_Q8)  >> 8;
+        int32_t spc = ((int32_t)spc_buf[i] * SPC_GAIN_Q8) >> 8;
+        int32_t mixed = gb + spc;
         if (mixed >  32767) mixed =  32767;
         if (mixed < -32768) mixed = -32768;
         out16[i] = (int16_t)mixed;
+    }
+    for (; i < sample_words; ++i)
+    {
+        int32_t gb = ((int32_t)out16[i] * GB_GAIN_Q8) >> 8;
+        out16[i] = (int16_t)gb;
     }
     S9xAudioWaveformPushMix(out16, frames);
 }
@@ -516,11 +523,7 @@ void CXAudio2::ProcessSound()
     if(Settings.SoundSync && !Settings.TurboMode && !Settings.Mute)
     {
         // no sound sync when speed is not set to 100%
-        const bool sgb_bios_mix = Settings.SGB_BIOSModeActive && S9xSGBBIOSGBIsReleased();
-        const int wait_threshold = sgb_bios_mix
-            ? (int)singleBufferSamples
-            : (int)availableSamples;
-        while((freeBytes >> 1) < wait_threshold)
+        while((freeBytes >> 1) < availableSamples)
         {
             if (bufferCount == 0)
                 break;
