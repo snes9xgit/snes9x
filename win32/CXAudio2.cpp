@@ -523,38 +523,26 @@ static void MixSpcOverGB(uint8 *dest, int sample_words)
 
     static const int GB_GAIN_Q8  = 242;
     static const int SPC_GAIN_Q8 = 512;
-    static const int GB_LPF_ALPHA_Q15 = 3277;
-    static int32_t gb_lpf_l = 0, gb_lpf_r = 0;
 
     int16_t spc_buf[2048];
     int cap = (sample_words < 2048) ? sample_words : 2048;
     int n = S9xPullSpcOutput(spc_buf, cap);
     int i = 0;
-    for (; i < n; i += 2)
+    for (; i < n; ++i)
     {
-        int32_t gbl_raw = ((int32_t)out16[i]     * GB_GAIN_Q8) >> 8;
-        int32_t gbr_raw = ((int32_t)out16[i + 1] * GB_GAIN_Q8) >> 8;
-        gb_lpf_l += ((gbl_raw - gb_lpf_l) * GB_LPF_ALPHA_Q15) >> 15;
-        gb_lpf_r += ((gbr_raw - gb_lpf_r) * GB_LPF_ALPHA_Q15) >> 15;
-        int32_t spcl = ((int32_t)spc_buf[i]     * SPC_GAIN_Q8) >> 8;
-        int32_t spcr = ((int32_t)spc_buf[i + 1] * SPC_GAIN_Q8) >> 8;
-        int32_t ml = gb_lpf_l + spcl;
-        int32_t mr = gb_lpf_r + spcr;
-        if (ml >  32767) ml =  32767;
-        if (ml < -32768) ml = -32768;
-        if (mr >  32767) mr =  32767;
-        if (mr < -32768) mr = -32768;
-        out16[i]     = (int16_t)ml;
-        out16[i + 1] = (int16_t)mr;
+        int32_t gb  = ((int32_t)out16[i]   * GB_GAIN_Q8)  >> 8;
+        int32_t spc = ((int32_t)spc_buf[i] * SPC_GAIN_Q8) >> 8;
+        int32_t mixed = gb + spc;
+        if (mixed >  32767) mixed =  32767;
+        if (mixed < -32768) mixed = -32768;
+        out16[i] = (int16_t)mixed;
     }
-    for (; i < sample_words; i += 2)
+    for (; i < sample_words; ++i)
     {
-        int32_t gbl_raw = ((int32_t)out16[i]     * GB_GAIN_Q8) >> 8;
-        int32_t gbr_raw = ((int32_t)out16[i + 1] * GB_GAIN_Q8) >> 8;
-        gb_lpf_l += ((gbl_raw - gb_lpf_l) * GB_LPF_ALPHA_Q15) >> 15;
-        gb_lpf_r += ((gbr_raw - gb_lpf_r) * GB_LPF_ALPHA_Q15) >> 15;
-        out16[i]     = (int16_t)gb_lpf_l;
-        out16[i + 1] = (int16_t)gb_lpf_r;
+        int32_t gb = ((int32_t)out16[i] * GB_GAIN_Q8) >> 8;
+        if (gb >  32767) gb =  32767;
+        if (gb < -32768) gb = -32768;
+        out16[i] = (int16_t)gb;
     }
     S9xAudioWaveformPushMix(out16, frames);
 }
