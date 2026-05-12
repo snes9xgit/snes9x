@@ -292,7 +292,7 @@ void Mix(const Apu &a, int32_t &out_l, int32_t &out_r)
 	const int32_t vol_r = static_cast<int32_t>(a.nr50 & 0x07) + 1;         // 1..8
 	const int32_t vol_l = static_cast<int32_t>((a.nr50 >> 4) & 0x07) + 1;  // 1..8
 
-	constexpr int32_t GAIN = 35;
+	constexpr int32_t GAIN = 70;
 	out_l = l * vol_l * GAIN;
 	out_r = r * vol_r * GAIN;
 	if (out_l >  32767) out_l =  32767;

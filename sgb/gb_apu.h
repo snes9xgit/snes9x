@@ -15,7 +15,7 @@ namespace SGB {
 // Internal samples come out at T-cycle resolution and are box-filtered
 // down to a configurable output rate (default 32000 Hz).
 
-constexpr uint32_t APU_SAMPLE_BUF_SIZE = 8192;
+constexpr uint32_t APU_SAMPLE_BUF_SIZE = 16384;
 
 // CH1/CH2 — Square wave with envelope; CH1 also has frequency sweep.
 struct ApuSquare
