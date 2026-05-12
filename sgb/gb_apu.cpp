@@ -357,23 +357,15 @@ void PushSample(Apu &a, int16_t l, int16_t r)
 // Emit one integrated sample to the ring buffer, reset accumulator.
 void FlushSample(Apu &a)
 {
-	int32_t raw_l = 0, raw_r = 0;
+	int16_t out_l = 0, out_r = 0;
 	if (a.sample_accum_cnt > 0)
 	{
-		raw_l = a.sample_accum_l / static_cast<int32_t>(a.sample_accum_cnt);
-		raw_r = a.sample_accum_r / static_cast<int32_t>(a.sample_accum_cnt);
+		out_l = static_cast<int16_t>(a.sample_accum_l / static_cast<int32_t>(a.sample_accum_cnt));
+		out_r = static_cast<int16_t>(a.sample_accum_r / static_cast<int32_t>(a.sample_accum_cnt));
 	}
 	a.sample_accum_l   = 0;
 	a.sample_accum_r   = 0;
 	a.sample_accum_cnt = 0;
-
-	static int32_t lpf_l = 0, lpf_r = 0;
-	static const int LPF_ALPHA_Q15 = 9830;
-	lpf_l += ((raw_l - lpf_l) * LPF_ALPHA_Q15) >> 15;
-	lpf_r += ((raw_r - lpf_r) * LPF_ALPHA_Q15) >> 15;
-
-	int16_t out_l = static_cast<int16_t>(lpf_l);
-	int16_t out_r = static_cast<int16_t>(lpf_r);
 	PushSample(a, out_l, out_r);
 }
 
