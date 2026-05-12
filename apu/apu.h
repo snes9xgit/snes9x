@@ -54,6 +54,15 @@ void S9xAudioWaveformEnable(bool enable);
 int  S9xAudioWaveformSnapshot(int stream, short *out_lr, int max_frames);
 int  S9xAudioWaveformSampleRate(void);
 
+// SGB BIOS-released mix-mode helpers — host layer (CXAudio2) drains the SPC
+// resampler independently of the GB stream so the two stay in sync via the
+// shared SNES clock while host throttles on combined buffer state.
+// PullSpc: reads up to count words (int16) from spc::resampler output. Returns actual read.
+// SpcOutAvail: returns spc::resampler.avail() in output words.
+int  S9xPullSpcOutput(int16_t *dst, int count);
+int  S9xSpcOutAvailable(void);
+void S9xAudioWaveformPushMix(const int16_t *src, int frames);
+
 #define DSP_INTERPOLATION_NONE     0
 #define DSP_INTERPOLATION_LINEAR   1
 #define DSP_INTERPOLATION_GAUSSIAN 2

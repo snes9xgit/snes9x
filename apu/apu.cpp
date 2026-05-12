@@ -279,45 +279,15 @@ bool8 S9xMixSamples(uint8 *dest, int sample_count)
             audiowave::push(audiowave::buf_gb, audiowave::wpos_gb,
                             out, sample_count / 2);
 
-        if (mix_spc_under_gb)
-        {
-            int read_count = spc::resampler.avail();
-            if (read_count > sample_count) read_count = sample_count;
-            if (read_count > 2048)         read_count = 2048;
-            if (read_count & 1)            --read_count;
-            if (read_count > 0)
-            {
-                int16 spc_buf[2048];
-                spc::resampler.read(spc_buf, read_count);
-                if (audiowave::enabled)
-                {
-                    audiowave::push(audiowave::buf_spc, audiowave::wpos_spc,
-                                    spc_buf, read_count / 2);
-                    if (read_count < sample_count)
-                        audiowave::push_silence(audiowave::buf_spc, audiowave::wpos_spc,
-                                                (sample_count - read_count) / 2);
-                }
-                for (int i = 0; i < read_count; ++i)
-                {
-                    int32 mixed = (int32)out[i] + (int32)spc_buf[i];
-                    if (mixed >  32767) mixed =  32767;
-                    if (mixed < -32768) mixed = -32768;
-                    out[i] = (int16)mixed;
-                }
-            }
-            else if (audiowave::enabled)
-            {
-                audiowave::push_silence(audiowave::buf_spc, audiowave::wpos_spc,
-                                        sample_count / 2);
-            }
-        }
-        else
+        if (!mix_spc_under_gb)
         {
             S9xClearSamples();
         }
         ApplySourceCrossFade(out, sample_count);
         ApplyDCBlocker(out, sample_count);
-        if (audiowave::enabled)
+        // buf_mix waveform push is now done by the host layer (CXAudio2)
+        // after it merges the SPC stream on top — see S9xAudioWaveformPushMix.
+        if (audiowave::enabled && !mix_spc_under_gb)
             audiowave::push(audiowave::buf_mix, audiowave::wpos_mix,
                             out, sample_count / 2);
         CaptureLastOut(out, sample_count);
@@ -396,6 +366,31 @@ void S9xClearSamples(void)
     spc::resampler.clear();
     if (Settings.MSU1)
         msu::resampler.clear();
+}
+
+void S9xAudioWaveformPushMix(const int16_t *src, int frames)
+{
+    if (!audiowave::enabled || !src || frames <= 0) return;
+    audiowave::push(audiowave::buf_mix, audiowave::wpos_mix, src, frames);
+}
+
+int S9xPullSpcOutput(int16_t *dst, int count)
+{
+    if (!dst || count <= 0) return 0;
+    int avail = spc::resampler.avail();
+    if (count > avail) count = avail;
+    if (count & 1) --count;
+    if (count <= 0) return 0;
+    spc::resampler.read(dst, count);
+    if (audiowave::enabled)
+        audiowave::push(audiowave::buf_spc, audiowave::wpos_spc,
+                        dst, count / 2);
+    return count;
+}
+
+int S9xSpcOutAvailable(void)
+{
+    return spc::resampler.avail();
 }
 
 void S9xAudioWaveformEnable(bool enable)
