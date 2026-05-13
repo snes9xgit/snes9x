@@ -377,7 +377,19 @@ void S9xAudioWaveformPushMix(const int16_t *src, int frames)
 int S9xPullSpcOutput(int16_t *dst, int count)
 {
     if (!dst || count <= 0) return 0;
+
     int avail = spc::resampler.avail();
+    const int max_keep = count * 3;
+    if (avail > max_keep)
+    {
+        const int excess_outputs = avail - max_keep;
+        int dump_input_words = (int)(excess_outputs * spc::resampler.r_step);
+        dump_input_words &= ~1;
+        if (dump_input_words > 0)
+            spc::resampler.dump(dump_input_words);
+        avail = spc::resampler.avail();
+    }
+
     if (count > avail) count = avail;
     if (count & 1) --count;
     if (count <= 0) return 0;
