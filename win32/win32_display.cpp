@@ -13,6 +13,7 @@
 #include "../ppu.h"
 #include "../font.h"
 #include "../sgb/sgb.h"
+#include "../apu/apu.h"
 #include "wsnes9x.h"
 #include "win32_display.h"
 #include "CDirect3D.h"
@@ -714,6 +715,24 @@ void WinThrottleFramerate()
 
 	if (Settings.SuperGameBoy && Settings.SoundSync && GUI.AllowSoundSync)
 		return;
+
+	if (Settings.SGB_BIOSModeActive && S9xSGBBIOSGBIsReleased())
+	{
+		int gb_frames = S9xGetSampleCount() / 2;
+		if (gb_frames < 768)
+		{
+			if (!throttle_timer)
+			{
+				QueryPerformanceFrequency((LARGE_INTEGER *)&PCBase);
+				PCFrameTimeNTSC = (int64_t)(PCBase / NTSC_PROGRESSIVE_FRAME_RATE);
+				PCFrameTimePAL = (int64_t)(PCBase / PAL_PROGRESSIVE_FRAME_RATE);
+				throttle_timer = CreateWaitableTimer(NULL, true, NULL);
+				QueryPerformanceCounter((LARGE_INTEGER *)&PCStart);
+			}
+			QueryPerformanceCounter((LARGE_INTEGER *)&PCStart);
+			return;
+		}
+	}
 
 	if (!throttle_timer)
 	{
