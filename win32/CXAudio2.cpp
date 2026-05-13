@@ -7,6 +7,7 @@
 #include "CXAudio2.h"
 #include "../snes9x.h"
 #include "../apu/apu.h"
+#include "../sgb/sgb.h"
 #include "wsnes9x.h"
 #include <process.h>
 #include "dxerr.h"
@@ -69,6 +70,10 @@ CXAudio2::CXAudio2(void)
 	fade_in_pos = kFadeFrames;  // "done" — no fade in progress
 	fadeout_in_flight = 0;
 	fadeoutBuffer = NULL;
+
+	drainThread = NULL;
+	drainShutdown = 0;
+	drainThreadId = 0;
 }
 
 CXAudio2::~CXAudio2(void)
@@ -157,6 +162,61 @@ bool CXAudio2::InitXAudio2(void)
 	return true;
 }
 
+static void MixSpcOverGB(uint8 *dest, int sample_words);
+
+DWORD WINAPI CXAudio2::AudioDrainThreadProc(LPVOID param)
+{
+	CXAudio2 *self = (CXAudio2 *)param;
+	InterlockedExchange((LONG *)&self->drainThreadId, (LONG)GetCurrentThreadId());
+
+	const LONG queue_target = (LONG)self->blockCount - 1;
+
+	while (!self->drainShutdown)
+	{
+		if (!Settings.SGB_BIOSModeActive || !S9xSGBBIOSGBIsReleased() ||
+		    Settings.TurboMode || Settings.Mute || !self->initDone ||
+		    !self->soundBuffer)
+		{
+			Sleep(2);
+			continue;
+		}
+
+		DWORD spin_start = GetTickCount();
+		while (self->bufferCount >= queue_target && !self->drainShutdown)
+		{
+			SwitchToThread();
+			if (GetTickCount() - spin_start > 50) break;
+		}
+		if (self->drainShutdown) break;
+
+		uint8 *curBuffer = self->soundBuffer + self->writeOffset;
+		S9xMixSamples(curBuffer, self->singleBufferSamples);
+		MixSpcOverGB(curBuffer, self->singleBufferSamples);
+		self->PushBuffer(self->singleBufferBytes, curBuffer, NULL);
+		self->writeOffset += self->singleBufferBytes;
+		self->writeOffset %= self->sum_bufferSize;
+
+		S9xSGBSetAudioRate(Settings.SoundPlaybackRate);
+
+		extern volatile LONG g_drain_pushes_per_sec;
+		static DWORD push_window_start = 0;
+		static LONG push_count = 0;
+		DWORD now_tick = GetTickCount();
+		if (push_window_start == 0) push_window_start = now_tick;
+		++push_count;
+		if (now_tick - push_window_start >= 1000)
+		{
+			InterlockedExchange(&g_drain_pushes_per_sec, push_count);
+			push_count = 0;
+			push_window_start = now_tick;
+		}
+	}
+
+	return 0;
+}
+
+volatile LONG g_drain_pushes_per_sec = 0;
+
 /*  CXAudio2::InitVoices
 initializes the voice objects with the current audio settings
 -----
@@ -212,6 +272,14 @@ deinitializes the voice objects and buffers
 */
 void CXAudio2::DeInitVoices(void)
 {
+	if (drainThread)
+	{
+		InterlockedExchange(&drainShutdown, 1);
+		WaitForSingleObject(drainThread, 2000);
+		CloseHandle(drainThread);
+		drainThread = NULL;
+		drainThreadId = 0;
+	}
 	if(pSourceVoice) {
 		StopPlayback();
 		pSourceVoice->DestroyVoice();
@@ -427,6 +495,7 @@ bool CXAudio2::SetupSound()
 
 	BeginPlayback();
 
+
     return true;
 }
 
@@ -450,6 +519,44 @@ int CXAudio2::GetAvailableBytes()
     return ((blockCount - bufferCount) * singleBufferBytes) - partialOffset;
 }
 
+static void MixSpcOverGB(uint8 *dest, int sample_words)
+{
+    const bool sgb_bios_mix = Settings.SGB_BIOSModeActive && S9xSGBBIOSGBIsReleased();
+    int16_t *out16 = (int16_t *)dest;
+    const int frames = sample_words / 2;
+
+    if (!sgb_bios_mix)
+    {
+        S9xAudioWaveformPushMix(out16, frames);
+        return;
+    }
+
+    static const int GB_GAIN_Q8  = 242;
+    static const int SPC_GAIN_Q8 = 512;
+
+    int16_t spc_buf[2048];
+    int cap = (sample_words < 2048) ? sample_words : 2048;
+    int n = S9xPullSpcOutput(spc_buf, cap);
+    int i = 0;
+    for (; i < n; ++i)
+    {
+        int32_t gb  = ((int32_t)out16[i]   * GB_GAIN_Q8)  >> 8;
+        int32_t spc = ((int32_t)spc_buf[i] * SPC_GAIN_Q8) >> 8;
+        int32_t mixed = gb + spc;
+        if (mixed >  32767) mixed =  32767;
+        if (mixed < -32768) mixed = -32768;
+        out16[i] = (int16_t)mixed;
+    }
+    for (; i < sample_words; ++i)
+    {
+        int32_t gb = ((int32_t)out16[i] * GB_GAIN_Q8) >> 8;
+        if (gb >  32767) gb =  32767;
+        if (gb < -32768) gb = -32768;
+        out16[i] = (int16_t)gb;
+    }
+    S9xAudioWaveformPushMix(out16, frames);
+}
+
 /*  CXAudio2::ProcessSound
 The mixing function called by the sound core when new samples are available.
 SoundBuffer is divided into blockCount blocks. If there are enough available samples and a free block,
@@ -458,6 +565,12 @@ the OnBufferComplete callback.
 */
 void CXAudio2::ProcessSound()
 {
+	if (Settings.SGB_BIOSModeActive && S9xSGBBIOSGBIsReleased() &&
+	    drainThread != NULL && GetCurrentThreadId() != drainThreadId)
+	{
+		return;
+	}
+
 	int freeBytes = GetAvailableBytes();
 
 	if (Settings.DynamicRateControl)
@@ -468,6 +581,15 @@ void CXAudio2::ProcessSound()
 	UINT32 availableSamples;
 
 	availableSamples = S9xGetSampleCount();
+
+	if (Settings.SGB_BIOSModeActive && S9xSGBBIOSGBIsReleased())
+	{
+		S9xSpcAdjustRate(1.0);
+	}
+	else
+	{
+		S9xSpcResetDrc();
+	}
 
 	if (Settings.DynamicRateControl && !Settings.SoundSync)
 	{
@@ -486,7 +608,11 @@ void CXAudio2::ProcessSound()
     if(Settings.SoundSync && !Settings.TurboMode && !Settings.Mute)
     {
         // no sound sync when speed is not set to 100%
-        while((freeBytes >> 1) < availableSamples)
+        const bool sgb_bios_mix = Settings.SGB_BIOSModeActive && S9xSGBBIOSGBIsReleased();
+        const UINT32 wait_threshold = sgb_bios_mix
+            ? singleBufferSamples
+            : availableSamples;
+        while((freeBytes >> 1) < wait_threshold)
         {
             if (bufferCount == 0)
                 break;
@@ -509,6 +635,7 @@ void CXAudio2::ProcessSound()
 		if (availableSamples < samplesleftinblock)
 		{
 			S9xMixSamples(offsetBuffer, availableSamples);
+			MixSpcOverGB(offsetBuffer, availableSamples);
             partialOffset += availableSamples << 1;
 			assert(partialOffset < singleBufferBytes);
 			availableSamples = 0;
@@ -516,6 +643,7 @@ void CXAudio2::ProcessSound()
 		else
 		{
 			S9xMixSamples(offsetBuffer, samplesleftinblock);
+			MixSpcOverGB(offsetBuffer, samplesleftinblock);
 			partialOffset = 0;
 			availableSamples -= samplesleftinblock;
 			PushBuffer(singleBufferBytes, soundBuffer + writeOffset, NULL);
@@ -527,6 +655,7 @@ void CXAudio2::ProcessSound()
 	while (availableSamples >= singleBufferSamples && bufferCount < blockCount) {
 		BYTE *curBuffer = soundBuffer + writeOffset;
 		S9xMixSamples(curBuffer, singleBufferSamples);
+		MixSpcOverGB(curBuffer, singleBufferSamples);
 		PushBuffer(singleBufferBytes, curBuffer, NULL);
 		writeOffset += singleBufferBytes;
 		writeOffset %= sum_bufferSize;
@@ -536,6 +665,7 @@ void CXAudio2::ProcessSound()
 	// need to check this is less than a single buffer, otherwise we have a race condition with bufferCount
 	if (availableSamples > 0 && availableSamples < singleBufferSamples && bufferCount < blockCount) {
 		S9xMixSamples(soundBuffer + writeOffset, availableSamples);
+		MixSpcOverGB(soundBuffer + writeOffset, availableSamples);
 		partialOffset = availableSamples << 1;
 		assert(partialOffset < singleBufferBytes);
 	}

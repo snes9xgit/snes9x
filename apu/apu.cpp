@@ -54,6 +54,7 @@ static uint32 ratio_numerator = APU_NUMERATOR_NTSC;
 static uint32 ratio_denominator = APU_DENOMINATOR_NTSC;
 
 static double dynamic_rate_multiplier = 1.0;
+static double drc_scale = 1.0;
 } // namespace spc
 
 namespace msu {
@@ -61,6 +62,59 @@ namespace msu {
 static Resampler resampler;
 static std::vector<int16_t> resampler_buffer;
 } // namespace msu
+
+namespace audiowave {
+static bool enabled = false;
+constexpr int CAPTURE_FRAMES = 9600;
+static int16_t buf_spc[CAPTURE_FRAMES * 2];
+static int16_t buf_gb [CAPTURE_FRAMES * 2];
+static int16_t buf_mix[CAPTURE_FRAMES * 2];
+static int     wpos_spc = 0;
+static int     wpos_gb  = 0;
+static int     wpos_mix = 0;
+
+inline void push(int16_t *ring, int &wpos, const int16_t *src, int frames)
+{
+    for (int i = 0; i < frames; ++i)
+    {
+        ring[wpos * 2 + 0] = src[i * 2 + 0];
+        ring[wpos * 2 + 1] = src[i * 2 + 1];
+        wpos = (wpos + 1) % CAPTURE_FRAMES;
+    }
+}
+
+inline void push_silence(int16_t *ring, int &wpos, int frames)
+{
+    for (int i = 0; i < frames; ++i)
+    {
+        ring[wpos * 2 + 0] = 0;
+        ring[wpos * 2 + 1] = 0;
+        wpos = (wpos + 1) % CAPTURE_FRAMES;
+    }
+}
+
+int snapshot(int stream, short *out_lr, int max_frames)
+{
+    int16_t *ring;
+    int      wpos;
+    switch (stream)
+    {
+        case 0: ring = buf_spc; wpos = wpos_spc; break;
+        case 1: ring = buf_gb;  wpos = wpos_gb;  break;
+        case 2: ring = buf_mix; wpos = wpos_mix; break;
+        default: return 0;
+    }
+    int n = (max_frames < CAPTURE_FRAMES) ? max_frames : CAPTURE_FRAMES;
+    int start = (wpos - n + CAPTURE_FRAMES) % CAPTURE_FRAMES;
+    for (int i = 0; i < n; ++i)
+    {
+        int idx = (start + i) % CAPTURE_FRAMES;
+        out_lr[i * 2 + 0] = ring[idx * 2 + 0];
+        out_lr[i * 2 + 1] = ring[idx * 2 + 1];
+    }
+    return n;
+}
+} // namespace audiowave
 
 static void UpdatePlaybackRate(void);
 static void SPCSnapshotCallback(void);
@@ -131,7 +185,7 @@ inline void CaptureLastOut(const int16 *out, int sample_count_int16s)
 // 22Hz half-cycle of magnitude V — the boot-time bass kick. Avoid it by
 // seeding x_prev = first_sample so y[0] = x[0] - x[0] = 0 and the filter
 // is "already tracking" from sample zero.
-constexpr double kDcBlockR = 0.998;
+constexpr double kDcBlockR = 0.99;
 bool   g_dc_initialized = false;
 double g_dc_in_prev_l  = 0.0;
 double g_dc_in_prev_r  = 0.0;
@@ -222,38 +276,21 @@ bool8 S9xMixSamples(uint8 *dest, int sample_count)
         if (got < sample_count)
             memset(out + got, 0, (sample_count - got) << 1);
 
-        if (mix_spc_under_gb)
+        if (audiowave::enabled)
+            audiowave::push(audiowave::buf_gb, audiowave::wpos_gb,
+                            out, sample_count / 2);
+
+        if (!mix_spc_under_gb)
         {
-            // Mix whatever the SPC has produced into the GB stream. If
-            // SPC ran short this call, the tail of `out` stays GB-only —
-            // strictly better than dropping the partial voice. Read is
-            // bounded by our scratch buffer and forced even (the resampler
-            // asserts on odd counts because it emits stereo pairs).
-            int read_count = spc::resampler.avail();
-            if (read_count > sample_count) read_count = sample_count;
-            if (read_count > 2048)         read_count = 2048;
-            if (read_count & 1)            --read_count;
-            if (read_count > 0)
-            {
-                int16 spc_buf[2048];
-                spc::resampler.read(spc_buf, read_count);
-                for (int i = 0; i < read_count; ++i)
-                {
-                    int32 mixed = (int32)out[i] + (int32)spc_buf[i];
-                    if (mixed >  32767) mixed =  32767;
-                    if (mixed < -32768) mixed = -32768;
-                    out[i] = (int16)mixed;
-                }
-            }
-        }
-        else
-        {
-            // BIOS-less GB: SPC isn't running an SGB engine — drain to
-            // keep the scanline-driver gate firing at its natural cadence.
             S9xClearSamples();
         }
         ApplySourceCrossFade(out, sample_count);
         ApplyDCBlocker(out, sample_count);
+        // buf_mix waveform push is now done by the host layer (CXAudio2)
+        // after it merges the SPC stream on top — see S9xAudioWaveformPushMix.
+        if (audiowave::enabled && !mix_spc_under_gb)
+            audiowave::push(audiowave::buf_mix, audiowave::wpos_mix,
+                            out, sample_count / 2);
         CaptureLastOut(out, sample_count);
         return true;
     }
@@ -308,7 +345,7 @@ int S9xGetSampleCount(void)
 		return S9xSGBGetSampleCount();
 
 	int avail = spc::resampler.avail();
-	if (Settings.MSU1) // return minimum available samples, otherwise we can run into the assert above due to partial sample generation in msu1
+	if (Settings.MSU1)
 		avail = Resampler::min(avail, msu::resampler.avail());
     return avail;
 }
@@ -330,6 +367,92 @@ void S9xClearSamples(void)
     spc::resampler.clear();
     if (Settings.MSU1)
         msu::resampler.clear();
+}
+
+void S9xAudioWaveformPushMix(const int16_t *src, int frames)
+{
+    if (!audiowave::enabled || !src || frames <= 0) return;
+    audiowave::push(audiowave::buf_mix, audiowave::wpos_mix, src, frames);
+}
+
+int S9xPullSpcOutput(int16_t *dst, int count)
+{
+    if (!dst || count <= 0) return 0;
+    int avail = spc::resampler.avail();
+    if (count > avail) count = avail;
+    if (count & 1) --count;
+    if (count <= 0) return 0;
+    spc::resampler.read(dst, count);
+    if (audiowave::enabled)
+        audiowave::push(audiowave::buf_spc, audiowave::wpos_spc,
+                        dst, count / 2);
+    return count;
+}
+
+int S9xSpcOutAvailable(void)
+{
+    return spc::resampler.avail();
+}
+
+int S9xSpcResamplerCapacity(void)
+{
+    return spc::resampler.buffer_size;
+}
+
+double S9xSpcGetTimeRatio(void)
+{
+    return spc::resampler.r_step;
+}
+
+void S9xSpcAdjustRate(double /*drc_factor*/)
+{
+    const int buffer_size = spc::resampler.buffer_size;
+    if (buffer_size <= 0) return;
+
+    const double base_ratio = (double)Settings.SoundInputRate /
+                              (double)Settings.SoundPlaybackRate;
+    spc::resampler.time_ratio(base_ratio);
+
+    const int target = buffer_size / 4;
+    const int delta  = spc::resampler.space_filled() - target;
+    double trim = (double)delta * 0.001 / (double)buffer_size;
+    if (trim >  0.0005) trim =  0.0005;
+    if (trim < -0.0005) trim = -0.0005;
+    spc::drc_scale += trim;
+    if (spc::drc_scale > 1.30) spc::drc_scale = 1.30;
+    if (spc::drc_scale < 0.70) spc::drc_scale = 0.70;
+}
+
+void S9xSpcResetDrc(void)
+{
+    spc::drc_scale = 1.0;
+    const double base_ratio = (double)Settings.SoundInputRate /
+                              (double)Settings.SoundPlaybackRate;
+    spc::resampler.time_ratio(base_ratio);
+}
+
+void S9xAudioWaveformEnable(bool enable)
+{
+    audiowave::enabled = enable;
+    if (enable)
+    {
+        memset(audiowave::buf_spc, 0, sizeof audiowave::buf_spc);
+        memset(audiowave::buf_gb,  0, sizeof audiowave::buf_gb);
+        memset(audiowave::buf_mix, 0, sizeof audiowave::buf_mix);
+        audiowave::wpos_spc = 0;
+        audiowave::wpos_gb  = 0;
+        audiowave::wpos_mix = 0;
+    }
+}
+
+int S9xAudioWaveformSnapshot(int stream, short *out_lr, int max_frames)
+{
+    return audiowave::snapshot(stream, out_lr, max_frames);
+}
+
+int S9xAudioWaveformSampleRate(void)
+{
+    return Settings.SoundPlaybackRate;
 }
 
 // Run-ahead audio state preservation. We snapshot the resampler control state
@@ -458,16 +581,23 @@ void S9xDeinitAPU(void)
     msu::resampler_buffer.clear();
 }
 
+static inline uint32 S9xAPUEffectiveDenominator(void)
+{
+    double d = (double)spc::ratio_denominator * spc::drc_scale + 0.5;
+    if (d < 1.0) d = 1.0;
+    return (uint32)d;
+}
+
 static inline int S9xAPUGetClock(int32 cpucycles)
 {
     return (spc::ratio_numerator * (cpucycles - spc::reference_time) + spc::remainder) /
-           spc::ratio_denominator;
+           S9xAPUEffectiveDenominator();
 }
 
 static inline int S9xAPUGetClockRemainder(int32 cpucycles)
 {
     return (spc::ratio_numerator * (cpucycles - spc::reference_time) + spc::remainder) %
-           spc::ratio_denominator;
+           S9xAPUEffectiveDenominator();
 }
 
 uint8 S9xAPUReadPort(int port)

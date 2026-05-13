@@ -7,6 +7,8 @@
 #include "sgb.h"
 
 #include "../snes9x.h"   // Settings.SGB_BIOSModeActive + S9xMessage
+#include "../memmap.h"   // Memory.VRAM (BG1 tilemap zero at handoff)
+#include "../ppu.h"      // PPU.OAMData (sprite zero at handoff)
                           // (used for the border-capture diagnostic OSD,
                           // matching the pattern dropped in bd2a5479).
 #include "../messages.h" // S9X_INFO / S9X_ROM_INFO type tags.
@@ -139,6 +141,11 @@ struct Emulator::Impl
 		uint8_t  joypad[4];
 		uint8_t  input_value;   // last $FF00 write from GB (for edge detect)
 		uint8_t  input_index;   // 0..3 — current MLT_REQ player slot
+		uint8_t  mlt_players;   // 1, 2, or 4 — set when game issues MLT_REQ
+		uint16_t mlt_auto_drop_polls; // post-handoff poll counter — drops the
+		                              // forced 2-player override back to 1
+		                              // after ~8 P15 rises if no real MLT_REQ
+		                              // packet arrived (cleared on cmd 0x11)
 
 		// Packet assembler. GB bit-bangs SGB commands over $FF00:
 		//   $00 (P14+P15 both active) = reset/start pulse
@@ -241,6 +248,8 @@ struct Emulator::Impl
 		// both get zeroed on VBlank entry. $6000 = (row & 0xF8) | bank.
 		uint8_t  sgb_row;
 		uint8_t  sgb_bank;
+		uint8_t  sgb_bank_latched;
+		uint8_t  sgb_row_latched;
 
 		// Per-pixel capture ring — 4 banks × 8 rows × 160 pixels (palette
 		// indices 0..3). Mesen2 SuperGameboy::WriteLcdColor writes into
@@ -299,6 +308,11 @@ struct Emulator::Impl
 	// DE=$0000, HL=$C060).
 	bool     boot_handoff_captured = false;
 	CpuRegs  boot_handoff_regs{};
+	// GB frames elapsed since boot-ROM handoff. Used by OnPpuVBlank to
+	// re-zero BG1 tilemap + OAM for the first 30 frames so the SGB
+	// BIOS's transient sequential-tilemap setup doesn't bleed through
+	// as stripe artifacts before the game's own PCT_TRN takes over.
+	uint32_t handoff_frames           = 0;
 };
 
 // File-local trampoline — lets the process-global SgbCommandCallback
@@ -356,6 +370,7 @@ void Emulator::Reset()
 	impl_->border_fade_frames   = 0;
 	impl_->boot_handoff_captured = false;
 	impl_->boot_handoff_regs     = {};
+	impl_->handoff_frames        = 0;
 	IrqServicedReset();
 	std::memset(&impl_->icd2, 0, sizeof impl_->icd2);
 	// 4-bank LCD ring starts at $00 (matches Mesen2 SuperGameboy::Reset).
@@ -918,6 +933,24 @@ void Emulator::RunCycles(int32_t tcycles)
 			{
 				impl_->boot_handoff_captured = true;
 				impl_->boot_handoff_regs     = impl_->cpu.State().r;
+				if (impl_->has_rom &&
+				    impl_->cart.header.sgb_flag == 0x03)
+				{
+					impl_->icd2.mlt_players       = 2;
+					impl_->icd2.mlt_auto_drop_polls = 1;
+				}
+				std::memset(&::Memory.VRAM[0x7000], 0, 0x0800);
+				// Also zero BG3's char data + tilemap ($E000-$FFFF).
+				// In our SGB2 BIOS the GB-display area is rendered via
+				// BG3 with every cell pointing at tile $17F (a stripey
+				// placeholder); after b91717c1 dropped the $7800 read-
+				// gate the BIOS started reading real LCD-ring pixels and
+				// those bled through the placeholder as Tetris Plus's
+				// vertical-stripe artifact. Zeroing the whole BG3 region
+				// makes the GB area render as palette-0 yellow blank
+				// during the BIOS's transient setup window.
+				std::memset(&::Memory.VRAM[0xE000], 0, 0x2000);
+				std::memset(::PPU.OAMData, 0, sizeof ::PPU.OAMData);
 			}
 
 			TimerStep(impl_->timer, impl_->mem, consumed);
@@ -1024,6 +1057,9 @@ uint8_t Emulator::GetICD2(uint16_t addr)
 		if (pos >= 320)
 			return 0xFF;
 
+		if (impl_->mem.boot_rom_enabled)
+			return 0x00;
+
 		const uint8_t bank  = static_cast<uint8_t>(icd.lcd_row_select & 0x03);
 		const uint8_t row   = static_cast<uint8_t>((pos >> 1) & 0x07);
 		const uint8_t col   = static_cast<uint8_t>(pos >> 4);
@@ -1043,7 +1079,7 @@ uint8_t Emulator::GetICD2(uint16_t addr)
 			// bank counter (cycles 0→1→2→3→0 every 8 GB scanlines). The
 			// BIOS uses the bank rotation to detect when a fresh bank is
 			// ready to drain.
-			return static_cast<uint8_t>((icd.sgb_row & 0xF8) | (icd.sgb_bank & 0x03));
+			return static_cast<uint8_t>((icd.sgb_row_latched & 0xF8) | (icd.sgb_bank_latched & 0x03));
 		case 0x6002:
 		{
 			// Lazy-stage the next synth packet if queue's empty (no-op
@@ -1231,7 +1267,8 @@ void Emulator::OnPpuHBlank()
 void Emulator::OnPpuVBlank()
 {
 	if (!impl_) return;
-	// Mesen2 ProcessVBlank: just `_row = 0;`. _bank is intentionally
+
+	// ProcessVBlank: just `_row = 0;`. _bank is intentionally
 	// NOT reset — it persists across frames, so the bank-to-band
 	// mapping shifts each frame (frame 1 starts at bank 0, frame 2
 	// starts at bank 2 because 18 % 4 = 2). The SNES BIOS reads
@@ -1240,6 +1277,34 @@ void Emulator::OnPpuVBlank()
 	// across frames.
 	impl_->icd2.sgb_row = 0;
 	impl_->icd2.frame_6001_count = 0;
+
+	// Clean up VRAM areas the BIOS uses for the boot-handoff capture and
+	// This is caused due to drifting scanline timing between the GB and SNES emulation cores.
+	// TODO: add libco for better sync and remove this hack.
+	if (impl_->boot_handoff_captured)
+	{
+		if (impl_->handoff_frames < 30)
+		{
+			std::memset(&::Memory.VRAM[0x7000], 0, 0x0800);
+			std::memset(&::Memory.VRAM[0xE000], 0, 0x2000);
+			std::memset(::PPU.OAMData, 0, sizeof ::PPU.OAMData);
+		}
+		impl_->handoff_frames++;
+	}
+
+	// Suppress visible artifact at the BIOS fade-in moment 
+	// without touching unrelated VRAM regions. Every GB VBlank, after handoff is captured,
+	// compare the first 16 bytes of BG3 char data ($E000-$E00F) against the BIOS-staged
+	// TODO: add libco for better sync and remove this hack.
+	if (impl_->boot_handoff_captured)
+	{
+		static const uint8_t kBiosStagedSig[16] = {
+			0x01, 0x10, 0x02, 0x10, 0x03, 0x10, 0x04, 0x10,
+			0x05, 0x10, 0x06, 0x10, 0x07, 0x10, 0x08, 0x10
+		};
+		if (std::memcmp(&::Memory.VRAM[0xE000], kBiosStagedSig, 16) == 0)
+			std::memset(&::Memory.VRAM[0xE000], 0, 0x1400);
+	}
 }
 
 void Emulator::CaptureScanline(const uint8_t *pixels)
@@ -1249,6 +1314,8 @@ void Emulator::CaptureScanline(const uint8_t *pixels)
 	const uint8_t bank = static_cast<uint8_t>(icd.sgb_bank & 0x03);
 	const uint8_t row  = static_cast<uint8_t>(icd.sgb_row  & 0x07);
 	std::memcpy(&icd.lcd_ring[bank][row * 160], pixels, 160);
+	icd.sgb_bank_latched = icd.sgb_bank;
+	icd.sgb_row_latched  = icd.sgb_row;
 }
 
 static inline uint16_t BgrToHost(uint16_t bgr)
@@ -1419,10 +1486,35 @@ static void IcdFeedJoypad(Emulator::Impl::Icd2 &icd, uint8_t value)
 		if (p15_rose)
 		{
 			const uint8_t mlt_bits = static_cast<uint8_t>((icd.control >> 4) & 0x03);
-			const uint8_t players  = (mlt_bits == 0) ? 1u
-			                       : (mlt_bits == 1) ? 2u : 4u;
+			const uint8_t ctrl_players = (mlt_bits == 0) ? 1u
+			                           : (mlt_bits == 1) ? 2u : 4u;
+			const uint8_t pkt_players  = icd.mlt_players ? icd.mlt_players : 1u;
+			const uint8_t players      = pkt_players > ctrl_players
+			                             ? pkt_players : ctrl_players;
 			icd.input_index = static_cast<uint8_t>(
 				(icd.input_index + 1) % players);
+
+			// Auto-drop the handoff-time mlt_players=2 override after
+			// the game has had enough polls to complete its SGB
+			// detection ritual. Tetris Plus / Pokemon Red detect SGB
+			// purely by observing rotation on the joypad register —
+			// neither sends an actual MLT_REQ packet — so we have to
+			// fake it at boot. After 8 P15 rises (4 full P1↔P2 cycles)
+			// we drop back to 1 player so games that just poll without
+			// running detection (Animaniacs) get stable input. A real
+			// MLT_REQ packet (cmd 0x11) clears mlt_auto_drop_polls so
+			// games that genuinely want multi-player aren't affected.
+			if (icd.mlt_auto_drop_polls > 0)
+			{
+				icd.mlt_auto_drop_polls++;
+				if (icd.mlt_auto_drop_polls > 8)
+				{
+					if (icd.mlt_players == 2)
+						icd.mlt_players = 1;
+					icd.mlt_auto_drop_polls = 0;
+					icd.input_index         = 0;
+				}
+			}
 		}
 	}
 	icd.input_value = value;
@@ -1510,6 +1602,14 @@ void Emulator::OnJoyserWrite(uint8_t value)
 void Emulator::OnSgbCommandInternal(uint8_t cmd, const uint8_t *data, uint32_t len)
 {
 	DbgPushCmd(cmd);
+
+	if (cmd == 0x11 && len > 1)
+	{
+		const uint8_t mode = static_cast<uint8_t>(data[1] & 0x03);
+		impl_->icd2.mlt_players = (mode == 1) ? 2u
+		                       : (mode == 3) ? 4u : 1u;
+		impl_->icd2.mlt_auto_drop_polls = 0;
+	}
 
 	if (cmd == 0x13 || cmd == 0x14)
 	{
@@ -1873,6 +1973,11 @@ int32_t S9xSGBDrainSamples(int16_t *dest, int32_t count_int16s)
 void S9xSGBSetAudioRate(int32_t rate_hz)
 {
 	SGB::Instance().SetAudioRate(rate_hz);
+}
+
+int32_t S9xSGBGetAudioRate(void)
+{
+	return SGB::Instance().GetAudioSampleRate();
 }
 
 int32_t S9xSGBGetAudioClockHz(void)

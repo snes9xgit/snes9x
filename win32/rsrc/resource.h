@@ -531,6 +531,7 @@
 #define ID_SOUND_208MS                  40166
 #define ID_EMULATION_PAUSEWHENINACTIVE  40167
 #define ID_VIDEO_SHOWFRAMERATE          40168
+#define ID_VIDEO_SHOWFRAMENUMBER        40197
 #define ID_WINDOW_SIZE_1X               40169
 #define ID_WINDOW_SIZE_2X               40170
 #define ID_WINDOW_SIZE_3X               40171
@@ -772,6 +773,8 @@
 #define IDC_LOADFROMFILE                3245
 #define IDC_LABEL_SAVETOFILE            3246
 #define IDC_LABEL_LOADFROMFILE          3247
+
+#define ID_SOUND_AUDIOWAVEFORM          40198
 
 #define IDC_STATIC                      -1
 

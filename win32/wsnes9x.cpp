@@ -51,6 +51,7 @@
 #include "kaillera_client.h"
 #include "kaillera_server.h"
 #include "../apu/apu.h"
+#include "../sgb/sgb.h"
 #include "../movie.h"
 #include "../crosshairs.h"
 #include "../controls.h"
@@ -122,6 +123,11 @@ INT_PTR CALLBACK DlgKailleraClient(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lP
 INT_PTR CALLBACK DlgFunky(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
 INT_PTR CALLBACK DlgInputConfig(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
 HWND InputConfig_GetOpenHwnd();
+
+LRESULT CALLBACK AudioWaveProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp);
+static HWND g_audiowave_hwnd = NULL;
+HWND S9xWinGetAudioWaveformHwnd(void) { return g_audiowave_hwnd; }
+static void ToggleAudioWaveform(HINSTANCE hInst, HWND parent);
 INT_PTR CALLBACK DlgHotkeyConfig(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
 INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
 INT_PTR CALLBACK DlgCheatSearch(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -2456,6 +2462,9 @@ LRESULT CALLBACK WinProc(
 				RestoreSNESDisplay ();
 				break;
 			}
+		case ID_SOUND_AUDIOWAVEFORM:
+			ToggleAudioWaveform(g_hInst, hWnd);
+			break;
 		case ID_WINDOW_FULLSCREEN:
 			ToggleFullScreen ();
 			break;
@@ -2498,6 +2507,9 @@ LRESULT CALLBACK WinProc(
 			break;
 		case ID_VIDEO_SHOWFRAMERATE:
 			Settings.DisplayFrameRate = !Settings.DisplayFrameRate;
+			break;
+		case ID_VIDEO_SHOWFRAMENUMBER:
+			Settings.DisplayFrameNumber = !Settings.DisplayFrameNumber;
 			break;
 		case ID_VIDEO_COLORCORRECTION:
 			RestoreGUIDisplay();
@@ -4470,6 +4482,9 @@ static void CheckMenuStates ()
 
 	mii.fState = Settings.DisplayFrameRate ? MFS_CHECKED : MFS_UNCHECKED;
     SetMenuItemInfo (GUI.hMenu, ID_VIDEO_SHOWFRAMERATE, FALSE, &mii);
+
+	mii.fState = Settings.DisplayFrameNumber ? MFS_CHECKED : MFS_UNCHECKED;
+    SetMenuItemInfo (GUI.hMenu, ID_VIDEO_SHOWFRAMENUMBER, FALSE, &mii);
 
 	mii.fState = (Settings.Paused && !Settings.StopEmulation) ? MFS_CHECKED : MFS_UNCHECKED;
     SetMenuItemInfo (GUI.hMenu, ID_FILE_PAUSE, FALSE, &mii);
@@ -9322,6 +9337,288 @@ void UpdateModeComboBox(HWND hComboBox)
 		ComboBox_SetCurSel(hComboBox,ComboBox_GetCount(hComboBox)-1);
 	}
 
+}
+
+static const TCHAR kAudioWaveClass[] = TEXT("Snes9xAudioWaveform");
+static const int   kAudioWaveFrames  = 4800;
+
+static void DrawWaveformPanel(HDC hdc, const RECT &r, const TCHAR *label,
+                              const short *lr, int n, int sample_rate,
+                              int *sticky_min, int *sticky_max, bool show_xaxis)
+{
+    FillRect(hdc, &r, (HBRUSH)GetStockObject(BLACK_BRUSH));
+
+    const int yAxisW   = 56;
+    const int xAxisH   = show_xaxis ? 18 : 0;
+    const int axisLeft = r.left + 6;
+    const int axisRight = r.right - yAxisW;
+    const int axisTop  = r.top + 4;
+    const int axisBot  = r.bottom - 4 - xAxisH;
+    const int W = axisRight - axisLeft;
+    const int H = axisBot - axisTop;
+    const int midY = (axisTop + axisBot) / 2;
+
+    int peak = 0;
+    for (int s = 0; s < n; ++s)
+    {
+        int v = ((int)lr[s * 2] + (int)lr[s * 2 + 1]) / 2;
+        if (sticky_min && v < *sticky_min) *sticky_min = v;
+        if (sticky_max && v > *sticky_max) *sticky_max = v;
+        int av = v < 0 ? -v : v;
+        if (av > peak) peak = av;
+    }
+    int show_min = sticky_min ? *sticky_min : 0;
+    int show_max = sticky_max ? *sticky_max : 0;
+
+    const int amps[7] = { -30000, -20000, -10000, 0, 10000, 20000, 30000 };
+    HPEN penGrid = CreatePen(PS_SOLID, 1, RGB(40, 40, 40));
+    HPEN oldPen = (HPEN)SelectObject(hdc, penGrid);
+    for (int i = 0; i < 7; ++i)
+    {
+        int y = midY - (amps[i] * H / 2) / 32768;
+        MoveToEx(hdc, axisLeft, y, NULL); LineTo(hdc, axisRight, y);
+    }
+    for (int i = 1; i < 7; ++i)
+    {
+        int x = axisLeft + (W * i) / 7;
+        MoveToEx(hdc, x, axisTop, NULL); LineTo(hdc, x, axisBot);
+    }
+    SelectObject(hdc, oldPen);
+    DeleteObject(penGrid);
+
+    if (n > 1)
+    {
+        HPEN penWave = CreatePen(PS_SOLID, 1, RGB(122, 240, 195));
+        oldPen = (HPEN)SelectObject(hdc, penWave);
+        for (int i = 0; i < W; ++i)
+        {
+            int s0 = (i * n) / W;
+            int s1 = ((i + 1) * n) / W;
+            if (s1 <= s0) s1 = s0 + 1;
+            int mn = 32767, mx = -32768;
+            for (int s = s0; s < s1 && s < n; ++s)
+            {
+                int v = ((int)lr[s * 2] + (int)lr[s * 2 + 1]) / 2;
+                if (v < mn) mn = v;
+                if (v > mx) mx = v;
+            }
+            int yMin = midY - (mx * H / 2) / 32768;
+            int yMax = midY - (mn * H / 2) / 32768;
+            MoveToEx(hdc, axisLeft + i, yMin, NULL);
+            LineTo  (hdc, axisLeft + i, yMax);
+        }
+        SelectObject(hdc, oldPen);
+        DeleteObject(penWave);
+    }
+
+    SetBkMode(hdc, TRANSPARENT);
+    SetTextColor(hdc, RGB(190, 190, 190));
+    TCHAR txt[64];
+    for (int i = 0; i < 7; ++i)
+    {
+        int y = midY - (amps[i] * H / 2) / 32768;
+        _stprintf(txt, TEXT("%d"), amps[i]);
+        TextOut(hdc, axisRight + 6, y - 7, txt, lstrlen(txt));
+    }
+    SetTextColor(hdc, RGB(220, 220, 220));
+    TextOut(hdc, axisRight + 6, axisTop - 4, TEXT("smpl"), 4);
+
+    HPEN penBox = CreatePen(PS_SOLID, 1, RGB(220, 220, 220));
+    oldPen = (HPEN)SelectObject(hdc, penBox);
+    HBRUSH oldBrush = (HBRUSH)SelectObject(hdc, GetStockObject(NULL_BRUSH));
+    const int lblW = 52, lblH = 18;
+    Rectangle(hdc, axisLeft, axisTop, axisLeft + lblW, axisTop + lblH);
+    SelectObject(hdc, oldBrush);
+    SelectObject(hdc, oldPen);
+    DeleteObject(penBox);
+    SetTextColor(hdc, RGB(230, 230, 230));
+    TextOut(hdc, axisLeft + 6, axisTop + 2, label, lstrlen(label));
+
+    SetTextColor(hdc, RGB(160, 200, 180));
+    _stprintf(txt, TEXT("peak %d  min %d  max %d"), peak, show_min, show_max);
+    TextOut(hdc, axisLeft + lblW + 12, axisTop + 2, txt, lstrlen(txt));
+
+    if (show_xaxis)
+    {
+        SetTextColor(hdc, RGB(190, 190, 190));
+        double secPerSpan = sample_rate > 0 ? ((double)n / sample_rate) : 0.0;
+        for (int i = 1; i < 7; ++i)
+        {
+            int x = axisLeft + (W * i) / 7;
+            double tMs = secPerSpan * 1000.0 * i / 7.0;
+            _stprintf(txt, TEXT("%.0f ms"), tMs);
+            TextOut(hdc, x - 22, axisBot + 3, txt, lstrlen(txt));
+        }
+        SetTextColor(hdc, RGB(220, 220, 220));
+        TextOut(hdc, axisLeft - 2, axisBot + 3, TEXT("0"), 1);
+        TextOut(hdc, axisRight - 16, axisBot + 3, TEXT("smpl"), 4);
+    }
+}
+
+static UINT g_audiowave_refresh_ms = 100;
+
+struct AudioWaveRefreshOpt { UINT ms; const TCHAR *label; };
+static const AudioWaveRefreshOpt kAudioWaveRefreshOpts[] = {
+    { 500, TEXT("2 Hz (500 ms)") },
+    { 200, TEXT("5 Hz (200 ms)") },
+    { 100, TEXT("10 Hz (100 ms)") },
+    {  50, TEXT("20 Hz (50 ms)") },
+    {  33, TEXT("30 Hz (33 ms)") },
+    {  16, TEXT("60 Hz (16 ms)") },
+};
+static const int kAudioWaveRefreshCount = sizeof(kAudioWaveRefreshOpts) / sizeof(kAudioWaveRefreshOpts[0]);
+static const UINT kAudioWaveRefreshIdBase = 0x9100;
+
+LRESULT CALLBACK AudioWaveProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
+{
+    switch (msg)
+    {
+        case WM_CREATE:
+            SetTimer(hwnd, 1, g_audiowave_refresh_ms, NULL);
+            return 0;
+        case WM_TIMER:
+            InvalidateRect(hwnd, NULL, FALSE);
+            return 0;
+        case WM_CONTEXTMENU:
+        {
+            HMENU menu = CreatePopupMenu();
+            if (!menu) return 0;
+            for (int i = 0; i < kAudioWaveRefreshCount; ++i)
+            {
+                UINT flags = MF_STRING;
+                if (kAudioWaveRefreshOpts[i].ms == g_audiowave_refresh_ms)
+                    flags |= MF_CHECKED;
+                AppendMenu(menu, flags, kAudioWaveRefreshIdBase + i, kAudioWaveRefreshOpts[i].label);
+            }
+            POINT pt = { (int)(short)LOWORD(lp), (int)(short)HIWORD(lp) };
+            if (pt.x == -1 && pt.y == -1)
+            {
+                RECT rc; GetWindowRect(hwnd, &rc);
+                pt.x = rc.left + 8; pt.y = rc.top + 8;
+            }
+            UINT sel = TrackPopupMenu(menu, TPM_RETURNCMD | TPM_RIGHTBUTTON,
+                                      pt.x, pt.y, 0, hwnd, NULL);
+            DestroyMenu(menu);
+            if (sel >= kAudioWaveRefreshIdBase &&
+                sel < kAudioWaveRefreshIdBase + (UINT)kAudioWaveRefreshCount)
+            {
+                g_audiowave_refresh_ms = kAudioWaveRefreshOpts[sel - kAudioWaveRefreshIdBase].ms;
+                KillTimer(hwnd, 1);
+                SetTimer(hwnd, 1, g_audiowave_refresh_ms, NULL);
+            }
+            return 0;
+        }
+        case WM_ERASEBKGND:
+            return 1;
+        case WM_PAINT:
+        {
+            PAINTSTRUCT ps;
+            HDC hdcWnd = BeginPaint(hwnd, &ps);
+            RECT cr;
+            GetClientRect(hwnd, &cr);
+            const int cw = cr.right - cr.left;
+            const int ch = cr.bottom - cr.top;
+            HDC hdc = CreateCompatibleDC(hdcWnd);
+            HBITMAP memBmp = CreateCompatibleBitmap(hdcWnd, cw, ch);
+            HBITMAP oldBmp = (HBITMAP)SelectObject(hdc, memBmp);
+            int H = ch / 3;
+            short buf[kAudioWaveFrames * 2];
+
+            const TCHAR *labels[3] = { TEXT("SPC"), TEXT("GB"), TEXT("MIX") };
+            int sr = S9xAudioWaveformSampleRate();
+            const int32_t gb_rate = S9xSGBGetAudioRate();
+            const double spc_ratio = S9xSpcGetTimeRatio();
+            const double spc_eff_hz = (spc_ratio > 0.0) ? (Settings.SoundInputRate / spc_ratio) : 0.0;
+
+            static DWORD fps_last_tick = 0;
+            static uint32 fps_last_frames = 0;
+            static double fps_measured = 0.0;
+            DWORD now_tick = GetTickCount();
+            if (now_tick - fps_last_tick >= 500)
+            {
+                uint32 frames_delta = IPPU.TotalEmulatedFrames - fps_last_frames;
+                fps_measured = frames_delta * 1000.0 / (now_tick - fps_last_tick);
+                fps_last_frames = IPPU.TotalEmulatedFrames;
+                fps_last_tick = now_tick;
+            }
+
+            TCHAR rateTxt[3][96];
+            const double refresh_hz = (g_audiowave_refresh_ms > 0) ? (1000.0 / g_audiowave_refresh_ms) : 0.0;
+            _stprintf(rateTxt[0], TEXT("GB %d  emu %.1f fps"), gb_rate, fps_measured);
+            _stprintf(rateTxt[1], TEXT("SPC %.0f Hz (ratio %.5f)"), spc_eff_hz, spc_ratio);
+            _stprintf(rateTxt[2], TEXT("refresh %.0f Hz  (right-click to change)"), refresh_hz);
+            static int sticky_min[3] = {0, 0, 0};
+            static int sticky_max[3] = {0, 0, 0};
+            for (int s = 0; s < 3; ++s)
+            {
+                int n = S9xAudioWaveformSnapshot(s, buf, kAudioWaveFrames);
+                RECT panel;
+                panel.left   = 0;
+                panel.right  = cw;
+                panel.top    = s * H;
+                panel.bottom = (s == 2) ? ch : ((s + 1) * H);
+                DrawWaveformPanel(hdc, panel, labels[s], buf, n, sr,
+                                  &sticky_min[s], &sticky_max[s], s == 2);
+                if (rateTxt[s][0])
+                {
+                    SetTextColor(hdc, RGB(160, 200, 180));
+                    SetBkMode(hdc, TRANSPARENT);
+                    TextOut(hdc, panel.right - 290, panel.top + 2, rateTxt[s], lstrlen(rateTxt[s]));
+                }
+            }
+            BitBlt(hdcWnd, 0, 0, cw, ch, hdc, 0, 0, SRCCOPY);
+            SelectObject(hdc, oldBmp);
+            DeleteObject(memBmp);
+            DeleteDC(hdc);
+            EndPaint(hwnd, &ps);
+            return 0;
+        }
+        case WM_CLOSE:
+            DestroyWindow(hwnd);
+            return 0;
+        case WM_DESTROY:
+            KillTimer(hwnd, 1);
+            S9xAudioWaveformEnable(false);
+            g_audiowave_hwnd = NULL;
+            return 0;
+    }
+    return DefWindowProc(hwnd, msg, wp, lp);
+}
+
+static void ToggleAudioWaveform(HINSTANCE hInst, HWND parent)
+{
+    if (g_audiowave_hwnd)
+    {
+        DestroyWindow(g_audiowave_hwnd);
+        g_audiowave_hwnd = NULL;
+        return;
+    }
+
+    static bool s_class_registered = false;
+    if (!s_class_registered)
+    {
+        WNDCLASSEX wc = {};
+        wc.cbSize        = sizeof(wc);
+        wc.style         = CS_HREDRAW | CS_VREDRAW;
+        wc.lpfnWndProc   = AudioWaveProc;
+        wc.hInstance     = hInst;
+        wc.hCursor       = LoadCursor(NULL, IDC_ARROW);
+        wc.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
+        wc.lpszClassName = kAudioWaveClass;
+        RegisterClassEx(&wc);
+        s_class_registered = true;
+    }
+
+    S9xAudioWaveformEnable(true);
+    g_audiowave_hwnd = CreateWindowEx(
+        0, kAudioWaveClass, TEXT("Audio Waveform: SPC / GB / MIX"),
+        WS_OVERLAPPEDWINDOW,
+        CW_USEDEFAULT, CW_USEDEFAULT, 800, 480,
+        parent, NULL, hInst, NULL);
+    if (g_audiowave_hwnd)
+        ShowWindow(g_audiowave_hwnd, SW_SHOW);
+    else
+        S9xAudioWaveformEnable(false);
 }
 
 static WNDPROC lpfnOldWndProc;

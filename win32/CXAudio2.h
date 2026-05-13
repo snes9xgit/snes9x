@@ -22,6 +22,12 @@ private:
 
 	volatile LONG bufferCount;				// currently submitted XAudio2 buffers
 
+	HANDLE        drainThread;
+	volatile LONG drainShutdown;
+	volatile DWORD drainThreadId;
+
+	static DWORD WINAPI AudioDrainThreadProc(LPVOID param);
+
 	UINT32 sum_bufferSize;					// the size of soundBuffer
 	UINT32 singleBufferSamples;				// samples in one block
 	UINT32 singleBufferBytes;				// bytes in one block

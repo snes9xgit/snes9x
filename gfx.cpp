@@ -29,6 +29,7 @@ static void SetupOBJ (void);
 static void DrawOBJS (int);
 static void DisplayTime (void);
 static void DisplayFrameRate (void);
+static void DisplayFrameNumber (void);
 static void DisplayPressedKeys (void);
 static void DisplayWatchedAddresses (void);
 static void DisplayStringFromBottom (const char *, int, int, bool);
@@ -1956,6 +1957,14 @@ static void DisplayFrameRate (void)
 	S9xDisplayString(string, 1, IPPU.RenderedScreenWidth - (font_width - 1) * len - 1, false);
 }
 
+static void DisplayFrameNumber (void)
+{
+	char string[32];
+	sprintf(string, "#%u", (unsigned)IPPU.TotalEmulatedFrames);
+	const int line = Settings.DisplayFrameRate ? 3 : 2;
+	S9xDisplayString(string, line, IPPU.RenderedScreenWidth - (font_width - 1) * (int)strlen(string) - 1, false);
+}
+
 static void DisplayPressedKeys (void)
 {
 	static unsigned char	KeyMap[]   = { '0', '1', '2', 'R', 'L', 'X', 'A', 225, 224, 227, 226, 'S', 's', 'Y', 'B' };
@@ -2124,6 +2133,9 @@ void S9xDisplayMessages (uint16 *screen, int ppl, int width, int height, int sca
 
 	if (Settings.DisplayFrameRate)
 		DisplayFrameRate();
+
+	if (Settings.DisplayFrameNumber)
+		DisplayFrameNumber();
 
 	if (Settings.DisplayWatchedAddresses)
 		DisplayWatchedAddresses();

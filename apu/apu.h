@@ -48,6 +48,28 @@ void S9xUpdateDynamicRate (int empty = 1, int buffer_size = 2);
 void S9xRunAheadSaveAudio (void);
 void S9xRunAheadLoadAudio (void);
 
+// Audio waveform debug capture — see Sound > Show Audio Waveform.
+// streams: 0=SPC pre-mix, 1=GB pre-mix, 2=final mix.
+void S9xAudioWaveformEnable(bool enable);
+int  S9xAudioWaveformSnapshot(int stream, short *out_lr, int max_frames);
+int  S9xAudioWaveformSampleRate(void);
+
+// SGB BIOS-released mix-mode helpers — host layer (CXAudio2) drains the SPC
+// resampler independently of the GB stream so the two stay in sync via the
+// shared SNES clock while host throttles on combined buffer state.
+// PullSpc: reads up to count words (int16) from spc::resampler output. Returns actual read.
+// SpcOutAvail: returns spc::resampler.avail() in output words.
+int  S9xPullSpcOutput(int16_t *dst, int count);
+int  S9xSpcOutAvailable(void);
+void S9xAudioWaveformPushMix(const int16_t *src, int frames);
+
+// Adaptive rate control hooks for the SGB BIOS-released mix mode drain
+// thread. Each call observes the stream's own buffer fill level and biases
+// its rate to keep it near target, decoupling GB and SPC pitch drift.
+void   S9xSpcAdjustRate(double drc_factor);
+void   S9xSpcResetDrc(void);
+double S9xSpcGetTimeRatio(void);
+
 #define DSP_INTERPOLATION_NONE     0
 #define DSP_INTERPOLATION_LINEAR   1
 #define DSP_INTERPOLATION_GAUSSIAN 2

@@ -284,18 +284,14 @@ void Mix(const Apu &a, int32_t &out_l, int32_t &out_r)
 	int32_t l = 0, r = 0;
 	for (int ch = 0; ch < 4; ++ch)
 	{
-		// DAC: 0..15 → +7..-8 (roughly) as signed. Use linear centering
-		// around the middle (7.5), scaled to int16 range later.
-		const int32_t lvl = static_cast<int32_t>(levels[ch]) * 2 - 15;  // -15..+15
-		if (a.nr51 & (1 << ch))       r += lvl;           // right side (bits 0-3)
-		if (a.nr51 & (1 << (ch + 4))) l += lvl;           // left  side (bits 4-7)
+		const int32_t lvl = static_cast<int32_t>(levels[ch]);
+		if (a.nr51 & (1 << ch))       r += lvl;
+		if (a.nr51 & (1 << (ch + 4))) l += lvl;
 	}
 
 	const int32_t vol_r = static_cast<int32_t>(a.nr50 & 0x07) + 1;         // 1..8
 	const int32_t vol_l = static_cast<int32_t>((a.nr50 >> 4) & 0x07) + 1;  // 1..8
 
-	// Each channel contributes -15..+15; 4 channels max = -60..+60.
-	// Scale × volume (1..8) × ~70 to fill int16 (max 60 * 8 * 70 ≈ 33600).
 	constexpr int32_t GAIN = 70;
 	out_l = l * vol_l * GAIN;
 	out_r = r * vol_r * GAIN;

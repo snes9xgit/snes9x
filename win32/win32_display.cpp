@@ -735,6 +735,7 @@ void WinThrottleFramerate()
     else
         PCFrameTime = (__int64)(PCBase * Settings.FrameTime / 1e6);
 
+
 	QueryPerformanceCounter((LARGE_INTEGER *)&PCEnd);
 	int64_t time_left_us = ((PCFrameTime - (PCEnd - PCStart)) * 1000000) / PCBase;
 
