@@ -377,19 +377,7 @@ void S9xAudioWaveformPushMix(const int16_t *src, int frames)
 int S9xPullSpcOutput(int16_t *dst, int count)
 {
     if (!dst || count <= 0) return 0;
-
     int avail = spc::resampler.avail();
-    const int max_keep = count * 3;
-    if (avail > max_keep)
-    {
-        const int excess_outputs = avail - max_keep;
-        int dump_input_words = (int)(excess_outputs * spc::resampler.r_step);
-        dump_input_words &= ~1;
-        if (dump_input_words > 0)
-            spc::resampler.dump(dump_input_words);
-        avail = spc::resampler.avail();
-    }
-
     if (count > avail) count = avail;
     if (count & 1) --count;
     if (count <= 0) return 0;
@@ -415,18 +403,11 @@ double S9xSpcGetTimeRatio(void)
     return spc::resampler.r_step;
 }
 
-void S9xSpcAdjustRate(void)
+void S9xSpcAdjustRate(double drc_factor)
 {
-    const int buffer_size = spc::resampler.buffer_size;
-    if (buffer_size <= 0) return;
     const double base_ratio = (double)Settings.SoundInputRate /
                               (double)Settings.SoundPlaybackRate;
-    const int target = buffer_size / 2;
-    const int delta  = spc::resampler.space_filled() - target;
-    double bias = (double)delta * 4.0 / (double)buffer_size;
-    if (bias >  0.02) bias =  0.02;
-    if (bias < -0.02) bias = -0.02;
-    spc::resampler.time_ratio(base_ratio * (1.0 + bias));
+    spc::resampler.time_ratio(base_ratio / drc_factor);
 }
 
 void S9xAudioWaveformEnable(bool enable)

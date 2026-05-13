@@ -495,13 +495,6 @@ bool CXAudio2::SetupSound()
 
 	BeginPlayback();
 
-	if (!drainThread)
-	{
-		InterlockedExchange(&drainShutdown, 0);
-		drainThread = CreateThread(NULL, 0, &CXAudio2::AudioDrainThreadProc, this, 0, NULL);
-		if (drainThread)
-			SetThreadPriority(drainThread, THREAD_PRIORITY_TIME_CRITICAL);
-	}
 
     return true;
 }
@@ -589,6 +582,11 @@ void CXAudio2::ProcessSound()
 
 	availableSamples = S9xGetSampleCount();
 
+	if (Settings.SGB_BIOSModeActive && S9xSGBBIOSGBIsReleased())
+	{
+		S9xSpcAdjustRate(1.0);
+	}
+
 	if (Settings.DynamicRateControl && !Settings.SoundSync)
 	{
 		// Using rate control, we should always keep the emulator's sound buffers empty to
@@ -606,7 +604,11 @@ void CXAudio2::ProcessSound()
     if(Settings.SoundSync && !Settings.TurboMode && !Settings.Mute)
     {
         // no sound sync when speed is not set to 100%
-        while((freeBytes >> 1) < availableSamples)
+        const bool sgb_bios_mix = Settings.SGB_BIOSModeActive && S9xSGBBIOSGBIsReleased();
+        const UINT32 wait_threshold = sgb_bios_mix
+            ? singleBufferSamples
+            : availableSamples;
+        while((freeBytes >> 1) < wait_threshold)
         {
             if (bufferCount == 0)
                 break;

@@ -66,7 +66,7 @@ void S9xAudioWaveformPushMix(const int16_t *src, int frames);
 // Adaptive rate control hooks for the SGB BIOS-released mix mode drain
 // thread. Each call observes the stream's own buffer fill level and biases
 // its rate to keep it near target, decoupling GB and SPC pitch drift.
-void   S9xSpcAdjustRate(void);
+void   S9xSpcAdjustRate(double drc_factor);
 double S9xSpcGetTimeRatio(void);
 
 #define DSP_INTERPOLATION_NONE     0

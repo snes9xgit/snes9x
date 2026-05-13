@@ -712,7 +712,9 @@ void WinThrottleFramerate()
 	if (Settings.SkipFrames != AUTO_FRAMERATE || Settings.TurboMode || Settings.NetPlay || Settings.NetPlayServer)
 		return;
 
-	if (Settings.SuperGameBoy && Settings.SoundSync && GUI.AllowSoundSync)
+	const bool sgb_owns_audio = Settings.SuperGameBoy ||
+		(Settings.SGB_BIOSModeActive && S9xSGBBIOSGBIsReleased());
+	if (sgb_owns_audio && Settings.SoundSync && GUI.AllowSoundSync)
 		return;
 
 	if (!throttle_timer)
@@ -733,8 +735,6 @@ void WinThrottleFramerate()
     else
         PCFrameTime = (__int64)(PCBase * Settings.FrameTime / 1e6);
 
-    if (Settings.SGB_BIOSModeActive && S9xSGBBIOSGBIsReleased())
-        PCFrameTime = (PCFrameTime * 900) / 1000;
 
 	QueryPerformanceCounter((LARGE_INTEGER *)&PCEnd);
 	int64_t time_left_us = ((PCFrameTime - (PCEnd - PCStart)) * 1000000) / PCBase;
