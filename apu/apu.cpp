@@ -54,6 +54,7 @@ static uint32 ratio_numerator = APU_NUMERATOR_NTSC;
 static uint32 ratio_denominator = APU_DENOMINATOR_NTSC;
 
 static double dynamic_rate_multiplier = 1.0;
+static double drc_scale = 1.0;
 } // namespace spc
 
 namespace msu {
@@ -403,11 +404,31 @@ double S9xSpcGetTimeRatio(void)
     return spc::resampler.r_step;
 }
 
-void S9xSpcAdjustRate(double drc_factor)
+void S9xSpcAdjustRate(double /*drc_factor*/)
 {
+    const int buffer_size = spc::resampler.buffer_size;
+    if (buffer_size <= 0) return;
+
     const double base_ratio = (double)Settings.SoundInputRate /
                               (double)Settings.SoundPlaybackRate;
-    spc::resampler.time_ratio(base_ratio / drc_factor);
+    spc::resampler.time_ratio(base_ratio);
+
+    const int target = buffer_size / 4;
+    const int delta  = spc::resampler.space_filled() - target;
+    double trim = (double)delta * 0.001 / (double)buffer_size;
+    if (trim >  0.0005) trim =  0.0005;
+    if (trim < -0.0005) trim = -0.0005;
+    spc::drc_scale += trim;
+    if (spc::drc_scale > 1.30) spc::drc_scale = 1.30;
+    if (spc::drc_scale < 0.70) spc::drc_scale = 0.70;
+}
+
+void S9xSpcResetDrc(void)
+{
+    spc::drc_scale = 1.0;
+    const double base_ratio = (double)Settings.SoundInputRate /
+                              (double)Settings.SoundPlaybackRate;
+    spc::resampler.time_ratio(base_ratio);
 }
 
 void S9xAudioWaveformEnable(bool enable)
@@ -560,16 +581,23 @@ void S9xDeinitAPU(void)
     msu::resampler_buffer.clear();
 }
 
+static inline uint32 S9xAPUEffectiveDenominator(void)
+{
+    double d = (double)spc::ratio_denominator * spc::drc_scale + 0.5;
+    if (d < 1.0) d = 1.0;
+    return (uint32)d;
+}
+
 static inline int S9xAPUGetClock(int32 cpucycles)
 {
     return (spc::ratio_numerator * (cpucycles - spc::reference_time) + spc::remainder) /
-           spc::ratio_denominator;
+           S9xAPUEffectiveDenominator();
 }
 
 static inline int S9xAPUGetClockRemainder(int32 cpucycles)
 {
     return (spc::ratio_numerator * (cpucycles - spc::reference_time) + spc::remainder) %
-           spc::ratio_denominator;
+           S9xAPUEffectiveDenominator();
 }
 
 uint8 S9xAPUReadPort(int port)

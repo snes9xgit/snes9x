@@ -586,6 +586,10 @@ void CXAudio2::ProcessSound()
 	{
 		S9xSpcAdjustRate(1.0);
 	}
+	else
+	{
+		S9xSpcResetDrc();
+	}
 
 	if (Settings.DynamicRateControl && !Settings.SoundSync)
 	{
