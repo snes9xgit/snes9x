@@ -63,6 +63,12 @@ int  S9xPullSpcOutput(int16_t *dst, int count);
 int  S9xSpcOutAvailable(void);
 void S9xAudioWaveformPushMix(const int16_t *src, int frames);
 
+// Adaptive rate control hooks for the SGB BIOS-released mix mode drain
+// thread. Each call observes the stream's own buffer fill level and biases
+// its rate to keep it near target, decoupling GB and SPC pitch drift.
+void   S9xSpcAdjustRate(void);
+double S9xSpcGetTimeRatio(void);
+
 #define DSP_INTERPOLATION_NONE     0
 #define DSP_INTERPOLATION_LINEAR   1
 #define DSP_INTERPOLATION_GAUSSIAN 2

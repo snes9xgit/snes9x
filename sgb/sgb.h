@@ -289,6 +289,7 @@ void S9xSGBOverlayBiosBorder(uint16_t *dest, uint32_t pitch_pixels);
 int32_t S9xSGBGetSampleCount(void);
 int32_t S9xSGBDrainSamples(int16_t *dest, int32_t count_int16s);
 void    S9xSGBSetAudioRate(int32_t rate_hz);
+int32_t S9xSGBGetAudioRate(void);
 
 // Diagnostics — see Emulator::GetAudioClockHz / GetAudioCyclesPerSample.
 int32_t S9xSGBGetAudioClockHz(void);

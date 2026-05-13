@@ -1975,6 +1975,11 @@ void S9xSGBSetAudioRate(int32_t rate_hz)
 	SGB::Instance().SetAudioRate(rate_hz);
 }
 
+int32_t S9xSGBGetAudioRate(void)
+{
+	return SGB::Instance().GetAudioSampleRate();
+}
+
 int32_t S9xSGBGetAudioClockHz(void)
 {
 	return SGB::Instance().GetAudioClockHz();

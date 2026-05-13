@@ -51,6 +51,7 @@
 #include "kaillera_client.h"
 #include "kaillera_server.h"
 #include "../apu/apu.h"
+#include "../sgb/sgb.h"
 #include "../movie.h"
 #include "../crosshairs.h"
 #include "../controls.h"
@@ -125,6 +126,7 @@ HWND InputConfig_GetOpenHwnd();
 
 LRESULT CALLBACK AudioWaveProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp);
 static HWND g_audiowave_hwnd = NULL;
+HWND S9xWinGetAudioWaveformHwnd(void) { return g_audiowave_hwnd; }
 static void ToggleAudioWaveform(HINSTANCE hInst, HWND parent);
 INT_PTR CALLBACK DlgHotkeyConfig(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
 INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -9341,7 +9343,8 @@ static const TCHAR kAudioWaveClass[] = TEXT("Snes9xAudioWaveform");
 static const int   kAudioWaveFrames  = 4800;
 
 static void DrawWaveformPanel(HDC hdc, const RECT &r, const TCHAR *label,
-                              const short *lr, int n, int sample_rate)
+                              const short *lr, int n, int sample_rate,
+                              int *sticky_min, int *sticky_max)
 {
     FillRect(hdc, &r, (HBRUSH)GetStockObject(BLACK_BRUSH));
 
@@ -9355,9 +9358,13 @@ static void DrawWaveformPanel(HDC hdc, const RECT &r, const TCHAR *label,
     for (int s = 0; s < n; ++s)
     {
         int v = ((int)lr[s * 2] + (int)lr[s * 2 + 1]) / 2;
-        if (v < 0) v = -v;
-        if (v > peak) peak = v;
+        if (sticky_min && v < *sticky_min) *sticky_min = v;
+        if (sticky_max && v > *sticky_max) *sticky_max = v;
+        int av = v < 0 ? -v : v;
+        if (av > peak) peak = av;
     }
+    int show_min = sticky_min ? *sticky_min : 0;
+    int show_max = sticky_max ? *sticky_max : 0;
 
     HPEN penGrid = CreatePen(PS_SOLID, 1, RGB(48, 48, 48));
     HPEN oldPen = (HPEN)SelectObject(hdc, penGrid);
@@ -9411,7 +9418,7 @@ static void DrawWaveformPanel(HDC hdc, const RECT &r, const TCHAR *label,
     _stprintf(txt, TEXT("%.0f ms"), durMs);
     TextOut(hdc, axisRight - 50, r.bottom - 14, txt, lstrlen(txt));
 
-    _stprintf(txt, TEXT("peak %d"), peak);
+    _stprintf(txt, TEXT("peak %d  min %d  max %d"), peak, show_min, show_max);
     TextOut(hdc, axisLeft + 4, r.top + 2, txt, lstrlen(txt));
 }
 
@@ -9420,7 +9427,7 @@ LRESULT CALLBACK AudioWaveProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
     switch (msg)
     {
         case WM_CREATE:
-            SetTimer(hwnd, 1, 33, NULL);
+            SetTimer(hwnd, 1, 100, NULL);
             return 0;
         case WM_TIMER:
             InvalidateRect(hwnd, NULL, FALSE);
@@ -9436,6 +9443,33 @@ LRESULT CALLBACK AudioWaveProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 
             const TCHAR *labels[3] = { TEXT("SPC"), TEXT("GB"), TEXT("MIX") };
             int sr = S9xAudioWaveformSampleRate();
+            const int32_t gb_rate = S9xSGBGetAudioRate();
+            const double spc_ratio = S9xSpcGetTimeRatio();
+            const double spc_eff_hz = (spc_ratio > 0.0) ? (Settings.SoundInputRate / spc_ratio) : 0.0;
+
+            static DWORD fps_last_tick = 0;
+            static uint32 fps_last_frames = 0;
+            static double fps_measured = 0.0;
+            DWORD now_tick = GetTickCount();
+            if (now_tick - fps_last_tick >= 500)
+            {
+                uint32 frames_delta = IPPU.TotalEmulatedFrames - fps_last_frames;
+                fps_measured = frames_delta * 1000.0 / (now_tick - fps_last_tick);
+                fps_last_frames = IPPU.TotalEmulatedFrames;
+                fps_last_tick = now_tick;
+            }
+
+            extern volatile LONG g_drain_pushes_per_sec;
+            const LONG drain_pps = g_drain_pushes_per_sec;
+            const int drain_samples_per_sec = (int)drain_pps * 384;
+
+            TCHAR rateTxt[3][96];
+            _stprintf(rateTxt[0], TEXT("SPC %.0f Hz (ratio %.5f)"), spc_eff_hz, spc_ratio);
+            _stprintf(rateTxt[1], TEXT("GB %d  emu %.1f fps  drain %d/s"),
+                      gb_rate, fps_measured, drain_samples_per_sec);
+            _stprintf(rateTxt[2], TEXT(""));
+            static int sticky_min[3] = {0, 0, 0};
+            static int sticky_max[3] = {0, 0, 0};
             for (int s = 0; s < 3; ++s)
             {
                 int n = S9xAudioWaveformSnapshot(s, buf, kAudioWaveFrames);
@@ -9444,7 +9478,14 @@ LRESULT CALLBACK AudioWaveProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                 panel.right  = cr.right;
                 panel.top    = cr.top + s * H;
                 panel.bottom = (s == 2) ? cr.bottom : (cr.top + (s + 1) * H);
-                DrawWaveformPanel(hdc, panel, labels[s], buf, n, sr);
+                DrawWaveformPanel(hdc, panel, labels[s], buf, n, sr,
+                                  &sticky_min[s], &sticky_max[s]);
+                if (rateTxt[s][0])
+                {
+                    SetTextColor(hdc, RGB(180, 220, 180));
+                    SetBkMode(hdc, TRANSPARENT);
+                    TextOut(hdc, panel.right - 230, panel.top + 2, rateTxt[s], lstrlen(rateTxt[s]));
+                }
             }
             EndPaint(hwnd, &ps);
             return 0;

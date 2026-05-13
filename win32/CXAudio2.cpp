@@ -195,10 +195,27 @@ DWORD WINAPI CXAudio2::AudioDrainThreadProc(LPVOID param)
 		self->PushBuffer(self->singleBufferBytes, curBuffer, NULL);
 		self->writeOffset += self->singleBufferBytes;
 		self->writeOffset %= self->sum_bufferSize;
+
+		S9xSGBSetAudioRate(Settings.SoundPlaybackRate);
+
+		extern volatile LONG g_drain_pushes_per_sec;
+		static DWORD push_window_start = 0;
+		static LONG push_count = 0;
+		DWORD now_tick = GetTickCount();
+		if (push_window_start == 0) push_window_start = now_tick;
+		++push_count;
+		if (now_tick - push_window_start >= 1000)
+		{
+			InterlockedExchange(&g_drain_pushes_per_sec, push_count);
+			push_count = 0;
+			push_window_start = now_tick;
+		}
 	}
 
 	return 0;
 }
+
+volatile LONG g_drain_pushes_per_sec = 0;
 
 /*  CXAudio2::InitVoices
 initializes the voice objects with the current audio settings

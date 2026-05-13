@@ -405,6 +405,30 @@ int S9xSpcOutAvailable(void)
     return spc::resampler.avail();
 }
 
+int S9xSpcResamplerCapacity(void)
+{
+    return spc::resampler.buffer_size;
+}
+
+double S9xSpcGetTimeRatio(void)
+{
+    return spc::resampler.r_step;
+}
+
+void S9xSpcAdjustRate(void)
+{
+    const int buffer_size = spc::resampler.buffer_size;
+    if (buffer_size <= 0) return;
+    const double base_ratio = (double)Settings.SoundInputRate /
+                              (double)Settings.SoundPlaybackRate;
+    const int target = buffer_size / 2;
+    const int delta  = spc::resampler.space_filled() - target;
+    double bias = (double)delta * 4.0 / (double)buffer_size;
+    if (bias >  0.02) bias =  0.02;
+    if (bias < -0.02) bias = -0.02;
+    spc::resampler.time_ratio(base_ratio * (1.0 + bias));
+}
+
 void S9xAudioWaveformEnable(bool enable)
 {
     audiowave::enabled = enable;

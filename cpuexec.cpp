@@ -278,12 +278,7 @@ void S9xMainLoop (void)
 			                  ? Settings.GBClockMultiplier : 1.0f;
 			S9xSGBSetClockMultiplier(mul);
 			S9xSGBSetRunMode(Settings.GameBoyRunMode);
-			// Match the GB APU's downsample target to the host playback
-			// rate. Idempotent so per-frame calls are cheap; picks up
-			// any sound-config change while the game is running.
 			S9xSGBSetAudioRate(Settings.SoundPlaybackRate);
-			// GB is now stepped per SNES opcode via S9xSGBTickSnes —
-			// see the main loop. Per-scanline/end-of-frame run disabled.
 		}
 
 	}
