@@ -938,19 +938,14 @@ void Emulator::RunCycles(int32_t tcycles)
 				{
 					impl_->icd2.mlt_players       = 2;
 					impl_->icd2.mlt_auto_drop_polls = 1;
+					// Wipe BG1 tilemap immediately so the BIOS can't
+					// render Tetris Plus's stripe artifact during the
+					// ~half-frame between handoff and the first VBlank
+					// where the 30-frame cleanup block kicks in.
+					// SGB-enhanced only — plain GB carts rely on the
+					// BIOS's default render path and must not be touched.
+					std::memset(&::Memory.VRAM[0x7000], 0, 0x0800);
 				}
-				std::memset(&::Memory.VRAM[0x7000], 0, 0x0800);
-				// Also zero BG3's char data + tilemap ($E000-$FFFF).
-				// In our SGB2 BIOS the GB-display area is rendered via
-				// BG3 with every cell pointing at tile $17F (a stripey
-				// placeholder); after b91717c1 dropped the $7800 read-
-				// gate the BIOS started reading real LCD-ring pixels and
-				// those bled through the placeholder as Tetris Plus's
-				// vertical-stripe artifact. Zeroing the whole BG3 region
-				// makes the GB area render as palette-0 yellow blank
-				// during the BIOS's transient setup window.
-				std::memset(&::Memory.VRAM[0xE000], 0, 0x2000);
-				std::memset(::PPU.OAMData, 0, sizeof ::PPU.OAMData);
 			}
 
 			TimerStep(impl_->timer, impl_->mem, consumed);
@@ -1278,10 +1273,22 @@ void Emulator::OnPpuVBlank()
 	impl_->icd2.sgb_row = 0;
 	impl_->icd2.frame_6001_count = 0;
 
-	// Clean up VRAM areas the BIOS uses for the boot-handoff capture and
-	// This is caused due to drifting scanline timing between the GB and SNES emulation cores.
-	// TODO: add libco for better sync and remove this hack.
-	if (impl_->boot_handoff_captured)
+	// Clean up VRAM areas the BIOS uses for the boot-handoff capture.
+	// GB-SNES scanline timing drift makes the BIOS's IRQ DMA read from the
+	// wrong ping-pong buffer, producing striped/Nintendo-logo artifacts in
+	// BG3 char + tilemap. Wiping those regions hides the artifact.
+	//
+	// Gate on sgb_flag == 0x03: SGB-enhanced carts overwrite BG3 themselves
+	// via CHR_TRN/PCT_TRN within a few frames of handoff, so the wipe only
+	// covers the brief artifact window. Plain GB carts (e.g. Super Mario
+	// Land) never override BG3 — the BIOS keeps refilling it every frame
+	// from the LCD-ring, and wiping fights with the BIOS's legitimate
+	// render path, producing the M-tile / striped frames.
+	//
+	// TODO: add libco for better GB-SNES sync and remove this hack.
+	const bool sgb_enhanced =
+	    impl_->has_rom && impl_->cart.header.sgb_flag == 0x03;
+	if (impl_->boot_handoff_captured && sgb_enhanced)
 	{
 		if (impl_->handoff_frames < 30)
 		{
@@ -1292,11 +1299,12 @@ void Emulator::OnPpuVBlank()
 		impl_->handoff_frames++;
 	}
 
-	// Suppress visible artifact at the BIOS fade-in moment 
-	// without touching unrelated VRAM regions. Every GB VBlank, after handoff is captured,
-	// compare the first 16 bytes of BG3 char data ($E000-$E00F) against the BIOS-staged
+	// Suppress visible artifact at the BIOS fade-in moment without touching
+	// unrelated VRAM regions. Same SGB-enhanced gating as above — plain GB
+	// carts don't go through the BIOS fade-in path that produces this
+	// artifact, and we never want to zero BG3 on them.
 	// TODO: add libco for better sync and remove this hack.
-	if (impl_->boot_handoff_captured)
+	if (impl_->boot_handoff_captured && sgb_enhanced)
 	{
 		static const uint8_t kBiosStagedSig[16] = {
 			0x01, 0x10, 0x02, 0x10, 0x03, 0x10, 0x04, 0x10,
