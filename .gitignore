@@ -505,3 +505,4 @@ MigrationBackup/
 .DS_Store
 *.lock
 profile
+/win32/super-snes9x.conf
