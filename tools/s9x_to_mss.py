@@ -31,6 +31,80 @@ from typing import Optional
 
 # ---- Snes9x .009 parsing -----------------------------------------------------
 
+def _upgrade_section_to_v12(version: int, tag: str, raw: bytes) -> bytes:
+    """Normalize a snes9x snapshot section from any version (v6..v12) to a v12-
+    equivalent byte layout. The rest of the converter assumes v12 offsets.
+
+    For each upgrade step we add zero bytes (or sensible defaults) in the
+    positions where v12 has fields that the older format lacked, and drop the
+    bytes that older formats had but v12 doesn't.
+    """
+    if version >= 12:
+        return raw
+
+    if tag == "CPU":
+        # v6 → v7: drop CPU_IRQActive(1 OBSOLETE), WaitAddress(4),
+        # WaitCounter(4), PBPCAtOpcodeStart(4 DELETED) and append 5 byte-flags
+        # NMIPending..IRQExternal. Net size: 56 → 48.
+        # Also remap WhichEvent values (v6 used 1..12; v7+ uses 1..6; the
+        # mapping below mirrors the conversion in snapshot.cpp at the
+        # "Converting old snapshot version" branch).
+        if version < 7:
+            if len(raw) != 56:
+                raise ValueError(f"v6 CPU section: expected 56 bytes, got {len(raw)}")
+            we_remap = {0: 0, 1: 1, 2: 2, 3: 2, 4: 3, 5: 3, 6: 4, 7: 4,
+                        8: 5, 9: 5, 10: 6, 11: 6, 12: 1}
+            tmp = bytearray()
+            tmp += raw[0:16]      # Cycles, PrevCycles, V_Counter, Flags
+            # SKIP raw[16] (CPU_IRQActive)
+            tmp += raw[17:44]     # IRQPending..WaitingForInterrupt
+            # SKIP raw[44:56] (WaitAddress, WaitCounter, PBPCAtOpcodeStart)
+            tmp += b"\x00" * 5    # NMIPending, IRQLine, IRQTransition,
+                                  # IRQLastState, IRQExternal (defaults to 0)
+            # remap WhichEvent at tmp offset 37
+            tmp[37] = we_remap.get(tmp[37], 1)
+            raw = bytes(tmp)
+        return raw
+
+    if tag == "PPU":
+        # pre-v11 → v11: insert CGSavedByte (1 byte default 0) at offset 63
+        # (right before CGDATA[256]), and append VRAMReadBuffer (2 bytes
+        # default 0) at end of section. Net size: 2649 → 2652.
+        if version < 11:
+            if len(raw) != 2649:
+                raise ValueError(f"pre-v11 PPU section: expected 2649 bytes, got {len(raw)}")
+            tmp = bytearray()
+            tmp += raw[0:63]      # VMA..CGADD
+            tmp += b"\x00"        # CGSavedByte default 0
+            tmp += raw[63:2649]   # CGDATA..end
+            tmp += b"\x00\x00"    # VRAMReadBuffer default 0
+            raw = bytes(tmp)
+        return raw
+
+    if tag == "TIM":
+        # pre-v7 → v7: append IRQTriggerCycles (int32 = 14 — snes9x default
+        # from memmap.cpp:Timings.IRQTriggerCycles=14) and APUAllowTimeOverflow
+        # (uint8 = 0). Net size: 61 → 66.
+        if version < 7:
+            if len(raw) != 61:
+                raise ValueError(f"v6 TIM section: expected 61 bytes, got {len(raw)}")
+            tmp = bytearray(raw)
+            tmp += b"\x00\x00\x00\x0e"   # IRQTriggerCycles = 14 (big-endian)
+            tmp += b"\x00"                # APUAllowTimeOverflow = 0
+            raw = bytes(tmp)
+        # pre-v11 → v11: append NextIRQTimer (int32 = 0x0FFFFFFF — "no IRQ
+        # scheduled" sentinel). Net size: 66 → 70.
+        if version < 11:
+            if len(raw) != 66:
+                raise ValueError(f"pre-v11 TIM section: expected 66 bytes, got {len(raw)}")
+            tmp = bytearray(raw)
+            tmp += b"\x0f\xff\xff\xff"   # NextIRQTimer = 0x0FFFFFFF
+            raw = bytes(tmp)
+        return raw
+
+    return raw
+
+
 class S9xState:
     def __init__(self, path: str) -> None:
         with open(path, "rb") as f:
@@ -41,6 +115,10 @@ class S9xState:
             raise ValueError("not a snes9x save state (missing magic)")
         eol = raw.index(b"\n")
         self.version = int(raw[9:eol])
+        # Original snapshot version preserved across the v12 normalization
+        # step below — used by callers that need to know whether the source
+        # used Blargg-era APU (pre-v8) vs the modern bAPU layout (v8+).
+        self.original_version = self.version
         self.sections: dict[str, bytes] = {}
         i = eol + 1
         while i < len(raw):
@@ -55,6 +133,19 @@ class S9xState:
             data_off = i + 11
             self.sections[tag.decode("ascii")] = raw[data_off : data_off + size]
             i = data_off + size
+
+        # Normalize all version-dependent sections to v12-equivalent layout so
+        # the rest of the converter can use fixed offsets. snes9x SNAPSHOT_VERSION
+        # has gone through v6→v7 (CPU: drop OBSOLETE/DELETED, add 5 IRQ flags;
+        # TIM: add IRQTriggerCycles+APUAllowTimeOverflow), and v10→v11 (PPU: add
+        # CGSavedByte+VRAMReadBuffer; TIM: add NextIRQTimer). Earlier versions
+        # crash Mesen when loaded without this normalization because PPU offset
+        # math shifts and CPU fields are read from the wrong bytes.
+        for tag in ("CPU", "PPU", "TIM"):
+            if tag in self.sections:
+                self.sections[tag] = _upgrade_section_to_v12(
+                    self.version, tag, self.sections[tag])
+        self.version = max(self.version, 12)
 
     # --- PPU struct field accessors, by offset within the PPU section ---
     def ppu_u8(self, off: int) -> int:
@@ -405,13 +496,19 @@ def convert(s9x_path: str, template_path: str, out_path: str) -> None:
         for i in range(4):
             _try_patch(mss, f"spc.outputReg[{i}]", _u8(snd[0xF4 + i]))
 
-        tail = snd[65536:]
-        last_nz = max((i for i, b in enumerate(tail) if b != 0), default=0)
-        if last_nz >= 200:                       # safely past SMP state
-            cpu_regs = tail[last_nz - 3 : last_nz + 1]
-            for i in range(4):
-                _try_patch(mss, f"spc.cpuRegs[{i}]",    _u8(cpu_regs[i]))
-                _try_patch(mss, f"spc.newCpuRegs[{i}]", _u8(cpu_regs[i]))
+        # The tail-scan for CPU→SPC port registers only matches the modern
+        # bAPU SND layout (v8+). Pre-v8 (Blargg) snapshots store these
+        # registers somewhere else entirely, so we leave Mesen's template
+        # values in place — wrong sound for a frame is much better than the
+        # crash the alternative produces.
+        if s9x.original_version >= 8:
+            tail = snd[65536:]
+            last_nz = max((i for i, b in enumerate(tail) if b != 0), default=0)
+            if last_nz >= 200:                       # safely past SMP state
+                cpu_regs = tail[last_nz - 3 : last_nz + 1]
+                for i in range(4):
+                    _try_patch(mss, f"spc.cpuRegs[{i}]",    _u8(cpu_regs[i]))
+                    _try_patch(mss, f"spc.newCpuRegs[{i}]", _u8(cpu_regs[i]))
 
     # Cartridge SRAM (present only if the ROM has battery-backed RAM)
     if "SRA" in s9x.sections:
@@ -665,6 +762,68 @@ def _patch_cpu_timing(s9x: "S9xState", mss: "MssFile") -> None:
         mss.state[off : off + sz] = new_mc.to_bytes(8, "little")
 
 
+def _patch_smp_blargg(s9x: "S9xState", mss: "MssFile") -> None:
+    """Extract SPC700 register state from a pre-v8 (Blargg-APU) SND section.
+
+    Layout (matches apu/apu.cpp::S9xAPULoadBlarggState):
+        [0..65535]    apuram (already patched by the caller)
+        [65536..65551] REGS  ($00F0-$00FF SPC hardware regs)
+        [65552..65567] REGS_IN  ($2140-$2143 port inputs as seen by SPC)
+        [65568..65569] PC (uint16, big-endian per the file framing — but the
+                          Blargg state_copier writes ints native-endian, so
+                          we try the conservative little-endian interpretation
+                          that matches the SMP::regs.pc field layout on x86
+                          builds where these saves were almost always made)
+        [65570]       A
+        [65571]       X
+        [65572]       Y
+        [65573]       PSW
+        [65574]       SP
+
+    Skipped: DSP register block, timer internals, spc_time/dsp_time clocks.
+    Mesen keeps its template DSP/timer state; the SPC will run from the
+    saved PC with the saved registers, which is enough to advance the
+    APU-handshake state machine games use to gate scene transitions.
+    """
+    snd = s9x.sections["SND"]
+    if len(snd) < 65575:
+        return
+
+    regs    = snd[65536:65552]
+    regs_in = snd[65552:65568]
+    # The Blargg copier wrote ints as raw little-endian on every host where
+    # snes9x produced .009 files we've encountered.
+    pc  = struct.unpack("<H", snd[65568:65570])[0]
+    a   = snd[65570]
+    x   = snd[65571]
+    y   = snd[65572]
+    psw = snd[65573]
+    sp  = snd[65574]
+
+    _try_patch(mss, "spc.pc", _u16(pc))
+    _try_patch(mss, "spc.a",  _u8(a))
+    _try_patch(mss, "spc.x",  _u8(x))
+    _try_patch(mss, "spc.y",  _u8(y))
+    _try_patch(mss, "spc.sp", _u8(sp))
+    _try_patch(mss, "spc.ps", _u8(psw))
+
+    # REGS[2] = dsp_addr (the $00F2 latch)
+    _try_patch(mss, "spc.dspReg", _u8(regs[2]))
+
+    # REGS[1] = $00F1 control byte: bits 0-2 = timer enables, bit 7 = IPL ROM
+    f1 = regs[1]
+    _try_patch(mss, "spc.timersEnabled",  _u8(0 if (f1 & 0x07) == 0 else 1))
+    _try_patch(mss, "spc.romEnabled",     _u8(1 if (f1 & 0x80) else 0))
+    _try_patch(mss, "spc.timersDisabled", _u8(0))
+
+    # CPU→SPC port-register values that the SPC reads at $00F4-$00F7.
+    # Blargg stores these in REGS_IN[4..7] (see the memcpy at the tail of
+    # S9xAPULoadBlarggState).
+    for i in range(4):
+        _try_patch(mss, f"spc.cpuRegs[{i}]",    _u8(regs_in[4 + i]))
+        _try_patch(mss, f"spc.newCpuRegs[{i}]", _u8(regs_in[4 + i]))
+
+
 def _patch_smp(s9x: "S9xState", mss: "MssFile") -> None:
     """Transfer SPC700 CPU registers and timer state.
 
@@ -672,8 +831,17 @@ def _patch_smp(s9x: "S9xState", mss: "MssFile") -> None:
     Y, SP, PSW) against the .009's apuram. The music driver never advances,
     so $07c7 (the music tick counter) stays at its saved value and the game's
     main loop spins forever waiting for it to decrement.
+
+    Pre-v8 (Blargg-APU) snapshots get a narrower extraction path: SMP regs,
+    REGS ($F0-$FF), and port inputs are at fixed Blargg offsets right after
+    apuram; DSP state and timer internals stay from the template. Enough to
+    keep the SPC running its actual code so the APU-handshake spinloop
+    (e.g. Firemen's `$80:89FB` waiting for `$7E:$07C7` to drain) advances.
     """
     if "SND" not in s9x.sections:
+        return
+    if s9x.original_version < 8:
+        _patch_smp_blargg(s9x, mss)
         return
     smp = s9x.smp_state()
 
