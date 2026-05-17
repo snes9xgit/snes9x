@@ -215,14 +215,17 @@ void EmuCanvasVulkan::draw()
     if (retval)
     {
         throttle();
+        bool anti_lag_used = config->reduce_input_lag ? context->update_anti_lag_present() : false;
         context->swapchain->swap();
-        if (config->reduce_input_lag)
+        if (config->reduce_input_lag && !anti_lag_used)
         {
             context->wait_idle();
             context->swapchain->present_wait();
         }
     }
 }
+
+
 
 void EmuCanvasVulkan::resizeEvent(QResizeEvent *event)
 {
@@ -329,6 +332,17 @@ void EmuCanvasVulkan::showParametersDialog()
             std::make_unique<ShaderParametersDialog>(this, properties);
 
     shader_parameters_dialog->show();
+}
+
+void EmuCanvasVulkan::signalInputStage()
+{
+    if (!context)
+        return;
+
+    if (!config->reduce_input_lag)
+        return;
+
+    context->update_anti_lag_input();
 }
 
 void EmuCanvasVulkan::saveParameters(std::string filename)

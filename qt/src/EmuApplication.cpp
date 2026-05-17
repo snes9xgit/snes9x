@@ -259,6 +259,11 @@ void EmuApplication::mainLoop()
         return;
     }
 
+    if (window->canvas)
+        window->canvas->signalInputStage();
+
+    QGuiApplication::processEvents();
+
     core->mainLoop();
 }
 

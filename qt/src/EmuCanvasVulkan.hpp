@@ -25,6 +25,7 @@ class EmuCanvasVulkan : public EmuCanvas
     void shaderChanged() override;
     void showParametersDialog() override;
     void saveParameters(std::string filename) override;
+    void signalInputStage() override;
 
     void draw() override;
 

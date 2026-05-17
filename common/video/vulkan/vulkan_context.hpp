@@ -41,6 +41,9 @@ class Context
     vk::CommandBuffer begin_cmd_buffer();
     void end_cmd_buffer();
     void hard_barrier(vk::CommandBuffer cmd);
+    bool update_anti_lag_stage(vk::AntiLagStageAMD);
+    bool update_anti_lag_input();
+    bool update_anti_lag_present();
     static std::vector<std::string> get_device_list();
     void set_preferred_device(int device) { preferred_device = device; };
     void unset_preferred_device() { preferred_device = -1; };
@@ -56,13 +59,15 @@ class Context
     vk::PhysicalDeviceProperties physical_device_props;
     vk::UniqueSurfaceKHR surface;
     std::string platform_name;
-    bool have_present_wait;
+    bool have_present_wait{};
+    bool have_anti_lag{};
+    uint64_t anti_lag_frame_index{};
 
   private:
     bool init_vma();
     bool init_device();
     bool init_command_pool();
-    int preferred_device;
+    int preferred_device{};
 
 #ifdef VK_USE_PLATFORM_XLIB_KHR
     Display *xlib_display;
