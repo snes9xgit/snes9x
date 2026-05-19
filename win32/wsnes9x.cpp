@@ -14389,11 +14389,48 @@ void CpuDebugFormat(wchar_t *out, size_t outLen)
         bg2_map[i] = vread(bg2_scbase_addr + i);
         bg3_map[i] = vread(bg3_scbase_addr + i);
     }
+    // First 16 bytes of tile graphics data at each BG's NameBase. If
+    // tilemap entries point to non-zero tile indices but the tile data
+    // here is zero, tiles render as palette-color-0 (blank).
+    uint16 bg1_nb_addr = ((bg12nba     ) & 7) << 12;
+    uint16 bg2_nb_addr = ((bg12nba >> 4) & 7) << 12;
+    uint16 bg3_nb_addr = ((bg34nba     ) & 7) << 12;
+    uint8 bg1_chr[16], bg2_chr[16], bg3_chr[16];
+    for (int i = 0; i < 16; ++i) {
+        bg1_chr[i] = vread(bg1_nb_addr + i);
+        bg2_chr[i] = vread(bg2_nb_addr + i);
+        bg3_chr[i] = vread(bg3_nb_addr + i);
+    }
     // Live CGRAM first 8 colors (16 bytes). If these are all $7FFF (white)
     // or $0000 (black), the palette has been clobbered post-load.
     uint8 cg[16];
     for (int i = 0; i < 16; ++i)
         cg[i] = PPU.CGDATA[i / 2] >> ((i & 1) ? 8 : 0);  // LE per-byte
+
+    // FNV-1a 32-bit hashes of full VRAM, CGRAM, OAM, WRAM — for whole-region
+    // identity check. Two states with identical PPU regs + same hashes
+    // should render identically; any mismatch points at the divergent region.
+    auto fnv1a = [](const uint8 *data, size_t n) -> uint32 {
+        uint32 h = 0x811C9DC5;
+        for (size_t i = 0; i < n; ++i) {
+            h ^= data[i];
+            h *= 0x01000193;
+        }
+        return h;
+    };
+    uint32 vram_hash = fnv1a(Memory.VRAM, 0x10000);
+    uint32 cgram_hash = fnv1a((const uint8 *)PPU.CGDATA, 512);
+    uint32 oam_hash  = fnv1a(PPU.OAMData, 512 + 32);
+    uint32 wram_hash = fnv1a(Memory.RAM, 0x20000);
+    uint32 fillram_hash = fnv1a(Memory.FillRAM, 0x8000);
+    // Tile-cache cached-flags hashes (one entry per tile, 0=not cached / 1=cached).
+    // If two states have identical VRAM but the cache is different (= stale),
+    // rendering can diverge. IPPU is already declared by ppu.h via the
+    // earlier includes; don't `extern` it inside this anonymous namespace
+    // (would create an internal-linkage symbol that doesn't link).
+    uint32 tc2_hash = (IPPU.TileCached[0] ? fnv1a(IPPU.TileCached[0], 2048) : 0);
+    uint32 tc4_hash = (IPPU.TileCached[1] ? fnv1a(IPPU.TileCached[1], 1024) : 0);
+    uint32 tc8_hash = (IPPU.TileCached[2] ? fnv1a(IPPU.TileCached[2], 512) : 0);
 
     _snwprintf(out, outLen,
         L"== 65C816 ==\r\n"
@@ -14431,13 +14468,28 @@ void CpuDebugFormat(wchar_t *out, size_t outLen)
         L"  $4200 NMITIMEN= $%02X   NMI=%d  V/H-IRQ=%d  Joypad=%d\r\n"
         L"  $420C HDMAEN  = $%02X   (HDMA channels enabled, bit per ch)\r\n"
         L"\r\n"
-        L"== Live VRAM (first 16 bytes at BG SCBase) ==\r\n"
+        L"== Live VRAM tilemaps (first 16 bytes at BG SCBase) ==\r\n"
+        L"  BG1@$%04X: %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X\r\n"
+        L"  BG2@$%04X: %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X\r\n"
+        L"  BG3@$%04X: %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X\r\n"
+        L"\r\n"
+        L"== Live VRAM tile chr-data (first 16 bytes at BG NameBase) ==\r\n"
         L"  BG1@$%04X: %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X\r\n"
         L"  BG2@$%04X: %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X\r\n"
         L"  BG3@$%04X: %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X\r\n"
         L"\r\n"
         L"== Live CGRAM (first 8 colors, 16 bytes LE) ==\r\n"
-        L"  $00..$0F: %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X\r\n",
+        L"  $00..$0F: %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X\r\n"
+        L"\r\n"
+        L"== Whole-region hashes (FNV-1a 32-bit) ==\r\n"
+        L"  VRAM    = 0x%08X    (64KB)\r\n"
+        L"  CGRAM   = 0x%08X    (512B)\r\n"
+        L"  OAM     = 0x%08X    (544B)\r\n"
+        L"  WRAM    = 0x%08X    (128KB)\r\n"
+        L"  FillRAM = 0x%08X    (32KB)\r\n"
+        L"  TileCache[2bpp] = 0x%08X    (any mismatch = stale cache!)\r\n"
+        L"  TileCache[4bpp] = 0x%08X\r\n"
+        L"  TileCache[8bpp] = 0x%08X\r\n",
         pb_, pc_, op[0], op[1], op[2], op[3],
         a_w, x_w, y_w,
         s_w, d_w, db_,
@@ -14481,8 +14533,22 @@ void CpuDebugFormat(wchar_t *out, size_t outLen)
                          bg3_map[4], bg3_map[5], bg3_map[6], bg3_map[7],
                          bg3_map[8], bg3_map[9], bg3_map[10], bg3_map[11],
                          bg3_map[12], bg3_map[13], bg3_map[14], bg3_map[15],
+        bg1_nb_addr,    bg1_chr[0], bg1_chr[1], bg1_chr[2], bg1_chr[3],
+                        bg1_chr[4], bg1_chr[5], bg1_chr[6], bg1_chr[7],
+                        bg1_chr[8], bg1_chr[9], bg1_chr[10], bg1_chr[11],
+                        bg1_chr[12], bg1_chr[13], bg1_chr[14], bg1_chr[15],
+        bg2_nb_addr,    bg2_chr[0], bg2_chr[1], bg2_chr[2], bg2_chr[3],
+                        bg2_chr[4], bg2_chr[5], bg2_chr[6], bg2_chr[7],
+                        bg2_chr[8], bg2_chr[9], bg2_chr[10], bg2_chr[11],
+                        bg2_chr[12], bg2_chr[13], bg2_chr[14], bg2_chr[15],
+        bg3_nb_addr,    bg3_chr[0], bg3_chr[1], bg3_chr[2], bg3_chr[3],
+                        bg3_chr[4], bg3_chr[5], bg3_chr[6], bg3_chr[7],
+                        bg3_chr[8], bg3_chr[9], bg3_chr[10], bg3_chr[11],
+                        bg3_chr[12], bg3_chr[13], bg3_chr[14], bg3_chr[15],
         cg[0], cg[1], cg[2], cg[3], cg[4], cg[5], cg[6], cg[7],
-        cg[8], cg[9], cg[10], cg[11], cg[12], cg[13], cg[14], cg[15]);
+        cg[8], cg[9], cg[10], cg[11], cg[12], cg[13], cg[14], cg[15],
+        vram_hash, cgram_hash, oam_hash, wram_hash, fillram_hash,
+        tc2_hash, tc4_hash, tc8_hash);
     out[outLen - 1] = 0;
 }
 
