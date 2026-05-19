@@ -933,12 +933,6 @@ void Emulator::RunCycles(int32_t tcycles)
 			{
 				impl_->boot_handoff_captured = true;
 				impl_->boot_handoff_regs     = impl_->cpu.State().r;
-				if (impl_->has_rom &&
-				    impl_->cart.header.sgb_flag == 0x03)
-				{
-					impl_->icd2.mlt_players       = 2;
-					impl_->icd2.mlt_auto_drop_polls = 1;
-				}
 			}
 
 			TimerStep(impl_->timer, impl_->mem, consumed);
