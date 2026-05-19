@@ -1296,21 +1296,25 @@ void Emulator::OnPpuVBlank()
 	    impl_->has_rom && impl_->cart.header.sgb_flag == 0x03;
 	const bool cgb_enhanced =
 	    impl_->has_rom && impl_->cart.header.cgb_flag != 0;
+	const bool border_installed =
+	    impl_->sgb_state.border.tiles_loaded &&
+	    impl_->sgb_state.border.map_loaded;
+	const bool skip_bg3_wipe = cgb_enhanced || border_installed;
 	if (impl_->boot_handoff_captured && sgb_enhanced)
 	{
 		if (impl_->handoff_frames < 30)
 		{
 			std::memset(&::Memory.VRAM[0x7000], 0, 0x0800);
-			if (!cgb_enhanced)
+			if (!skip_bg3_wipe)
 			{
-				std::memset(&::Memory.VRAM[0xE000], 0, 0x2000);
+				std::memset(&::Memory.VRAM[0xE000], 0, 0x1680);
 				std::memset(::PPU.OAMData, 0, sizeof ::PPU.OAMData);
 			}
 		}
 		impl_->handoff_frames++;
 	}
 
-	if (impl_->boot_handoff_captured && sgb_enhanced && !cgb_enhanced)
+	if (impl_->boot_handoff_captured && sgb_enhanced && !skip_bg3_wipe)
 	{
 		static const uint8_t kBiosStagedSig[16] = {
 			0x01, 0x10, 0x02, 0x10, 0x03, 0x10, 0x04, 0x10,
