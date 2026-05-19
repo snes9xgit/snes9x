@@ -938,13 +938,6 @@ void Emulator::RunCycles(int32_t tcycles)
 				{
 					impl_->icd2.mlt_players       = 2;
 					impl_->icd2.mlt_auto_drop_polls = 1;
-					// Wipe BG1 tilemap immediately so the BIOS can't
-					// render Tetris Plus's stripe artifact during the
-					// ~half-frame between handoff and the first VBlank
-					// where the 30-frame cleanup block kicks in.
-					// SGB-enhanced only — plain GB carts rely on the
-					// BIOS's default render path and must not be touched.
-					std::memset(&::Memory.VRAM[0x7000], 0, 0x0800);
 				}
 			}
 
@@ -1295,35 +1288,8 @@ void Emulator::OnPpuVBlank()
 	// TODO: add libco for better GB-SNES sync and remove this hack.
 	const bool sgb_enhanced =
 	    impl_->has_rom && impl_->cart.header.sgb_flag == 0x03;
-	const bool cgb_enhanced =
-	    impl_->has_rom && impl_->cart.header.cgb_flag != 0;
-	const bool border_installed =
-	    impl_->sgb_state.border.tiles_loaded &&
-	    impl_->sgb_state.border.map_loaded;
-	const bool skip_bg3_wipe = cgb_enhanced || border_installed;
 	if (impl_->boot_handoff_captured && sgb_enhanced)
-	{
-		if (impl_->handoff_frames < 30)
-		{
-			std::memset(&::Memory.VRAM[0x7000], 0, 0x0800);
-			if (!skip_bg3_wipe)
-			{
-				std::memset(&::Memory.VRAM[0xE000], 0, 0x1680);
-				std::memset(::PPU.OAMData, 0, sizeof ::PPU.OAMData);
-			}
-		}
 		impl_->handoff_frames++;
-	}
-
-	if (impl_->boot_handoff_captured && sgb_enhanced && !skip_bg3_wipe)
-	{
-		static const uint8_t kBiosStagedSig[16] = {
-			0x01, 0x10, 0x02, 0x10, 0x03, 0x10, 0x04, 0x10,
-			0x05, 0x10, 0x06, 0x10, 0x07, 0x10, 0x08, 0x10
-		};
-		if (std::memcmp(&::Memory.VRAM[0xE000], kBiosStagedSig, 16) == 0)
-			std::memset(&::Memory.VRAM[0xE000], 0, 0x1400);
-	}
 }
 
 void Emulator::CaptureScanline(const uint8_t *pixels)

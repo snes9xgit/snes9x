@@ -253,14 +253,21 @@ void S9xMainLoop (void)
 		if (Settings.SA1)
 			S9xSA1MainLoop();
 
-		// SNES→GB sync now happens at scanline boundaries only (see
-		// HC_HCOUNTER_MAX_EVENT below) plus on every ICD2 register
-		// access in getset.h. The previous per-opcode sync here cost
-		// millions of function calls/sec in BIOS-released mode and
-		// dropped wall-fps from 60 to ~25. Scanline-grained sync is
-		// fine for game-running mode — the BIOS handshake's tight
-		// $7800-slice timing happens before release, where ICD2-access
-		// syncs already serialize state correctly.
+		// Per-SNES-opcode GB sync — instruction-level interleaving.
+		// Mesen-equivalent granularity: every SNES opcode advances the
+		// GB by the corresponding cycle delta, so $6000/$6002/$7800
+		// reads from the BIOS see GB state that varies naturally as
+		// SNES cycles tick. Without this fine-grained sync the BIOS
+		// band counter ($0294) phase-locks to deterministic GB
+		// scanlines, $0294 never reaches 18, the swap never fires,
+		// the WRAM ping-pong buffers never fill, and BG3 char renders
+		// empty. Costs ~50% wall fps in BIOS mode (was the reason
+		// it was removed in 0762b725), but it's the only way to
+		// match real-hardware-equivalent BIOS state-machine progress.
+		// Only gates on BIOS-released so pre-release boot/handshake
+		// stays cheap.
+		if (Settings.SGB_BIOSModeActive && S9xSGBBIOSGBIsReleased())
+			S9xSGBSyncToSnesCycle(CPU.Cycles);
 	}
 
 	// P2 — in BIOS mode the GB core is held in reset until the BIOS
