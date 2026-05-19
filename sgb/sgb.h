@@ -161,6 +161,8 @@ public:
 	// True while synth handshake packets are still pending drain.
 	bool    IsHandshakePending() const;
 
+	bool    IsBootHandoffCaptured() const;
+
 	// GB PPU scanline event hooks for SGB row/bank counter advance.
 	void    OnPpuHBlank();
 	void    OnPpuVBlank();
@@ -345,6 +347,8 @@ bool          S9xSGBBIOSGBIsReleased (void);
 // real GB packets must not clobber a pending synth packet before the
 // BIOS reads it, so the GB is paused until the handshake drains out.
 bool          S9xSGBBIOSHandshakePending (void);
+
+bool          S9xSGBBootHandoffCaptured (void);
 
 // ---- Integration hooks for RetroAchievements -------------------------------
 // Expose the loaded GB ROM so the platform can hash it under the GameBoy /

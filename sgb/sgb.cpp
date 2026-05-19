@@ -1244,6 +1244,12 @@ bool Emulator::IsHandshakePending() const
 	return impl_->icd2.synth_remaining > 0 || impl_->icd2.queue_count > 0;
 }
 
+bool Emulator::IsBootHandoffCaptured() const
+{
+	if (!impl_) return false;
+	return impl_->boot_handoff_captured;
+}
+
 void Emulator::OnPpuHBlank()
 {
 	if (!impl_) return;
@@ -2139,6 +2145,11 @@ bool S9xSGBBIOSGBIsReleased(void)
 bool S9xSGBBIOSHandshakePending(void)
 {
 	return SGB::Instance().IsHandshakePending();
+}
+
+bool S9xSGBBootHandoffCaptured(void)
+{
+	return SGB::Instance().IsBootHandoffCaptured();
 }
 
 bool S9xSGBGetROMBytes(const unsigned char **out_data, size_t *out_size)
