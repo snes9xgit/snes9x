@@ -14432,6 +14432,25 @@ void CpuDebugFormat(wchar_t *out, size_t outLen)
     uint32 tc4_hash = (IPPU.TileCached[1] ? fnv1a(IPPU.TileCached[1], 1024) : 0);
     uint32 tc8_hash = (IPPU.TileCached[2] ? fnv1a(IPPU.TileCached[2], 512) : 0);
 
+    S9xSGBDebugState gb = {};
+    S9xSGBGetDebugState(&gb);
+    const wchar_t *mbc_name = L"?";
+    switch (gb.mbc_type) {
+        case 0: mbc_name = L"None"; break;
+        case 1: mbc_name = L"MBC1"; break;
+        case 2: mbc_name = L"MBC2"; break;
+        case 3: mbc_name = L"MBC3"; break;
+        case 5: mbc_name = L"MBC5"; break;
+        case 6: mbc_name = L"MBC6"; break;
+        case 7: mbc_name = L"MBC7"; break;
+        case 8: mbc_name = L"HuC1"; break;
+        case 9: mbc_name = L"HuC3"; break;
+        case 10: mbc_name = L"MMM01"; break;
+    }
+    wchar_t gb_title[18] = {0};
+    for (int i = 0; i < 17 && gb.title[i]; ++i)
+        gb_title[i] = (wchar_t)(uint8_t)gb.title[i];
+
     _snwprintf(out, outLen,
         L"== 65C816 ==\r\n"
         L"  PC = $%02X:%04X    bytes: %02X %02X %02X %02X\r\n"
@@ -14489,7 +14508,39 @@ void CpuDebugFormat(wchar_t *out, size_t outLen)
         L"  FillRAM = 0x%08X    (32KB)\r\n"
         L"  TileCache[2bpp] = 0x%08X    (any mismatch = stale cache!)\r\n"
         L"  TileCache[4bpp] = 0x%08X\r\n"
-        L"  TileCache[8bpp] = 0x%08X\r\n",
+        L"  TileCache[8bpp] = 0x%08X\r\n"
+        L"\r\n"
+        L"== GB/SGB cart ==\r\n"
+        L"  Loaded   = %hs   Title = \"%ls\"\r\n"
+        L"  CGB flag = $%02X    SGB flag = $%02X    cart_type = $%02X (%ls)\r\n"
+        L"  ROM size = %u    RAM size = %u\r\n"
+        L"\r\n"
+        L"== SM83 (GB CPU) ==\r\n"
+        L"  PC = $%04X    bytes: %02X %02X %02X %02X\r\n"
+        L"  AF = $%04X    BC = $%04X    DE = $%04X    HL = $%04X    SP = $%04X\r\n"
+        L"  IME=%d  ime_pending=%d  halted=%d  stopped=%d  halt_bug=%d  illegal_ops=%u\r\n"
+        L"  t_cycles = %I64u\r\n"
+        L"  IE = $%02X    IF = $%02X    boot_rom_enabled=%d\r\n"
+        L"\r\n"
+        L"== GB PPU ==\r\n"
+        L"  LCDC=$%02X  STAT=$%02X  LY=%u  LYC=%u  SCX=%u  SCY=%u  WY=%u  WX=%u\r\n"
+        L"  BGP=$%02X  OBP0=$%02X  OBP1=$%02X\r\n"
+        L"\r\n"
+        L"== MBC ==\r\n"
+        L"  type=%ls  rom_bank=%u  ram_bank=%u  ram_enable=%d  mbc1_mode=%d\r\n"
+        L"\r\n"
+        L"== SGB ICD2 ==\r\n"
+        L"  control=$%02X  released=%d  handshake_pending=%d\r\n"
+        L"  packets_received=%u  f1_packets=%u\r\n"
+        L"  mlt_players=%u  input_index=%u  sgb_row=%u  sgb_bank=%u\r\n"
+        L"\r\n"
+        L"== Handoff ==\r\n"
+        L"  boot_handoff_captured=%d  handoff_frames=%u\r\n"
+        L"  PC=$%04X  AF=$%04X  BC=$%04X  DE=$%04X  HL=$%04X  SP=$%04X\r\n"
+        L"\r\n"
+        L"== SGB state ==\r\n"
+        L"  border tiles_loaded=%d  map_loaded=%d\r\n"
+        L"  mask_mode=%u  pal0_color0=$%04X\r\n",
         pb_, pc_, op[0], op[1], op[2], op[3],
         a_w, x_w, y_w,
         s_w, d_w, db_,
@@ -14548,7 +14599,26 @@ void CpuDebugFormat(wchar_t *out, size_t outLen)
         cg[0], cg[1], cg[2], cg[3], cg[4], cg[5], cg[6], cg[7],
         cg[8], cg[9], cg[10], cg[11], cg[12], cg[13], cg[14], cg[15],
         vram_hash, cgram_hash, oam_hash, wram_hash, fillram_hash,
-        tc2_hash, tc4_hash, tc8_hash);
+        tc2_hash, tc4_hash, tc8_hash,
+        gb.has_rom ? "yes" : "no", gb_title,
+        gb.cgb_flag, gb.sgb_flag, gb.cart_type, mbc_name,
+        gb.rom_size, gb.ram_size,
+        gb.pc, gb.opcode_at_pc[0], gb.opcode_at_pc[1], gb.opcode_at_pc[2], gb.opcode_at_pc[3],
+        gb.af, gb.bc, gb.de, gb.hl, gb.sp,
+        (int)gb.ime, (int)gb.ime_pending, (int)gb.halted, (int)gb.stopped, (int)gb.halt_bug, gb.illegal_ops,
+        gb.t_cycles,
+        gb.ie, gb.if_, (int)gb.boot_rom_enabled,
+        gb.lcdc, gb.stat, (unsigned)gb.ly, (unsigned)gb.lyc,
+        (unsigned)gb.scx, (unsigned)gb.scy, (unsigned)gb.wy, (unsigned)gb.wx,
+        gb.bgp, gb.obp0, gb.obp1,
+        mbc_name, gb.mbc_rom_bank, gb.mbc_ram_bank, (int)gb.mbc_ram_enable, (int)gb.mbc1_mode,
+        gb.icd_control, (int)gb.released, (int)gb.handshake_pending,
+        gb.packets_received, gb.f1_packets,
+        (unsigned)gb.mlt_players, (unsigned)gb.input_index, (unsigned)gb.sgb_row, (unsigned)gb.sgb_bank,
+        (int)gb.boot_handoff_captured, gb.handoff_frames,
+        gb.handoff_pc, gb.handoff_af, gb.handoff_bc, gb.handoff_de, gb.handoff_hl, gb.handoff_sp,
+        (int)gb.border_tiles_loaded, (int)gb.border_map_loaded,
+        (unsigned)gb.mask_mode, gb.pal0_color0);
     out[outLen - 1] = 0;
 }
 
@@ -14561,7 +14631,7 @@ INT_PTR CALLBACK CpuDebugDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPar
 
     case WM_TIMER:
         if (wParam == CPU_DEBUG_TIMER_ID) {
-            wchar_t buf[4096];
+            wchar_t buf[8192];
             CpuDebugFormat(buf, _countof(buf));
             // Preserve selection so the user can highlight + copy without flicker.
             HWND hEdit = GetDlgItem(hDlg, IDC_CPU_DEBUG_TEXT);

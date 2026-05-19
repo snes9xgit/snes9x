@@ -173,6 +173,8 @@ public:
 	// has no way to obtain one.
 	struct Impl;
 
+	Impl *DebugImpl() const { return impl_; }
+
 private:
 	Impl *impl_;
 };
@@ -349,6 +351,48 @@ bool          S9xSGBBIOSGBIsReleased (void);
 bool          S9xSGBBIOSHandshakePending (void);
 
 bool          S9xSGBBootHandoffCaptured (void);
+
+struct S9xSGBDebugState
+{
+	bool     has_rom;
+	uint8_t  cgb_flag;
+	uint8_t  sgb_flag;
+	uint8_t  cart_type;
+	uint32_t rom_size;
+	uint32_t ram_size;
+	char     title[17];
+
+	uint16_t pc, af, bc, de, hl, sp;
+	bool     ime, ime_pending, halted, stopped, halt_bug;
+	uint64_t t_cycles;
+	uint32_t illegal_ops;
+	uint8_t  opcode_at_pc[4];
+
+	uint8_t  ie, if_;
+	bool     boot_rom_enabled;
+
+	uint8_t  lcdc, stat, ly, scx, scy, bgp, obp0, obp1, wy, wx, lyc;
+
+	uint8_t  mbc_type;
+	uint32_t mbc_rom_bank, mbc_ram_bank;
+	bool     mbc_ram_enable;
+	bool     mbc1_mode;
+
+	uint8_t  icd_control;
+	uint32_t packets_received, f1_packets;
+	uint8_t  mlt_players, input_index;
+	uint8_t  sgb_row, sgb_bank;
+	bool     released, handshake_pending;
+	bool     boot_handoff_captured;
+	uint32_t handoff_frames;
+	uint16_t handoff_pc, handoff_af, handoff_bc, handoff_de, handoff_hl, handoff_sp;
+
+	bool     border_tiles_loaded, border_map_loaded;
+	uint8_t  mask_mode;
+	uint16_t pal0_color0;
+};
+
+void          S9xSGBGetDebugState (S9xSGBDebugState *out);
 
 // ---- Integration hooks for RetroAchievements -------------------------------
 // Expose the loaded GB ROM so the platform can hash it under the GameBoy /

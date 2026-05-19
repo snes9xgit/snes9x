@@ -2156,6 +2156,85 @@ bool S9xSGBBootHandoffCaptured(void)
 	return SGB::Instance().IsBootHandoffCaptured();
 }
 
+void S9xSGBGetDebugState(S9xSGBDebugState *out)
+{
+	if (!out) return;
+	std::memset(out, 0, sizeof *out);
+	SGB::Emulator::Impl *p = SGB::Instance().DebugImpl();
+	if (!p) return;
+
+	out->has_rom   = p->has_rom;
+	out->cgb_flag  = p->cart.header.cgb_flag;
+	out->sgb_flag  = p->cart.header.sgb_flag;
+	out->cart_type = p->cart.header.cart_type;
+	out->rom_size  = p->cart.header.rom_size;
+	out->ram_size  = p->cart.header.ram_size;
+	std::memcpy(out->title, p->cart.header.title, sizeof out->title);
+
+	const SGB::CpuState &cs = p->cpu.State();
+	out->pc          = cs.r.pc;
+	out->af          = cs.r.af;
+	out->bc          = cs.r.bc;
+	out->de          = cs.r.de;
+	out->hl          = cs.r.hl;
+	out->sp          = cs.r.sp;
+	out->ime         = cs.ime;
+	out->ime_pending = cs.ime_pending;
+	out->halted      = cs.halted;
+	out->stopped     = cs.stopped;
+	out->halt_bug    = cs.halt_bug;
+	out->t_cycles    = static_cast<uint64_t>(cs.t_cycles);
+	out->illegal_ops = cs.illegal_ops;
+	for (int i = 0; i < 4; ++i)
+		out->opcode_at_pc[i] = SGB::MemRead(p->mem, static_cast<uint16_t>(cs.r.pc + i));
+
+	out->ie  = p->mem.ie;
+	out->if_ = p->mem.if_;
+	out->boot_rom_enabled = p->mem.boot_rom_enabled;
+
+	out->lcdc = p->ppu.lcdc;
+	out->stat = p->ppu.stat;
+	out->ly   = p->ppu.ly;
+	out->lyc  = p->ppu.lyc;
+	out->scx  = p->ppu.scx;
+	out->scy  = p->ppu.scy;
+	out->bgp  = p->ppu.bgp;
+	out->obp0 = p->ppu.obp0;
+	out->obp1 = p->ppu.obp1;
+	out->wy   = p->ppu.wy;
+	out->wx   = p->ppu.wx;
+
+	out->mbc_type       = static_cast<uint8_t>(p->cart.mbc.type);
+	out->mbc_rom_bank   = p->cart.mbc.rom_bank;
+	out->mbc_ram_bank   = p->cart.mbc.ram_bank;
+	out->mbc_ram_enable = p->cart.mbc.ram_enable;
+	out->mbc1_mode      = p->cart.mbc.mbc1_mode;
+
+	out->icd_control       = p->icd2.control;
+	out->packets_received  = p->icd2.packets_received;
+	out->f1_packets        = p->icd2.f1_packets;
+	out->mlt_players       = p->icd2.mlt_players;
+	out->input_index       = p->icd2.input_index;
+	out->sgb_row           = p->icd2.sgb_row;
+	out->sgb_bank          = p->icd2.sgb_bank;
+	out->released          = (p->icd2.control & 0x80) != 0;
+	out->handshake_pending = p->icd2.synth_remaining > 0 || p->icd2.queue_count > 0;
+
+	out->boot_handoff_captured = p->boot_handoff_captured;
+	out->handoff_frames        = p->handoff_frames;
+	out->handoff_pc            = p->boot_handoff_regs.pc;
+	out->handoff_af            = p->boot_handoff_regs.af;
+	out->handoff_bc            = p->boot_handoff_regs.bc;
+	out->handoff_de            = p->boot_handoff_regs.de;
+	out->handoff_hl            = p->boot_handoff_regs.hl;
+	out->handoff_sp            = p->boot_handoff_regs.sp;
+
+	out->border_tiles_loaded = p->sgb_state.border.tiles_loaded;
+	out->border_map_loaded   = p->sgb_state.border.map_loaded;
+	out->mask_mode           = p->sgb_state.mask_mode;
+	out->pal0_color0         = p->sgb_state.active[0].colors[0];
+}
+
 bool S9xSGBGetROMBytes(const unsigned char **out_data, size_t *out_size)
 {
 	const uint8_t *data = SGB::Instance().GetROMData();
