@@ -540,8 +540,8 @@ static void MixSpcOverGB(uint8 *dest, int sample_words)
     int i = 0;
     for (; i < n; ++i)
     {
-        int32_t gb  = ((int32_t)out16[i]   * GB_GAIN_Q8)  >> 8;
-        int32_t spc = ((int32_t)spc_buf[i] * SPC_GAIN_Q8) >> 8;
+        int32_t gb    = ((int32_t)out16[i]   * GB_GAIN_Q8)  >> 8;
+        int32_t spc   = ((int32_t)spc_buf[i] * SPC_GAIN_Q8) >> 8;
         int32_t mixed = gb + spc;
         if (mixed >  32767) mixed =  32767;
         if (mixed < -32768) mixed = -32768;
@@ -554,6 +554,17 @@ static void MixSpcOverGB(uint8 *dest, int sample_words)
         if (gb < -32768) gb = -32768;
         out16[i] = (int16_t)gb;
     }
+
+    // Silence the SPC-over-GB mix until the GB completes its boot ROM
+    // (writes $FF50 → boot_handoff_captured). Bridges the audible click
+    // between BIOS-released and the GB taking over the audio path —
+    // the click sample stayed in DSound's queue from the pre-release
+    // SPC stream and emerged after the mix path switched, so neither
+    // muting GB nor SPC individually killed it. Zeroing the post-mix
+    // output through this window is the only thing that does.
+    if (!S9xSGBBootHandoffCaptured())
+        memset(out16, 0, sample_words * sizeof(int16_t));
+
     S9xAudioWaveformPushMix(out16, frames);
 }
 

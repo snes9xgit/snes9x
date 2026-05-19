@@ -1244,6 +1244,12 @@ bool Emulator::IsHandshakePending() const
 	return impl_->icd2.synth_remaining > 0 || impl_->icd2.queue_count > 0;
 }
 
+bool Emulator::IsBootHandoffCaptured() const
+{
+	if (!impl_) return false;
+	return impl_->boot_handoff_captured;
+}
+
 void Emulator::OnPpuHBlank()
 {
 	if (!impl_) return;
@@ -1288,23 +1294,27 @@ void Emulator::OnPpuVBlank()
 	// TODO: add libco for better GB-SNES sync and remove this hack.
 	const bool sgb_enhanced =
 	    impl_->has_rom && impl_->cart.header.sgb_flag == 0x03;
+	const bool cgb_enhanced =
+	    impl_->has_rom && impl_->cart.header.cgb_flag != 0;
+	const bool border_installed =
+	    impl_->sgb_state.border.tiles_loaded &&
+	    impl_->sgb_state.border.map_loaded;
+	const bool skip_bg3_wipe = cgb_enhanced || border_installed;
 	if (impl_->boot_handoff_captured && sgb_enhanced)
 	{
 		if (impl_->handoff_frames < 30)
 		{
 			std::memset(&::Memory.VRAM[0x7000], 0, 0x0800);
-			std::memset(&::Memory.VRAM[0xE000], 0, 0x2000);
-			std::memset(::PPU.OAMData, 0, sizeof ::PPU.OAMData);
+			if (!skip_bg3_wipe)
+			{
+				std::memset(&::Memory.VRAM[0xE000], 0, 0x1680);
+				std::memset(::PPU.OAMData, 0, sizeof ::PPU.OAMData);
+			}
 		}
 		impl_->handoff_frames++;
 	}
 
-	// Suppress visible artifact at the BIOS fade-in moment without touching
-	// unrelated VRAM regions. Same SGB-enhanced gating as above — plain GB
-	// carts don't go through the BIOS fade-in path that produces this
-	// artifact, and we never want to zero BG3 on them.
-	// TODO: add libco for better sync and remove this hack.
-	if (impl_->boot_handoff_captured && sgb_enhanced)
+	if (impl_->boot_handoff_captured && sgb_enhanced && !skip_bg3_wipe)
 	{
 		static const uint8_t kBiosStagedSig[16] = {
 			0x01, 0x10, 0x02, 0x10, 0x03, 0x10, 0x04, 0x10,
@@ -2139,6 +2149,11 @@ bool S9xSGBBIOSGBIsReleased(void)
 bool S9xSGBBIOSHandshakePending(void)
 {
 	return SGB::Instance().IsHandshakePending();
+}
+
+bool S9xSGBBootHandoffCaptured(void)
+{
+	return SGB::Instance().IsBootHandoffCaptured();
 }
 
 bool S9xSGBGetROMBytes(const unsigned char **out_data, size_t *out_size)
