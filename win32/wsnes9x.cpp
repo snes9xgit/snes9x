@@ -41,6 +41,9 @@
 #include "CTilemapViewerDlg.h"
 #include "CSpriteViewerDlg.h"
 #include "debug_viewer_common.h"
+
+// Defined at the bottom of this file. See "CPU debugger dialog" section.
+void WinShowCpuDebugDialog();
 #include "../snes9x.h"
 #include "../memmap.h"
 #include "../cpuexec.h"
@@ -2591,6 +2594,9 @@ LRESULT CALLBACK WinProc(
 			break;
 		case ID_DEBUG_SPRITE_VIEWER:
             WinShowSpriteViewerDialog();
+			break;
+		case ID_EMULATION_DEBUGGER:
+            WinShowCpuDebugDialog();
 			break;
 		case ID_CHEAT_ENTER:
 #ifdef RETROACHIEVEMENTS_SUPPORT
@@ -14262,4 +14268,178 @@ std::wstring GetTextWstring(HWND hWnd)
     GetWindowText(hWnd, edit_text.data(), text_length + 1);
     edit_text.resize(text_length); // need to resize, otherwise length is +1 and string contains terminator
     return edit_text;
+}
+
+// =====================================================================
+//   CPU debugger dialog (Emulation -> Debugger)
+//
+//   Read-only modeless dialog that polls CPU + SPC state every 200ms.
+//   Designed for inspecting freezes — load a state, open the dialog,
+//   pause, and read off the registers. Stuck-PC and APU port views
+//   are the most useful columns for handshake-deadlock diagnosis.
+// =====================================================================
+namespace {
+
+// Forward decls to avoid pulling apu/bapu/snes/snes.hpp into this file —
+// that header indirectly includes resampler.h which declares `int min(int,int)`,
+// and by this point windows.h has #define'd min/max into macros, which breaks
+// the build. Reading via the bAPU's exposed port_read / port_write would also
+// work, but we want the *raw* state for the debugger so the values match what
+// snes9x save-state load wrote rather than the live read path.
+extern "C" {
+    // Implemented in this file by snes9x — already linked into the binary.
+    // We just need the externs so we can read the live state.
+}
+
+HWND g_CpuDebugHwnd = NULL;
+constexpr UINT_PTR CPU_DEBUG_TIMER_ID = 0xC9D8;
+
+} // anonymous namespace
+
+// Defined in a separate compilation unit (CpuDebugSpcState.cpp) so the bAPU
+// headers — which clash with windows.h's min/max macros — can be included
+// without polluting this file.
+struct CpuDebugSpcState {
+    uint16_t pc;
+    uint8_t  a, x, y, sp;
+    uint8_t  apuram_F4, apuram_F5, apuram_F6, apuram_F7;
+    uint8_t  cpu_regs_0, cpu_regs_1, cpu_regs_2, cpu_regs_3;
+};
+extern void S9xGetCpuDebugSpcState(CpuDebugSpcState *out);
+
+namespace {
+
+void CpuDebugFormat(wchar_t *out, size_t outLen)
+{
+    // CPU. Local names must avoid 65c816.h macros (PB / PCw / PL / AL etc.)
+    // which would otherwise expand into struct-member chains in our decls.
+    uint8  pb_   = Registers.PB;
+    uint16 pc_   = Registers.PCw;
+    uint16 a_w   = Registers.A.W;
+    uint16 x_w   = Registers.X.W;
+    uint16 y_w   = Registers.Y.W;
+    uint16 s_w   = Registers.S.W;
+    uint16 d_w   = Registers.D.W;
+    uint8  db_   = Registers.DB;
+    uint8  p_    = Registers.PL;
+
+    // Peek instruction bytes via Memory.Map[] directly. S9xGetByte() routes
+    // through the full CPU read path including S9xDoHEventProcessing(),
+    // which is unsafe to call from the UI thread (causes reentrant event
+    // processing → infinite loop in the debugger dialog). Best-effort
+    // mapped-RAM/ROM peek instead. MEMMAP_SHIFT/MASK is the standard
+    // snes9x page granularity (4 KB pages, mask = 0x0FFF).
+    uint8 op[4] = {0,0,0,0};
+    for (int i = 0; i < 4; ++i) {
+        uint32 addr = (uint32(pb_) << 16) | uint16(pc_ + i);
+        uint8 *page = Memory.Map[(addr & 0xFFFFFF) >> MEMMAP_SHIFT];
+        // Map entries below 256 are special handlers (PPU/CPU regs, SRAM,
+        // etc.) where the pointer is actually an enum and dereferencing
+        // crashes. Only peek real RAM/ROM pages (high pointers).
+        if (page != NULL && reinterpret_cast<uintptr_t>(page) > 0x10000) {
+            op[i] = page[addr & MEMMAP_MASK];
+        }
+    }
+
+    // SPC + APU port state via the bAPU-isolated helper.
+    CpuDebugSpcState s = {};
+    S9xGetCpuDebugSpcState(&s);
+    uint16 spc_pc = s.pc;
+    uint8  spc_a  = s.a;
+    uint8  spc_x  = s.x;
+    uint8  spc_y  = s.y;
+    uint8  spc_sp = s.sp;
+    uint8 ar[4] = { s.apuram_F4, s.apuram_F5, s.apuram_F6, s.apuram_F7 };
+    uint8 cr[4] = { s.cpu_regs_0, s.cpu_regs_1, s.cpu_regs_2, s.cpu_regs_3 };
+
+    _snwprintf(out, outLen,
+        L"== 65C816 ==\r\n"
+        L"  PC = $%02X:%04X    bytes: %02X %02X %02X %02X\r\n"
+        L"  A  = $%04X    X = $%04X    Y = $%04X\r\n"
+        L"  S  = $%04X    D = $%04X    DB= $%02X\r\n"
+        L"  P  = $%02X     [%hc%hc%hc%hc%hc%hc%hc%hc]\r\n"
+        L"\r\n"
+        L"== Cycles ==\r\n"
+        L"  Cycles      = %d\r\n"
+        L"  V_Counter   = %d   PrevCycles=%d\r\n"
+        L"\r\n"
+        L"== SPC700 ==\r\n"
+        L"  PC = $%04X    A = $%02X   X = $%02X   Y = $%02X   SP = $%02X\r\n"
+        L"\r\n"
+        L"== APU ports ==\r\n"
+        L"  $2140-$2143 (CPU reads, = apuram[$F4..$F7]):\r\n"
+        L"      %02X %02X %02X %02X\r\n"
+        L"  $F4-$F7 (SPC reads, = SNES::cpu.registers):\r\n"
+        L"      %02X %02X %02X %02X\r\n",
+        pb_, pc_, op[0], op[1], op[2], op[3],
+        a_w, x_w, y_w,
+        s_w, d_w, db_,
+        p_,
+        (p_ & 0x80) ? 'N' : '.',
+        (p_ & 0x40) ? 'V' : '.',
+        (p_ & 0x20) ? 'M' : '.',
+        (p_ & 0x10) ? 'X' : '.',
+        (p_ & 0x08) ? 'D' : '.',
+        (p_ & 0x04) ? 'I' : '.',
+        (p_ & 0x02) ? 'Z' : '.',
+        (p_ & 0x01) ? 'C' : '.',
+        (int)CPU.Cycles,
+        (int)CPU.V_Counter, (int)CPU.PrevCycles,
+        spc_pc, spc_a, spc_x, spc_y, spc_sp,
+        ar[0], ar[1], ar[2], ar[3],
+        cr[0], cr[1], cr[2], cr[3]);
+    out[outLen - 1] = 0;
+}
+
+INT_PTR CALLBACK CpuDebugDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
+{
+    switch (msg) {
+    case WM_INITDIALOG:
+        SetTimer(hDlg, CPU_DEBUG_TIMER_ID, 200, NULL);
+        return TRUE;
+
+    case WM_TIMER:
+        if (wParam == CPU_DEBUG_TIMER_ID) {
+            wchar_t buf[2048];
+            CpuDebugFormat(buf, _countof(buf));
+            // Preserve selection so the user can highlight + copy without flicker.
+            HWND hEdit = GetDlgItem(hDlg, IDC_CPU_DEBUG_TEXT);
+            DWORD selStart = 0, selEnd = 0;
+            SendMessage(hEdit, EM_GETSEL, (WPARAM)&selStart, (LPARAM)&selEnd);
+            SetWindowText(hEdit, buf);
+            SendMessage(hEdit, EM_SETSEL, selStart, selEnd);
+            return TRUE;
+        }
+        break;
+
+    case WM_COMMAND:
+        if (LOWORD(wParam) == IDCANCEL || LOWORD(wParam) == IDOK) {
+            DestroyWindow(hDlg);
+            return TRUE;
+        }
+        break;
+
+    case WM_CLOSE:
+        DestroyWindow(hDlg);
+        return TRUE;
+
+    case WM_DESTROY:
+        KillTimer(hDlg, CPU_DEBUG_TIMER_ID);
+        g_CpuDebugHwnd = NULL;
+        return TRUE;
+    }
+    return FALSE;
+}
+
+} // anonymous namespace
+
+void WinShowCpuDebugDialog()
+{
+    if (!g_CpuDebugHwnd) {
+        g_CpuDebugHwnd = CreateDialog(g_hInst, MAKEINTRESOURCE(IDD_CPU_DEBUG),
+                                       GUI.hWnd, CpuDebugDlgProc);
+        if (g_CpuDebugHwnd) ShowWindow(g_CpuDebugHwnd, SW_SHOW);
+    } else {
+        SetActiveWindow(g_CpuDebugHwnd);
+    }
 }

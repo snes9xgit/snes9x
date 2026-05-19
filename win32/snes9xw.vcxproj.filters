@@ -911,6 +911,9 @@
     <ClCompile Include="CSpriteViewerDlg.cpp">
       <Filter>GUI</Filter>
     </ClCompile>
+    <ClCompile Include="CpuDebugSpcState.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
     <ClCompile Include="debug_viewer_common.cpp">
       <Filter>GUI</Filter>
     </ClCompile>

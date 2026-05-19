@@ -727,6 +727,7 @@
     <ClCompile Include="CVRAMViewerDlg.cpp" />
     <ClCompile Include="CTilemapViewerDlg.cpp" />
     <ClCompile Include="CSpriteViewerDlg.cpp" />
+    <ClCompile Include="CpuDebugSpcState.cpp" />
     <ClCompile Include="debug_viewer_common.cpp" />
     <ClCompile Include="debug_viewer_export.cpp" />
     <ClCompile Include="CVulkan.cpp" />
