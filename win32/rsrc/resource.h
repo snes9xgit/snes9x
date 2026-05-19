@@ -678,6 +678,7 @@
 #define ID_EMULATION_DEBUGGER           40203
 
 #define IDC_CPU_DEBUG_TEXT              3250
+#define IDC_CPU_DEBUG_TAB               3251
 
 #define IDC_VRAMV_CANVAS                3120
 #define IDC_VRAMV_PALETTE               3121
