@@ -1288,23 +1288,23 @@ void Emulator::OnPpuVBlank()
 	// TODO: add libco for better GB-SNES sync and remove this hack.
 	const bool sgb_enhanced =
 	    impl_->has_rom && impl_->cart.header.sgb_flag == 0x03;
+	const bool cgb_enhanced =
+	    impl_->has_rom && impl_->cart.header.cgb_flag != 0;
 	if (impl_->boot_handoff_captured && sgb_enhanced)
 	{
 		if (impl_->handoff_frames < 30)
 		{
 			std::memset(&::Memory.VRAM[0x7000], 0, 0x0800);
-			std::memset(&::Memory.VRAM[0xE000], 0, 0x2000);
-			std::memset(::PPU.OAMData, 0, sizeof ::PPU.OAMData);
+			if (!cgb_enhanced)
+			{
+				std::memset(&::Memory.VRAM[0xE000], 0, 0x2000);
+				std::memset(::PPU.OAMData, 0, sizeof ::PPU.OAMData);
+			}
 		}
 		impl_->handoff_frames++;
 	}
 
-	// Suppress visible artifact at the BIOS fade-in moment without touching
-	// unrelated VRAM regions. Same SGB-enhanced gating as above — plain GB
-	// carts don't go through the BIOS fade-in path that produces this
-	// artifact, and we never want to zero BG3 on them.
-	// TODO: add libco for better sync and remove this hack.
-	if (impl_->boot_handoff_captured && sgb_enhanced)
+	if (impl_->boot_handoff_captured && sgb_enhanced && !cgb_enhanced)
 	{
 		static const uint8_t kBiosStagedSig[16] = {
 			0x01, 0x10, 0x02, 0x10, 0x03, 0x10, 0x04, 0x10,
