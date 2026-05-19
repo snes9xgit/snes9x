@@ -14352,6 +14352,49 @@ void CpuDebugFormat(wchar_t *out, size_t outLen)
     uint8 ar[4] = { s.apuram_F4, s.apuram_F5, s.apuram_F6, s.apuram_F7 };
     uint8 cr[4] = { s.cpu_regs_0, s.cpu_regs_1, s.cpu_regs_2, s.cpu_regs_3 };
 
+    // Snapshot of live PPU rendering registers (FillRAM I/O area).
+    // Useful for diagnosing "why isn't BG rendering" — TM/TS show which
+    // layers are enabled on the main/sub screens, INIDISP shows whether
+    // the screen is force-blanked, the BGnSC values point BG tilemaps
+    // into VRAM, the BGnNBA pair selects each BG's tile-data bank.
+    uint8 inidisp  = Memory.FillRAM[0x2100];
+    uint8 obsel    = Memory.FillRAM[0x2101];
+    uint8 bgmode   = Memory.FillRAM[0x2105];
+    uint8 bg1sc    = Memory.FillRAM[0x2107];
+    uint8 bg2sc    = Memory.FillRAM[0x2108];
+    uint8 bg3sc    = Memory.FillRAM[0x2109];
+    uint8 bg4sc    = Memory.FillRAM[0x210A];
+    uint8 bg12nba  = Memory.FillRAM[0x210B];
+    uint8 bg34nba  = Memory.FillRAM[0x210C];
+    uint8 tm       = Memory.FillRAM[0x212C];
+    uint8 ts       = Memory.FillRAM[0x212D];
+    uint8 tmw      = Memory.FillRAM[0x212E];
+    uint8 nmitimen = Memory.FillRAM[0x4200];
+    uint8 hdmaen   = Memory.FillRAM[0x420C];
+
+    // Live VRAM sample at the BG1 SCBase region. Each tilemap entry is
+    // 2 bytes LE (tile index + flip/priority bits). If this region is
+    // all zeros at runtime even though the state file had real tilemap
+    // data, something cleared VRAM[$4000..$47FF] after state load.
+    uint16 bg1_scbase_addr = (bg1sc & 0x7C) << 8;
+    uint16 bg2_scbase_addr = (bg2sc & 0x7C) << 8;
+    uint16 bg3_scbase_addr = (bg3sc & 0x7C) << 8;
+    auto vread = [](uint16 addr) -> uint8 {
+        return Memory.VRAM[addr & 0xFFFF];
+    };
+    // First 16 bytes (= 8 tilemap entries) of each BG's tilemap.
+    uint8 bg1_map[16], bg2_map[16], bg3_map[16];
+    for (int i = 0; i < 16; ++i) {
+        bg1_map[i] = vread(bg1_scbase_addr + i);
+        bg2_map[i] = vread(bg2_scbase_addr + i);
+        bg3_map[i] = vread(bg3_scbase_addr + i);
+    }
+    // Live CGRAM first 8 colors (16 bytes). If these are all $7FFF (white)
+    // or $0000 (black), the palette has been clobbered post-load.
+    uint8 cg[16];
+    for (int i = 0; i < 16; ++i)
+        cg[i] = PPU.CGDATA[i / 2] >> ((i & 1) ? 8 : 0);  // LE per-byte
+
     _snwprintf(out, outLen,
         L"== 65C816 ==\r\n"
         L"  PC = $%02X:%04X    bytes: %02X %02X %02X %02X\r\n"
@@ -14370,7 +14413,31 @@ void CpuDebugFormat(wchar_t *out, size_t outLen)
         L"  $2140-$2143 (CPU reads, = apuram[$F4..$F7]):\r\n"
         L"      %02X %02X %02X %02X\r\n"
         L"  $F4-$F7 (SPC reads, = SNES::cpu.registers):\r\n"
-        L"      %02X %02X %02X %02X\r\n",
+        L"      %02X %02X %02X %02X\r\n"
+        L"\r\n"
+        L"== PPU regs (live FillRAM) ==\r\n"
+        L"  $2100 INIDISP = $%02X   ($80 = force-blank, low4 = brightness)\r\n"
+        L"  $2101 OBSEL   = $%02X   OBJ name base / select / size\r\n"
+        L"  $2105 BGMODE  = $%02X   (mode %d, BG3-pri=%d, BGsize bits 7-4)\r\n"
+        L"  $2107 BG1SC   = $%02X   SCBase=$%04X SCSize=%d\r\n"
+        L"  $2108 BG2SC   = $%02X   SCBase=$%04X SCSize=%d\r\n"
+        L"  $2109 BG3SC   = $%02X   SCBase=$%04X SCSize=%d\r\n"
+        L"  $210A BG4SC   = $%02X   SCBase=$%04X SCSize=%d\r\n"
+        L"  $210B BG12NBA = $%02X   BG1 NameBase=$%04X  BG2=$%04X\r\n"
+        L"  $210C BG34NBA = $%02X   BG3 NameBase=$%04X  BG4=$%04X\r\n"
+        L"  $212C TM      = $%02X   main screen layers BG1-4=%d%d%d%d OBJ=%d\r\n"
+        L"  $212D TS      = $%02X   sub  screen layers BG1-4=%d%d%d%d OBJ=%d\r\n"
+        L"  $212E TMW     = $%02X   main-screen window mask\r\n"
+        L"  $4200 NMITIMEN= $%02X   NMI=%d  V/H-IRQ=%d  Joypad=%d\r\n"
+        L"  $420C HDMAEN  = $%02X   (HDMA channels enabled, bit per ch)\r\n"
+        L"\r\n"
+        L"== Live VRAM (first 16 bytes at BG SCBase) ==\r\n"
+        L"  BG1@$%04X: %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X\r\n"
+        L"  BG2@$%04X: %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X\r\n"
+        L"  BG3@$%04X: %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X\r\n"
+        L"\r\n"
+        L"== Live CGRAM (first 8 colors, 16 bytes LE) ==\r\n"
+        L"  $00..$0F: %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X\r\n",
         pb_, pc_, op[0], op[1], op[2], op[3],
         a_w, x_w, y_w,
         s_w, d_w, db_,
@@ -14387,7 +14454,35 @@ void CpuDebugFormat(wchar_t *out, size_t outLen)
         (int)CPU.V_Counter, (int)CPU.PrevCycles,
         spc_pc, spc_a, spc_x, spc_y, spc_sp,
         ar[0], ar[1], ar[2], ar[3],
-        cr[0], cr[1], cr[2], cr[3]);
+        cr[0], cr[1], cr[2], cr[3],
+        inidisp,
+        obsel,
+        bgmode, bgmode & 7, (bgmode >> 3) & 1,
+        bg1sc, (bg1sc & 0x7C) << 8, bg1sc & 3,
+        bg2sc, (bg2sc & 0x7C) << 8, bg2sc & 3,
+        bg3sc, (bg3sc & 0x7C) << 8, bg3sc & 3,
+        bg4sc, (bg4sc & 0x7C) << 8, bg4sc & 3,
+        bg12nba, ((bg12nba) & 7) << 12,       ((bg12nba >> 4) & 7) << 12,
+        bg34nba, ((bg34nba) & 7) << 12,       ((bg34nba >> 4) & 7) << 12,
+        tm, (tm)&1, (tm>>1)&1, (tm>>2)&1, (tm>>3)&1, (tm>>4)&1,
+        ts, (ts)&1, (ts>>1)&1, (ts>>2)&1, (ts>>3)&1, (ts>>4)&1,
+        tmw,
+        nmitimen, (nmitimen>>7)&1, (nmitimen>>4)&3, nmitimen&1,
+        hdmaen,
+        bg1_scbase_addr, bg1_map[0], bg1_map[1], bg1_map[2], bg1_map[3],
+                         bg1_map[4], bg1_map[5], bg1_map[6], bg1_map[7],
+                         bg1_map[8], bg1_map[9], bg1_map[10], bg1_map[11],
+                         bg1_map[12], bg1_map[13], bg1_map[14], bg1_map[15],
+        bg2_scbase_addr, bg2_map[0], bg2_map[1], bg2_map[2], bg2_map[3],
+                         bg2_map[4], bg2_map[5], bg2_map[6], bg2_map[7],
+                         bg2_map[8], bg2_map[9], bg2_map[10], bg2_map[11],
+                         bg2_map[12], bg2_map[13], bg2_map[14], bg2_map[15],
+        bg3_scbase_addr, bg3_map[0], bg3_map[1], bg3_map[2], bg3_map[3],
+                         bg3_map[4], bg3_map[5], bg3_map[6], bg3_map[7],
+                         bg3_map[8], bg3_map[9], bg3_map[10], bg3_map[11],
+                         bg3_map[12], bg3_map[13], bg3_map[14], bg3_map[15],
+        cg[0], cg[1], cg[2], cg[3], cg[4], cg[5], cg[6], cg[7],
+        cg[8], cg[9], cg[10], cg[11], cg[12], cg[13], cg[14], cg[15]);
     out[outLen - 1] = 0;
 }
 
@@ -14400,7 +14495,7 @@ INT_PTR CALLBACK CpuDebugDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPar
 
     case WM_TIMER:
         if (wParam == CPU_DEBUG_TIMER_ID) {
-            wchar_t buf[2048];
+            wchar_t buf[4096];
             CpuDebugFormat(buf, _countof(buf));
             // Preserve selection so the user can highlight + copy without flicker.
             HWND hEdit = GetDlgItem(hDlg, IDC_CPU_DEBUG_TEXT);
