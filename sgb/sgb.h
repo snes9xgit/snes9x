@@ -390,6 +390,25 @@ struct S9xSGBDebugState
 	bool     border_tiles_loaded, border_map_loaded;
 	uint8_t  mask_mode;
 	uint16_t pal0_color0;
+
+	uint8_t  queue_count, queue_head, queue_tail;
+	uint8_t  synth_remaining;
+	uint32_t r_6000, r_6002, r_6003, r_7000, r_7800;
+	uint32_t w_6000, w_6001, w_6003, w_7000, w_6004;
+	uint16_t last_read_addr, last_write_addr;
+	uint8_t  last_write_val;
+	uint8_t  last_cmd_ids[8];
+	uint8_t  last_cmd_ids_len;
+	uint8_t  joypad[4];
+	uint8_t  input_value;
+	uint16_t mlt_auto_drop_polls;
+
+	uint8_t  bios_state_0101;
+	uint8_t  bios_substate_0102;
+	uint8_t  bios_dma_swap_0280;
+	uint16_t bios_dma_ptr_a_0282, bios_dma_ptr_b_0284;
+	uint32_t vram_hash, oam_hash;
+	uint8_t  stack_peek[32];
 };
 
 void          S9xSGBGetDebugState (S9xSGBDebugState *out);

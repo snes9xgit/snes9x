@@ -1097,7 +1097,8 @@ uint8_t Emulator::GetICD2(uint16_t addr)
 			// mode; after that the game's own SGB commands drive the
 			// packet queue and validation is no longer needed.
 			if (icd.queue_count == 0 && impl_->cache_valid &&
-			    impl_->replays_done < 50)
+			    impl_->replays_done < 50 &&
+			    !impl_->boot_handoff_captured)
 			{
 				for (int p = 0; p < 6; ++p)
 					IcdPushQueue(icd, impl_->cached_packets[p]);
@@ -2233,6 +2234,47 @@ void S9xSGBGetDebugState(S9xSGBDebugState *out)
 	out->border_map_loaded   = p->sgb_state.border.map_loaded;
 	out->mask_mode           = p->sgb_state.mask_mode;
 	out->pal0_color0         = p->sgb_state.active[0].colors[0];
+
+	out->queue_count       = p->icd2.queue_count;
+	out->queue_head        = p->icd2.queue_head;
+	out->queue_tail        = p->icd2.queue_tail;
+	out->synth_remaining   = p->icd2.synth_remaining;
+	out->r_6000            = p->icd2.r_6000;
+	out->r_6002            = p->icd2.r_6002;
+	out->r_6003            = p->icd2.r_6003;
+	out->r_7000            = p->icd2.r_7000;
+	out->r_7800            = p->icd2.r_7800;
+	out->w_6000            = p->icd2.w_6000;
+	out->w_6001            = p->icd2.w_6001;
+	out->w_6003            = p->icd2.w_6003;
+	out->w_7000            = p->icd2.w_7000;
+	out->w_6004            = p->icd2.w_6004;
+	out->last_read_addr    = p->icd2.last_read_addr;
+	out->last_write_addr   = p->icd2.last_write_addr;
+	out->last_write_val    = p->icd2.last_write_val;
+	for (int i = 0; i < 8; ++i) out->last_cmd_ids[i] = p->icd2.last_cmd_ids[i];
+	out->last_cmd_ids_len  = p->icd2.last_cmd_ids_len;
+	for (int i = 0; i < 4; ++i) out->joypad[i] = p->icd2.joypad[i];
+	out->input_value       = p->icd2.input_value;
+	out->mlt_auto_drop_polls = p->icd2.mlt_auto_drop_polls;
+
+	out->bios_state_0101     = ::Memory.RAM[0x0101];
+	out->bios_substate_0102  = ::Memory.RAM[0x0102];
+	out->bios_dma_swap_0280  = ::Memory.RAM[0x0280];
+	out->bios_dma_ptr_a_0282 = static_cast<uint16_t>(
+	    ::Memory.RAM[0x0282] | (::Memory.RAM[0x0283] << 8));
+	out->bios_dma_ptr_b_0284 = static_cast<uint16_t>(
+	    ::Memory.RAM[0x0284] | (::Memory.RAM[0x0285] << 8));
+
+	uint32_t h = 0x811C9DC5;
+	for (int i = 0; i < 0x2000; ++i) { h ^= p->ppu.vram[i]; h *= 0x01000193; }
+	out->vram_hash = h;
+	h = 0x811C9DC5;
+	for (int i = 0; i < 0xA0; ++i) { h ^= p->ppu.oam[i]; h *= 0x01000193; }
+	out->oam_hash = h;
+
+	for (int i = 0; i < 32; ++i)
+		out->stack_peek[i] = SGB::MemRead(p->mem, static_cast<uint16_t>(cs.r.sp + i));
 }
 
 bool S9xSGBGetROMBytes(const unsigned char **out_data, size_t *out_size)

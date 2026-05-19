@@ -14604,7 +14604,30 @@ void CpuDebugFormatGb(wchar_t *out, size_t outLen)
         L"\r\n"
         L"== SGB state ==\r\n"
         L"  border tiles_loaded=%d  map_loaded=%d\r\n"
-        L"  mask_mode=%u  pal0_color0=$%04X\r\n",
+        L"  mask_mode=%u  pal0_color0=$%04X\r\n"
+        L"\r\n"
+        L"== ICD2 packet queue ==\r\n"
+        L"  queue_count=%u  head=%u  tail=%u  synth_remaining=%u\r\n"
+        L"  last_cmd_ids (recent %u, IDs are byte0>>3): %02X %02X %02X %02X %02X %02X %02X %02X\r\n"
+        L"\r\n"
+        L"== ICD2 register access ==\r\n"
+        L"  Reads:  $6000=%u  $6002=%u  $6003=%u  $7000=%u  $7800=%u\r\n"
+        L"  Writes: $6000=%u  $6001=%u  $6003=%u  $7000=%u  $6004=%u\r\n"
+        L"  last_read=$%04X  last_write=$%04X val=$%02X\r\n"
+        L"\r\n"
+        L"== ICD2 joypad ==\r\n"
+        L"  $6004-7=%02X %02X %02X %02X  input_value=$%02X  mlt_auto_drop_polls=%u\r\n"
+        L"\r\n"
+        L"== SGB BIOS state (WRAM $7E:0100-$7E:0285) ==\r\n"
+        L"  state $0101=$%02X (5=game-mode)  substate $0102=$%02X\r\n"
+        L"  dma_swap $0280=$%02X  ptr_A $0282=$%04X  ptr_B $0284=$%04X\r\n"
+        L"\r\n"
+        L"== GB regions ==\r\n"
+        L"  VRAM hash = 0x%08X    OAM hash = 0x%08X\r\n"
+        L"\r\n"
+        L"== GB stack peek (32 bytes from SP — pairs are LE return addrs) ==\r\n"
+        L"  %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X\r\n"
+        L"  %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X\r\n",
         gb.has_rom ? "yes" : "no", gb_title,
         gb.cgb_flag, gb.sgb_flag, gb.cart_type, mbc_name,
         gb.rom_size, gb.ram_size,
@@ -14623,7 +14646,26 @@ void CpuDebugFormatGb(wchar_t *out, size_t outLen)
         (int)gb.boot_handoff_captured, gb.handoff_frames,
         gb.handoff_pc, gb.handoff_af, gb.handoff_bc, gb.handoff_de, gb.handoff_hl, gb.handoff_sp,
         (int)gb.border_tiles_loaded, (int)gb.border_map_loaded,
-        (unsigned)gb.mask_mode, gb.pal0_color0);
+        (unsigned)gb.mask_mode, gb.pal0_color0,
+        (unsigned)gb.queue_count, (unsigned)gb.queue_head, (unsigned)gb.queue_tail, (unsigned)gb.synth_remaining,
+        (unsigned)gb.last_cmd_ids_len,
+        gb.last_cmd_ids[0], gb.last_cmd_ids[1], gb.last_cmd_ids[2], gb.last_cmd_ids[3],
+        gb.last_cmd_ids[4], gb.last_cmd_ids[5], gb.last_cmd_ids[6], gb.last_cmd_ids[7],
+        gb.r_6000, gb.r_6002, gb.r_6003, gb.r_7000, gb.r_7800,
+        gb.w_6000, gb.w_6001, gb.w_6003, gb.w_7000, gb.w_6004,
+        gb.last_read_addr, gb.last_write_addr, gb.last_write_val,
+        gb.joypad[0], gb.joypad[1], gb.joypad[2], gb.joypad[3], gb.input_value, (unsigned)gb.mlt_auto_drop_polls,
+        gb.bios_state_0101, gb.bios_substate_0102,
+        gb.bios_dma_swap_0280, gb.bios_dma_ptr_a_0282, gb.bios_dma_ptr_b_0284,
+        gb.vram_hash, gb.oam_hash,
+        gb.stack_peek[0], gb.stack_peek[1], gb.stack_peek[2], gb.stack_peek[3],
+        gb.stack_peek[4], gb.stack_peek[5], gb.stack_peek[6], gb.stack_peek[7],
+        gb.stack_peek[8], gb.stack_peek[9], gb.stack_peek[10], gb.stack_peek[11],
+        gb.stack_peek[12], gb.stack_peek[13], gb.stack_peek[14], gb.stack_peek[15],
+        gb.stack_peek[16], gb.stack_peek[17], gb.stack_peek[18], gb.stack_peek[19],
+        gb.stack_peek[20], gb.stack_peek[21], gb.stack_peek[22], gb.stack_peek[23],
+        gb.stack_peek[24], gb.stack_peek[25], gb.stack_peek[26], gb.stack_peek[27],
+        gb.stack_peek[28], gb.stack_peek[29], gb.stack_peek[30], gb.stack_peek[31]);
     out[outLen - 1] = 0;
 }
 
