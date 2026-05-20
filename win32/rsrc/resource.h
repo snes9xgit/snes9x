@@ -773,6 +773,15 @@
 #define IDC_LOADFROMFILE                3245
 #define IDC_LABEL_SAVETOFILE            3246
 #define IDC_LABEL_LOADFROMFILE          3247
+#define IDC_GROUP_SGB_MIX               3248
+#define IDC_SLIDER_VOLUME_SPC           3249
+#define IDC_EDIT_VOLUME_SPC             3250
+#define IDC_STATIC_SPC_LABEL            3251
+#define IDC_STATIC_SPC_PCT              3252
+#define IDC_SLIDER_VOLUME_GB            3253
+#define IDC_EDIT_VOLUME_GB              3254
+#define IDC_STATIC_GB_LABEL             3255
+#define IDC_STATIC_GB_PCT               3256
 
 #define ID_SOUND_AUDIOWAVEFORM          40198
 
@@ -784,7 +793,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        180
 #define _APS_NEXT_COMMAND_VALUE         40203
-#define _APS_NEXT_CONTROL_VALUE         3252
+#define _APS_NEXT_CONTROL_VALUE         3257
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

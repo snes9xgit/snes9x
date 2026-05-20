@@ -16,6 +16,7 @@
 
 #include "../port.h"
 #include "../snes9x.h"
+#include "../apu/apu.h"
 #include "wsnes9x.h"
 #include "wlanguage.h"
 #include "../display.h"
@@ -904,6 +905,8 @@ void WinRegisterConfigItems()
 	AddBoolC("MuteFrameAdvance", GUI.FAMute, false, "true to prevent Snes9x from outputting sound when the Frame Advance command is in use");
 	AddUIntC("VolumeRegular", GUI.VolumeRegular, 100, "volume during regular play (percentage between 0 and 100)");
 	AddUIntC("VolumeTurbo", GUI.VolumeTurbo, 100, "volume during turbo mode (percentage between 0 and 100)");
+	AddUIntC("VolumeSGBMixSPC", S9xSGBMixVolumeSPC, 50, "SGB BIOS mix: SPC channel volume (percentage between 0 and 100, only active when a .gb/.gbc ROM is loaded in SGB BIOS mode)");
+	AddUIntC("VolumeSGBMixGB", S9xSGBMixVolumeGB, 50, "SGB BIOS mix: GB channel volume (percentage between 0 and 100, only active when a .gb/.gbc ROM is loaded in SGB BIOS mode)");
     AddStringC("OutputDevice", GUI.AudioDevice, MAX_AUDIO_NAME_LENGTH, "Default", "Name of the output audio device (substring matching, XAudio2 only atm), set to 'Default' for default audio device");
 #undef CATEGORY
 #define	CATEGORY "Controls"
