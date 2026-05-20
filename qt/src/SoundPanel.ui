@@ -310,6 +310,120 @@
     </widget>
    </item>
    <item>
+    <widget class="QGroupBox" name="groupBox_volume">
+     <property name="title">
+      <string>Volume</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_volume">
+      <item row="0" column="0">
+       <widget class="QLabel" name="label_volume_regular">
+        <property name="text"><string>Regular:</string></property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QSlider" name="slider_volume_regular">
+        <property name="whatsThis">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Master output volume during normal play. Moving this also drags the per-source SGB sliders so they stay in step.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+        <property name="minimum"><number>0</number></property>
+        <property name="maximum"><number>100</number></property>
+        <property name="value"><number>100</number></property>
+        <property name="orientation"><enum>Qt::Horizontal</enum></property>
+       </widget>
+      </item>
+      <item row="0" column="2">
+       <widget class="QSpinBox" name="spinBox_volume_regular">
+        <property name="suffix"><string> %</string></property>
+        <property name="minimum"><number>0</number></property>
+        <property name="maximum"><number>100</number></property>
+        <property name="value"><number>100</number></property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="label_volume_fast_forward">
+        <property name="text"><string>Fast-Forward:</string></property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QSlider" name="slider_volume_fast_forward">
+        <property name="whatsThis">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Master output volume during turbo and rewind.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+        <property name="minimum"><number>0</number></property>
+        <property name="maximum"><number>100</number></property>
+        <property name="value"><number>100</number></property>
+        <property name="orientation"><enum>Qt::Horizontal</enum></property>
+       </widget>
+      </item>
+      <item row="1" column="2">
+       <widget class="QSpinBox" name="spinBox_volume_fast_forward">
+        <property name="suffix"><string> %</string></property>
+        <property name="minimum"><number>0</number></property>
+        <property name="maximum"><number>100</number></property>
+        <property name="value"><number>100</number></property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="groupBox_sgb_mix">
+     <property name="title">
+      <string>SGB Mix</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_sgb_mix">
+      <item row="0" column="0">
+       <widget class="QLabel" name="label_volume_spc">
+        <property name="text"><string>SPC:</string></property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QSlider" name="slider_volume_spc">
+        <property name="whatsThis">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;SGB BIOS mix: SPC channel volume. Only active in SGB1/SGB2 BIOS mode — BIOS-less GB playback discards SPC output.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+        <property name="minimum"><number>0</number></property>
+        <property name="maximum"><number>100</number></property>
+        <property name="value"><number>50</number></property>
+        <property name="orientation"><enum>Qt::Horizontal</enum></property>
+       </widget>
+      </item>
+      <item row="0" column="2">
+       <widget class="QSpinBox" name="spinBox_volume_spc">
+        <property name="suffix"><string> %</string></property>
+        <property name="minimum"><number>0</number></property>
+        <property name="maximum"><number>100</number></property>
+        <property name="value"><number>50</number></property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="label_volume_gb">
+        <property name="text"><string>GB:</string></property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QSlider" name="slider_volume_gb">
+        <property name="whatsThis">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;SGB BIOS mix: GB channel volume. Active in SGB1/SGB2 BIOS mode; in BIOS-less mode this mirrors the Regular master, which is what actually scales GB output.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+        <property name="minimum"><number>0</number></property>
+        <property name="maximum"><number>100</number></property>
+        <property name="value"><number>50</number></property>
+        <property name="orientation"><enum>Qt::Horizontal</enum></property>
+       </widget>
+      </item>
+      <item row="1" column="2">
+       <widget class="QSpinBox" name="spinBox_volume_gb">
+        <property name="suffix"><string> %</string></property>
+        <property name="minimum"><number>0</number></property>
+        <property name="maximum"><number>100</number></property>
+        <property name="value"><number>50</number></property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
     <spacer name="verticalSpacer">
      <property name="orientation">
       <enum>Qt::Vertical</enum>

@@ -262,6 +262,11 @@ bool EmuConfig::setDefaults(int section)
         dynamic_rate_limit = 0.005;
         mute_audio = false;
         mute_audio_during_alternate_speed = false;
+
+        master_volume_regular = 100;
+        master_volume_fast_forward = 100;
+        sgb_mix_volume_spc = 50;
+        sgb_mix_volume_gb = 50;
     }
 
     if (section == -1 || section == 3)
@@ -482,6 +487,10 @@ void EmuConfig::config(const std::string &filename, bool write)
     Double("DynamicRateLimit", dynamic_rate_limit);
     Bool("Mute", mute_audio);
     Bool("MuteAudioDuringAlternateSpeed", mute_audio_during_alternate_speed);
+    Int("MasterVolumeRegular", master_volume_regular);
+    Int("MasterVolumeFastForward", master_volume_fast_forward);
+    Int("VolumeSGBMixSPC", sgb_mix_volume_spc);
+    Int("VolumeSGBMixGB", sgb_mix_volume_gb);
     EndSection();
 
     BeginSection("Emulation");

@@ -136,6 +136,22 @@ void EmuApplication::writeSamples(int16_t *data, int samples)
     auto buffer_level = sound_driver->buffer_level();
     core->updateSoundBufferLevel(buffer_level.first, buffer_level.second);
 
+    // Master volume (post-mix) — Regular for normal play, FastForward when
+    // turbo/rewind is active. No sound driver here exposes a host volume API,
+    // so scale samples in place.
+    {
+        int vol_pct = core->isAbnormalSpeed()
+            ? config->master_volume_fast_forward
+            : config->master_volume_regular;
+        if (vol_pct < 0)   vol_pct = 0;
+        if (vol_pct > 100) vol_pct = 100;
+        if (vol_pct != 100)
+        {
+            for (int i = 0; i < samples; ++i)
+                data[i] = (int16_t)(((int32_t)data[i] * vol_pct) / 100);
+        }
+    }
+
     if (!sound_driver->write_samples(data, samples))
     {
         core->clearSoundBuffer();

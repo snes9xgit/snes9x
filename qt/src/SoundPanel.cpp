@@ -1,6 +1,7 @@
 #include "SoundPanel.hpp"
 #include "EmuApplication.hpp"
 #include "EmuConfig.hpp"
+#include "snes9x.h"
 
 static constexpr int playback_rates[] = { 96000, 48000, 44100 };
 
@@ -74,6 +75,81 @@ SoundPanel::SoundPanel(EmuApplication *app_)
     connect(checkBox_mute_during_alt_speed, &QCheckBox::toggled, [&](bool checked) {
         app->config->mute_audio_during_alternate_speed = checked;
     });
+
+    // --- Volume + SGB Mix sliders --------------------------------------------
+    //
+    // Two-way binding between each QSlider and its QSpinBox is handled by a
+    // helper lambda. The Regular slider also drags the active per-source
+    // sliders by the same delta (clamped 0..100): both SPC and GB in SGB BIOS
+    // mode, only GB in BIOS-less .gb/.gbc (since SPC isn't engaged), nothing
+    // when no GB ROM is loaded.
+
+    auto pairSync = [&](QSlider *slider, QSpinBox *spin) {
+        connect(slider, &QSlider::valueChanged, [&, spin](int value) {
+            if (suppress_volume_sync) return;
+            suppress_volume_sync = true;
+            spin->setValue(value);
+            suppress_volume_sync = false;
+        });
+        connect(spin, &QSpinBox::valueChanged, [&, slider](int value) {
+            if (suppress_volume_sync) return;
+            suppress_volume_sync = true;
+            slider->setValue(value);
+            suppress_volume_sync = false;
+        });
+    };
+    pairSync(slider_volume_regular,      spinBox_volume_regular);
+    pairSync(slider_volume_fast_forward, spinBox_volume_fast_forward);
+    pairSync(slider_volume_spc,          spinBox_volume_spc);
+    pairSync(slider_volume_gb,           spinBox_volume_gb);
+
+    auto dragLinked = [&](int new_regular) {
+        int delta = new_regular - prev_regular_volume;
+        if (delta == 0)
+            return;
+
+        auto shiftSlider = [&](QSlider *slider) {
+            int cur = slider->value();
+            int next = cur + delta;
+            if (next < 0)   next = 0;
+            if (next > 100) next = 100;
+            slider->setValue(next);
+        };
+
+        if (Settings.SGB_BIOSModeActive)
+        {
+            shiftSlider(slider_volume_spc);
+            shiftSlider(slider_volume_gb);
+        }
+        else if (Settings.SuperGameBoy)
+        {
+            shiftSlider(slider_volume_gb);
+        }
+        prev_regular_volume = new_regular;
+    };
+
+    connect(slider_volume_regular, &QSlider::valueChanged, [&, dragLinked](int value) {
+        app->config->master_volume_regular = value;
+        dragLinked(value);
+    });
+
+    connect(slider_volume_fast_forward, &QSlider::valueChanged, [&](int value) {
+        app->config->master_volume_fast_forward = value;
+    });
+
+    connect(slider_volume_spc, &QSlider::valueChanged, [&](int value) {
+        // Only persist in BIOS mode — BIOS-less mode would otherwise clobber
+        // the user's previous BIOS-mode preference with a synced value.
+        if (Settings.SGB_BIOSModeActive)
+            app->config->sgb_mix_volume_spc = value;
+        app->updateSettings();
+    });
+
+    connect(slider_volume_gb, &QSlider::valueChanged, [&](int value) {
+        if (Settings.SGB_BIOSModeActive)
+            app->config->sgb_mix_volume_gb = value;
+        app->updateSettings();
+    });
 }
 
 void SoundPanel::updateInputRate()
@@ -92,6 +168,32 @@ void SoundPanel::updateInputRate()
         .arg(app->config->input_rate)
         .arg(hz, 6, 'g', 6)
         .arg(app->config->input_rate == 32040.0 ? " (Default)" : ""));
+}
+
+void SoundPanel::updateSGBVolumeEnableState()
+{
+    // SGB-mix gains only fire inside S9xMixSpcOverGB, which short-circuits
+    // outside SGB BIOS mode. So enable SPC+GB only when BIOS mode is active.
+    // In BIOS-less GB mode the GB slider mirrors Regular (disabled, since the
+    // master is what actually scales BIOS-less GB output).
+    bool bios_mode = Settings.SGB_BIOSModeActive;
+    bool bios_less_gb = Settings.SuperGameBoy && !Settings.SGB_BIOSModeActive;
+
+    slider_volume_spc->setEnabled(bios_mode);
+    spinBox_volume_spc->setEnabled(bios_mode);
+    label_volume_spc->setEnabled(bios_mode);
+
+    slider_volume_gb->setEnabled(bios_mode);
+    spinBox_volume_gb->setEnabled(bios_mode);
+    label_volume_gb->setEnabled(bios_mode);
+
+    if (bios_less_gb)
+    {
+        suppress_volume_sync = true;
+        slider_volume_gb->setValue(app->config->master_volume_regular);
+        spinBox_volume_gb->setValue(app->config->master_volume_regular);
+        suppress_volume_sync = false;
+    }
 }
 
 void SoundPanel::showEvent(QShowEvent *event)
@@ -143,5 +245,18 @@ void SoundPanel::showEvent(QShowEvent *event)
 
     checkBox_mute_sound->setChecked(config->mute_audio);
     checkBox_mute_during_alt_speed->setChecked(config->mute_audio_during_alternate_speed);
-}
 
+    suppress_volume_sync = true;
+    slider_volume_regular->setValue(config->master_volume_regular);
+    spinBox_volume_regular->setValue(config->master_volume_regular);
+    slider_volume_fast_forward->setValue(config->master_volume_fast_forward);
+    spinBox_volume_fast_forward->setValue(config->master_volume_fast_forward);
+    slider_volume_spc->setValue(config->sgb_mix_volume_spc);
+    spinBox_volume_spc->setValue(config->sgb_mix_volume_spc);
+    slider_volume_gb->setValue(config->sgb_mix_volume_gb);
+    spinBox_volume_gb->setValue(config->sgb_mix_volume_gb);
+    suppress_volume_sync = false;
+    prev_regular_volume = config->master_volume_regular;
+
+    updateSGBVolumeEnableState();
+}

@@ -236,6 +236,63 @@ void Snes9xPreferences::connect_signals()
                      get_spin("sound_buffer_size")));
     });
 
+    // --- Volume + SGB Mix sliders --------------------------------------------
+    //
+    // Regular acts as a master: moving it drags the active per-source SGB
+    // sliders by the same delta (clamped 0..100). In SGB BIOS mode both SPC
+    // and GB follow; in BIOS-less .gb/.gbc only GB (SPC is discarded); with
+    // no GB ROM loaded, neither follows so saved values aren't disturbed.
+
+    // Live update gui_config on slider changes so the sample callback picks
+    // up new values immediately. Master values always update; SGB per-source
+    // values only persist in BIOS mode (BIOS-less mode forces the GB slider
+    // to mirror Regular and that mirrored value shouldn't overwrite the saved
+    // BIOS-mode preference).
+    get_object<Gtk::HScale>("master_volume_fast_forward")->signal_value_changed().connect([&] {
+        if (suppress_volume_sync) return;
+        config->master_volume_fast_forward = (int)get_slider("master_volume_fast_forward");
+    });
+    get_object<Gtk::HScale>("sgb_mix_volume_spc")->signal_value_changed().connect([&] {
+        if (suppress_volume_sync) return;
+        if (Settings.SGB_BIOSModeActive)
+            config->sgb_mix_volume_spc = (int)get_slider("sgb_mix_volume_spc");
+    });
+    get_object<Gtk::HScale>("sgb_mix_volume_gb")->signal_value_changed().connect([&] {
+        if (suppress_volume_sync) return;
+        if (Settings.SGB_BIOSModeActive)
+            config->sgb_mix_volume_gb = (int)get_slider("sgb_mix_volume_gb");
+    });
+
+    get_object<Gtk::HScale>("master_volume_regular")->signal_value_changed().connect([&] {
+        if (suppress_volume_sync)
+            return;
+        int new_val = (int)get_slider("master_volume_regular");
+        config->master_volume_regular = new_val;
+        int delta = new_val - prev_regular_volume;
+        if (delta != 0)
+        {
+            auto shift = [&](const char *name) {
+                int cur = (int)get_slider(name);
+                int next = cur + delta;
+                if (next < 0)   next = 0;
+                if (next > 100) next = 100;
+                set_slider(name, next);
+            };
+            suppress_volume_sync = true;
+            if (Settings.SGB_BIOSModeActive)
+            {
+                shift("sgb_mix_volume_spc");
+                shift("sgb_mix_volume_gb");
+            }
+            else if (Settings.SuperGameBoy)
+            {
+                shift("sgb_mix_volume_gb");
+            }
+            suppress_volume_sync = false;
+        }
+        prev_regular_volume = new_val;
+    });
+
     std::array<std::string, 6> browse_buttons = { "sram", "savestate", "cheat", "patch", "export", "bios" };
     for (auto &name : browse_buttons)
     {
@@ -259,6 +316,29 @@ void Snes9xPreferences::connect_signals()
                      "seconds after change",
                      get_spin("save_sram_after_sec")));
     });
+}
+
+void Snes9xPreferences::update_sgb_volume_enable_state()
+{
+    // SGB-mix gains only fire inside S9xMixSpcOverGB, which short-circuits
+    // outside SGB BIOS mode. Enable SPC+GB only when BIOS mode is active.
+    // In BIOS-less .gb/.gbc mode, force the GB slider to mirror the Regular
+    // master (which is what actually scales BIOS-less GB output) and disable
+    // it — same UX as the Win32 dialog.
+    bool bios_mode = Settings.SGB_BIOSModeActive;
+    bool bios_less_gb = Settings.SuperGameBoy && !Settings.SGB_BIOSModeActive;
+
+    enable_widget("sgb_mix_volume_spc",       bios_mode);
+    enable_widget("sgb_mix_volume_spc_label", bios_mode);
+    enable_widget("sgb_mix_volume_gb",        bios_mode);
+    enable_widget("sgb_mix_volume_gb_label",  bios_mode);
+
+    if (bios_less_gb)
+    {
+        suppress_volume_sync = true;
+        set_slider("sgb_mix_volume_gb", config->master_volume_regular);
+        suppress_volume_sync = false;
+    }
 }
 
 void Snes9xPreferences::about_dialog()
@@ -487,6 +567,15 @@ void Snes9xPreferences::move_settings_to_dialog()
     set_check("mute_sound_check",          config->mute_sound);
     set_check("mute_sound_turbo_check",    config->mute_sound_turbo);
     set_slider("sound_input_rate",         config->sound_input_rate);
+
+    suppress_volume_sync = true;
+    set_slider("master_volume_regular",      config->master_volume_regular);
+    set_slider("master_volume_fast_forward", config->master_volume_fast_forward);
+    set_slider("sgb_mix_volume_spc",         config->sgb_mix_volume_spc);
+    set_slider("sgb_mix_volume_gb",          config->sgb_mix_volume_gb);
+    suppress_volume_sync = false;
+    prev_regular_volume = config->master_volume_regular;
+    update_sgb_volume_enable_state();
     if (top_level->get_auto_input_rate() == 0)
     {
         config->auto_input_rate = false;
@@ -645,6 +734,16 @@ void Snes9xPreferences::get_settings_from_dialog()
     Settings.SoundSync                = sound_sync;
     config->mute_sound                = get_check("mute_sound_check");
     config->mute_sound_turbo          = get_check("mute_sound_turbo_check");
+    config->master_volume_regular      = (int)get_slider("master_volume_regular");
+    config->master_volume_fast_forward = (int)get_slider("master_volume_fast_forward");
+    // Only persist per-source SGB volumes in BIOS mode — BIOS-less mode forces
+    // the GB slider to mirror Regular and would otherwise clobber the user's
+    // previous BIOS-mode preferences.
+    if (Settings.SGB_BIOSModeActive)
+    {
+        config->sgb_mix_volume_spc = (int)get_slider("sgb_mix_volume_spc");
+        config->sgb_mix_volume_gb  = (int)get_slider("sgb_mix_volume_gb");
+    }
     Settings.DynamicRateControl       = get_check("dynamic_rate_control");
     Settings.DynamicRateLimit         = (uint32) (get_spin("dynamic_rate_limit") * 1000);
     store_ntsc_settings();

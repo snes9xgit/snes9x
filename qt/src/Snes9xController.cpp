@@ -160,6 +160,18 @@ void Snes9xController::updateSettings(const EmuConfig * const config)
 
     Settings.Mute = config->mute_audio;
 
+    // Per-source SGB BIOS-mix volumes — only take effect inside S9xMixSpcOverGB
+    // when SGB BIOS mode is active. Clamp to the same 0..100 range as the UI.
+    {
+        auto clamp_pct = [](int v) -> unsigned int {
+            if (v < 0)   v = 0;
+            if (v > 100) v = 100;
+            return (unsigned int)v;
+        };
+        S9xSGBMixVolumeSPC = clamp_pct(config->sgb_mix_volume_spc);
+        S9xSGBMixVolumeGB  = clamp_pct(config->sgb_mix_volume_gb);
+    }
+
     Settings.DynamicRateControl = config->dynamic_rate_control;
 
     Settings.DynamicRateLimit = config->dynamic_rate_limit * 1000;

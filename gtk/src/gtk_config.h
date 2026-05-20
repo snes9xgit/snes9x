@@ -128,6 +128,13 @@ class Snes9xConfig
     int sound_playback_rate;
     bool auto_input_rate;
     int sound_input_rate;
+    // Master output gain (0..100, percent) applied post-mix in S9xSamplesAvailable.
+    // Regular for normal play, FastForward for turbo/rewind. SGB-mix per-source
+    // gains scale GB/SPC inside S9xMixSpcOverGB (active only in SGB BIOS mode).
+    int master_volume_regular;
+    int master_volume_fast_forward;
+    int sgb_mix_volume_spc;
+    int sgb_mix_volume_gb;
     bool rom_loaded;
     int window_width, window_height;
     int preferences_width, preferences_height;

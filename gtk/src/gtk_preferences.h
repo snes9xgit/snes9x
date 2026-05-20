@@ -30,6 +30,7 @@ class Snes9xPreferences final : public GtkBuilderWindow
     void calibration_dialog();
     void connect_signals();
     void input_rate_changed();
+    void update_sgb_volume_enable_state();
     bool key_pressed(GdkEventKey *event);
     void shader_select();
     void game_data_browse(const std::string &folder);
@@ -38,6 +39,10 @@ class Snes9xPreferences final : public GtkBuilderWindow
     Snes9xConfig *config;
     bool awaiting_key;
     bool polling_joystick;
+    // Track the Regular slider's value so it can drag the per-source SGB
+    // sliders by the same delta. Mirrors the Win32 dialog's behavior.
+    int prev_regular_volume = 100;
+    bool suppress_volume_sync = false;
     std::array<JoypadBinding, NUM_JOYPADS> pad;
     std::array<Binding, NUM_EMU_LINKS> shortcut;
 
