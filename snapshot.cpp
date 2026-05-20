@@ -1999,6 +1999,11 @@ int S9xUnfreezeScreenshotFromStream(STREAM stream, uint16 **image_buffer, int &w
     SkipBlockWithName(stream, "CLK");
     SkipBlockWithName(stream, "BSX");
     SkipBlockWithName(stream, "MSU");
+    // GBE — optional SGB BIOS-mode GB/SGB state blob (see S9xFreezeToStream).
+    // Sits between MSU and SHO when present; absent on non-SGB snapshots and
+    // on BIOS-less mode. SkipBlockWithName rewinds on mismatch, so it's safe
+    // to call unconditionally.
+    SkipBlockWithName(stream, "GBE");
     result = UnfreezeStructCopy(stream, "SHO", &local_screenshot, SnapScreenshot, COUNT(SnapScreenshot), version);
 
 
