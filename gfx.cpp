@@ -269,6 +269,9 @@ void S9xEndScreenRefresh (void)
 	}
 #endif
 
+	if (S9xSGBTakeSramDirty())
+		CPU.SRAMModified = TRUE;
+
 	if (CPU.SRAMModified)
 	{
 		if (!CPU.AutoSaveTimer)

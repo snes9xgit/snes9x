@@ -41,9 +41,11 @@ struct MbcState
 	uint8_t  rtc_select     = 0;
 };
 
+struct Cart;
+
 void MbcReset(MbcState &s);
 uint8_t MbcRead(MbcState &s, const std::vector<uint8_t> &rom, const std::vector<uint8_t> &sram, uint16_t addr);
-void    MbcWrite(MbcState &s, std::vector<uint8_t> &sram, uint16_t addr, uint8_t value);
+void    MbcWrite(Cart &c, uint16_t addr, uint8_t value);
 
 } // namespace SGB
 

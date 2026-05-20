@@ -601,7 +601,6 @@ bool Emulator::LoadROM(const uint8_t *data, size_t size, const char *path)
 
 void Emulator::UnloadROM()
 {
-	if (impl_->has_rom) CartSaveBattery(impl_->cart);
 	CartUnload(impl_->cart);
 	impl_->has_rom = false;
 	// Drop any staged boot ROM so a subsequent BIOS-less load starts at
@@ -610,6 +609,31 @@ void Emulator::UnloadROM()
 }
 
 bool Emulator::HasROM() const { return impl_->has_rom; }
+
+bool Emulator::HasBattery() const
+{
+	return impl_->has_rom && impl_->cart.has_battery && !impl_->cart.sram.empty();
+}
+
+bool Emulator::SaveBatteryToPath(const char *path) const
+{
+	if (!impl_->has_rom) return false;
+	return CartSaveBatteryToPath(impl_->cart, path);
+}
+
+bool Emulator::LoadBatteryFromPath(const char *path)
+{
+	if (!impl_->has_rom) return false;
+	return CartLoadBatteryFromPath(impl_->cart, path);
+}
+
+bool Emulator::TakeSramDirty()
+{
+	if (!impl_->has_rom) return false;
+	if (!impl_->cart.sram_dirty) return false;
+	impl_->cart.sram_dirty = false;
+	return true;
+}
 
 const uint8_t *Emulator::GetROMData() const
 {
@@ -1759,6 +1783,8 @@ bool Emulator::StateLoad(const uint8_t *buffer, size_t size)
 	impl_->mem.joypad = &impl_->joypad;
 	impl_->mem.cart   = &impl_->cart;
 
+	impl_->cart.sram_dirty = false;
+
 	// Reset only the sub-sample integration accumulator. The ring buffer
 	// is not serialized but also not wiped — it stays at its current
 	// in-memory positions so already-queued samples keep playing across
@@ -1805,6 +1831,10 @@ bool S9xSGBInit(void)               { return SGB::Instance().Init(); }
 void S9xSGBDeinit(void)             { SGB::Instance().Deinit(); }
 void S9xSGBReset(void)              { SGB::Instance().ColdReset(); }
 bool S9xSGBIsActive(void)           { return SGB::Instance().HasROM(); }
+bool S9xSGBHasBattery(void)         { return SGB::Instance().HasBattery(); }
+bool S9xSGBSaveBatteryToPath(const char *path) { return SGB::Instance().SaveBatteryToPath(path); }
+bool S9xSGBLoadBatteryFromPath(const char *path) { return SGB::Instance().LoadBatteryFromPath(path); }
+bool S9xSGBTakeSramDirty(void)      { return SGB::Instance().TakeSramDirty(); }
 void S9xSGBRunFrame(void)           { SGB::Instance().RunFrame(); }
 void S9xSGBRunCycles(int tcycles)   { SGB::Instance().RunCycles(static_cast<int32_t>(tcycles)); }
 

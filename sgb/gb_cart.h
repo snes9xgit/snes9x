@@ -41,6 +41,7 @@ struct Cart
 	bool                  has_battery = false;
 	bool                  has_rtc     = false;
 	bool                  has_rumble  = false;
+	bool                  sram_dirty  = false;
 };
 
 bool CartLoad(Cart &c, const uint8_t *data, size_t size, const char *path);
@@ -49,6 +50,9 @@ void CartUnload(Cart &c);
 // Persist battery-backed SRAM (and RTC if present) to ".sav" alongside the ROM.
 bool CartSaveBattery(const Cart &c);
 bool CartLoadBattery(Cart &c);
+
+bool CartSaveBatteryToPath(const Cart &c, const char *path);
+bool CartLoadBatteryFromPath(Cart &c, const char *path);
 
 } // namespace SGB
 

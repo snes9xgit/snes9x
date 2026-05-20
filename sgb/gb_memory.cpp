@@ -98,7 +98,7 @@ void MemWrite(Memory &m, uint16_t addr, uint8_t value)
 {
 	if (addr < 0x8000)
 	{
-		if (m.cart) MbcWrite(m.cart->mbc, m.cart->sram, addr, value);
+		if (m.cart) MbcWrite(*m.cart, addr, value);
 		return;
 	}
 	if (addr < 0xA000)
@@ -112,7 +112,7 @@ void MemWrite(Memory &m, uint16_t addr, uint8_t value)
 	}
 	if (addr < 0xC000)
 	{
-		if (m.cart) MbcWrite(m.cart->mbc, m.cart->sram, addr, value);
+		if (m.cart) MbcWrite(*m.cart, addr, value);
 		return;
 	}
 	if (addr < 0xE000)
