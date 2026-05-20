@@ -183,6 +183,7 @@ void S9xSamplesAvailable(void *userdata)
     if ((int)temp_buffer.size() < samples)
         temp_buffer.resize(samples);
     S9xMixSamples((uint8_t *)temp_buffer.data(), samples);
+    S9xMixSpcOverGB(temp_buffer.data(), samples);
     driver->write_samples(temp_buffer.data(), samples);
 
     if (clear_leftover_samples)

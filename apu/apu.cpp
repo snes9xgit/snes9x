@@ -375,6 +375,53 @@ void S9xAudioWaveformPushMix(const int16_t *src, int frames)
     audiowave::push(audiowave::buf_mix, audiowave::wpos_mix, src, frames);
 }
 
+void S9xMixSpcOverGB(int16_t *dest, int sample_count)
+{
+    if (!dest || sample_count <= 0) return;
+
+    const bool sgb_bios_mix = Settings.SGB_BIOSModeActive && S9xSGBBIOSGBIsReleased();
+    const int frames = sample_count / 2;
+
+    if (!sgb_bios_mix)
+    {
+        S9xAudioWaveformPushMix(dest, frames);
+        return;
+    }
+
+    static const int GB_GAIN_Q8  = 242;
+    static const int SPC_GAIN_Q8 = 512;
+
+    int16_t spc_buf[2048];
+    int cap = (sample_count < 2048) ? sample_count : 2048;
+    int n = S9xPullSpcOutput(spc_buf, cap);
+    int i = 0;
+    for (; i < n; ++i)
+    {
+        int32_t gb    = ((int32_t)dest[i]    * GB_GAIN_Q8)  >> 8;
+        int32_t spc   = ((int32_t)spc_buf[i] * SPC_GAIN_Q8) >> 8;
+        int32_t mixed = gb + spc;
+        if (mixed >  32767) mixed =  32767;
+        if (mixed < -32768) mixed = -32768;
+        dest[i] = (int16_t)mixed;
+    }
+    for (; i < sample_count; ++i)
+    {
+        int32_t gb = ((int32_t)dest[i] * GB_GAIN_Q8) >> 8;
+        if (gb >  32767) gb =  32767;
+        if (gb < -32768) gb = -32768;
+        dest[i] = (int16_t)gb;
+    }
+
+    // Silence the SPC-over-GB mix until the GB completes its boot ROM
+    // (writes $FF50 → boot_handoff_captured). Same rationale as the
+    // win32 driver — bridges the audible click between BIOS-released
+    // and the GB taking over the audio path.
+    if (!S9xSGBBootHandoffCaptured())
+        memset(dest, 0, sample_count * sizeof(int16_t));
+
+    S9xAudioWaveformPushMix(dest, frames);
+}
+
 int S9xPullSpcOutput(int16_t *dst, int count)
 {
     if (!dst || count <= 0) return 0;
