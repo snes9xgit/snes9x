@@ -235,12 +235,6 @@ bool Context::init_device()
         VK_KHR_SWAPCHAIN_EXTENSION_NAME,
     };
 
-    std::vector<const char *> present_wait_extensions =
-    {
-        VK_KHR_PRESENT_ID_EXTENSION_NAME,
-        VK_KHR_PRESENT_WAIT_EXTENSION_NAME
-    };
-
     auto device_list = instance->enumeratePhysicalDevices().value;
     bool device_chosen = false;
     physical_device = vk::PhysicalDevice();
@@ -269,15 +263,36 @@ bool Context::init_device()
     if (!device_chosen)
         return false;
 
-    if (check_extensions(present_wait_extensions, physical_device))
+    auto chain = physical_device.getFeatures2<vk::PhysicalDeviceFeatures2,
+                                              vk::PhysicalDeviceAntiLagFeaturesAMD,
+                                              vk::PhysicalDevicePresentWaitFeaturesKHR>();
+
+    if (chain.isLinked<vk::PhysicalDevicePresentWaitFeaturesKHR>())
     {
-        for (auto &ext : present_wait_extensions)
-            required_extensions.push_back(ext);
-        have_present_wait = true;
+        std::vector<const char *> present_wait_extensions = {
+            VK_KHR_PRESENT_ID_EXTENSION_NAME,
+            VK_KHR_PRESENT_WAIT_EXTENSION_NAME
+        };
+
+        if (chain.get<vk::PhysicalDevicePresentWaitFeaturesKHR>().presentWait &&
+            check_extensions(present_wait_extensions, physical_device))
+        {
+            for (auto &ext : present_wait_extensions)
+                required_extensions.push_back(ext);
+            have_present_wait = true;
+        }
     }
-    else
+
+    if (chain.isLinked<vk::PhysicalDeviceAntiLagFeaturesAMD>())
     {
-        have_present_wait = false;
+        std::vector<const char *> anti_lag_extensions = { VK_AMD_ANTI_LAG_EXTENSION_NAME };
+
+        if (chain.get<vk::PhysicalDeviceAntiLagFeaturesAMD>().antiLag &&
+            check_extensions(anti_lag_extensions, physical_device))
+        {
+            required_extensions.push_back(anti_lag_extensions[0]);
+            have_anti_lag = true;
+        }
     }
 
     if (auto index = find_graphics_queue(physical_device))
@@ -289,13 +304,12 @@ bool Context::init_device()
     vk::DeviceQueueCreateInfo dqci({}, graphics_queue_family_index, priorities);
     vk::DeviceCreateInfo dci({}, dqci, {}, required_extensions);
 
-    vk::PhysicalDevicePresentWaitFeaturesKHR physical_device_present_wait_feature(true);
-    vk::PhysicalDevicePresentIdFeaturesKHR physical_device_present_id_feature(true);
-    if (have_present_wait)
-    {
-        dci.setPNext(&physical_device_present_wait_feature);
-        physical_device_present_wait_feature.setPNext(&physical_device_present_id_feature);
-    }
+    vk::PhysicalDevicePresentWaitFeaturesKHR physical_device_present_wait_feature(have_present_wait);
+    dci.setPNext(&physical_device_present_wait_feature);
+    vk::PhysicalDevicePresentIdFeaturesKHR physical_device_present_id_feature(have_present_wait);
+    physical_device_present_wait_feature.setPNext(&physical_device_present_id_feature);
+    vk::PhysicalDeviceAntiLagFeaturesAMD physical_device_anti_lag_feature(have_anti_lag);
+    physical_device_present_id_feature.setPNext(&physical_device_anti_lag_feature);
 
     device = physical_device.createDevice(dci).value;
     queue = device.getQueue(graphics_queue_family_index, 0);
@@ -317,6 +331,37 @@ bool Context::init_vma()
     allocator = vma::createAllocator(allocator_create_info).value;
 
     return true;
+}
+
+bool Context::update_anti_lag_stage(vk::AntiLagStageAMD stage)
+{
+    if (!have_anti_lag || !device)
+        return false;
+
+    vk::AntiLagPresentationInfoAMD pinfo;
+    vk::AntiLagDataAMD data;
+
+    pinfo.setFrameIndex(anti_lag_frame_index);
+    pinfo.setStage(stage);
+    data.setPPresentationInfo(&pinfo);
+    data.setMaxFPS(0);
+    data.setMode(vk::AntiLagModeAMD::eOn);
+    device.antiLagUpdateAMD(data);
+
+    if (stage == vk::AntiLagStageAMD::ePresent)
+        anti_lag_frame_index++;
+
+    return true;
+}
+
+bool Context::update_anti_lag_input()
+{
+    return update_anti_lag_stage(vk::AntiLagStageAMD::eInput);
+}
+
+bool Context::update_anti_lag_present()
+{
+    return update_anti_lag_stage(vk::AntiLagStageAMD::ePresent);
 }
 
 bool Context::create_swapchain()

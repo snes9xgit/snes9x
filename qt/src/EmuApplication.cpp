@@ -281,6 +281,11 @@ void EmuApplication::mainLoop()
         return;
     }
 
+    if (window->canvas)
+        window->canvas->signalInputStage();
+
+    QGuiApplication::processEvents();
+
     core->mainLoop();
 #ifdef RETROACHIEVEMENTS_SUPPORT
     RA_DoFrame();
