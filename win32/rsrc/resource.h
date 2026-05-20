@@ -670,15 +670,10 @@
 #define IDD_VRAM_VIEWER                 177
 #define IDD_TILEMAP_VIEWER              178
 #define IDD_SPRITE_VIEWER               179
-#define IDD_CPU_DEBUG                   180
 
 #define ID_DEBUG_VRAM_VIEWER            40200
 #define ID_DEBUG_TILEMAP_VIEWER         40201
 #define ID_DEBUG_SPRITE_VIEWER          40202
-#define ID_EMULATION_DEBUGGER           40203
-
-#define IDC_CPU_DEBUG_TEXT              3250
-#define IDC_CPU_DEBUG_TAB               3251
 
 #define IDC_VRAMV_CANVAS                3120
 #define IDC_VRAMV_PALETTE               3121

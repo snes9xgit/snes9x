@@ -907,17 +907,6 @@ BEGIN
     LTEXT           "",IDC_SPV_DETAILS,352,312,164,100
 END
 
-IDD_CPU_DEBUG DIALOGEX 0, 0, 460, 470
-STYLE DS_SETFONT | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_VISIBLE | WS_MINIMIZEBOX
-CAPTION "CPU Debugger"
-FONT 8, "Consolas", 400, 0, 0x1
-BEGIN
-    CONTROL         "",IDC_CPU_DEBUG_TAB,"SysTabControl32",WS_TABSTOP,4,4,452,16
-    EDITTEXT        IDC_CPU_DEBUG_TEXT,4,22,452,444,
-                    ES_MULTILINE | ES_READONLY | ES_AUTOVSCROLL | ES_AUTOHSCROLL |
-                    ES_WANTRETURN | WS_VSCROLL | WS_HSCROLL | WS_TABSTOP
-END
-
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -1333,8 +1322,6 @@ BEGIN
         MENUITEM MFT_SEPARATOR
         MENUITEM "&Hacks...",                   ID_EMULATION_HACKS,MFT_STRING,MFS_ENABLED
         MENUITEM "&Settings...\tAlt+F8",        ID_OPTIONS_SETTINGS,MFT_STRING,MFS_ENABLED
-        MENUITEM MFT_SEPARATOR
-        MENUITEM "&Debugger...",                ID_EMULATION_DEBUGGER,MFT_STRING,MFS_ENABLED
     END
     POPUP "&Input",                         0,MFT_STRING,MFS_ENABLED
     BEGIN

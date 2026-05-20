@@ -57,9 +57,6 @@ struct CpuState
 	uint32_t illegal_ops;  // count of the 11 undefined opcodes executed
 };
 
-uint32_t IrqServicedCount(uint8_t vector);
-void     IrqServicedReset();
-
 // Debug trace — called before each instruction dispatch.
 // Fired in user code (hot path), so keep hooks cheap.
 using TraceHook = void (*)(uint16_t pc, uint8_t opcode, const CpuState &state);
