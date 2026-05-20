@@ -124,6 +124,7 @@ int Snes9xConfig::load_defaults()
     savestate_directory.clear();
     cheat_directory.clear();
     patch_directory.clear();
+    bios_directory = "Bios";
     screensaver_needs_reset = false;
     ntsc_setup = snes_ntsc_composite;
     ntsc_scanline_intensity = 1;
@@ -185,6 +186,7 @@ int Snes9xConfig::load_defaults()
     Settings.TurboSkipFrames = 15;
     Settings.DisplayPressedKeys = false;
     Settings.InitialInfoStringTimeout   =  120;
+    Settings.SGB_BIOSPreference = 2;
     
 #ifdef ALLOW_CPU_OVERCLOCK
     Settings.MaxSpriteTilesPerLine = 34;
@@ -281,6 +283,7 @@ int Snes9xConfig::save_config_file()
     outstring("CheatDirectory", cheat_directory);
     outstring("PatchDirectory", patch_directory);
     outstring("ExportDirectory", export_directory);
+    outstring("BIOSDirectory", bios_directory);
 
     section = "Window State";
     outint("MainWidth", window_width);
@@ -508,6 +511,7 @@ int Snes9xConfig::load_config_file()
     instr("CheatDirectory", cheat_directory);
     instr("PatchDirectory", patch_directory);
     instr("ExportDirectory", export_directory);
+    instr("BIOSDirectory", bios_directory);
 
     section = "Window State";
     inint("MainWidth", window_width);

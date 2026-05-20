@@ -98,6 +98,7 @@ class Snes9xConfig
     std::string cheat_directory;
     std::string patch_directory;
     std::string export_directory;
+    std::string bios_directory;
     std::string last_directory;
     std::string last_shader_directory;
 

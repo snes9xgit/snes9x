@@ -83,6 +83,7 @@ class Snes9xWindow : public GtkBuilderWindow
     void release_cairo();
 
     Snes9xConfig *config;
+    bool refreshing_bios_menu = false;
     int user_pause, sys_pause;
     int last_width, last_height;
     int mouse_region_x, mouse_region_y;

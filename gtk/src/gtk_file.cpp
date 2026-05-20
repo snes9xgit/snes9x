@@ -77,6 +77,10 @@ std::string S9xGetDirectory(enum s9x_getdirtype dirtype)
         dirname = gui_config->export_directory;
         break;
 
+    case BIOS_DIR:
+        dirname = gui_config->bios_directory;
+        break;
+
     default:
         dirname = "";
     }

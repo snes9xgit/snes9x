@@ -236,7 +236,7 @@ void Snes9xPreferences::connect_signals()
                      get_spin("sound_buffer_size")));
     });
 
-    std::array<std::string, 5> browse_buttons = { "sram", "savestate", "cheat", "patch", "export" };
+    std::array<std::string, 6> browse_buttons = { "sram", "savestate", "cheat", "patch", "export", "bios" };
     for (auto &name : browse_buttons)
     {
         get_object<Gtk::Button>((name + "_browse").c_str())->signal_clicked().connect([&, name] {
@@ -466,6 +466,10 @@ void Snes9xPreferences::move_settings_to_dialog()
         set_entry_text("export_directory", SAME_AS_GAME);
     else
         set_entry_text("export_directory", config->export_directory.c_str());
+    if (config->bios_directory.empty())
+        set_entry_text("bios_directory", SAME_AS_GAME);
+    else
+        set_entry_text("bios_directory", config->bios_directory.c_str());
 
     set_combo("resolution_combo",          config->xrr_index);
     set_combo("scale_method_combo",        config->scale_method);
@@ -699,12 +703,14 @@ void Snes9xPreferences::get_settings_from_dialog()
     config->patch_directory = get_entry_text("patch_directory");
     config->cheat_directory = get_entry_text("cheat_directory");
     config->export_directory = get_entry_text("export_directory");
+    config->bios_directory = get_entry_text("bios_directory");
 
     for (auto &i : { &new_sram_directory,
                      &config->savestate_directory,
                      &config->patch_directory,
                      &config->cheat_directory,
-                     &config->export_directory })
+                     &config->export_directory,
+                     &config->bios_directory })
     {
         if (*i == SAME_AS_GAME)
             i->clear();

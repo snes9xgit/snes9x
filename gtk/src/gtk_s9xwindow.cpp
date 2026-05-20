@@ -173,6 +173,28 @@ void Snes9xWindow::connect_signals()
         S9xReset();
     });
 
+    auto reload_with_bios_pref = [&](uint8_t pref) {
+        if (refreshing_bios_menu)
+            return;
+        if (Settings.SGB_BIOSPreference == pref)
+            return;
+        Settings.SGB_BIOSPreference = pref;
+        if (Settings.GBRomPath[0])
+            try_open_rom(std::string(Settings.GBRomPath));
+    };
+    get_object<Gtk::RadioMenuItem>("bios_none_item")->signal_toggled().connect([&, reload_with_bios_pref] {
+        if (get_object<Gtk::RadioMenuItem>("bios_none_item")->get_active())
+            reload_with_bios_pref(0);
+    });
+    get_object<Gtk::RadioMenuItem>("bios_sgb1_item")->signal_toggled().connect([&, reload_with_bios_pref] {
+        if (get_object<Gtk::RadioMenuItem>("bios_sgb1_item")->get_active())
+            reload_with_bios_pref(1);
+    });
+    get_object<Gtk::RadioMenuItem>("bios_sgb2_item")->signal_toggled().connect([&, reload_with_bios_pref] {
+        if (get_object<Gtk::RadioMenuItem>("bios_sgb2_item")->get_active())
+            reload_with_bios_pref(2);
+    });
+
     get_object<Gtk::MenuItem>("shader_parameters_item")->signal_activate().connect([&] {
         gtk_shader_parameters_dialog(get_window());
     });
@@ -918,6 +940,24 @@ void Snes9xWindow::configure_widgets()
                   config->rom_loaded &&
                       Settings.NetPlay &&
                       Settings.NetPlayServer);
+
+    const bool gb_loaded = (Settings.GBRomPath[0] != '\0');
+    show_widget("bios_item", gb_loaded);
+    show_widget("bios_separator", gb_loaded);
+    if (gb_loaded)
+    {
+        const bool sgb1_avail = S9xSGBBIOSAvailable(1, Settings.GBRomPath);
+        const bool sgb2_avail = S9xSGBBIOSAvailable(2, Settings.GBRomPath);
+        enable_widget("bios_sgb1_item", sgb1_avail);
+        enable_widget("bios_sgb2_item", sgb2_avail);
+        uint8_t active = 0;
+        if (Settings.SGB_BIOSModeActive)
+            active = (Settings.GameBoyRunMode == 2) ? 2 : 1;
+        const char *names[3] = { "bios_none_item", "bios_sgb1_item", "bios_sgb2_item" };
+        refreshing_bios_menu = true;
+        get_object<Gtk::RadioMenuItem>(names[active])->set_active(true);
+        refreshing_bios_menu = false;
+    }
 
     if (config->default_esc_behavior != ESC_TOGGLE_MENUBAR)
     {
