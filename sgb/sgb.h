@@ -58,6 +58,11 @@ public:
 	void UnloadROM();
 	bool HasROM() const;
 
+	bool HasBattery() const;
+	bool SaveBatteryToPath(const char *path) const;
+	bool LoadBatteryFromPath(const char *path);
+	bool TakeSramDirty();
+
 	// Raw cart ROM accessor for hashing / external introspection. Returns
 	// nullptr when no ROM is loaded.
 	const uint8_t *GetROMData() const;
@@ -368,5 +373,10 @@ bool          S9xSGBGetROMBytes (const unsigned char **out_data, size_t *out_siz
 // 0x10000-0x33FFF for the extended SRAM/CGB-WRAM bank window). Returns
 // 0 for unmapped or out-of-range addresses.
 unsigned char S9xSGBPeekRAByte (unsigned int addr);
+
+bool S9xSGBHasBattery(void);
+bool S9xSGBSaveBatteryToPath(const char *path);
+bool S9xSGBLoadBatteryFromPath(const char *path);
+bool S9xSGBTakeSramDirty(void);
 
 #endif

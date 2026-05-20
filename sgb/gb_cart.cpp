@@ -166,18 +166,16 @@ void CartUnload(Cart &c)
 	c.has_battery = false;
 	c.has_rtc     = false;
 	c.has_rumble  = false;
+	c.sram_dirty  = false;
 	MbcReset(c.mbc);
 	c.mbc.type    = MbcType::None;
 }
 
-bool CartSaveBattery(const Cart &c)
+bool CartSaveBatteryToPath(const Cart &c, const char *path)
 {
-	if (!c.has_battery || c.sram.empty() || c.path.empty()) return false;
+	if (!c.has_battery || c.sram.empty() || !path || !*path) return false;
 
-	const std::string sav = MakeSavPath(c.path);
-	if (sav.empty()) return false;
-
-	FILE *f = fopen(sav.c_str(), "wb");
+	FILE *f = fopen(path, "wb");
 	if (!f) return false;
 
 	const size_t written = fwrite(c.sram.data(), 1, c.sram.size(), f);
@@ -185,14 +183,11 @@ bool CartSaveBattery(const Cart &c)
 	return written == c.sram.size();
 }
 
-bool CartLoadBattery(Cart &c)
+bool CartLoadBatteryFromPath(Cart &c, const char *path)
 {
-	if (!c.has_battery || c.sram.empty() || c.path.empty()) return false;
+	if (!c.has_battery || c.sram.empty() || !path || !*path) return false;
 
-	const std::string sav = MakeSavPath(c.path);
-	if (sav.empty()) return false;
-
-	FILE *f = fopen(sav.c_str(), "rb");
+	FILE *f = fopen(path, "rb");
 	if (!f) return false;
 
 	// Cap at the allocated SRAM; ignore any trailing RTC bytes for now
@@ -201,6 +196,20 @@ bool CartLoadBattery(Cart &c)
 	const size_t got  = fread(c.sram.data(), 1, want, f);
 	fclose(f);
 	return got == want;
+}
+
+bool CartSaveBattery(const Cart &c)
+{
+	if (c.path.empty()) return false;
+	const std::string sav = MakeSavPath(c.path);
+	return CartSaveBatteryToPath(c, sav.c_str());
+}
+
+bool CartLoadBattery(Cart &c)
+{
+	if (c.path.empty()) return false;
+	const std::string sav = MakeSavPath(c.path);
+	return CartLoadBatteryFromPath(c, sav.c_str());
 }
 
 } // namespace SGB

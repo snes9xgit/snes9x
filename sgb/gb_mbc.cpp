@@ -29,6 +29,7 @@
 //     0x4000-0x5FFF  RAM bank 0..0x0F (bit 3 of value = rumble on rumble carts)
 
 #include "gb_mbc.h"
+#include "gb_cart.h"
 
 namespace SGB {
 
@@ -57,10 +58,15 @@ inline uint8_t ReadSram(const std::vector<uint8_t> &sram, uint32_t offset)
 	return sram[offset % sram.size()];
 }
 
-inline void WriteSram(std::vector<uint8_t> &sram, uint32_t offset, uint8_t value)
+inline void WriteSram(Cart &c, uint32_t offset, uint8_t value)
 {
-	if (sram.empty()) return;
-	sram[offset % sram.size()] = value;
+	if (c.sram.empty()) return;
+	uint8_t &cell = c.sram[offset % c.sram.size()];
+	if (cell != value)
+	{
+		cell = value;
+		c.sram_dirty = true;
+	}
 }
 
 // Effective 0x0000-0x3FFF bank for MBC1 — normally 0, but mode 1 with
@@ -138,15 +144,16 @@ uint8_t MbcRead(MbcState &s, const std::vector<uint8_t> &rom, const std::vector<
 	return 0xFF;
 }
 
-void MbcWrite(MbcState &s, std::vector<uint8_t> &sram, uint16_t addr, uint8_t value)
+void MbcWrite(Cart &c, uint16_t addr, uint8_t value)
 {
+	MbcState &s = c.mbc;
 	switch (s.type)
 	{
 
 	case MbcType::None:
 		if (addr >= 0xA000 && addr < 0xC000)
 		{
-			WriteSram(sram, addr - 0xA000, value);
+			WriteSram(c, addr - 0xA000, value);
 		}
 		break;
 
@@ -173,7 +180,7 @@ void MbcWrite(MbcState &s, std::vector<uint8_t> &sram, uint16_t addr, uint8_t va
 		else if (addr >= 0xA000 && addr < 0xC000)
 		{
 			if (!s.ram_enable) break;
-			WriteSram(sram, (Mbc1RamBank(s) * 0x2000u) + (addr - 0xA000u), value);
+			WriteSram(c, (Mbc1RamBank(s) * 0x2000u) + (addr - 0xA000u), value);
 		}
 		break;
 
@@ -197,7 +204,7 @@ void MbcWrite(MbcState &s, std::vector<uint8_t> &sram, uint16_t addr, uint8_t va
 		{
 			if (!s.ram_enable) break;
 			// 512 x 4-bit — only low nibble stored.
-			WriteSram(sram, (addr - 0xA000) & 0x01FF, static_cast<uint8_t>(value & 0x0F));
+			WriteSram(c, (addr - 0xA000) & 0x01FF, static_cast<uint8_t>(value & 0x0F));
 		}
 		break;
 
@@ -235,7 +242,7 @@ void MbcWrite(MbcState &s, std::vector<uint8_t> &sram, uint16_t addr, uint8_t va
 			}
 			else
 			{
-				WriteSram(sram, ((s.ram_bank & 0x07) * 0x2000u) + (addr - 0xA000u), value);
+				WriteSram(c, ((s.ram_bank & 0x07) * 0x2000u) + (addr - 0xA000u), value);
 			}
 		}
 		break;
@@ -261,7 +268,7 @@ void MbcWrite(MbcState &s, std::vector<uint8_t> &sram, uint16_t addr, uint8_t va
 		else if (addr >= 0xA000 && addr < 0xC000)
 		{
 			if (!s.ram_enable) break;
-			WriteSram(sram, ((s.ram_bank & 0x0F) * 0x2000u) + (addr - 0xA000u), value);
+			WriteSram(c, ((s.ram_bank & 0x0F) * 0x2000u) + (addr - 0xA000u), value);
 		}
 		break;
 

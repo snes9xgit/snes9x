@@ -2305,6 +2305,15 @@ bool8 CMemory::LoadSRAM (const char *filename)
 	FILE	*file;
 	int		size, len;
 
+	if (S9xSGBIsActive() && S9xSGBHasBattery())
+	{
+		std::string sav(filename);
+		size_t dot = sav.rfind('.');
+		if (dot != std::string::npos) sav.replace(dot, std::string::npos, ".sav");
+		else                          sav += ".sav";
+		S9xSGBLoadBatteryFromPath(sav.c_str());
+	}
+
 	ClearSRAM();
 
 	if (Multi.cartType && Multi.sramSizeB)
@@ -2374,6 +2383,15 @@ bool8 CMemory::LoadSRAM (const char *filename)
 
 bool8 CMemory::SaveSRAM (const char *filename)
 {
+	if (S9xSGBIsActive() && S9xSGBHasBattery())
+	{
+		std::string sav(filename);
+		size_t dot = sav.rfind('.');
+		if (dot != std::string::npos) sav.replace(dot, std::string::npos, ".sav");
+		else                          sav += ".sav";
+		S9xSGBSaveBatteryToPath(sav.c_str());
+	}
+
 	if (Settings.SuperFX && ROMType < 0x15) // doesn't have SRAM
 		return (TRUE);
 
