@@ -24,6 +24,19 @@ set(SNES9X_CORE_SOURCES
     ../apu/bapu/dsp/sdsp.cpp
     ../apu/bapu/smp/smp.cpp
     ../apu/bapu/smp/smp_state.cpp
+    ../sgb/sgb.cpp
+    ../sgb/sgb_packet.cpp
+    ../sgb/sgb_state.cpp
+    ../sgb/gb_cpu.cpp
+    ../sgb/gb_ops.cpp
+    ../sgb/gb_ops_cb.cpp
+    ../sgb/gb_memory.cpp
+    ../sgb/gb_mbc.cpp
+    ../sgb/gb_ppu.cpp
+    ../sgb/gb_apu.cpp
+    ../sgb/gb_timer.cpp
+    ../sgb/gb_joypad.cpp
+    ../sgb/gb_cart.cpp
     ../msu1.cpp
     ../msu1.h
     ../dsp.cpp
