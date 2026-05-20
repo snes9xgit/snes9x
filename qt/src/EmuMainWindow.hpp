@@ -58,6 +58,12 @@ class EmuMainWindow : public QMainWindow
     QMenu *load_state_menu;
     QMenu *save_state_menu;
     QMenu *recent_menu;
+    QMenu *bios_menu = nullptr;
+    QAction *bios_menu_action = nullptr;
+    QAction *bios_none_action = nullptr;
+    QAction *bios_sgb1_action = nullptr;
+    QAction *bios_sgb2_action = nullptr;
+    void refreshBiosMenu();
     QTimer mouse_timer;
     bool cursor_visible = true;
     QAction *shader_settings_item;

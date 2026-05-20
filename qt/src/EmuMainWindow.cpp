@@ -28,6 +28,8 @@
 #include "EmuCanvasVulkan.hpp"
 #include "EmuMainWindow.hpp"
 #include "EmuSettingsWindow.hpp"
+#include "memmap.h"
+#include <QActionGroup>
 
 #include <QMessageBox>
 #undef KeyPress
@@ -159,6 +161,29 @@ void EmuMainWindow::setCoreActionsEnabled(bool enable)
 {
     for (auto &a : core_actions)
         a->setEnabled(enable);
+}
+
+void EmuMainWindow::refreshBiosMenu()
+{
+    if (!bios_menu_action)
+        return;
+
+    const bool gb_loaded = (Settings.GBRomPath[0] != '\0');
+    bios_menu_action->setVisible(gb_loaded);
+    if (!gb_loaded)
+        return;
+
+    const bool sgb1_avail = S9xSGBBIOSAvailable(1, Settings.GBRomPath);
+    const bool sgb2_avail = S9xSGBBIOSAvailable(2, Settings.GBRomPath);
+    bios_sgb1_action->setEnabled(sgb1_avail);
+    bios_sgb2_action->setEnabled(sgb2_avail);
+
+    uint8_t active = 0;
+    if (Settings.SGB_BIOSModeActive)
+        active = (Settings.GameBoyRunMode == 2) ? 2 : 1;
+    bios_none_action->setChecked(active == 0);
+    bios_sgb1_action->setChecked(active == 1);
+    bios_sgb2_action->setChecked(active == 2);
 }
 
 void EmuMainWindow::createWidgets()
@@ -299,6 +324,31 @@ void EmuMainWindow::createWidgets()
         cheats_dialog->show();
     });
     core_actions.push_back(cheats_item);
+
+    emulation_menu->addSeparator();
+
+    bios_menu = new QMenu(tr("&BIOS"));
+    auto bios_group = new QActionGroup(this);
+    bios_group->setExclusive(true);
+    bios_none_action = bios_menu->addAction(tr("&No BIOS"));
+    bios_sgb1_action = bios_menu->addAction(tr("Super Game Boy (&SGB1)"));
+    bios_sgb2_action = bios_menu->addAction(tr("Super Game Boy 2 (SGB&2)"));
+    for (auto a : { bios_none_action, bios_sgb1_action, bios_sgb2_action })
+    {
+        a->setCheckable(true);
+        bios_group->addAction(a);
+    }
+    auto reload_with_pref = [this](uint8_t pref) {
+        Settings.SGB_BIOSPreference = pref;
+        if (Settings.GBRomPath[0])
+            openFile(std::string(Settings.GBRomPath));
+    };
+    connect(bios_none_action, &QAction::triggered, [reload_with_pref] { reload_with_pref(0); });
+    connect(bios_sgb1_action, &QAction::triggered, [reload_with_pref] { reload_with_pref(1); });
+    connect(bios_sgb2_action, &QAction::triggered, [reload_with_pref] { reload_with_pref(2); });
+    bios_menu_action = emulation_menu->addMenu(bios_menu);
+    bios_menu_action->setVisible(false);
+    connect(emulation_menu, &QMenu::aboutToShow, this, &EmuMainWindow::refreshBiosMenu);
 
     menuBar()->addMenu(emulation_menu);
 
