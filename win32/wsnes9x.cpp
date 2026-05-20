@@ -1332,7 +1332,7 @@ int HandleKeyMessage(WPARAM wParam, LPARAM lParam)
 		{
 			if(wParam == CustomKeys.SelectSave[i].key && modifiers == CustomKeys.SelectSave[i].modifiers)
 			{
-				GUI.CurrentSaveSlot = GUI.CurrentSaveBank * SAVE_SLOTS_PER_BANK + i;
+				GUI.CurrentSaveSlot = i;
 
 				ShowStatusSlotInfo();
 
