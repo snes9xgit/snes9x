@@ -1310,6 +1310,23 @@ void S9xFreezeToStream (STREAM stream)
 	if (Settings.MSU1)
 		FreezeStruct(stream, "MSU", &MSU1, SnapMSU1, COUNT(SnapMSU1));
 
+	// SGB BIOS mode: piggyback the GB/SGB blob inside the SNES snapshot.
+	// The blob is self-versioning ("SGB!" magic + version + size); we just
+	// hand the raw bytes to FreezeBlock. Without this, BIOS-mode loads
+	// freeze the GB cross-session (icd2 reset to zero → GB held in reset)
+	// and desync the SNES↔GB packet handshake same-session.
+	if (Settings.SGB_BIOSModeActive)
+	{
+		const size_t gbe_size = S9xSGBStateSize();
+		if (gbe_size > 0)
+		{
+			uint8 *gbe_buf = new uint8[gbe_size];
+			S9xSGBStateSave(gbe_buf);
+			FreezeBlock(stream, "GBE", gbe_buf, static_cast<int>(gbe_size));
+			delete [] gbe_buf;
+		}
+	}
+
 	if (Settings.SnapshotScreenshots)
 	{
 		SnapshotScreenshotInfo	*ssi = new SnapshotScreenshotInfo;
@@ -1411,6 +1428,8 @@ int S9xUnfreezeFromStream (STREAM stream)
 	uint8	*local_rtc_data      = NULL;
 	uint8	*local_bsx_data      = NULL;
 	uint8	*local_msu1_data     = NULL;
+	uint8	*local_gbe_data      = NULL;
+	int		local_gbe_size       = 0;
 	uint8	*local_screenshot    = NULL;
 	uint8	*local_movie_data    = NULL;
 
@@ -1551,6 +1570,26 @@ int S9xUnfreezeFromStream (STREAM stream)
 		result = UnfreezeStructCopy(stream, "MSU", &local_msu1_data, SnapMSU1, COUNT(SnapMSU1), version);
 		if (result != SUCCESS && Settings.MSU1)
 			break;
+
+		// Optional GB/SGB blob — present iff the snapshot was taken in
+		// BIOS mode (Settings.SGB_BIOSModeActive). Old snapshots and
+		// non-SGB SNES games omit it. CheckBlockName peeks without
+		// advancing the stream, so we can branch cleanly.
+		{
+			int gbe_block_len = 0;
+			if (CheckBlockName(stream, "GBE", gbe_block_len) && gbe_block_len > 0)
+			{
+				local_gbe_data = new uint8[gbe_block_len];
+				result = UnfreezeBlock(stream, "GBE", local_gbe_data, gbe_block_len);
+				if (result != SUCCESS)
+				{
+					delete [] local_gbe_data;
+					local_gbe_data = NULL;
+					break;
+				}
+				local_gbe_size = gbe_block_len;
+			}
+		}
 
 		result = UnfreezeStructCopy(stream, "SHO", &local_screenshot, SnapScreenshot, COUNT(SnapScreenshot), version);
 
@@ -1707,6 +1746,14 @@ int S9xUnfreezeFromStream (STREAM stream)
 
 		if (local_msu1_data)
 			UnfreezeStructFromCopy(&MSU1, SnapMSU1, COUNT(SnapMSU1), local_msu1_data, version);
+
+		// Restore the GB/SGB state if the snapshot was taken in BIOS
+		// mode. Without this, the SNES side is rewound to save time but
+		// the GB stays at its current runtime state — packet handshake
+		// and joypad mirrors desync immediately. Cross-session loads
+		// freeze entirely (icd2.control = 0 → GB held in reset).
+		if (local_gbe_data && local_gbe_size > 0)
+			S9xSGBStateLoad(local_gbe_data, static_cast<size_t>(local_gbe_size));
 
 		if (version < SNAPSHOT_VERSION_IRQ)
 		{
@@ -1896,6 +1943,7 @@ int S9xUnfreezeFromStream (STREAM stream)
 	if (local_bsx_data)			delete [] local_bsx_data;
 	if (local_screenshot)		delete [] local_screenshot;
 	if (local_movie_data)		delete [] local_movie_data;
+	if (local_gbe_data)			delete [] local_gbe_data;
 
 	return (result);
 }
