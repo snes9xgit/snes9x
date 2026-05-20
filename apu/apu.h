@@ -63,6 +63,15 @@ int  S9xPullSpcOutput(int16_t *dst, int count);
 int  S9xSpcOutAvailable(void);
 void S9xAudioWaveformPushMix(const int16_t *src, int frames);
 
+// Host-side post-mix step for SGB BIOS mode. Call this on the buffer
+// returned by S9xMixSamples to overlay the SPC stream (running the SGB
+// BIOS sound engine and SOU_TRN samples) on top of the GB audio, with
+// the same gains/clip and boot-handoff click suppression the win32
+// driver uses. No-op when not in SGB BIOS released mode.
+// sample_count is the interleaved-stereo int16_t count (same units as
+// passed to S9xMixSamples).
+void S9xMixSpcOverGB(int16_t *dest, int sample_count);
+
 // Adaptive rate control hooks for the SGB BIOS-released mix mode drain
 // thread. Each call observes the stream's own buffer fill level and biases
 // its rate to keep it near target, decoupling GB and SPC pitch drift.

@@ -561,6 +561,7 @@ void Snes9xController::SamplesAvailable()
         if (data.size() < samples)
             data.resize(samples);
         S9xMixSamples((uint8_t *)data.data(), samples);
+        S9xMixSpcOverGB(data.data(), samples);
         sound_output_function(data.data(), samples);
     }
     else
