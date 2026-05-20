@@ -1457,7 +1457,7 @@ int HandleKeyMessage(WPARAM wParam, LPARAM lParam)
 		{
 			if(MatchesHotkeyBinding(wParam, modifiers, &CustomKeys.SelectSave[i], &CustomKeysExtra.SelectSave[i]))
 			{
-				GUI.CurrentSaveSlot = GUI.CurrentSaveBank * SAVE_SLOTS_PER_BANK + i;
+				GUI.CurrentSaveSlot = i;
 
 				ShowStatusSlotInfo();
 
