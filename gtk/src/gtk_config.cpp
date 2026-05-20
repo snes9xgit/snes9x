@@ -109,6 +109,10 @@ int Snes9xConfig::load_defaults()
     sound_playback_rate = 7;
     sound_input_rate = 32040;
     auto_input_rate = false;
+    master_volume_regular = 100;
+    master_volume_fast_forward = 100;
+    sgb_mix_volume_spc = 50;
+    sgb_mix_volume_gb = 50;
     last_directory.clear();
     last_shader_directory.clear();
     window_width = -1;
@@ -274,6 +278,10 @@ int Snes9xConfig::save_config_file()
     outint("DynamicRateControlLimit", Settings.DynamicRateLimit);
     outbool("AutomaticInputRate", auto_input_rate, "Guess input rate by asking the monitor what its refresh rate is");
     outint("PlaybackRate", gui_config->sound_playback_rate, "1: 8000Hz, 2: 11025Hz, 3: 16000Hz, 4: 22050Hz, 5: 32000Hz, 6: 44100Hz, 7: 48000Hz");
+    outint("MasterVolumeRegular", master_volume_regular, "Master output volume during normal play (0..100, percent)");
+    outint("MasterVolumeFastForward", master_volume_fast_forward, "Master output volume during turbo/rewind (0..100, percent)");
+    outint("VolumeSGBMixSPC", sgb_mix_volume_spc, "SGB BIOS mix: SPC channel volume (0..100, percent; only active in SGB BIOS mode)");
+    outint("VolumeSGBMixGB", sgb_mix_volume_gb, "SGB BIOS mix: GB channel volume (0..100, percent; only active in SGB BIOS mode)");
 
     section = "Files";
     outstring("LastDirectory", last_directory);
@@ -502,6 +510,10 @@ int Snes9xConfig::load_config_file()
     inint("DynamicRateControlLimit", Settings.DynamicRateLimit);
     inbool("AutomaticInputRate", auto_input_rate);
     inint("PlaybackRate", gui_config->sound_playback_rate);
+    inint("MasterVolumeRegular", master_volume_regular);
+    inint("MasterVolumeFastForward", master_volume_fast_forward);
+    inint("VolumeSGBMixSPC", sgb_mix_volume_spc);
+    inint("VolumeSGBMixGB", sgb_mix_volume_gb);
 
     section = "Files";
     instr("LastDirectory", last_directory);

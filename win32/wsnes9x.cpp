@@ -5309,6 +5309,8 @@ INT_PTR CALLBACK DlgSoundConf(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 
     // temporary GUI state for restoring after switching devices (need to actually switch devices to get output devices)
     static int prevDriver;
+    // tracked so the Regular slider can drag SPC/GB by the same delta (clamped 0..100).
+    static int prevRegularVolume;
 
 	switch(msg)
 	{
@@ -5317,6 +5319,7 @@ INT_PTR CALLBACK DlgSoundConf(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
             WinRefreshDisplay();
 
             prevDriver = GUI.SoundDriver;
+            prevRegularVolume = (int)GUI.VolumeRegular;
 
             // FIXME: these strings should come from wlanguage.h
 
@@ -5369,6 +5372,45 @@ INT_PTR CALLBACK DlgSoundConf(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
             SendDlgItemMessage(hDlg, IDC_SLIDER_VOLUME_TURBO, TBM_SETTICFREQ, 10, 0);
             _sntprintf(valTxt, 10, TEXT("%d"), GUI.VolumeTurbo);
             Edit_SetText(GetDlgItem(hDlg, IDC_EDIT_VOLUME_TURBO), valTxt);
+
+            // SGB per-source mix volumes (SPC + GB), only meaningful in SGB BIOS mode
+            SendDlgItemMessage(hDlg, IDC_SLIDER_VOLUME_SPC, TBM_SETRANGE, TRUE, MAKELONG(0, 100));
+            SendDlgItemMessage(hDlg, IDC_SLIDER_VOLUME_SPC, TBM_SETPOS, TRUE, 100 - (int)S9xSGBMixVolumeSPC);
+            SendDlgItemMessage(hDlg, IDC_SLIDER_VOLUME_SPC, TBM_SETTICFREQ, 10, 0);
+            _sntprintf(valTxt, 10, TEXT("%u"), S9xSGBMixVolumeSPC);
+            Edit_SetText(GetDlgItem(hDlg, IDC_EDIT_VOLUME_SPC), valTxt);
+
+            SendDlgItemMessage(hDlg, IDC_SLIDER_VOLUME_GB, TBM_SETRANGE, TRUE, MAKELONG(0, 100));
+            SendDlgItemMessage(hDlg, IDC_SLIDER_VOLUME_GB, TBM_SETPOS, TRUE, 100 - (int)S9xSGBMixVolumeGB);
+            SendDlgItemMessage(hDlg, IDC_SLIDER_VOLUME_GB, TBM_SETTICFREQ, 10, 0);
+            _sntprintf(valTxt, 10, TEXT("%u"), S9xSGBMixVolumeGB);
+            Edit_SetText(GetDlgItem(hDlg, IDC_EDIT_VOLUME_GB), valTxt);
+
+            {
+                // SPC + GB only matter in SGB1/SGB2 BIOS mode: that's the only path
+                // that actually applies the per-source gains. In BIOS-less .gb/.gbc
+                // mode the GB samples come straight through S9xMixSamples and are
+                // only scaled by the master Regular volume, so the GB slider just
+                // mirrors Regular (disabled) and the SPC is silent (discarded).
+                BOOL bios_mode = Settings.SGB_BIOSModeActive ? TRUE : FALSE;
+                EnableWindow(GetDlgItem(hDlg, IDC_SLIDER_VOLUME_SPC), bios_mode);
+                EnableWindow(GetDlgItem(hDlg, IDC_EDIT_VOLUME_SPC),   bios_mode);
+                EnableWindow(GetDlgItem(hDlg, IDC_STATIC_SPC_LABEL),  bios_mode);
+                EnableWindow(GetDlgItem(hDlg, IDC_STATIC_SPC_PCT),    bios_mode);
+                EnableWindow(GetDlgItem(hDlg, IDC_SLIDER_VOLUME_GB),  bios_mode);
+                EnableWindow(GetDlgItem(hDlg, IDC_EDIT_VOLUME_GB),    bios_mode);
+                EnableWindow(GetDlgItem(hDlg, IDC_STATIC_GB_LABEL),   bios_mode);
+                EnableWindow(GetDlgItem(hDlg, IDC_STATIC_GB_PCT),     bios_mode);
+
+                // In BIOS-less GB mode, show GB slider mirroring the Regular master,
+                // since master is what actually controls GB loudness.
+                if (Settings.SuperGameBoy && !Settings.SGB_BIOSModeActive)
+                {
+                    SendDlgItemMessage(hDlg, IDC_SLIDER_VOLUME_GB, TBM_SETPOS, TRUE, 100 - (int)GUI.VolumeRegular);
+                    _sntprintf(valTxt, 10, TEXT("%u"), GUI.VolumeRegular);
+                    Edit_SetText(GetDlgItem(hDlg, IDC_EDIT_VOLUME_GB), valTxt);
+                }
+            }
 
 
             SendDlgItemMessage(hDlg, IDC_RATE, CB_INSERTSTRING, 0, (LPARAM)TEXT("8 KHz"));
@@ -5456,10 +5498,58 @@ INT_PTR CALLBACK DlgSoundConf(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 				else if (trackHwnd == GetDlgItem(hDlg, IDC_SLIDER_VOLUME_REGULAR))
 				{
 					editId = IDC_EDIT_VOLUME_REGULAR;
+
+					// Master behavior: shift active per-source sliders by the same
+					// delta, clamped to [0,100]. In BIOS mode SPC + GB both apply,
+					// so drag both. In BIOS-less mode only GB is engaged (SPC is
+					// discarded), so drag only GB. With no GB ROM loaded, leave
+					// the saved per-source values untouched.
+					int delta = trackValue - prevRegularVolume;
+					if (delta != 0)
+					{
+						struct { int slider; int edit; } linked[2];
+						int count = 0;
+						if (Settings.SGB_BIOSModeActive)
+						{
+							linked[count].slider = IDC_SLIDER_VOLUME_SPC;
+							linked[count].edit   = IDC_EDIT_VOLUME_SPC;
+							++count;
+							linked[count].slider = IDC_SLIDER_VOLUME_GB;
+							linked[count].edit   = IDC_EDIT_VOLUME_GB;
+							++count;
+						}
+						else if (Settings.SuperGameBoy)
+						{
+							linked[count].slider = IDC_SLIDER_VOLUME_GB;
+							linked[count].edit   = IDC_EDIT_VOLUME_GB;
+							++count;
+						}
+						for (int i = 0; i < count; ++i)
+						{
+							HWND sH = GetDlgItem(hDlg, linked[i].slider);
+							int curVal = 100 - (int)SendMessage(sH, TBM_GETPOS, 0, 0);
+							int newVal = curVal + delta;
+							if (newVal < 0)   newVal = 0;
+							if (newVal > 100) newVal = 100;
+							SendMessage(sH, TBM_SETPOS, TRUE, 100 - newVal);
+							TCHAR tx[10];
+							_sntprintf(tx, 10, TEXT("%d"), newVal);
+							Edit_SetText(GetDlgItem(hDlg, linked[i].edit), tx);
+						}
+					}
+					prevRegularVolume = trackValue;
 				}
 				else if (trackHwnd == GetDlgItem(hDlg, IDC_SLIDER_VOLUME_TURBO))
 				{
 					editId = IDC_EDIT_VOLUME_TURBO;
+				}
+				else if (trackHwnd == GetDlgItem(hDlg, IDC_SLIDER_VOLUME_SPC))
+				{
+					editId = IDC_EDIT_VOLUME_SPC;
+				}
+				else if (trackHwnd == GetDlgItem(hDlg, IDC_SLIDER_VOLUME_GB))
+				{
+					editId = IDC_EDIT_VOLUME_GB;
 				}
 				_sntprintf(valTxt, 10, TEXT("%d"), trackValue);
 				Edit_SetText(GetDlgItem(hDlg, editId), valTxt);
@@ -5510,6 +5600,21 @@ INT_PTR CALLBACK DlgSoundConf(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 					Edit_GetText(GetDlgItem(hDlg, IDC_EDIT_VOLUME_TURBO), valTxt, 10);
 					sliderVal = _tstoi(valTxt);
 					GUI.VolumeTurbo = (sliderVal >= 0 && sliderVal <= 100) ? sliderVal : 100;
+
+					// SGB per-source mix volumes — only persist when SGB BIOS mode is
+					// active (the only mode that actually applies these gains). In
+					// BIOS-less mode the GB slider was forced to mirror Regular, so
+					// saving it would clobber the user's previous BIOS-mode preference.
+					if (Settings.SGB_BIOSModeActive)
+					{
+						Edit_GetText(GetDlgItem(hDlg, IDC_EDIT_VOLUME_SPC), valTxt, 10);
+						sliderVal = _tstoi(valTxt);
+						S9xSGBMixVolumeSPC = (sliderVal >= 0 && sliderVal <= 100) ? (unsigned int)sliderVal : 100u;
+
+						Edit_GetText(GetDlgItem(hDlg, IDC_EDIT_VOLUME_GB), valTxt, 10);
+						sliderVal = _tstoi(valTxt);
+						S9xSGBMixVolumeGB = (sliderVal >= 0 && sliderVal <= 100) ? (unsigned int)sliderVal : 100u;
+					}
 
                     // output device
                     Edit_GetText(GetDlgItem(hDlg, IDC_OUTPUT_DEVICE), GUI.AudioDevice, MAX_AUDIO_NAME_LENGTH);

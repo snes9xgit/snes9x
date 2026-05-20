@@ -534,14 +534,19 @@ static void MixSpcOverGB(uint8 *dest, int sample_words)
     static const int GB_GAIN_Q8  = 242;
     static const int SPC_GAIN_Q8 = 512;
 
+    const unsigned int vol_gb_pct  = (S9xSGBMixVolumeGB  > 100) ? 100 : S9xSGBMixVolumeGB;
+    const unsigned int vol_spc_pct = (S9xSGBMixVolumeSPC > 100) ? 100 : S9xSGBMixVolumeSPC;
+    const int gb_gain_eff  = (GB_GAIN_Q8  * (int)vol_gb_pct)  / 100;
+    const int spc_gain_eff = (SPC_GAIN_Q8 * (int)vol_spc_pct) / 100;
+
     int16_t spc_buf[2048];
     int cap = (sample_words < 2048) ? sample_words : 2048;
     int n = S9xPullSpcOutput(spc_buf, cap);
     int i = 0;
     for (; i < n; ++i)
     {
-        int32_t gb    = ((int32_t)out16[i]   * GB_GAIN_Q8)  >> 8;
-        int32_t spc   = ((int32_t)spc_buf[i] * SPC_GAIN_Q8) >> 8;
+        int32_t gb    = ((int32_t)out16[i]   * gb_gain_eff)  >> 8;
+        int32_t spc   = ((int32_t)spc_buf[i] * spc_gain_eff) >> 8;
         int32_t mixed = gb + spc;
         if (mixed >  32767) mixed =  32767;
         if (mixed < -32768) mixed = -32768;
@@ -549,7 +554,7 @@ static void MixSpcOverGB(uint8 *dest, int sample_words)
     }
     for (; i < sample_words; ++i)
     {
-        int32_t gb = ((int32_t)out16[i] * GB_GAIN_Q8) >> 8;
+        int32_t gb = ((int32_t)out16[i] * gb_gain_eff) >> 8;
         if (gb >  32767) gb =  32767;
         if (gb < -32768) gb = -32768;
         out16[i] = (int16_t)gb;

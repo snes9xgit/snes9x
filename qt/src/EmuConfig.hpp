@@ -94,6 +94,14 @@ struct EmuConfig
     bool mute_audio;
     bool mute_audio_during_alternate_speed;
 
+    // Volume: master output gain (0..100, percent) applied post-mix. Two slots —
+    // Regular for normal play, FastForward for turbo/rewind. SGB-mix per-source
+    // gains scale GB/SPC inside S9xMixSpcOverGB; only meaningful in SGB BIOS mode.
+    int master_volume_regular;
+    int master_volume_fast_forward;
+    int sgb_mix_volume_spc;
+    int sgb_mix_volume_gb;
+
     // Emulation
 
     enum SpeedSyncMethod

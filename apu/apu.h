@@ -72,6 +72,12 @@ void S9xAudioWaveformPushMix(const int16_t *src, int frames);
 // passed to S9xMixSamples).
 void S9xMixSpcOverGB(int16_t *dest, int sample_count);
 
+// Per-source volume scalers (0..100, percent) for the SGB BIOS mix
+// path. Multiply the fixed per-channel gains so the user can rebalance
+// SPC vs GB audio in SGB-with-BIOS mode. 100 = unchanged from default.
+extern unsigned int S9xSGBMixVolumeSPC;
+extern unsigned int S9xSGBMixVolumeGB;
+
 // Adaptive rate control hooks for the SGB BIOS-released mix mode drain
 // thread. Each call observes the stream's own buffer fill level and biases
 // its rate to keep it near target, decoupling GB and SPC pitch drift.

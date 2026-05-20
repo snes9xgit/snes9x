@@ -182,8 +182,38 @@ void S9xSamplesAvailable(void *userdata)
 
     if ((int)temp_buffer.size() < samples)
         temp_buffer.resize(samples);
+
+    // Sync per-source SGB BIOS-mix gains into the apu globals before mixing.
+    // (Cheap; lets the user adjust SPC/GB live without going through a
+    // dedicated update-settings hook.)
+    {
+        auto clamp_pct = [](int v) -> unsigned int {
+            if (v < 0)   v = 0;
+            if (v > 100) v = 100;
+            return (unsigned int)v;
+        };
+        S9xSGBMixVolumeSPC = clamp_pct(gui_config->sgb_mix_volume_spc);
+        S9xSGBMixVolumeGB  = clamp_pct(gui_config->sgb_mix_volume_gb);
+    }
+
     S9xMixSamples((uint8_t *)temp_buffer.data(), samples);
     S9xMixSpcOverGB(temp_buffer.data(), samples);
+
+    // Master volume — Regular during normal play, FastForward in turbo/rewind.
+    // Scaling is in-place; no driver here exposes a host-side volume API.
+    {
+        int vol_pct = (Settings.TurboMode || Settings.Rewinding)
+            ? gui_config->master_volume_fast_forward
+            : gui_config->master_volume_regular;
+        if (vol_pct < 0)   vol_pct = 0;
+        if (vol_pct > 100) vol_pct = 100;
+        if (vol_pct != 100)
+        {
+            for (int i = 0; i < samples; ++i)
+                temp_buffer[i] = (int16_t)(((int32_t)temp_buffer[i] * vol_pct) / 100);
+        }
+    }
+
     driver->write_samples(temp_buffer.data(), samples);
 
     if (clear_leftover_samples)
