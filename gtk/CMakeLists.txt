@@ -388,12 +388,12 @@ add_executable(sourcify src/sourcify.c)
 add_custom_command(
     OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/gtk_snes9x_ui.cpp
     COMMAND sourcify ${CMAKE_CURRENT_SOURCE_DIR}/src/snes9x.ui ${CMAKE_CURRENT_BINARY_DIR}/gtk_snes9x_ui.cpp snes9x_ui
-    DEPENDS sourcify)
+    DEPENDS sourcify ${CMAKE_CURRENT_SOURCE_DIR}/src/snes9x.ui)
 
 add_custom_command(
     OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/mini_icon.cpp
     COMMAND sourcify ${CMAKE_CURRENT_SOURCE_DIR}/data/mini_icon.png ${CMAKE_CURRENT_BINARY_DIR}/mini_icon.cpp mini_icon
-    DEPENDS sourcify)
+    DEPENDS sourcify ${CMAKE_CURRENT_SOURCE_DIR}/data/mini_icon.png)
 
 add_executable(snes9x-gtk ${SOURCES} ${jma} ${CMAKE_CURRENT_BINARY_DIR}/gtk_snes9x_ui.cpp ${CMAKE_CURRENT_BINARY_DIR}/mini_icon.cpp)
 target_include_directories(snes9x-gtk PRIVATE ${INCLUDES})
