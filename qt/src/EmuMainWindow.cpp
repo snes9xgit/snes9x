@@ -4,6 +4,7 @@
 #include <QFileDialog>
 #include <QtEvents>
 #include <QGuiApplication>
+#include <QActionGroup>
 
 #ifdef Q_OS_WIN
 #include <dwmapi.h>
@@ -29,7 +30,6 @@
 #include "EmuMainWindow.hpp"
 #include "EmuSettingsWindow.hpp"
 #include "memmap.h"
-#include <QActionGroup>
 
 #include <QMessageBox>
 #undef KeyPress
