@@ -214,6 +214,25 @@ void S9xMainLoop (void)
 			break;
 		}
 
+		// Olympic Summer Games (SGB Enhanced) workaround. The SGB BIOS's
+		// JUMP packet handler at $00:C72B does SEI before JMP [$00B8] to
+		// transfer control to user-uploaded code (Olympic's $7E:081B
+		// handler). Per pandocs the JUMP target runs with IRQs disabled
+		// intentionally. On real hardware Olympic re-enables IRQ later
+		// via its cmd-09 (SOU_TRN) hook at $7E:0900 which calls sub_80C58D
+		// (CLI when $02CA != 0). In our emulation the BIOS reaches the
+		// V-counter-gated wait at $00:BA6A (LDA $22; BEQ $-04) before
+		// the SOU_TRN packets get drained, so I=1 blocks the IRQ that
+		// would write $22 and the wait hangs forever. Clearing I here
+		// restores the invariant the wait requires; non-Olympic SGB
+		// titles never reach $BA6A with I=1 so they are unaffected.
+		if (Settings.SGB_BIOSModeActive &&
+		    Registers.PB == 0x00 && Registers.PCw == 0xBA6A &&
+		    CheckIRQ())
+		{
+			ClearIRQ();
+		}
+
 		uint8				Op;
 		struct	SOpcodes	*Opcodes;
 
