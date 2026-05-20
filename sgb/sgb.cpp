@@ -183,6 +183,23 @@ struct Emulator::Impl
 		uint8_t  last_cmd_ids[8];    // ring buffer of last 8 packet command IDs (byte0 >> 3)
 		uint8_t  last_cmd_ids_len;   // 0..8
 
+		uint32_t data_snd_packets;   // cmd 0x0F count (Olympic uploads via these)
+		uint32_t data_trn_packets;   // cmd 0x10 count (4KB bulk SNES-WRAM upload)
+		uint32_t jump_packets;       // cmd 0x12 count
+		uint16_t last_jump_addr;     // pkt[1..2] of most recent JUMP
+		uint8_t  last_jump_bank;     // pkt[3]
+		uint16_t last_data_snd_addr; // pkt[2..3] of most recent DATA_SND
+		uint8_t  last_data_snd_bank; // pkt[1]
+		uint8_t  last_data_trn_bank; // pkt[1]
+		uint16_t last_data_trn_addr; // pkt[2..3]
+
+		// Ring of the last 16 DATA_SND packets (full 16-byte payload).
+		// Lets us verify packet-delivery integrity by comparing what we
+		// pushed to the queue vs what landed in WRAM.
+		uint8_t  data_snd_hist[16][16];
+		uint8_t  data_snd_hist_count;  // packets recorded so far (caps at 16)
+		uint8_t  data_snd_hist_head;   // ring write index
+
 		// Per-address read/write counts for the registers the BIOS is
 		// most likely to poll. Lets the status line expose which
 		// register the BIOS is hot-looping on (distinct from bucketed
@@ -371,7 +388,6 @@ void Emulator::Reset()
 	impl_->boot_handoff_captured = false;
 	impl_->boot_handoff_regs     = {};
 	impl_->handoff_frames        = 0;
-	IrqServicedReset();
 	std::memset(&impl_->icd2, 0, sizeof impl_->icd2);
 	// 4-bank LCD ring starts at $00 (matches Mesen2 SuperGameboy::Reset).
 	// $7000-$700F latch buffer starts as $FF so reads before the first
@@ -519,6 +535,35 @@ static void IcdPushQueue(Emulator::Impl::Icd2 &icd, const uint8_t *pkt)
 	const uint8_t byte0  = pkt[0];
 	const uint8_t cmd_id = static_cast<uint8_t>(byte0 >> 3);
 	if (byte0 == 0xF1) icd.f1_packets++;
+
+	switch (cmd_id)
+	{
+		case 0x0F:
+			icd.data_snd_packets++;
+			icd.last_data_snd_bank = pkt[1];
+			icd.last_data_snd_addr =
+				static_cast<uint16_t>(pkt[2] | (pkt[3] << 8));
+			std::memcpy(icd.data_snd_hist[icd.data_snd_hist_head & 0x0F],
+			            pkt, 16);
+			icd.data_snd_hist_head = static_cast<uint8_t>(
+			    (icd.data_snd_hist_head + 1) & 0x0F);
+			if (icd.data_snd_hist_count < 16)
+				icd.data_snd_hist_count++;
+			break;
+		case 0x10:
+			icd.data_trn_packets++;
+			icd.last_data_trn_bank = pkt[1];
+			icd.last_data_trn_addr =
+				static_cast<uint16_t>(pkt[2] | (pkt[3] << 8));
+			break;
+		case 0x12:
+			icd.jump_packets++;
+			icd.last_jump_addr =
+				static_cast<uint16_t>(pkt[1] | (pkt[2] << 8));
+			icd.last_jump_bank = pkt[3];
+			break;
+		default: break;
+	}
 	if (!icd.first_packet_seen)
 	{
 		icd.first_packet_byte0 = byte0;
@@ -740,135 +785,6 @@ static void DbgPushCmd(uint8_t cmd)
 	++g_sgb_dbg.cmd_count;
 }
 
-#if 0
-static void DbgDrawOsd(const Emulator::Impl &impl)
-{
-	char buf[400];
-	const SgbDbg &d = g_sgb_dbg;
-	const auto   &icd = impl.icd2;
-	const auto   &b   = impl.sgb_state.border;
-	const uint8_t mode_now = (impl.run_mode == RunMode::SGB)  ? 1
-	                       : (impl.run_mode == RunMode::SGB2) ? 2
-	                       : 0;
-	// Unqualified snprintf — win32 headers macro it to _snprintf, so
-	// `std::snprintf` expands to `std::_snprintf` and fails to resolve
-	// (same hazard as the `fopen` → `_tfwopen` macro).
-	//
-	// Diagnostic field key (read in this order to triage):
-	//   w6=N        — count of BIOS writes to $6004. ZERO = BIOS NMI
-	//                 handler isn't running / GB not yet released.
-	//                 Climbing = BIOS is alive and feeding the GB.
-	//   jp=XX/YY    — last $6004 / $6005 byte (active-low; FF = idle).
-	//                 If w6 > 0 but jp stays FF, BIOS sees no SNES pad.
-	//   idx=N       — current ICD2 player rotation index (0..3). For
-	//                 SGB-detect (MLT_REQ-2 probe), this should briefly
-	//                 toggle to 1 then settle at 0.
-	//   mlt=N       — sniffed MLT_REQ player count (1/2/4).
-	//   sel=XX      — last GB write to $FF00 (j.select, masked $30).
-	//   tl/ml       — border tiles_loaded / map_loaded flags. BOTH
-	//                 must flip 1 before OverlayBiosBorder draws the
-	//                 captured frame. cap=N counts how many times
-	//                 RunCycles flushed a deferred CHR_TRN/PCT_TRN.
-	//   jw=N rst=N  — raw GB→$FF00 traffic. jw is total writes,
-	//                 rst is count of $00 (RESET-pulse) writes —
-	//                 i.e. packet starts. After boot-ROM handshake
-	//                 baseline (~rst=8 for SGB2's F1..FF set), if
-	//                 rst stays flat the GB isn't trying to send
-	//                 packets at all; if rst climbs but rcv doesn't
-	//                 keep up, the packet decoder is dropping bits.
-	//   cmds=N ring — total commands seen by OnSgbCommandInternal +
-	//                 last 8 cmd IDs (oldest→newest). The cmd is
-	//                 byte0>>3, so handshake F1/F3/F5/F7 → 1E and
-	//                 F9/FB/FD/FF → 1F. Game commands: 11 = MLT_REQ,
-	//                 13 = CHR_TRN, 14 = PCT_TRN, 0B = PAL_TRN,
-	//                 15 = ATTR_TRN, 17 = MASK_EN.
-	//   IE/IF       — GB interrupt enable / pending. If GB is HALTed
-	//                 (HLT=1) and IE & IF == 0, GB is hung waiting
-	//                 for an IRQ that no one will fire.
-	//   IME         — GB master interrupt-enable flag.
-	//   HLT         — GB CPU is in HALT (PC frozen on HALT instr).
-	//   BR          — GB-side boot ROM still mapped at $0000-$00FF.
-	//                 Should flip to 0 once boot ROM finishes and
-	//                 writes $FF50; if stuck at 1, boot ROM is hung.
-	//   CTL         — ICD2 $6003. Bit 7 = GB released. If $00, GB is
-	//                 frozen in reset (no instructions executing).
-	//   SGBflag     — cart header byte $0146. $03 = SGB-aware, $00 =
-	//                 plain DMG. If $00, the loaded game won't EVER
-	//                 send SGB packets regardless of how good our
-	//                 ICD2 bridge is — the BIOS-mode test ROM must
-	//                 actually be SGB-flagged (e.g. the JP/EU "Donkey
-	//                 Kong" rev, NOT the original 1994 NTSC release).
-	//   title       — first 11 bytes of cart title at $0134, ASCII-
-	//                 only filter. Cross-check against the file the
-	//                 user thinks they loaded.
-	//   handoff +   — GB CPU register snapshot at the moment the
-	//   AF/BC/DE/HL   boot ROM unmapped itself. Real SGB2: AF=$FF00,
-	//                 BC=$0014, DE=$0000, HL=$C060. Real SGB1:
-	//                 AF=$0100, BC=$0014, DE=$0000, HL=$C060. Real
-	//                 DMG: AF=$01B0, BC=$0013, DE=$00D8, HL=$014D.
-	//                 Mismatch = the loaded GB game's hardware-
-	//                 detect branches DMG-side and skips SGB-init.
-	//   irqV/S/T    — count of VBlank / STAT / Timer IRQs serviced
-	//                 by Cpu::ServiceInterrupts since reset. At 60 Hz
-	//                 with default wiring, irqV should grow ≈ once
-	//                 per frame. Anything substantially slower means
-	//                 our PPU/timer isn't producing the IRQs the
-	//                 running game expects.
-	//   ill         — count of illegal opcodes executed. Should stay
-	//                 0 on healthy ROMs; rising means our CPU lost
-	//                 the plot and is fetching from data/RAM.
-	//   bank        — current MBC1 ROM bank visible at $4000-$7FFF.
-	const auto &cs = impl.cpu.State();
-	// Snapshot the cart's title (first 11 bytes — title region is
-	// 0x0134..0x0142 but past byte 11 may overlap manufacturer code on
-	// CGB-aware carts). Print printable ASCII only, so a non-GB cart or
-	// truncated load shows obvious garbage.
-	char title[12] = {0};
-	for (int i = 0; i < 11; ++i)
-	{
-		const char ch = impl.cart.header.title[i];
-		title[i] = (ch >= 0x20 && ch < 0x7F) ? ch : '.';
-	}
-	snprintf(buf, sizeof buf,
-	         "SGB m=%u rcv=%u cmds=%u chr=%u pct=%u cap=%u "
-	         "w6=%u jp=%02X/%02X idx=%u mlt=%u sel=%02X tl=%u ml=%u "
-	         "jw=%u rst=%u "
-	         "ring=%02X-%02X-%02X-%02X-%02X-%02X-%02X-%02X "
-	         "PC=%04X LY=%02X LCDC=%02X "
-	         "IE=%02X IF=%02X IME=%u HLT=%u BR=%u CTL=%02X "
-	         "SGBflag=%02X title=\"%s\" "
-	         "handoff=%s AF=%04X BC=%04X DE=%04X HL=%04X "
-	         "irqV=%u irqS=%u irqT=%u ill=%u bank=%u",
-	         mode_now, impl.sgb_pkt.packets_received, d.cmd_count,
-	         d.pkt_chr, d.pkt_pct, d.cap_fired,
-	         icd.w_6004,
-	         icd.joypad[0], icd.joypad[1],
-	         impl.joypad.sgb_index, impl.sgb_state.mlt_players,
-	         static_cast<uint8_t>(impl.joypad.select & 0x30),
-	         b.tiles_loaded ? 1u : 0u, b.map_loaded ? 1u : 0u,
-	         d.joy_writes, d.rst_pulses,
-	         d.cmd_ring[0], d.cmd_ring[1], d.cmd_ring[2], d.cmd_ring[3],
-	         d.cmd_ring[4], d.cmd_ring[5], d.cmd_ring[6], d.cmd_ring[7],
-	         cs.r.pc, impl.ppu.ly, impl.ppu.lcdc,
-	         impl.mem.ie, impl.mem.if_,
-	         cs.ime ? 1u : 0u, cs.halted ? 1u : 0u,
-	         impl.mem.boot_rom_enabled ? 1u : 0u, icd.control,
-	         impl.cart.header.sgb_flag, title,
-	         impl.boot_handoff_captured ? "yes" : "no",
-	         impl.boot_handoff_regs.af, impl.boot_handoff_regs.bc,
-	         impl.boot_handoff_regs.de, impl.boot_handoff_regs.hl,
-	         IrqServicedCount(0), IrqServicedCount(1), IrqServicedCount(2),
-	         cs.illegal_ops, impl.cart.mbc.rom_bank);
-	// Same pattern as the BIOS-mode diagnostic OSD removed in bd2a5479
-	// (and used in memmap.cpp:1526-1529): temporarily force the
-	// InitialInfoStringTimeout high enough that S9xMessage won't drop
-	// the line on configs where the user has disabled OSD messages.
-	const uint32 saved = Settings.InitialInfoStringTimeout;
-	Settings.InitialInfoStringTimeout = 120;
-	S9xMessage(S9X_INFO, S9X_ROM_INFO, buf);
-	Settings.InitialInfoStringTimeout = saved;
-}
-#endif
 
 // Reconstruct 4 KB of byte data from the top-left 16x16 tile area
 // (128x128 pixels, 2bpp raw indices) of the GB framebuffer. Output
@@ -933,19 +849,6 @@ void Emulator::RunCycles(int32_t tcycles)
 			{
 				impl_->boot_handoff_captured = true;
 				impl_->boot_handoff_regs     = impl_->cpu.State().r;
-				if (impl_->has_rom &&
-				    impl_->cart.header.sgb_flag == 0x03)
-				{
-					impl_->icd2.mlt_players       = 2;
-					impl_->icd2.mlt_auto_drop_polls = 1;
-					// Wipe BG1 tilemap immediately so the BIOS can't
-					// render Tetris Plus's stripe artifact during the
-					// ~half-frame between handoff and the first VBlank
-					// where the 30-frame cleanup block kicks in.
-					// SGB-enhanced only — plain GB carts rely on the
-					// BIOS's default render path and must not be touched.
-					std::memset(&::Memory.VRAM[0x7000], 0, 0x0800);
-				}
 			}
 
 			TimerStep(impl_->timer, impl_->mem, consumed);
@@ -1097,7 +1000,8 @@ uint8_t Emulator::GetICD2(uint16_t addr)
 			// mode; after that the game's own SGB commands drive the
 			// packet queue and validation is no longer needed.
 			if (icd.queue_count == 0 && impl_->cache_valid &&
-			    impl_->replays_done < 50)
+			    impl_->replays_done < 50 &&
+			    !impl_->boot_handoff_captured)
 			{
 				for (int p = 0; p < 6; ++p)
 					IcdPushQueue(icd, impl_->cached_packets[p]);
@@ -1294,35 +1198,8 @@ void Emulator::OnPpuVBlank()
 	// TODO: add libco for better GB-SNES sync and remove this hack.
 	const bool sgb_enhanced =
 	    impl_->has_rom && impl_->cart.header.sgb_flag == 0x03;
-	const bool cgb_enhanced =
-	    impl_->has_rom && impl_->cart.header.cgb_flag != 0;
-	const bool border_installed =
-	    impl_->sgb_state.border.tiles_loaded &&
-	    impl_->sgb_state.border.map_loaded;
-	const bool skip_bg3_wipe = cgb_enhanced || border_installed;
 	if (impl_->boot_handoff_captured && sgb_enhanced)
-	{
-		if (impl_->handoff_frames < 30)
-		{
-			std::memset(&::Memory.VRAM[0x7000], 0, 0x0800);
-			if (!skip_bg3_wipe)
-			{
-				std::memset(&::Memory.VRAM[0xE000], 0, 0x1680);
-				std::memset(::PPU.OAMData, 0, sizeof ::PPU.OAMData);
-			}
-		}
 		impl_->handoff_frames++;
-	}
-
-	if (impl_->boot_handoff_captured && sgb_enhanced && !skip_bg3_wipe)
-	{
-		static const uint8_t kBiosStagedSig[16] = {
-			0x01, 0x10, 0x02, 0x10, 0x03, 0x10, 0x04, 0x10,
-			0x05, 0x10, 0x06, 0x10, 0x07, 0x10, 0x08, 0x10
-		};
-		if (std::memcmp(&::Memory.VRAM[0xE000], kBiosStagedSig, 16) == 0)
-			std::memset(&::Memory.VRAM[0xE000], 0, 0x1400);
-	}
 }
 
 void Emulator::CaptureScanline(const uint8_t *pixels)

@@ -490,7 +490,7 @@ uint8_t PpuReadReg(const Ppu &p, uint16_t addr)
 	return 0xFF;
 }
 
-void PpuWriteReg(Ppu &p, uint16_t addr, uint8_t value)
+void PpuWriteReg(Ppu &p, Memory &mem, uint16_t addr, uint8_t value)
 {
 	switch (addr)
 	{
@@ -507,16 +507,17 @@ void PpuWriteReg(Ppu &p, uint16_t addr, uint8_t value)
 				p.mode_clock  = 0;
 				p.window_line = 0;
 			}
+			if (is_on) RecomputeStatLine(p, mem);
 			break;
 		}
 		case 0xFF41:
-			// Low 3 bits read-only; high 4 are IRQ enables.
 			p.stat = static_cast<uint8_t>((p.stat & 0x07) | (value & 0x78));
+			RecomputeStatLine(p, mem);
 			break;
 		case 0xFF42: p.scy = value; break;
 		case 0xFF43: p.scx = value; break;
-		case 0xFF44: p.ly  = 0;     break;  // Pan Docs: any write resets LY
-		case 0xFF45: p.lyc = value; break;
+		case 0xFF44: p.ly  = 0; RecomputeStatLine(p, mem); break;
+		case 0xFF45: p.lyc = value; RecomputeStatLine(p, mem); break;
 		case 0xFF47: p.bgp  = value; break;
 		case 0xFF48: p.obp0 = value; break;
 		case 0xFF49: p.obp1 = value; break;

@@ -173,6 +173,8 @@ public:
 	// has no way to obtain one.
 	struct Impl;
 
+	Impl *DebugImpl() const { return impl_; }
+
 private:
 	Impl *impl_;
 };

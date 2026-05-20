@@ -238,7 +238,7 @@ static void WriteIO(Memory &m, uint16_t addr, uint8_t value)
 	}
 	if (addr >= 0xFF40 && addr <= 0xFF4B)
 	{
-		if (m.ppu) PpuWriteReg(*m.ppu, addr, value);
+		if (m.ppu) PpuWriteReg(*m.ppu, m, addr, value);
 		return;
 	}
 	// Remaining I/O addresses (CGB regs, etc.) are ignored.

@@ -22,6 +22,7 @@
 #endif
 
 #pragma warning(disable: 4091)
+#include <stdarg.h>
 #include <shlobj.h>
 #pragma warning(default: 4091)
 #include <objidl.h>
@@ -41,6 +42,7 @@
 #include "CTilemapViewerDlg.h"
 #include "CSpriteViewerDlg.h"
 #include "debug_viewer_common.h"
+
 #include "../snes9x.h"
 #include "../memmap.h"
 #include "../cpuexec.h"
@@ -14263,3 +14265,4 @@ std::wstring GetTextWstring(HWND hWnd)
     edit_text.resize(text_length); // need to resize, otherwise length is +1 and string contains terminator
     return edit_text;
 }
+

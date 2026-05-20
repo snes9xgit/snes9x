@@ -214,6 +214,25 @@ void S9xMainLoop (void)
 			break;
 		}
 
+		// Olympic Summer Games (SGB Enhanced) workaround. The SGB BIOS's
+		// JUMP packet handler at $00:C72B does SEI before JMP [$00B8] to
+		// transfer control to user-uploaded code (Olympic's $7E:081B
+		// handler). Per pandocs the JUMP target runs with IRQs disabled
+		// intentionally. On real hardware Olympic re-enables IRQ later
+		// via its cmd-09 (SOU_TRN) hook at $7E:0900 which calls sub_80C58D
+		// (CLI when $02CA != 0). In our emulation the BIOS reaches the
+		// V-counter-gated wait at $00:BA6A (LDA $22; BEQ $-04) before
+		// the SOU_TRN packets get drained, so I=1 blocks the IRQ that
+		// would write $22 and the wait hangs forever. Clearing I here
+		// restores the invariant the wait requires; non-Olympic SGB
+		// titles never reach $BA6A with I=1 so they are unaffected.
+		if (Settings.SGB_BIOSModeActive &&
+		    Registers.PB == 0x00 && Registers.PCw == 0xBA6A &&
+		    CheckIRQ())
+		{
+			ClearIRQ();
+		}
+
 		uint8				Op;
 		struct	SOpcodes	*Opcodes;
 
@@ -253,14 +272,21 @@ void S9xMainLoop (void)
 		if (Settings.SA1)
 			S9xSA1MainLoop();
 
-		// SNES→GB sync now happens at scanline boundaries only (see
-		// HC_HCOUNTER_MAX_EVENT below) plus on every ICD2 register
-		// access in getset.h. The previous per-opcode sync here cost
-		// millions of function calls/sec in BIOS-released mode and
-		// dropped wall-fps from 60 to ~25. Scanline-grained sync is
-		// fine for game-running mode — the BIOS handshake's tight
-		// $7800-slice timing happens before release, where ICD2-access
-		// syncs already serialize state correctly.
+		// Per-SNES-opcode GB sync — instruction-level interleaving.
+		// Mesen-equivalent granularity: every SNES opcode advances the
+		// GB by the corresponding cycle delta, so $6000/$6002/$7800
+		// reads from the BIOS see GB state that varies naturally as
+		// SNES cycles tick. Without this fine-grained sync the BIOS
+		// band counter ($0294) phase-locks to deterministic GB
+		// scanlines, $0294 never reaches 18, the swap never fires,
+		// the WRAM ping-pong buffers never fill, and BG3 char renders
+		// empty. Costs ~50% wall fps in BIOS mode (was the reason
+		// it was removed in 0762b725), but it's the only way to
+		// match real-hardware-equivalent BIOS state-machine progress.
+		// Only gates on BIOS-released so pre-release boot/handshake
+		// stays cheap.
+		if (Settings.SGB_BIOSModeActive && S9xSGBBIOSGBIsReleased())
+			S9xSGBSyncToSnesCycle(CPU.Cycles);
 	}
 
 	// P2 — in BIOS mode the GB core is held in reset until the BIOS
