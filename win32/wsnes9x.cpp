@@ -14733,6 +14733,31 @@ void CpuDebugFormatGb(wchar_t *out, size_t outLen)
         for (int j = 5; j < 16; ++j) append(L" %02X", p[j]);
         append(L"\r\n");
     }
+
+    append(L"\r\n== GB IRQ counters (cumulative serviced) ==\r\n");
+    append(L"  VBlank=%u  LCDSTAT=%u  Timer=%u  Serial=%u  Joypad=%u\r\n",
+           gb.irq_serviced[0], gb.irq_serviced[1], gb.irq_serviced[2],
+           gb.irq_serviced[3], gb.irq_serviced[4]);
+    append(L"  STAT raises=%I64u   GB frames (LY 143->144)=%I64u\r\n",
+           gb.stat_irq_raise_count, gb.frame_count);
+
+    append(L"\r\n== LCDSTAT IRQ raise ring (last %u, ring head=%u) ==\r\n",
+           (unsigned)gb.stat_irq_ring_count, (unsigned)gb.stat_irq_ring_head);
+    append(L"  src bits: 40=LYC 20=OAM 10=VBlank 08=HBlank  phase: 0=HBl 1=VBl 2=OAM 3=Trf\r\n");
+    const unsigned ring_n = gb.stat_irq_ring_count;
+    uint64_t prev_t = 0;
+    bool     have_prev = false;
+    for (unsigned i = 0; i < ring_n && i < 16; ++i) {
+        const auto &e = gb.stat_irq_ring[i];
+        uint64_t dt = have_prev ? (e.t_cycles - prev_t) : 0;
+        append(L"  #%2u  LY=%3u LYC=%3u SCX=%3u SCY=%3u BGP=$%02X STAT=$%02X src=$%02X ph=%u  t=%I64u  dt=%I64u\r\n",
+               i + 1, (unsigned)e.ly, (unsigned)e.lyc,
+               (unsigned)e.scx, (unsigned)e.scy,
+               e.bgp, e.stat, e.source, (unsigned)e.frame_phase,
+               e.t_cycles, dt);
+        prev_t = e.t_cycles;
+        have_prev = true;
+    }
 }
 
 INT_PTR CALLBACK CpuDebugDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)

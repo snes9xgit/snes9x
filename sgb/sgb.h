@@ -423,6 +423,25 @@ struct S9xSGBDebugState
 	uint8_t  data_snd_hist[16][16];
 	uint8_t  data_snd_hist_count;
 	uint8_t  data_snd_hist_head;
+
+	uint32_t irq_serviced[5];
+
+	struct StatIrqEvent {
+		uint8_t  ly;
+		uint8_t  lyc;
+		uint8_t  scx;
+		uint8_t  scy;
+		uint8_t  bgp;
+		uint8_t  stat;
+		uint8_t  source;
+		uint8_t  frame_phase;
+		uint64_t t_cycles;
+	} stat_irq_ring[16];
+	uint8_t  stat_irq_ring_count;
+	uint8_t  stat_irq_ring_head;
+
+	uint64_t stat_irq_raise_count;
+	uint64_t frame_count;
 };
 
 void          S9xSGBGetDebugState (S9xSGBDebugState *out);

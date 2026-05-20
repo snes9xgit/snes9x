@@ -2295,6 +2295,31 @@ void S9xSGBGetDebugState(S9xSGBDebugState *out)
 	            sizeof out->data_snd_hist);
 	out->data_snd_hist_count = p->icd2.data_snd_hist_count;
 	out->data_snd_hist_head  = p->icd2.data_snd_hist_head;
+
+	for (int i = 0; i < 5; ++i)
+		out->irq_serviced[i] = SGB::IrqServicedCount(static_cast<uint8_t>(i));
+
+	const uint32_t ring_n = SGB::PpuStatIrqRingCount();
+	const uint32_t ring_h = SGB::PpuStatIrqRingHead();
+	out->stat_irq_ring_count = static_cast<uint8_t>(ring_n);
+	out->stat_irq_ring_head  = static_cast<uint8_t>(ring_h);
+	for (uint32_t i = 0; i < ring_n && i < 16; ++i)
+	{
+		SGB::PpuStatIrqEvent e{};
+		if (!SGB::PpuStatIrqRingGet(i, e)) break;
+		out->stat_irq_ring[i].ly          = e.ly;
+		out->stat_irq_ring[i].lyc         = e.lyc;
+		out->stat_irq_ring[i].scx         = e.scx;
+		out->stat_irq_ring[i].scy         = e.scy;
+		out->stat_irq_ring[i].bgp         = e.bgp;
+		out->stat_irq_ring[i].stat        = e.stat;
+		out->stat_irq_ring[i].source      = e.source;
+		out->stat_irq_ring[i].frame_phase = e.frame_phase;
+		out->stat_irq_ring[i].t_cycles    = e.t_cycles;
+	}
+
+	out->stat_irq_raise_count = SGB::PpuStatIrqRaiseCount();
+	out->frame_count          = SGB::PpuFrameCount();
 }
 
 bool S9xSGBGetROMBytes(const unsigned char **out_data, size_t *out_size)

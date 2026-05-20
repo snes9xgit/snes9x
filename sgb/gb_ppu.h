@@ -109,7 +109,28 @@ void PpuStep(Ppu &p, Memory &mem, int32_t tcycles);
 
 // Register I/O — 0xFF40 .. 0xFF4B (LCDC/STAT/SCY/SCX/LY/LYC/DMA/BGP/OBP0/OBP1/WY/WX).
 uint8_t PpuReadReg(const Ppu &p, uint16_t addr);
-void    PpuWriteReg(Ppu &p, uint16_t addr, uint8_t value);
+void    PpuWriteReg(Ppu &p, Memory &mem, uint16_t addr, uint8_t value);
+
+struct PpuStatIrqEvent
+{
+	uint8_t  ly;
+	uint8_t  lyc;
+	uint8_t  scx;
+	uint8_t  scy;
+	uint8_t  bgp;
+	uint8_t  stat;
+	uint8_t  source;
+	uint8_t  frame_phase;
+	uint64_t t_cycles;
+};
+
+uint32_t PpuStatIrqRingCount();
+uint32_t PpuStatIrqRingHead();
+bool     PpuStatIrqRingGet(uint32_t i, PpuStatIrqEvent &out);
+void     PpuStatIrqRingReset();
+
+uint64_t PpuStatIrqRaiseCount();
+uint64_t PpuFrameCount();
 
 } // namespace SGB
 
