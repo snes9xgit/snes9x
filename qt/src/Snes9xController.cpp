@@ -84,6 +84,7 @@ void Snes9xController::init()
     Settings.TwoClockCycles = 12;
     Settings.ShowOverscan = false;
     Settings.InitialInfoStringTimeout = 120;
+    Settings.SGB_BIOSPreference = 2;
 
     CPU.Flags = 0;
 
