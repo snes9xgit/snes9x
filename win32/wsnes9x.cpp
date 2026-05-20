@@ -14575,6 +14575,7 @@ void CpuDebugFormatSnes(wchar_t *out, size_t outLen)
     dump_region(L"low (DP + $22 + uploaded code)", 0x0000, 256);
     dump_region(L"BIOS state ($0200-$02FF inc. $02CA IRQ gate)", 0x0200, 256);
     dump_region(L"JUMP-target neighborhood", 0x0800, 256);
+    dump_region(L"Olympic hook2 ($0900 = cmd-09 intercept)", 0x0900, 256);
 }
 
 void CpuDebugFormatGb(wchar_t *out, size_t outLen)
