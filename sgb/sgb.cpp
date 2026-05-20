@@ -1538,7 +1538,14 @@ void Emulator::OnSgbCommandInternal(uint8_t cmd, const uint8_t *data, uint32_t l
 namespace {
 
 constexpr uint32_t SGB_STATE_MAGIC   = 0x21424753u;  // 'S''G''B''!' LE
-constexpr uint32_t SGB_STATE_VERSION = 1;
+// v2: add icd2 bridge + ppu.t_cycles. v1 loads cleanly (new fields default-init).
+// v3: add mem.boot_rom_enabled + cache_valid/cached_packets/replays_done +
+//     mem.serial_control + post-boot misc. Without boot_rom_enabled the GB
+//     remaps boot ROM at $0000-$00FF after a load → IRQ vectors land in
+//     boot-ROM space, CPU jumps into BIOS-handshake code, game "resets".
+//     Without cache_valid/cached_packets any subsequent $6003 0→1 toggle
+//     by the SNES BIOS triggers a full Reset() and re-runs the handshake.
+constexpr uint32_t SGB_STATE_VERSION = 3;
 
 enum class IoMode : uint8_t { Size, Save, Load };
 
@@ -1550,6 +1557,7 @@ struct IoCtx
 	size_t         cap;
 	IoMode         mode;
 	bool           ok;
+	uint32_t       version;
 };
 
 inline void IoBytes(IoCtx &c, void *data, size_t n)
@@ -1641,13 +1649,69 @@ void VisitState(Emulator::Impl &impl, IoCtx &c)
 	// ----- Emulator-level config -----
 	IoField(c, impl.run_mode);
 	IoField(c, impl.clock_mul);
+
+	// v2 additions: ICD2 bridge + PPU master clock. v1 saves do not
+	// include these — the load path leaves them at their current values
+	// (icd2 default-init when the emulator was cold-started; ppu.t_cycles
+	// whatever the runtime had advanced to). For BIOS-mode saves the
+	// icd2.control GB-release bit is what gates per-opcode GB sync, so a
+	// v1 cross-session load freezes the GB; v2 fixes that.
+	if (c.version >= 2)
+	{
+		IoField(c, impl.ppu.t_cycles);
+		IoField(c, impl.icd2);
+	}
+
+	// v3 additions: state that ColdReset re-defaults to "fresh boot"
+	// values, but which the game has already moved past mid-session.
+	//   mem.boot_rom_enabled — Reset() re-maps boot ROM at $0000-$00FF
+	//     whenever boot_rom_loaded is set. Without restoring this flag a
+	//     mid-game load leaves the boot ROM exposed, so the next IRQ
+	//     vector read (vectors live at $0040-$0060) returns boot-ROM
+	//     bytes and the GB jumps into handshake code — looks identical
+	//     to a BIOS reset.
+	//   mem.serial_control — bit 7 = transfer-in-progress; games waiting
+	//     on $FF02 would otherwise hang after a load.
+	//   cache_valid / cached_packets / cached_count / replays_done —
+	//     ColdReset clears these. If the SNES BIOS ever toggles $6003
+	//     0→1 again (some game code does), the !cache_valid branch in
+	//     the ICD2 write handler calls Reset() and PrimeBIOSHandshake,
+	//     wiping our just-restored GB state.
+	//   border_capture / border_fade_frames — in-flight CHR/PCT_TRN
+	//     capture + BIOS-mode border crossfade. Visual only but cheap.
+	//   boot_handoff_* / handoff_frames — first 30 frames after the
+	//     boot ROM writes $FF50. Affects BG-tilemap cleanup heuristic.
+	//   ppu.draw_x / sprites[] / sprite_count / window_active /
+	//   window_start_x / scanline_raw — mid-scanline state. Without
+	//     these, the first scanline after a load draws with the latched
+	//     sprite list from frame zero.
+	if (c.version >= 3)
+	{
+		IoField(c, impl.mem.boot_rom_enabled);
+		IoField(c, impl.mem.serial_control);
+		IoBytes(c, impl.cached_packets, sizeof impl.cached_packets);
+		IoField(c, impl.cached_count);
+		IoField(c, impl.cache_valid);
+		IoField(c, impl.replays_done);
+		IoField(c, impl.border_capture);
+		IoField(c, impl.border_fade_frames);
+		IoField(c, impl.boot_handoff_captured);
+		IoField(c, impl.boot_handoff_regs);
+		IoField(c, impl.handoff_frames);
+		IoField(c, impl.ppu.draw_x);
+		IoBytes(c, impl.ppu.sprites, sizeof impl.ppu.sprites);
+		IoField(c, impl.ppu.sprite_count);
+		IoField(c, impl.ppu.window_active);
+		IoField(c, impl.ppu.window_start_x);
+		IoBytes(c, impl.ppu.scanline_raw, sizeof impl.ppu.scanline_raw);
+	}
 }
 
 } // anonymous
 
 size_t Emulator::StateSize() const
 {
-	IoCtx c{nullptr, nullptr, 0, 0, IoMode::Size, true};
+	IoCtx c{nullptr, nullptr, 0, 0, IoMode::Size, true, SGB_STATE_VERSION};
 	VisitState(const_cast<Impl &>(*impl_), c);
 	// +12 for header: magic + version + payload_size.
 	return c.pos + 12;
@@ -1667,7 +1731,7 @@ void Emulator::StateSave(uint8_t *buffer) const
 	std::memcpy(buffer + 4, &version, 4);
 	std::memcpy(buffer + 8, &plen,    4);
 
-	IoCtx c{buffer + 12, nullptr, 0, payload, IoMode::Save, true};
+	IoCtx c{buffer + 12, nullptr, 0, payload, IoMode::Save, true, SGB_STATE_VERSION};
 	VisitState(const_cast<Impl &>(*impl_), c);
 }
 
@@ -1680,11 +1744,11 @@ bool Emulator::StateLoad(const uint8_t *buffer, size_t size)
 	std::memcpy(&version, buffer + 4, 4);
 	std::memcpy(&plen,    buffer + 8, 4);
 
-	if (magic != SGB_STATE_MAGIC)     return false;
-	if (version != SGB_STATE_VERSION) return false;  // future: accept v<=current
-	if (size < 12 + plen)             return false;
+	if (magic != SGB_STATE_MAGIC)        return false;
+	if (version < 1 || version > SGB_STATE_VERSION) return false;
+	if (size < 12 + plen)                return false;
 
-	IoCtx c{nullptr, buffer + 12, 0, plen, IoMode::Load, true};
+	IoCtx c{nullptr, buffer + 12, 0, plen, IoMode::Load, true, version};
 	VisitState(*impl_, c);
 	if (!c.ok) return false;
 
