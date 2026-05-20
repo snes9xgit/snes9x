@@ -419,6 +419,10 @@ struct S9xSGBDebugState
 	uint8_t  last_data_snd_bank;
 	uint16_t last_data_trn_addr;
 	uint8_t  last_data_trn_bank;
+
+	uint8_t  data_snd_hist[16][16];
+	uint8_t  data_snd_hist_count;
+	uint8_t  data_snd_hist_head;
 };
 
 void          S9xSGBGetDebugState (S9xSGBDebugState *out);

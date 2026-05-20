@@ -193,6 +193,13 @@ struct Emulator::Impl
 		uint8_t  last_data_trn_bank; // pkt[1]
 		uint16_t last_data_trn_addr; // pkt[2..3]
 
+		// Ring of the last 16 DATA_SND packets (full 16-byte payload).
+		// Lets us verify packet-delivery integrity by comparing what we
+		// pushed to the queue vs what landed in WRAM.
+		uint8_t  data_snd_hist[16][16];
+		uint8_t  data_snd_hist_count;  // packets recorded so far (caps at 16)
+		uint8_t  data_snd_hist_head;   // ring write index
+
 		// Per-address read/write counts for the registers the BIOS is
 		// most likely to poll. Lets the status line expose which
 		// register the BIOS is hot-looping on (distinct from bucketed
@@ -537,6 +544,12 @@ static void IcdPushQueue(Emulator::Impl::Icd2 &icd, const uint8_t *pkt)
 			icd.last_data_snd_bank = pkt[1];
 			icd.last_data_snd_addr =
 				static_cast<uint16_t>(pkt[2] | (pkt[3] << 8));
+			std::memcpy(icd.data_snd_hist[icd.data_snd_hist_head & 0x0F],
+			            pkt, 16);
+			icd.data_snd_hist_head = static_cast<uint8_t>(
+			    (icd.data_snd_hist_head + 1) & 0x0F);
+			if (icd.data_snd_hist_count < 16)
+				icd.data_snd_hist_count++;
 			break;
 		case 0x10:
 			icd.data_trn_packets++;
@@ -2278,6 +2291,10 @@ void S9xSGBGetDebugState(S9xSGBDebugState *out)
 	out->last_data_snd_bank  = p->icd2.last_data_snd_bank;
 	out->last_data_trn_addr  = p->icd2.last_data_trn_addr;
 	out->last_data_trn_bank  = p->icd2.last_data_trn_bank;
+	std::memcpy(out->data_snd_hist, p->icd2.data_snd_hist,
+	            sizeof out->data_snd_hist);
+	out->data_snd_hist_count = p->icd2.data_snd_hist_count;
+	out->data_snd_hist_head  = p->icd2.data_snd_hist_head;
 }
 
 bool S9xSGBGetROMBytes(const unsigned char **out_data, size_t *out_size)

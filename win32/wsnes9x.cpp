@@ -14699,6 +14699,39 @@ void CpuDebugFormatGb(wchar_t *out, size_t outLen)
         gb.stack_peek[24], gb.stack_peek[25], gb.stack_peek[26], gb.stack_peek[27],
         gb.stack_peek[28], gb.stack_peek[29], gb.stack_peek[30], gb.stack_peek[31]);
     out[outLen - 1] = 0;
+
+    // Append DATA_SND packet history (full 16-byte payload of each).
+    // For DATA_SND, packet layout: byte0=cmd<<3|len, byte1=bank,
+    // byte2=addr.lo, byte3=addr.hi, byte4=count, byte5..15=data (11 bytes).
+    size_t used = wcslen(out);
+    auto append = [&](const wchar_t *fmt, ...) {
+        va_list ap; va_start(ap, fmt);
+        int n = _vsnwprintf(out + used, outLen - used - 1, fmt, ap);
+        va_end(ap);
+        if (n > 0) used += (size_t)n;
+        if (used >= outLen) used = outLen - 1;
+        out[used] = 0;
+    };
+    append(L"\r\n== DATA_SND packet history (last %u, ring head=%u) ==\r\n",
+           (unsigned)gb.data_snd_hist_count, (unsigned)gb.data_snd_hist_head);
+    const unsigned shown = (gb.data_snd_hist_count < 16) ? gb.data_snd_hist_count : 16u;
+    const unsigned start = (gb.data_snd_hist_count < 16)
+                           ? 0u
+                           : (unsigned)gb.data_snd_hist_head;
+    for (unsigned i = 0; i < shown; ++i) {
+        const unsigned slot = (start + i) & 0x0F;
+        const uint8_t *p = gb.data_snd_hist[slot];
+        const uint16_t dest_lo_mid = (uint16_t)(p[2] | (p[3] << 8));
+        const uint16_t dest_lo_hi  = (uint16_t)(p[1] | (p[3] << 8));
+        append(L"  #%2u byte0=$%02X cmd=$%02X len=%u  raw[1..4]=%02X %02X %02X %02X\r\n",
+               i + 1, p[0], (unsigned)(p[0] >> 3), (unsigned)(p[0] & 7),
+               p[1], p[2], p[3], p[4]);
+        append(L"        if(lo,mid,bank): dest=$%02X:%04X    if(lo,bank,hi): dest=$%02X:%04X\r\n",
+               p[3], dest_lo_mid, p[2], dest_lo_hi);
+        append(L"        data:");
+        for (int j = 5; j < 16; ++j) append(L" %02X", p[j]);
+        append(L"\r\n");
+    }
 }
 
 INT_PTR CALLBACK CpuDebugDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
