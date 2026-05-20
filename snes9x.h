@@ -9,6 +9,8 @@
 
 #ifndef VERSION
 #define VERSION	"1.63"
+#define PATCH_VERSION "17"
+#define VERSION_DISPLAY VERSION "." PATCH_VERSION
 #endif
 
 #include "port.h"

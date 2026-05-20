@@ -188,7 +188,7 @@ void EmuMainWindow::refreshBiosMenu()
 
 void EmuMainWindow::createWidgets()
 {
-    setWindowTitle(QString("SuperSnes9x %1").arg(VERSION));
+    setWindowTitle(QString("SuperSnes9x %1").arg(VERSION_DISPLAY));
     if (QIcon::hasThemeIcon("snes9x"))
         setWindowIcon(QIcon::fromTheme("snes9x"));
     else
