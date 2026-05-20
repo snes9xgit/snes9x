@@ -5350,7 +5350,7 @@
                                       </packing>
                                     </child>
                                     <child>
-                                      <object class="GtkLabel" id="label157">
+                                      <object class="GtkLabel" id="label_bios_dir">
                                         <property name="visible">True</property>
                                         <property name="can_focus">False</property>
                                         <property name="xalign">0</property>
