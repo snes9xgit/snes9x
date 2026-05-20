@@ -147,11 +147,13 @@ struct EmuConfig
     int cheat_location;
     int patch_location;
     int export_location;
+    int bios_location;
     std::string sram_folder;
     std::string state_folder;
     std::string cheat_folder;
     std::string patch_folder;
     std::string export_folder;
+    std::string bios_folder;
 
     int sram_save_interval;
 

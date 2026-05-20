@@ -56,6 +56,7 @@ class Snes9xController
     std::string cheat_folder;
     std::string patch_folder;
     std::string export_folder;
+    std::string bios_folder;
     int16_t mouse_x, mouse_y;
     int high_resolution_effect;
     int rewind_buffer_size;

@@ -314,12 +314,14 @@ bool EmuConfig::setDefaults(int section)
         cheat_folder = {};
         patch_folder = {};
         export_folder = {};
+        bios_folder = "Bios";
 
         sram_location = eROMDirectory;
         state_location = eROMDirectory;
         cheat_location = eROMDirectory;
         patch_location = eROMDirectory;
         export_location = eROMDirectory;
+        bios_location = eCustomDirectory;
     }
 
     return restart;
@@ -537,12 +539,14 @@ void EmuConfig::config(const std::string &filename, bool write)
     Enum("CheatLocation", cheat_location, { "ROMDirectory", "ConfigDirectory", "Custom" });
     Enum("PatchLocation", patch_location, { "ROMDirectory", "ConfigDirectory", "Custom" });
     Enum("ExportLocation", export_location, { "ROMDirectory", "ConfigDirectory", "Custom" });
+    Enum("BIOSLocation", bios_location, { "ROMDirectory", "ConfigDirectory", "Custom" });
 
     String("SRAMFolder", sram_folder);
     String("StateFolder", state_folder);
     String("CheatFolder", cheat_folder);
     String("PatchFolder", patch_folder);
     String("ExportFolder", export_folder);
+    String("BIOSFolder", bios_folder);
 
     Int("SRAMSaveInterval", sram_save_interval);
     EndSection();

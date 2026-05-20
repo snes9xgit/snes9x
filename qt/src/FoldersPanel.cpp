@@ -13,6 +13,7 @@ FoldersPanel::FoldersPanel(EmuApplication *app_)
     connectEntry(comboBox_cheat, lineEdit_cheat, pushButton_cheat, &app->config->cheat_location, &app->config->cheat_folder);
     connectEntry(comboBox_patch, lineEdit_patch, pushButton_patch, &app->config->patch_location, &app->config->patch_folder);
     connectEntry(comboBox_export, lineEdit_export, pushButton_export, &app->config->export_location, &app->config->export_folder);
+    connectEntry(comboBox_bios, lineEdit_bios, pushButton_bios, &app->config->bios_location, &app->config->bios_folder);
 }
 
 void FoldersPanel::connectEntry(QComboBox *combo, QLineEdit *lineEdit, QPushButton *browse, int *location, std::string *folder)
@@ -31,6 +32,7 @@ void FoldersPanel::refreshData()
     refreshEntry(comboBox_cheat, lineEdit_cheat, pushButton_cheat, &app->config->cheat_location, &app->config->cheat_folder);
     refreshEntry(comboBox_patch, lineEdit_patch, pushButton_patch, &app->config->patch_location, &app->config->patch_folder);
     refreshEntry(comboBox_export, lineEdit_export, pushButton_export, &app->config->export_location, &app->config->export_folder);
+    refreshEntry(comboBox_bios, lineEdit_bios, pushButton_bios, &app->config->bios_location, &app->config->bios_folder);
 }
 
 void FoldersPanel::refreshEntry(QComboBox *combo, QLineEdit *lineEdit, QPushButton *browse, int *location, std::string *folder)

@@ -203,6 +203,7 @@ void Snes9xController::updateSettings(const EmuConfig * const config)
     doFolder(config->cheat_location, cheat_folder, config->cheat_folder, "cheat");
     doFolder(config->patch_location, patch_folder, config->patch_folder, "patch");
     doFolder(config->export_location, export_folder, config->export_folder, "export");
+    doFolder(config->bios_location, bios_folder, config->bios_folder, "bios");
 }
 
 bool Snes9xController::openFile(const std::string &filename)
@@ -424,6 +425,10 @@ std::string S9xGetDirectory(s9x_getdirtype dirtype)
     case SCREENSHOT_DIR:
     case SPC_DIR:
         dirname = c->export_folder;
+        break;
+
+    case BIOS_DIR:
+        dirname = c->bios_folder;
         break;
 
     default:
