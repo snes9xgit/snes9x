@@ -409,6 +409,16 @@ struct S9xSGBDebugState
 	uint16_t bios_dma_ptr_a_0282, bios_dma_ptr_b_0284;
 	uint32_t vram_hash, oam_hash;
 	uint8_t  stack_peek[32];
+
+	uint32_t data_snd_packets;
+	uint32_t data_trn_packets;
+	uint32_t jump_packets;
+	uint16_t last_jump_addr;
+	uint8_t  last_jump_bank;
+	uint16_t last_data_snd_addr;
+	uint8_t  last_data_snd_bank;
+	uint16_t last_data_trn_addr;
+	uint8_t  last_data_trn_bank;
 };
 
 void          S9xSGBGetDebugState (S9xSGBDebugState *out);

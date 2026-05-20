@@ -183,6 +183,16 @@ struct Emulator::Impl
 		uint8_t  last_cmd_ids[8];    // ring buffer of last 8 packet command IDs (byte0 >> 3)
 		uint8_t  last_cmd_ids_len;   // 0..8
 
+		uint32_t data_snd_packets;   // cmd 0x0F count (Olympic uploads via these)
+		uint32_t data_trn_packets;   // cmd 0x10 count (4KB bulk SNES-WRAM upload)
+		uint32_t jump_packets;       // cmd 0x12 count
+		uint16_t last_jump_addr;     // pkt[1..2] of most recent JUMP
+		uint8_t  last_jump_bank;     // pkt[3]
+		uint16_t last_data_snd_addr; // pkt[2..3] of most recent DATA_SND
+		uint8_t  last_data_snd_bank; // pkt[1]
+		uint8_t  last_data_trn_bank; // pkt[1]
+		uint16_t last_data_trn_addr; // pkt[2..3]
+
 		// Per-address read/write counts for the registers the BIOS is
 		// most likely to poll. Lets the status line expose which
 		// register the BIOS is hot-looping on (distinct from bucketed
@@ -519,6 +529,29 @@ static void IcdPushQueue(Emulator::Impl::Icd2 &icd, const uint8_t *pkt)
 	const uint8_t byte0  = pkt[0];
 	const uint8_t cmd_id = static_cast<uint8_t>(byte0 >> 3);
 	if (byte0 == 0xF1) icd.f1_packets++;
+
+	switch (cmd_id)
+	{
+		case 0x0F:
+			icd.data_snd_packets++;
+			icd.last_data_snd_bank = pkt[1];
+			icd.last_data_snd_addr =
+				static_cast<uint16_t>(pkt[2] | (pkt[3] << 8));
+			break;
+		case 0x10:
+			icd.data_trn_packets++;
+			icd.last_data_trn_bank = pkt[1];
+			icd.last_data_trn_addr =
+				static_cast<uint16_t>(pkt[2] | (pkt[3] << 8));
+			break;
+		case 0x12:
+			icd.jump_packets++;
+			icd.last_jump_addr =
+				static_cast<uint16_t>(pkt[1] | (pkt[2] << 8));
+			icd.last_jump_bank = pkt[3];
+			break;
+		default: break;
+	}
 	if (!icd.first_packet_seen)
 	{
 		icd.first_packet_byte0 = byte0;
@@ -2235,6 +2268,16 @@ void S9xSGBGetDebugState(S9xSGBDebugState *out)
 
 	for (int i = 0; i < 32; ++i)
 		out->stack_peek[i] = SGB::MemRead(p->mem, static_cast<uint16_t>(cs.r.sp + i));
+
+	out->data_snd_packets    = p->icd2.data_snd_packets;
+	out->data_trn_packets    = p->icd2.data_trn_packets;
+	out->jump_packets        = p->icd2.jump_packets;
+	out->last_jump_addr      = p->icd2.last_jump_addr;
+	out->last_jump_bank      = p->icd2.last_jump_bank;
+	out->last_data_snd_addr  = p->icd2.last_data_snd_addr;
+	out->last_data_snd_bank  = p->icd2.last_data_snd_bank;
+	out->last_data_trn_addr  = p->icd2.last_data_trn_addr;
+	out->last_data_trn_bank  = p->icd2.last_data_trn_bank;
 }
 
 bool S9xSGBGetROMBytes(const unsigned char **out_data, size_t *out_size)

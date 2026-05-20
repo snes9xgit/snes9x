@@ -22,6 +22,7 @@
 #endif
 
 #pragma warning(disable: 4091)
+#include <stdarg.h>
 #include <shlobj.h>
 #pragma warning(default: 4091)
 #include <objidl.h>
@@ -14333,11 +14334,8 @@ void CpuDebugFormatSnes(wchar_t *out, size_t outLen)
     for (int i = 0; i < 4; ++i) {
         uint32 addr = (uint32(pb_) << 16) | uint16(pc_ + i);
         uint8 *page = Memory.Map[(addr & 0xFFFFFF) >> MEMMAP_SHIFT];
-        // Map entries below 256 are special handlers (PPU/CPU regs, SRAM,
-        // etc.) where the pointer is actually an enum and dereferencing
-        // crashes. Only peek real RAM/ROM pages (high pointers).
         if (page != NULL && reinterpret_cast<uintptr_t>(page) > 0x10000) {
-            op[i] = page[addr & MEMMAP_MASK];
+            op[i] = page[addr & 0xFFFF];
         }
     }
 
@@ -14550,6 +14548,33 @@ void CpuDebugFormatSnes(wchar_t *out, size_t outLen)
         vram_hash, cgram_hash, oam_hash, wram_hash, fillram_hash,
         tc2_hash, tc4_hash, tc8_hash);
     out[outLen - 1] = 0;
+
+    // Append WRAM peek windows useful for Olympic-style debugging:
+    //   $7E:0000-$00FF — direct page + uploaded code low area (\$22 wait flag lives here)
+    //   $7E:0800-$08FF — JUMP target neighborhood (Olympic JUMPs to $7E:081B)
+    size_t used = wcslen(out);
+    auto append = [&](const wchar_t *fmt, ...) {
+        va_list ap; va_start(ap, fmt);
+        int n = _vsnwprintf(out + used, outLen - used - 1, fmt, ap);
+        va_end(ap);
+        if (n > 0) used += (size_t)n;
+        if (used >= outLen) used = outLen - 1;
+        out[used] = 0;
+    };
+    auto dump_region = [&](const wchar_t *label, uint32_t base, uint32_t bytes) {
+        append(L"\r\n== WRAM %ls ($7E:%04X-$7E:%04X) ==\r\n", label, base, base + bytes - 1);
+        for (uint32_t row = 0; row < bytes; row += 16) {
+            append(L"  $%04X:", base + row);
+            for (uint32_t i = 0; i < 16 && row + i < bytes; ++i) {
+                uint8 b = Memory.RAM[(base + row + i) & 0x1FFFF];
+                append(L" %02X", b);
+            }
+            append(L"\r\n");
+        }
+    };
+    dump_region(L"low (DP + $22 + uploaded code)", 0x0000, 256);
+    dump_region(L"BIOS state ($0200-$02FF inc. $02CA IRQ gate)", 0x0200, 256);
+    dump_region(L"JUMP-target neighborhood", 0x0800, 256);
 }
 
 void CpuDebugFormatGb(wchar_t *out, size_t outLen)
@@ -14609,6 +14634,9 @@ void CpuDebugFormatGb(wchar_t *out, size_t outLen)
         L"== ICD2 packet queue ==\r\n"
         L"  queue_count=%u  head=%u  tail=%u  synth_remaining=%u\r\n"
         L"  last_cmd_ids (recent %u, IDs are byte0>>3): %02X %02X %02X %02X %02X %02X %02X %02X\r\n"
+        L"  DATA_SND=%u  DATA_TRN=%u  JUMP=%u\r\n"
+        L"  last_DATA_SND bank=$%02X addr=$%04X    last_DATA_TRN bank=$%02X addr=$%04X\r\n"
+        L"  last_JUMP bank=$%02X addr=$%04X\r\n"
         L"\r\n"
         L"== ICD2 register access ==\r\n"
         L"  Reads:  $6000=%u  $6002=%u  $6003=%u  $7000=%u  $7800=%u\r\n"
@@ -14651,6 +14679,10 @@ void CpuDebugFormatGb(wchar_t *out, size_t outLen)
         (unsigned)gb.last_cmd_ids_len,
         gb.last_cmd_ids[0], gb.last_cmd_ids[1], gb.last_cmd_ids[2], gb.last_cmd_ids[3],
         gb.last_cmd_ids[4], gb.last_cmd_ids[5], gb.last_cmd_ids[6], gb.last_cmd_ids[7],
+        gb.data_snd_packets, gb.data_trn_packets, gb.jump_packets,
+        gb.last_data_snd_bank, gb.last_data_snd_addr,
+        gb.last_data_trn_bank, gb.last_data_trn_addr,
+        gb.last_jump_bank, gb.last_jump_addr,
         gb.r_6000, gb.r_6002, gb.r_6003, gb.r_7000, gb.r_7800,
         gb.w_6000, gb.w_6001, gb.w_6003, gb.w_7000, gb.w_6004,
         gb.last_read_addr, gb.last_write_addr, gb.last_write_val,
@@ -14694,12 +14726,19 @@ INT_PTR CALLBACK CpuDebugDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPar
                 CpuDebugFormatGb(buf, _countof(buf));
             else
                 CpuDebugFormatSnes(buf, _countof(buf));
-            // Preserve selection so the user can highlight + copy without flicker.
             HWND hEdit = GetDlgItem(hDlg, IDC_CPU_DEBUG_TEXT);
             DWORD selStart = 0, selEnd = 0;
             SendMessage(hEdit, EM_GETSEL, (WPARAM)&selStart, (LPARAM)&selEnd);
+            int firstVis = (int)SendMessage(hEdit, EM_GETFIRSTVISIBLELINE, 0, 0);
+            SendMessage(hEdit, WM_SETREDRAW, FALSE, 0);
             SetWindowText(hEdit, buf);
             SendMessage(hEdit, EM_SETSEL, selStart, selEnd);
+            int newFirstVis = (int)SendMessage(hEdit, EM_GETFIRSTVISIBLELINE, 0, 0);
+            int delta = firstVis - newFirstVis;
+            if (delta != 0)
+                SendMessage(hEdit, EM_LINESCROLL, 0, delta);
+            SendMessage(hEdit, WM_SETREDRAW, TRUE, 0);
+            InvalidateRect(hEdit, NULL, FALSE);
             return TRUE;
         }
         break;
