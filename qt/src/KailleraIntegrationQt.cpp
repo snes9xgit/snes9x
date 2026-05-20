@@ -46,7 +46,7 @@ static void kaillera_qt_update_window_title()
     if (!g_app || !g_app->window)
         return;
 
-    QString title = QString("SuperSnes9x %1").arg(VERSION);
+    QString title = QString("SuperSnes9x %1").arg(VERSION_DISPLAY);
     if (KailleraServerIsRunning())
     {
         const char *srvName = KailleraServerGetName();

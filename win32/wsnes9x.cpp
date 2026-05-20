@@ -757,10 +757,10 @@ void S9xRestoreWindowTitle ()
     {
         char def[_MAX_FNAME];
         _splitpath(Memory.ROMFilename.c_str(), NULL, NULL, def, NULL);
-        _stprintf(buf, TEXT("%s - %s %s"), (wchar_t *)Utf8ToWide(def), WINDOW_TITLE, TEXT(VERSION));
+        _stprintf(buf, TEXT("%s - %s %s"), (wchar_t *)Utf8ToWide(def), WINDOW_TITLE, TEXT(VERSION_DISPLAY));
     }
     else
-        _stprintf(buf, TEXT("%s %s"), WINDOW_TITLE, TEXT(VERSION));
+        _stprintf(buf, TEXT("%s %s"), WINDOW_TITLE, TEXT(VERSION_DISPLAY));
 
 #ifdef RETROACHIEVEMENTS_SUPPORT
     if (GUI.RAHardcoreMode)
@@ -3384,7 +3384,7 @@ BOOL WinInit( HINSTANCE hInstance)
 #endif
 
     TCHAR buf [100];
-    _stprintf(buf, TEXT("%s %s"), WINDOW_TITLE, TEXT(VERSION));
+    _stprintf(buf, TEXT("%s %s"), WINDOW_TITLE, TEXT(VERSION_DISPLAY));
 
     DWORD dwExStyle;
     DWORD dwStyle;
@@ -6127,7 +6127,7 @@ INT_PTR CALLBACK DlgAboutProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 		WinRefreshDisplay();
 		{
 			TCHAR buf[2048];//find better way of dealing.
-			_stprintf(buf,DISCLAIMER_TEXT,TEXT(VERSION));
+			_stprintf(buf,DISCLAIMER_TEXT,TEXT(VERSION_DISPLAY));
 			SetDlgItemText(hDlg, IDC_DISCLAIMER, buf);
 			SetWindowText(hDlg, ABOUT_DIALOG_TITLE APP_NAME);
 		}

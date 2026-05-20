@@ -6,7 +6,11 @@
 
 /* This is where all the GUI text strings will eventually end up */
 
+#ifdef _WIN64
+#define WINDOW_TITLE TEXT("SuperSnes9x (x64)")
+#else
 #define WINDOW_TITLE TEXT("SuperSnes9x")
+#endif
 
 // the windows registry is no longer used
 //#define MY_REG_KEY   "Software\\Emulators\\Snes9x"
@@ -22,10 +26,10 @@ Based on Snes9x by Gary Henderson and Jerremy Koot.\r\n\r\n\
 (c) Copyright 2002 - 2010  Brad Jorsch, funkyass, Kris Bleakley, Nach, zones\r\n\
 (c) Copyright 2006 - 2007  nitsuja\r\n\
 (c) Copyright 2009 - 2023  BearOso, OV2\r\n\
-(c) Copyright 2026         Shanytc\r\n\r\n\
+(c) Copyright 2026 - 2026  Shanytc\r\n\r\n\
 Windows Port Authors: Matthew Kendora, funkyass, nitsuja, Nach, blip, OV2.\r\n\r\n\
 SuperSnes9x is a Super Nintendo Entertainment System\r\n\
-emulator with RetroAchievements support that allows you\r\n\
+emulator that allows you\r\n\
 to play most games designed for the SNES on your PC.\r\n\r\n\
 Please visit http://www.snes9x.com for\r\n\
 up-to-the-minute information and help on Snes9x.\r\n\r\n\
