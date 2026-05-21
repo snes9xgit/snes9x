@@ -207,10 +207,13 @@ static void WriteIO(Memory &m, uint16_t addr, uint8_t value)
 			// partner clocking bits in, so bit 7 stays set and no IRQ fires —
 			// matching real DMG with a disconnected link cable. Games like
 			// Tetris Plus rely on this silence to detect "no link partner".
+			// SB latches $FF: disconnected MISO floats high, so each clock
+			// shifts in a 1. Alleyway's serial-IRQ input loop depends on this.
 			if ((value & 0x81) == 0x81)
 			{
 				if (g_serial_cb) g_serial_cb(m.serial_data);
-				m.if_ = static_cast<uint8_t>(m.if_ | IRQ_SERIAL);
+				m.serial_data    = 0xFF;
+				m.if_            = static_cast<uint8_t>(m.if_ | IRQ_SERIAL);
 				m.serial_control = static_cast<uint8_t>(value & 0x7F);
 			}
 			return;
