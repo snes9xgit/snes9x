@@ -134,8 +134,14 @@ bool CXAudio2::InitVoices(void)
     if (device_index < 0)
         device_index = 0;
 
+	// XAudio2.7 (v141_xp) uses device index; XAudio2.8+ (v143) uses NULL device ID
+#if (_WIN32_WINNT >= 0x0602)
+	if ( FAILED(hr = pXAudio2->CreateMasteringVoice( &pMasterVoice, 2,
+		Settings.SoundPlaybackRate, 0, NULL, NULL ) ) ) {
+#else
 	if ( FAILED(hr = pXAudio2->CreateMasteringVoice( &pMasterVoice, 2,
 		Settings.SoundPlaybackRate, 0, device_index, NULL ) ) ) {
+#endif
 			DXTRACE_ERR_MSGBOX(TEXT("Unable to create mastering voice."),hr);
 			return false;
 	}
@@ -375,12 +381,14 @@ std::vector<std::wstring> CXAudio2::GetDeviceList()
 {
     std::vector<std::wstring> device_list;
 
+    device_list.push_back(_T("Default"));
+
+#if (_WIN32_WINNT < 0x0602)
+    // XAudio2.7: enumerate devices via GetDeviceCount/GetDeviceDetails
     if (pXAudio2)
     {
         UINT32 num_devices;
         pXAudio2->GetDeviceCount(&num_devices);
-
-        device_list.push_back(_T("Default"));
 
         for (unsigned int i = 0; i < num_devices; i++)
         {
@@ -391,6 +399,7 @@ std::vector<std::wstring> CXAudio2::GetDeviceList()
             }
         }
     }
+#endif
 
     return device_list;
 }
