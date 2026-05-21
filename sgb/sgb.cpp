@@ -1323,9 +1323,14 @@ static constexpr uint16_t BORDER_FADE_FRAMES = 24;
 
 void Emulator::OverlayBiosBorder(uint16_t *dest, uint32_t pitch_pixels)
 {
-	(void)dest;
-	(void)pitch_pixels;
-	if (!impl_->has_rom) return;
+	if (!impl_->has_rom || !dest) return;
+
+	const int last_y = (int)PPU.ScreenHeight - 1;
+	if (last_y < 0) return;
+	const int width = (IPPU.RenderedScreenWidth > 0) ? IPPU.RenderedScreenWidth
+	                                                 : SNES_WIDTH;
+	uint16_t *row = dest + (uint32_t)last_y * pitch_pixels;
+	for (int x = 0; x < width; ++x) row[x] = 0;
 }
 
 int32_t Emulator::DrainAudio(int16_t *out, int32_t max_samples)
