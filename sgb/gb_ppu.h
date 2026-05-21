@@ -91,6 +91,17 @@ struct Ppu
 	// LCDSTAT interrupt only when this transitions 0 → 1.
 	bool     stat_line_high = false;
 
+	// VBlank IRQ latency. Real DMG samples IF on the LAST M-cycle of the
+	// current instruction, so when LY transitions to 144 mid-instruction the
+	// current LDH/CP/JR can still observe LY=144 before IRQ dispatch. Our
+	// CPU runs instructions atomically and checks IF before the next step —
+	// firing IF.VBLANK on the dot LY hits 144 pre-empts the polling LDH that
+	// would have caught LY=144. Defer the IF.VBLANK set by N dots: when LY
+	// transitions, arm this counter; ExecPpuDot decrements it; when it hits
+	// 0, set IF.VBLANK. 24 dots ≈ one LDH+CP — enough for Altered Space's
+	// "wait until LY=$90" busy loop at $078A to capture LY=144 into A.
+	uint8_t  vblank_irq_delay = 0;
+
 	uint8_t  framebuffer[GB_SCREEN_WIDTH * GB_SCREEN_HEIGHT];
 
 	// Per-frame raw 2-bit BG/window/sprite indices (pre-BGP/OBP). The
