@@ -320,6 +320,7 @@ void PpuReset(Ppu &p)
 	p.mode_clock    = 0;
 	p.window_line   = 0;
 	p.stat_line_high = false;
+	p.vblank_irq_delay = 0;
 	p.frame_ready   = false;
 	p.t_cycles      = 0;
 	p.draw_x        = 0;
@@ -336,6 +337,14 @@ inline void ExecPpuDot(Ppu &p, Memory &mem)
 {
 	p.mode_clock += 1;
 	bool transitioned = false;
+
+	// Deferred VBlank IRQ — see Ppu::vblank_irq_delay for rationale.
+	if (p.vblank_irq_delay > 0)
+	{
+		--p.vblank_irq_delay;
+		if (p.vblank_irq_delay == 0)
+			mem.if_ = static_cast<uint8_t>(mem.if_ | IRQ_VBLANK);
+	}
 
 	switch (p.mode)
 	{
@@ -406,7 +415,7 @@ inline void ExecPpuDot(Ppu &p, Memory &mem)
 				p.frame_ready   = true;
 				p.window_line   = 0;
 				p.window_active = false;
-				mem.if_         = static_cast<uint8_t>(mem.if_ | IRQ_VBLANK);
+				p.vblank_irq_delay = 24;
 				S9xSGBOnPpuVBlank();
 			}
 			else
@@ -460,6 +469,7 @@ void PpuStep(Ppu &p, Memory &mem, int32_t tcycles)
 		p.mode_clock     = 0;
 		p.window_line    = 0;
 		p.stat_line_high = false;
+		p.vblank_irq_delay = 0;
 		p.draw_x         = 0;
 		p.window_active  = false;
 		p.stat = static_cast<uint8_t>(p.stat & 0xF8);
