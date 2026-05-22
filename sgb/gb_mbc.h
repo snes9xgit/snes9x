@@ -14,16 +14,17 @@ namespace SGB {
 
 enum class MbcType : uint8_t
 {
-	None   = 0,
-	MBC1   = 1,
-	MBC2   = 2,
-	MBC3   = 3,
-	MBC5   = 5,
-	MBC6   = 6,  // not yet implemented
-	MBC7   = 7,  // not yet implemented
-	HuC1   = 8,  // not yet implemented
-	HuC3   = 9,  // not yet implemented
-	MMM01  = 10  // not yet implemented
+	None       = 0,
+	MBC1       = 1,
+	MBC2       = 2,
+	MBC3       = 3,
+	MBC5       = 5,
+	MBC6       = 6,  // not yet implemented
+	MBC7       = 7,  // not yet implemented
+	HuC1       = 8,  // not yet implemented
+	HuC3       = 9,  // not yet implemented
+	MMM01      = 10, // not yet implemented
+	SachenMMC1 = 11  // Sachen 4B-series unlicensed multicarts
 };
 
 struct MbcState
@@ -39,6 +40,16 @@ struct MbcState
 	uint8_t  rtc_latched[5] = {0};
 	bool     rtc_latch      = false;
 	uint8_t  rtc_select     = 0;
+
+	// Sachen MMC1: outer-bank/mask + lock with simple unlock counter.
+	// While locked, ROM reads in 0x0100-0x01FF go through an A0/A6 and
+	// A1/A4 bit-permutation so the bootstrap sees the real Nintendo logo
+	// at 0x0104-0x0133. The cart unlocks once the game has issued ~0x30
+	// writes to addresses >= 0x8000 (VRAM/WRAM/SRAM/HRAM/IO).
+	uint8_t  sachen_outer_bank  = 0;
+	uint8_t  sachen_outer_mask  = 0;
+	bool     sachen_locked      = true;
+	uint8_t  sachen_unlock_ctr  = 0;
 };
 
 struct Cart;
@@ -46,6 +57,11 @@ struct Cart;
 void MbcReset(MbcState &s);
 uint8_t MbcRead(MbcState &s, const std::vector<uint8_t> &rom, const std::vector<uint8_t> &sram, uint16_t addr);
 void    MbcWrite(Cart &c, uint16_t addr, uint8_t value);
+
+// Notify the mapper of a CPU write to addr >= 0x8000 (VRAM/WRAM/SRAM/HRAM/IO).
+// Used by Sachen MMC1 to advance its unlock counter — writes there are
+// otherwise invisible to the MBC.
+void    MbcNotifyHighWrite(MbcState &s, uint16_t addr);
 
 } // namespace SGB
 

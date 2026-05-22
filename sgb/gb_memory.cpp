@@ -101,6 +101,10 @@ void MemWrite(Memory &m, uint16_t addr, uint8_t value)
 		if (m.cart) MbcWrite(*m.cart, addr, value);
 		return;
 	}
+	if (m.cart && m.cart->mbc.type == MbcType::SachenMMC1)
+	{
+		MbcNotifyHighWrite(m.cart->mbc, addr);
+	}
 	if (addr < 0xA000)
 	{
 		if (m.ppu)

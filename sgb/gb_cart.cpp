@@ -65,6 +65,40 @@ bool DecodeCartType(uint8_t code, MbcType &mbc, bool &battery, bool &rtc, bool &
 	}
 }
 
+// Sachen unlicensed multicarts (4B-007 etc.) hide the Nintendo logo under
+// an address bit-permutation across 0x0104-0x01FF. If the standard logo
+// slot doesn't match but the permuted bytes do, this is a Sachen cart and
+// we route it through the Sachen mapper regardless of the header byte at
+// 0x0147 (which is forged — 4B-007 reports MBC1 + 32KB).
+constexpr uint8_t kGbNintendoLogo[48] = {
+	0xCE, 0xED, 0x66, 0x66, 0xCC, 0x0D, 0x00, 0x0B,
+	0x03, 0x73, 0x00, 0x83, 0x00, 0x0C, 0x00, 0x0D,
+	0x00, 0x08, 0x11, 0x1F, 0x88, 0x89, 0x00, 0x0E,
+	0xDC, 0xCC, 0x6E, 0xE6, 0xDD, 0xDD, 0xD9, 0x99,
+	0xBB, 0xBB, 0x67, 0x63, 0x6E, 0x0E, 0xEC, 0xCC,
+	0xDD, 0xDC, 0x99, 0x9F, 0xBB, 0xB9, 0x33, 0x3E
+};
+
+inline uint16_t SachenScrambleAddr(uint16_t addr)
+{
+	return static_cast<uint16_t>((addr & ~0x53u)
+	                           | ((addr >> 6) & 0x01u)
+	                           | ((addr >> 3) & 0x02u)
+	                           | ((addr << 3) & 0x10u)
+	                           | ((addr << 6) & 0x40u));
+}
+
+bool LooksLikeSachenScrambledLogo(const std::vector<uint8_t> &rom)
+{
+	if (rom.size() < 0x0200) return false;
+	for (int i = 0; i < 48; ++i)
+	{
+		const uint16_t a = SachenScrambleAddr(static_cast<uint16_t>(0x0104 + i));
+		if (rom[a] != kGbNintendoLogo[i]) return false;
+	}
+	return true;
+}
+
 std::string MakeSavPath(const std::string &rom_path)
 {
 	if (rom_path.empty()) return {};
@@ -131,7 +165,17 @@ bool CartLoad(Cart &c, const uint8_t *data, size_t size, const char *path)
 	}
 
 	// ----- MBC selection -----
-	if (!DecodeCartType(h.cart_type, c.mbc.type, c.has_battery, c.has_rtc, c.has_rumble))
+	// Sachen takes priority: the cart's header is forged (4B-007 claims
+	// MBC1 + 32KB) so the only reliable detection is the bit-permuted
+	// Nintendo logo at 0x0104-0x01FF.
+	if (LooksLikeSachenScrambledLogo(c.rom))
+	{
+		c.mbc.type     = MbcType::SachenMMC1;
+		c.has_battery  = false;
+		c.has_rtc      = false;
+		c.has_rumble   = false;
+	}
+	else if (!DecodeCartType(h.cart_type, c.mbc.type, c.has_battery, c.has_rtc, c.has_rumble))
 	{
 		c.rom.clear();
 		return false;

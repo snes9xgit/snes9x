@@ -1482,18 +1482,46 @@ static bool S9xFilenameHasExt(const char *name, const char *ext)
 // 48-byte Nintendo logo at 0x0104-0x0133 — if it's not present the real
 // HW boot ROM refuses to run the cart. Matching lets us catch .gb/.gbc
 // wrapped in .zip/.jma/.7z containers after FileLoader has unzipped.
+//
+// Sachen unlicensed multicarts (e.g. 4B-007) bury the logo inside
+// 0x0104-0x01FF under an address bit permutation (A0/A1/A4/A6 swapped);
+// the cart's MMC1 mapper unscrambles it on locked reads so the bootstrap
+// still sees a valid logo. We try the strict match first, then redo the
+// compare with the permutation so those carts route to the SGB.
+static const uint8 kGbNintendoLogo[48] = {
+    0xCE, 0xED, 0x66, 0x66, 0xCC, 0x0D, 0x00, 0x0B,
+    0x03, 0x73, 0x00, 0x83, 0x00, 0x0C, 0x00, 0x0D,
+    0x00, 0x08, 0x11, 0x1F, 0x88, 0x89, 0x00, 0x0E,
+    0xDC, 0xCC, 0x6E, 0xE6, 0xDD, 0xDD, 0xD9, 0x99,
+    0xBB, 0xBB, 0x67, 0x63, 0x6E, 0x0E, 0xEC, 0xCC,
+    0xDD, 0xDC, 0x99, 0x9F, 0xBB, 0xB9, 0x33, 0x3E
+};
+
+static inline uint16 SachenScrambleAddr(uint16 addr)
+{
+    return static_cast<uint16>((addr & ~0x53u)
+                             | ((addr >> 6) & 0x01u)
+                             | ((addr >> 3) & 0x02u)
+                             | ((addr << 3) & 0x10u)
+                             | ((addr << 6) & 0x40u));
+}
+
+static bool S9xRomBytesAreSachenScrambledGb(const uint8 *rom, int32 size)
+{
+    if (size < 0x0200) return false;
+    for (int i = 0; i < 48; ++i)
+    {
+        const uint16 a = SachenScrambleAddr(static_cast<uint16>(0x0104 + i));
+        if (rom[a] != kGbNintendoLogo[i]) return false;
+    }
+    return true;
+}
+
 static bool S9xRomBytesAreGb(const uint8 *rom, int32 size)
 {
     if (size < 0x150 || !rom) return false;
-    static const uint8 kGbNintendoLogo[48] = {
-        0xCE, 0xED, 0x66, 0x66, 0xCC, 0x0D, 0x00, 0x0B,
-        0x03, 0x73, 0x00, 0x83, 0x00, 0x0C, 0x00, 0x0D,
-        0x00, 0x08, 0x11, 0x1F, 0x88, 0x89, 0x00, 0x0E,
-        0xDC, 0xCC, 0x6E, 0xE6, 0xDD, 0xDD, 0xD9, 0x99,
-        0xBB, 0xBB, 0x67, 0x63, 0x6E, 0x0E, 0xEC, 0xCC,
-        0xDD, 0xDC, 0x99, 0x9F, 0xBB, 0xB9, 0x33, 0x3E
-    };
-    return memcmp(rom + 0x0104, kGbNintendoLogo, 48) == 0;
+    if (memcmp(rom + 0x0104, kGbNintendoLogo, 48) == 0) return true;
+    return S9xRomBytesAreSachenScrambledGb(rom, size);
 }
 
 static std::string GBGameNameFromPath(const char *path)
