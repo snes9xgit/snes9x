@@ -58,6 +58,7 @@ void MbcReset(MbcState &s)
 	s.mmm01_ram_bank_high     = 0;
 	s.mmm01_rom_bank_mask     = 0;
 	s.mmm01_ram_bank_mask     = 0xFF;
+	s.mmm01_just_locked       = false;
 }
 
 namespace {
@@ -409,7 +410,11 @@ void MbcWrite(Cart &c, uint16_t addr, uint8_t value)
 			if (!s.mmm01_locked)
 			{
 				s.mmm01_ram_bank_mask = static_cast<uint8_t>(value >> 4);
-				if (value & 0x40) s.mmm01_locked = true;
+				if (value & 0x40)
+				{
+					s.mmm01_locked      = true;
+					s.mmm01_just_locked = true;
+				}
 			}
 		}
 		else if (addr < 0x4000)

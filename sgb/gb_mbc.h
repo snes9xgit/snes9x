@@ -68,6 +68,14 @@ struct MbcState
 	uint8_t  mmm01_ram_bank_high     = 0;
 	uint8_t  mmm01_rom_bank_mask     = 0;      // bits [5:2] of $6000-$7FFF
 	uint8_t  mmm01_ram_bank_mask     = 0xFF;   // bits [5:4] of $0000-$1FFF
+
+	// One-shot event flag: rises when the menu writes the lock bit. The
+	// SGB layer polls and clears it, then injects PAL01/PAL23 packets
+	// that force all 4 SGB system palettes to grayscale — without this
+	// the sub-game inherits whatever palette the SGB BIOS assigned to
+	// the menu's title during its one-shot handshake, which usually
+	// looks badly inverted.
+	bool     mmm01_just_locked       = false;
 };
 
 struct Cart;
