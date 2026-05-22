@@ -66,11 +66,24 @@ void RecomputeStatLine(Ppu &p, Memory &mem)
 	p.stat = new_stat;
 
 	// Compute the combined IRQ line from the four source-enable flags.
+	// When the LCD is off (LCDC.bit7 = 0), real DMG holds the STAT IRQ
+	// line low regardless of the source-enable bits and the PPU state
+	// (mode/LY/LYC are parked). PpuStep mirrors this by forcing mode 0 /
+	// LY=0 with the LCD off, but writes to FF41/FF44/FF45 also call
+	// RecomputeStatLine — without this LCDC guard those writes would see
+	// "mode 0 active + bit 3 enabled" or "LY=LYC=0 + bit 6 enabled" and
+	// raise a STAT IRQ that real hardware never fires while the LCD is
+	// disabled. Zerd no Densetsu's bank-1 init exposed this: it writes
+	// STAT.bit6 inside a DI region with the LCD off via $02CF; without
+	// the guard the spurious raise leaks into the post-EI flow.
 	bool line_high = false;
-	if ((p.stat & 0x40) && (p.ly == p.lyc))                 line_high = true;
-	if ((p.stat & 0x20) && p.mode == PpuMode::OamScan)       line_high = true;
-	if ((p.stat & 0x10) && p.mode == PpuMode::VBlank)        line_high = true;
-	if ((p.stat & 0x08) && p.mode == PpuMode::HBlank)        line_high = true;
+	if (p.lcdc & 0x80)
+	{
+		if ((p.stat & 0x40) && (p.ly == p.lyc))                 line_high = true;
+		if ((p.stat & 0x20) && p.mode == PpuMode::OamScan)       line_high = true;
+		if ((p.stat & 0x10) && p.mode == PpuMode::VBlank)        line_high = true;
+		if ((p.stat & 0x08) && p.mode == PpuMode::HBlank)        line_high = true;
+	}
 
 	// Rising edge on the combined line raises LCDSTAT IRQ.
 	if (line_high && !p.stat_line_high)
@@ -427,14 +440,38 @@ inline void ExecPpuDot(Ppu &p, Memory &mem)
 		break;
 
 	case PpuMode::VBlank:
+		// LY=153 hardware quirk (Pan Docs §STAT.lyc-glitch):
+		// On real DMG, LY only reads as 153 for the first 4 dots of
+		// scanline 153, then visibly becomes 0 for the remaining 452
+		// dots while the PPU stays in mode 1 (VBlank). That early LY=0
+		// is the moment LYC=0 STAT IRQ rises on real hardware — not at
+		// scanline 0 as a naive scanline-end counter would imply.
+		// Models the LY transition; the actual end-of-scanline-153 →
+		// scanline-0 mode transition happens 452 dots later.
+		if (p.ly == 153 && p.mode_clock == 4)
+		{
+			p.ly = 0;
+			transitioned = true;
+		}
 		if (p.mode_clock >= LINE_DOTS)
 		{
 			p.mode_clock -= LINE_DOTS;
-			++p.ly;
-			if (p.ly >= TOTAL_LINES)
+			if (p.ly == 0)
 			{
-				p.ly   = 0;
+				// Quirk already set LY=0; the scanline-153 → scanline-0
+				// boundary just transitions mode to OamScan with LY
+				// unchanged.
 				p.mode = PpuMode::OamScan;
+			}
+			else
+			{
+				++p.ly;
+				if (p.ly >= TOTAL_LINES)
+				{
+					// Safety fallback (shouldn't fire if the quirk did).
+					p.ly   = 0;
+					p.mode = PpuMode::OamScan;
+				}
 			}
 			transitioned = true;
 		}
@@ -521,9 +558,39 @@ void PpuWriteReg(Ppu &p, Memory &mem, uint16_t addr, uint8_t value)
 			break;
 		}
 		case 0xFF41:
+		{
+			// DMG STAT write quirk (Pan Docs §STAT.spurious-stat-interrupts):
+			// On DMG, writing to STAT momentarily applies the rising-edge
+			// detector to ALL four source conditions (mode 0/1/2 and LYC
+			// match), regardless of which enable bits are actually being
+			// written. If the STAT line was low and ANY current condition
+			// matches, a spurious STAT IRQ is raised at the write itself.
+			//
+			// Zerd no Densetsu's bank-1 init relies on this. At $62DB
+			// (SET 6 / LDH ($41),A) the PPU is mid-VBlank (mode 1 active).
+			// The quirk fires IF.STAT immediately — with IME=0 from the
+			// surrounding DI region it sits pending; after the $62E7 EI
+			// and the CALL into $021E, the IRQ dispatches with bank=1
+			// still mapped, so the trampoline at $C2CC reads the real
+			// handler in bank 1. Without the quirk, IF.STAT only sets on
+			// the next LYC=0 edge ~3000 cycles later — by then the wait
+			// loop has entered the bank-7 sound CALL ($4023) inside its
+			// DI region, the trampoline reads bank 7 garbage ($7B), and
+			// the CPU falls into RST 38 forever.
+			if (!p.stat_line_high && (p.lcdc & 0x80))
+			{
+				const bool any_source_active =
+					p.mode == PpuMode::HBlank ||
+					p.mode == PpuMode::VBlank ||
+					p.mode == PpuMode::OamScan ||
+					p.ly == p.lyc;
+				if (any_source_active)
+					mem.if_ = static_cast<uint8_t>(mem.if_ | IRQ_LCDSTAT);
+			}
 			p.stat = static_cast<uint8_t>((p.stat & 0x07) | (value & 0x78));
 			RecomputeStatLine(p, mem);
 			break;
+		}
 		case 0xFF42: p.scy = value; break;
 		case 0xFF43: p.scx = value; break;
 		case 0xFF44: p.ly  = 0; RecomputeStatLine(p, mem); break;
