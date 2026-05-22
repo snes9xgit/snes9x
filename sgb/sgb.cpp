@@ -502,8 +502,12 @@ void Emulator::PrimeBIOSHandshake()
 		icd.synth_packets[p][0] = kHeaderByte0[p];
 		for (int b = 1; b < 16; ++b)
 		{
-			const size_t off = 0x0104 + p * 15 + (b - 1);
-			icd.synth_packets[p][b] = (off < rom.size()) ? rom[off] : 0x00;
+			const uint16_t addr = static_cast<uint16_t>(0x0104 + p * 15 + (b - 1));
+			// Route through the MBC so Sachen's locked-mode header
+			// bit-permutation (and any future mapper that munges header
+			// reads) feeds the SGB BIOS the same bytes a real cart bus
+			// would. Plain MBCs return the raw ROM byte unchanged.
+			icd.synth_packets[p][b] = MbcRead(impl_->cart.mbc, rom, impl_->cart.sram, addr);
 		}
 	}
 
@@ -598,6 +602,70 @@ bool Emulator::LoadROM(const uint8_t *data, size_t size, const char *path)
 	ColdReset();   // new cart → start fresh, drop any stale handshake cache
 	return true;
 }
+
+namespace {
+
+// All 4 SGB system palettes set to the BIOS's default colorization
+// for unknown titles — cream/orange/brown/dark, matching what Mesen
+// shows. Used after MMM01 lock so the picked sub-game renders with
+// SGB-style colors instead of inheriting the menu title's palette.
+//
+// Color 0 of every palette must be the same per SGB hardware rule.
+// SGB packet format: byte 0 = (cmd << 3) | length_in_packets. PAL01
+// is cmd 0x00, PAL23 is cmd 0x01, both with length 1. Each color is
+// 15-bit BGR555 little-endian:
+//   cream  0x67BE  (R=30 G=29 B=25)
+//   orange 0x225D  (R=29 G=18 B=8)
+//   brown  0x1956  (R=22 G=10 B=6)
+//   dark   0x006A  (R=10 G=3  B=0)
+inline void BuildSgbDefaultPalettePackets(uint8_t pal01[16], uint8_t pal23[16])
+{
+	const uint8_t cream_lo  = 0xBE, cream_hi  = 0x67;
+	const uint8_t orange_lo = 0x5D, orange_hi = 0x22;
+	const uint8_t brown_lo  = 0x56, brown_hi  = 0x19;
+	const uint8_t dark_lo   = 0x6A, dark_hi   = 0x00;
+
+	std::memset(pal01, 0, 16);
+	pal01[0]  = 0x01;  // PAL01 cmd, length 1
+	pal01[1]  = cream_lo;  pal01[2]  = cream_hi;   // shared color 0
+	pal01[3]  = orange_lo; pal01[4]  = orange_hi;  // palette 0 color 1
+	pal01[5]  = brown_lo;  pal01[6]  = brown_hi;   // palette 0 color 2
+	pal01[7]  = dark_lo;   pal01[8]  = dark_hi;    // palette 0 color 3
+	pal01[9]  = orange_lo; pal01[10] = orange_hi;  // palette 1 color 1
+	pal01[11] = brown_lo;  pal01[12] = brown_hi;   // palette 1 color 2
+	pal01[13] = dark_lo;   pal01[14] = dark_hi;    // palette 1 color 3
+
+	std::memset(pal23, 0, 16);
+	pal23[0]  = 0x09;  // PAL23 cmd (0x01 << 3 | 1)
+	pal23[1]  = cream_lo;  pal23[2]  = cream_hi;   // shared color 0
+	pal23[3]  = orange_lo; pal23[4]  = orange_hi;  // palette 2 color 1
+	pal23[5]  = brown_lo;  pal23[6]  = brown_hi;   // palette 2 color 2
+	pal23[7]  = dark_lo;   pal23[8]  = dark_hi;    // palette 2 color 3
+	pal23[9]  = orange_lo; pal23[10] = orange_hi;  // palette 3 color 1
+	pal23[11] = brown_lo;  pal23[12] = brown_hi;   // palette 3 color 2
+	pal23[13] = dark_lo;   pal23[14] = dark_hi;    // palette 3 color 3
+}
+
+// ATTR_BLK packet that assigns palette 0 to the entire 20x18 GB screen
+// (inside, border, and outside). Resets whatever attribute-file regions
+// the menu had set up for its UI — without this, sub-game text drawn
+// inside a former menu-UI region picks up the menu's palette index
+// and can render invisibly (e.g. "PUSH START" disappearing into the
+// background).
+inline void BuildResetAttrBlkPacket(uint8_t pkt[16])
+{
+	std::memset(pkt, 0, 16);
+	pkt[0] = 0x21;  // ATTR_BLK cmd (0x04 << 3 | 1 packet)
+	pkt[1] = 0x01;  // one data set
+	pkt[2] = 0x07;  // change inside + border + outside palettes
+	pkt[3] = 0x00;  // all use palette 0
+	pkt[4] = 0x00;  // X1 = 0
+	pkt[5] = 0x00;  // Y1 = 0
+	pkt[6] = 0x13;  // X2 = 19 (right edge inclusive)
+	pkt[7] = 0x11;  // Y2 = 17 (bottom edge inclusive)
+}
+
+} // anonymous
 
 void Emulator::UnloadROM()
 {
@@ -843,6 +911,33 @@ void Emulator::RunCycles(int32_t tcycles)
 {
 	if (!impl_->has_rom) return;
 	if (tcycles <= 0) return;
+
+	// MMM01 multicart just locked into game-mode — inject the SGB
+	// default ("Mario") palette packets so the picked sub-game gets
+	// proper SGB-style colorization instead of inheriting the menu
+	// title's misapplied palette. In BIOS mode we push packets onto
+	// the ICD2 FIFO so the SNES SGB BIOS picks them up and updates
+	// CGRAM; in BIOS-less mode we feed them straight into our own
+	// dispatcher. No soft reset, no splash, immediate menu→game.
+	if (impl_->cart.mbc.mmm01_just_locked)
+	{
+		impl_->cart.mbc.mmm01_just_locked = false;
+		uint8_t pal01[16], pal23[16], attr_blk[16];
+		BuildSgbDefaultPalettePackets(pal01, pal23);
+		BuildResetAttrBlkPacket(attr_blk);
+		if (impl_->boot_rom_loaded)
+		{
+			IcdPushQueue(impl_->icd2, pal01);
+			IcdPushQueue(impl_->icd2, pal23);
+			IcdPushQueue(impl_->icd2, attr_blk);
+		}
+		else
+		{
+			OnSgbCommandInternal(0x00, &pal01[1],    14);
+			OnSgbCommandInternal(0x01, &pal23[1],    14);
+			OnSgbCommandInternal(0x04, &attr_blk[1], 14);
+		}
+	}
 
 	// Per-dot CPU/PPU interleaving. Advance PPU one t-cycle at a time;
 	// after each dot, run CPU as far as it can go without overshooting
