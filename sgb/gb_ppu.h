@@ -63,6 +63,16 @@ struct Ppu
 	bool      window_active   = false;   // window engaged on this LY
 	int16_t   window_start_x  = 0;       // x at which window engaged
 
+	// Set at mode 2 → 3 transition. Real DMG extends mode 3 by ~6 dots
+	// per OAM-scan-hit sprite and delays pixel emission by the same.
+	int16_t   mode3_sprite_stall = 0;
+
+	// WX snapshot taken at mode 2 → 3. The renderer uses this instead
+	// of live p.wx so STAT-handler-driven mid-mode-3 WX writes don't tear
+	// the current line (they apply to the next line instead). $FF4B reads
+	// still return the live p.wx.
+	uint8_t   latched_wx = 0;
+
 	// Monotonic GB t-cycle counter — advanced by PpuStep. Used by
 	// AdvanceMasterCycles (sgb.cpp) to drive PPU exactly to the SNES
 	// master-cycle target on each sync, decoupled from CPU instruction
