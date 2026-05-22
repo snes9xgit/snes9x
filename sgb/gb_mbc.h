@@ -60,8 +60,9 @@ void    MbcWrite(Cart &c, uint16_t addr, uint8_t value);
 
 // Notify the mapper of a CPU write to addr >= 0x8000 (VRAM/WRAM/SRAM/HRAM/IO).
 // Used by Sachen MMC1 to advance its unlock counter — writes there are
-// otherwise invisible to the MBC.
-void    MbcNotifyHighWrite(MbcState &s, uint16_t addr);
+// otherwise invisible to the MBC. Value-sensitive (Sachen counts $31
+// writes per Tauwasser's RE) so the byte must be passed.
+void    MbcNotifyHighWrite(MbcState &s, uint16_t addr, uint8_t value);
 
 } // namespace SGB
 

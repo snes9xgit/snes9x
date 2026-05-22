@@ -502,8 +502,12 @@ void Emulator::PrimeBIOSHandshake()
 		icd.synth_packets[p][0] = kHeaderByte0[p];
 		for (int b = 1; b < 16; ++b)
 		{
-			const size_t off = 0x0104 + p * 15 + (b - 1);
-			icd.synth_packets[p][b] = (off < rom.size()) ? rom[off] : 0x00;
+			const uint16_t addr = static_cast<uint16_t>(0x0104 + p * 15 + (b - 1));
+			// Route through the MBC so Sachen's locked-mode header
+			// bit-permutation (and any future mapper that munges header
+			// reads) feeds the SGB BIOS the same bytes a real cart bus
+			// would. Plain MBCs return the raw ROM byte unchanged.
+			icd.synth_packets[p][b] = MbcRead(impl_->cart.mbc, rom, impl_->cart.sram, addr);
 		}
 	}
 

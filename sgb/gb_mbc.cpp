@@ -338,10 +338,15 @@ void MbcWrite(Cart &c, uint16_t addr, uint8_t value)
 	}
 }
 
-void MbcNotifyHighWrite(MbcState &s, uint16_t /*addr*/)
+void MbcNotifyHighWrite(MbcState &s, uint16_t /*addr*/, uint8_t value)
 {
 	if (s.type != MbcType::SachenMMC1) return;
 	if (!s.sachen_locked) return;
+	// Per Tauwasser's RE the unlock sequence is specifically value $31
+	// written to addresses with A15 set. Filtering on $31 keeps the SGB
+	// boot ROM's VRAM clear (writes garbage A) and packet-protocol
+	// $FF00 traffic (writes $00/$20/$30) from prematurely unlocking.
+	if (value != 0x31) return;
 	if (s.sachen_unlock_ctr < 0x30)
 	{
 		if (++s.sachen_unlock_ctr >= 0x30) s.sachen_locked = false;

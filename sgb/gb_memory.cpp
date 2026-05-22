@@ -103,7 +103,7 @@ void MemWrite(Memory &m, uint16_t addr, uint8_t value)
 	}
 	if (m.cart && m.cart->mbc.type == MbcType::SachenMMC1)
 	{
-		MbcNotifyHighWrite(m.cart->mbc, addr);
+		MbcNotifyHighWrite(m.cart->mbc, addr, value);
 	}
 	if (addr < 0xA000)
 	{
