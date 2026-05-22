@@ -46,6 +46,18 @@ void MbcReset(MbcState &s)
 	s.sachen_outer_mask = 0;
 	s.sachen_locked     = true;
 	s.sachen_unlock_ctr = 0;
+
+	s.mmm01_locked            = false;
+	s.mmm01_mbc1_mode         = false;
+	s.mmm01_mbc1_mode_disable = false;
+	s.mmm01_multiplex_mode    = false;
+	s.mmm01_rom_bank_low      = 0;
+	s.mmm01_rom_bank_mid      = 0;
+	s.mmm01_rom_bank_high     = 0;
+	s.mmm01_ram_bank_low      = 0;
+	s.mmm01_ram_bank_high     = 0;
+	s.mmm01_rom_bank_mask     = 0;
+	s.mmm01_ram_bank_mask     = 0xFF;
 }
 
 namespace {
@@ -122,14 +134,62 @@ inline uint16_t SachenLockedHeaderXform(uint16_t addr)
 	                           | ((addr << 6) & 0x40u));
 }
 
+// MMM01 effective bank for the $0000-$3FFF region. While unlocked the
+// mapper forces all outer ROM lines to 1 so the last 32 KiB of ROM
+// (the menu) is exposed. Once locked, the menu has populated the base
+// (rom_bank_mid/high) and mask (rom_bank_mask) registers; the masked
+// bits of rom_bank_low get overlaid with the base so the sub-game can
+// only switch within its allotted window.
+inline uint32_t Mmm01Rom0Bank(const MbcState &s, size_t rom_size)
+{
+	if (!s.mmm01_locked)
+	{
+		const uint32_t banks = static_cast<uint32_t>(rom_size / 0x4000u);
+		return banks >= 2 ? banks - 2u : 0u;
+	}
+	const uint8_t lowmask = static_cast<uint8_t>(s.mmm01_rom_bank_mask << 1);
+	const uint8_t mid = s.mmm01_multiplex_mode && s.mmm01_mbc1_mode
+	                  ? 0u
+	                  : (s.mmm01_multiplex_mode ? s.mmm01_ram_bank_low : s.mmm01_rom_bank_mid);
+	return static_cast<uint32_t>(
+	          (s.mmm01_rom_bank_low & lowmask)
+	        | (static_cast<uint32_t>(mid) << 5)
+	        | (static_cast<uint32_t>(s.mmm01_rom_bank_high) << 7));
+}
+
+inline uint32_t Mmm01RomBank(const MbcState &s, size_t rom_size)
+{
+	if (!s.mmm01_locked)
+	{
+		const uint32_t banks = static_cast<uint32_t>(rom_size / 0x4000u);
+		return banks >= 1 ? banks - 1u : 1u;
+	}
+	const uint8_t mid = s.mmm01_multiplex_mode ? s.mmm01_ram_bank_low : s.mmm01_rom_bank_mid;
+	uint32_t bank = static_cast<uint32_t>(s.mmm01_rom_bank_low)
+	              | (static_cast<uint32_t>(mid) << 5)
+	              | (static_cast<uint32_t>(s.mmm01_rom_bank_high) << 7);
+	if (bank == Mmm01Rom0Bank(s, rom_size)) ++bank;
+	return bank;
+}
+
+inline uint32_t Mmm01RamBank(const MbcState &s)
+{
+	if (!s.mmm01_locked) return 0;
+	if (s.mmm01_multiplex_mode)
+		return static_cast<uint32_t>(s.mmm01_rom_bank_mid
+		                           | (static_cast<uint32_t>(s.mmm01_ram_bank_high) << 2));
+	return static_cast<uint32_t>(s.mmm01_ram_bank_low
+	                           | (static_cast<uint32_t>(s.mmm01_ram_bank_high) << 2));
+}
+
 } // anonymous
 
 uint8_t MbcRead(MbcState &s, const std::vector<uint8_t> &rom, const std::vector<uint8_t> &sram, uint16_t addr)
 {
 	if (addr < 0x4000)
 	{
-		// Bank 0 region — mostly direct, except for MBC1 mode 1 quirk
-		// and Sachen MMC1 outer-bank routing + locked-mode header xform.
+		// Bank 0 region — mostly direct, except for MBC1 mode 1 quirk,
+		// Sachen MMC1 outer-bank/header xform, and MMM01 menu mapping.
 		uint32_t bank = 0;
 		uint16_t eff_addr = addr;
 		if (s.type == MbcType::MBC1)
@@ -140,6 +200,10 @@ uint8_t MbcRead(MbcState &s, const std::vector<uint8_t> &rom, const std::vector<
 		{
 			bank = SachenBank0(s);
 			if (s.sachen_locked) eff_addr = SachenLockedHeaderXform(addr);
+		}
+		else if (s.type == MbcType::MMM01)
+		{
+			bank = Mmm01Rom0Bank(s, rom.size());
 		}
 		return static_cast<uint8_t>(ReadRom(rom, (bank * 0x4000u) + eff_addr));
 	}
@@ -153,6 +217,7 @@ uint8_t MbcRead(MbcState &s, const std::vector<uint8_t> &rom, const std::vector<
 			case MbcType::MBC5: bank = s.rom_bank; break;
 			case MbcType::MBC2: bank = (s.rom_bank & 0x0F) ? (s.rom_bank & 0x0F) : 1; break;
 			case MbcType::SachenMMC1: bank = SachenBankN(s); break;
+			case MbcType::MMM01:      bank = Mmm01RomBank(s, rom.size()); break;
 			default:            bank = 1; break;
 		}
 		return static_cast<uint8_t>(ReadRom(rom, (bank * 0x4000u) + (addr - 0x4000u)));
@@ -180,6 +245,7 @@ uint8_t MbcRead(MbcState &s, const std::vector<uint8_t> &rom, const std::vector<
 			case MbcType::MBC1: bank = Mbc1RamBank(s); break;
 			case MbcType::MBC3: bank = s.ram_bank & 0x07; break;
 			case MbcType::MBC5: bank = s.ram_bank & 0x0F; break;
+			case MbcType::MMM01: bank = Mmm01RamBank(s) & 0x0F; break;
 			default:            bank = 0;               break;
 		}
 		return ReadSram(sram, (bank * 0x2000u) + (addr - 0xA000u));
@@ -329,6 +395,61 @@ void MbcWrite(Cart &c, uint16_t addr, uint8_t value)
 		else if (addr < 0x6000)
 		{
 			if ((s.rom_bank & 0x30) == 0x30) s.sachen_outer_mask = value;
+		}
+		break;
+
+	case MbcType::MMM01:
+		// 4 register ranges, all writable from unlocked menu mode; once
+		// the menu writes bit 6 of $0000-$1FFF the mapper locks down and
+		// only the MBC1-compatible fields (rom_bank_low / ram_bank_low /
+		// mbc1_mode + ram_enable) remain writable.
+		if (addr < 0x2000)
+		{
+			s.ram_enable = ((value & 0x0F) == 0x0A);
+			if (!s.mmm01_locked)
+			{
+				s.mmm01_ram_bank_mask = static_cast<uint8_t>(value >> 4);
+				if (value & 0x40) s.mmm01_locked = true;
+			}
+		}
+		else if (addr < 0x4000)
+		{
+			if (!s.mmm01_locked)
+			{
+				s.mmm01_rom_bank_mid = static_cast<uint8_t>(value >> 5);
+			}
+			const uint8_t lowmask = static_cast<uint8_t>(s.mmm01_rom_bank_mask << 1);
+			s.mmm01_rom_bank_low = static_cast<uint8_t>(
+			    (s.mmm01_rom_bank_low & lowmask)
+			  | (value & static_cast<uint8_t>(~lowmask)));
+		}
+		else if (addr < 0x6000)
+		{
+			s.mmm01_ram_bank_low = static_cast<uint8_t>(
+			    value | static_cast<uint8_t>(~s.mmm01_ram_bank_mask));
+			if (!s.mmm01_locked)
+			{
+				s.mmm01_ram_bank_high     = static_cast<uint8_t>((value >> 2) & 0x03);
+				s.mmm01_rom_bank_high     = static_cast<uint8_t>((value >> 4) & 0x03);
+				s.mmm01_mbc1_mode_disable = (value & 0x40) != 0;
+			}
+		}
+		else if (addr < 0x8000)
+		{
+			if (!s.mmm01_mbc1_mode_disable)
+			{
+				s.mmm01_mbc1_mode = (value & 0x01) != 0;
+			}
+			if (!s.mmm01_locked)
+			{
+				s.mmm01_rom_bank_mask  = static_cast<uint8_t>((value >> 2) & 0x0F);
+				s.mmm01_multiplex_mode = (value & 0x40) != 0;
+			}
+		}
+		else if (addr >= 0xA000 && addr < 0xC000)
+		{
+			if (!s.ram_enable) break;
+			WriteSram(c, ((Mmm01RamBank(s) & 0x0F) * 0x2000u) + (addr - 0xA000u), value);
 		}
 		break;
 

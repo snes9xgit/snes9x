@@ -23,7 +23,7 @@ enum class MbcType : uint8_t
 	MBC7       = 7,  // not yet implemented
 	HuC1       = 8,  // not yet implemented
 	HuC3       = 9,  // not yet implemented
-	MMM01      = 10, // not yet implemented
+	MMM01      = 10, // Nintendo multicart meta-mapper (Mani / Taito 4-in-1)
 	SachenMMC1 = 11  // Sachen 4B-series unlicensed multicarts
 };
 
@@ -50,6 +50,24 @@ struct MbcState
 	uint8_t  sachen_outer_mask  = 0;
 	bool     sachen_locked      = true;
 	uint8_t  sachen_unlock_ctr  = 0;
+
+	// MMM01: Nintendo multicart meta-mapper. After power-on the last
+	// 32 KiB of ROM (the menu) is mapped at $0000-$7FFF; the menu
+	// configures rom/ram base+mask registers, then writes bit 6 of
+	// $0000-$1FFF to lock into "game mode" where the selected sub-game
+	// runs under MBC1-style banking inside its allotted ROM window.
+	// Fields mirror SameBoy's mmm01 struct for direct spec parity.
+	bool     mmm01_locked            = false;
+	bool     mmm01_mbc1_mode         = false;  // bit 0 of $6000-$7FFF
+	bool     mmm01_mbc1_mode_disable = false;  // bit 6 of $4000-$5FFF
+	bool     mmm01_multiplex_mode    = false;  // bit 6 of $6000-$7FFF
+	uint8_t  mmm01_rom_bank_low      = 0;      // MBC1-style low ROM bank
+	uint8_t  mmm01_rom_bank_mid      = 0;      // upper 2 bits of $2000-$3FFF
+	uint8_t  mmm01_rom_bank_high     = 0;      // upper outer ROM bank bits
+	uint8_t  mmm01_ram_bank_low      = 0;
+	uint8_t  mmm01_ram_bank_high     = 0;
+	uint8_t  mmm01_rom_bank_mask     = 0;      // bits [5:2] of $6000-$7FFF
+	uint8_t  mmm01_ram_bank_mask     = 0xFF;   // bits [5:4] of $0000-$1FFF
 };
 
 struct Cart;
