@@ -9,19 +9,23 @@
 // Timing (T-cycles, per Pan Docs):
 //   line = 456 dots, split as
 //     mode 2 (OAM scan)       : 80 dots
-//     mode 3 (pixel transfer) : 172 dots (fixed — real HW is 172..289)
-//     mode 0 (HBlank)         : 204 dots
+//     mode 3 (pixel transfer) : 172 + sprite_count*6 dots (12-dot setup
+//                               + 6 dots per OAM-scan-hit sprite, then
+//                               160 pixels emit, total 172..232)
+//     mode 0 (HBlank)         : 204 - sprite_count*6 dots
 //   144 visible lines + 10 VBlank lines = 154 total. Frame = 70224 dots.
 //
 // PpuStep iterates one GB t-cycle at a time. During mode 3 the renderer
 // emits ONE pixel per dot (RenderPixel), re-sampling LCDC/SCX/SCY/BGP/
-// OBP0/OBP1/WX/WY at each pixel — this catches mid-LY register writes
-// that some games use for parallax (Animaniacs cloud strip), palette
-// effects, and window-position changes. It's not the full Mesen2 fetcher
-// state machine (no per-tile fetch delay, no sprite/window/SCX-fine
-// mode 3 length penalty), but it's enough to fix the visible artifacts.
-// Promote to fetcher-driven mode 3 length (Mesen-style RunDrawCycle) if
-// games need cycle-exact mode-3 timing.
+// OBP0/OBP1/WY at each pixel — this catches mid-LY register writes that
+// some games use for parallax (Animaniacs cloud strip), palette effects,
+// and partial-line scroll. WX is the exception: it's latched at
+// mode 2 → 3 and held for the line, so STAT-handler-driven mid-mode-3
+// WX writes apply to the NEXT line. This matches the 8-dot tile-boundary
+// granularity real DMG uses for window engage (rather than per-pixel).
+// Without latching, games that toggle WX from a STAT IRQ to engage/
+// disengage the window for a dialog overlay (One Piece - Maboroshi no
+// Grand Line) tear the boundary scanlines.
 //
 // OBJ-over-BG priority: the per-pixel BG raw value (scanline_bg_raw) is
 // tracked alongside the palette-mapped framebuffer so SampleSpritePixel
@@ -43,10 +47,12 @@ namespace SGB {
 
 namespace {
 
-// Mode durations in T-cycles for the fixed-timing model.
-constexpr int32_t MODE2_DOTS = 80;
-constexpr int32_t MODE3_DOTS = 172;
-constexpr int32_t MODE0_DOTS = 204;
+// Mode 3 base lengths; per-scanline length shifts by p.mode3_sprite_stall.
+constexpr int32_t MODE2_DOTS        = 80;
+constexpr int32_t MODE3_DOTS        = 172;
+constexpr int32_t MODE0_DOTS        = 204;
+constexpr int32_t MODE3_SETUP_DOTS  = 12;
+constexpr int32_t SPRITE_STALL_DOTS = 6;
 constexpr int32_t LINE_DOTS  = MODE2_DOTS + MODE3_DOTS + MODE0_DOTS;  // 456
 constexpr int32_t VISIBLE_LINES = 144;
 constexpr int32_t TOTAL_LINES   = 154;
@@ -119,8 +125,9 @@ inline uint8_t SampleBgPixel(const Ppu &p, int x)
 	return static_cast<uint8_t>((((hi >> bit) & 1) << 1) | ((lo >> bit) & 1));
 }
 
-// Sample one window pixel using CURRENT registers. Caller has already
-// confirmed the pixel falls inside the window (x >= WX-7 and ly >= WY).
+// Sample one window pixel. Uses latched_wx (sampled at mode 2 → 3)
+// rather than live p.wx — caller already confirmed engage with the
+// same latched value.
 inline uint8_t SampleWindowPixel(const Ppu &p, int x)
 {
 	const uint16_t map_base = (p.lcdc & 0x40) ? 0x1C00 : 0x1800;
@@ -128,7 +135,7 @@ inline uint8_t SampleWindowPixel(const Ppu &p, int x)
 	const uint32_t win_y    = static_cast<uint32_t>(p.window_line);
 	const uint32_t tile_row = win_y >> 3;
 	const uint32_t fine_y   = win_y & 7;
-	const int      wx       = static_cast<int>(p.wx) - 7;
+	const int      wx       = static_cast<int>(p.latched_wx) - 7;
 	const int      win_col  = x - wx;
 	const uint32_t tile_col = static_cast<uint32_t>(win_col) >> 3;
 	const uint32_t fine_x   = static_cast<uint32_t>(win_col) & 7;
@@ -258,7 +265,7 @@ void RenderPixel(Ppu &p)
 	uint8_t bg_color = 0;   // raw 2-bit pre-palette
 	if (p.lcdc & 0x01)
 	{
-		const int wx = static_cast<int>(p.wx) - 7;
+		const int wx = static_cast<int>(p.latched_wx) - 7;
 		const bool win_active_here =
 			(p.lcdc & 0x20) != 0 &&
 			static_cast<int>(p.ly) >= static_cast<int>(p.wy) &&
@@ -340,6 +347,8 @@ void PpuReset(Ppu &p)
 	p.sprite_count  = 0;
 	p.window_active = false;
 	p.window_start_x = 0;
+	p.mode3_sprite_stall = 0;
+	p.latched_wx    = 0;
 }
 
 // One GB t-cycle's worth of PPU work. Drives mode 2 sprite eval (latched
@@ -372,16 +381,30 @@ inline void ExecPpuDot(Ppu &p, Memory &mem)
 			EvalSprites(p);
 			p.draw_x        = 0;
 			p.window_active = false;
-			transitioned    = true;
+			// Real DMG fetcher pauses ~6 dots per OAM-scan-hit sprite
+			// (regardless of LCDC.1) and ~12 dots up front for setup.
+			p.mode3_sprite_stall = static_cast<int16_t>(
+				p.sprite_count * SPRITE_STALL_DOTS);
+			// WX is snapshotted here so mid-mode-3 writes don't engage
+			// the window mid-line — they take effect on the next line.
+			p.latched_wx = p.wx;
+			transitioned = true;
 		}
 		break;
 
 	case PpuMode::Transfer:
 	{
-		// Render one pixel per dot. After 160 emitted, idle until the
-		// mode 3 budget elapses (constant 172 dots — fetcher penalties
-		// for sprites/window/SCX-fine are NOT modeled yet, follow-up).
-		if (p.draw_x < GB_SCREEN_WIDTH)
+		// Pixels start emitting after the fetcher setup + sprite stalls.
+		// Mid-mode-3 register writes (LCDC.1 sprite toggle, etc.) that
+		// land before pixel 0 apply to the whole line; writes after that
+		// apply only to subsequent pixels. STAT-IRQ handlers driving WX
+		// toggles for a dialog overlay rely on the upfront setup window
+		// being large enough that the WX write completes before pixel 0
+		// emits — combined with the WX latch on the OamScan → Transfer
+		// edge, the boundary scanlines render cleanly.
+		const int32_t pixel_start_dot =
+			MODE3_SETUP_DOTS + p.mode3_sprite_stall;
+		if (p.mode_clock > pixel_start_dot && p.draw_x < GB_SCREEN_WIDTH)
 		{
 			if (p.lcdc & 0x01)
 			{
@@ -406,9 +429,10 @@ inline void ExecPpuDot(Ppu &p, Memory &mem)
 			}
 			++p.draw_x;
 		}
-		if (p.mode_clock >= MODE3_DOTS)
+		const int32_t mode3_length = MODE3_DOTS + p.mode3_sprite_stall;
+		if (p.mode_clock >= mode3_length)
 		{
-			p.mode_clock -= MODE3_DOTS;
+			p.mode_clock -= mode3_length;
 			p.mode        = PpuMode::HBlank;
 			FinalizeScanline(p);
 			transitioned = true;
@@ -417,9 +441,12 @@ inline void ExecPpuDot(Ppu &p, Memory &mem)
 	}
 
 	case PpuMode::HBlank:
-		if (p.mode_clock >= MODE0_DOTS)
+	{
+		// Mode 0 absorbs the sprite stall so the scanline still totals 456 dots.
+		const int32_t mode0_length = MODE0_DOTS - p.mode3_sprite_stall;
+		if (p.mode_clock >= mode0_length)
 		{
-			p.mode_clock -= MODE0_DOTS;
+			p.mode_clock -= mode0_length;
 			++p.ly;
 			S9xSGBOnPpuHBlank();
 			if (p.ly == VISIBLE_LINES)
@@ -438,6 +465,7 @@ inline void ExecPpuDot(Ppu &p, Memory &mem)
 			transitioned = true;
 		}
 		break;
+	}
 
 	case PpuMode::VBlank:
 		// LY=153 hardware quirk (Pan Docs §STAT.lyc-glitch):
@@ -509,6 +537,8 @@ void PpuStep(Ppu &p, Memory &mem, int32_t tcycles)
 		p.vblank_irq_delay = 0;
 		p.draw_x         = 0;
 		p.window_active  = false;
+		p.mode3_sprite_stall = 0;
+		p.latched_wx     = p.wx;
 		p.stat = static_cast<uint8_t>(p.stat & 0xF8);
 		(void)mem;
 		return;
