@@ -1120,7 +1120,7 @@ bool retro_load_game(const struct retro_game_info *game)
         }
 
         else
-        if ((is_bsx((uint8 *) game->data + 0x7fc0)==1) | (is_bsx((uint8 *) game->data + 0xffc0)==1)) {
+        if ((is_bsx((uint8 *) game->data + 0x7fc0)==1) || (is_bsx((uint8 *) game->data + 0xffc0)==1)) {
             if ((rom_loaded = LoadBIOS(biosrom,"BS-X.bin",0x100000)))
             rom_loaded = Memory.LoadMultiCartMem(biosrom, 0x100000, (const uint8_t*)game->data, game->size, 0, 0);
         }
@@ -1148,7 +1148,7 @@ bool retro_load_game(const struct retro_game_info *game)
         if (randomize_memory)
         {
             srand(time(NULL));
-            for(int lcv = 0; lcv < sizeof(Memory.RAM); lcv++)
+            for(size_t lcv = 0; lcv < sizeof(Memory.RAM); lcv++)
                 Memory.RAM[lcv] = rand() % 256;
         }
     }
