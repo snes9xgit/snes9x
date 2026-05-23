@@ -9,11 +9,29 @@
 // Timing (T-cycles, per Pan Docs):
 //   line = 456 dots, split as
 //     mode 2 (OAM scan)       : 80 dots
-//     mode 3 (pixel transfer) : 172 + sprite_count*6 dots (12-dot setup
-//                               + 6 dots per OAM-scan-hit sprite, then
-//                               160 pixels emit, total 172..232)
-//     mode 0 (HBlank)         : 204 - sprite_count*6 dots
+//     mode 3 (pixel transfer) : 172 + sprite_count*6 + (SCX & 7) dots
+//                               (12-dot setup + 6 dots per OAM-scan-hit
+//                               sprite + 1 dot per pixel the BG fetcher
+//                               has to discard for SCX-fine alignment,
+//                               then 160 pixels emit, total 172..239)
+//     mode 0 (HBlank)         : 204 - sprite_count*6 - (SCX & 7) dots
 //   144 visible lines + 10 VBlank lines = 154 total. Frame = 70224 dots.
+//
+// Mode 3 timing model:
+//   The first 12 dots of mode 3 are setup (BG fetcher fills its 16-pixel
+//   shift register with two tiles before pixel 0 emits). On lines with
+//   sprites, the fetcher additionally stalls ~6 dots per sprite covering
+//   the scanline while reading sprite tile data. When SCX is not
+//   tile-aligned (SCX & 7 != 0), the fetcher discards (SCX & 7) pixels
+//   from the first tile before emitting pixel 0 — each discarded pixel
+//   costs 1 dot. Pixels start emitting at
+//     mode_clock = 12 + sprite_count*6 + (SCX & 7)
+//   and the LAST pixel emits 160 dots later. Mode 0 shrinks by the same
+//   total to keep the scanline at 456 dots. We model the stall as a
+//   single upfront block (computed at mode 2 → 3 transition from
+//   sprite_count and the SCX latched at that boundary) rather than the
+//   per-sprite-position pipeline — close enough that STAT-IRQ handler
+//   writes land at the same effective pixel boundary as real HW.
 //
 // PpuStep iterates one GB t-cycle at a time. During mode 3 the renderer
 // emits ONE pixel per dot (RenderPixel), re-sampling LCDC/SCX/SCY/BGP/
@@ -381,10 +399,23 @@ inline void ExecPpuDot(Ppu &p, Memory &mem)
 			EvalSprites(p);
 			p.draw_x        = 0;
 			p.window_active = false;
-			// Real DMG fetcher pauses ~6 dots per OAM-scan-hit sprite
-			// (regardless of LCDC.1) and ~12 dots up front for setup.
+			// Mode 3 extra-dots budget covers two penalties that real DMG
+			// applies at the mode 2 → 3 boundary:
+			//   1. Per OAM-scan-hit sprite: ~6 dots of fetcher stall
+			//      (regardless of LCDC.1) while sprite tile data fetches.
+			//   2. SCX-fine penalty: when SCX is not tile-aligned, the BG
+			//      fetcher discards (SCX & 7) pixels from the first tile
+			//      before emitting pixel 0. Each discarded pixel costs 1
+			//      dot. Per-scanline raster-effect games (Initial D Gaiden
+			//      racing road perspective) that ramp SCX 0..31 across
+			//      consecutive scanlines need this penalty modeled or the
+			//      handler ends up writing the NEXT line's SCY/BGP into
+			//      mode 3 instead of HBlank, producing split scanlines.
+			// Mode 0 (HBlank) shrinks by the same amount so each scanline
+			// still totals 456 dots.
 			p.mode3_sprite_stall = static_cast<int16_t>(
-				p.sprite_count * SPRITE_STALL_DOTS);
+				p.sprite_count * SPRITE_STALL_DOTS +
+				(p.scx & 0x07));
 			// WX is snapshotted here so mid-mode-3 writes don't engage
 			// the window mid-line — they take effect on the next line.
 			p.latched_wx = p.wx;
