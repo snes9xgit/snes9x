@@ -9,23 +9,45 @@
 // Timing (T-cycles, per Pan Docs):
 //   line = 456 dots, split as
 //     mode 2 (OAM scan)       : 80 dots
-//     mode 3 (pixel transfer) : 172 + sprite_count*6 dots (12-dot setup
-//                               + 6 dots per OAM-scan-hit sprite, then
-//                               160 pixels emit, total 172..232)
-//     mode 0 (HBlank)         : 204 - sprite_count*6 dots
+//     mode 3 (pixel transfer) : 172 + sprite_count*6 + (SCX & 7) dots
+//                               (12-dot setup + 6 dots per OAM-scan-hit
+//                               sprite + 1 dot per pixel the BG fetcher
+//                               has to discard for SCX-fine alignment,
+//                               then 160 pixels emit, total 172..239)
+//     mode 0 (HBlank)         : 204 - sprite_count*6 - (SCX & 7) dots
 //   144 visible lines + 10 VBlank lines = 154 total. Frame = 70224 dots.
 //
+// Mode 3 timing model:
+//   The first 12 dots of mode 3 are setup (BG fetcher fills its 16-pixel
+//   shift register with two tiles before pixel 0 emits). On lines with
+//   sprites, the fetcher additionally stalls ~6 dots per sprite covering
+//   the scanline while reading sprite tile data. When SCX is not
+//   tile-aligned (SCX & 7 != 0), the fetcher discards (SCX & 7) pixels
+//   from the first tile before emitting pixel 0 — each discarded pixel
+//   costs 1 dot. Pixels start emitting at
+//     mode_clock = 12 + sprite_count*6 + (SCX & 7)
+//   and the LAST pixel emits 160 dots later. Mode 0 shrinks by the same
+//   total to keep the scanline at 456 dots. We model the stall as a
+//   single upfront block (computed at mode 2 → 3 transition from
+//   sprite_count and the SCX latched at that boundary) rather than the
+//   per-sprite-position pipeline — close enough that STAT-IRQ handler
+//   writes land at the same effective pixel boundary as real HW.
+//
 // PpuStep iterates one GB t-cycle at a time. During mode 3 the renderer
-// emits ONE pixel per dot (RenderPixel), re-sampling LCDC/SCX/SCY/BGP/
-// OBP0/OBP1/WY at each pixel — this catches mid-LY register writes that
-// some games use for parallax (Animaniacs cloud strip), palette effects,
-// and partial-line scroll. WX is the exception: it's latched at
+// emits ONE pixel per dot (RenderPixel), re-sampling LCDC/SCX/SCY/OBP0/
+// OBP1/WY at each pixel — this catches mid-LY register writes that some
+// games use for parallax (Animaniacs cloud strip), palette effects, and
+// partial-line scroll. WX and BGP are exceptions: both are latched at
 // mode 2 → 3 and held for the line, so STAT-handler-driven mid-mode-3
-// WX writes apply to the NEXT line. This matches the 8-dot tile-boundary
+// writes apply to the NEXT line. This matches the 8-dot tile-boundary
 // granularity real DMG uses for window engage (rather than per-pixel).
-// Without latching, games that toggle WX from a STAT IRQ to engage/
+// Without WX latching, games that toggle WX from a STAT IRQ to engage/
 // disengage the window for a dialog overlay (One Piece - Maboroshi no
-// Grand Line) tear the boundary scanlines.
+// Grand Line) tear the boundary scanlines. Without BGP latching, games
+// with per-scanline BGP raster effects where the handler runs long
+// (Initial D Gaiden racing speedometer top border) split the next
+// scanline — early pixels with the previous line's BGP, late pixels
+// with the new value.
 //
 // OBJ-over-BG priority: the per-pixel BG raw value (scanline_bg_raw) is
 // tracked alongside the palette-mapped framebuffer so SampleSpritePixel
@@ -290,7 +312,7 @@ void RenderPixel(Ppu &p)
 
 	p.scanline_bg_raw[x] = bg_color;
 	p.scanline_raw[x]    = bg_color;
-	line[x]              = ApplyPalette(p.bgp, bg_color);
+	line[x]              = ApplyPalette(p.latched_bgp, bg_color);
 
 	// Sprite resolve — overwrite if visible.
 	const SpritePixel sp = SampleSpritePixel(p, x);
@@ -349,6 +371,7 @@ void PpuReset(Ppu &p)
 	p.window_start_x = 0;
 	p.mode3_sprite_stall = 0;
 	p.latched_wx    = 0;
+	p.latched_bgp   = p.bgp;
 }
 
 // One GB t-cycle's worth of PPU work. Drives mode 2 sprite eval (latched
@@ -381,13 +404,32 @@ inline void ExecPpuDot(Ppu &p, Memory &mem)
 			EvalSprites(p);
 			p.draw_x        = 0;
 			p.window_active = false;
-			// Real DMG fetcher pauses ~6 dots per OAM-scan-hit sprite
-			// (regardless of LCDC.1) and ~12 dots up front for setup.
+			// Mode 3 extra-dots budget covers two penalties that real DMG
+			// applies at the mode 2 → 3 boundary:
+			//   1. Per OAM-scan-hit sprite: ~6 dots of fetcher stall
+			//      (regardless of LCDC.1) while sprite tile data fetches.
+			//   2. SCX-fine penalty: when SCX is not tile-aligned, the BG
+			//      fetcher discards (SCX & 7) pixels from the first tile
+			//      before emitting pixel 0. Each discarded pixel costs 1
+			//      dot. Per-scanline raster-effect games (Initial D Gaiden
+			//      racing road perspective) that ramp SCX 0..31 across
+			//      consecutive scanlines need this penalty modeled or the
+			//      handler ends up writing the NEXT line's SCY/BGP into
+			//      mode 3 instead of HBlank, producing split scanlines.
+			// Mode 0 (HBlank) shrinks by the same amount so each scanline
+			// still totals 456 dots.
 			p.mode3_sprite_stall = static_cast<int16_t>(
-				p.sprite_count * SPRITE_STALL_DOTS);
+				p.sprite_count * SPRITE_STALL_DOTS +
+				(p.scx & 0x07));
 			// WX is snapshotted here so mid-mode-3 writes don't engage
 			// the window mid-line — they take effect on the next line.
-			p.latched_wx = p.wx;
+			// BGP is snapshotted alongside for the same reason: a STAT
+			// handler that runs long can write the next line's BGP into
+			// the current line's early mode 3, and per-pixel sampling
+			// would split the line. Latching here gives each line a
+			// single BGP for its entire mode 3.
+			p.latched_wx  = p.wx;
+			p.latched_bgp = p.bgp;
 			transitioned = true;
 		}
 		break;
@@ -418,7 +460,7 @@ inline void ExecPpuDot(Ppu &p, Memory &mem)
 				p.scanline_bg_raw[x] = 0;
 				p.scanline_raw[x]    = 0;
 				p.framebuffer[p.ly * GB_SCREEN_WIDTH + x] =
-					ApplyPalette(p.bgp, 0);
+					ApplyPalette(p.latched_bgp, 0);
 				const SpritePixel sp = SampleSpritePixel(p, x);
 				if (sp.covered)
 				{
@@ -539,6 +581,7 @@ void PpuStep(Ppu &p, Memory &mem, int32_t tcycles)
 		p.window_active  = false;
 		p.mode3_sprite_stall = 0;
 		p.latched_wx     = p.wx;
+		p.latched_bgp    = p.bgp;
 		p.stat = static_cast<uint8_t>(p.stat & 0xF8);
 		(void)mem;
 		return;
@@ -590,11 +633,10 @@ void PpuWriteReg(Ppu &p, Memory &mem, uint16_t addr, uint8_t value)
 		case 0xFF41:
 		{
 			// DMG STAT write quirk (Pan Docs §STAT.spurious-stat-interrupts):
-			// On DMG, writing to STAT momentarily applies the rising-edge
-			// detector to ALL four source conditions (mode 0/1/2 and LYC
-			// match), regardless of which enable bits are actually being
-			// written. If the STAT line was low and ANY current condition
-			// matches, a spurious STAT IRQ is raised at the write itself.
+			// On DMG, writing to STAT momentarily glitches the enable bits
+			// to all-1 for one cycle. If a source condition (mode 0/1/2 or
+			// LYC=LY) is currently active during that glitch AND the STAT
+			// line was previously low, a spurious LCDSTAT IRQ is raised.
 			//
 			// Zerd no Densetsu's bank-1 init relies on this. At $62DB
 			// (SET 6 / LDH ($41),A) the PPU is mid-VBlank (mode 1 active).
@@ -607,7 +649,23 @@ void PpuWriteReg(Ppu &p, Memory &mem, uint16_t addr, uint8_t value)
 			// loop has entered the bank-7 sound CALL ($4023) inside its
 			// DI region, the trampoline reads bank 7 garbage ($7B), and
 			// the CPU falls into RST 38 forever.
-			if (!p.stat_line_high && (p.lcdc & 0x80))
+			//
+			// Edge gate: only fire the quirk when the write ACTUALLY
+			// newly-enables at least one source bit (3..6 going 0→1).
+			// Idempotent rewrites (e.g. STAT=$40 → STAT=$40) don't
+			// produce a hardware-visible edge — without this gate
+			// Initial D Gaiden's racing-scene STAT handler over-fires
+			// itself catastrophically: the handler does EI early then
+			// writes STAT idempotently as part of its work, each write
+			// quirk-firing a new STAT IRQ that nests on top of the
+			// running handler, stack-bombing WRAM down hundreds of bytes
+			// per frame and walking the per-scanline SCY/SCX/BGP table
+			// way past one entry per line. The road perspective falls
+			// apart into stripes.
+			const uint8_t old_enables = static_cast<uint8_t>(p.stat & 0x78);
+			const uint8_t new_enables = static_cast<uint8_t>(value & 0x78);
+			const bool    newly_set   = (~old_enables & new_enables) != 0;
+			if (newly_set && !p.stat_line_high && (p.lcdc & 0x80))
 			{
 				const bool any_source_active =
 					p.mode == PpuMode::HBlank ||

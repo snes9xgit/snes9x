@@ -73,6 +73,22 @@ struct Ppu
 	// still return the live p.wx.
 	uint8_t   latched_wx = 0;
 
+	// BGP snapshot taken at mode 2 → 3 — same rationale as latched_wx.
+	// Initial D Gaiden's per-scanline raster effect handler can extend
+	// into the next line's mode 2 / early mode 3 (handler is ~55 m-cycles,
+	// HBlank with sprite/SCX-fine stalls can be as short as ~30 m-cycles).
+	// Those late BGP writes were splitting the next scanline under our
+	// per-pixel BGP sampling: pixels emitted before the write used the
+	// previous line's BGP, pixels after used the new one. Latching at
+	// the mode 2 → 3 boundary gives each line a single BGP for its
+	// entire mode 3, matching how real DMG sources palette for the
+	// majority of games. $FF47 reads still return live p.bgp. TRADE-OFF:
+	// games that intentionally change BGP mid-mode-3 for a horizontal
+	// gradient (Animaniacs cloud strip, Balloon Kid title) will see one
+	// BGP per line instead of the per-pixel sweep — revisit if those
+	// regress.
+	uint8_t   latched_bgp = 0;
+
 	// Monotonic GB t-cycle counter — advanced by PpuStep. Used by
 	// AdvanceMasterCycles (sgb.cpp) to drive PPU exactly to the SNES
 	// master-cycle target on each sync, decoupled from CPU instruction

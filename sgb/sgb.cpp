@@ -383,6 +383,7 @@ void Emulator::Reset()
 	JoypadReset(impl_->joypad);
 	PacketReset(impl_->sgb_pkt);
 	SgbReset(impl_->sgb_state);
+	MbcReset(impl_->cart.mbc);
 	impl_->border_capture.stage = Impl::BorderCapture::Idle;
 	impl_->border_fade_frames   = 0;
 	impl_->boot_handoff_captured = false;
