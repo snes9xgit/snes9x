@@ -226,14 +226,23 @@ bool CartLoad(Cart &c, const uint8_t *data, size_t size, const char *path)
 	MbcReset(c.mbc);
 
 	// ----- Cart RAM allocation -----
+	// Initialize fresh SRAM to $FF. Real hardware SRAM cells with no
+	// battery (or first-ever boot with a fresh battery) read as $FF —
+	// not zero — and several games use that as the "no save / new game"
+	// sentinel. Initial D Gaiden is one: with a zero-init SRAM the game
+	// thinks a save exists and walks an in-game-data code path that reads
+	// strings out of cart RAM that the new-game flow would have populated,
+	// so the dialog box renders empty. Match BGB/mGBA/SameBoy here.
 	if (c.mbc.type == MbcType::MBC2)
 	{
-		// MBC2 has 512 x 4-bit internal RAM regardless of the header RAM size.
-		c.sram.assign(512, 0x00);
+		// MBC2 has 512 x 4-bit internal RAM regardless of the header RAM
+		// size. Real MBC2 internal RAM also defaults to $FF — but only the
+		// low nibble is wired, so we'll see $F upper-bits at read time.
+		c.sram.assign(512, 0xFF);
 	}
 	else if (h.ram_size > 0)
 	{
-		c.sram.assign(h.ram_size, 0x00);
+		c.sram.assign(h.ram_size, 0xFF);
 	}
 
 	c.path = path ? path : "";
