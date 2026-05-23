@@ -590,11 +590,10 @@ void PpuWriteReg(Ppu &p, Memory &mem, uint16_t addr, uint8_t value)
 		case 0xFF41:
 		{
 			// DMG STAT write quirk (Pan Docs §STAT.spurious-stat-interrupts):
-			// On DMG, writing to STAT momentarily applies the rising-edge
-			// detector to ALL four source conditions (mode 0/1/2 and LYC
-			// match), regardless of which enable bits are actually being
-			// written. If the STAT line was low and ANY current condition
-			// matches, a spurious STAT IRQ is raised at the write itself.
+			// On DMG, writing to STAT momentarily glitches the enable bits
+			// to all-1 for one cycle. If a source condition (mode 0/1/2 or
+			// LYC=LY) is currently active during that glitch AND the STAT
+			// line was previously low, a spurious LCDSTAT IRQ is raised.
 			//
 			// Zerd no Densetsu's bank-1 init relies on this. At $62DB
 			// (SET 6 / LDH ($41),A) the PPU is mid-VBlank (mode 1 active).
@@ -607,7 +606,23 @@ void PpuWriteReg(Ppu &p, Memory &mem, uint16_t addr, uint8_t value)
 			// loop has entered the bank-7 sound CALL ($4023) inside its
 			// DI region, the trampoline reads bank 7 garbage ($7B), and
 			// the CPU falls into RST 38 forever.
-			if (!p.stat_line_high && (p.lcdc & 0x80))
+			//
+			// Edge gate: only fire the quirk when the write ACTUALLY
+			// newly-enables at least one source bit (3..6 going 0→1).
+			// Idempotent rewrites (e.g. STAT=$40 → STAT=$40) don't
+			// produce a hardware-visible edge — without this gate
+			// Initial D Gaiden's racing-scene STAT handler over-fires
+			// itself catastrophically: the handler does EI early then
+			// writes STAT idempotently as part of its work, each write
+			// quirk-firing a new STAT IRQ that nests on top of the
+			// running handler, stack-bombing WRAM down hundreds of bytes
+			// per frame and walking the per-scanline SCY/SCX/BGP table
+			// way past one entry per line. The road perspective falls
+			// apart into stripes.
+			const uint8_t old_enables = static_cast<uint8_t>(p.stat & 0x78);
+			const uint8_t new_enables = static_cast<uint8_t>(value & 0x78);
+			const bool    newly_set   = (~old_enables & new_enables) != 0;
+			if (newly_set && !p.stat_line_high && (p.lcdc & 0x80))
 			{
 				const bool any_source_active =
 					p.mode == PpuMode::HBlank ||
