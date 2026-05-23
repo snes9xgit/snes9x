@@ -34,16 +34,20 @@
 //   writes land at the same effective pixel boundary as real HW.
 //
 // PpuStep iterates one GB t-cycle at a time. During mode 3 the renderer
-// emits ONE pixel per dot (RenderPixel), re-sampling LCDC/SCX/SCY/BGP/
-// OBP0/OBP1/WY at each pixel — this catches mid-LY register writes that
-// some games use for parallax (Animaniacs cloud strip), palette effects,
-// and partial-line scroll. WX is the exception: it's latched at
+// emits ONE pixel per dot (RenderPixel), re-sampling LCDC/SCX/SCY/OBP0/
+// OBP1/WY at each pixel — this catches mid-LY register writes that some
+// games use for parallax (Animaniacs cloud strip), palette effects, and
+// partial-line scroll. WX and BGP are exceptions: both are latched at
 // mode 2 → 3 and held for the line, so STAT-handler-driven mid-mode-3
-// WX writes apply to the NEXT line. This matches the 8-dot tile-boundary
+// writes apply to the NEXT line. This matches the 8-dot tile-boundary
 // granularity real DMG uses for window engage (rather than per-pixel).
-// Without latching, games that toggle WX from a STAT IRQ to engage/
+// Without WX latching, games that toggle WX from a STAT IRQ to engage/
 // disengage the window for a dialog overlay (One Piece - Maboroshi no
-// Grand Line) tear the boundary scanlines.
+// Grand Line) tear the boundary scanlines. Without BGP latching, games
+// with per-scanline BGP raster effects where the handler runs long
+// (Initial D Gaiden racing speedometer top border) split the next
+// scanline — early pixels with the previous line's BGP, late pixels
+// with the new value.
 //
 // OBJ-over-BG priority: the per-pixel BG raw value (scanline_bg_raw) is
 // tracked alongside the palette-mapped framebuffer so SampleSpritePixel
@@ -308,7 +312,7 @@ void RenderPixel(Ppu &p)
 
 	p.scanline_bg_raw[x] = bg_color;
 	p.scanline_raw[x]    = bg_color;
-	line[x]              = ApplyPalette(p.bgp, bg_color);
+	line[x]              = ApplyPalette(p.latched_bgp, bg_color);
 
 	// Sprite resolve — overwrite if visible.
 	const SpritePixel sp = SampleSpritePixel(p, x);
@@ -367,6 +371,7 @@ void PpuReset(Ppu &p)
 	p.window_start_x = 0;
 	p.mode3_sprite_stall = 0;
 	p.latched_wx    = 0;
+	p.latched_bgp   = p.bgp;
 }
 
 // One GB t-cycle's worth of PPU work. Drives mode 2 sprite eval (latched
@@ -418,7 +423,13 @@ inline void ExecPpuDot(Ppu &p, Memory &mem)
 				(p.scx & 0x07));
 			// WX is snapshotted here so mid-mode-3 writes don't engage
 			// the window mid-line — they take effect on the next line.
-			p.latched_wx = p.wx;
+			// BGP is snapshotted alongside for the same reason: a STAT
+			// handler that runs long can write the next line's BGP into
+			// the current line's early mode 3, and per-pixel sampling
+			// would split the line. Latching here gives each line a
+			// single BGP for its entire mode 3.
+			p.latched_wx  = p.wx;
+			p.latched_bgp = p.bgp;
 			transitioned = true;
 		}
 		break;
@@ -449,7 +460,7 @@ inline void ExecPpuDot(Ppu &p, Memory &mem)
 				p.scanline_bg_raw[x] = 0;
 				p.scanline_raw[x]    = 0;
 				p.framebuffer[p.ly * GB_SCREEN_WIDTH + x] =
-					ApplyPalette(p.bgp, 0);
+					ApplyPalette(p.latched_bgp, 0);
 				const SpritePixel sp = SampleSpritePixel(p, x);
 				if (sp.covered)
 				{
@@ -570,6 +581,7 @@ void PpuStep(Ppu &p, Memory &mem, int32_t tcycles)
 		p.window_active  = false;
 		p.mode3_sprite_stall = 0;
 		p.latched_wx     = p.wx;
+		p.latched_bgp    = p.bgp;
 		p.stat = static_cast<uint8_t>(p.stat & 0xF8);
 		(void)mem;
 		return;
