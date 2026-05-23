@@ -5387,29 +5387,22 @@ INT_PTR CALLBACK DlgSoundConf(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
             Edit_SetText(GetDlgItem(hDlg, IDC_EDIT_VOLUME_GB), valTxt);
 
             {
-                // SPC + GB only matter in SGB1/SGB2 BIOS mode: that's the only path
-                // that actually applies the per-source gains. In BIOS-less .gb/.gbc
-                // mode the GB samples come straight through S9xMixSamples and are
-                // only scaled by the master Regular volume, so the GB slider just
-                // mirrors Regular (disabled) and the SPC is silent (discarded).
+                // SPC slider only matters in SGB1/SGB2 BIOS mode (the SPC stream is
+                // discarded in BIOS-less .gb/.gbc). The GB slider applies in both
+                // BIOS and BIOS-less modes: in BIOS mode as the GB side of the
+                // SPC+GB mix, in BIOS-less mode as a pre-master attenuation on the
+                // GB-only buffer so the user can balance GB vs SNES (Regular)
+                // independently when switching between cartridges.
                 BOOL bios_mode = Settings.SGB_BIOSModeActive ? TRUE : FALSE;
+                BOOL gb_active = Settings.SuperGameBoy ? TRUE : FALSE;
                 EnableWindow(GetDlgItem(hDlg, IDC_SLIDER_VOLUME_SPC), bios_mode);
                 EnableWindow(GetDlgItem(hDlg, IDC_EDIT_VOLUME_SPC),   bios_mode);
                 EnableWindow(GetDlgItem(hDlg, IDC_STATIC_SPC_LABEL),  bios_mode);
                 EnableWindow(GetDlgItem(hDlg, IDC_STATIC_SPC_PCT),    bios_mode);
-                EnableWindow(GetDlgItem(hDlg, IDC_SLIDER_VOLUME_GB),  bios_mode);
-                EnableWindow(GetDlgItem(hDlg, IDC_EDIT_VOLUME_GB),    bios_mode);
-                EnableWindow(GetDlgItem(hDlg, IDC_STATIC_GB_LABEL),   bios_mode);
-                EnableWindow(GetDlgItem(hDlg, IDC_STATIC_GB_PCT),     bios_mode);
-
-                // In BIOS-less GB mode, show GB slider mirroring the Regular master,
-                // since master is what actually controls GB loudness.
-                if (Settings.SuperGameBoy && !Settings.SGB_BIOSModeActive)
-                {
-                    SendDlgItemMessage(hDlg, IDC_SLIDER_VOLUME_GB, TBM_SETPOS, TRUE, 100 - (int)GUI.VolumeRegular);
-                    _sntprintf(valTxt, 10, TEXT("%u"), GUI.VolumeRegular);
-                    Edit_SetText(GetDlgItem(hDlg, IDC_EDIT_VOLUME_GB), valTxt);
-                }
+                EnableWindow(GetDlgItem(hDlg, IDC_SLIDER_VOLUME_GB),  gb_active);
+                EnableWindow(GetDlgItem(hDlg, IDC_EDIT_VOLUME_GB),    gb_active);
+                EnableWindow(GetDlgItem(hDlg, IDC_STATIC_GB_LABEL),   gb_active);
+                EnableWindow(GetDlgItem(hDlg, IDC_STATIC_GB_PCT),     gb_active);
             }
 
 
@@ -5499,34 +5492,21 @@ INT_PTR CALLBACK DlgSoundConf(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 				{
 					editId = IDC_EDIT_VOLUME_REGULAR;
 
-					// Master behavior: shift active per-source sliders by the same
-					// delta, clamped to [0,100]. In BIOS mode SPC + GB both apply,
-					// so drag both. In BIOS-less mode only GB is engaged (SPC is
-					// discarded), so drag only GB. With no GB ROM loaded, leave
-					// the saved per-source values untouched.
+					// Master behavior: in BIOS mode the Regular slider drags SPC +
+					// GB together (those gains live inside the SPC+GB mix and the
+					// Regular slider is the only practical master). In BIOS-less
+					// mode the GB slider is independent — Regular is the post-mix
+					// master that also scales SNES audio, GB is a pre-master
+					// attenuation on the GB-only buffer, so dragging them in lock
+					// would defeat the point of having two sliders.
 					int delta = trackValue - prevRegularVolume;
-					if (delta != 0)
+					if (delta != 0 && Settings.SGB_BIOSModeActive)
 					{
-						struct { int slider; int edit; } linked[2];
-						int count = 0;
-						if (Settings.SGB_BIOSModeActive)
+						const int linked[2] = { IDC_SLIDER_VOLUME_SPC, IDC_SLIDER_VOLUME_GB };
+						const int linkedEdit[2] = { IDC_EDIT_VOLUME_SPC, IDC_EDIT_VOLUME_GB };
+						for (int i = 0; i < 2; ++i)
 						{
-							linked[count].slider = IDC_SLIDER_VOLUME_SPC;
-							linked[count].edit   = IDC_EDIT_VOLUME_SPC;
-							++count;
-							linked[count].slider = IDC_SLIDER_VOLUME_GB;
-							linked[count].edit   = IDC_EDIT_VOLUME_GB;
-							++count;
-						}
-						else if (Settings.SuperGameBoy)
-						{
-							linked[count].slider = IDC_SLIDER_VOLUME_GB;
-							linked[count].edit   = IDC_EDIT_VOLUME_GB;
-							++count;
-						}
-						for (int i = 0; i < count; ++i)
-						{
-							HWND sH = GetDlgItem(hDlg, linked[i].slider);
+							HWND sH = GetDlgItem(hDlg, linked[i]);
 							int curVal = 100 - (int)SendMessage(sH, TBM_GETPOS, 0, 0);
 							int newVal = curVal + delta;
 							if (newVal < 0)   newVal = 0;
@@ -5534,7 +5514,7 @@ INT_PTR CALLBACK DlgSoundConf(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 							SendMessage(sH, TBM_SETPOS, TRUE, 100 - newVal);
 							TCHAR tx[10];
 							_sntprintf(tx, 10, TEXT("%d"), newVal);
-							Edit_SetText(GetDlgItem(hDlg, linked[i].edit), tx);
+							Edit_SetText(GetDlgItem(hDlg, linkedEdit[i]), tx);
 						}
 					}
 					prevRegularVolume = trackValue;
@@ -5601,16 +5581,19 @@ INT_PTR CALLBACK DlgSoundConf(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 					sliderVal = _tstoi(valTxt);
 					GUI.VolumeTurbo = (sliderVal >= 0 && sliderVal <= 100) ? sliderVal : 100;
 
-					// SGB per-source mix volumes — only persist when SGB BIOS mode is
-					// active (the only mode that actually applies these gains). In
-					// BIOS-less mode the GB slider was forced to mirror Regular, so
-					// saving it would clobber the user's previous BIOS-mode preference.
+					// SGB per-source mix volumes. SPC only applies in BIOS mode (the
+					// SPC stream is discarded in BIOS-less), so only persist it
+					// there. GB applies in both modes — in BIOS as the GB side of
+					// the SPC+GB mix, in BIOS-less as a pre-master attenuation on
+					// the GB-only buffer.
 					if (Settings.SGB_BIOSModeActive)
 					{
 						Edit_GetText(GetDlgItem(hDlg, IDC_EDIT_VOLUME_SPC), valTxt, 10);
 						sliderVal = _tstoi(valTxt);
 						S9xSGBMixVolumeSPC = (sliderVal >= 0 && sliderVal <= 100) ? (unsigned int)sliderVal : 100u;
-
+					}
+					if (Settings.SuperGameBoy)
+					{
 						Edit_GetText(GetDlgItem(hDlg, IDC_EDIT_VOLUME_GB), valTxt, 10);
 						sliderVal = _tstoi(valTxt);
 						S9xSGBMixVolumeGB = (sliderVal >= 0 && sliderVal <= 100) ? (unsigned int)sliderVal : 100u;

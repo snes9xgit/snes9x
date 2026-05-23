@@ -527,6 +527,15 @@ static void MixSpcOverGB(uint8 *dest, int sample_words)
 
     if (!sgb_bios_mix)
     {
+        if (Settings.SuperGameBoy)
+        {
+            const unsigned int vol_gb_pct = (S9xSGBMixVolumeGB > 100) ? 100 : S9xSGBMixVolumeGB;
+            if (vol_gb_pct != 100)
+            {
+                for (int i = 0; i < sample_words; ++i)
+                    out16[i] = (int16_t)(((int32_t)out16[i] * (int)vol_gb_pct) / 100);
+            }
+        }
         S9xAudioWaveformPushMix(out16, frames);
         return;
     }
