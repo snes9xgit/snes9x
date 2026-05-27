@@ -5394,7 +5394,7 @@ INT_PTR CALLBACK DlgSoundConf(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
                 // GB-only buffer so the user can balance GB vs SNES (Regular)
                 // independently when switching between cartridges.
                 BOOL bios_mode = Settings.SGB_BIOSModeActive ? TRUE : FALSE;
-                BOOL gb_active = Settings.SuperGameBoy ? TRUE : FALSE;
+                BOOL gb_active = (Settings.SuperGameBoy || Settings.SGB_BIOSModeActive) ? TRUE : FALSE;
                 EnableWindow(GetDlgItem(hDlg, IDC_SLIDER_VOLUME_SPC), bios_mode);
                 EnableWindow(GetDlgItem(hDlg, IDC_EDIT_VOLUME_SPC),   bios_mode);
                 EnableWindow(GetDlgItem(hDlg, IDC_STATIC_SPC_LABEL),  bios_mode);
