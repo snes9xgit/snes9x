@@ -288,6 +288,7 @@
 #define IDC_LABEL_UP26                  1199
 #define IDC_LABEL_UP27                  1200
 #define IDC_MESSAGES_IN_IMAGE           1200
+#define IDC_BLEND_GB_FRAMES             3257
 #define IDC_RECORD_NOW                  1201
 #define IDC_MESSAGES_SCALE              1201
 #define IDC_LABEL_UP28                  1201
@@ -793,7 +794,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        180
 #define _APS_NEXT_COMMAND_VALUE         40203
-#define _APS_NEXT_CONTROL_VALUE         3257
+#define _APS_NEXT_CONTROL_VALUE         3258
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

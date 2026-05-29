@@ -205,6 +205,53 @@ void S9xStartScreenRefresh (void)
 	IPPU.TotalEmulatedFrames++;
 }
 
+static void S9xBlendGameBoyFrames (void)
+{
+	static uint16 prev[SNES_WIDTH * SNES_HEIGHT_EXTENDED];
+	static uint32 prevW = 0, prevH = 0;
+	static bool   valid = false;
+
+	if (!Settings.GBFrameBlend ||
+	    !(Settings.SuperGameBoy || Settings.SGB_BIOSModeActive))
+	{
+		valid = false;
+		return;
+	}
+
+	const uint32 w = IPPU.RenderedScreenWidth;
+	const uint32 h = IPPU.RenderedScreenHeight;
+	if (w == 0 || h == 0 || w > SNES_WIDTH || h > SNES_HEIGHT_EXTENDED)
+	{
+		valid = false;
+		return;
+	}
+
+	const uint32 pitch = GFX.RealPPL;
+	const bool   mix   = valid && w == prevW && h == prevH;
+
+	for (uint32 y = 0; y < h; y++)
+	{
+		uint16 *line = GFX.Screen + y * pitch;
+		uint16 *save = prev + y * w;
+		for (uint32 x = 0; x < w; x++)
+		{
+			const uint16 cur = line[x];
+			if (mix)
+			{
+				uint32 r0, g0, b0, r1, g1, b1;
+				DECOMPOSE_PIXEL(save[x], r0, g0, b0);
+				DECOMPOSE_PIXEL(cur,     r1, g1, b1);
+				line[x] = (uint16) BUILD_PIXEL((r0 + r1) >> 1, (g0 + g1) >> 1, (b0 + b1) >> 1);
+			}
+			save[x] = cur;
+		}
+	}
+
+	prevW = w;
+	prevH = h;
+	valid = true;
+}
+
 void S9xEndScreenRefresh (void)
 {
 	if (IPPU.RenderThisFrame)
@@ -221,6 +268,8 @@ void S9xEndScreenRefresh (void)
 		// No-op until both halves of CHR_TRN + PCT_TRN have arrived.
 		if (Settings.SGB_BIOSModeActive)
 			S9xSGBOverlayBiosBorder(GFX.Screen, GFX.RealPPL);
+
+		S9xBlendGameBoyFrames();
 
 		if (GFX.DoInterlace && S9xInterlaceField() == 0)
 		{
