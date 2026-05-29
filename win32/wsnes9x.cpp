@@ -9746,7 +9746,7 @@ INT_PTR CALLBACK DlgFunky(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 
 	// temporary GUI state for restoring after previewing while selecting options
 	static int prevScale, prevScaleHiRes, prevPPL;
-	static bool prevStretch, prevAspectRatio, prevHeightExtend, prevAutoDisplayMessages, prevBilinearFilter, prevShaderEnabled, prevBlendHires, prevIntegerScaling, prevNTSCScanlines;
+	static bool prevStretch, prevAspectRatio, prevHeightExtend, prevAutoDisplayMessages, prevBilinearFilter, prevShaderEnabled, prevBlendHires, prevIntegerScaling, prevNTSCScanlines, prevGBFrameBlend;
 	static int prevAspectWidth;
 	static OutputMethod prevOutputMethod;
 	static TCHAR prevD3DShaderFile[MAX_PATH],prevOGLShaderFile[MAX_PATH];
@@ -9782,6 +9782,7 @@ INT_PTR CALLBACK DlgFunky(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
         prevShaderEnabled = GUI.shaderEnabled;
         prevBlendHires = GUI.BlendHiRes;
 		prevNTSCScanlines = GUI.NTSCScanlines;
+		prevGBFrameBlend = Settings.GBFrameBlend != 0;
 
         lstrcpy(prevD3DShaderFile, GUI.D3DshaderFileName);
         lstrcpy(prevOGLShaderFile, GUI.OGLshaderFileName);
@@ -9806,6 +9807,8 @@ INT_PTR CALLBACK DlgFunky(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 
         if (GUI.BlendHiRes)
             SendDlgItemMessage(hDlg, IDC_HIRESBLEND, BM_SETCHECK, (WPARAM)BST_CHECKED, 0);
+        if (Settings.GBFrameBlend)
+            SendDlgItemMessage(hDlg, IDC_BLEND_GB_FRAMES, BM_SETCHECK, (WPARAM)BST_CHECKED, 0);
         if (Settings.ShowOverscan)
             SendDlgItemMessage(hDlg, IDC_HEIGHT_EXTEND, BM_SETCHECK, (WPARAM)BST_CHECKED, 0);
         if (Settings.AutoDisplayMessages)
@@ -10030,6 +10033,11 @@ INT_PTR CALLBACK DlgFunky(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 			WinRefreshDisplay();
 			break;
 
+		case IDC_BLEND_GB_FRAMES:
+			Settings.GBFrameBlend = (IsDlgButtonChecked(hDlg,IDC_BLEND_GB_FRAMES)==BST_CHECKED);
+			WinRefreshDisplay();
+			break;
+
 		case IDC_AUTOFRAME:
 			if(BN_CLICKED==HIWORD(wParam)||BN_DBLCLK==HIWORD(wParam))
 			{
@@ -10230,6 +10238,7 @@ INT_PTR CALLBACK DlgFunky(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 			GUI.FullscreenOnOpen = (bool)(IsDlgButtonChecked(hDlg, IDC_FULLSCREEN_ON_OPEN) == BST_CHECKED);
 			Settings.DisplayFrameRate = IsDlgButtonChecked(hDlg, IDC_SHOWFPS);
 			GUI.BlendHiRes = (bool)(IsDlgButtonChecked(hDlg, IDC_HIRESBLEND)==BST_CHECKED);
+			Settings.GBFrameBlend = (IsDlgButtonChecked(hDlg, IDC_BLEND_GB_FRAMES)==BST_CHECKED);
 
 			index = ComboBox_GetCurSel(GetDlgItem(hDlg,IDC_RESOLUTION));
 
@@ -10286,6 +10295,7 @@ INT_PTR CALLBACK DlgFunky(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 				GUI.shaderEnabled = prevShaderEnabled;
 				GUI.BlendHiRes = prevBlendHires;
 				GUI.NTSCScanlines = prevNTSCScanlines;
+				Settings.GBFrameBlend = prevGBFrameBlend;
 				lstrcpy(GUI.D3DshaderFileName,prevD3DShaderFile);
 				lstrcpy(GUI.OGLshaderFileName,prevOGLShaderFile);
 			}

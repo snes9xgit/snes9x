@@ -773,6 +773,7 @@ void WinRegisterConfigItems()
 	AddBool2C("FrameRate", Settings.DisplayFrameRate, false, "on to display the framerate (will be inaccurate if AutoMaxSkipFrames is too small)");
 	AddBoolC("DisplayInput", Settings.DisplayPressedKeys, false, "true to show which buttons are pressed");
 	AddBoolC("DisplayFrameCount", Settings.DisplayMovieFrame, true, "true to show the frame count when a movie is playing");
+	AddBoolC("BlendGBFrames", Settings.GBFrameBlend, false, "true to mix each Game Boy frame 50/50 with the previous one (fixes flicker-based fake transparency, e.g. Chikyuu Kaihou Gun ZAS)");
 #undef CATEGORY
 #define CATEGORY "Display\\Win"
 	AddUIntC("OutputMethod", GUI.outputMethod, 1, "0=DirectDraw, 1=Direct3D, 2=OpenGL");
