@@ -5,8 +5,8 @@
 \*****************************************************************************/
 
 // Memory Bank Controllers. MBC1, MBC3, MBC5 cover ~95% of commercial
-// GB carts; MBC2, HuC1, MMM01, and Sachen MMC1 are also handled.
-// MBC6/MBC7/HuC3 remain stubbed (read-only no-MBC) for now.
+// GB carts; MBC2, HuC1, HuC3, MMM01, and Sachen MMC1 are also
+// handled. MBC6/MBC7 remain stubbed (read-only no-MBC) for now.
 //
 // Register meanings per Pan Docs:
 //
@@ -33,6 +33,12 @@
 //                    IR register; any other value routes it to cart RAM.
 //                    HuC1 RAM has no separate enable (always live).
 //     0x2000-0x3FFF  ROM bank (low 6 bits)
+//     0x4000-0x5FFF  RAM bank (low 2 bits)
+//
+//   HuC3: (MBC-like, with an RTC command interface + IR)
+//     0x0000-0x1FFF  $A000-$BFFF window mode (low nibble): $0/$A = RAM (ro/rw),
+//                    $B = RTC command, $C = response, $D = semaphore, $E = IR
+//     0x2000-0x3FFF  ROM bank (7 bits, no 0->1 remap)
 //     0x4000-0x5FFF  RAM bank (low 2 bits)
 
 #include "gb_mbc.h"
@@ -193,6 +199,62 @@ inline uint32_t Mmm01RamBank(const MbcState &s)
 	                           | (static_cast<uint32_t>(s.mmm01_ram_bank_high) << 2));
 }
 
+// ---- HuC3 ----------------------------------------------------------------
+// HuC3 adds an RTC reached through a small command interface, plus IR. It
+// never coexists with MBC3, so it borrows the (otherwise MBC3-only) RTC
+// fields as its own state — keeping MbcState's size, and therefore the
+// savestate layout, unchanged:
+//   rtc_select     = $A000-$BFFF window mode (low nibble of $0000-$1FFF write)
+//   rtc_regs[0]    = RTC register-map access pointer
+//   rtc_regs[1]    = last extended-command argument ($2 = boot status request)
+//   rtc_regs[2]    = response nibble (result of the last read command)
+//   rtc_regs[3..4] = minutes (12-bit), rtc_latched[0..1] = days (16-bit)
+inline uint16_t Huc3Minutes(const MbcState &s) { return static_cast<uint16_t>(s.rtc_regs[3] | (s.rtc_regs[4] << 8)); }
+inline uint16_t Huc3Days(const MbcState &s)    { return static_cast<uint16_t>(s.rtc_latched[0] | (s.rtc_latched[1] << 8)); }
+inline void Huc3SetMinutes(MbcState &s, uint16_t v) { s.rtc_regs[3] = v & 0xFF; s.rtc_regs[4] = (v >> 8) & 0x0F; }
+inline void Huc3SetDays(MbcState &s, uint16_t v)    { s.rtc_latched[0] = v & 0xFF; s.rtc_latched[1] = (v >> 8) & 0xFF; }
+
+inline uint8_t Huc3ReadReg(const MbcState &s, uint8_t idx)
+{
+	if (idx < 3) return (Huc3Minutes(s) >> (idx * 4)) & 0x0F;
+	if (idx < 7) return (Huc3Days(s) >> ((idx - 3) * 4)) & 0x0F;
+	return 0;   // alarm/tone registers ($58+) not modeled
+}
+
+inline void Huc3WriteReg(MbcState &s, uint8_t idx, uint8_t nib)
+{
+	nib &= 0x0F;
+	if (idx < 3)
+	{
+		const uint16_t m = Huc3Minutes(s);
+		Huc3SetMinutes(s, static_cast<uint16_t>((m & ~(0x0Fu << (idx * 4))) | (nib << (idx * 4))));
+	}
+	else if (idx < 7)
+	{
+		const uint16_t d = Huc3Days(s);
+		Huc3SetDays(s, static_cast<uint16_t>((d & ~(0x0Fu << ((idx - 3) * 4))) | (nib << ((idx - 3) * 4))));
+	}
+	// idx >= 7 (alarm/tone) intentionally dropped
+}
+
+// Execute one command written to the $B window. Per SameBoy, HuC3 runs the
+// command immediately on write; the $D semaphore then always reads ready.
+inline void Huc3Command(MbcState &s, uint8_t value)
+{
+	uint8_t &idx = s.rtc_regs[0];
+	const uint8_t arg = value & 0x0F;
+	switch (value >> 4)
+	{
+		case 1: s.rtc_regs[2] = Huc3ReadReg(s, idx); ++idx;             break;  // read + advance
+		case 2: Huc3WriteReg(s, idx, arg);                              break;  // write
+		case 3: Huc3WriteReg(s, idx, arg); ++idx;                       break;  // write + advance
+		case 4: idx = static_cast<uint8_t>((idx & 0xF0) | arg);         break;  // pointer low nibble
+		case 5: idx = static_cast<uint8_t>((idx & 0x0F) | (arg << 4));  break;  // pointer high nibble
+		case 6: s.rtc_regs[1] = arg;                                    break;  // extended command
+		default:                                                        break;
+	}
+}
+
 } // anonymous
 
 uint8_t MbcRead(MbcState &s, const std::vector<uint8_t> &rom, const std::vector<uint8_t> &sram, uint16_t addr)
@@ -227,6 +289,7 @@ uint8_t MbcRead(MbcState &s, const std::vector<uint8_t> &rom, const std::vector<
 			case MbcType::MBC3: bank = s.rom_bank ? s.rom_bank : 1; break;
 			case MbcType::MBC5: bank = s.rom_bank; break;
 			case MbcType::HuC1: bank = s.rom_bank ? s.rom_bank : 1; break;
+			case MbcType::HuC3: bank = s.rom_bank; break;
 			case MbcType::MBC2: bank = (s.rom_bank & 0x0F) ? (s.rom_bank & 0x0F) : 1; break;
 			case MbcType::SachenMMC1: bank = SachenBankN(s); break;
 			case MbcType::MMM01:      bank = Mmm01RomBank(s, rom.size()); break;
@@ -243,6 +306,23 @@ uint8_t MbcRead(MbcState &s, const std::vector<uint8_t> &rom, const std::vector<
 		{
 			if (!s.ram_enable) return 0xC0;
 			return ReadSram(sram, ((s.ram_bank & 0x03) * 0x2000u) + (addr - 0xA000u));
+		}
+
+		// HuC3 multiplexes RAM, the RTC command/response, a ready semaphore
+		// and IR onto this window, selected by the mode set at $0000-$1FFF.
+		if (s.type == MbcType::HuC3)
+		{
+			switch (s.rtc_select)
+			{
+				case 0x0:        // RAM, read-only
+				case 0xA:        // RAM, read/write
+					return ReadSram(sram, ((s.ram_bank & 0x03) * 0x2000u) + (addr - 0xA000u));
+				case 0xC:        // command response — $62 status must read back 1
+					return (s.rtc_regs[1] == 0x02) ? 0x01 : s.rtc_regs[2];
+				case 0xD: return 0x01;   // semaphore: always ready
+				case 0xE: return 0x00;   // IR: no link partner
+				default:  return 0xFF;   // open bus
+			}
 		}
 
 		if (!s.ram_enable && s.type != MbcType::MBC5) return 0xFF;
@@ -502,8 +582,38 @@ void MbcWrite(Cart &c, uint16_t addr, uint8_t value)
 		}
 		break;
 
+	case MbcType::HuC3:
+		if (addr < 0x2000)
+		{
+			// $A000-$BFFF window mode; RAM is read/write only in mode $A.
+			s.rtc_select = value & 0x0F;
+			s.ram_enable = (s.rtc_select == 0x0A);
+		}
+		else if (addr < 0x4000)
+		{
+			s.rom_bank = value & 0x7F;   // 7-bit, MBC5-style (no 0->1 remap)
+		}
+		else if (addr < 0x6000)
+		{
+			s.ram_bank = value & 0x03;
+		}
+		else if (addr < 0x8000)
+		{
+			// $6000-$7FFF: no effect on HuC3.
+		}
+		else if (addr >= 0xA000 && addr < 0xC000)
+		{
+			switch (s.rtc_select)
+			{
+				case 0xA: WriteSram(c, ((s.ram_bank & 0x03) * 0x2000u) + (addr - 0xA000u), value); break;
+				case 0xB: Huc3Command(s, value); break;  // RTC command (executes immediately)
+				default:  break;                          // RO RAM / semaphore / IR / undefined
+			}
+		}
+		break;
+
 	default:
-		// MBC6, MBC7, HuC3: treat as read-only no-MBC.
+		// MBC6, MBC7: treat as read-only no-MBC.
 		break;
 	}
 }

@@ -22,7 +22,7 @@ enum class MbcType : uint8_t
 	MBC6       = 6,  // not yet implemented
 	MBC7       = 7,  // not yet implemented
 	HuC1       = 8,  // MBC1-like, with infrared (RAM<->IR via $0000-$1FFF)
-	HuC3       = 9,  // not yet implemented
+	HuC3       = 9,  // MBC-like, with RTC command interface + IR
 	MMM01      = 10, // Nintendo multicart meta-mapper (Mani / Taito 4-in-1)
 	SachenMMC1 = 11  // Sachen 4B-series unlicensed multicarts
 };
