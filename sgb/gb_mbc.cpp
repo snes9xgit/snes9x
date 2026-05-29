@@ -225,7 +225,7 @@ uint8_t MbcRead(MbcState &s, const std::vector<uint8_t> &rom, const std::vector<
 	}
 	if (addr >= 0xA000 && addr < 0xC000)
 	{
-		if (!s.ram_enable) return 0xFF;
+		if (!s.ram_enable && s.type != MbcType::MBC5) return 0xFF;
 
 		// MBC3 RTC select exposes latched RTC values in this window.
 		if (s.type == MbcType::MBC3 && s.rtc_select >= 0x08 && s.rtc_select <= 0x0C)
