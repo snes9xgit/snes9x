@@ -5,8 +5,8 @@
 \*****************************************************************************/
 
 // Memory Bank Controllers. MBC1, MBC3, MBC5 cover ~95% of commercial
-// GB carts. MBC2/MBC6/MBC7/HuC1/HuC3/MMM01 are stubbed (treated as
-// read-only no-MBC) and will be filled in as needed.
+// GB carts; MBC2, HuC1, MMM01, and Sachen MMC1 are also handled.
+// MBC6/MBC7/HuC3 remain stubbed (read-only no-MBC) for now.
 //
 // Register meanings per Pan Docs:
 //
@@ -27,6 +27,13 @@
 //     0x2000-0x2FFF  ROM bank lower 8 bits (0 stays 0)
 //     0x3000-0x3FFF  ROM bank bit 8 (only bit 0 of value matters)
 //     0x4000-0x5FFF  RAM bank 0..0x0F (bit 3 of value = rumble on rumble carts)
+//
+//   HuC1: (MBC1-like, with an infrared link)
+//     0x0000-0x1FFF  RAM/IR select — value 0x0E routes 0xA000-0xBFFF to the
+//                    IR register; any other value routes it to cart RAM.
+//                    HuC1 RAM has no separate enable (always live).
+//     0x2000-0x3FFF  ROM bank (low 6 bits)
+//     0x4000-0x5FFF  RAM bank (low 2 bits)
 
 #include "gb_mbc.h"
 #include "gb_cart.h"
@@ -37,7 +44,10 @@ void MbcReset(MbcState &s)
 {
 	s.rom_bank   = 1;
 	s.ram_bank   = 0;
-	s.ram_enable = false;
+	// HuC1 RAM is always live — its $0000-$1FFF register only routes the
+	// $A000-$BFFF window between RAM and the IR register — so default it
+	// enabled. (Cart type is assigned before MbcReset runs.)
+	s.ram_enable = (s.type == MbcType::HuC1);
 	s.mbc1_mode  = false;
 	s.rtc_latch  = false;
 	s.rtc_select = 0;
@@ -216,6 +226,7 @@ uint8_t MbcRead(MbcState &s, const std::vector<uint8_t> &rom, const std::vector<
 			case MbcType::MBC1: bank = Mbc1BankN(s); break;
 			case MbcType::MBC3: bank = s.rom_bank ? s.rom_bank : 1; break;
 			case MbcType::MBC5: bank = s.rom_bank; break;
+			case MbcType::HuC1: bank = s.rom_bank ? s.rom_bank : 1; break;
 			case MbcType::MBC2: bank = (s.rom_bank & 0x0F) ? (s.rom_bank & 0x0F) : 1; break;
 			case MbcType::SachenMMC1: bank = SachenBankN(s); break;
 			case MbcType::MMM01:      bank = Mmm01RomBank(s, rom.size()); break;
@@ -225,6 +236,15 @@ uint8_t MbcRead(MbcState &s, const std::vector<uint8_t> &rom, const std::vector<
 	}
 	if (addr >= 0xA000 && addr < 0xC000)
 	{
+		// HuC1 routes this window between cart RAM and the IR register.
+		// ram_enable doubles as the RAM/IR select (true = RAM, false = IR).
+		// With no link partner the IR sensor idles at $C0 (no light).
+		if (s.type == MbcType::HuC1)
+		{
+			if (!s.ram_enable) return 0xC0;
+			return ReadSram(sram, ((s.ram_bank & 0x03) * 0x2000u) + (addr - 0xA000u));
+		}
+
 		if (!s.ram_enable && s.type != MbcType::MBC5) return 0xFF;
 
 		// MBC3 RTC select exposes latched RTC values in this window.
@@ -458,8 +478,32 @@ void MbcWrite(Cart &c, uint16_t addr, uint8_t value)
 		}
 		break;
 
+	case MbcType::HuC1:
+		if (addr < 0x2000)
+		{
+			// Value $0E selects the IR register at $A000-$BFFF; any other
+			// value selects cart RAM. HuC1 RAM has no separate enable, so
+			// the select line is modeled directly in ram_enable.
+			s.ram_enable = ((value & 0x0F) != 0x0E);
+		}
+		else if (addr < 0x4000)
+		{
+			s.rom_bank = value & 0x3F;
+		}
+		else if (addr < 0x6000)
+		{
+			s.ram_bank = value & 0x03;
+		}
+		else if (addr >= 0xA000 && addr < 0xC000)
+		{
+			// RAM mode → cart RAM; IR mode → IR LED, which we discard.
+			if (!s.ram_enable) break;
+			WriteSram(c, ((s.ram_bank & 0x03) * 0x2000u) + (addr - 0xA000u), value);
+		}
+		break;
+
 	default:
-		// MBC6, MBC7, HuC1, HuC3, MMM01: treat as read-only no-MBC.
+		// MBC6, MBC7, HuC3: treat as read-only no-MBC.
 		break;
 	}
 }
