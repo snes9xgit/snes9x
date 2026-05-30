@@ -9825,7 +9825,7 @@ INT_PTR CALLBACK DlgFunky(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
             SendDlgItemMessage(hDlg, IDC_GB_BLEND_AUTO, BM_SETCHECK, (WPARAM)BST_CHECKED, 0);
         CreateToolTip(IDC_BLEND_GB_FRAMES, hDlg, TEXT("Game Boy frame-blend mode: Simple Blend = 50/50 of the last two frames (cancels flicker-transparency); LCD Blend = slow-decay LCD-style ghosting"));
         CreateToolTip(IDC_BLEND_GB_LAYER, hDlg, TEXT("Which Game Boy layer to blend: Background (BG) keeps moving sprites crisp; Window = the window/HUD layer; Sprites = objects only; All blends everything"));
-        CreateToolTip(IDC_GB_BLEND_AUTO, hDlg, TEXT("Auto Layer: pick the blend per game from a built-in list of known flicker-transparency games (off for the rest). Uncheck to set the mode/layer manually for every Game Boy game."));
+        CreateToolTip(IDC_GB_BLEND_AUTO, hDlg, TEXT("Auto Layer Transparency: pick the blend per game from a built-in list of known flicker-transparency games (off for the rest). Uncheck to set the mode/layer manually for every Game Boy game."));
 
         // The Game Boy Image options only apply to a Game Boy / GBC / SGB game —
         // grey them out for SNES titles (or when nothing is loaded). With Auto on,
