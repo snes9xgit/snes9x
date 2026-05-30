@@ -119,6 +119,24 @@ bool LooksLikeMmm01(const std::vector<uint8_t> &rom)
 	return true;
 }
 
+// M161 (Mani 4-in-1 "Tetris Set"): a write-once register selects one of up to
+// eight raw 32 KiB pages into $0000-$7FFF — the menu is page 0, the sub-games
+// follow. The $0147 byte is forged (this cart claims MBC3+TIMER+BATTERY), so
+// identify it structurally: a second Nintendo logo at the first sub-game page
+// ($8000) that no single-game cart carries.
+bool LooksLikeM161(const std::vector<uint8_t> &rom)
+{
+	if (rom.size() < 0x10000) return false;          // need >= menu + one game
+	if (rom.size() % 0x8000)  return false;          // 32 KiB-page aligned
+	auto logo_at = [&](size_t base) {
+		if (base + 0x0104 + 48 > rom.size()) return false;
+		for (int i = 0; i < 48; ++i)
+			if (rom[base + 0x0104 + i] != kGbNintendoLogo[i]) return false;
+		return true;
+	};
+	return logo_at(0x0000) && logo_at(0x8000);
+}
+
 std::string MakeSavPath(const std::string &rom_path)
 {
 	if (rom_path.empty()) return {};
@@ -216,6 +234,13 @@ bool CartLoad(Cart &c, const uint8_t *data, size_t size, const char *path)
 		// MMM01+RAM+BATTERY); Mani forgeries report MBC1/MBC3 there
 		// so fall back to false unless we see the real MMM01 type.
 		c.has_battery = (h.cart_type == 0x0D);
+		c.has_rtc     = false;
+		c.has_rumble  = false;
+	}
+	else if (LooksLikeM161(c.rom))
+	{
+		c.mbc.type    = MbcType::M161;
+		c.has_battery = false;
 		c.has_rtc     = false;
 		c.has_rumble  = false;
 	}

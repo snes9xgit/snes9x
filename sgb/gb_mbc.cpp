@@ -133,6 +133,7 @@ void MbcReset(MbcState &s)
 	s.mmm01_ram_bank_mask     = 0xFF;
 	s.mmm01_just_locked       = false;
 
+	if (s.type == MbcType::M161) s.rom_bank = 0;   // power-on page 0 = menu
 	if (s.type == MbcType::TAMA5) Tama5SeedRtc(s);
 }
 
@@ -354,6 +355,12 @@ inline void Tama5Trigger(Cart &c)
 
 uint8_t MbcRead(MbcState &s, const std::vector<uint8_t> &rom, const std::vector<uint8_t> &sram, uint16_t addr)
 {
+	if (s.type == MbcType::M161 && addr < 0x8000)
+	{
+		// One 32 KiB page covers the whole $0000-$7FFF window.
+		const uint32_t page = s.rom_bank & 0x07;
+		return static_cast<uint8_t>(ReadRom(rom, (page << 15) | (addr & 0x7FFF)));
+	}
 	if (addr < 0x4000)
 	{
 		// Bank 0 region — mostly direct, except for MBC1 mode 1 quirk,
@@ -758,6 +765,17 @@ void MbcWrite(Cart &c, uint16_t addr, uint8_t value)
 					default: break;
 				}
 			}
+		}
+		break;
+
+	case MbcType::M161:
+		// Write-once page register: the first write to $0000-$7FFF latches the
+		// selected 32 KiB page; later writes (e.g. a sub-game's own $2000 bank
+		// poke) are ignored. mbc1_mode is reused as the "latched" flag.
+		if (addr < 0x8000 && !s.mbc1_mode)
+		{
+			s.rom_bank  = value & 0x07;
+			s.mbc1_mode = true;
 		}
 		break;
 

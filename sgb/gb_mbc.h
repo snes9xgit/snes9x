@@ -25,7 +25,8 @@ enum class MbcType : uint8_t
 	HuC3       = 9,  // MBC-like, with RTC command interface + IR
 	MMM01      = 10, // Nintendo multicart meta-mapper (Mani / Taito 4-in-1)
 	SachenMMC1 = 11, // Sachen 4B-series unlicensed multicarts
-	TAMA5      = 12  // Bandai Tamagotchi — register port + EEPROM + RTC
+	TAMA5      = 12, // Bandai Tamagotchi — register port + EEPROM + RTC
+	M161       = 13  // write-once 32 KiB-page multicart (Mani 4-in-1 "Tetris Set")
 };
 
 struct MbcState
