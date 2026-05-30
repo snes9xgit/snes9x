@@ -9810,8 +9810,8 @@ INT_PTR CALLBACK DlgFunky(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
             SendDlgItemMessage(hDlg, IDC_HIRESBLEND, BM_SETCHECK, (WPARAM)BST_CHECKED, 0);
         SendDlgItemMessage(hDlg, IDC_BLEND_GB_FRAMES, CB_RESETCONTENT, 0, 0);
         SendDlgItemMessage(hDlg, IDC_BLEND_GB_FRAMES, CB_ADDSTRING, 0, (LPARAM)TEXT("Off"));
-        SendDlgItemMessage(hDlg, IDC_BLEND_GB_FRAMES, CB_ADDSTRING, 0, (LPARAM)TEXT("Simple Blending"));
-        SendDlgItemMessage(hDlg, IDC_BLEND_GB_FRAMES, CB_ADDSTRING, 0, (LPARAM)TEXT("LCD Blending"));
+        SendDlgItemMessage(hDlg, IDC_BLEND_GB_FRAMES, CB_ADDSTRING, 0, (LPARAM)TEXT("Simple Blend"));
+        SendDlgItemMessage(hDlg, IDC_BLEND_GB_FRAMES, CB_ADDSTRING, 0, (LPARAM)TEXT("LCD Blend"));
         SendDlgItemMessage(hDlg, IDC_BLEND_GB_FRAMES, CB_SETCURSEL, (WPARAM)(Settings.GBFrameBlend <= 2 ? Settings.GBFrameBlend : 0), 0);
 
         SendDlgItemMessage(hDlg, IDC_BLEND_GB_LAYER, CB_RESETCONTENT, 0, 0);
@@ -9820,7 +9820,7 @@ INT_PTR CALLBACK DlgFunky(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
         SendDlgItemMessage(hDlg, IDC_BLEND_GB_LAYER, CB_ADDSTRING, 0, (LPARAM)TEXT("Window"));
         SendDlgItemMessage(hDlg, IDC_BLEND_GB_LAYER, CB_ADDSTRING, 0, (LPARAM)TEXT("Sprites"));
         SendDlgItemMessage(hDlg, IDC_BLEND_GB_LAYER, CB_SETCURSEL, (WPARAM)(Settings.GBFrameBlendLayer <= 3 ? Settings.GBFrameBlendLayer : 0), 0);
-        CreateToolTip(IDC_BLEND_GB_FRAMES, hDlg, TEXT("Game Boy frame-blend mode: Simple Blending = 50/50 of the last two frames (cancels flicker-transparency); LCD Blending = slow-decay LCD-style ghosting"));
+        CreateToolTip(IDC_BLEND_GB_FRAMES, hDlg, TEXT("Game Boy frame-blend mode: Simple Blend = 50/50 of the last two frames (cancels flicker-transparency); LCD Blend = slow-decay LCD-style ghosting"));
         CreateToolTip(IDC_BLEND_GB_LAYER, hDlg, TEXT("Which Game Boy layer to blend: Background (BG) keeps moving sprites crisp; Window = the window/HUD layer; Sprites = objects only; All blends everything"));
 
         // The Game Boy Image options only apply to a Game Boy / GBC / SGB game —
@@ -9830,7 +9830,8 @@ INT_PTR CALLBACK DlgFunky(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
             EnableWindow(GetDlgItem(hDlg, IDC_GB_IMAGE_GROUP),  gbActive);
             EnableWindow(GetDlgItem(hDlg, IDC_GB_BLEND_LABEL),  gbActive);
             EnableWindow(GetDlgItem(hDlg, IDC_BLEND_GB_FRAMES), gbActive);
-            EnableWindow(GetDlgItem(hDlg, IDC_BLEND_GB_LAYER),  gbActive);
+            // The layer selector only matters when blending is on (mode != Off).
+            EnableWindow(GetDlgItem(hDlg, IDC_BLEND_GB_LAYER),  gbActive && Settings.GBFrameBlend != 0);
         }
         if (Settings.ShowOverscan)
             SendDlgItemMessage(hDlg, IDC_HEIGHT_EXTEND, BM_SETCHECK, (WPARAM)BST_CHECKED, 0);
@@ -10061,6 +10062,7 @@ INT_PTR CALLBACK DlgFunky(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 			{
 				int sel = SendDlgItemMessage(hDlg, IDC_BLEND_GB_FRAMES, CB_GETCURSEL, 0, 0);
 				Settings.GBFrameBlend = (sel == CB_ERR) ? 0 : (uint8)sel;
+				EnableWindow(GetDlgItem(hDlg, IDC_BLEND_GB_LAYER), Settings.GBFrameBlend != 0);
 				WinRefreshDisplay();
 			}
 			break;

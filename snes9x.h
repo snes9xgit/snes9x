@@ -217,7 +217,7 @@ struct SSettings
 	bool8	SuperGameBoy;        // active when a .gb/.gbc ROM is loaded
 	uint8	GameBoyRunMode;      // 0=DMG, 1=SGB1, 2=SGB2
 	float	GBClockMultiplier;   // 1.0 = real speed; underclock on weak ARM, over on strong hosts
-	uint8	GBFrameBlend;        // GB frame-blend mode: 0=off, 1=Simple Blending (50/50), 2=LCD Blending (decay)
+	uint8	GBFrameBlend;        // GB frame-blend mode: 0=off, 1=Simple Blend (50/50), 2=LCD Blend (decay)
 	uint8	GBFrameBlendLayer;   // which GB layers to blend: 0=all, 1=background (BG), 2=window, 3=sprites
 	bool8	SGB_UseBIOS;         // prefer authentic SGB1/SGB2 BIOS mode when a matching BIOS file is found
 	bool8	SGB_BIOSModeActive;  // runtime: the currently-loaded ROM is running on the real SGB BIOS
