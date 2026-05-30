@@ -260,6 +260,10 @@ void S9xSGBResetSyncAnchor(int32_t cpu_cycles);
 // 144 transition). Benign no-ops in BIOS-less mode.
 void S9xSGBOnPpuHBlank(void);
 void S9xSGBOnPpuVBlank(void);
+// Monotonic count of completed GB frames (PPU VBlank entries), valid in both
+// BIOS and BIOS-less modes. The frame-blend hook reads it to pair frames
+// correctly across the GB↔SNES refresh-rate beat. See g_gb_vblank_count.
+uint32_t S9xSGBGetGBFrameCount(void);
 
 // Capture a drawn GB scanline (160 palette indices, 0..3) into the SGB
 // char-transfer ring. Call immediately after RenderScanline; writes to

@@ -811,13 +811,26 @@ void Emulator::RunFrame()
 	const double   per_frame = (base_hz / SNES_FPS) * static_cast<double>(mul);
 	const int32_t  budget    = static_cast<int32_t>(per_frame);
 
-	RunCycles(budget);
+	// Run roughly one SNES-frame of GB cycles, but STOP at the first completed
+	// frame so BlitScreen reads a clean, untorn framebuffer. SGB1's budget
+	// exceeds one GB frame (~71473 > 70224 T-cycles), so a single
+	// RunCycles(budget) overshoots ~2.77 lines into the NEXT frame and
+	// overwrites the top of the framebuffer; the safety loop below never
+	// corrected this because frame_ready had already latched during the
+	// overshoot, so BlitScreen saw a tear that rolled down the screen each
+	// frame. Frame-locking to the first VBlank pins BIOS-less output to exactly
+	// one GB frame per SNES frame: no tear, and the temporal blend always pairs
+	// adjacent frames.
+	int32_t remaining = budget;
+	while (remaining > 0 && !impl_->ppu.frame_ready)
+	{
+		const int32_t chunk = remaining < 456 ? remaining : 456;
+		RunCycles(chunk);
+		remaining -= chunk;
+	}
 
-	// Always end at VBlank entry so BlitScreen reads a complete framebuffer.
-	// Fixed budget alone drifts the render position out of VBlank every few
-	// calls (SGB1 overshoots ~2.77 lines/call; SGB2/DMG undershoot ~0.95
-	// lines/call), tearing the displayed image and depositing mid-frame
-	// palette/attr packets onto a half-rendered buffer.
+	// Undershoot case (SGB2/DMG budgets fall ~0.95 lines short of VBlank): keep
+	// stepping single scanlines until the frame completes.
 	int32_t safety = 70224;
 	while (!impl_->ppu.frame_ready && safety > 0)
 	{
@@ -1274,6 +1287,13 @@ bool Emulator::IsBootHandoffCaptured() const
 	return impl_->boot_handoff_captured;
 }
 
+// Monotonic count of completed GB frames (bumped at each PPU VBlank entry, in
+// both BIOS and BIOS-less modes). The frame-blend hook samples this once per
+// SNES frame to tell a genuinely new GB frame from a duplicate/skip caused by
+// the GB↔SNES refresh-rate beat, so it can pair frames correctly. Display-only,
+// not serialized.
+static uint32_t g_gb_vblank_count = 0;
+
 void Emulator::OnPpuHBlank()
 {
 	if (!impl_) return;
@@ -1302,6 +1322,7 @@ void Emulator::OnPpuVBlank()
 	// across frames.
 	impl_->icd2.sgb_row = 0;
 	impl_->icd2.frame_6001_count = 0;
+	++g_gb_vblank_count;
 
 	// Clean up VRAM areas the BIOS uses for the boot-handoff capture.
 	// GB-SNES scanline timing drift makes the BIOS's IRQ DMA read from the
@@ -2026,6 +2047,7 @@ void S9xSGBSyncToSnesCycle(int32_t cpu_cycles)
 
 void S9xSGBOnPpuHBlank(void) { SGB::Instance().OnPpuHBlank(); }
 void S9xSGBOnPpuVBlank(void) { SGB::Instance().OnPpuVBlank(); }
+uint32_t S9xSGBGetGBFrameCount(void) { return SGB::g_gb_vblank_count; }
 void S9xSGBCaptureScanline(const unsigned char *pixels)
 {
 	SGB::Instance().CaptureScanline(static_cast<const uint8_t *>(pixels));

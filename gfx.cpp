@@ -205,16 +205,47 @@ void S9xStartScreenRefresh (void)
 	IPPU.TotalEmulatedFrames++;
 }
 
+// Temporal frame-blend for the Game Boy display (Settings.GBFrameBlend):
+//   1 = "simple"      — average the two most recent DISTINCT GB frames 50/50,
+//                       fully cancelling flicker-based fake transparency.
+//   2 = "LCD reality" — IIR decay (out = 3/8 cur + 5/8 accumulator) that mimics
+//                       an LCD's slow pixel response: softer, with light ghost
+//                       trails, robust without exact frame pairing.
+//
+// The hard part is pairing. The GB and the SNES present at slightly different
+// rates, so in BIOS mode a GB frame is periodically duplicated (SGB2/DMG, GB a
+// touch slower) or skipped (SGB1, GB a touch faster). Blending "this SNES
+// frame" with "last SNES frame" then pairs a frame with itself (dup) or with a
+// same-phase frame (skip) — neither cancels flicker, so it shows through.
+//
+// We can't drive this off the GB-VBlank counter alone: that counter ticks at
+// SNES VBlank, but the displayed picture is composited earlier (during the
+// visible scanlines), so there's a variable phase offset that makes "is this a
+// fresh GB frame?" misfire by a frame. Instead:
+//   * DUPLICATES are detected by comparing the freshly composited image to the
+//     previous one — phase-immune and exact. On a dup we re-present the last
+//     blended frame (the composite is unchanged, so there is nothing new to
+//     pair with).
+//   * SKIPS are detected from the GB-frame count elapsed BETWEEN two distinct
+//     composites. Both samples are taken at the same point in the SNES frame,
+//     so the phase offset cancels: a delta of 1 is a normal step, >=2 means a
+//     GB frame was dropped. On a skip we hold the last blended frame and adopt
+//     the current image as the next pair partner so the following frame
+//     realigns to opposite phase.
+// BIOS-less mode is frame-locked 1:1 by RunFrame, so every frame is a clean
+// distinct step here.
 static void S9xBlendGameBoyFrames (void)
 {
-	static uint16 prev[SNES_WIDTH * SNES_HEIGHT_EXTENDED];
+	static uint16 prev[SNES_WIDTH * SNES_HEIGHT_EXTENDED];     // raw composite of last DISTINCT frame
+	static uint16 lastout[SNES_WIDTH * SNES_HEIGHT_EXTENDED];  // last presented blended frame
 	static uint32 prevW = 0, prevH = 0;
-	static bool   valid = false;
+	static uint32 gbPrev = 0;
+	static bool   primed = false;
 
 	if (!Settings.GBFrameBlend ||
 	    !(Settings.SuperGameBoy || Settings.SGB_BIOSModeActive))
 	{
-		valid = false;
+		primed = false;
 		return;
 	}
 
@@ -222,34 +253,121 @@ static void S9xBlendGameBoyFrames (void)
 	const uint32 h = IPPU.RenderedScreenHeight;
 	if (w == 0 || h == 0 || w > SNES_WIDTH || h > SNES_HEIGHT_EXTENDED)
 	{
-		valid = false;
+		primed = false;
 		return;
 	}
 
 	const uint32 pitch = GFX.RealPPL;
-	const bool   mix   = valid && w == prevW && h == prevH;
+	const uint32 gbNow = S9xSGBGetGBFrameCount();
+	const uint8  mode  = Settings.GBFrameBlend;
 
+	// In BIOS mode the GB is held in reset during the boot/reset splash (control
+	// bit 7 clear) and produces no frames while the BIOS animates its own logo.
+	// That animation must NOT be blended (it stutters), so treat "GB not
+	// released" as not running. BIOS-less mode has no such line — the GB runs as
+	// soon as it is loaded, so the gate is bypassed there.
+	const bool gbRunning = !Settings.SGB_BIOSModeActive || S9xSGBBIOSGBIsReleased();
+
+	// (Re)prime — and pass the raw image straight through — on the first frame, a
+	// resolution change, a counter reset (game reset / savestate load), or while
+	// the GB is not running (boot/reset splash). Blending resumes from the next
+	// real gameplay frame.
+	if (!primed || w != prevW || h != prevH || gbNow < gbPrev || !gbRunning)
+	{
+		for (uint32 y = 0; y < h; y++)
+		{
+			const uint16 *line = GFX.Screen + y * pitch;
+			uint16 *p = prev + y * w, *o = lastout + y * w;
+			for (uint32 x = 0; x < w; x++)
+				p[x] = o[x] = line[x];
+		}
+		prevW = w; prevH = h; gbPrev = gbNow; primed = gbRunning;
+		return;
+	}
+
+	// GB frames elapsed in THIS SNES frame (gbNow and gbPrev both sampled here,
+	// so the counter's phase offset cancels): 0/1 under SGB2/DMG, occasionally 2
+	// under SGB1 (the dropped frame). Measured per SNES frame — not since the
+	// last distinct composite — so a long static stretch can't masquerade as a
+	// skip when motion resumes.
+	const uint32 gbDelta = gbNow - gbPrev;
+	gbPrev = gbNow;
+
+	// Duplicate detection: is the freshly composited image identical to the
+	// previous distinct one? (Assumes the surrounding border/HUD is static
+	// frame-to-frame, which holds for the flicker games this targets.)
+	bool identical = true;
+	for (uint32 y = 0; y < h && identical; y++)
+	{
+		const uint16 *line = GFX.Screen + y * pitch;
+		const uint16 *p    = prev + y * w;
+		for (uint32 x = 0; x < w; x++)
+			if (line[x] != p[x]) { identical = false; break; }
+	}
+
+	if (identical)
+	{
+		// Nothing new to pair with — re-present the last blended frame.
+		for (uint32 y = 0; y < h; y++)
+		{
+			uint16 *line = GFX.Screen + y * pitch;
+			const uint16 *o = lastout + y * w;
+			for (uint32 x = 0; x < w; x++)
+				line[x] = o[x];
+		}
+		return;
+	}
+
+	// Skip: a GB frame was dropped, so the current image is the same flicker
+	// phase as our pair partner. Blending would not cancel — hold the last good
+	// frame and adopt the current image as the next partner to realign phase.
+	if (gbDelta >= 2)
+	{
+		for (uint32 y = 0; y < h; y++)
+		{
+			uint16 *line = GFX.Screen + y * pitch;
+			uint16 *p = prev + y * w;
+			const uint16 *o = lastout + y * w;
+			for (uint32 x = 0; x < w; x++)
+			{
+				p[x]    = line[x];
+				line[x] = o[x];
+			}
+		}
+		return;
+	}
+
+	// Normal distinct frame: blend.
 	for (uint32 y = 0; y < h; y++)
 	{
 		uint16 *line = GFX.Screen + y * pitch;
-		uint16 *save = prev + y * w;
+		uint16 *p = prev + y * w, *o = lastout + y * w;
 		for (uint32 x = 0; x < w; x++)
 		{
 			const uint16 cur = line[x];
-			if (mix)
+			uint32 rc, gc, bc, ra, ga, ba;
+			DECOMPOSE_PIXEL(cur,  rc, gc, bc);
+			if (mode == 2)
 			{
-				uint32 r0, g0, b0, r1, g1, b1;
-				DECOMPOSE_PIXEL(save[x], r0, g0, b0);
-				DECOMPOSE_PIXEL(cur,     r1, g1, b1);
-				line[x] = (uint16) BUILD_PIXEL((r0 + r1) >> 1, (g0 + g1) >> 1, (b0 + b1) >> 1);
+				DECOMPOSE_PIXEL(o[x], ra, ga, ba);   // accumulator
+				const uint16 out = (uint16) BUILD_PIXEL((rc * 3 + ra * 5) >> 3,
+				                                        (gc * 3 + ga * 5) >> 3,
+				                                        (bc * 3 + ba * 5) >> 3);
+				line[x] = out;
+				o[x]    = out;
 			}
-			save[x] = cur;
+			else
+			{
+				DECOMPOSE_PIXEL(p[x], ra, ga, ba);   // previous distinct frame
+				const uint16 out = (uint16) BUILD_PIXEL((rc + ra) >> 1,
+				                                        (gc + ga) >> 1,
+				                                        (bc + ba) >> 1);
+				line[x] = out;
+				o[x]    = out;
+			}
+			p[x] = cur;
 		}
 	}
-
-	prevW = w;
-	prevH = h;
-	valid = true;
 }
 
 void S9xEndScreenRefresh (void)
