@@ -234,10 +234,18 @@ void S9xStartScreenRefresh (void)
 //     realigns to opposite phase.
 // BIOS-less mode is frame-locked 1:1 by RunFrame, so every frame is a clean
 // distinct step here.
+// GB picture placement inside the 256x224 SGB composite: standard SGB centers
+// the 160x144 GB screen at tile (6,5) = pixel (48,40). Same in BIOS / BIOS-less.
+#define GB_BLEND_X 48
+#define GB_BLEND_Y 40
+#define GB_BLEND_W 160
+#define GB_BLEND_H 144
+
 static void S9xBlendGameBoyFrames (void)
 {
 	static uint16 prev[SNES_WIDTH * SNES_HEIGHT_EXTENDED];     // raw composite of last DISTINCT frame
 	static uint16 lastout[SNES_WIDTH * SNES_HEIGHT_EXTENDED];  // last presented blended frame
+	static uint8  prevLayer[GB_BLEND_W * GB_BLEND_H];          // GB layer map of last distinct frame
 	static uint32 prevW = 0, prevH = 0;
 	static uint32 gbPrev = 0;
 	static uint32 dupRun = 0;
@@ -262,6 +270,20 @@ static void S9xBlendGameBoyFrames (void)
 	const uint32 gbNow = S9xSGBGetGBFrameCount();
 	const uint8  mode  = Settings.GBFrameBlend;
 
+	// Layer-selective blend (Settings.GBFrameBlendLayer): 0=all, 1=background
+	// (BG), 2=window, 3=sprites. S9xSGBGetGBLayerMask() gives the per-pixel
+	// source layer (0=BG, 1=window, 2=OBJ) for the 160x144 GB picture.
+	//   * BG/window flicker alternates COLOR (the pixel stays that layer), so we
+	//     blend a pixel only when it is the selected layer in BOTH this and the
+	//     previous frame — flicker cancels while moving sprites and the trails
+	//     they vacate stay crisp.
+	//   * Sprite flicker-transparency alternates PRESENCE (object drawn every
+	//     other frame), so "sprites" blends when OBJ appears in EITHER frame.
+	const uint8  layerSel = Settings.GBFrameBlendLayer;
+	const uint8 *curLayer = (layerSel != 0) ? S9xSGBGetGBLayerMask() : NULL;
+	const bool   useLayer = curLayer && w >= GB_BLEND_X + GB_BLEND_W
+	                                 && h >= GB_BLEND_Y + GB_BLEND_H;
+
 	// In BIOS mode the GB is held in reset during the boot/reset splash (control
 	// bit 7 clear) and produces no frames while the BIOS animates its own logo.
 	// That animation must NOT be blended (it stutters), so treat "GB not
@@ -282,6 +304,7 @@ static void S9xBlendGameBoyFrames (void)
 			for (uint32 x = 0; x < w; x++)
 				p[x] = o[x] = line[x];
 		}
+		if (curLayer) memcpy(prevLayer, curLayer, sizeof prevLayer);
 		prevW = w; prevH = h; gbPrev = gbNow; dupRun = 0; primed = gbRunning;
 		return;
 	}
@@ -325,6 +348,7 @@ static void S9xBlendGameBoyFrames (void)
 				for (uint32 x = 0; x < w; x++)
 					p[x] = o[x] = line[x];
 			}
+			if (curLayer) memcpy(prevLayer, curLayer, sizeof prevLayer);
 		}
 		else
 		{
@@ -355,6 +379,7 @@ static void S9xBlendGameBoyFrames (void)
 			for (uint32 x = 0; x < w; x++)
 				p[x] = o[x] = line[x];
 		}
+		if (curLayer) memcpy(prevLayer, curLayer, sizeof prevLayer);
 		return;
 	}
 
@@ -374,6 +399,7 @@ static void S9xBlendGameBoyFrames (void)
 				line[x] = o[x];
 			}
 		}
+		if (curLayer) memcpy(prevLayer, curLayer, sizeof prevLayer);
 		return;
 	}
 
@@ -382,32 +408,70 @@ static void S9xBlendGameBoyFrames (void)
 	{
 		uint16 *line = GFX.Screen + y * pitch;
 		uint16 *p = prev + y * w, *o = lastout + y * w;
+
+		// Per-row layer pointers (only the GB picture rows carry a layer map;
+		// the surrounding border is treated as background).
+		const bool   yIn = useLayer && y >= GB_BLEND_Y && y < GB_BLEND_Y + GB_BLEND_H;
+		const uint8 *clr = yIn ? curLayer  + (y - GB_BLEND_Y) * GB_BLEND_W : NULL;
+		const uint8 *plr = yIn ? prevLayer + (y - GB_BLEND_Y) * GB_BLEND_W : NULL;
+
 		for (uint32 x = 0; x < w; x++)
 		{
 			const uint16 cur = line[x];
-			uint32 rc, gc, bc, ra, ga, ba;
-			DECOMPOSE_PIXEL(cur,  rc, gc, bc);
-			if (mode == 2)
+
+			// Decide whether THIS pixel's layer is selected for blending.
+			bool blendPixel = true;
+			if (useLayer)
 			{
-				DECOMPOSE_PIXEL(o[x], ra, ga, ba);   // accumulator
-				const uint16 out = (uint16) BUILD_PIXEL((rc * 3 + ra * 5) >> 3,
-				                                        (gc * 3 + ga * 5) >> 3,
-				                                        (bc * 3 + ba * 5) >> 3);
-				line[x] = out;
-				o[x]    = out;
+				uint8 cl = 0, pl = 0;   // border defaults to background (0)
+				if (yIn && x >= GB_BLEND_X && x < GB_BLEND_X + GB_BLEND_W)
+				{
+					const uint32 gi = x - GB_BLEND_X;
+					cl = clr[gi];
+					pl = plr[gi];
+				}
+				if (layerSel == 3)
+					blendPixel = (cl == 2 || pl == 2);        // sprites: OBJ in either frame
+				else
+				{
+					const uint8 want = (uint8)(layerSel - 1); // 1->BG(0), 2->window(1)
+					blendPixel = (cl == want && pl == want);  // that layer in both frames
+				}
+			}
+
+			if (blendPixel)
+			{
+				uint32 rc, gc, bc, ra, ga, ba;
+				DECOMPOSE_PIXEL(cur,  rc, gc, bc);
+				if (mode == 2)
+				{
+					DECOMPOSE_PIXEL(o[x], ra, ga, ba);   // accumulator
+					const uint16 out = (uint16) BUILD_PIXEL((rc * 3 + ra * 5) >> 3,
+					                                        (gc * 3 + ga * 5) >> 3,
+					                                        (bc * 3 + ba * 5) >> 3);
+					line[x] = out;
+					o[x]    = out;
+				}
+				else
+				{
+					DECOMPOSE_PIXEL(p[x], ra, ga, ba);   // previous distinct frame
+					const uint16 out = (uint16) BUILD_PIXEL((rc + ra) >> 1,
+					                                        (gc + ga) >> 1,
+					                                        (bc + ba) >> 1);
+					line[x] = out;
+					o[x]    = out;
+				}
 			}
 			else
 			{
-				DECOMPOSE_PIXEL(p[x], ra, ga, ba);   // previous distinct frame
-				const uint16 out = (uint16) BUILD_PIXEL((rc + ra) >> 1,
-				                                        (gc + ga) >> 1,
-				                                        (bc + ba) >> 1);
-				line[x] = out;
-				o[x]    = out;
+				// Excluded layer: leave the raw pixel (line[x] is already cur)
+				// and resync the accumulator so it carries no stale ghost.
+				o[x] = cur;
 			}
 			p[x] = cur;
 		}
 	}
+	if (curLayer) memcpy(prevLayer, curLayer, sizeof prevLayer);
 }
 
 void S9xEndScreenRefresh (void)

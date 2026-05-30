@@ -716,6 +716,12 @@ size_t Emulator::GetROMSize() const
 	return impl_->cart.rom.size();
 }
 
+const uint8_t *Emulator::GBLayerMask() const
+{
+	if (!impl_->has_rom) return nullptr;
+	return impl_->ppu.layer;
+}
+
 uint8_t Emulator::PeekRAByte(uint32_t addr) const
 {
 	if (!impl_->has_rom) return 0;
@@ -2048,6 +2054,7 @@ void S9xSGBSyncToSnesCycle(int32_t cpu_cycles)
 void S9xSGBOnPpuHBlank(void) { SGB::Instance().OnPpuHBlank(); }
 void S9xSGBOnPpuVBlank(void) { SGB::Instance().OnPpuVBlank(); }
 uint32_t S9xSGBGetGBFrameCount(void) { return SGB::g_gb_vblank_count; }
+const uint8_t *S9xSGBGetGBLayerMask(void) { return SGB::Instance().GBLayerMask(); }
 void S9xSGBCaptureScanline(const unsigned char *pixels)
 {
 	SGB::Instance().CaptureScanline(static_cast<const uint8_t *>(pixels));

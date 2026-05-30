@@ -68,6 +68,11 @@ public:
 	const uint8_t *GetROMData() const;
 	size_t         GetROMSize() const;
 
+	// Per-pixel source-layer map for the current GB frame (160x144, parallel
+	// to the framebuffer): 0 = BG, 1 = window, 2 = sprite/OBJ. Used by the host
+	// frame-blend to blend only selected layers. nullptr when no ROM is loaded.
+	const uint8_t *GBLayerMask() const;
+
 	// Read a byte from the GB-side address space using the rcheevos
 	// GameBoy / GameBoy Color memory map (0x0000-0xFFFF native + the
 	// 0x10000-0x33FFF extended bank window). Side-effect-free; does not
@@ -264,6 +269,9 @@ void S9xSGBOnPpuVBlank(void);
 // BIOS and BIOS-less modes. The frame-blend hook reads it to pair frames
 // correctly across the GB↔SNES refresh-rate beat. See g_gb_vblank_count.
 uint32_t S9xSGBGetGBFrameCount(void);
+// Per-pixel source-layer map for the current GB frame (160x144): 0=BG, 1=window,
+// 2=sprite/OBJ. nullptr when no ROM is loaded. See Emulator::GBLayerMask.
+const uint8_t *S9xSGBGetGBLayerMask(void);
 
 // Capture a drawn GB scanline (160 palette indices, 0..3) into the SGB
 // char-transfer ring. Call immediately after RenderScanline; writes to

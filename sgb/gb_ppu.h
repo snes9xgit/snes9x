@@ -136,6 +136,12 @@ struct Ppu
 	// mangle the byte stream the game intended to send.
 	uint8_t  raw_framebuffer[GB_SCREEN_WIDTH * GB_SCREEN_HEIGHT];
 
+	// Per-pixel source layer, parallel to framebuffer: 0 = BG, 1 = window,
+	// 2 = sprite/OBJ. Lets the host frame-blend selectively blend only the
+	// background (BG+window, where flicker-transparency lives) and leave
+	// moving sprites crisp, or vice versa. Display-only, NOT serialized.
+	uint8_t  layer[GB_SCREEN_WIDTH * GB_SCREEN_HEIGHT];
+
 	bool     frame_ready = false;
 
 	uint64_t vram_writes = 0;

@@ -774,6 +774,7 @@ void WinRegisterConfigItems()
 	AddBoolC("DisplayInput", Settings.DisplayPressedKeys, false, "true to show which buttons are pressed");
 	AddBoolC("DisplayFrameCount", Settings.DisplayMovieFrame, true, "true to show the frame count when a movie is playing");
 	AddUIntC("BlendGBFrames", Settings.GBFrameBlend, 0, "Game Boy frame-blend mode: 0=off, 1=simple (mix each frame 50/50 with the previous, fixes flicker-based fake transparency e.g. Chikyuu Kaihou Gun ZAS), 2=LCD reality (slow-decay LCD-style ghosting)");
+	AddUIntC("BlendGBFramesLayer", Settings.GBFrameBlendLayer, 0, "which Game Boy layer the frame-blend applies to: 0=all, 1=background (BG, keeps moving sprites crisp), 2=window, 3=sprites");
 #undef CATEGORY
 #define CATEGORY "Display\\Win"
 	AddUIntC("OutputMethod", GUI.outputMethod, 1, "0=DirectDraw, 1=Direct3D, 2=OpenGL");
