@@ -282,9 +282,11 @@ void RenderPixel(Ppu &p)
 	if (p.ly >= GB_SCREEN_HEIGHT)      return;
 
 	uint8_t *const line = &p.framebuffer[p.ly * GB_SCREEN_WIDTH];
+	uint8_t *const lay  = &p.layer[p.ly * GB_SCREEN_WIDTH];
 
 	// BG / window resolve.
 	uint8_t bg_color = 0;   // raw 2-bit pre-palette
+	uint8_t bg_layer = GB_PIXEL_BG;   // GB_PIXEL_BG (or blank) / GB_PIXEL_WINDOW
 	if (p.lcdc & 0x01)
 	{
 		const int wx = static_cast<int>(p.latched_wx) - 7;
@@ -296,6 +298,7 @@ void RenderPixel(Ppu &p)
 		if (win_active_here)
 		{
 			bg_color = SampleWindowPixel(p, x);
+			bg_layer = GB_PIXEL_WINDOW;
 			// Latch the "window did draw" state for window_line bookkeeping
 			// at end of LY.
 			if (!p.window_active)
@@ -313,6 +316,7 @@ void RenderPixel(Ppu &p)
 	p.scanline_bg_raw[x] = bg_color;
 	p.scanline_raw[x]    = bg_color;
 	line[x]              = ApplyPalette(p.latched_bgp, bg_color);
+	lay[x]               = bg_layer;
 
 	// Sprite resolve — overwrite if visible.
 	const SpritePixel sp = SampleSpritePixel(p, x);
@@ -320,6 +324,7 @@ void RenderPixel(Ppu &p)
 	{
 		p.scanline_raw[x] = sp.color;
 		line[x]           = ApplyPalette(sp.palette, sp.color);
+		lay[x]            = GB_PIXEL_OBJ;
 	}
 }
 
@@ -351,6 +356,7 @@ void PpuReset(Ppu &p)
 	std::memset(p.oam,         0, sizeof p.oam);
 	std::memset(p.framebuffer,     0, sizeof p.framebuffer);
 	std::memset(p.raw_framebuffer, 0, sizeof p.raw_framebuffer);
+	std::memset(p.layer,           0, sizeof p.layer);
 	std::memset(p.scanline_bg_raw, 0, sizeof p.scanline_bg_raw);
 	std::memset(p.scanline_raw,    0, sizeof p.scanline_raw);
 	p.lcdc = 0x91;   // LCD on, BG on, BG tile data at 0x8000, BG map at 0x9800.
@@ -461,12 +467,14 @@ inline void ExecPpuDot(Ppu &p, Memory &mem)
 				p.scanline_raw[x]    = 0;
 				p.framebuffer[p.ly * GB_SCREEN_WIDTH + x] =
 					ApplyPalette(p.latched_bgp, 0);
+				p.layer[p.ly * GB_SCREEN_WIDTH + x] = GB_PIXEL_BG;   // blank BG
 				const SpritePixel sp = SampleSpritePixel(p, x);
 				if (sp.covered)
 				{
 					p.scanline_raw[x] = sp.color;
 					p.framebuffer[p.ly * GB_SCREEN_WIDTH + x] =
 						ApplyPalette(sp.palette, sp.color);
+					p.layer[p.ly * GB_SCREEN_WIDTH + x] = GB_PIXEL_OBJ;
 				}
 			}
 			++p.draw_x;

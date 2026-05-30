@@ -9745,7 +9745,7 @@ INT_PTR CALLBACK DlgFunky(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 	OPENFILENAME ofn;
 
 	// temporary GUI state for restoring after previewing while selecting options
-	static int prevScale, prevScaleHiRes, prevPPL, prevGBFrameBlend;
+	static int prevScale, prevScaleHiRes, prevPPL, prevGBFrameBlend, prevGBFrameBlendLayer, prevGBFrameBlendAuto;
 	static bool prevStretch, prevAspectRatio, prevHeightExtend, prevAutoDisplayMessages, prevBilinearFilter, prevShaderEnabled, prevBlendHires, prevIntegerScaling, prevNTSCScanlines;
 	static int prevAspectWidth;
 	static OutputMethod prevOutputMethod;
@@ -9783,6 +9783,8 @@ INT_PTR CALLBACK DlgFunky(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
         prevBlendHires = GUI.BlendHiRes;
 		prevNTSCScanlines = GUI.NTSCScanlines;
 		prevGBFrameBlend = Settings.GBFrameBlend;
+		prevGBFrameBlendLayer = Settings.GBFrameBlendLayer;
+		prevGBFrameBlendAuto = Settings.GBFrameBlendAuto;
 
         lstrcpy(prevD3DShaderFile, GUI.D3DshaderFileName);
         lstrcpy(prevOGLShaderFile, GUI.OGLshaderFileName);
@@ -9809,9 +9811,34 @@ INT_PTR CALLBACK DlgFunky(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
             SendDlgItemMessage(hDlg, IDC_HIRESBLEND, BM_SETCHECK, (WPARAM)BST_CHECKED, 0);
         SendDlgItemMessage(hDlg, IDC_BLEND_GB_FRAMES, CB_RESETCONTENT, 0, 0);
         SendDlgItemMessage(hDlg, IDC_BLEND_GB_FRAMES, CB_ADDSTRING, 0, (LPARAM)TEXT("Off"));
-        SendDlgItemMessage(hDlg, IDC_BLEND_GB_FRAMES, CB_ADDSTRING, 0, (LPARAM)TEXT("Simple"));
-        SendDlgItemMessage(hDlg, IDC_BLEND_GB_FRAMES, CB_ADDSTRING, 0, (LPARAM)TEXT("LCD reality"));
-        SendDlgItemMessage(hDlg, IDC_BLEND_GB_FRAMES, CB_SETCURSEL, (WPARAM)(Settings.GBFrameBlend <= 2 ? Settings.GBFrameBlend : 0), 0);
+        SendDlgItemMessage(hDlg, IDC_BLEND_GB_FRAMES, CB_ADDSTRING, 0, (LPARAM)TEXT("Simple Blend"));
+        SendDlgItemMessage(hDlg, IDC_BLEND_GB_FRAMES, CB_ADDSTRING, 0, (LPARAM)TEXT("LCD Blend"));
+        SendDlgItemMessage(hDlg, IDC_BLEND_GB_FRAMES, CB_SETCURSEL, (WPARAM)(Settings.GBFrameBlend <= GB_BLEND_LCD ? Settings.GBFrameBlend : GB_BLEND_OFF), 0);
+
+        SendDlgItemMessage(hDlg, IDC_BLEND_GB_LAYER, CB_RESETCONTENT, 0, 0);
+        SendDlgItemMessage(hDlg, IDC_BLEND_GB_LAYER, CB_ADDSTRING, 0, (LPARAM)TEXT("All"));
+        SendDlgItemMessage(hDlg, IDC_BLEND_GB_LAYER, CB_ADDSTRING, 0, (LPARAM)TEXT("Background"));
+        SendDlgItemMessage(hDlg, IDC_BLEND_GB_LAYER, CB_ADDSTRING, 0, (LPARAM)TEXT("Window"));
+        SendDlgItemMessage(hDlg, IDC_BLEND_GB_LAYER, CB_ADDSTRING, 0, (LPARAM)TEXT("Sprites"));
+        SendDlgItemMessage(hDlg, IDC_BLEND_GB_LAYER, CB_SETCURSEL, (WPARAM)(Settings.GBFrameBlendLayer <= GB_BLEND_LAYER_SPRITES ? Settings.GBFrameBlendLayer : GB_BLEND_LAYER_ALL), 0);
+        if (Settings.GBFrameBlendAuto)
+            SendDlgItemMessage(hDlg, IDC_GB_BLEND_AUTO, BM_SETCHECK, (WPARAM)BST_CHECKED, 0);
+        CreateToolTip(IDC_BLEND_GB_FRAMES, hDlg, TEXT("Game Boy frame-blend mode: Simple Blend = 50/50 of the last two frames (cancels flicker-transparency); LCD Blend = slow-decay LCD-style ghosting"));
+        CreateToolTip(IDC_BLEND_GB_LAYER, hDlg, TEXT("Which Game Boy layer to blend: Background (BG) keeps moving sprites crisp; Window = the window/HUD layer; Sprites = objects only; All blends everything"));
+        CreateToolTip(IDC_GB_BLEND_AUTO, hDlg, TEXT("Auto Layer Transparency: pick the blend per game from a built-in list of known flicker-transparency games (off for the rest). Uncheck to set the mode/layer manually for every Game Boy game."));
+
+        // The Game Boy Image options only apply to a Game Boy / GBC / SGB game —
+        // grey them out for SNES titles (or when nothing is loaded). With Auto on,
+        // the two dropdowns are list-driven so they're greyed too; the layer one
+        // also needs blending to be on (mode != Off).
+        {
+            BOOL gbActive = (Settings.SuperGameBoy || Settings.SGB_BIOSModeActive) ? TRUE : FALSE;
+            BOOL manual   = gbActive && !Settings.GBFrameBlendAuto;
+            EnableWindow(GetDlgItem(hDlg, IDC_GB_IMAGE_GROUP),  gbActive);
+            EnableWindow(GetDlgItem(hDlg, IDC_GB_BLEND_AUTO),   gbActive);
+            EnableWindow(GetDlgItem(hDlg, IDC_BLEND_GB_FRAMES), manual);
+            EnableWindow(GetDlgItem(hDlg, IDC_BLEND_GB_LAYER),  manual && Settings.GBFrameBlend != GB_BLEND_OFF);
+        }
         if (Settings.ShowOverscan)
             SendDlgItemMessage(hDlg, IDC_HEIGHT_EXTEND, BM_SETCHECK, (WPARAM)BST_CHECKED, 0);
         if (Settings.AutoDisplayMessages)
@@ -10040,9 +10067,34 @@ INT_PTR CALLBACK DlgFunky(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 			if (HIWORD(wParam) == CBN_SELCHANGE)
 			{
 				int sel = SendDlgItemMessage(hDlg, IDC_BLEND_GB_FRAMES, CB_GETCURSEL, 0, 0);
-				Settings.GBFrameBlend = (sel == CB_ERR) ? 0 : (uint8)sel;
+				Settings.GBFrameBlend = (sel == CB_ERR) ? GB_BLEND_OFF : (uint8)sel;
+				EnableWindow(GetDlgItem(hDlg, IDC_BLEND_GB_LAYER), Settings.GBFrameBlend != GB_BLEND_OFF);
 				WinRefreshDisplay();
 			}
+			break;
+
+		case IDC_BLEND_GB_LAYER:
+			if (HIWORD(wParam) == CBN_SELCHANGE)
+			{
+				int sel = SendDlgItemMessage(hDlg, IDC_BLEND_GB_LAYER, CB_GETCURSEL, 0, 0);
+				Settings.GBFrameBlendLayer = (sel == CB_ERR) ? GB_BLEND_LAYER_ALL : (uint8)sel;
+				WinRefreshDisplay();
+			}
+			break;
+
+		case IDC_GB_BLEND_AUTO:
+			Settings.GBFrameBlendAuto = (IsDlgButtonChecked(hDlg, IDC_GB_BLEND_AUTO) == BST_CHECKED);
+			if (Settings.GBFrameBlendAuto)
+			{
+				// Re-pick the blend for the loaded game from the table and reflect
+				// it in the (now disabled) dropdowns.
+				S9xSGBApplyAutoBlend();
+				SendDlgItemMessage(hDlg, IDC_BLEND_GB_FRAMES, CB_SETCURSEL, (WPARAM)(Settings.GBFrameBlend <= GB_BLEND_LCD ? Settings.GBFrameBlend : GB_BLEND_OFF), 0);
+				SendDlgItemMessage(hDlg, IDC_BLEND_GB_LAYER,  CB_SETCURSEL, (WPARAM)(Settings.GBFrameBlendLayer <= GB_BLEND_LAYER_SPRITES ? Settings.GBFrameBlendLayer : GB_BLEND_LAYER_ALL), 0);
+			}
+			EnableWindow(GetDlgItem(hDlg, IDC_BLEND_GB_FRAMES), !Settings.GBFrameBlendAuto);
+			EnableWindow(GetDlgItem(hDlg, IDC_BLEND_GB_LAYER),  !Settings.GBFrameBlendAuto && Settings.GBFrameBlend != GB_BLEND_OFF);
+			WinRefreshDisplay();
 			break;
 
 		case IDC_AUTOFRAME:
@@ -10247,7 +10299,10 @@ INT_PTR CALLBACK DlgFunky(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 			GUI.BlendHiRes = (bool)(IsDlgButtonChecked(hDlg, IDC_HIRESBLEND)==BST_CHECKED);
 			{
 				int sel = SendDlgItemMessage(hDlg, IDC_BLEND_GB_FRAMES, CB_GETCURSEL, 0, 0);
-				Settings.GBFrameBlend = (sel == CB_ERR) ? 0 : (uint8)sel;
+				Settings.GBFrameBlend = (sel == CB_ERR) ? GB_BLEND_OFF : (uint8)sel;
+				int lsel = SendDlgItemMessage(hDlg, IDC_BLEND_GB_LAYER, CB_GETCURSEL, 0, 0);
+				Settings.GBFrameBlendLayer = (lsel == CB_ERR) ? GB_BLEND_LAYER_ALL : (uint8)lsel;
+				Settings.GBFrameBlendAuto = (IsDlgButtonChecked(hDlg, IDC_GB_BLEND_AUTO) == BST_CHECKED);
 			}
 
 			index = ComboBox_GetCurSel(GetDlgItem(hDlg,IDC_RESOLUTION));
@@ -10306,6 +10361,8 @@ INT_PTR CALLBACK DlgFunky(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 				GUI.BlendHiRes = prevBlendHires;
 				GUI.NTSCScanlines = prevNTSCScanlines;
 				Settings.GBFrameBlend = prevGBFrameBlend;
+				Settings.GBFrameBlendLayer = prevGBFrameBlendLayer;
+				Settings.GBFrameBlendAuto = prevGBFrameBlendAuto;
 				lstrcpy(GUI.D3DshaderFileName,prevD3DShaderFile);
 				lstrcpy(GUI.OGLshaderFileName,prevOGLShaderFile);
 			}
