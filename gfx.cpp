@@ -206,11 +206,11 @@ void S9xStartScreenRefresh (void)
 }
 
 // Temporal frame-blend for the Game Boy display (Settings.GBFrameBlend):
-//   1 = "simple"      — average the two most recent DISTINCT GB frames 50/50,
-//                       fully cancelling flicker-based fake transparency.
-//   2 = "LCD reality" — IIR decay (out = 3/8 cur + 5/8 accumulator) that mimics
-//                       an LCD's slow pixel response: softer, with light ghost
-//                       trails, robust without exact frame pairing.
+//   1 = "Simple Blending" — average the two most recent DISTINCT GB frames
+//                       50/50, fully cancelling flicker-based fake transparency.
+//   2 = "LCD Blending"    — IIR decay (out = 3/8 cur + 5/8 accumulator) that
+//                       mimics an LCD's slow pixel response: softer, with light
+//                       ghost trails, robust without exact frame pairing.
 //
 // The hard part is pairing. The GB and the SNES present at slightly different
 // rates, so in BIOS mode a GB frame is periodically duplicated (SGB2/DMG, GB a

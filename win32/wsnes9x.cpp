@@ -9810,8 +9810,8 @@ INT_PTR CALLBACK DlgFunky(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
             SendDlgItemMessage(hDlg, IDC_HIRESBLEND, BM_SETCHECK, (WPARAM)BST_CHECKED, 0);
         SendDlgItemMessage(hDlg, IDC_BLEND_GB_FRAMES, CB_RESETCONTENT, 0, 0);
         SendDlgItemMessage(hDlg, IDC_BLEND_GB_FRAMES, CB_ADDSTRING, 0, (LPARAM)TEXT("Off"));
-        SendDlgItemMessage(hDlg, IDC_BLEND_GB_FRAMES, CB_ADDSTRING, 0, (LPARAM)TEXT("Simple"));
-        SendDlgItemMessage(hDlg, IDC_BLEND_GB_FRAMES, CB_ADDSTRING, 0, (LPARAM)TEXT("LCD reality"));
+        SendDlgItemMessage(hDlg, IDC_BLEND_GB_FRAMES, CB_ADDSTRING, 0, (LPARAM)TEXT("Simple Blending"));
+        SendDlgItemMessage(hDlg, IDC_BLEND_GB_FRAMES, CB_ADDSTRING, 0, (LPARAM)TEXT("LCD Blending"));
         SendDlgItemMessage(hDlg, IDC_BLEND_GB_FRAMES, CB_SETCURSEL, (WPARAM)(Settings.GBFrameBlend <= 2 ? Settings.GBFrameBlend : 0), 0);
 
         SendDlgItemMessage(hDlg, IDC_BLEND_GB_LAYER, CB_RESETCONTENT, 0, 0);
@@ -9820,8 +9820,18 @@ INT_PTR CALLBACK DlgFunky(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
         SendDlgItemMessage(hDlg, IDC_BLEND_GB_LAYER, CB_ADDSTRING, 0, (LPARAM)TEXT("Window"));
         SendDlgItemMessage(hDlg, IDC_BLEND_GB_LAYER, CB_ADDSTRING, 0, (LPARAM)TEXT("Sprites"));
         SendDlgItemMessage(hDlg, IDC_BLEND_GB_LAYER, CB_SETCURSEL, (WPARAM)(Settings.GBFrameBlendLayer <= 3 ? Settings.GBFrameBlendLayer : 0), 0);
-        CreateToolTip(IDC_BLEND_GB_FRAMES, hDlg, TEXT("Game Boy frame-blend mode: Simple = 50/50 of the last two frames (cancels flicker-transparency); LCD reality = slow-decay LCD-style ghosting"));
+        CreateToolTip(IDC_BLEND_GB_FRAMES, hDlg, TEXT("Game Boy frame-blend mode: Simple Blending = 50/50 of the last two frames (cancels flicker-transparency); LCD Blending = slow-decay LCD-style ghosting"));
         CreateToolTip(IDC_BLEND_GB_LAYER, hDlg, TEXT("Which Game Boy layer to blend: Background (BG) keeps moving sprites crisp; Window = the window/HUD layer; Sprites = objects only; All blends everything"));
+
+        // The Game Boy Image options only apply to a Game Boy / GBC / SGB game —
+        // grey them out for SNES titles (or when nothing is loaded).
+        {
+            BOOL gbActive = (Settings.SuperGameBoy || Settings.SGB_BIOSModeActive) ? TRUE : FALSE;
+            EnableWindow(GetDlgItem(hDlg, IDC_GB_IMAGE_GROUP),  gbActive);
+            EnableWindow(GetDlgItem(hDlg, IDC_GB_BLEND_LABEL),  gbActive);
+            EnableWindow(GetDlgItem(hDlg, IDC_BLEND_GB_FRAMES), gbActive);
+            EnableWindow(GetDlgItem(hDlg, IDC_BLEND_GB_LAYER),  gbActive);
+        }
         if (Settings.ShowOverscan)
             SendDlgItemMessage(hDlg, IDC_HEIGHT_EXTEND, BM_SETCHECK, (WPARAM)BST_CHECKED, 0);
         if (Settings.AutoDisplayMessages)
