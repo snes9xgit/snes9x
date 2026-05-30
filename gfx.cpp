@@ -240,6 +240,7 @@ static void S9xBlendGameBoyFrames (void)
 	static uint16 lastout[SNES_WIDTH * SNES_HEIGHT_EXTENDED];  // last presented blended frame
 	static uint32 prevW = 0, prevH = 0;
 	static uint32 gbPrev = 0;
+	static uint32 dupRun = 0;
 	static bool   primed = false;
 
 	if (!Settings.GBFrameBlend ||
@@ -281,7 +282,7 @@ static void S9xBlendGameBoyFrames (void)
 			for (uint32 x = 0; x < w; x++)
 				p[x] = o[x] = line[x];
 		}
-		prevW = w; prevH = h; gbPrev = gbNow; primed = gbRunning;
+		prevW = w; prevH = h; gbPrev = gbNow; dupRun = 0; primed = gbRunning;
 		return;
 	}
 
@@ -307,13 +308,52 @@ static void S9xBlendGameBoyFrames (void)
 
 	if (identical)
 	{
-		// Nothing new to pair with — re-present the last blended frame.
+		// A lone duplicate is the GB<->SNES refresh beat re-showing a flicker
+		// frame: re-present the last blended frame so the flicker stays
+		// cancelled. But once the picture has held still for a couple of frames
+		// it is genuinely static (a game title/menu, or a scene that has
+		// settled), not a flicker phase — continuing to show the stale blend
+		// freezes a "ghost" of whatever preceded it (e.g. doubled title text).
+		// So converge to the raw still image, matching the crisp look of
+		// blend-off on static screens.
+		if (++dupRun >= 2)
+		{
+			for (uint32 y = 0; y < h; y++)
+			{
+				const uint16 *line = GFX.Screen + y * pitch;
+				uint16 *p = prev + y * w, *o = lastout + y * w;
+				for (uint32 x = 0; x < w; x++)
+					p[x] = o[x] = line[x];
+			}
+		}
+		else
+		{
+			for (uint32 y = 0; y < h; y++)
+			{
+				uint16 *line = GFX.Screen + y * pitch;
+				const uint16 *o = lastout + y * w;
+				for (uint32 x = 0; x < w; x++)
+					line[x] = o[x];
+			}
+		}
+		return;
+	}
+
+	// First changed frame after the picture was static (e.g. game title -> play,
+	// or a scene cut): don't cross-fade the new content with the stale still
+	// image — present it raw and start a fresh pairing. dupRun still holds the
+	// just-ended static run here; gameplay/flicker never reach 2 consecutive
+	// identical frames, so this only fires leaving a genuinely static screen.
+	const bool wasStatic = dupRun >= 2;
+	dupRun = 0;
+	if (wasStatic)
+	{
 		for (uint32 y = 0; y < h; y++)
 		{
-			uint16 *line = GFX.Screen + y * pitch;
-			const uint16 *o = lastout + y * w;
+			const uint16 *line = GFX.Screen + y * pitch;
+			uint16 *p = prev + y * w, *o = lastout + y * w;
 			for (uint32 x = 0; x < w; x++)
-				line[x] = o[x];
+				p[x] = o[x] = line[x];
 		}
 		return;
 	}
