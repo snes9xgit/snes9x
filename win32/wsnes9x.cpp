@@ -5592,7 +5592,7 @@ INT_PTR CALLBACK DlgSoundConf(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 						sliderVal = _tstoi(valTxt);
 						S9xSGBMixVolumeSPC = (sliderVal >= 0 && sliderVal <= 100) ? (unsigned int)sliderVal : 100u;
 					}
-					if (Settings.SuperGameBoy)
+					if (Settings.SuperGameBoy || Settings.SGB_BIOSModeActive)
 					{
 						Edit_GetText(GetDlgItem(hDlg, IDC_EDIT_VOLUME_GB), valTxt, 10);
 						sliderVal = _tstoi(valTxt);
