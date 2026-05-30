@@ -59,6 +59,7 @@ bool DecodeCartType(uint8_t code, MbcType &mbc, bool &battery, bool &rtc, bool &
 		case 0x1E: mbc = MbcType::MBC5; rumble = true; battery = true; return true;
 		case 0x20: mbc = MbcType::MBC6; return true;
 		case 0x22: mbc = MbcType::MBC7; rumble = true; battery = true; return true;
+		case 0xFD: mbc = MbcType::TAMA5; battery = true; rtc = true; return true;
 		case 0xFE: mbc = MbcType::HuC3; battery = true; rtc = true; return true;
 		case 0xFF: mbc = MbcType::HuC1; battery = true; return true;
 		default:                                 return false;
@@ -239,6 +240,12 @@ bool CartLoad(Cart &c, const uint8_t *data, size_t size, const char *path)
 		// size. Real MBC2 internal RAM also defaults to $FF — but only the
 		// low nibble is wired, so we'll see $F upper-bits at read time.
 		c.sram.assign(512, 0xFF);
+	}
+	else if (c.mbc.type == MbcType::TAMA5)
+	{
+		// TAMA5 carts report no RAM in the header ($0149 = 0) but carry a
+		// 32-byte EEPROM addressed by the mapper's 5-bit register interface.
+		c.sram.assign(0x20, 0xFF);
 	}
 	else if (h.ram_size > 0)
 	{
