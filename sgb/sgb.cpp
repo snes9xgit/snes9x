@@ -595,11 +595,46 @@ static void IcdStageNextSynth(Emulator::Impl::Icd2 &icd)
 	icd.synth_remaining--;
 }
 
+// ---- Per-title auto frame-blend table ------------------------------------
+// Curated list of GB/GBC/SGB games known to use flicker-based fake transparency,
+// with the blend that suits each. When Settings.GBFrameBlendAuto is on, LoadROM
+// picks the matching entry and turns blending off for unlisted titles. Match is
+// on the exact GB header title (CartHeader::title, 16 bytes from 0x0134, trailing
+// padding stripped). Extend by hand as more flicker games turn up.
+//   mode  : 1 = Simple Blend, 2 = LCD Blend
+//   layer : 0 = all, 1 = background (BG), 2 = window, 3 = sprites
+namespace {
+struct GBAutoBlendEntry { const char *title; GBBlendMode mode; GBBlendLayer layer; };
+const GBAutoBlendEntry kGBAutoBlend[] = {
+	{ "CASTLEVANIA2 BEL", GB_BLEND_SIMPLE, GB_BLEND_LAYER_BACKGROUND },  // Castlevania II: Belmont's Revenge (16-byte title)
+	{ "ZAS",              GB_BLEND_SIMPLE, GB_BLEND_LAYER_BACKGROUND },  // Chikyuu Kaihou Gun ZAS
+	{ "ZELDA",            GB_BLEND_SIMPLE, GB_BLEND_LAYER_ALL        },  // Zelda: Link's Awakening (DX)
+};
+} // anonymous
+
+void Emulator::ApplyAutoBlend()
+{
+	if (!Settings.GBFrameBlendAuto || !impl_->has_rom) return;
+	const char *title = impl_->cart.header.title;
+	for (const GBAutoBlendEntry &e : kGBAutoBlend)
+	{
+		if (std::strcmp(title, e.title) == 0)
+		{
+			Settings.GBFrameBlend      = e.mode;
+			Settings.GBFrameBlendLayer = e.layer;
+			return;
+		}
+	}
+	// Unlisted title — no known transparency trick, so leave blending off.
+	Settings.GBFrameBlend = GB_BLEND_OFF;
+}
+
 bool Emulator::LoadROM(const uint8_t *data, size_t size, const char *path)
 {
 	if (!CartLoad(impl_->cart, data, size, path))
 		return false;
 	impl_->has_rom = true;
+	ApplyAutoBlend();   // pick blend from the per-title table when Auto is on
 	ColdReset();   // new cart → start fresh, drop any stale handshake cache
 	return true;
 }
@@ -2055,6 +2090,7 @@ void S9xSGBOnPpuHBlank(void) { SGB::Instance().OnPpuHBlank(); }
 void S9xSGBOnPpuVBlank(void) { SGB::Instance().OnPpuVBlank(); }
 uint32_t S9xSGBGetGBFrameCount(void) { return SGB::g_gb_vblank_count; }
 const uint8_t *S9xSGBGetGBLayerMask(void) { return SGB::Instance().GBLayerMask(); }
+void S9xSGBApplyAutoBlend(void) { SGB::Instance().ApplyAutoBlend(); }
 void S9xSGBCaptureScanline(const unsigned char *pixels)
 {
 	SGB::Instance().CaptureScanline(static_cast<const uint8_t *>(pixels));

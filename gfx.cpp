@@ -251,8 +251,13 @@ static void S9xBlendGameBoyFrames (void)
 	static uint32 dupRun = 0;
 	static bool   primed = false;
 
+	// Suppress blending during fast-forward: the GB races many frames per
+	// displayed frame, so pairing/skip-holding stutters. Present raw frames and
+	// resume the saved mode (we only gate here, never change GBFrameBlend) once
+	// fast-forward is released.
 	if (!Settings.GBFrameBlend ||
-	    !(Settings.SuperGameBoy || Settings.SGB_BIOSModeActive))
+	    !(Settings.SuperGameBoy || Settings.SGB_BIOSModeActive) ||
+	    Settings.TurboMode)
 	{
 		primed = false;
 		return;
@@ -280,7 +285,7 @@ static void S9xBlendGameBoyFrames (void)
 	//   * Sprite flicker-transparency alternates PRESENCE (object drawn every
 	//     other frame), so "sprites" blends when OBJ appears in EITHER frame.
 	const uint8  layerSel = Settings.GBFrameBlendLayer;
-	const uint8 *curLayer = (layerSel != 0) ? S9xSGBGetGBLayerMask() : NULL;
+	const uint8 *curLayer = (layerSel != GB_BLEND_LAYER_ALL) ? S9xSGBGetGBLayerMask() : NULL;
 	const bool   useLayer = curLayer && w >= GB_BLEND_X + GB_BLEND_W
 	                                 && h >= GB_BLEND_Y + GB_BLEND_H;
 
@@ -430,12 +435,12 @@ static void S9xBlendGameBoyFrames (void)
 					cl = clr[gi];
 					pl = plr[gi];
 				}
-				if (layerSel == 3)
-					blendPixel = (cl == 2 || pl == 2);        // sprites: OBJ in either frame
+				if (layerSel == GB_BLEND_LAYER_SPRITES)
+					blendPixel = (cl == GB_PIXEL_OBJ || pl == GB_PIXEL_OBJ);  // OBJ in either frame
 				else
 				{
-					const uint8 want = (uint8)(layerSel - 1); // 1->BG(0), 2->window(1)
-					blendPixel = (cl == want && pl == want);  // that layer in both frames
+					const uint8 want = (layerSel == GB_BLEND_LAYER_WINDOW) ? GB_PIXEL_WINDOW : GB_PIXEL_BG;
+					blendPixel = (cl == want && pl == want);                  // that layer in both frames
 				}
 			}
 
@@ -443,7 +448,7 @@ static void S9xBlendGameBoyFrames (void)
 			{
 				uint32 rc, gc, bc, ra, ga, ba;
 				DECOMPOSE_PIXEL(cur,  rc, gc, bc);
-				if (mode == 2)
+				if (mode == GB_BLEND_LCD)
 				{
 					DECOMPOSE_PIXEL(o[x], ra, ga, ba);   // accumulator
 					const uint16 out = (uint16) BUILD_PIXEL((rc * 3 + ra * 5) >> 3,

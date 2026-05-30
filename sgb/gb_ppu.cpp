@@ -286,7 +286,7 @@ void RenderPixel(Ppu &p)
 
 	// BG / window resolve.
 	uint8_t bg_color = 0;   // raw 2-bit pre-palette
-	uint8_t bg_layer = 0;   // 0 = BG (or blank), 1 = window
+	uint8_t bg_layer = GB_PIXEL_BG;   // GB_PIXEL_BG (or blank) / GB_PIXEL_WINDOW
 	if (p.lcdc & 0x01)
 	{
 		const int wx = static_cast<int>(p.latched_wx) - 7;
@@ -298,7 +298,7 @@ void RenderPixel(Ppu &p)
 		if (win_active_here)
 		{
 			bg_color = SampleWindowPixel(p, x);
-			bg_layer = 1;
+			bg_layer = GB_PIXEL_WINDOW;
 			// Latch the "window did draw" state for window_line bookkeeping
 			// at end of LY.
 			if (!p.window_active)
@@ -324,7 +324,7 @@ void RenderPixel(Ppu &p)
 	{
 		p.scanline_raw[x] = sp.color;
 		line[x]           = ApplyPalette(sp.palette, sp.color);
-		lay[x]            = 2;   // sprite/OBJ
+		lay[x]            = GB_PIXEL_OBJ;
 	}
 }
 
@@ -467,14 +467,14 @@ inline void ExecPpuDot(Ppu &p, Memory &mem)
 				p.scanline_raw[x]    = 0;
 				p.framebuffer[p.ly * GB_SCREEN_WIDTH + x] =
 					ApplyPalette(p.latched_bgp, 0);
-				p.layer[p.ly * GB_SCREEN_WIDTH + x] = 0;   // blank BG
+				p.layer[p.ly * GB_SCREEN_WIDTH + x] = GB_PIXEL_BG;   // blank BG
 				const SpritePixel sp = SampleSpritePixel(p, x);
 				if (sp.covered)
 				{
 					p.scanline_raw[x] = sp.color;
 					p.framebuffer[p.ly * GB_SCREEN_WIDTH + x] =
 						ApplyPalette(sp.palette, sp.color);
-					p.layer[p.ly * GB_SCREEN_WIDTH + x] = 2;   // sprite/OBJ
+					p.layer[p.ly * GB_SCREEN_WIDTH + x] = GB_PIXEL_OBJ;
 				}
 			}
 			++p.draw_x;
