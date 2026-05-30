@@ -40,11 +40,68 @@
 //                    $B = RTC command, $C = response, $D = semaphore, $E = IR
 //     0x2000-0x3FFF  ROM bank (7 bits, no 0->1 remap)
 //     0x4000-0x5FFF  RAM bank (low 2 bits)
+//
+//   TAMA5: (Bandai Tamagotchi — a nibble register port, not the usual banking)
+//     0xA001  register select — which TAMA5 register the next 0xA000 access hits
+//     0xA000  nibble data port. Registers: 0/1 = ROM bank lo/hi, 4/5 = write
+//             data lo/hi, 6/7 = address hi/lo (writing reg 7 commits), 0xA =
+//             ready handshake (reads 0xF1), 0xC/0xD = read result lo/hi. The
+//             5-bit address + a 3-bit mode pick a 32-byte EEPROM cell or a
+//             TAMA6 RTC register / command.
 
 #include "gb_mbc.h"
 #include "gb_cart.h"
 
+#include <ctime>
+
 namespace SGB {
+
+// TAMA5 reuses existing MbcState fields (it never coexists with the mappers
+// that own them), keeping MbcState's size — and the savestate layout — fixed:
+//   rom_bank          = ROM bank (BANK_LO | BANK_HI << 4)
+//   rtc_select        = selected TAMA5 register (the 0xA001 latch)
+//   sachen_outer_bank = packed write byte (WRITE_HI << 4 | WRITE_LO)
+//   sachen_outer_mask = packed address byte (ADDR_HI << 4 | ADDR_LO);
+//                       low 5 bits = RAM/command address, top 3 bits = op mode
+//   rtc_regs[0..4] + rtc_latched[0..1] = TAMA6 BCD timer page, one nibble each
+namespace {
+
+inline void Tama5SetRtcNib(MbcState &s, uint8_t idx, uint8_t nib)
+{
+	nib &= 0x0F;
+	const uint8_t b = static_cast<uint8_t>(idx >> 1);
+	uint8_t &cell = (b < 5) ? s.rtc_regs[b] : s.rtc_latched[b - 5];
+	cell = (idx & 1) ? static_cast<uint8_t>((cell & 0x0F) | (nib << 4))
+	                 : static_cast<uint8_t>((cell & 0xF0) | nib);
+}
+
+inline uint8_t Tama5RtcNib(const MbcState &s, uint8_t idx)
+{
+	const uint8_t b = static_cast<uint8_t>(idx >> 1);
+	const uint8_t cell = (b < 5) ? s.rtc_regs[b] : s.rtc_latched[b - 5];
+	return (idx & 1) ? static_cast<uint8_t>(cell >> 4)
+	                 : static_cast<uint8_t>(cell & 0x0F);
+}
+
+inline void Tama5SeedRtc(MbcState &s)
+{
+	std::time_t t = std::time(nullptr);
+	const std::tm *lt = std::localtime(&t);
+	if (!lt) return;
+	auto put2 = [&](uint8_t lo, int v) {
+		Tama5SetRtcNib(s, lo, static_cast<uint8_t>(v % 10));
+		Tama5SetRtcNib(s, static_cast<uint8_t>(lo + 1), static_cast<uint8_t>((v / 10) % 10));
+	};
+	put2(0x0, lt->tm_sec);
+	put2(0x2, lt->tm_min);
+	put2(0x4, lt->tm_hour);
+	Tama5SetRtcNib(s, 0x6, static_cast<uint8_t>(lt->tm_wday));
+	put2(0x7, lt->tm_mday);
+	put2(0x9, lt->tm_mon + 1);
+	put2(0xB, lt->tm_year % 100);
+}
+
+} // anonymous
 
 void MbcReset(MbcState &s)
 {
@@ -75,6 +132,8 @@ void MbcReset(MbcState &s)
 	s.mmm01_rom_bank_mask     = 0;
 	s.mmm01_ram_bank_mask     = 0xFF;
 	s.mmm01_just_locked       = false;
+
+	if (s.type == MbcType::TAMA5) Tama5SeedRtc(s);
 }
 
 namespace {
@@ -255,6 +314,42 @@ inline void Huc3Command(MbcState &s, uint8_t value)
 	}
 }
 
+// TAMA5: a write to register 7 (ADDR_LO) commits the operation selected by the
+// top 3 bits of the packed address byte — RAM write, RTC command, or RTC-page
+// write. RAM reads (mode 1) are serviced lazily in MbcRead.
+inline void Tama5Trigger(Cart &c)
+{
+	MbcState &s = c.mbc;
+	const uint8_t addr5 = static_cast<uint8_t>(s.sachen_outer_mask & 0x1F);
+	const uint8_t mode  = static_cast<uint8_t>(s.sachen_outer_mask >> 5);
+	const uint8_t data  = s.sachen_outer_bank;
+	switch (mode)
+	{
+		case 0x0:
+			WriteSram(c, addr5, data);
+			break;
+		case 0x2:
+			switch (addr5)
+			{
+				case 0x0: s.rtc_latch = false; break;
+				case 0x1: s.rtc_latch = true;  break;
+				case 0x4: Tama5SetRtcNib(s, 0x2, data & 0x0F); Tama5SetRtcNib(s, 0x3, static_cast<uint8_t>(data >> 4)); break;
+				case 0x5: Tama5SetRtcNib(s, 0x4, data & 0x0F); Tama5SetRtcNib(s, 0x5, static_cast<uint8_t>(data >> 4)); break;
+				default: break;
+			}
+			break;
+		case 0x4:
+			if ((s.sachen_outer_mask & 0x0F) == 0x0)
+			{
+				const uint8_t idx = static_cast<uint8_t>(data & 0x0F);
+				if (idx < 0x0D) Tama5SetRtcNib(s, idx, static_cast<uint8_t>(data >> 4));
+			}
+			break;
+		default:
+			break;
+	}
+}
+
 } // anonymous
 
 uint8_t MbcRead(MbcState &s, const std::vector<uint8_t> &rom, const std::vector<uint8_t> &sram, uint16_t addr)
@@ -290,6 +385,7 @@ uint8_t MbcRead(MbcState &s, const std::vector<uint8_t> &rom, const std::vector<
 			case MbcType::MBC5: bank = s.rom_bank; break;
 			case MbcType::HuC1: bank = s.rom_bank ? s.rom_bank : 1; break;
 			case MbcType::HuC3: bank = s.rom_bank; break;
+			case MbcType::TAMA5: bank = s.rom_bank; break;
 			case MbcType::MBC2: bank = (s.rom_bank & 0x0F) ? (s.rom_bank & 0x0F) : 1; break;
 			case MbcType::SachenMMC1: bank = SachenBankN(s); break;
 			case MbcType::MMM01:      bank = Mmm01RomBank(s, rom.size()); break;
@@ -323,6 +419,32 @@ uint8_t MbcRead(MbcState &s, const std::vector<uint8_t> &rom, const std::vector<
 				case 0xE: return 0x00;   // IR: no link partner
 				default:  return 0xFF;   // open bus
 			}
+		}
+
+		if (s.type == MbcType::TAMA5)
+		{
+			if (addr & 1) return 0xFF;
+			const uint8_t addr5 = static_cast<uint8_t>(s.sachen_outer_mask & 0x1F);
+			const uint8_t mode  = static_cast<uint8_t>(s.sachen_outer_mask >> 5);
+			if (s.rtc_select == 0x0A) return 0xF1;
+			if (s.rtc_select == 0x0C || s.rtc_select == 0x0D)
+			{
+				uint8_t value = 0x0F;
+				if (mode == 0x1)
+					value = ReadSram(sram, addr5);
+				else if (mode == 0x2)
+					value = (addr5 == 0x6) ? static_cast<uint8_t>((Tama5RtcNib(s, 0x3) << 4) | Tama5RtcNib(s, 0x2))
+					      : (addr5 == 0x7) ? static_cast<uint8_t>((Tama5RtcNib(s, 0x5) << 4) | Tama5RtcNib(s, 0x4))
+					      :                  addr5;
+				else if (mode == 0x4)
+				{
+					const uint8_t idx = static_cast<uint8_t>(s.sachen_outer_bank & 0x0F);
+					value = (idx < 0x0D) ? Tama5RtcNib(s, idx) : 0;
+				}
+				if (s.rtc_select == 0x0D) value = static_cast<uint8_t>(value >> 4);
+				return static_cast<uint8_t>(value | 0xF0);
+			}
+			return 0xF1;
 		}
 
 		if (!s.ram_enable && s.type != MbcType::MBC5) return 0xFF;
@@ -608,6 +730,33 @@ void MbcWrite(Cart &c, uint16_t addr, uint8_t value)
 				case 0xA: WriteSram(c, ((s.ram_bank & 0x03) * 0x2000u) + (addr - 0xA000u), value); break;
 				case 0xB: Huc3Command(s, value); break;  // RTC command (executes immediately)
 				default:  break;                          // RO RAM / semaphore / IR / undefined
+			}
+		}
+		break;
+
+	case MbcType::TAMA5:
+		if (addr >= 0xA000 && addr < 0xC000)
+		{
+			if (addr & 1)
+			{
+				s.rtc_select = static_cast<uint8_t>(value & 0x0F);
+			}
+			else
+			{
+				const uint8_t v = static_cast<uint8_t>(value & 0x0F);
+				switch (s.rtc_select)
+				{
+					case 0x0: s.rom_bank = (s.rom_bank & 0xF0u) | v; break;
+					case 0x1: s.rom_bank = (s.rom_bank & 0x0Fu) | (static_cast<uint32_t>(v) << 4); break;
+					case 0x4: s.sachen_outer_bank = static_cast<uint8_t>((s.sachen_outer_bank & 0xF0) | v); break;
+					case 0x5: s.sachen_outer_bank = static_cast<uint8_t>((s.sachen_outer_bank & 0x0F) | (v << 4)); break;
+					case 0x6: s.sachen_outer_mask = static_cast<uint8_t>((s.sachen_outer_mask & 0x0F) | (v << 4)); break;
+					case 0x7:
+						s.sachen_outer_mask = static_cast<uint8_t>((s.sachen_outer_mask & 0xF0) | v);
+						Tama5Trigger(c);
+						break;
+					default: break;
+				}
 			}
 		}
 		break;
