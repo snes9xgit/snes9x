@@ -788,7 +788,7 @@ void retro_get_system_info(struct retro_system_info *info)
 {
     memset(info,0,sizeof(retro_system_info));
 
-    info->library_name = "Snes9x";
+    info->library_name = "SuperSnes9x";
 #ifndef GIT_VERSION
 #define GIT_VERSION ""
 #endif
