@@ -987,11 +987,11 @@ int HandleKeyMessage(WPARAM wParam, LPARAM lParam)
 	if(!(wParam == 0 || wParam == VK_ESCAPE)) // if it's the 'disabled' key, it's never pressed as a hotkey
 	{
 		int modifiers = 0;
-		if(GetAsyncKeyState(VK_MENU))
+		if(GetAsyncKeyState(VK_MENU) & 0x8000)
 			modifiers |= CUSTKEY_ALT_MASK;
-		if(GetAsyncKeyState(VK_CONTROL))
+		if(GetAsyncKeyState(VK_CONTROL) & 0x8000)
 			modifiers |= CUSTKEY_CTRL_MASK;
-		if(GetAsyncKeyState(VK_SHIFT))
+		if(GetAsyncKeyState(VK_SHIFT) & 0x8000)
 			modifiers |= CUSTKEY_SHIFT_MASK;
 
 		{
@@ -1826,11 +1826,11 @@ LRESULT CALLBACK WinProc(
 	case WM_CUSTKEYUP:
 		{
 			int modifiers = 0;
-			if(GetAsyncKeyState(VK_MENU) || wParam == VK_MENU)
+			if((GetAsyncKeyState(VK_MENU) & 0x8000) || wParam == VK_MENU)
 				modifiers |= CUSTKEY_ALT_MASK;
-			if(GetAsyncKeyState(VK_CONTROL)|| wParam == VK_CONTROL)
+			if((GetAsyncKeyState(VK_CONTROL) & 0x8000) || wParam == VK_CONTROL)
 				modifiers |= CUSTKEY_CTRL_MASK;
-			if(GetAsyncKeyState(VK_SHIFT)|| wParam == VK_SHIFT)
+			if((GetAsyncKeyState(VK_SHIFT) & 0x8000) || wParam == VK_SHIFT)
 				modifiers |= CUSTKEY_SHIFT_MASK;
 
 			// Master hotkey key-up: reset hold timer
