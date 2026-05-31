@@ -781,7 +781,31 @@ static LRESULT CALLBACK InputCustomWndProc(HWND hwnd, UINT msg, WPARAM wParam, L
 	case WM_USER+47:
 	{
 		// Set maxKeys: wParam = new maxKeys value
-		icp->maxKeys = max(1, min((int)wParam, MAX_BIND_KEYS));
+		int newMax = max(1, min((int)wParam, MAX_BIND_KEYS));
+		bool changed = (newMax != icp->maxKeys);
+		icp->maxKeys = newMax;
+
+		if (changed && icp->capturing)
+		{
+			col = RGB( 0,255,0);
+			icp->crForeGnd = ((~col) & 0x00ffffff);
+			icp->crBackGnd = col;
+			if (icp->maxKeys > 1 && icp->numKeys > 0)
+			{
+				TranslateMultiKey(icp->keys, icp->numKeys, temp);
+				if (icp->numKeys < icp->maxKeys)
+					strcat(temp, ", ...");
+				SetWindowText(hwnd, _tFromChar(temp));
+			}
+			else
+			{
+				icp->numKeys = 0;
+				memset(icp->keys, 0, sizeof(icp->keys));
+				SetWindowText(hwnd, _T("..."));
+			}
+			InvalidateRect(icp->hwnd, NULL, FALSE);
+			UpdateWindow(icp->hwnd);
+		}
 		break;
 	}
 
@@ -1351,7 +1375,33 @@ static LRESULT CALLBACK HotInputCustomWndProc(HWND hwnd, UINT msg, WPARAM wParam
 	case WM_USER+47:
 	{
 		// Set maxKeys: wParam = new maxKeys value
-		icp->maxKeys = max(1, min((int)wParam, MAX_BIND_KEYS));
+		int newMax = max(1, min((int)wParam, MAX_BIND_KEYS));
+		bool changed = (newMax != icp->maxKeys);
+		icp->maxKeys = newMax;
+
+		if (changed && icp->capturing)
+		{
+			keyPressLock = false;
+			col = RGB( 0,255,0);
+			icp->crForeGnd = ((~col) & 0x00ffffff);
+			icp->crBackGnd = col;
+			if (icp->maxKeys > 1 && icp->numKeys > 0)
+			{
+				TranslateMultiHotKey(icp->keys, icp->mods, icp->numKeys, temp);
+				if (icp->numKeys < icp->maxKeys)
+					strcat(temp, ", ...");
+				SetWindowText(hwnd, _tFromChar(temp));
+			}
+			else
+			{
+				icp->numKeys = 0;
+				memset(icp->keys, 0, sizeof(icp->keys));
+				memset(icp->mods, 0, sizeof(icp->mods));
+				SetWindowText(hwnd, _T("..."));
+			}
+			InvalidateRect(icp->hwnd, NULL, FALSE);
+			UpdateWindow(icp->hwnd);
+		}
 		break;
 	}
 
