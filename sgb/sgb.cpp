@@ -814,6 +814,18 @@ size_t Emulator::GetROMSize() const
 	return impl_->cart.rom.size();
 }
 
+uint8_t *Emulator::GetSRAMData()
+{
+	if (!impl_->has_rom || impl_->cart.sram.empty()) return nullptr;
+	return impl_->cart.sram.data();
+}
+
+size_t Emulator::GetSRAMSize() const
+{
+	if (!impl_->has_rom) return 0;
+	return impl_->cart.sram.size();
+}
+
 const uint8_t *Emulator::GBLayerMask() const
 {
 	if (!impl_->has_rom) return nullptr;
@@ -2399,6 +2411,8 @@ bool S9xSGBHasBattery(void)         { return SGB::Instance().HasBattery(); }
 bool S9xSGBSaveBatteryToPath(const char *path) { return SGB::Instance().SaveBatteryToPath(path); }
 bool S9xSGBLoadBatteryFromPath(const char *path) { return SGB::Instance().LoadBatteryFromPath(path); }
 bool S9xSGBTakeSramDirty(void)      { return SGB::Instance().TakeSramDirty(); }
+unsigned char *S9xSGBGetSRAM(void)  { return SGB::Instance().GetSRAMData(); }
+size_t S9xSGBGetSRAMSize(void)      { return SGB::Instance().GetSRAMSize(); }
 void S9xSGBRunFrame(void)           { SGB::Instance().RunFrame(); }
 void S9xSGBRunCycles(int tcycles)   { SGB::Instance().RunCycles(static_cast<int32_t>(tcycles)); }
 

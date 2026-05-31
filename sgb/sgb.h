@@ -72,6 +72,12 @@ public:
 	bool LoadBatteryFromPath(const char *path);
 	bool TakeSramDirty();
 
+	// Raw cart battery-RAM accessor so a host (e.g. the libretro core) can
+	// expose it as a savable memory region. Returns nullptr / 0 when the
+	// loaded cart has no SRAM.
+	uint8_t       *GetSRAMData();
+	size_t         GetSRAMSize() const;
+
 	// Raw cart ROM accessor for hashing / external introspection. Returns
 	// nullptr when no ROM is loaded.
 	const uint8_t *GetROMData() const;
@@ -480,5 +486,11 @@ bool S9xSGBHasBattery(void);
 bool S9xSGBSaveBatteryToPath(const char *path);
 bool S9xSGBLoadBatteryFromPath(const char *path);
 bool S9xSGBTakeSramDirty(void);
+
+// Raw cart battery-RAM pointer + size, for hosts that persist save RAM via a
+// memory-region API (e.g. libretro's RETRO_MEMORY_SAVE_RAM). nullptr / 0 when
+// the loaded cart has no battery-backed SRAM.
+unsigned char *S9xSGBGetSRAM(void);
+size_t         S9xSGBGetSRAMSize(void);
 
 #endif

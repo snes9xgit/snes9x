@@ -14,6 +14,7 @@
 #include "display.h"
 #include "conffile.h"
 #include "crosshairs.h"
+#include "sgb/sgb.h"
 #include <stdio.h>
 #include <vector>
 #include <string>
@@ -614,6 +615,22 @@ static void update_variables(void)
     else
         Settings.SeparateEchoBuffer = false;
 
+    // Super Game Boy BIOS preference for .gb/.gbc content. 2 = prefer a real
+    // SNES SGB BIOS in the system dir (SGB2 then SGB1), falling back to the
+    // built-in BIOS-less GB core; 1 = SGB1 only; 0 = always BIOS-less.
+    var.key = "snes9x_sgb_bios";
+    var.value = NULL;
+    Settings.SGB_BIOSPreference = 2;
+    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+    {
+        if (!strcmp(var.value, "off"))
+            Settings.SGB_BIOSPreference = 0;
+        else if (!strcmp(var.value, "sgb1"))
+            Settings.SGB_BIOSPreference = 1;
+        else
+            Settings.SGB_BIOSPreference = 2;
+    }
+
     var.key = "snes9x_blargg";
     var.value = NULL;
 
@@ -776,7 +793,7 @@ void retro_get_system_info(struct retro_system_info *info)
 #define GIT_VERSION ""
 #endif
     info->library_version = VERSION GIT_VERSION;
-    info->valid_extensions = "smc|sfc|swc|fig|bs";
+    info->valid_extensions = "smc|sfc|swc|fig|bs|gb|gbc|dmg|sgb";
     info->need_fullpath = false;
     info->block_extract = false;
 }
@@ -1114,6 +1131,14 @@ bool retro_load_game(const struct retro_game_info *game)
             extract_directory(g_rom_dir, game->path, sizeof(g_rom_dir));
         }
 
+        // Game Boy / Game Boy Color / Super Game Boy content takes priority:
+        // route it straight to LoadROMMem (which hands .gb/.gbc carts to the
+        // SGB subsystem) so the BS-X/Sufami header sniffs below can't grab it.
+        if (S9xRomBytesAreGb((const uint8 *) game->data, (int32) game->size)) {
+            rom_loaded = Memory.LoadROMMem((const uint8_t*)game->data, game->size, g_basename);
+        }
+
+        else
         if (is_SufamiTurbo_Cart((uint8 *) game->data, game->size)) {
             if ((rom_loaded = LoadBIOS(biosrom,"STBIOS.bin",0x40000)))
             rom_loaded = Memory.LoadMultiCartMem((const uint8_t*)game->data, game->size, 0, 0, biosrom, 0x40000);
@@ -1873,9 +1898,13 @@ void* retro_get_memory_data(unsigned type)
 
     switch(type)
     {
+        case RETRO_MEMORY_SNES_GAME_BOY_RAM:
         case RETRO_MEMORY_SNES_SUFAMI_TURBO_A_RAM:
         case RETRO_MEMORY_SAVE_RAM:
-            data = Memory.SRAM;
+            // A loaded GB/SGB cart keeps its battery RAM in the SGB cart, not
+            // in Memory.SRAM — expose that so the frontend persists the .srm.
+            // S9xSGBIsActive() is true in both BIOS and BIOS-less GB modes.
+            data = S9xSGBIsActive() ? (void *) S9xSGBGetSRAM() : (void *) Memory.SRAM;
             break;
         case RETRO_MEMORY_SNES_SUFAMI_TURBO_B_RAM:
             data = Multi.sramB;
@@ -1905,8 +1934,14 @@ size_t retro_get_memory_size(unsigned type)
     size_t size;
 
     switch(type) {
+        case RETRO_MEMORY_SNES_GAME_BOY_RAM:
         case RETRO_MEMORY_SNES_SUFAMI_TURBO_A_RAM:
         case RETRO_MEMORY_SAVE_RAM:
+            if (S9xSGBIsActive())
+            {
+                size = S9xSGBGetSRAMSize();
+                break;
+            }
             size = (unsigned) (Memory.SRAMSize ? (1 << (Memory.SRAMSize + 3)) * 128 : 0);
             if (size > 0x20000)
             size = 0x20000;

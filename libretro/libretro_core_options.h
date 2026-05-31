@@ -67,6 +67,18 @@ struct retro_core_option_definition option_defs_us[] = {
       "auto"
    },
    {
+      "snes9x_sgb_bios",
+      "Super Game Boy BIOS Mode (Reload Game)",
+      "Choose how Game Boy / Super Game Boy content boots. 'Prefer SGB BIOS' uses a real SNES Super Game Boy BIOS placed in the system directory (sgb2.sfc / SGB2.sfc / sgb.sfc / SGB.sfc) for authentic SGB sound and borders - preferring SGB2 then SGB1 - and falls back to the built-in BIOS-less core if none is found. 'SGB1 BIOS only' restricts the search to an SGB1 BIOS. 'BIOS-less' always runs the built-in Game Boy core directly. Note: Game Boy Color content runs in monochrome DMG-compatibility mode (no color hardware emulation).",
+      {
+         { "auto", "Prefer SGB BIOS (SGB2 > SGB1 > BIOS-less)" },
+         { "sgb1", "SGB1 BIOS only" },
+         { "off",  "BIOS-less (built-in core)" },
+         { NULL, NULL },
+      },
+      "auto"
+   },
+   {
       "snes9x_aspect",
       "Preferred Aspect Ratio",
       "Choose the preferred content aspect ratio. This will only apply when RetroArch's aspect ratio is set to 'Core provided' in the Video settings.",

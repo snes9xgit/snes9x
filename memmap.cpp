@@ -1449,6 +1449,25 @@ bool8 CMemory::LoadROMMem (const uint8 *source, uint32 sourceSize, const char* o
     else
         ROMFilename = "MemoryROM";
 
+    // In-memory GB/SGB detection — mirror LoadROM so libretro and other
+    // in-memory callers route .gb/.gbc carts (including ones wrapped in a
+    // container) into the SGB subsystem instead of the 65816 parser.
+    {
+        int gb = LoadGBFromBytes(source, sourceSize, optional_rom_filename);
+        if (gb > 0) return TRUE;
+        if (gb < 0) return FALSE;
+    }
+
+    // Not a GB ROM — tear down any previous SGB session so a SNES ROM loaded
+    // after a GB ROM runs on the 65816 path.
+    if (Settings.SuperGameBoy || Settings.SGB_BIOSModeActive)
+    {
+        S9xSGBDeinit();
+        Settings.SuperGameBoy       = FALSE;
+        Settings.SGB_BIOSModeActive = FALSE;
+    }
+    Settings.GBRomPath[0] = '\0';
+
     do
     {
         memset(ROM,0, MAX_ROM_SIZE);
@@ -1542,7 +1561,7 @@ static bool S9xRomBytesAreSachenScrambledGbHeader(const uint8 *rom, int32 size)
     return sum == rom[SachenScrambleAddr(0x014D)];
 }
 
-static bool S9xRomBytesAreGb(const uint8 *rom, int32 size)
+bool S9xRomBytesAreGb(const uint8 *rom, int32 size)
 {
     if (size < 0x150 || !rom) return false;
     if (memcmp(rom + 0x0104, kGbNintendoLogo, 48) == 0) return true;
@@ -1599,6 +1618,77 @@ static uint8 GbFileCgbFlag(const char *filename)
     }
     fclose(f);
     return flag;
+}
+
+// Detect and load a Game Boy ROM straight from a memory buffer. Mirrors the
+// content-sniff branch in LoadROM so in-memory callers (LoadROMMem, and thus
+// the libretro core) route .gb/.gbc carts into the SGB subsystem too instead
+// of feeding them to the 65816 parser.
+//   returns  1 : handled — loaded as a GB/SGB cart (caller should return TRUE)
+//            0 : not a GB ROM — caller continues with the normal SNES path
+//           -1 : GB ROM but the load failed (caller should return FALSE)
+int CMemory::LoadGBFromBytes (const uint8 *rom, uint32 size, const char *filename)
+{
+    if (!S9xRomBytesAreGb(rom, static_cast<int32>(size)))
+        return 0;
+
+    if (filename && *filename)
+    {
+        strncpy(Settings.GBRomPath, filename, sizeof(Settings.GBRomPath) - 1);
+        Settings.GBRomPath[sizeof(Settings.GBRomPath) - 1] = '\0';
+    }
+    else
+        Settings.GBRomPath[0] = '\0';
+
+    const uint8 gbFlag    = GbBytesCgbFlag(rom, (size_t)size);
+    const bool  gbCgb     = (gbFlag & 0x80) != 0;
+    const bool  gbCgbOnly = (gbFlag == 0xC0);
+
+    std::string bios_path;
+    uint8 bios_mode = 0;
+    if (Settings.SGB_BIOSPreference >= 2 && FindSGB_BIOS(2, filename, bios_path))
+    {
+        bios_mode = 2;
+    }
+    else if (Settings.SGB_BIOSPreference >= 1)
+    {
+        bios_path.clear();
+        if (FindSGB_BIOS(1, filename, bios_path)) bios_mode = 1;
+        else bios_path.clear();
+    }
+
+    if (!gbCgbOnly && bios_mode &&
+        LoadROMWithSGBBIOSBytes(rom, size, filename, bios_path.c_str()))
+    {
+        EmitSGBLoadBanner(filename, bios_mode);
+        return 1;
+    }
+
+    // BIOS-less fallback — the legacy path that runs our GB core directly in
+    // S9xMainLoop, gated on Settings.SuperGameBoy.
+    S9xDeleteCheats();
+    if (Settings.SuperGameBoy) S9xSGBDeinit();
+    if (Settings.SGB_BIOSModeActive) Settings.SGB_BIOSModeActive = FALSE;
+    Settings.SuperGameBoy      = TRUE;
+    Settings.GameBoyRunMode    = gbCgb ? 0 : 1;   // CGB carts run BIOS-less in CGB mode
+    Settings.GBClockMultiplier = 1.0f;
+
+    if (!S9xSGBInit() ||
+        !S9xSGBLoadROMBytes(rom, static_cast<size_t>(size), filename))
+    {
+        Settings.SuperGameBoy = FALSE;
+        Settings.GBRomPath[0] = '\0';
+        return -1;
+    }
+    S9xSGBSetAudioRate(Settings.SoundPlaybackRate);
+    S9xInitCheatData();
+    if (filename && *filename)
+    {
+        ROMFilename = filename;
+        S9xLoadCheatFile(S9xGetFilename(".cht", CHEAT_DIR).c_str());
+    }
+    EmitSGBLoadBanner(filename, 0);
+    return 1;
 }
 
 bool8 CMemory::LoadROM (const char *filename)
@@ -1687,54 +1777,10 @@ bool8 CMemory::LoadROM (const char *filename)
         // because FileLoader accepted the extension. If the unzipped
         // content carries the Nintendo logo it's a GB cart — route
         // into the SGB subsystem instead of the 65816 parser.
-        if (S9xRomBytesAreGb(ROM, totalFileSize))
         {
-            strncpy(Settings.GBRomPath, filename, sizeof(Settings.GBRomPath) - 1);
-            Settings.GBRomPath[sizeof(Settings.GBRomPath) - 1] = '\0';
-
-            const uint8 gbFlag    = GbBytesCgbFlag(ROM, (size_t)totalFileSize);
-            const bool  gbCgb     = (gbFlag & 0x80) != 0;
-
-            std::string bios_path;
-            uint8 bios_mode = 0;
-            if (Settings.SGB_BIOSPreference >= 2 && FindSGB_BIOS(2, filename, bios_path))
-            {
-                bios_mode = 2;
-            }
-            else if (Settings.SGB_BIOSPreference >= 1)
-            {
-                bios_path.clear();
-                if (FindSGB_BIOS(1, filename, bios_path)) bios_mode = 1;
-                else bios_path.clear();
-            }
-
-            if (bios_mode &&
-                LoadROMWithSGBBIOSBytes(ROM, (uint32)totalFileSize,
-                                         filename, bios_path.c_str()))
-            {
-                EmitSGBLoadBanner(filename, bios_mode);
-                return TRUE;
-            }
-
-            // BIOS-less fallback (legacy path).
-            S9xDeleteCheats();
-            if (Settings.SGB_BIOSModeActive) Settings.SGB_BIOSModeActive = FALSE;
-            Settings.SuperGameBoy      = TRUE;
-            Settings.GameBoyRunMode    = gbCgb ? 0 : 1;
-            Settings.GBClockMultiplier = 1.0f;
-            if (!S9xSGBInit() ||
-                !S9xSGBLoadROMBytes(ROM, static_cast<size_t>(totalFileSize), filename))
-            {
-                Settings.SuperGameBoy = FALSE;
-                Settings.GBRomPath[0] = '\0';
-                return FALSE;
-            }
-            S9xSGBSetAudioRate(Settings.SoundPlaybackRate);
-            S9xInitCheatData();
-            ROMFilename = filename;
-            S9xLoadCheatFile(S9xGetFilename(".cht", CHEAT_DIR).c_str());
-            EmitSGBLoadBanner(filename, 0);
-            return TRUE;
+            int gb = LoadGBFromBytes(ROM, (uint32)totalFileSize, filename);
+            if (gb > 0) return TRUE;
+            if (gb < 0) return FALSE;
         }
 
         CheckForAnyPatch(filename, HeaderCount != 0, totalFileSize);
