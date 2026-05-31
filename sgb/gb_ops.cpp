@@ -164,8 +164,8 @@ void Dispatch(CpuState &s, Memory &mem, uint8_t op)
 	case 0x75: MemWrite(mem, s.r.hl, s.r.l); s.t_cycles += 8; break;                           // LD (HL),L
 	case 0x76:  // HALT
 		s.t_cycles += 4;
-		if (!s.ime && (mem.ie & mem.if_ & IRQ_ALL)) s.halt_bug = true;
-		else                                         s.halted   = true;
+		if (!s.ime && !s.ime_pending && (mem.ie & mem.if_ & IRQ_ALL)) s.halt_bug = true;
+		else                                                          s.halted   = true;
 		break;
 	case 0x77: MemWrite(mem, s.r.hl, s.r.a); s.t_cycles += 8; break;                           // LD (HL),A
 	case 0x78: s.r.a = s.r.b; s.t_cycles += 4; break;                                          // LD A,B
