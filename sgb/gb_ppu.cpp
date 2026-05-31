@@ -88,9 +88,22 @@ inline uint8_t ApplyPalette(uint8_t palette, uint8_t color_idx)
 
 void RecomputeStatLine(Ppu &p, Memory &mem)
 {
-	// Rebuild the low 3 bits of STAT (mode + LYC coincidence).
+	// Rebuild the low 3 bits of STAT (mode + LYC coincidence). With the LCD
+	// off the PPU comparator is frozen, so the coincidence flag latches the
+	// value it held when the LCD was disabled rather than being recomputed
+	// from the parked LY. Mr. Do! disables the LCD at line 145 (LYC=145
+	// match set), loads VRAM, then re-waits for that same match while the
+	// LCD is still off before re-enabling it; recomputing here would see
+	// LY(0) != LYC(145), clear bit 2 and hang the wait forever.
 	uint8_t new_stat = static_cast<uint8_t>((p.stat & 0xF8) | static_cast<uint8_t>(p.mode));
-	if (p.ly == p.lyc) new_stat |= 0x04;
+	if (p.lcdc & 0x80)
+	{
+		if (p.ly == p.lyc) new_stat |= 0x04;
+	}
+	else
+	{
+		new_stat |= static_cast<uint8_t>(p.stat & 0x04);
+	}
 	p.stat = new_stat;
 
 	// Compute the combined IRQ line from the four source-enable flags.
@@ -590,7 +603,10 @@ void PpuStep(Ppu &p, Memory &mem, int32_t tcycles)
 		p.mode3_sprite_stall = 0;
 		p.latched_wx     = p.wx;
 		p.latched_bgp    = p.bgp;
-		p.stat = static_cast<uint8_t>(p.stat & 0xF8);
+		// Clear the mode bits (parked mode 0) but latch the LYC coincidence
+		// flag — the comparator is frozen while the LCD is off, so bit 2
+		// holds its disable-time value (see RecomputeStatLine / Mr. Do!).
+		p.stat = static_cast<uint8_t>(p.stat & 0xFC);
 		(void)mem;
 		return;
 	}
