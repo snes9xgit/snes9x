@@ -11,6 +11,7 @@
 #include "common/audio/s9x_sound_driver.hpp"
 #include "snes9x.h"
 #include "apu/apu.h"
+#include "sgb/sgb.h"
 
 #ifdef USE_PORTAUDIO
 #include "common/audio/s9x_sound_driver_portaudio.hpp"
@@ -195,6 +196,13 @@ void S9xSamplesAvailable(void *userdata)
         S9xSGBMixVolumeSPC = clamp_pct(gui_config->sgb_mix_volume_spc);
         S9xSGBMixVolumeGB  = clamp_pct(gui_config->sgb_mix_volume_gb);
     }
+
+    // SGB BIOS mode: lock the SPC resampler to the GB-paced consumption so it
+    // doesn't drift into under/overrun (crackle) and pitch drift (bass). The
+    // closed-loop trim matches the win32 driver; only runs after the GB is
+    // released, so normal SNES audio and the boot splash are left untouched.
+    if (Settings.SGB_BIOSModeActive && S9xSGBBIOSGBIsReleased())
+        S9xSpcAdjustRate(1.0);
 
     S9xMixSamples((uint8_t *)temp_buffer.data(), samples);
     S9xMixSpcOverGB(temp_buffer.data(), samples);

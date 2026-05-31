@@ -8,6 +8,7 @@ namespace fs = std::filesystem;
 #include "snes9x.h"
 #include "memmap.h"
 #include "apu/apu.h"
+#include "sgb/sgb.h"
 #include "gfx.h"
 #include "snapshot.h"
 #include "controls.h"
@@ -572,6 +573,13 @@ void Snes9xController::SamplesAvailable()
         int samples = S9xGetSampleCount();
         if (data.size() < samples)
             data.resize(samples);
+        // SGB BIOS mode: lock the SPC resampler to the GB-paced consumption so
+        // it doesn't drift into under/overrun (crackle) and pitch drift (bass).
+        // Matches the win32 driver; only after GB release, so normal SNES audio
+        // and the boot splash are left untouched.
+        if (Settings.SGB_BIOSModeActive && S9xSGBBIOSGBIsReleased())
+            S9xSpcAdjustRate(1.0);
+
         S9xMixSamples((uint8_t *)data.data(), samples);
         S9xMixSpcOverGB(data.data(), samples);
         sound_output_function(data.data(), samples);
