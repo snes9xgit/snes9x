@@ -33,7 +33,7 @@ else ifneq (,$(findstring rpi,$(platform)))
    override platform += unix
 endif
 
-TARGET_NAME	= snes9x
+TARGET_NAME	= supersnes9x
 
 LIBS     =
 
