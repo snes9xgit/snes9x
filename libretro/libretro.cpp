@@ -631,6 +631,20 @@ static void update_variables(void)
             Settings.SGB_BIOSPreference = 2;
     }
 
+    // Per-source SGB mix volumes (0..100). Consumed by S9xMixSpcOverGB;
+    // only affect GB/SGB content. Defaults match the desktop frontends.
+    var.key = "snes9x_sgb_mix_volume_spc";
+    var.value = NULL;
+    S9xSGBMixVolumeSPC = 50;
+    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+        S9xSGBMixVolumeSPC = (unsigned int) atoi(var.value);
+
+    var.key = "snes9x_sgb_mix_volume_gb";
+    var.value = NULL;
+    S9xSGBMixVolumeGB = 50;
+    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+        S9xSGBMixVolumeGB = (unsigned int) atoi(var.value);
+
     var.key = "snes9x_blargg";
     var.value = NULL;
 
@@ -781,6 +795,12 @@ void S9xSyncSpeed() {
         audio_buffer.resize(avail);
 
     S9xMixSamples((uint8*)&audio_buffer[0], avail);
+    // Merge the SGB BIOS-mode SPC stream over the GB output (and apply the
+    // SGB mix gains). S9xMixSamples leaves the SPC ring intact in BIOS mode
+    // expecting this second pass; gtk/qt/win32 all call it right after
+    // S9xMixSamples. Without it the SPC (SGB BIOS sound engine) is silent.
+    // No-op outside SGB modes.
+    S9xMixSpcOverGB(&audio_buffer[0], (int)avail);
     audio_batch_cb(&audio_buffer[0], avail >> 1);
 }
 
