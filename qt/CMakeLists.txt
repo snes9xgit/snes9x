@@ -118,8 +118,8 @@ list(APPEND LIBS ${CURL_LIBRARIES})
 list(APPEND INCLUDES ${Qt6Gui_PRIVATE_INCLUDE_DIRS})
 
 find_package(PkgConfig REQUIRED)
-pkg_check_modules(ZLIB REQUIRED zlib)
-pkg_check_modules(PNG REQUIRED libpng)
+pkg_check_modules(ZLIB REQUIRED IMPORTED_TARGET zlib)
+pkg_check_modules(PNG REQUIRED IMPORTED_TARGET libpng)
 list(APPEND INCLUDES ${ZLIB_INCLUDE_DIRS})
 list(APPEND FLAGS ${ZLIB_COMPILE_FLAGS})
 
@@ -146,8 +146,15 @@ else()
     endif()
 
     list(APPEND INCLUDES ${WAYLAND_INCLUDE_DIRS} ${X11_INCLUDE_DIRS})
-    list(APPEND LIBS ${WAYLAND_LIBRARIES} ${PNG_LIBRARIES} ${X11_LIBRARIES} ${ZLIB_LIBRARIES})
+    list(APPEND LIBS ${WAYLAND_LIBRARIES} ${X11_LIBRARIES})
     list(APPEND FLAGS ${WAYLAND_CFLAGS})
+
+    # screenshot.cpp (in snes9x-core) calls libpng directly; attach png/zlib to the
+    # core target via pkg-config imported targets so CMake always emits them on the
+    # link line, after the core archive, with full paths. Linking them only to the
+    # final executable (as before) left the ordering up to the linker's defaults and
+    # broke on stricter setups ("libpng16.so: DSO missing from command line").
+    target_link_libraries(snes9x-core PUBLIC PkgConfig::PNG PkgConfig::ZLIB)
 
     pkg_check_modules(PULSEAUDIO libpulse)
     if(PULSEAUDIO_FOUND)
