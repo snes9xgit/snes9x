@@ -791,6 +791,16 @@ void S9xSyncSpeed() {
 
     size_t avail = S9xGetSampleCount();
 
+    // In SGB BIOS mode the host output is paced by the GB sample count, so the
+    // SPC resampler has to be rate-locked to that cadence or it drifts into
+    // under/overrun (crackle) and pitch drift (bass). S9xSpcAdjustRate runs a
+    // closed-loop trim that holds the SPC buffer near its target fill, matching
+    // the win32 driver (CXAudio2::ProcessSound). Scoped to BIOS mode after the
+    // GB is released; normal SNES audio and the pre-release boot splash (which
+    // use the standard SPC path) are left untouched.
+    if (Settings.SGB_BIOSModeActive && S9xSGBBIOSGBIsReleased())
+        S9xSpcAdjustRate(1.0);
+
     if (audio_buffer.size() < avail)
         audio_buffer.resize(avail);
 
