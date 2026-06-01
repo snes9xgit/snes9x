@@ -627,6 +627,7 @@ static LRESULT CALLBACK InputCustomWndProc(HWND hwnd, UINT msg, WPARAM wParam, L
         icp->maxKeys   = MAX_BIND_KEYS;
         icp->capturing = false;
         icp->inContextMenu = false;
+        icp->modeRefresh = false;
 
         // Assign the window text specified in the call to CreateWindow.
         SetWindowText(hwnd, ((CREATESTRUCT *)lParam)->lpszName);
@@ -732,8 +733,11 @@ static LRESULT CALLBACK InputCustomWndProc(HWND hwnd, UINT msg, WPARAM wParam, L
     }
 	case WM_USER+44:
 	{
-		// Don't overwrite while actively capturing input (display is managed by WM_KEYDOWN)
-		if (icp->capturing)
+		// Don't overwrite while actively capturing input (display is managed by WM_KEYDOWN),
+		// except for the one-shot refresh right after a binding-mode change.
+		bool modeRefresh = icp->capturing && icp->modeRefresh;
+		icp->modeRefresh = false;
+		if (icp->capturing && !modeRefresh)
 			break;
 
 		// Multi-bind protocol: wParam = pointer to WORD[MAX_BIND_KEYS] array, lParam = count
@@ -765,6 +769,15 @@ static LRESULT CALLBACK InputCustomWndProc(HWND hwnd, UINT msg, WPARAM wParam, L
 			col = CheckButtonKey(wParam);
 		}
 
+		if (modeRefresh)
+		{
+			if (icp->numKeys == 0)
+				strcpy(temp, "...");
+			else if (icp->maxKeys > 1 && icp->numKeys < icp->maxKeys)
+				strcat(temp, ", ...");
+			col = RGB( 0,255,0);
+		}
+
 		if(!IsWindowEnabled(hwnd))
 		{
 			col = RGB( 192,192,192);
@@ -781,7 +794,10 @@ static LRESULT CALLBACK InputCustomWndProc(HWND hwnd, UINT msg, WPARAM wParam, L
 	case WM_USER+47:
 	{
 		// Set maxKeys: wParam = new maxKeys value
-		icp->maxKeys = max(1, min((int)wParam, MAX_BIND_KEYS));
+		int newMax = max(1, min((int)wParam, MAX_BIND_KEYS));
+		if (newMax != icp->maxKeys && icp->capturing)
+			icp->modeRefresh = true;
+		icp->maxKeys = newMax;
 		break;
 	}
 
@@ -1059,6 +1075,7 @@ static LRESULT CALLBACK HotInputCustomWndProc(HWND hwnd, UINT msg, WPARAM wParam
         icp->maxKeys   = 1;
         icp->capturing = false;
         icp->inContextMenu = false;
+        icp->modeRefresh = false;
 
         // Assign the window text specified in the call to CreateWindow.
         SetWindowText(hwnd, ((CREATESTRUCT *)lParam)->lpszName);
@@ -1292,8 +1309,11 @@ static LRESULT CALLBACK HotInputCustomWndProc(HWND hwnd, UINT msg, WPARAM wParam
 		break;
 	case WM_USER+44:
 	{
-		// Don't overwrite while actively capturing input (display is managed by WM_KEYDOWN)
-		if (icp->capturing)
+		// Don't overwrite while actively capturing input (display is managed by WM_KEYDOWN),
+		// except for the one-shot refresh right after a binding-mode change.
+		bool modeRefresh = icp->capturing && icp->modeRefresh;
+		icp->modeRefresh = false;
+		if (icp->capturing && !modeRefresh)
 			break;
 
 		// Set a hotkey field
@@ -1340,6 +1360,17 @@ static LRESULT CALLBACK HotInputCustomWndProc(HWND hwnd, UINT msg, WPARAM wParam
 			else
 				col = RGB(192,192,192);
 		}
+
+		if (modeRefresh)
+		{
+			if (icp->numKeys == 0)
+				strcpy(temp, "...");
+			else if (icp->maxKeys > 1 && icp->numKeys < icp->maxKeys)
+				strcat(temp, ", ...");
+			if (IsWindowEnabled(hwnd))
+				col = RGB( 0,255,0);
+		}
+
 		icp->crForeGnd = ((~col) & 0x00ffffff);
 		icp->crBackGnd = col;
 		SetWindowText(hwnd,_tFromChar(temp));
@@ -1351,7 +1382,13 @@ static LRESULT CALLBACK HotInputCustomWndProc(HWND hwnd, UINT msg, WPARAM wParam
 	case WM_USER+47:
 	{
 		// Set maxKeys: wParam = new maxKeys value
-		icp->maxKeys = max(1, min((int)wParam, MAX_BIND_KEYS));
+		int newMax = max(1, min((int)wParam, MAX_BIND_KEYS));
+		if (newMax != icp->maxKeys && icp->capturing)
+		{
+			keyPressLock = false;
+			icp->modeRefresh = true;
+		}
+		icp->maxKeys = newMax;
 		break;
 	}
 

@@ -10441,7 +10441,7 @@ static void UpdateBindingMode(HWND hDlg, int index)
 	int bindMode = SendDlgItemMessage(hDlg, IDC_BINDINGCOMBO, CB_GETCURSEL, 0, 0);
 	bool isMulti = (bindMode == 1);
 	ShowWindow(GetDlgItem(hDlg, IDC_ALLOWMULTIBIND), isMulti ? SW_SHOW : SW_HIDE);
-	int maxKeys = (isMulti && IsDlgButtonChecked(hDlg, IDC_ALLOWMULTIBIND)) ? MAX_BIND_KEYS : 1;
+	int maxKeys = isMulti ? MAX_BIND_KEYS : 1;
 	SetInputMaxKeys(hDlg, maxKeys);
 	set_buttoninfo(index, hDlg);
 }
@@ -10911,7 +10911,7 @@ static void UpdateHotkeyBindingMode(HWND hDlg)
 	int bindMode = SendDlgItemMessage(hDlg, IDC_BINDINGCOMBO_HK, CB_GETCURSEL, 0, 0);
 	bool isMulti = (bindMode == 1);
 	ShowWindow(GetDlgItem(hDlg, IDC_ALLOWMULTIBIND_HK), isMulti ? SW_SHOW : SW_HIDE);
-	int maxKeys = (isMulti && IsDlgButtonChecked(hDlg, IDC_ALLOWMULTIBIND_HK)) ? MAX_BIND_KEYS : 1;
+	int maxKeys = isMulti ? MAX_BIND_KEYS : 1;
 	SetHotkeyMaxKeys(hDlg, maxKeys);
 	set_hotkeyinfo(hDlg, true);
 }

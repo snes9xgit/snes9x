@@ -32,6 +32,7 @@ typedef struct
     int      maxKeys;               // max allowed keys (1=single, MAX_BIND_KEYS=multi)
     bool     capturing;             // true while actively waiting for input
     bool     inContextMenu;         // true while right-click context menu is open
+    bool     modeRefresh;           // one-shot: let next refresh through while capturing after a mode change
 } InputCust;
 COLORREF CheckButtonKey( WORD Key);
 COLORREF CheckHotKey( WORD Key, int modifiers);
