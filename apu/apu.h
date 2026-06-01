@@ -84,6 +84,12 @@ extern unsigned int S9xSGBMixVolumeGB;
 void   S9xSpcAdjustRate(double drc_factor);
 void   S9xSpcResetDrc(void);
 double S9xSpcGetTimeRatio(void);
+// PI rate-match for once-per-frame frontends in SGB BIOS mode (libretro/gtk/qt).
+// Drives spc::drc_scale to hold the SPC resampler buffer near half-full so it
+// stays locked to the GB-paced consumption. S9xSpcSyncReset clears the
+// integrator (call when leaving BIOS mode).
+void   S9xSpcSyncToConsumption(void);
+void   S9xSpcSyncReset(void);
 
 #define DSP_INTERPOLATION_NONE     0
 #define DSP_INTERPOLATION_LINEAR   1

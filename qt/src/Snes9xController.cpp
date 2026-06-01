@@ -573,12 +573,16 @@ void Snes9xController::SamplesAvailable()
         int samples = S9xGetSampleCount();
         if (data.size() < samples)
             data.resize(samples);
-        // SGB BIOS mode: lock the SPC resampler to the GB-paced consumption so
-        // it doesn't drift into under/overrun (crackle) and pitch drift (bass).
-        // Matches the win32 driver; only after GB release, so normal SNES audio
-        // and the boot splash are left untouched.
+        // SGB BIOS mode: the host output is paced by the GB sample count, which
+        // runs a few percent off the SPC's native rate. Drive the SPC production
+        // rate (PI controller) to hold its resampler buffer matched to that
+        // cadence -- otherwise it overflows (noise) and the under-drain pitches
+        // it down (bass). Reset the trim outside BIOS mode so a SNES game loaded
+        // afterward isn't left with the SGB rate scaling.
         if (Settings.SGB_BIOSModeActive && S9xSGBBIOSGBIsReleased())
-            S9xSpcAdjustRate(1.0);
+            S9xSpcSyncToConsumption();
+        else
+            S9xSpcSyncReset();
 
         S9xMixSamples((uint8_t *)data.data(), samples);
         S9xMixSpcOverGB(data.data(), samples);
