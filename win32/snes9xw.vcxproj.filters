@@ -426,6 +426,12 @@
     <ClInclude Include="CSpriteViewerDlg.h">
       <Filter>GUI</Filter>
     </ClInclude>
+    <ClInclude Include="CGBTileViewerDlg.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="gb_viewer_common.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
     <ClInclude Include="debug_viewer_common.h">
       <Filter>GUI</Filter>
     </ClInclude>
@@ -909,6 +915,9 @@
       <Filter>GUI</Filter>
     </ClCompile>
     <ClCompile Include="CSpriteViewerDlg.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="CGBTileViewerDlg.cpp">
       <Filter>GUI</Filter>
     </ClCompile>
     <ClCompile Include="debug_viewer_common.cpp">

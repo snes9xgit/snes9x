@@ -110,6 +110,7 @@ struct Emulator::Impl
 	RunMode     run_mode  = RunMode::SGB;
 	FrameBuffer fb{};
 	bool        has_rom   = false;
+	bool        cgb_mode  = false;
 	float       clock_mul = 1.0f;
 
 	// Staged GB-side boot ROM. Copied into mem.boot_rom on Reset when
@@ -424,6 +425,8 @@ void Emulator::Reset()
 	impl_->fb.height = GB_SCREEN_HEIGHT;
 	impl_->fb.pitch  = GB_SCREEN_WIDTH;
 
+	impl_->ppu.cgb = impl_->cgb_mode;
+
 	// Apply run-mode specific post-boot register values. The SGB BIOS
 	// hands control to the cart with slightly different register state
 	// than a DMG boot ROM does — some games (notably Donkey Kong and
@@ -448,6 +451,16 @@ void Emulator::Reset()
 		default:
 			// gb_cpu.cpp Reset() already set DMG values.
 			break;
+	}
+
+	// CGB hands the cart A=0x11 (the value games test to detect Color
+	// hardware). Applied after the run-mode block so it wins for CGB carts.
+	if (impl_->cgb_mode && !impl_->boot_rom_loaded)
+	{
+		cs.r.af = 0x1180;
+		cs.r.bc = 0x0000;
+		cs.r.de = 0xFF56;
+		cs.r.hl = 0x000D;
 	}
 
 	// If a GB-side boot ROM was staged (authentic BIOS mode), overlay it
@@ -634,6 +647,7 @@ bool Emulator::LoadROM(const uint8_t *data, size_t size, const char *path)
 	if (!CartLoad(impl_->cart, data, size, path))
 		return false;
 	impl_->has_rom = true;
+	impl_->cgb_mode = (impl_->cart.header.cgb_flag & 0x80) != 0;
 	ApplyAutoBlend();   // pick blend from the per-title table when Auto is on
 	ColdReset();   // new cart → start fresh, drop any stale handshake cache
 	return true;
@@ -707,6 +721,7 @@ void Emulator::UnloadROM()
 {
 	CartUnload(impl_->cart);
 	impl_->has_rom = false;
+	impl_->cgb_mode = false;
 	// Drop any staged boot ROM so a subsequent BIOS-less load starts at
 	// $0100 with the normal post-boot register state.
 	impl_->boot_rom_loaded = false;
@@ -755,6 +770,49 @@ const uint8_t *Emulator::GBLayerMask() const
 {
 	if (!impl_->has_rom) return nullptr;
 	return impl_->ppu.layer;
+}
+
+bool Emulator::IsCgb() const
+{
+	return impl_->has_rom && impl_->cgb_mode;
+}
+
+const uint8_t *Emulator::DebugVRAM() const
+{
+	return impl_->has_rom ? impl_->ppu.vram : nullptr;
+}
+
+const uint8_t *Emulator::DebugOAM() const
+{
+	return impl_->has_rom ? impl_->ppu.oam : nullptr;
+}
+
+const uint8_t *Emulator::DebugCgbBgPal() const
+{
+	return impl_->has_rom ? impl_->ppu.bg_pal : nullptr;
+}
+
+const uint8_t *Emulator::DebugCgbObjPal() const
+{
+	return impl_->has_rom ? impl_->ppu.obj_pal : nullptr;
+}
+
+const uint16_t *Emulator::DebugSgbActivePalettes() const
+{
+	return impl_->has_rom ? &impl_->sgb_state.active[0].colors[0] : nullptr;
+}
+
+const uint8_t *Emulator::DebugSgbAttrMap() const
+{
+	return impl_->has_rom ? impl_->sgb_state.attr_map : nullptr;
+}
+
+void Emulator::DebugGetPpuRegs(uint8_t out[12]) const
+{
+	const Ppu &p = impl_->ppu;
+	out[0]  = p.lcdc; out[1]  = p.stat; out[2]  = p.scy;  out[3]  = p.scx;
+	out[4]  = p.ly;   out[5]  = p.lyc;  out[6]  = p.bgp;  out[7]  = p.obp0;
+	out[8]  = p.obp1; out[9]  = p.wy;   out[10] = p.wx;   out[11] = p.vbk;
 }
 
 uint8_t Emulator::PeekRAByte(uint32_t addr) const
@@ -837,7 +895,11 @@ void Emulator::RunFrame()
 	// accidentally freeze the emulator with a 0x or 1000x setting.
 	constexpr double SNES_FPS = 60.09881389744051;
 	double base_hz;
-	switch (impl_->run_mode)
+	if (impl_->cgb_mode)
+	{
+		base_hz = 4194304.0;
+	}
+	else switch (impl_->run_mode)
 	{
 		case RunMode::SGB:  base_hz = 21477272.727272 / 5.0; break;
 		case RunMode::SGB2: base_hz = 4194304.0;             break;
@@ -1003,13 +1065,20 @@ void Emulator::RunCycles(int32_t tcycles)
 	// their new register value in place by the time PPU starts the next
 	// mode 3. cycle_debt is no longer needed — the per-dot model only
 	// steps CPU when it has kMaxOpcodeTCycles of headroom.
+	// CGB double-speed: the CPU runs twice per PPU dot. ds_extra is the
+	// accumulated lead of the CPU clock over the PPU clock; it is 0 whenever
+	// double-speed has never engaged, so the DMG/SGB gate is byte-identical.
 	const int64_t target_t = impl_->ppu.t_cycles + tcycles;
+	int64_t ds_extra = impl_->cpu.State().t_cycles - impl_->ppu.t_cycles;
+	if (ds_extra < 0) ds_extra = 0;
+	int32_t apu_rem = 0;
 	while (impl_->ppu.t_cycles < target_t)
 	{
 		PpuStep(impl_->ppu, impl_->mem, 1);
+		if (impl_->mem.double_speed) ds_extra += 1;
 
 		while (impl_->cpu.State().t_cycles + kMaxOpcodeTCycles <=
-		       impl_->ppu.t_cycles)
+		       impl_->ppu.t_cycles + ds_extra)
 		{
 			const bool was_boot = impl_->mem.boot_rom_enabled;
 			const int64_t pre_t = impl_->cpu.State().t_cycles;
@@ -1025,8 +1094,17 @@ void Emulator::RunCycles(int32_t tcycles)
 				impl_->boot_handoff_regs     = impl_->cpu.State().r;
 			}
 
+			// Timer runs in the CPU clock domain (DIV doubles in double-
+			// speed); the APU stays real-time so audio pitch is unchanged.
 			TimerStep(impl_->timer, impl_->mem, consumed);
-			ApuStep  (impl_->apu,                consumed);
+			int32_t apu_in = consumed;
+			if (impl_->mem.double_speed)
+			{
+				apu_rem += consumed;
+				apu_in   = apu_rem >> 1;
+				apu_rem &= 1;
+			}
+			ApuStep(impl_->apu, apu_in);
 		}
 	}
 
@@ -1445,6 +1523,11 @@ void Emulator::BlitScreen(uint16_t *dest, uint32_t pitch_pixels)
 		uint16_t *const dst_row  = staging + dst_y * SGB_BORDER_W + origin_x;
 		for (uint32_t px = 0; px < GB_SCREEN_WIDTH; ++px)
 		{
+			if (impl_->cgb_mode)
+			{
+				dst_row[px] = impl_->ppu.color_fb[py * GB_SCREEN_WIDTH + px];
+				continue;
+			}
 			uint16_t color;
 			switch (impl_->sgb_state.mask_mode)
 			{
@@ -1732,7 +1815,10 @@ constexpr uint32_t SGB_STATE_MAGIC   = 0x21424753u;  // 'S''G''B''!' LE
 //     boot-ROM space, CPU jumps into BIOS-handshake code, game "resets".
 //     Without cache_valid/cached_packets any subsequent $6003 0→1 toggle
 //     by the SNES BIOS triggers a full Reset() and re-runs the handshake.
-constexpr uint32_t SGB_STATE_VERSION = 3;
+// v4: add CGB state - VRAM bank 1, WRAM banks 2-7, BG/OBJ palette RAM,
+//     VBK/SVBK/KEY1/double-speed, HDMA. v1-3 loads skip the v4 block and
+//     the CGB fields keep their reset defaults (correct for DMG/SGB carts).
+constexpr uint32_t SGB_STATE_VERSION = 4;
 
 enum class IoMode : uint8_t { Size, Save, Load };
 
@@ -1768,7 +1854,7 @@ void VisitState(Emulator::Impl &impl, IoCtx &c)
 	IoField(c, impl.cpu.State());
 
 	// ----- Memory (skip pointer fields — they're relinked after load) -----
-	IoBytes(c, impl.mem.wram, sizeof impl.mem.wram);
+	IoBytes(c, impl.mem.wram, 0x2000);   // legacy DMG WRAM; CGB banks 2-7 in v4 block
 	IoBytes(c, impl.mem.hram, sizeof impl.mem.hram);
 	IoField(c, impl.mem.ie);
 	IoField(c, impl.mem.if_);
@@ -1783,7 +1869,7 @@ void VisitState(Emulator::Impl &impl, IoCtx &c)
 	if (sram_size > 0) IoBytes(c, impl.cart.sram.data(), sram_size);
 
 	// ----- PPU -----
-	IoBytes(c, impl.ppu.vram, sizeof impl.ppu.vram);
+	IoBytes(c, impl.ppu.vram, 0x2000);   // legacy bank 0; CGB bank 1 in v4 block
 	IoBytes(c, impl.ppu.oam,  sizeof impl.ppu.oam);
 	IoField(c, impl.ppu.lcdc);
 	IoField(c, impl.ppu.stat);
@@ -1892,6 +1978,32 @@ void VisitState(Emulator::Impl &impl, IoCtx &c)
 		IoField(c, impl.ppu.window_start_x);
 		IoBytes(c, impl.ppu.scanline_raw, sizeof impl.ppu.scanline_raw);
 	}
+
+	// v4 additions: Game Boy Color state. Older saves skip this block and
+	// the CGB fields keep their reset defaults (correct for DMG/SGB carts).
+	if (c.version >= 4)
+	{
+		IoBytes(c, impl.mem.wram + 0x2000, 0x6000);
+		IoBytes(c, impl.ppu.vram + 0x2000, 0x2000);
+		IoBytes(c, impl.ppu.bg_pal,  sizeof impl.ppu.bg_pal);
+		IoBytes(c, impl.ppu.obj_pal, sizeof impl.ppu.obj_pal);
+		IoField(c, impl.ppu.vbk);
+		IoField(c, impl.ppu.bcps);
+		IoField(c, impl.ppu.ocps);
+		IoField(c, impl.mem.svbk);
+		IoField(c, impl.mem.key1_armed);
+		IoField(c, impl.mem.double_speed);
+		IoField(c, impl.mem.hdma1);
+		IoField(c, impl.mem.hdma2);
+		IoField(c, impl.mem.hdma3);
+		IoField(c, impl.mem.hdma4);
+		IoField(c, impl.mem.hdma5);
+		IoField(c, impl.mem.hdma_src);
+		IoField(c, impl.mem.hdma_dst);
+		IoField(c, impl.mem.hdma_len);
+		IoField(c, impl.mem.hdma_active);
+		IoField(c, impl.cgb_mode);
+	}
 }
 
 } // anonymous
@@ -1963,6 +2075,8 @@ bool Emulator::StateLoad(const uint8_t *buffer, size_t size)
 	impl_->fb.width  = GB_SCREEN_WIDTH;
 	impl_->fb.height = GB_SCREEN_HEIGHT;
 	impl_->fb.pitch  = GB_SCREEN_WIDTH;
+
+	impl_->ppu.cgb = impl_->cgb_mode;
 
 	// Reseed the SGB-bridge mirrors on Joypad from icd2 — these are
 	// not serialized (see VisitState), so a load with the BIOS not
@@ -2091,6 +2205,22 @@ void S9xSGBOnPpuVBlank(void) { SGB::Instance().OnPpuVBlank(); }
 uint32_t S9xSGBGetGBFrameCount(void) { return SGB::g_gb_vblank_count; }
 const uint8_t *S9xSGBGetGBLayerMask(void) { return SGB::Instance().GBLayerMask(); }
 void S9xSGBApplyAutoBlend(void) { SGB::Instance().ApplyAutoBlend(); }
+bool S9xSGBIsCgb(void) { return SGB::Instance().IsCgb(); }
+const uint8_t  *S9xSGBGetVRAM(void)           { return SGB::Instance().DebugVRAM(); }
+const uint8_t  *S9xSGBGetOAM(void)            { return SGB::Instance().DebugOAM(); }
+const uint8_t  *S9xSGBGetCgbBgPal(void)       { return SGB::Instance().DebugCgbBgPal(); }
+const uint8_t  *S9xSGBGetCgbObjPal(void)      { return SGB::Instance().DebugCgbObjPal(); }
+const uint16_t *S9xSGBGetActivePalettes(void) { return SGB::Instance().DebugSgbActivePalettes(); }
+const uint8_t  *S9xSGBGetAttrMap(void)        { return SGB::Instance().DebugSgbAttrMap(); }
+void S9xSGBGetPpuRegs(SgbPpuRegs *out)
+{
+	if (!out) return;
+	uint8_t r[12];
+	SGB::Instance().DebugGetPpuRegs(r);
+	out->lcdc = r[0]; out->stat = r[1]; out->scy  = r[2];  out->scx  = r[3];
+	out->ly   = r[4]; out->lyc  = r[5]; out->bgp  = r[6];  out->obp0 = r[7];
+	out->obp1 = r[8]; out->wy   = r[9]; out->wx   = r[10]; out->vbk  = r[11];
+}
 void S9xSGBCaptureScanline(const unsigned char *pixels)
 {
 	SGB::Instance().CaptureScanline(static_cast<const uint8_t *>(pixels));

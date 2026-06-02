@@ -41,6 +41,7 @@
 #include "CVRAMViewerDlg.h"
 #include "CTilemapViewerDlg.h"
 #include "CSpriteViewerDlg.h"
+#include "CGBTileViewerDlg.h"
 #include "debug_viewer_common.h"
 
 #include "../snes9x.h"
@@ -2593,6 +2594,9 @@ LRESULT CALLBACK WinProc(
 			break;
 		case ID_DEBUG_SPRITE_VIEWER:
             WinShowSpriteViewerDialog();
+			break;
+		case ID_DEBUG_GB_TILE_VIEWER:
+            WinShowGBTileViewerDialog();
 			break;
 		case ID_CHEAT_ENTER:
 #ifdef RETROACHIEVEMENTS_SUPPORT

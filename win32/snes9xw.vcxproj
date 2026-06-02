@@ -493,6 +493,8 @@
     <ClInclude Include="CVRAMViewerDlg.h" />
     <ClInclude Include="CTilemapViewerDlg.h" />
     <ClInclude Include="CSpriteViewerDlg.h" />
+    <ClInclude Include="CGBTileViewerDlg.h" />
+    <ClInclude Include="gb_viewer_common.h" />
     <ClInclude Include="debug_viewer_common.h" />
     <ClInclude Include="debug_viewer_export.h" />
     <ClInclude Include="CVulkan.h" />
@@ -727,6 +729,7 @@
     <ClCompile Include="CVRAMViewerDlg.cpp" />
     <ClCompile Include="CTilemapViewerDlg.cpp" />
     <ClCompile Include="CSpriteViewerDlg.cpp" />
+    <ClCompile Include="CGBTileViewerDlg.cpp" />
     <ClCompile Include="debug_viewer_common.cpp" />
     <ClCompile Include="debug_viewer_export.cpp" />
     <ClCompile Include="CVulkan.cpp" />

@@ -215,7 +215,7 @@ void EvalSprites(Ppu &p)
 	// DMG priority: lower X wins, ties by lower OAM index. Sort ascending
 	// (insertion sort, stable) so render-time picks the FIRST sprite that
 	// produces a non-zero pixel.
-	for (uint8_t i = 1; i < p.sprite_count; ++i)
+	for (uint8_t i = 1; !p.cgb && i < p.sprite_count; ++i)
 	{
 		Ppu::SpriteHit cur = p.sprites[i];
 		uint8_t j = i;
@@ -284,6 +284,149 @@ SpritePixel SampleSpritePixel(const Ppu &p, int x)
 	return out;
 }
 
+inline uint16_t CgbColor(const uint8_t *pal, uint8_t palette, uint8_t color)
+{
+	const int idx = palette * 8 + color * 2;
+	return static_cast<uint16_t>((pal[idx] | (pal[idx + 1] << 8)) & 0x7FFF);
+}
+
+struct BgPixelCgb { uint8_t color; uint8_t pal; bool priority; };
+
+inline BgPixelCgb SampleBgPixelCgb(const Ppu &p, int x, bool window)
+{
+	uint32_t tile_row, fine_y, tile_col, fine_x;
+	uint16_t map_base;
+	if (window)
+	{
+		map_base = (p.lcdc & 0x40) ? 0x1C00 : 0x1800;
+		const uint32_t win_y = static_cast<uint32_t>(p.window_line);
+		tile_row = win_y >> 3;
+		fine_y   = win_y & 7;
+		const int win_col = x - (static_cast<int>(p.latched_wx) - 7);
+		tile_col = static_cast<uint32_t>(win_col) >> 3;
+		fine_x   = static_cast<uint32_t>(win_col) & 7;
+	}
+	else
+	{
+		map_base = (p.lcdc & 0x08) ? 0x1C00 : 0x1800;
+		const uint8_t bg_y = static_cast<uint8_t>(p.ly + p.scy);
+		tile_row = bg_y >> 3;
+		fine_y   = bg_y & 7;
+		const uint8_t bg_x = static_cast<uint8_t>(x + p.scx);
+		tile_col = bg_x >> 3;
+		fine_x   = bg_x & 7;
+	}
+
+	const uint16_t map_idx  = static_cast<uint16_t>(map_base + tile_row * 32 + tile_col);
+	const uint8_t  tile_num = p.vram[map_idx];
+	const uint8_t  attr     = p.vram[0x2000 + map_idx];
+
+	const uint32_t databank = (attr & 0x08) ? 0x2000u : 0u;
+	if (attr & 0x40) fine_y = 7 - fine_y;
+
+	uint16_t tile_addr;
+	if (p.lcdc & 0x10)
+		tile_addr = static_cast<uint16_t>(tile_num * 16);
+	else
+		tile_addr = static_cast<uint16_t>(0x1000 + static_cast<int8_t>(tile_num) * 16);
+	tile_addr = static_cast<uint16_t>(tile_addr + fine_y * 2);
+
+	const uint8_t lo  = p.vram[databank + tile_addr];
+	const uint8_t hi  = p.vram[databank + tile_addr + 1];
+	const uint8_t bit = (attr & 0x20) ? static_cast<uint8_t>(fine_x)
+	                                  : static_cast<uint8_t>(7 - fine_x);
+	const uint8_t color = static_cast<uint8_t>((((hi >> bit) & 1) << 1) | ((lo >> bit) & 1));
+	return BgPixelCgb{ color, static_cast<uint8_t>(attr & 0x07), (attr & 0x80) != 0 };
+}
+
+struct SpritePixelCgb { bool covered; uint8_t color; uint8_t pal; bool bg_over; };
+
+inline SpritePixelCgb SampleSpritePixelCgb(const Ppu &p, int x)
+{
+	SpritePixelCgb out{ false, 0, 0, false };
+	if (!(p.lcdc & 0x02)) return out;
+
+	const bool large    = (p.lcdc & 0x04) != 0;
+	const int  sprite_h = large ? 16 : 8;
+
+	for (uint8_t i = 0; i < p.sprite_count; ++i)
+	{
+		const int sx = p.sprites[i].x;
+		if (x < sx || x >= sx + 8) continue;
+
+		const uint8_t oi    = p.sprites[i].oam_idx;
+		const uint8_t oy    = p.oam[oi * 4 + 0];
+		uint8_t       tile  = p.oam[oi * 4 + 2];
+		const uint8_t flags = p.oam[oi * 4 + 3];
+
+		int sprite_top = static_cast<int>(oy) - 16;
+		int tile_row   = static_cast<int>(p.ly) - sprite_top;
+		if (flags & 0x40) tile_row = sprite_h - 1 - tile_row;
+
+		if (large) tile = static_cast<uint8_t>(tile & 0xFE);
+		const uint8_t  sub_tile = static_cast<uint8_t>(tile + (tile_row / 8));
+		const int      fine_y   = tile_row & 7;
+		const uint32_t databank = (flags & 0x08) ? 0x2000u : 0u;
+
+		const uint16_t tile_addr = static_cast<uint16_t>(sub_tile * 16 + fine_y * 2);
+		const uint8_t  lo        = p.vram[databank + tile_addr];
+		const uint8_t  hi        = p.vram[databank + tile_addr + 1];
+
+		const int     px        = x - sx;
+		const int     bit       = (flags & 0x20) ? px : (7 - px);
+		const uint8_t color_idx = static_cast<uint8_t>(
+			(((hi >> bit) & 1) << 1) | ((lo >> bit) & 1));
+		if (color_idx == 0) continue;
+
+		out.covered = true;
+		out.color   = color_idx;
+		out.pal     = static_cast<uint8_t>(flags & 0x07);
+		out.bg_over = (flags & 0x80) != 0;
+		return out;
+	}
+	return out;
+}
+
+void RenderPixelCgb(Ppu &p, int x)
+{
+	uint8_t  *const line  = &p.framebuffer[p.ly * GB_SCREEN_WIDTH];
+	uint8_t  *const lay   = &p.layer[p.ly * GB_SCREEN_WIDTH];
+	uint16_t *const cline = &p.color_fb[p.ly * GB_SCREEN_WIDTH];
+
+	const int  wx = static_cast<int>(p.latched_wx) - 7;
+	const bool win_active_here =
+		(p.lcdc & 0x20) != 0 &&
+		static_cast<int>(p.ly) >= static_cast<int>(p.wy) &&
+		x >= wx;
+	if (win_active_here && !p.window_active)
+	{
+		p.window_active  = true;
+		p.window_start_x = static_cast<int16_t>(x);
+	}
+
+	const BgPixelCgb bg = SampleBgPixelCgb(p, x, win_active_here);
+
+	p.scanline_bg_raw[x] = bg.color;
+	p.scanline_raw[x]    = bg.color;
+	line[x]              = bg.color;
+	lay[x]               = win_active_here ? GB_PIXEL_WINDOW : GB_PIXEL_BG;
+	cline[x]             = CgbColor(p.bg_pal, bg.pal, bg.color);
+
+	const SpritePixelCgb sp = SampleSpritePixelCgb(p, x);
+	if (sp.covered)
+	{
+		const bool bg_master = (p.lcdc & 0x01) != 0;
+		const bool bg_wins   = bg_master && bg.color != 0 && (bg.priority || sp.bg_over);
+		if (!bg_wins)
+		{
+			p.scanline_raw[x] = sp.color;
+			line[x]           = sp.color;
+			lay[x]            = GB_PIXEL_OBJ;
+			cline[x]          = CgbColor(p.obj_pal, sp.pal, sp.color);
+		}
+	}
+}
+
 // Render exactly one pixel at p.draw_x for the current LY. Re-samples
 // every relevant register so mid-LY changes (SCX/SCY/BGP/LCDC/WX/etc.)
 // take effect at the right pixel, matching real hardware's per-dot
@@ -293,6 +436,8 @@ void RenderPixel(Ppu &p)
 	const int x = static_cast<int>(p.draw_x);
 	if (x < 0 || x >= GB_SCREEN_WIDTH) return;
 	if (p.ly >= GB_SCREEN_HEIGHT)      return;
+
+	if (p.cgb) { RenderPixelCgb(p, x); return; }
 
 	uint8_t *const line = &p.framebuffer[p.ly * GB_SCREEN_WIDTH];
 	uint8_t *const lay  = &p.layer[p.ly * GB_SCREEN_WIDTH];
@@ -391,6 +536,11 @@ void PpuReset(Ppu &p)
 	p.mode3_sprite_stall = 0;
 	p.latched_wx    = 0;
 	p.latched_bgp   = p.bgp;
+	std::memset(p.color_fb, 0, sizeof p.color_fb);
+	p.vbk = 0;
+	p.bcps = p.ocps = 0;
+	std::memset(p.bg_pal,  0xFF, sizeof p.bg_pal);
+	std::memset(p.obj_pal, 0xFF, sizeof p.obj_pal);
 }
 
 // One GB t-cycle's worth of PPU work. Drives mode 2 sprite eval (latched
@@ -467,7 +617,7 @@ inline void ExecPpuDot(Ppu &p, Memory &mem)
 			MODE3_SETUP_DOTS + p.mode3_sprite_stall;
 		if (p.mode_clock > pixel_start_dot && p.draw_x < GB_SCREEN_WIDTH)
 		{
-			if (p.lcdc & 0x01)
+			if (p.cgb || (p.lcdc & 0x01))
 			{
 				RenderPixel(p);
 			}
@@ -498,6 +648,7 @@ inline void ExecPpuDot(Ppu &p, Memory &mem)
 			p.mode_clock -= mode3_length;
 			p.mode        = PpuMode::HBlank;
 			FinalizeScanline(p);
+			MemHdmaHBlank(mem);
 			transitioned = true;
 		}
 		break;
