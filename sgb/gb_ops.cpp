@@ -40,7 +40,12 @@ void Dispatch(CpuState &s, Memory &mem, uint8_t op)
 	case 0x0F: AluRrca(s); s.t_cycles += 4; break;                                             // RRCA
 
 	// ===== 0x10-0x1F =====
-	case 0x10: Fetch8(s, mem); s.stopped = true; s.t_cycles += 4; break;                       // STOP (consumes filler byte)
+	case 0x10:                                                                                 // STOP / CGB speed switch
+		Fetch8(s, mem);
+		if (mem.key1_armed) { mem.double_speed = !mem.double_speed; mem.key1_armed = false; }
+		else                  s.stopped = true;
+		s.t_cycles += 4;
+		break;
 	case 0x11: s.r.de = Fetch16(s, mem); s.t_cycles += 12; break;                              // LD DE,nn
 	case 0x12: MemWrite(mem, s.r.de, s.r.a); s.t_cycles += 8; break;                           // LD (DE),A
 	case 0x13: s.r.de++; s.t_cycles += 8; break;                                               // INC DE

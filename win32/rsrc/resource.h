@@ -675,10 +675,19 @@
 #define IDD_VRAM_VIEWER                 177
 #define IDD_TILEMAP_VIEWER              178
 #define IDD_SPRITE_VIEWER               179
+#define IDD_GB_TILE_VIEWER              180
+#define IDD_GB_TILEMAP_VIEWER           181
+#define IDD_GB_SPRITE_VIEWER            182
 
 #define ID_DEBUG_VRAM_VIEWER            40200
 #define ID_DEBUG_TILEMAP_VIEWER         40201
 #define ID_DEBUG_SPRITE_VIEWER          40202
+#define ID_DEBUG_GB_TILE_VIEWER         40203
+#define ID_DEBUG_GB_TILEMAP_VIEWER      40204
+#define ID_DEBUG_GB_SPRITE_VIEWER       40205
+#define ID_DEBUG_GB_SHOW_BG             40206
+#define ID_DEBUG_GB_SHOW_WIN            40207
+#define ID_DEBUG_GB_SHOW_OBJ            40208
 
 #define IDC_VRAMV_CANVAS                3120
 #define IDC_VRAMV_PALETTE               3121
@@ -713,6 +722,38 @@
 #define IDC_VRAMV_WIDTH                 3206
 #define IDC_VRAMV_WIDTH_SPIN            3207
 #define IDC_VRAMV_TILEINFO              3208
+
+#define IDC_GBTV_CANVAS                 3262
+#define IDC_GBTV_ZOOM                   3263
+#define IDC_GBTV_AUTOUPDATE             3264
+#define IDC_GBTV_REFRESH                3265
+#define IDC_GBTV_SHOWGRID               3266
+#define IDC_GBTV_PALMODE                3267
+#define IDC_GBTV_PALINDEX               3268
+#define IDC_GBTV_PALINDEX_SPIN          3269
+#define IDC_GBTV_BANK                   3270
+#define IDC_GBTV_WIDTH                  3271
+#define IDC_GBTV_WIDTH_SPIN             3272
+#define IDC_GBTV_TILEINFO               3273
+
+#define IDC_GBMV_CANVAS                 3280
+#define IDC_GBMV_ZOOM                   3281
+#define IDC_GBMV_AUTOUPDATE             3282
+#define IDC_GBMV_REFRESH                3283
+#define IDC_GBMV_SHOWGRID               3284
+#define IDC_GBMV_MAP                    3285
+#define IDC_GBMV_TILEDATA               3286
+#define IDC_GBMV_VIEWPORT               3287
+#define IDC_GBMV_TILEINFO               3288
+
+#define IDC_GBSV_CANVAS                 3300
+#define IDC_GBSV_ZOOM                   3301
+#define IDC_GBSV_AUTOUPDATE             3302
+#define IDC_GBSV_REFRESH                3303
+#define IDC_GBSV_INDEX                  3304
+#define IDC_GBSV_INDEX_SPIN             3305
+#define IDC_GBSV_SPRITEINFO             3306
+#define IDC_GBSV_VIEWPORT               3307
 
 #define IDC_TMV_CANVAS                  3150
 #define IDC_TMV_AUTOUPDATE              3151
@@ -796,9 +837,9 @@
 //
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        180
-#define _APS_NEXT_COMMAND_VALUE         40203
-#define _APS_NEXT_CONTROL_VALUE         3262
+#define _APS_NEXT_RESOURCE_VALUE        183
+#define _APS_NEXT_COMMAND_VALUE         40209
+#define _APS_NEXT_CONTROL_VALUE         3320
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

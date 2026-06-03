@@ -73,6 +73,21 @@ public:
 	// frame-blend to blend only selected layers. nullptr when no ROM is loaded.
 	const uint8_t *GBLayerMask() const;
 
+	bool IsCgb() const;
+
+	// Debug viewer accessors — side-effect-free reads of live PPU state.
+	const uint8_t  *DebugVRAM() const;       // 0x4000: bank0 [0..0x1FFF], bank1 [0x2000..]
+	const uint8_t  *DebugOAM() const;        // 0xA0
+	const uint8_t  *DebugCgbBgPal() const;   // 64
+	const uint8_t  *DebugCgbObjPal() const;  // 64
+	const uint16_t *DebugSgbActivePalettes() const;  // 16 (4 palettes x 4 colors)
+	const uint8_t  *DebugSgbAttrMap() const; // SGB_TILES (360)
+	void            DebugGetPpuRegs(uint8_t out[12]) const;
+
+	// Live-frame layer visibility (0=BG, 1=window, 2=OBJ). Display-only.
+	void SetLayerEnabled(int layer, bool enabled);
+	bool GetLayerEnabled(int layer) const;
+
 	// When Settings.GBFrameBlendAuto is on, set Settings.GBFrameBlend/Layer from
 	// the per-title table for the loaded cart (off for unlisted titles). Called
 	// at LoadROM and re-runnable from the UI when the Auto toggle changes.
@@ -288,6 +303,28 @@ const uint8_t *S9xSGBGetGBLayerMask(void);
 // Re-apply the per-title auto frame-blend selection (see Emulator::ApplyAutoBlend);
 // used by the UI when the Auto toggle changes mid-session.
 void S9xSGBApplyAutoBlend(void);
+
+// True when the loaded cart runs in Game Boy Color mode (color output).
+bool S9xSGBIsCgb(void);
+
+// ---- Debug viewer accessors (GB/GBC/SGB tile/tilemap/sprite viewers) --------
+struct SgbPpuRegs
+{
+	uint8_t lcdc, stat, scy, scx, ly, lyc, bgp, obp0, obp1, wy, wx, vbk;
+};
+
+// VRAM is 0x4000 bytes: bank 0 at [0..0x1FFF], bank 1 (CGB) at [0x2000..0x3FFF].
+const uint8_t  *S9xSGBGetVRAM(void);
+const uint8_t  *S9xSGBGetOAM(void);            // 0xA0 bytes
+const uint8_t  *S9xSGBGetCgbBgPal(void);       // 64 bytes, CGB BG palette RAM
+const uint8_t  *S9xSGBGetCgbObjPal(void);      // 64 bytes, CGB OBJ palette RAM
+const uint16_t *S9xSGBGetActivePalettes(void); // 16 RGB555 (4 SGB palettes x 4)
+const uint8_t  *S9xSGBGetAttrMap(void);        // 360 bytes (20x18 SGB cells)
+void            S9xSGBGetPpuRegs(struct SgbPpuRegs *out);
+
+// Live-frame layer visibility (0=BG, 1=window, 2=OBJ) — debug show/hide.
+void S9xSGBSetLayerEnabled(int layer, bool enabled);
+bool S9xSGBGetLayerEnabled(int layer);
 
 // Capture a drawn GB scanline (160 palette indices, 0..3) into the SGB
 // char-transfer ring. Call immediately after RenderScanline; writes to

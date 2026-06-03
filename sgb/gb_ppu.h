@@ -28,7 +28,7 @@ enum class PpuMode : uint8_t
 
 struct Ppu
 {
-	uint8_t  vram[0x2000];
+	uint8_t  vram[0x4000];
 	uint8_t  oam[0xA0];
 
 	uint8_t  lcdc = 0;    // 0xFF40
@@ -38,6 +38,14 @@ struct Ppu
 	uint8_t  lyc  = 0;
 	uint8_t  bgp  = 0, obp0 = 0, obp1 = 0;
 	uint8_t  wy   = 0, wx  = 0;
+
+	bool     cgb = false;
+	bool     show_bg = true, show_window = true, show_obj = true;
+
+	uint8_t  vbk  = 0;            // 0xFF4F
+	uint8_t  bcps = 0, ocps = 0;  // 0xFF68 / 0xFF6A
+	uint8_t  bg_pal[64]  = {0};
+	uint8_t  obj_pal[64] = {0};
 
 	PpuMode  mode = PpuMode::OamScan;
 	int32_t  mode_clock = 0;
@@ -141,6 +149,8 @@ struct Ppu
 	// background (BG+window, where flicker-transparency lives) and leave
 	// moving sprites crisp, or vice versa. Display-only, NOT serialized.
 	uint8_t  layer[GB_SCREEN_WIDTH * GB_SCREEN_HEIGHT];
+
+	uint16_t color_fb[GB_SCREEN_WIDTH * GB_SCREEN_HEIGHT];
 
 	bool     frame_ready = false;
 

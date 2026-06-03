@@ -39,11 +39,43 @@ void MemReset(Memory &m)
 	std::memset(m.boot_rom, 0, sizeof m.boot_rom);
 	m.boot_rom_enabled = false;
 	g_dma_last         = 0xFF;
+
+	m.svbk         = 1;
+	m.key1_armed   = false;
+	m.double_speed = false;
+	m.hdma1 = m.hdma2 = m.hdma3 = m.hdma4 = 0;
+	m.hdma5        = 0xFF;
+	m.hdma_src = m.hdma_dst = m.hdma_len = 0;
+	m.hdma_active  = false;
 }
 
 static uint8_t ReadIO(Memory &m, uint16_t addr);
 static void    WriteIO(Memory &m, uint16_t addr, uint8_t value);
 static void    DoOamDma(Memory &m, uint8_t value);
+static void    HdmaTrigger(Memory &m, uint8_t value);
+
+namespace {
+inline uint32_t VramBankBase(const Memory &m)
+{
+	return (m.ppu && (m.ppu->vbk & 1)) ? 0x2000u : 0u;
+}
+
+inline uint32_t WramBankBase(const Memory &m)
+{
+	if (m.ppu && m.ppu->cgb)
+	{
+		const uint8_t b = m.svbk & 0x07;
+		return static_cast<uint32_t>(b ? b : 1) * 0x1000u;
+	}
+	return 0x1000u;
+}
+
+inline void CgbWritePalette(uint8_t *pal, uint8_t &idx, uint8_t value)
+{
+	pal[idx & 0x3F] = value;
+	if (idx & 0x80) idx = static_cast<uint8_t>((idx & 0x80) | ((idx + 1) & 0x3F));
+}
+} // namespace
 
 uint8_t MemRead(Memory &m, uint16_t addr)
 {
@@ -61,19 +93,27 @@ uint8_t MemRead(Memory &m, uint16_t addr)
 	}
 	if (addr < 0xA000)
 	{
-		return m.ppu ? m.ppu->vram[addr - 0x8000] : 0xFF;
+		return m.ppu ? m.ppu->vram[(addr - 0x8000) + VramBankBase(m)] : 0xFF;
 	}
 	if (addr < 0xC000)
 	{
 		return m.cart ? MbcRead(m.cart->mbc, m.cart->rom, m.cart->sram, addr) : 0xFF;
 	}
-	if (addr < 0xE000)
+	if (addr < 0xD000)
 	{
 		return m.wram[addr - 0xC000];
 	}
+	if (addr < 0xE000)
+	{
+		return m.wram[WramBankBase(m) + (addr - 0xD000)];
+	}
+	if (addr < 0xF000)
+	{
+		return m.wram[addr - 0xE000];  // Echo of C000-CFFF
+	}
 	if (addr < 0xFE00)
 	{
-		return m.wram[addr - 0xE000];  // Echo RAM mirrors C000-DDFF
+		return m.wram[WramBankBase(m) + (addr - 0xF000)];  // Echo of D000-DDFF
 	}
 	if (addr < 0xFEA0)
 	{
@@ -109,7 +149,7 @@ void MemWrite(Memory &m, uint16_t addr, uint8_t value)
 	{
 		if (m.ppu)
 		{
-			m.ppu->vram[addr - 0x8000] = value;
+			m.ppu->vram[(addr - 0x8000) + VramBankBase(m)] = value;
 			m.ppu->vram_writes++;
 		}
 		return;
@@ -119,14 +159,24 @@ void MemWrite(Memory &m, uint16_t addr, uint8_t value)
 		if (m.cart) MbcWrite(*m.cart, addr, value);
 		return;
 	}
-	if (addr < 0xE000)
+	if (addr < 0xD000)
 	{
 		m.wram[addr - 0xC000] = value;
 		return;
 	}
-	if (addr < 0xFE00)
+	if (addr < 0xE000)
+	{
+		m.wram[WramBankBase(m) + (addr - 0xD000)] = value;
+		return;
+	}
+	if (addr < 0xF000)
 	{
 		m.wram[addr - 0xE000] = value;
+		return;
+	}
+	if (addr < 0xFE00)
+	{
+		m.wram[WramBankBase(m) + (addr - 0xF000)] = value;
 		return;
 	}
 	if (addr < 0xFEA0)
@@ -179,6 +229,25 @@ static uint8_t ReadIO(Memory &m, uint16_t addr)
 			return m.timer ? TimerRead(*m.timer, addr) : 0xFF;
 		case 0xFF0F: return static_cast<uint8_t>(m.if_ | 0xE0);
 		case 0xFF46: return g_dma_last;
+		case 0xFF4D:
+			return (m.ppu && m.ppu->cgb)
+				? static_cast<uint8_t>((m.double_speed ? 0x80 : 0x00) |
+				                       (m.key1_armed   ? 0x01 : 0x00) | 0x7E)
+				: 0xFF;
+		case 0xFF4F:
+			return (m.ppu && m.ppu->cgb) ? static_cast<uint8_t>(m.ppu->vbk | 0xFE) : 0xFF;
+		case 0xFF55:
+			return (m.ppu && m.ppu->cgb) ? m.hdma5 : 0xFF;
+		case 0xFF68:
+			return (m.ppu && m.ppu->cgb) ? m.ppu->bcps : 0xFF;
+		case 0xFF69:
+			return (m.ppu && m.ppu->cgb) ? m.ppu->bg_pal[m.ppu->bcps & 0x3F] : 0xFF;
+		case 0xFF6A:
+			return (m.ppu && m.ppu->cgb) ? m.ppu->ocps : 0xFF;
+		case 0xFF6B:
+			return (m.ppu && m.ppu->cgb) ? m.ppu->obj_pal[m.ppu->ocps & 0x3F] : 0xFF;
+		case 0xFF70:
+			return (m.ppu && m.ppu->cgb) ? static_cast<uint8_t>(m.svbk | 0xF8) : 0xFF;
 	}
 	if (addr >= 0xFF10 && addr <= 0xFF3F)
 	{
@@ -237,6 +306,22 @@ static void WriteIO(Memory &m, uint16_t addr, uint8_t value)
 			// become visible. Real hardware: bit 0 disables, can't be re-enabled.
 			if (value != 0) m.boot_rom_enabled = false;
 			return;
+		case 0xFF4D:
+			if (m.ppu && m.ppu->cgb) m.key1_armed = (value & 0x01) != 0;
+			return;
+		case 0xFF4F:
+			if (m.ppu && m.ppu->cgb) m.ppu->vbk = value & 0x01;
+			return;
+		case 0xFF51: if (m.ppu && m.ppu->cgb) m.hdma1 = value; return;
+		case 0xFF52: if (m.ppu && m.ppu->cgb) m.hdma2 = value; return;
+		case 0xFF53: if (m.ppu && m.ppu->cgb) m.hdma3 = value; return;
+		case 0xFF54: if (m.ppu && m.ppu->cgb) m.hdma4 = value; return;
+		case 0xFF55: if (m.ppu && m.ppu->cgb) HdmaTrigger(m, value); return;
+		case 0xFF68: if (m.ppu && m.ppu->cgb) m.ppu->bcps = value; return;
+		case 0xFF69: if (m.ppu && m.ppu->cgb) CgbWritePalette(m.ppu->bg_pal, m.ppu->bcps, value); return;
+		case 0xFF6A: if (m.ppu && m.ppu->cgb) m.ppu->ocps = value; return;
+		case 0xFF6B: if (m.ppu && m.ppu->cgb) CgbWritePalette(m.ppu->obj_pal, m.ppu->ocps, value); return;
+		case 0xFF70: if (m.ppu && m.ppu->cgb) m.svbk = value & 0x07; return;
 	}
 	if (addr >= 0xFF10 && addr <= 0xFF3F)
 	{
@@ -264,6 +349,64 @@ static void DoOamDma(Memory &m, uint8_t value)
 	for (int i = 0; i < 0xA0; ++i)
 	{
 		m.ppu->oam[i] = MemRead(m, static_cast<uint16_t>(src + i));
+	}
+}
+
+static void DoGdma(Memory &m, uint16_t src, uint16_t dst, uint16_t blocks)
+{
+	const uint32_t n = static_cast<uint32_t>(blocks) * 0x10u;
+	for (uint32_t i = 0; i < n; ++i)
+	{
+		const uint8_t b = MemRead(m, static_cast<uint16_t>(src + i));
+		MemWrite(m, static_cast<uint16_t>(0x8000 + ((dst + i) & 0x1FFF)), b);
+	}
+}
+
+static void HdmaTrigger(Memory &m, uint8_t value)
+{
+	const uint16_t src    = static_cast<uint16_t>(((m.hdma1 << 8) | m.hdma2) & 0xFFF0);
+	const uint16_t dst    = static_cast<uint16_t>(((m.hdma3 << 8) | m.hdma4) & 0x1FF0);
+	const uint16_t blocks = static_cast<uint16_t>((value & 0x7F) + 1);
+
+	if (value & 0x80)
+	{
+		m.hdma_src    = src;
+		m.hdma_dst    = dst;
+		m.hdma_len    = blocks;
+		m.hdma_active = true;
+		m.hdma5       = static_cast<uint8_t>(value & 0x7F);
+	}
+	else if (m.hdma_active)
+	{
+		m.hdma_active = false;
+		m.hdma5       = static_cast<uint8_t>(0x80 | ((m.hdma_len - 1) & 0x7F));
+	}
+	else
+	{
+		DoGdma(m, src, dst, blocks);
+		m.hdma5 = 0xFF;
+	}
+}
+
+void MemHdmaHBlank(Memory &m)
+{
+	if (!m.hdma_active) return;
+	for (uint32_t i = 0; i < 0x10; ++i)
+	{
+		const uint8_t b = MemRead(m, static_cast<uint16_t>(m.hdma_src + i));
+		MemWrite(m, static_cast<uint16_t>(0x8000 + ((m.hdma_dst + i) & 0x1FFF)), b);
+	}
+	m.hdma_src = static_cast<uint16_t>(m.hdma_src + 0x10);
+	m.hdma_dst = static_cast<uint16_t>(m.hdma_dst + 0x10);
+	--m.hdma_len;
+	if (m.hdma_len == 0)
+	{
+		m.hdma_active = false;
+		m.hdma5       = 0xFF;
+	}
+	else
+	{
+		m.hdma5 = static_cast<uint8_t>((m.hdma_len - 1) & 0x7F);
 	}
 }
 

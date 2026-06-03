@@ -210,6 +210,9 @@ struct sGUI {
 	sDialogPos vramViewerPos;
 	sDialogPos tilemapViewerPos;
 	sDialogPos spriteViewerPos;
+	sDialogPos gbTileViewerPos;
+	sDialogPos gbTilemapViewerPos;
+	sDialogPos gbSpriteViewerPos;
 
     int  MouseX;
     int  MouseY;
