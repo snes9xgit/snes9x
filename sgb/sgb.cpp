@@ -425,7 +425,7 @@ void Emulator::Reset()
 	impl_->fb.height = GB_SCREEN_HEIGHT;
 	impl_->fb.pitch  = GB_SCREEN_WIDTH;
 
-	impl_->ppu.cgb = impl_->cgb_mode;
+	impl_->ppu.cgb = impl_->cgb_mode && !Settings.SGB_BIOSModeActive;
 
 	// Apply run-mode specific post-boot register values. The SGB BIOS
 	// hands control to the cart with slightly different register state
@@ -774,7 +774,7 @@ const uint8_t *Emulator::GBLayerMask() const
 
 bool Emulator::IsCgb() const
 {
-	return impl_->has_rom && impl_->cgb_mode;
+	return impl_->has_rom && impl_->cgb_mode && !Settings.SGB_BIOSModeActive;
 }
 
 const uint8_t *Emulator::DebugVRAM() const
@@ -1049,6 +1049,11 @@ void Emulator::RunCycles(int32_t tcycles)
 {
 	if (!impl_->has_rom) return;
 	if (tcycles <= 0) return;
+
+	// The SGB BIOS boots even a CGB-capable cart as a plain DMG game (no
+	// bank-1 attributes, no CGB palettes); rendering it as CGB would read
+	// garbage. Gate the color path off whenever the BIOS is driving.
+	impl_->ppu.cgb = impl_->cgb_mode && !Settings.SGB_BIOSModeActive;
 
 	// MMM01 multicart just locked into game-mode — inject the SGB
 	// default ("Mario") palette packets so the picked sub-game gets
@@ -1544,7 +1549,7 @@ void Emulator::BlitScreen(uint16_t *dest, uint32_t pitch_pixels)
 		uint16_t *const dst_row  = staging + dst_y * SGB_BORDER_W + origin_x;
 		for (uint32_t px = 0; px < GB_SCREEN_WIDTH; ++px)
 		{
-			if (impl_->cgb_mode)
+			if (impl_->ppu.cgb)
 			{
 				dst_row[px] = impl_->ppu.color_fb[py * GB_SCREEN_WIDTH + px];
 				continue;
@@ -2097,7 +2102,7 @@ bool Emulator::StateLoad(const uint8_t *buffer, size_t size)
 	impl_->fb.height = GB_SCREEN_HEIGHT;
 	impl_->fb.pitch  = GB_SCREEN_WIDTH;
 
-	impl_->ppu.cgb = impl_->cgb_mode;
+	impl_->ppu.cgb = impl_->cgb_mode && !Settings.SGB_BIOSModeActive;
 
 	// Reseed the SGB-bridge mirrors on Joypad from icd2 — these are
 	// not serialized (see VisitState), so a load with the BIOS not

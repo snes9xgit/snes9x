@@ -1552,26 +1552,28 @@ static void EmitSGBLoadBanner(const char *gb_path, uint8 bios_mode)
     Settings.InitialInfoStringTimeout = saved;
 }
 
-// Game Boy Color carts (header $0143 bit 7) must skip SGB-BIOS mode and use
-// the BIOS-less CGB path: the SGB BIOS boots them as monochrome, and CGB-only
-// carts then lock out ("This Game Pak is designed only for Game Boy Color").
-static bool GbBytesAreCgb(const uint8 *rom, size_t size)
+// Game Boy header $0143 CGB flag: $80 = CGB-enhanced (also runs on DMG/SGB),
+// $C0 = CGB-only. CGB-only carts can't run under the SGB BIOS (it boots them
+// monochrome and they lock out: "designed only for Game Boy Color"), so they
+// are forced into the BIOS-less CGB path. CGB-enhanced carts still honour the
+// SGB-BIOS preference and run correctly either way.
+static uint8 GbBytesCgbFlag(const uint8 *rom, size_t size)
 {
-    return size > 0x143 && (rom[0x143] & 0x80) != 0;
+    return size > 0x143 ? rom[0x143] : 0;
 }
 
-static bool GbFileIsCgb(const char *filename)
+static uint8 GbFileCgbFlag(const char *filename)
 {
     FILE *f = fopen(filename, "rb");
-    if (!f) return false;
-    bool cgb = false;
+    if (!f) return 0;
+    uint8 flag = 0;
     if (fseek(f, 0x143, SEEK_SET) == 0)
     {
         int c = fgetc(f);
-        if (c != EOF) cgb = (c & 0x80) != 0;
+        if (c != EOF) flag = (uint8)c;
     }
     fclose(f);
-    return cgb;
+    return flag;
 }
 
 bool8 CMemory::LoadROM (const char *filename)
@@ -1589,7 +1591,9 @@ bool8 CMemory::LoadROM (const char *filename)
         strncpy(Settings.GBRomPath, filename, sizeof(Settings.GBRomPath) - 1);
         Settings.GBRomPath[sizeof(Settings.GBRomPath) - 1] = '\0';
 
-        const bool gbCgb = GbFileIsCgb(filename);
+        const uint8 gbFlag    = GbFileCgbFlag(filename);
+        const bool  gbCgb     = (gbFlag & 0x80) != 0;
+        const bool  gbCgbOnly = (gbFlag == 0xC0);
 
         std::string bios_path;
         uint8 bios_mode = 0;
@@ -1604,7 +1608,7 @@ bool8 CMemory::LoadROM (const char *filename)
             else bios_path.clear();
         }
 
-        if (!gbCgb && bios_mode && LoadROMWithSGBBIOS(filename, bios_path.c_str()))
+        if (!gbCgbOnly && bios_mode && LoadROMWithSGBBIOS(filename, bios_path.c_str()))
         {
             EmitSGBLoadBanner(filename, bios_mode);
             return TRUE;
@@ -1662,6 +1666,10 @@ bool8 CMemory::LoadROM (const char *filename)
             strncpy(Settings.GBRomPath, filename, sizeof(Settings.GBRomPath) - 1);
             Settings.GBRomPath[sizeof(Settings.GBRomPath) - 1] = '\0';
 
+            const uint8 gbFlag    = GbBytesCgbFlag(ROM, (size_t)totalFileSize);
+            const bool  gbCgb     = (gbFlag & 0x80) != 0;
+            const bool  gbCgbOnly = (gbFlag == 0xC0);
+
             std::string bios_path;
             uint8 bios_mode = 0;
             if (Settings.SGB_BIOSPreference >= 2 && FindSGB_BIOS(2, filename, bios_path))
@@ -1675,7 +1683,7 @@ bool8 CMemory::LoadROM (const char *filename)
                 else bios_path.clear();
             }
 
-            if (bios_mode &&
+            if (!gbCgbOnly && bios_mode &&
                 LoadROMWithSGBBIOSBytes(ROM, (uint32)totalFileSize,
                                          filename, bios_path.c_str()))
             {
@@ -1686,7 +1694,7 @@ bool8 CMemory::LoadROM (const char *filename)
             // BIOS-less fallback (legacy path).
             if (Settings.SGB_BIOSModeActive) Settings.SGB_BIOSModeActive = FALSE;
             Settings.SuperGameBoy      = TRUE;
-            Settings.GameBoyRunMode    = 1;
+            Settings.GameBoyRunMode    = gbCgb ? 0 : 1;
             Settings.GBClockMultiplier = 1.0f;
             if (!S9xSGBInit() ||
                 !S9xSGBLoadROMBytes(ROM, static_cast<size_t>(totalFileSize), filename))
