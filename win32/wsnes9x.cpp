@@ -42,6 +42,8 @@
 #include "CTilemapViewerDlg.h"
 #include "CSpriteViewerDlg.h"
 #include "CGBTileViewerDlg.h"
+#include "CGBTilemapViewerDlg.h"
+#include "CGBSpriteViewerDlg.h"
 #include "debug_viewer_common.h"
 
 #include "../snes9x.h"
@@ -2598,6 +2600,21 @@ LRESULT CALLBACK WinProc(
 		case ID_DEBUG_GB_TILE_VIEWER:
             WinShowGBTileViewerDialog();
 			break;
+		case ID_DEBUG_GB_TILEMAP_VIEWER:
+            WinShowGBTilemapViewerDialog();
+			break;
+		case ID_DEBUG_GB_SPRITE_VIEWER:
+            WinShowGBSpriteViewerDialog();
+			break;
+		case ID_DEBUG_GB_SHOW_BG:
+		case ID_DEBUG_GB_SHOW_WIN:
+		case ID_DEBUG_GB_SHOW_OBJ: {
+			int gbLayer = LOWORD(wParam) - ID_DEBUG_GB_SHOW_BG;
+			bool on = !S9xSGBGetLayerEnabled(gbLayer);
+			S9xSGBSetLayerEnabled(gbLayer, on);
+			CheckMenuItem(GetMenu(GUI.hWnd), LOWORD(wParam), on ? MF_CHECKED : MF_UNCHECKED);
+			break;
+		}
 		case ID_CHEAT_ENTER:
 #ifdef RETROACHIEVEMENTS_SUPPORT
 			if (!RA_WarnDisableHardcore("Cheat editor"))

@@ -494,6 +494,8 @@
     <ClInclude Include="CTilemapViewerDlg.h" />
     <ClInclude Include="CSpriteViewerDlg.h" />
     <ClInclude Include="CGBTileViewerDlg.h" />
+    <ClInclude Include="CGBTilemapViewerDlg.h" />
+    <ClInclude Include="CGBSpriteViewerDlg.h" />
     <ClInclude Include="gb_viewer_common.h" />
     <ClInclude Include="debug_viewer_common.h" />
     <ClInclude Include="debug_viewer_export.h" />
@@ -730,6 +732,8 @@
     <ClCompile Include="CTilemapViewerDlg.cpp" />
     <ClCompile Include="CSpriteViewerDlg.cpp" />
     <ClCompile Include="CGBTileViewerDlg.cpp" />
+    <ClCompile Include="CGBTilemapViewerDlg.cpp" />
+    <ClCompile Include="CGBSpriteViewerDlg.cpp" />
     <ClCompile Include="debug_viewer_common.cpp" />
     <ClCompile Include="debug_viewer_export.cpp" />
     <ClCompile Include="CVulkan.cpp" />

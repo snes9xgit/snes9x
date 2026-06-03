@@ -429,6 +429,12 @@
     <ClInclude Include="CGBTileViewerDlg.h">
       <Filter>GUI</Filter>
     </ClInclude>
+    <ClInclude Include="CGBTilemapViewerDlg.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="CGBSpriteViewerDlg.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
     <ClInclude Include="gb_viewer_common.h">
       <Filter>GUI</Filter>
     </ClInclude>
@@ -918,6 +924,12 @@
       <Filter>GUI</Filter>
     </ClCompile>
     <ClCompile Include="CGBTileViewerDlg.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="CGBTilemapViewerDlg.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="CGBSpriteViewerDlg.cpp">
       <Filter>GUI</Filter>
     </ClCompile>
     <ClCompile Include="debug_viewer_common.cpp">

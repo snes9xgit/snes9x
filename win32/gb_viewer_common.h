@@ -64,6 +64,50 @@ inline void GbBuildPalette4(int mode, int palIndex, uint32 pal[4]) {
     GbGrayPalette4(0xE4, pal);
 }
 
+// Build the 8 CGB palettes (BG or OBJ) from 64 bytes of palette RAM into
+// an [8][4] array of 0xAARRGGBB colours.
+inline void GbBuildCgbPalettes(const uint8 *palram, uint32 out[8][4]) {
+    for (int p = 0; p < 8; ++p)
+        for (int c = 0; c < 4; ++c) {
+            int i = p * 8 + c * 2;
+            out[p][c] = GbRgb555ToBgra((uint16)(palram[i] | (palram[i + 1] << 8)));
+        }
+}
+
+// Opaque 8x8 blit (all four indices drawn) from a 4-colour palette. Tilemaps.
+inline void GbBlitTileOpaque(const uint8 tile[64], const uint32 pal4[4],
+                             uint32 *dst, int stride, int dx, int dy,
+                             bool hflip, bool vflip) {
+    for (int y = 0; y < 8; ++y) {
+        int sy = vflip ? 7 - y : y;
+        uint32 *row = dst + (dy + y) * stride + dx;
+        for (int x = 0; x < 8; ++x) {
+            int sx = hflip ? 7 - x : x;
+            row[x] = pal4[tile[sy * 8 + sx] & 3];
+        }
+    }
+}
+
+// Transparent (index 0 skipped) 8x8 blit, clipped to [0,w) x [0,h). Sprites.
+inline void GbBlitTileClipped(const uint8 tile[64], const uint32 pal4[4],
+                              uint32 *dst, int stride, int w, int h,
+                              int dx, int dy, bool hflip, bool vflip) {
+    for (int y = 0; y < 8; ++y) {
+        int py = dy + y;
+        if (py < 0 || py >= h) continue;
+        int sy = vflip ? 7 - y : y;
+        uint32 *row = dst + py * stride;
+        for (int x = 0; x < 8; ++x) {
+            int px = dx + x;
+            if (px < 0 || px >= w) continue;
+            int sx = hflip ? 7 - x : x;
+            uint8 c = tile[sy * 8 + sx] & 3;
+            if (c == 0) continue;
+            row[px] = pal4[c];
+        }
+    }
+}
+
 inline void GbPopulatePalMode(HWND hCombo) {
     SendMessage(hCombo, CB_ADDSTRING, 0, (LPARAM)TEXT("Auto"));
     SendMessage(hCombo, CB_ADDSTRING, 0, (LPARAM)TEXT("DMG BGP"));

@@ -84,6 +84,10 @@ public:
 	const uint8_t  *DebugSgbAttrMap() const; // SGB_TILES (360)
 	void            DebugGetPpuRegs(uint8_t out[12]) const;
 
+	// Live-frame layer visibility (0=BG, 1=window, 2=OBJ). Display-only.
+	void SetLayerEnabled(int layer, bool enabled);
+	bool GetLayerEnabled(int layer) const;
+
 	// When Settings.GBFrameBlendAuto is on, set Settings.GBFrameBlend/Layer from
 	// the per-title table for the loaded cart (off for unlisted titles). Called
 	// at LoadROM and re-runnable from the UI when the Auto toggle changes.
@@ -317,6 +321,10 @@ const uint8_t  *S9xSGBGetCgbObjPal(void);      // 64 bytes, CGB OBJ palette RAM
 const uint16_t *S9xSGBGetActivePalettes(void); // 16 RGB555 (4 SGB palettes x 4)
 const uint8_t  *S9xSGBGetAttrMap(void);        // 360 bytes (20x18 SGB cells)
 void            S9xSGBGetPpuRegs(struct SgbPpuRegs *out);
+
+// Live-frame layer visibility (0=BG, 1=window, 2=OBJ) — debug show/hide.
+void S9xSGBSetLayerEnabled(int layer, bool enabled);
+bool S9xSGBGetLayerEnabled(int layer);
 
 // Capture a drawn GB scanline (160 palette indices, 0..3) into the SGB
 // char-transfer ring. Call immediately after RenderScanline; writes to

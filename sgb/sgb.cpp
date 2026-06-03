@@ -815,6 +815,27 @@ void Emulator::DebugGetPpuRegs(uint8_t out[12]) const
 	out[8]  = p.obp1; out[9]  = p.wy;   out[10] = p.wx;   out[11] = p.vbk;
 }
 
+void Emulator::SetLayerEnabled(int layer, bool enabled)
+{
+	switch (layer)
+	{
+		case 0: impl_->ppu.show_bg     = enabled; break;
+		case 1: impl_->ppu.show_window = enabled; break;
+		case 2: impl_->ppu.show_obj    = enabled; break;
+	}
+}
+
+bool Emulator::GetLayerEnabled(int layer) const
+{
+	switch (layer)
+	{
+		case 0: return impl_->ppu.show_bg;
+		case 1: return impl_->ppu.show_window;
+		case 2: return impl_->ppu.show_obj;
+	}
+	return true;
+}
+
 uint8_t Emulator::PeekRAByte(uint32_t addr) const
 {
 	if (!impl_->has_rom) return 0;
@@ -2221,6 +2242,8 @@ void S9xSGBGetPpuRegs(SgbPpuRegs *out)
 	out->ly   = r[4]; out->lyc  = r[5]; out->bgp  = r[6];  out->obp0 = r[7];
 	out->obp1 = r[8]; out->wy   = r[9]; out->wx   = r[10]; out->vbk  = r[11];
 }
+void S9xSGBSetLayerEnabled(int layer, bool enabled) { SGB::Instance().SetLayerEnabled(layer, enabled); }
+bool S9xSGBGetLayerEnabled(int layer) { return SGB::Instance().GetLayerEnabled(layer); }
 void S9xSGBCaptureScanline(const unsigned char *pixels)
 {
 	SGB::Instance().CaptureScanline(static_cast<const uint8_t *>(pixels));

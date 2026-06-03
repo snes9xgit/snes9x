@@ -40,6 +40,7 @@ struct Ppu
 	uint8_t  wy   = 0, wx  = 0;
 
 	bool     cgb = false;
+	bool     show_bg = true, show_window = true, show_obj = true;
 
 	uint8_t  vbk  = 0;            // 0xFF4F
 	uint8_t  bcps = 0, ocps = 0;  // 0xFF68 / 0xFF6A

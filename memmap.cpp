@@ -1552,6 +1552,28 @@ static void EmitSGBLoadBanner(const char *gb_path, uint8 bios_mode)
     Settings.InitialInfoStringTimeout = saved;
 }
 
+// Game Boy Color carts (header $0143 bit 7) must skip SGB-BIOS mode and use
+// the BIOS-less CGB path: the SGB BIOS boots them as monochrome, and CGB-only
+// carts then lock out ("This Game Pak is designed only for Game Boy Color").
+static bool GbBytesAreCgb(const uint8 *rom, size_t size)
+{
+    return size > 0x143 && (rom[0x143] & 0x80) != 0;
+}
+
+static bool GbFileIsCgb(const char *filename)
+{
+    FILE *f = fopen(filename, "rb");
+    if (!f) return false;
+    bool cgb = false;
+    if (fseek(f, 0x143, SEEK_SET) == 0)
+    {
+        int c = fgetc(f);
+        if (c != EOF) cgb = (c & 0x80) != 0;
+    }
+    fclose(f);
+    return cgb;
+}
+
 bool8 CMemory::LoadROM (const char *filename)
 {
     if(!filename || !*filename)
@@ -1567,6 +1589,8 @@ bool8 CMemory::LoadROM (const char *filename)
         strncpy(Settings.GBRomPath, filename, sizeof(Settings.GBRomPath) - 1);
         Settings.GBRomPath[sizeof(Settings.GBRomPath) - 1] = '\0';
 
+        const bool gbCgb = GbFileIsCgb(filename);
+
         std::string bios_path;
         uint8 bios_mode = 0;
         if (Settings.SGB_BIOSPreference >= 2 && FindSGB_BIOS(2, filename, bios_path))
@@ -1580,7 +1604,7 @@ bool8 CMemory::LoadROM (const char *filename)
             else bios_path.clear();
         }
 
-        if (bios_mode && LoadROMWithSGBBIOS(filename, bios_path.c_str()))
+        if (!gbCgb && bios_mode && LoadROMWithSGBBIOS(filename, bios_path.c_str()))
         {
             EmitSGBLoadBanner(filename, bios_mode);
             return TRUE;
@@ -1591,7 +1615,7 @@ bool8 CMemory::LoadROM (const char *filename)
         if (Settings.SuperGameBoy) S9xSGBDeinit();
         if (Settings.SGB_BIOSModeActive) Settings.SGB_BIOSModeActive = FALSE;
         Settings.SuperGameBoy      = TRUE;
-        Settings.GameBoyRunMode    = 1;   // default SGB1
+        Settings.GameBoyRunMode    = gbCgb ? 0 : 1;   // CGB carts run BIOS-less in CGB mode
         Settings.GBClockMultiplier = 1.0f;
 
         if (!S9xSGBInit() || !S9xSGBLoadROM(filename))

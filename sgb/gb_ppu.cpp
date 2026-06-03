@@ -405,18 +405,20 @@ void RenderPixelCgb(Ppu &p, int x)
 	}
 
 	const BgPixelCgb bg = SampleBgPixelCgb(p, x, win_active_here);
+	const bool bg_hidden = win_active_here ? !p.show_window : !p.show_bg;
 
 	p.scanline_bg_raw[x] = bg.color;
 	p.scanline_raw[x]    = bg.color;
 	line[x]              = bg.color;
 	lay[x]               = win_active_here ? GB_PIXEL_WINDOW : GB_PIXEL_BG;
-	cline[x]             = CgbColor(p.bg_pal, bg.pal, bg.color);
+	cline[x]             = bg_hidden ? CgbColor(p.bg_pal, 0, 0)
+	                                 : CgbColor(p.bg_pal, bg.pal, bg.color);
 
 	const SpritePixelCgb sp = SampleSpritePixelCgb(p, x);
-	if (sp.covered)
+	if (p.show_obj && sp.covered)
 	{
 		const bool bg_master = (p.lcdc & 0x01) != 0;
-		const bool bg_wins   = bg_master && bg.color != 0 && (bg.priority || sp.bg_over);
+		const bool bg_wins   = !bg_hidden && bg_master && bg.color != 0 && (bg.priority || sp.bg_over);
 		if (!bg_wins)
 		{
 			p.scanline_raw[x] = sp.color;
@@ -471,14 +473,17 @@ void RenderPixel(Ppu &p)
 		}
 	}
 
+	const bool bg_hidden = (bg_layer == GB_PIXEL_WINDOW) ? !p.show_window : !p.show_bg;
+	const uint8_t disp_bg = bg_hidden ? 0 : bg_color;
+
 	p.scanline_bg_raw[x] = bg_color;
 	p.scanline_raw[x]    = bg_color;
-	line[x]              = ApplyPalette(p.latched_bgp, bg_color);
+	line[x]              = ApplyPalette(p.latched_bgp, disp_bg);
 	lay[x]               = bg_layer;
 
 	// Sprite resolve — overwrite if visible.
 	const SpritePixel sp = SampleSpritePixel(p, x);
-	if (sp.covered && (!sp.bg_over || bg_color == 0))
+	if (p.show_obj && sp.covered && (!sp.bg_over || disp_bg == 0))
 	{
 		p.scanline_raw[x] = sp.color;
 		line[x]           = ApplyPalette(sp.palette, sp.color);
@@ -632,7 +637,7 @@ inline void ExecPpuDot(Ppu &p, Memory &mem)
 					ApplyPalette(p.latched_bgp, 0);
 				p.layer[p.ly * GB_SCREEN_WIDTH + x] = GB_PIXEL_BG;   // blank BG
 				const SpritePixel sp = SampleSpritePixel(p, x);
-				if (sp.covered)
+				if (p.show_obj && sp.covered)
 				{
 					p.scanline_raw[x] = sp.color;
 					p.framebuffer[p.ly * GB_SCREEN_WIDTH + x] =
