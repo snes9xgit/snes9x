@@ -1766,6 +1766,24 @@ void WinShowCheatEditorDialog()
 #define TIMER_HOTPLUG_BURST 0xD0D0
 static int g_hotplugTicksRemaining = 0;
 
+// Grey (or enable) the submenu inside `parent` that contains `containedCmd`.
+// Used to keep the S-PPU viewers usable only for SNES ROMs and the GB-PPU
+// viewers only for GB/GBC/SGB games.
+static void GbSetSubmenuEnabled(HMENU parent, UINT containedCmd, bool enabled)
+{
+	if (!parent) return;
+	int n = GetMenuItemCount(parent);
+	for (int i = 0; i < n; ++i)
+	{
+		HMENU sub = GetSubMenu(parent, i);
+		if (sub && GetMenuState(sub, containedCmd, MF_BYCOMMAND) != (UINT)-1)
+		{
+			EnableMenuItem(parent, i, MF_BYPOSITION | (enabled ? MF_ENABLED : MF_GRAYED));
+			return;
+		}
+	}
+}
+
 LRESULT CALLBACK WinProc(
 						 HWND hWnd,
 						 UINT uMsg,
@@ -1783,6 +1801,15 @@ LRESULT CALLBACK WinProc(
 		g_hInst = ((LPCREATESTRUCT)lParam)->hInstance;
 		DragAcceptFiles(hWnd, TRUE);
 		return 0;
+	case WM_INITMENUPOPUP:
+	{
+		HMENU hPopup = (HMENU)wParam;
+		bool romLoaded = !Settings.StopEmulation;
+		bool gbActive  = Settings.SuperGameBoy || Settings.SGB_BIOSModeActive;
+		GbSetSubmenuEnabled(hPopup, ID_DEBUG_VRAM_VIEWER,    romLoaded && !gbActive);  // S-PPU
+		GbSetSubmenuEnabled(hPopup, ID_DEBUG_GB_TILE_VIEWER, romLoaded &&  gbActive);  // GB-PPU
+		return DefWindowProc(hWnd, uMsg, wParam, lParam);
+	}
 	case WM_DEVICECHANGE:
 		// Windows fires WM_DEVICECHANGE when a device is connected/disconnected,
 		// but SDL's backends (XInput, WGI, RawInput, DI) may not have enumerated
