@@ -392,7 +392,7 @@ BEGIN
     RTEXT           "DN RIGHT",IDC_LABEL_DOWNRIGHT,150,149,36,8
     RTEXT           "UP RIGHT",IDC_LABEL_UPRIGHT,150,136,36,8
     RTEXT           "DN LEFT",IDC_LABEL_DOWNLEFT,155,161,31,8
-    CONTROL         IDB_PAD,IDC_STATIC,"Static",SS_BITMAP,293,68,80,74
+    CONTROL         IDB_PAD,IDC_PAD_IMAGE,"Static",SS_BITMAP | SS_NOTIFY,293,68,80,74
     CONTROL         "Allow Left+Rt/Up+Dn",IDC_ALLOWLEFTRIGHT,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,293,149,87,11
     CONTROL         "Use DirectInput",IDC_USEDIRECTINPUT,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,293,162,87,11
     LTEXT           "(restart required)",IDC_STATIC,293,174,87,8
@@ -1216,6 +1216,8 @@ IDB_NETDRIVE            BITMAP                  "nd.bmp"
 IDB_HARDDRIVE           BITMAP                  "hd.bmp"
 
 IDB_PAD                 BITMAP                  "pad.bmp"
+
+IDB_PAD2                BITMAP                  "pad2.bmp"
 
 IDB_REMOVABLE           BITMAP                  "rd.bmp"
 

@@ -29,6 +29,7 @@
 #define IDD_CHEAT_SEARCH                129
 #define IDD_CHEAT_FROM_SEARCH           131
 #define IDB_PAD                         133
+#define IDB_PAD2                        183
 #define IDD_OPENMOVIE                   134
 #define IDD_CREATEMOVIE                 135
 #define IDD_KEYCUSTOM                   136
@@ -828,6 +829,7 @@
 #define IDC_EDIT_VOLUME_GB              3254
 #define IDC_STATIC_GB_LABEL             3255
 #define IDC_STATIC_GB_PCT               3256
+#define IDC_PAD_IMAGE                   3320
 
 #define ID_SOUND_AUDIOWAVEFORM          40198
 
@@ -837,9 +839,9 @@
 //
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        183
+#define _APS_NEXT_RESOURCE_VALUE        184
 #define _APS_NEXT_COMMAND_VALUE         40209
-#define _APS_NEXT_CONTROL_VALUE         3320
+#define _APS_NEXT_CONTROL_VALUE         3321
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif
