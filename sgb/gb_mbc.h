@@ -83,7 +83,7 @@ struct MbcState
 struct Cart;
 
 void MbcReset(MbcState &s);
-uint8_t MbcRead(MbcState &s, const std::vector<uint8_t> &rom, const std::vector<uint8_t> &sram, uint16_t addr);
+uint8_t MbcRead(MbcState &s, const std::vector<uint8_t> &rom, const std::vector<uint8_t> &sram, uint16_t addr, bool mbc1_multicart = false);
 void    MbcWrite(Cart &c, uint16_t addr, uint8_t value);
 
 // Notify the mapper of a CPU write to addr >= 0x8000 (VRAM/WRAM/SRAM/HRAM/IO).
