@@ -16,6 +16,9 @@
     <Filter Include="libretro">
       <UniqueIdentifier>{7445db59-72e6-42a3-963c-c352087333b1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="s9x-source\SGB">
+      <UniqueIdentifier>{a1b2c3d4-e5f6-47a8-9b0c-1d2e3f4a5b6c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\65c816.h">
@@ -361,6 +364,45 @@
     </ClCompile>
     <ClCompile Include="..\sha256.cpp">
       <Filter>s9x-source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sgb\sgb.cpp">
+      <Filter>s9x-source\SGB</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sgb\sgb_packet.cpp">
+      <Filter>s9x-source\SGB</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sgb\sgb_state.cpp">
+      <Filter>s9x-source\SGB</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sgb\gb_cpu.cpp">
+      <Filter>s9x-source\SGB</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sgb\gb_ops.cpp">
+      <Filter>s9x-source\SGB</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sgb\gb_ops_cb.cpp">
+      <Filter>s9x-source\SGB</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sgb\gb_memory.cpp">
+      <Filter>s9x-source\SGB</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sgb\gb_mbc.cpp">
+      <Filter>s9x-source\SGB</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sgb\gb_ppu.cpp">
+      <Filter>s9x-source\SGB</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sgb\gb_apu.cpp">
+      <Filter>s9x-source\SGB</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sgb\gb_timer.cpp">
+      <Filter>s9x-source\SGB</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sgb\gb_joypad.cpp">
+      <Filter>s9x-source\SGB</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sgb\gb_cart.cpp">
+      <Filter>s9x-source\SGB</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
