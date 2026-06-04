@@ -173,6 +173,7 @@ void TriggerSquare(ApuSquare &c, bool is_ch1)
 
 	c.freq       = SquareFreq(c);
 	c.freq_timer = SquarePeriod(c.freq);
+	c.duty_pos   = 0;
 
 	c.env_volume  = (c.nrx2 >> 4) & 0x0F;
 	c.env_timer   = (c.nrx2 & 0x07) ? (c.nrx2 & 0x07) : 8;
