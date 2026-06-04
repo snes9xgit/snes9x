@@ -137,6 +137,19 @@ bool LooksLikeM161(const std::vector<uint8_t> &rom)
 	return logo_at(0x0000) && logo_at(0x8000);
 }
 
+// MBC1 multicart (MBC1M): a "menu + games" compilation where the 2-bit BANK2
+// register drives ROM A18-A19 (instead of A19-A20), so it selects a 256 KiB
+// game slot and BANK1 keeps only its low 4 bits. The header still reports plain
+// MBC1, so identify it structurally: a second Nintendo logo at the start of the
+// bank-0x10 slot ($40000) that a single-game cart never carries.
+bool LooksLikeMbc1Multicart(const std::vector<uint8_t> &rom)
+{
+	if (rom.size() < 0x44000) return false;          // need at least slot 1's header
+	for (int i = 0; i < 48; ++i)
+		if (rom[0x40104 + i] != kGbNintendoLogo[i]) return false;
+	return true;
+}
+
 std::string MakeSavPath(const std::string &rom_path)
 {
 	if (rom_path.empty()) return {};
@@ -249,6 +262,7 @@ bool CartLoad(Cart &c, const uint8_t *data, size_t size, const char *path)
 		c.rom.clear();
 		return false;
 	}
+	c.mbc1_multicart = (c.mbc.type == MbcType::MBC1) && LooksLikeMbc1Multicart(c.rom);
 	MbcReset(c.mbc);
 
 	// ----- Cart RAM allocation -----
@@ -291,10 +305,11 @@ void CartUnload(Cart &c)
 	c.sram.clear();
 	c.header      = {};
 	c.path.clear();
-	c.has_battery = false;
-	c.has_rtc     = false;
-	c.has_rumble  = false;
-	c.sram_dirty  = false;
+	c.has_battery    = false;
+	c.has_rtc        = false;
+	c.has_rumble     = false;
+	c.sram_dirty     = false;
+	c.mbc1_multicart = false;
 	MbcReset(c.mbc);
 	c.mbc.type    = MbcType::None;
 }

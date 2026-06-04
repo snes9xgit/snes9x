@@ -89,7 +89,7 @@ uint8_t MemRead(Memory &m, uint16_t addr)
 	}
 	if (addr < 0x8000)
 	{
-		return m.cart ? MbcRead(m.cart->mbc, m.cart->rom, m.cart->sram, addr) : 0xFF;
+		return m.cart ? MbcRead(m.cart->mbc, m.cart->rom, m.cart->sram, addr, m.cart->mbc1_multicart) : 0xFF;
 	}
 	if (addr < 0xA000)
 	{
@@ -97,7 +97,7 @@ uint8_t MemRead(Memory &m, uint16_t addr)
 	}
 	if (addr < 0xC000)
 	{
-		return m.cart ? MbcRead(m.cart->mbc, m.cart->rom, m.cart->sram, addr) : 0xFF;
+		return m.cart ? MbcRead(m.cart->mbc, m.cart->rom, m.cart->sram, addr, m.cart->mbc1_multicart) : 0xFF;
 	}
 	if (addr < 0xD000)
 	{

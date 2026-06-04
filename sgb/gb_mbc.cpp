@@ -163,23 +163,30 @@ inline void WriteSram(Cart &c, uint32_t offset, uint8_t value)
 }
 
 // Effective 0x0000-0x3FFF bank for MBC1 — normally 0, but mode 1 with
-// a >= 1MB cart can expose banks 0x20/0x40/0x60.
-inline uint32_t Mbc1Bank0(const MbcState &s)
+// a >= 1MB cart can expose banks 0x20/0x40/0x60. On a multicart the 2-bit
+// BANK2 register drives one bit lower (A18-A19), so it shifts by 4 and the
+// game slot's bank 0 (the menu / sub-game header) appears here.
+inline uint32_t Mbc1Bank0(const MbcState &s, bool multicart)
 {
 	if (!s.mbc1_mode) return 0;
-	return (s.ram_bank & 0x03) << 5;
+	return (s.ram_bank & 0x03) << (multicart ? 4 : 5);
 }
 
-inline uint32_t Mbc1BankN(const MbcState &s)
+inline uint32_t Mbc1BankN(const MbcState &s, bool multicart)
 {
 	uint32_t lo = s.rom_bank & 0x1F;
 	if (lo == 0) lo = 1;
-	uint32_t hi = (s.ram_bank & 0x03) << 5;
-	return lo | hi;
+	// Multicart wiring leaves BANK1 only 4 effective bits and shifts BANK2
+	// down to bits 4-5, so each BANK2 value selects a 256 KiB game slot.
+	if (multicart)
+		return (lo & 0x0F) | ((s.ram_bank & 0x03) << 4);
+	return lo | ((s.ram_bank & 0x03) << 5);
 }
 
-inline uint32_t Mbc1RamBank(const MbcState &s)
+inline uint32_t Mbc1RamBank(const MbcState &s, bool multicart)
 {
+	// Multicarts carry no cart RAM — BANK2 is the game selector, not a RAM bank.
+	if (multicart) return 0;
 	return s.mbc1_mode ? (s.ram_bank & 0x03) : 0;
 }
 
@@ -353,7 +360,7 @@ inline void Tama5Trigger(Cart &c)
 
 } // anonymous
 
-uint8_t MbcRead(MbcState &s, const std::vector<uint8_t> &rom, const std::vector<uint8_t> &sram, uint16_t addr)
+uint8_t MbcRead(MbcState &s, const std::vector<uint8_t> &rom, const std::vector<uint8_t> &sram, uint16_t addr, bool mbc1_multicart)
 {
 	if (s.type == MbcType::M161 && addr < 0x8000)
 	{
@@ -369,7 +376,7 @@ uint8_t MbcRead(MbcState &s, const std::vector<uint8_t> &rom, const std::vector<
 		uint16_t eff_addr = addr;
 		if (s.type == MbcType::MBC1)
 		{
-			bank = Mbc1Bank0(s);
+			bank = Mbc1Bank0(s, mbc1_multicart);
 		}
 		else if (s.type == MbcType::SachenMMC1)
 		{
@@ -387,7 +394,7 @@ uint8_t MbcRead(MbcState &s, const std::vector<uint8_t> &rom, const std::vector<
 		uint32_t bank = 1;
 		switch (s.type)
 		{
-			case MbcType::MBC1: bank = Mbc1BankN(s); break;
+			case MbcType::MBC1: bank = Mbc1BankN(s, mbc1_multicart); break;
 			case MbcType::MBC3: bank = s.rom_bank ? s.rom_bank : 1; break;
 			case MbcType::MBC5: bank = s.rom_bank; break;
 			case MbcType::HuC1: bank = s.rom_bank ? s.rom_bank : 1; break;
@@ -472,7 +479,7 @@ uint8_t MbcRead(MbcState &s, const std::vector<uint8_t> &rom, const std::vector<
 		uint32_t bank = 0;
 		switch (s.type)
 		{
-			case MbcType::MBC1: bank = Mbc1RamBank(s); break;
+			case MbcType::MBC1: bank = Mbc1RamBank(s, mbc1_multicart); break;
 			case MbcType::MBC3: bank = s.ram_bank & 0x07; break;
 			case MbcType::MBC5: bank = s.ram_bank & 0x0F; break;
 			case MbcType::MMM01: bank = Mmm01RamBank(s) & 0x0F; break;
@@ -519,7 +526,7 @@ void MbcWrite(Cart &c, uint16_t addr, uint8_t value)
 		else if (addr >= 0xA000 && addr < 0xC000)
 		{
 			if (!s.ram_enable) break;
-			WriteSram(c, (Mbc1RamBank(s) * 0x2000u) + (addr - 0xA000u), value);
+			WriteSram(c, (Mbc1RamBank(s, c.mbc1_multicart) * 0x2000u) + (addr - 0xA000u), value);
 		}
 		break;
 

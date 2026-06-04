@@ -521,7 +521,7 @@ void Emulator::PrimeBIOSHandshake()
 			// bit-permutation (and any future mapper that munges header
 			// reads) feeds the SGB BIOS the same bytes a real cart bus
 			// would. Plain MBCs return the raw ROM byte unchanged.
-			icd.synth_packets[p][b] = MbcRead(impl_->cart.mbc, rom, impl_->cart.sram, addr);
+			icd.synth_packets[p][b] = MbcRead(impl_->cart.mbc, rom, impl_->cart.sram, addr, impl_->cart.mbc1_multicart);
 		}
 	}
 
@@ -848,12 +848,12 @@ uint8_t Emulator::PeekRAByte(uint32_t addr) const
 		const uint16_t a = static_cast<uint16_t>(addr);
 		if (a < 0x8000)
 			return MbcRead(const_cast<MbcState &>(impl_->cart.mbc),
-			               impl_->cart.rom, impl_->cart.sram, a);
+			               impl_->cart.rom, impl_->cart.sram, a, impl_->cart.mbc1_multicart);
 		if (a < 0xA000)        // VRAM — not exposed (would need PPU sync)
 			return 0;
 		if (a < 0xC000)        // External cart RAM (current bank)
 			return MbcRead(const_cast<MbcState &>(impl_->cart.mbc),
-			               impl_->cart.rom, impl_->cart.sram, a);
+			               impl_->cart.rom, impl_->cart.sram, a, impl_->cart.mbc1_multicart);
 		if (a < 0xE000)        // WRAM 0xC000-0xDFFF
 			return impl_->mem.wram[a - 0xC000];
 		if (a < 0xFE00)        // Echo RAM mirrors C000-DDFF

@@ -42,6 +42,10 @@ struct Cart
 	bool                  has_rtc     = false;
 	bool                  has_rumble  = false;
 	bool                  sram_dirty  = false;
+	// MBC1 multicart wiring (MBC1M): BANK2 selects a 256 KiB game slot. Static
+	// per-ROM, re-derived at load — kept out of MbcState so it never touches
+	// the blob-serialized savestate layout.
+	bool                  mbc1_multicart = false;
 };
 
 bool CartLoad(Cart &c, const uint8_t *data, size_t size, const char *path);
