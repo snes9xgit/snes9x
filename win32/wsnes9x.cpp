@@ -10533,6 +10533,19 @@ static void UpdateDeviceInfo(HWND hDlg, int index)
 static HWND s_inputConfigHwnd = NULL;
 HWND InputConfig_GetOpenHwnd() { return s_inputConfigHwnd; }
 
+static HBITMAP s_padBitmap = NULL;
+
+static void SetInputPadImage(HWND hDlg, bool japanese)
+{
+	HBITMAP hbm = LoadBitmap(g_hInst, MAKEINTRESOURCE(japanese ? IDB_PAD2 : IDB_PAD));
+	if (!hbm)
+		return;
+	SendDlgItemMessage(hDlg, IDC_PAD_IMAGE, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)hbm);
+	if (s_padBitmap)
+		DeleteObject(s_padBitmap);
+	s_padBitmap = hbm;
+}
+
 INT_PTR CALLBACK DlgInputConfig(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	TCHAR temp[256];
@@ -10599,6 +10612,7 @@ INT_PTR CALLBACK DlgInputConfig(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 		SendDlgItemMessage(hDlg,IDC_JPTOGGLE,BM_SETCHECK, Joypad[index].Enabled ? (WPARAM)BST_CHECKED : (WPARAM)BST_UNCHECKED, 0);
 		SendDlgItemMessage(hDlg,IDC_ALLOWLEFTRIGHT,BM_SETCHECK, Settings.UpAndDown ? (WPARAM)BST_CHECKED : (WPARAM)BST_UNCHECKED, 0);
 		SendDlgItemMessage(hDlg,IDC_USEDIRECTINPUT,BM_SETCHECK, GUI.UseDirectInput ? (WPARAM)BST_CHECKED : (WPARAM)BST_UNCHECKED, 0);
+		SetInputPadImage(hDlg, GUI.JapaneseController);
 
 		// Initialize binding mode combobox
 		SendDlgItemMessage(hDlg,IDC_BINDINGCOMBO,CB_ADDSTRING,0,(LPARAM)TEXT("Single"));
@@ -10628,6 +10642,42 @@ INT_PTR CALLBACK DlgInputConfig(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 		s_inputConfigHwnd = NULL;
 		EndDialog(hDlg, 0);
 		return TRUE;
+	case WM_DESTROY:
+		if (s_padBitmap)
+		{
+			DeleteObject(s_padBitmap);
+			s_padBitmap = NULL;
+		}
+		break;
+	case WM_CONTEXTMENU:
+		if ((HWND)wParam == GetDlgItem(hDlg, IDC_PAD_IMAGE))
+		{
+			POINT pt = { (short)LOWORD(lParam), (short)HIWORD(lParam) };
+			if (pt.x == -1 && pt.y == -1)
+			{
+				RECT rc;
+				GetWindowRect(GetDlgItem(hDlg, IDC_PAD_IMAGE), &rc);
+				pt.x = (rc.left + rc.right) / 2;
+				pt.y = (rc.top + rc.bottom) / 2;
+			}
+			HMENU menu = CreatePopupMenu();
+			AppendMenu(menu, MF_STRING | (GUI.JapaneseController ? MF_UNCHECKED : MF_CHECKED), 1, TEXT("USA Controller"));
+			AppendMenu(menu, MF_STRING | (GUI.JapaneseController ? MF_CHECKED : MF_UNCHECKED), 2, TEXT("Euro/Japanese Controller"));
+			int cmd = TrackPopupMenu(menu, TPM_RETURNCMD | TPM_RIGHTBUTTON, pt.x, pt.y, 0, hDlg, NULL);
+			DestroyMenu(menu);
+			if (cmd == 1 || cmd == 2)
+			{
+				bool japanese = (cmd == 2);
+				if (japanese != GUI.JapaneseController)
+				{
+					GUI.JapaneseController = japanese;
+					SetInputPadImage(hDlg, japanese);
+					WinSaveConfigFile();
+				}
+			}
+			return TRUE;
+		}
+		break;
 	case WM_TIMER:
 		if(wParam == 99)
 		{

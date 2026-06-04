@@ -257,6 +257,7 @@ struct sGUI {
 	bool MasterHotkeyEnabled;
 	bool HotkeysActive;
 	bool UseDirectInput;
+	bool JapaneseController;
 	char JoypadGUID[8][64]; // SDL device GUID per joypad slot (hex string)
 	bool MovieClearSRAM;
 	bool MovieStartFromReset;
