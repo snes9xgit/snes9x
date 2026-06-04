@@ -136,6 +136,14 @@ struct Apu
 	int16_t   sample_buf[APU_SAMPLE_BUF_SIZE * 2];
 	uint32_t  sample_head = 0;
 	uint32_t  sample_tail = 0;
+
+	// DC-blocking high-pass state, one pole per output channel. Removes the
+	// DC the DAC-bias mixer introduces (so ordinary playback keeps its exact
+	// AC level and channel enable/disable doesn't thump) while passing the
+	// audio band — including digitized-voice PCM. Transient like the sample
+	// accumulators: reset on Reset, never serialized.
+	float     hp_xprev_l = 0.0f, hp_yprev_l = 0.0f;
+	float     hp_xprev_r = 0.0f, hp_yprev_r = 0.0f;
 };
 
 void ApuReset(Apu &a);

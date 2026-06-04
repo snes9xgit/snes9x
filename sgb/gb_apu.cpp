@@ -245,9 +245,12 @@ void NoiseClock(ApuNoise &c)
 // Returns 0..15 "digital" level; DAC conversion to signed is done in the mixer.
 // -------------------------------------------------------------------
 
+// Digital level 0..15 a channel is *generating*. Gated on `enabled` only: a
+// channel whose length expired outputs 0 here, but if its DAC is still powered
+// that 0 becomes a non-centre analog level in DacAnalog below.
 uint8_t SquareOutput(const ApuSquare &c)
 {
-	if (!c.enabled || !c.dac_enabled) return 0;
+	if (!c.enabled) return 0;
 	const uint8_t duty = (c.nrx1 >> 6) & 0x03;
 	const uint8_t bit  = DUTY_TABLE[duty][c.duty_pos];
 	return static_cast<uint8_t>(bit * c.env_volume);
@@ -255,7 +258,7 @@ uint8_t SquareOutput(const ApuSquare &c)
 
 uint8_t WaveOutput(const ApuWave &c)
 {
-	if (!c.enabled || !c.dac_enabled) return 0;
+	if (!c.enabled) return 0;
 	const uint8_t shift_table[4] = { 4, 0, 1, 2 };
 	const uint8_t shift = shift_table[(c.nr32 >> 5) & 0x03];
 	return static_cast<uint8_t>(c.sample_buf >> shift);
@@ -263,9 +266,20 @@ uint8_t WaveOutput(const ApuWave &c)
 
 uint8_t NoiseOutput(const ApuNoise &c)
 {
-	if (!c.enabled || !c.dac_enabled) return 0;
+	if (!c.enabled) return 0;
 	const uint8_t bit = static_cast<uint8_t>((~c.lfsr) & 1);
 	return static_cast<uint8_t>(bit * c.env_volume);
+}
+
+// DAC analog level. A powered DAC maps digital 0..15 to a bipolar -15..+15,
+// so it contributes a non-zero DC even at digital 0 — the behaviour digitized
+// voice players (PCM via NR50 with a steady DC carrier) depend on, and the
+// reason a carrier channel at digital 0 must not be silent. A depowered DAC
+// contributes nothing (0 = centre). The residual DC is removed by the output
+// DC blocker, so ordinary tone playback is unchanged after the gain halving.
+inline int32_t DacAnalog(bool dac_enabled, uint8_t digital)
+{
+	return dac_enabled ? (2 * static_cast<int32_t>(digital) - 15) : 0;
 }
 
 // -------------------------------------------------------------------
@@ -274,17 +288,17 @@ uint8_t NoiseOutput(const ApuNoise &c)
 
 void Mix(const Apu &a, int32_t &out_l, int32_t &out_r)
 {
-	const uint8_t levels[4] = {
-		SquareOutput(a.ch1),
-		SquareOutput(a.ch2),
-		WaveOutput(a.ch3),
-		NoiseOutput(a.ch4)
+	const int32_t levels[4] = {
+		DacAnalog(a.ch1.dac_enabled, SquareOutput(a.ch1)),
+		DacAnalog(a.ch2.dac_enabled, SquareOutput(a.ch2)),
+		DacAnalog(a.ch3.dac_enabled, WaveOutput(a.ch3)),
+		DacAnalog(a.ch4.dac_enabled, NoiseOutput(a.ch4))
 	};
 
 	int32_t l = 0, r = 0;
 	for (int ch = 0; ch < 4; ++ch)
 	{
-		const int32_t lvl = static_cast<int32_t>(levels[ch]);
+		const int32_t lvl = levels[ch];
 		if (a.nr51 & (1 << ch))       r += lvl;
 		if (a.nr51 & (1 << (ch + 4))) l += lvl;
 	}
@@ -292,7 +306,10 @@ void Mix(const Apu &a, int32_t &out_l, int32_t &out_r)
 	const int32_t vol_r = static_cast<int32_t>(a.nr50 & 0x07) + 1;         // 1..8
 	const int32_t vol_l = static_cast<int32_t>((a.nr50 >> 4) & 0x07) + 1;  // 1..8
 
-	constexpr int32_t GAIN = 70;
+	// Half the pre-bias gain: DacAnalog doubles each channel's peak-to-peak
+	// swing (15 -> 30), so 35 keeps the audible AC level identical to the old
+	// unsigned 0..15 mix at GAIN 70.
+	constexpr int32_t GAIN = 35;
 	out_l = l * vol_l * GAIN;
 	out_r = r * vol_r * GAIN;
 	if (out_l >  32767) out_l =  32767;
@@ -357,16 +374,33 @@ void PushSample(Apu &a, int16_t l, int16_t r)
 // Emit one integrated sample to the ring buffer, reset accumulator.
 void FlushSample(Apu &a)
 {
-	int16_t out_l = 0, out_r = 0;
+	int32_t avg_l = 0, avg_r = 0;
 	if (a.sample_accum_cnt > 0)
 	{
-		out_l = static_cast<int16_t>(a.sample_accum_l / static_cast<int32_t>(a.sample_accum_cnt));
-		out_r = static_cast<int16_t>(a.sample_accum_r / static_cast<int32_t>(a.sample_accum_cnt));
+		avg_l = a.sample_accum_l / static_cast<int32_t>(a.sample_accum_cnt);
+		avg_r = a.sample_accum_r / static_cast<int32_t>(a.sample_accum_cnt);
 	}
 	a.sample_accum_l   = 0;
 	a.sample_accum_r   = 0;
 	a.sample_accum_cnt = 0;
-	PushSample(a, out_l, out_r);
+
+	// One-pole DC blocker: y[n] = x[n] - x[n-1] + R*y[n-1]. R = 0.996 puts the
+	// -3 dB corner near 30 Hz at 48 kHz — below the audio band, so it only
+	// strips the DAC-bias DC and softens channel on/off steps, leaving the
+	// digitized-voice PCM (and all tones) intact.
+	constexpr float R = 0.996f;
+	const float xl = static_cast<float>(avg_l);
+	const float yl = xl - a.hp_xprev_l + R * a.hp_yprev_l;
+	a.hp_xprev_l = xl; a.hp_yprev_l = yl;
+	const float xr = static_cast<float>(avg_r);
+	const float yr = xr - a.hp_xprev_r + R * a.hp_yprev_r;
+	a.hp_xprev_r = xr; a.hp_yprev_r = yr;
+
+	int32_t fl = static_cast<int32_t>(yl);
+	int32_t fr = static_cast<int32_t>(yr);
+	if (fl >  32767) fl =  32767; else if (fl < -32768) fl = -32768;
+	if (fr >  32767) fr =  32767; else if (fr < -32768) fr = -32768;
+	PushSample(a, static_cast<int16_t>(fl), static_cast<int16_t>(fr));
 }
 
 } // anonymous
@@ -396,6 +430,9 @@ void ApuReset(Apu &a)
 	a.sample_timer     = a.cycles_per_sample;
 	a.sample_head      = 0;
 	a.sample_tail      = 0;
+
+	a.hp_xprev_l = a.hp_yprev_l = 0.0f;
+	a.hp_xprev_r = a.hp_yprev_r = 0.0f;
 
 	std::memset(a.sample_buf, 0, sizeof a.sample_buf);
 }
