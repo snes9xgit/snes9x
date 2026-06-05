@@ -100,6 +100,18 @@ bool LooksLikeSachenScrambledLogo(const std::vector<uint8_t> &rom)
 	return true;
 }
 
+bool SachenHeaderRunsRaw(const std::vector<uint8_t> &rom)
+{
+	if (rom.size() < 0x0200) return false;
+	auto rd = [&](uint16_t a) { return rom[SachenScrambleAddr(a)]; };
+	const uint8_t e0 = rd(0x0100), e1 = rd(0x0101), e2 = rd(0x0102), e3 = rd(0x0103);
+	uint16_t target;
+	if (e0 == 0xC3)                    target = static_cast<uint16_t>(e1 | (e2 << 8));
+	else if (e0 == 0x00 && e1 == 0xC3) target = static_cast<uint16_t>(e2 | (e3 << 8));
+	else                               return false;
+	return target < 0x4000;
+}
+
 // MMM01: the menu lives in the LAST 32 KiB of ROM and carries its own
 // valid Nintendo logo at offset 0x0104 within that bank — that's how
 // real hardware powers on into the menu (upper ROM address lines are
@@ -242,10 +254,11 @@ bool CartLoad(Cart &c, const uint8_t *data, size_t size, const char *path)
 	// additional Nintendo logo at the last 32 KiB of ROM (the boot menu).
 	if (LooksLikeSachenScrambledLogo(c.rom))
 	{
-		c.mbc.type     = MbcType::SachenMMC1;
-		c.has_battery  = false;
-		c.has_rtc      = false;
-		c.has_rumble   = false;
+		c.mbc.type      = MbcType::SachenMMC1;
+		c.has_battery   = false;
+		c.has_rtc       = false;
+		c.has_rumble    = false;
+		c.sachen_runs_raw = SachenHeaderRunsRaw(c.rom);
 	}
 	else if (LooksLikeMmm01(c.rom))
 	{

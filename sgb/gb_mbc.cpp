@@ -202,11 +202,10 @@ inline uint32_t SachenBankN(const MbcState &s)
 	return outer | inner;
 }
 
-// Sachen MMC1 header bit-permutation: while the boot ROM is mapped, reads in
-// 0x0100-0x01FF pass through the cart's A0/A6 and A1/A4 swaps so the boot ROM's
-// logo check sees the real Nintendo logo at 0x0104-0x0133. That is its only
-// purpose: once the boot ROM hands off (0xFF50) the lock clears and the CPU
-// sees raw ROM, so the game's real entry at 0x0100 executes unscrambled.
+// Sachen MMC1 header bit-permutation: while locked, reads in 0x0100-0x01FF pass
+// through the cart's A0/A6 and A1/A4 swaps so the boot ROM's logo check sees the
+// real Nintendo logo at 0x0104-0x0133. Whether the lock survives the boot hand-
+// off is per-cart — see Cart::sachen_runs_raw and gb_memory.cpp 0xFF50.
 inline uint16_t SachenLockedHeaderXform(uint16_t addr)
 {
 	if ((addr & 0xFF00u) != 0x0100u) return addr;

@@ -45,10 +45,10 @@ struct MbcState
 
 	// Sachen MMC1: outer-bank/mask + header lock. While locked, ROM reads in
 	// 0x0100-0x01FF go through an A0/A6 and A1/A4 bit-permutation so the boot
-	// ROM's logo check sees the real Nintendo logo at 0x0104-0x0133. The lock
-	// tracks the boot ROM: set while it is mapped, cleared at its 0xFF50 write
-	// (BIOS-less starts clear); the game itself runs unscrambled. unlock_ctr is
-	// vestigial, kept for savestate ABI.
+	// ROM's logo check sees the real Nintendo logo at 0x0104-0x0133. Carts that
+	// run raw after boot (Cart::sachen_runs_raw, e.g. 4B-005) drop the lock at
+	// the 0xFF50 hand-off; the rest keep the xform for their scrambled high-bank
+	// entry and clear it later via unlock_ctr.
 	uint8_t  sachen_outer_bank  = 0;
 	uint8_t  sachen_outer_mask  = 0;
 	bool     sachen_locked      = true;
