@@ -1517,11 +1517,37 @@ static bool S9xRomBytesAreSachenScrambledGb(const uint8 *rom, int32 size)
     return true;
 }
 
+// Logo-less Sachen single-game carts (e.g. Beast Fighter) carry no Nintendo
+// logo at all — not even under the address swap — so the logo sniffs above miss
+// them and they fall through to the 65816 parser ("LoROM: Corrupt"). But every
+// Sachen cart presents a valid Game Boy header once its A0/A6 + A1/A4 address
+// swap is undone: a NOP;JP (or JP) entry into ROM plus a header checksum that
+// matches $014D (the standard $0134-$014C algorithm). That descrambled-but-valid
+// header identifies the cart without any logo bytes, and a non-GB ROM has
+// essentially no chance of satisfying both the entry shape and the checksum.
+static bool S9xRomBytesAreSachenScrambledGbHeader(const uint8 *rom, int32 size)
+{
+    if (size < 0x0200) return false;
+    uint16 entry;
+    if (rom[SachenScrambleAddr(0x0100)] == 0x00 && rom[SachenScrambleAddr(0x0101)] == 0xC3)
+        entry = static_cast<uint16>(rom[SachenScrambleAddr(0x0102)] | (rom[SachenScrambleAddr(0x0103)] << 8));
+    else if (rom[SachenScrambleAddr(0x0100)] == 0xC3)
+        entry = static_cast<uint16>(rom[SachenScrambleAddr(0x0101)] | (rom[SachenScrambleAddr(0x0102)] << 8));
+    else
+        return false;
+    if (entry >= 0x8000) return false;
+    uint8 sum = 0;
+    for (uint16 a = 0x0134; a <= 0x014C; ++a)
+        sum = static_cast<uint8>(sum - rom[SachenScrambleAddr(a)] - 1);
+    return sum == rom[SachenScrambleAddr(0x014D)];
+}
+
 static bool S9xRomBytesAreGb(const uint8 *rom, int32 size)
 {
     if (size < 0x150 || !rom) return false;
     if (memcmp(rom + 0x0104, kGbNintendoLogo, 48) == 0) return true;
-    return S9xRomBytesAreSachenScrambledGb(rom, size);
+    if (S9xRomBytesAreSachenScrambledGb(rom, size)) return true;
+    return S9xRomBytesAreSachenScrambledGbHeader(rom, size);
 }
 
 static std::string GBGameNameFromPath(const char *path)

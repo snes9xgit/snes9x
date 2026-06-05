@@ -61,6 +61,14 @@ bool CartLoadBattery(Cart &c);
 bool CartSaveBatteryToPath(const Cart &c, const char *path);
 bool CartLoadBatteryFromPath(Cart &c, const char *path);
 
+// While the boot ROM is mapped, a Sachen cart's mapper feeds the boot the
+// Nintendo logo at 0x0104-0x0133 (logo-less single-game carts store none, and
+// even the 4B multicarts only descramble to it) so the DMG/SGB boot logo check
+// passes — exactly as the hardware does. Returns true and the canonical byte
+// for a SachenMMC1 cart in that range; callers gate this on boot_rom_enabled so
+// the running game still reads its real (address-swapped) header afterwards.
+bool SachenBootLogoByte(const Cart &c, uint16_t addr, uint8_t &out);
+
 } // namespace SGB
 
 #endif
