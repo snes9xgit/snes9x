@@ -307,7 +307,7 @@ static void WriteIO(Memory &m, uint16_t addr, uint8_t value)
 			if (value != 0)
 			{
 				m.boot_rom_enabled = false;
-				if (m.cart) m.cart->mbc.sachen_locked = false;
+				if (m.cart && m.cart->sachen_runs_raw) m.cart->mbc.sachen_locked = false;
 			}
 			return;
 		case 0xFF4D:

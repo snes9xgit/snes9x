@@ -480,7 +480,7 @@ void Emulator::Reset()
 		cs.r.pc = 0x0000;
 	}
 
-	impl_->cart.mbc.sachen_locked = impl_->mem.boot_rom_enabled;
+	impl_->cart.mbc.sachen_locked = impl_->mem.boot_rom_enabled || !impl_->cart.sachen_runs_raw;
 }
 
 bool Emulator::LoadBootROM(const uint8_t *data, size_t size)
