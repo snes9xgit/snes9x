@@ -46,6 +46,8 @@ struct Cart
 	// per-ROM, re-derived at load — kept out of MbcState so it never touches
 	// the blob-serialized savestate layout.
 	bool                  mbc1_multicart = false;
+	// Duz "2-in-1" MBC3 multicart: $C0 to $0000 unlocks an $A000/$A100 register port whose reg $A3<<1 is the ROM base bank added to every access.
+	bool                  duz_multicart  = false;
 };
 
 bool CartLoad(Cart &c, const uint8_t *data, size_t size, const char *path);

@@ -387,6 +387,10 @@ uint8_t MbcRead(MbcState &s, const std::vector<uint8_t> &rom, const std::vector<
 		{
 			bank = Mmm01Rom0Bank(s, rom.size());
 		}
+		else if (s.type == MbcType::MBC3)
+		{
+			bank = s.sachen_outer_bank;   // Duz multicart base bank; 0 for normal MBC3
+		}
 		return static_cast<uint8_t>(ReadRom(rom, (bank * 0x4000u) + eff_addr));
 	}
 	if (addr < 0x8000)
@@ -395,7 +399,7 @@ uint8_t MbcRead(MbcState &s, const std::vector<uint8_t> &rom, const std::vector<
 		switch (s.type)
 		{
 			case MbcType::MBC1: bank = Mbc1BankN(s, mbc1_multicart); break;
-			case MbcType::MBC3: bank = s.rom_bank ? s.rom_bank : 1; break;
+			case MbcType::MBC3: bank = (s.rom_bank ? s.rom_bank : 1) + s.sachen_outer_bank; break;
 			case MbcType::MBC5: bank = s.rom_bank; break;
 			case MbcType::HuC1: bank = s.rom_bank ? s.rom_bank : 1; break;
 			case MbcType::HuC3: bank = s.rom_bank; break;
@@ -557,6 +561,8 @@ void MbcWrite(Cart &c, uint16_t addr, uint8_t value)
 	case MbcType::MBC3:
 		if (addr < 0x2000)
 		{
+			if (c.duz_multicart && value == 0xC0) { s.sachen_outer_mask = 1; break; }   // unlock Duz register port
+			if (c.duz_multicart) s.sachen_outer_mask = 0;
 			s.ram_enable = ((value & 0x0F) == 0x0A);
 		}
 		else if (addr < 0x4000)
@@ -581,6 +587,13 @@ void MbcWrite(Cart &c, uint16_t addr, uint8_t value)
 		}
 		else if (addr >= 0xA000 && addr < 0xC000)
 		{
+			if (c.duz_multicart && s.sachen_outer_mask)
+			{
+				// Register port: $A000 latches the index, $A100 writes it. Only $A3 (ROM base, in 32 KiB pages) affects banking.
+				if (addr & 0x0100) { if (s.sachen_unlock_ctr == 0xA3) s.sachen_outer_bank = static_cast<uint8_t>(value << 1); }
+				else                 s.sachen_unlock_ctr = value;
+				break;
+			}
 			if (!s.ram_enable) break;
 			if (s.rtc_select >= 0x08 && s.rtc_select <= 0x0C)
 			{

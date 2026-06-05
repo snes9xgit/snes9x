@@ -134,6 +134,7 @@ bool LooksLikeM161(const std::vector<uint8_t> &rom)
 			if (rom[base + 0x0104 + i] != kGbNintendoLogo[i]) return false;
 		return true;
 	};
+	if (rom[0x8148] != 0x00) return false;           // page 1 must be a 32 KiB game, not a banked 2-in-1 header
 	return logo_at(0x0000) && logo_at(0x8000);
 }
 
@@ -147,6 +148,24 @@ bool LooksLikeMbc1Multicart(const std::vector<uint8_t> &rom)
 	if (rom.size() < 0x44000) return false;          // need at least slot 1's header
 	for (int i = 0; i < 48; ++i)
 		if (rom[0x40104 + i] != kGbNintendoLogo[i]) return false;
+	return true;
+}
+
+// Duz "2-in-1" multicart (e.g. Pokemon Red/Blue): a multi-MB ROM that reports
+// plain MBC3 but carries a boot menu in banks 0-1 and each sub-game starting at
+// a 32 KiB page boundary, each with its own Nintendo logo. The menu programs the
+// ROM base via a register port in the SRAM window. Identify it by the second
+// logo at $8000 (which a single game never carries) over a banked sub-game
+// header — the same marker M161 rejects, but here the cart is genuinely MBC3.
+bool LooksLikeDuzMulticart(const std::vector<uint8_t> &rom)
+{
+	if (rom.size() < 0x80000) return false;
+	if (rom[0x8148] == 0x00)  return false;          // $8000 is a real banked game, not a 32 KiB M161 page
+	for (int i = 0; i < 48; ++i)
+	{
+		if (rom[0x0104 + i] != kGbNintendoLogo[i]) return false;
+		if (rom[0x8104 + i] != kGbNintendoLogo[i]) return false;
+	}
 	return true;
 }
 
@@ -263,6 +282,7 @@ bool CartLoad(Cart &c, const uint8_t *data, size_t size, const char *path)
 		return false;
 	}
 	c.mbc1_multicart = (c.mbc.type == MbcType::MBC1) && LooksLikeMbc1Multicart(c.rom);
+	c.duz_multicart  = (c.mbc.type == MbcType::MBC3) && LooksLikeDuzMulticart(c.rom);
 	MbcReset(c.mbc);
 
 	// ----- Cart RAM allocation -----
@@ -310,6 +330,7 @@ void CartUnload(Cart &c)
 	c.has_rumble     = false;
 	c.sram_dirty     = false;
 	c.mbc1_multicart = false;
+	c.duz_multicart  = false;
 	MbcReset(c.mbc);
 	c.mbc.type    = MbcType::None;
 }

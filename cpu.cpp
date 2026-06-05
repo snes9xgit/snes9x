@@ -177,6 +177,13 @@ void S9xSoftReset (void)
 
 	memset(Memory.FillRAM, 0, 0x8000);
 
+	// SGB BIOS mode: clear SNES WRAM/VRAM so the SGB BIOS state machine cold-boots — a soft reset that preserves it leaves a GB game that sends no SGB palette packets stuck on a black screen.
+	if (Settings.SGB_BIOSModeActive)
+	{
+		memset(Memory.RAM,  0x55, sizeof(Memory.RAM));
+		memset(Memory.VRAM, 0x00, sizeof(Memory.VRAM));
+	}
+
 	if (Settings.BS)
 		S9xResetBSX();
 
