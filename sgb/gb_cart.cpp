@@ -109,7 +109,7 @@ bool SachenHeaderRunsRaw(const std::vector<uint8_t> &rom)
 	if (e0 == 0xC3)                    target = static_cast<uint16_t>(e1 | (e2 << 8));
 	else if (e0 == 0x00 && e1 == 0xC3) target = static_cast<uint16_t>(e2 | (e3 << 8));
 	else                               return false;
-	return target < 0x4000;
+	return target < 0x0200;
 }
 
 // MMM01: the menu lives in the LAST 32 KiB of ROM and carries its own
