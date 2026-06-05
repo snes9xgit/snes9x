@@ -304,7 +304,11 @@ static void WriteIO(Memory &m, uint16_t addr, uint8_t value)
 			// Boot-ROM disable: writing any non-zero value (canonically 0x01)
 			// latches off the boot overlay so the cart bytes at 0x0000-0x00FF
 			// become visible. Real hardware: bit 0 disables, can't be re-enabled.
-			if (value != 0) m.boot_rom_enabled = false;
+			if (value != 0)
+			{
+				m.boot_rom_enabled = false;
+				if (m.cart) m.cart->mbc.sachen_locked = false;
+			}
 			return;
 		case 0xFF4D:
 			if (m.ppu && m.ppu->cgb) m.key1_armed = (value & 0x01) != 0;
