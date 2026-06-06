@@ -401,7 +401,7 @@ void RenderPixelCgb(Ppu &p, int x)
 	const int trigger_x = wx < 0 ? 0 : wx;
 	if (!p.window_active && x == trigger_x &&
 		(p.lcdc & 0x20) != 0 &&
-		static_cast<int>(p.ly) >= static_cast<int>(p.wy))
+		p.wy_triggered)
 	{
 		p.window_active  = true;
 		p.window_start_x = static_cast<int16_t>(x);
@@ -465,7 +465,7 @@ void RenderPixel(Ppu &p)
 		const int trigger_x = wx < 0 ? 0 : wx;
 		if (!p.window_active && x == trigger_x &&
 			(p.lcdc & 0x20) != 0 &&
-			static_cast<int>(p.ly) >= static_cast<int>(p.wy))
+			p.wy_triggered)
 		{
 			p.window_active  = true;
 			p.window_start_x = static_cast<int16_t>(x);
@@ -571,6 +571,7 @@ void PpuReset(Ppu &p)
 	p.sprite_count  = 0;
 	p.window_active = false;
 	p.window_start_x = 0;
+	p.wy_triggered  = false;
 	p.mode3_sprite_stall = 0;
 	p.latched_wx    = 0;
 	p.latched_bgp   = p.bgp;
@@ -637,6 +638,11 @@ inline void ExecPpuDot(Ppu &p, Memory &mem)
 			// single BGP for its entire mode 3.
 			p.latched_wx  = p.wx;
 			p.latched_bgp = p.bgp;
+			// Arm the window WY-trigger once LY == WY while it's enabled. Sampled
+			// after this line's LYC/STAT handler ran in mode 2, so a window kept
+			// disabled across the WY line never arms.
+			if ((p.lcdc & 0x20) && p.ly == p.wy)
+				p.wy_triggered = true;
 			transitioned = true;
 		}
 		break;
@@ -707,6 +713,7 @@ inline void ExecPpuDot(Ppu &p, Memory &mem)
 				p.frame_ready   = true;
 				p.window_line   = 0;
 				p.window_active = false;
+				p.wy_triggered  = false;
 				p.vblank_irq_delay = 24;
 				S9xSGBOnPpuVBlank();
 			}
@@ -789,6 +796,7 @@ void PpuStep(Ppu &p, Memory &mem, int32_t tcycles)
 		p.vblank_irq_delay = 0;
 		p.draw_x         = 0;
 		p.window_active  = false;
+		p.wy_triggered   = false;
 		p.mode3_sprite_stall = 0;
 		p.latched_wx     = p.wx;
 		p.latched_bgp    = p.bgp;

@@ -70,6 +70,10 @@ struct Ppu
 	uint8_t   sprite_count    = 0;
 	bool      window_active   = false;   // window engaged on this LY
 	int16_t   window_start_x  = 0;       // x at which window engaged
+	// Window WY-trigger latch: set when LY == WY while the window is enabled,
+	// held until frame start. The window engages only once this is set (not a
+	// running LY>=WY test), so a window enabled AFTER WY has passed never arms.
+	bool      wy_triggered    = false;
 
 	// Set at mode 2 → 3 transition. Real DMG extends mode 3 by ~6 dots
 	// per OAM-scan-hit sprite and delays pixel emission by the same.
