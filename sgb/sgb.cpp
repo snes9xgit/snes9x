@@ -1846,7 +1846,7 @@ constexpr uint32_t SGB_STATE_MAGIC   = 0x21424753u;  // 'S''G''B''!' LE
 // v4: add CGB state - VRAM bank 1, WRAM banks 2-7, BG/OBJ palette RAM,
 //     VBK/SVBK/KEY1/double-speed, HDMA. v1-3 loads skip the v4 block and
 //     the CGB fields keep their reset defaults (correct for DMG/SGB carts).
-constexpr uint32_t SGB_STATE_VERSION = 4;
+constexpr uint32_t SGB_STATE_VERSION = 5;
 
 enum class IoMode : uint8_t { Size, Save, Load };
 
@@ -2031,6 +2031,14 @@ void VisitState(Emulator::Impl &impl, IoCtx &c)
 		IoField(c, impl.mem.hdma_len);
 		IoField(c, impl.mem.hdma_active);
 		IoField(c, impl.cgb_mode);
+	}
+
+	// v5: window WY-trigger latch. Older saves skip it (default false); since
+	// saves are taken at VBlank where the latch is always reset, this only
+	// matters for a load that lands mid-frame, which self-corrects next VBlank.
+	if (c.version >= 5)
+	{
+		IoField(c, impl.ppu.wy_triggered);
 	}
 }
 
