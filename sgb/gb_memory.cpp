@@ -87,6 +87,16 @@ uint8_t MemRead(Memory &m, uint16_t addr)
 	{
 		return m.boot_rom[addr];
 	}
+	// While the boot ROM is mapped, a Sachen cart's mapper supplies the Nintendo
+	// logo at 0x0104-0x0133 so the DMG/SGB boot logo check passes — what the
+	// hardware does (logo-less single-game carts store none). Gated on
+	// boot_rom_enabled, so once the boot hands off the running game reads its
+	// real address-swapped header and the cart's own self-check still matches.
+	if (m.boot_rom_enabled && m.cart)
+	{
+		uint8_t logo;
+		if (SachenBootLogoByte(*m.cart, addr, logo)) return logo;
+	}
 	if (addr < 0x8000)
 	{
 		return m.cart ? MbcRead(m.cart->mbc, m.cart->rom, m.cart->sram, addr, m.cart->mbc1_multicart) : 0xFF;
