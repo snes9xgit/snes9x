@@ -393,16 +393,20 @@ void RenderPixelCgb(Ppu &p, int x)
 	uint8_t  *const lay   = &p.layer[p.ly * GB_SCREEN_WIDTH];
 	uint16_t *const cline = &p.color_fb[p.ly * GB_SCREEN_WIDTH];
 
-	const int  wx = static_cast<int>(p.latched_wx) - 7;
-	const bool win_active_here =
+	// Window engages once per scanline, latched at the WX trigger column
+	// (real-hw x==WX comparator) rather than a running x>=WX test, so a
+	// late mid-mode-3 LCDC.5 enable can't start the window partway across
+	// and tear the line. See RenderPixel for the full rationale.
+	const int wx        = static_cast<int>(p.latched_wx) - 7;
+	const int trigger_x = wx < 0 ? 0 : wx;
+	if (!p.window_active && x == trigger_x &&
 		(p.lcdc & 0x20) != 0 &&
-		static_cast<int>(p.ly) >= static_cast<int>(p.wy) &&
-		x >= wx;
-	if (win_active_here && !p.window_active)
+		static_cast<int>(p.ly) >= static_cast<int>(p.wy))
 	{
 		p.window_active  = true;
 		p.window_start_x = static_cast<int16_t>(x);
 	}
+	const bool win_active_here = p.window_active && (p.lcdc & 0x20) != 0;
 
 	const BgPixelCgb bg = SampleBgPixelCgb(p, x, win_active_here);
 	const bool bg_hidden = win_active_here ? !p.show_window : !p.show_bg;
@@ -449,27 +453,56 @@ void RenderPixel(Ppu &p)
 	uint8_t bg_layer = GB_PIXEL_BG;   // GB_PIXEL_BG (or blank) / GB_PIXEL_WINDOW
 	if (p.lcdc & 0x01)
 	{
-		const int wx = static_cast<int>(p.latched_wx) - 7;
-		const bool win_active_here =
+		// The window engages ONCE per scanline, latched the moment X reaches
+		// the WX trigger column — matching real-hw's x==WX comparator, not a
+		// running x>=WX test. A later mid-mode-3 LCDC.5 (window enable) write
+		// can't start the window: its trigger column already passed. Without
+		// this, a STAT handler that re-enables the window late tears the line
+		// from the write pixel on — Star Trek 25th Anniversary's credit "TV
+		// monitor" re-enables the window at ~pixel 48 of line 103, streaking
+		// the screen's bottom edge.
+		const int wx        = static_cast<int>(p.latched_wx) - 7;
+		const int trigger_x = wx < 0 ? 0 : wx;
+		if (!p.window_active && x == trigger_x &&
 			(p.lcdc & 0x20) != 0 &&
-			static_cast<int>(p.ly) >= static_cast<int>(p.wy) &&
-			x >= wx;
+			static_cast<int>(p.ly) >= static_cast<int>(p.wy))
+		{
+			p.window_active  = true;
+			p.window_start_x = static_cast<int16_t>(x);
+		}
+		const bool win_active_here = p.window_active && (p.lcdc & 0x20) != 0;
 
 		if (win_active_here)
 		{
 			bg_color = SampleWindowPixel(p, x);
 			bg_layer = GB_PIXEL_WINDOW;
-			// Latch the "window did draw" state for window_line bookkeeping
-			// at end of LY.
-			if (!p.window_active)
-			{
-				p.window_active  = true;
-				p.window_start_x = static_cast<int16_t>(x);
-			}
 		}
 		else
 		{
-			bg_color = SampleBgPixel(p, x);
+			// DMG window-to-background pixel-shift glitch (Windesync-validate
+			// test ROM): once the window has been active earlier in the frame,
+			// every later line on which the window is DISABLED gets one extra
+			// blank pixel inserted into the BG FIFO at the window-X "hit"
+			// column (WX-7) — shifting the rest of the BG line right by one —
+			// when (WX & 7) == 7 - (SCX & 7). DMG only. Star Trek 25th
+			// Anniversary's credit "TV monitor" relies on this: it puts the
+			// frame's top/bottom on the window and the sides on the BG, and the
+			// glitch is what lines the BG sides up with the window (without it
+			// the inner screen is 1px left of the frame).
+			const int hit = static_cast<int>(p.latched_wx) - 7;
+			if (p.window_line > 1 && (p.lcdc & 0x20) == 0 &&
+				hit >= 0 && hit < GB_SCREEN_WIDTH &&
+				(static_cast<int>(p.latched_wx) & 7) ==
+					7 - (static_cast<int>(p.scx) & 7))
+			{
+				if (x == hit)     bg_color = 0;                       // inserted blank
+				else if (x > hit) bg_color = SampleBgPixel(p, x - 1); // shifted +1
+				else              bg_color = SampleBgPixel(p, x);
+			}
+			else
+			{
+				bg_color = SampleBgPixel(p, x);
+			}
 		}
 	}
 
