@@ -398,6 +398,12 @@ static void HdmaTrigger(Memory &m, uint8_t value)
 	else
 	{
 		DoGdma(m, src, dst, blocks);
+		const uint16_t end_src = static_cast<uint16_t>(src + blocks * 0x10);
+		const uint16_t end_dst = static_cast<uint16_t>(dst + blocks * 0x10);
+		m.hdma1 = static_cast<uint8_t>(end_src >> 8);
+		m.hdma2 = static_cast<uint8_t>(end_src & 0xF0);
+		m.hdma3 = static_cast<uint8_t>(end_dst >> 8);
+		m.hdma4 = static_cast<uint8_t>(end_dst & 0xF0);
 		m.hdma5 = 0xFF;
 	}
 }
