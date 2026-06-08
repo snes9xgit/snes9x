@@ -883,10 +883,13 @@ void PpuWriteReg(Ppu &p, Memory &mem, uint16_t addr, uint8_t value)
 			// per frame and walking the per-scanline SCY/SCX/BGP table
 			// way past one entry per line. The road perspective falls
 			// apart into stripes.
+			// DMG/SGB-only: CGB fixed the STAT-write spurious-IRQ bug. Gating on
+			// !p.cgb stops NASCAR 2000's per-line STAT=$08 rewrite from double-
+			// firing the handler (which scrambled the digitized title).
 			const uint8_t old_enables = static_cast<uint8_t>(p.stat & 0x78);
 			const uint8_t new_enables = static_cast<uint8_t>(value & 0x78);
 			const bool    newly_set   = (~old_enables & new_enables) != 0;
-			if (newly_set && !p.stat_line_high && (p.lcdc & 0x80))
+			if (!p.cgb && newly_set && !p.stat_line_high && (p.lcdc & 0x80))
 			{
 				const bool any_source_active =
 					p.mode == PpuMode::HBlank ||
