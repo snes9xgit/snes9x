@@ -13626,6 +13626,7 @@ INT_PTR CALLBACK DlgCheatSearchAdd(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lP
 					memset(buf,0,sizeof(TCHAR) * 12);
 					_stprintf(buf, formatstring, new_cheat->new_val);
 					SetDlgItemText(hDlg, IDC_NC_CURRVAL, buf);
+					SetDlgItemText(hDlg, IDC_NC_NEWVAL, buf);
 					memset(buf,0,sizeof(TCHAR) * 12);
 					_stprintf(buf, formatstring, new_cheat->saved_val);
 					SetDlgItemText(hDlg, IDC_NC_PREVVAL, buf);
@@ -13636,12 +13637,16 @@ INT_PTR CALLBACK DlgCheatSearchAdd(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lP
 				}
 				break; //HEX
 			case 2:
+			{
+			int shift = 32 - new_cheat->size * 8;
 			memset(buf,0,sizeof(TCHAR) * 12);
-			_stprintf(buf, TEXT("%d"), new_cheat->new_val);
+			_stprintf(buf, TEXT("%d"), (int32)(new_cheat->new_val << shift) >> shift);
 			SetDlgItemText(hDlg, IDC_NC_CURRVAL, buf);
+			SetDlgItemText(hDlg, IDC_NC_NEWVAL, buf);
 			memset(buf,0,sizeof(TCHAR) * 12);
-			_stprintf(buf, TEXT("%d"), new_cheat->saved_val);
+			_stprintf(buf, TEXT("%d"), (int32)(new_cheat->saved_val << shift) >> shift);
 			SetDlgItemText(hDlg, IDC_NC_PREVVAL, buf);
+			}
 			if(new_cheat->size==1)
 			{
 				//-128
