@@ -129,6 +129,18 @@ struct Ppu
 	// LCDSTAT interrupt only when this transitions 0 → 1.
 	bool     stat_line_high = false;
 
+	// LY==LYC comparator re-latch. Real hardware momentarily de-asserts the
+	// LYC coincidence at the very start of each scanline (Pan Docs / Mesen
+	// "LyForCompare = -1" window) before re-asserting it against the new LY.
+	// That produces a fresh STAT rising edge for an LY==LYC match even when
+	// another enabled source (HBlank/OAM) was already holding the STAT line
+	// high across the line boundary — without it a chained-LYC raster handler
+	// stalls whenever the HBlank STAT IRQ is also enabled (Ken Griffey Jr.'s
+	// Slugfest's per-scanline field-palette gradient). Transient: set true
+	// only for the single suppressed RecomputeStatLine call at each scanline
+	// boundary, so it is never observed between dots and is not serialized.
+	bool     lyc_relatch = false;
+
 	// VBlank IRQ latency. Real DMG samples IF on the LAST M-cycle of the
 	// current instruction, so when LY transitions to 144 mid-instruction the
 	// current LDH/CP/JR can still observe LY=144 before IRQ dispatch. Our

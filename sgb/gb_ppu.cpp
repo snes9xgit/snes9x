@@ -95,10 +95,11 @@ void RecomputeStatLine(Ppu &p, Memory &mem)
 	// match set), loads VRAM, then re-waits for that same match while the
 	// LCD is still off before re-enabling it; recomputing here would see
 	// LY(0) != LYC(145), clear bit 2 and hang the wait forever.
+	const bool lyc_match = (p.ly == p.lyc) && !p.lyc_relatch;
 	uint8_t new_stat = static_cast<uint8_t>((p.stat & 0xF8) | static_cast<uint8_t>(p.mode));
 	if (p.lcdc & 0x80)
 	{
-		if (p.ly == p.lyc) new_stat |= 0x04;
+		if (lyc_match) new_stat |= 0x04;
 	}
 	else
 	{
@@ -120,7 +121,7 @@ void RecomputeStatLine(Ppu &p, Memory &mem)
 	bool line_high = false;
 	if (p.lcdc & 0x80)
 	{
-		if ((p.stat & 0x40) && (p.ly == p.lyc))                 line_high = true;
+		if ((p.stat & 0x40) && lyc_match)                       line_high = true;
 		if ((p.stat & 0x20) && p.mode == PpuMode::OamScan)       line_high = true;
 		if ((p.stat & 0x10) && p.mode == PpuMode::VBlank)        line_high = true;
 		if ((p.stat & 0x08) && p.mode == PpuMode::HBlank)        line_high = true;
@@ -130,6 +131,20 @@ void RecomputeStatLine(Ppu &p, Memory &mem)
 	if (line_high && !p.stat_line_high)
 		mem.if_ = static_cast<uint8_t>(mem.if_ | IRQ_LCDSTAT);
 	p.stat_line_high = line_high;
+}
+
+// Re-latch the LY==LYC comparator at a scanline boundary. First recompute
+// with the coincidence suppressed (drops the STAT line if LYC was the only
+// source holding it high), then the caller's end-of-step RecomputeStatLine
+// re-asserts it so a still-valid LY==LYC match produces a fresh 0->1 edge.
+// Models the real-hardware "LyForCompare briefly = -1" window that lets a
+// chained-LYC raster effect keep firing even while the HBlank STAT IRQ holds
+// the line high otherwise. See Ppu::lyc_relatch.
+inline void RelatchLyc(Ppu &p, Memory &mem)
+{
+	p.lyc_relatch = true;
+	RecomputeStatLine(p, mem);
+	p.lyc_relatch = false;
 }
 
 // Sample one BG pixel at (x, ly) using the CURRENT register values.
@@ -721,6 +736,7 @@ inline void ExecPpuDot(Ppu &p, Memory &mem)
 			{
 				p.mode = PpuMode::OamScan;
 			}
+			RelatchLyc(p, mem);
 			transitioned = true;
 		}
 		break;
@@ -738,6 +754,7 @@ inline void ExecPpuDot(Ppu &p, Memory &mem)
 		if (p.ly == 153 && p.mode_clock == 4)
 		{
 			p.ly = 0;
+			RelatchLyc(p, mem);
 			transitioned = true;
 		}
 		if (p.mode_clock >= LINE_DOTS)
@@ -759,6 +776,7 @@ inline void ExecPpuDot(Ppu &p, Memory &mem)
 					p.ly   = 0;
 					p.mode = PpuMode::OamScan;
 				}
+				RelatchLyc(p, mem);
 			}
 			transitioned = true;
 		}
