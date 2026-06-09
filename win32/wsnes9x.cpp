@@ -2739,7 +2739,7 @@ LRESULT CALLBACK WinProc(
 							TEXT("This rewrites the icon stored inside the .exe on disk. A temporary backup is made and removed the next time Snes9x starts. ")
 							TEXT("Some antivirus tools may warn about a program modifying its own file, and the .exe must be in a writable folder.\n\n")
 							TEXT("You will only be asked this once."),
-							TEXT("Snes9x - Change .exe Icon"),
+							TEXT("SuperSnes9x - Change .exe Icon"),
 							MB_OKCANCEL | MB_ICONQUESTION) == IDOK)
 						{
 							GUI.ExeIconRewriteOK = true;
@@ -3689,7 +3689,7 @@ static bool SetExeFileIcon(int logoIndex)
 	if (!ReadEmbeddedIconGroup(GUI.hInstance, LogoIndexToResource(logoIndex), lang, imgs))
 	{
 		MessageBox(GUI.hWnd, TEXT("Couldn't read the selected icon from the application."),
-		           TEXT("Snes9x - Change .exe Icon"), MB_OK | MB_ICONWARNING);
+		           TEXT("SuperSnes9x - Change .exe Icon"), MB_OK | MB_ICONWARNING);
 		return false;
 	}
 
@@ -3705,7 +3705,7 @@ static bool SetExeFileIcon(int logoIndex)
 			          stage, err);
 		else
 			_stprintf_s(msg, 600, TEXT("Couldn't update the program icon on disk.\n\nstage: %s\nerror: %lu"), stage, err);
-		MessageBox(GUI.hWnd, msg, TEXT("Snes9x - Change .exe Icon"), MB_OK | MB_ICONWARNING);
+		MessageBox(GUI.hWnd, msg, TEXT("SuperSnes9x - Change .exe Icon"), MB_OK | MB_ICONWARNING);
 		return false;
 	}
 
@@ -6597,6 +6597,7 @@ INT_PTR CALLBACK DlgEmulatorHacksProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM
         CheckDlgButton(hDlg, IDC_INVALID_VRAM, !Settings.BlockInvalidVRAMAccessMaster);
         CheckDlgButton(hDlg, IDC_SEPARATE_ECHO_BUFFER, Settings.SeparateEchoBuffer);
         CheckDlgButton(hDlg, IDC_NO_SPRITE_LIMIT, Settings.MaxSpriteTilesPerLine == 128);
+        CheckDlgButton(hDlg, IDC_ALLOW_EXE_ICON, GUI.ExeIconRewriteOK);
 
         return true;
         break;
@@ -6622,6 +6623,7 @@ INT_PTR CALLBACK DlgEmulatorHacksProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM
             Settings.BlockInvalidVRAMAccessMaster = !IsDlgButtonChecked(hDlg, IDC_INVALID_VRAM);
             Settings.SeparateEchoBuffer = IsDlgButtonChecked(hDlg, IDC_SEPARATE_ECHO_BUFFER);
             Settings.MaxSpriteTilesPerLine = IsDlgButtonChecked(hDlg, IDC_NO_SPRITE_LIMIT) ? 128 : 34;
+            GUI.ExeIconRewriteOK = IsDlgButtonChecked(hDlg, IDC_ALLOW_EXE_ICON);
 
             switch (Settings.OverclockMode)
             {
@@ -6662,6 +6664,7 @@ INT_PTR CALLBACK DlgEmulatorHacksProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM
 			CheckDlgButton(hDlg, IDC_INVALID_VRAM, false);
 			CheckDlgButton(hDlg, IDC_SEPARATE_ECHO_BUFFER, false);
 			CheckDlgButton(hDlg, IDC_NO_SPRITE_LIMIT, false);
+			CheckDlgButton(hDlg, IDC_ALLOW_EXE_ICON, false);
 			break;
         default:
             break;
