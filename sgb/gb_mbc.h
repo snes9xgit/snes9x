@@ -19,7 +19,7 @@ enum class MbcType : uint8_t
 	MBC2       = 2,
 	MBC3       = 3,
 	MBC5       = 5,
-	MBC6       = 6,  // not yet implemented
+	MBC6       = 6,  // dual half-bank ROM/flash windows + split SRAM (Net de Get)
 	MBC7       = 7,  // accelerometer + 93LC56 serial EEPROM (Kirby Tilt 'n' Tumble)
 	HuC1       = 8,  // MBC1-like, with infrared (RAM<->IR via $0000-$1FFF)
 	HuC3       = 9,  // MBC-like, with RTC command interface + IR

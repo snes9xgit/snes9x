@@ -57,7 +57,7 @@ bool DecodeCartType(uint8_t code, MbcType &mbc, bool &battery, bool &rtc, bool &
 		case 0x1C: mbc = MbcType::MBC5; rumble = true; return true;
 		case 0x1D: mbc = MbcType::MBC5; rumble = true; return true;
 		case 0x1E: mbc = MbcType::MBC5; rumble = true; battery = true; return true;
-		case 0x20: mbc = MbcType::MBC6; return true;
+		case 0x20: mbc = MbcType::MBC6; battery = true; return true;
 		case 0x22: mbc = MbcType::MBC7; rumble = true; battery = true; return true;
 		case 0xFD: mbc = MbcType::TAMA5; battery = true; rtc = true; return true;
 		case 0xFE: mbc = MbcType::HuC3; battery = true; rtc = true; return true;

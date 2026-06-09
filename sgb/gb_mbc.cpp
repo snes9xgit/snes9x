@@ -6,8 +6,8 @@
 
 // Memory Bank Controllers. MBC1, MBC3, MBC5 cover ~95% of commercial
 // GB carts; MBC2, HuC1, HuC3, MMM01, and Sachen MMC1 are also
-// handled, as is MBC7 (accelerometer + 93LC56 EEPROM). MBC6 remains
-// stubbed (read-only no-MBC) for now.
+// handled, as are MBC6 (dual half-bank windows + flash) and MBC7
+// (accelerometer + 93LC56 EEPROM).
 //
 // Register meanings per Pan Docs:
 //
@@ -141,6 +141,13 @@ void MbcReset(MbcState &s)
 		s.rtc_regs[1] = 0xFF;
 		s.rtc_regs[2] = 0xFF;
 		s.rtc_select  = 0x01;
+	}
+	if (s.type == MbcType::MBC6)
+	{
+		s.rom_bank           = 2;
+		s.mmm01_rom_bank_low = 3;
+		s.ram_bank           = 0;
+		s.mmm01_rom_bank_mid = 1;
 	}
 }
 
@@ -465,10 +472,27 @@ void Mbc7EepromClock(Cart &c, uint8_t value)
 	s.rtc_select = static_cast<uint8_t>((do_bit ? 0x01 : 0) | (di ? 0x02 : 0) | (clk ? 0x40 : 0) | (cs ? 0x80 : 0));
 }
 
+uint8_t Mbc6Read(const MbcState &s, const std::vector<uint8_t> &rom, const std::vector<uint8_t> &sram, uint16_t addr)
+{
+	if (addr < 0x4000)
+		return static_cast<uint8_t>(ReadRom(rom, addr));
+	if (addr < 0x6000)
+		return s.mbc1_mode ? 0xFF : static_cast<uint8_t>(ReadRom(rom, (s.rom_bank * 0x2000u) + (addr - 0x4000u)));
+	if (addr < 0x8000)
+		return s.mmm01_mbc1_mode ? 0xFF : static_cast<uint8_t>(ReadRom(rom, (s.mmm01_rom_bank_low * 0x2000u) + (addr - 0x6000u)));
+	if (addr >= 0xA000 && addr < 0xB000)
+		return (s.ram_enable && !sram.empty()) ? ReadSram(sram, (s.ram_bank * 0x1000u) + (addr - 0xA000u)) : 0xFF;
+	if (addr >= 0xB000 && addr < 0xC000)
+		return (s.ram_enable && !sram.empty()) ? ReadSram(sram, (s.mmm01_rom_bank_mid * 0x1000u) + (addr - 0xB000u)) : 0xFF;
+	return 0xFF;
+}
+
 } // anonymous
 
 uint8_t MbcRead(MbcState &s, const std::vector<uint8_t> &rom, const std::vector<uint8_t> &sram, uint16_t addr, bool mbc1_multicart)
 {
+	if (s.type == MbcType::MBC6)
+		return Mbc6Read(s, rom, sram, addr);
 	if (s.type == MbcType::M161 && addr < 0x8000)
 	{
 		// One 32 KiB page covers the whole $0000-$7FFF window.
@@ -922,6 +946,47 @@ void MbcWrite(Cart &c, uint16_t addr, uint8_t value)
 		}
 		break;
 
+	case MbcType::MBC6:
+		if (addr < 0x0400)
+		{
+			s.ram_enable = (value == 0x0A);
+		}
+		else if (addr < 0x0800)
+		{
+			s.ram_bank = value;
+		}
+		else if (addr < 0x0C00)
+		{
+			s.mmm01_rom_bank_mid = value;
+		}
+		else if (addr >= 0x2000 && addr < 0x2800)
+		{
+			s.rom_bank = value;
+		}
+		else if (addr >= 0x2800 && addr < 0x3000)
+		{
+			s.mbc1_mode = (value & 0x08) != 0;
+		}
+		else if (addr >= 0x3000 && addr < 0x3800)
+		{
+			s.mmm01_rom_bank_low = value;
+		}
+		else if (addr >= 0x3800 && addr < 0x4000)
+		{
+			s.mmm01_mbc1_mode = (value & 0x08) != 0;
+		}
+		else if (addr >= 0xA000 && addr < 0xB000)
+		{
+			if (s.ram_enable && !c.sram.empty())
+				WriteSram(c, (s.ram_bank * 0x1000u) + (addr - 0xA000u), value);
+		}
+		else if (addr >= 0xB000 && addr < 0xC000)
+		{
+			if (s.ram_enable && !c.sram.empty())
+				WriteSram(c, (s.mmm01_rom_bank_mid * 0x1000u) + (addr - 0xB000u), value);
+		}
+		break;
+
 	case MbcType::MBC7:
 		if (addr < 0x2000)
 		{
@@ -949,7 +1014,6 @@ void MbcWrite(Cart &c, uint16_t addr, uint8_t value)
 		break;
 
 	default:
-		// MBC6: treat as read-only no-MBC.
 		break;
 	}
 }
