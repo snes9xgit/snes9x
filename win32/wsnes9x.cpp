@@ -2731,23 +2731,7 @@ LRESULT CALLBACK WinProc(
 					UpdateLogoMenuBitmaps();
 					WinSaveConfigFile();
 
-					bool writeExe = GUI.ExeIconRewriteOK;
-					if (!writeExe)
-					{
-						if (MessageBox(GUI.hWnd,
-							TEXT("Also change the icon of the Snes9x program file itself, so the new logo shows in Explorer, on shortcuts and on the taskbar?\n\n")
-							TEXT("This rewrites the icon stored inside the .exe on disk. A temporary backup is made and removed the next time Snes9x starts. ")
-							TEXT("Some antivirus tools may warn about a program modifying its own file, and the .exe must be in a writable folder.\n\n")
-							TEXT("You will only be asked this once."),
-							TEXT("SuperSnes9x - Change .exe Icon"),
-							MB_OKCANCEL | MB_ICONQUESTION) == IDOK)
-						{
-							GUI.ExeIconRewriteOK = true;
-							WinSaveConfigFile();
-							writeExe = true;
-						}
-					}
-					if (writeExe && SetExeFileIcon(GUI.IconIndex))
+					if (GUI.ExeIconRewriteOK && SetExeFileIcon(GUI.IconIndex))
 						RestartSnes9x();
 				}
 			}
@@ -3700,7 +3684,7 @@ static bool SetExeFileIcon(int logoIndex)
 		TCHAR msg[600];
 		if (err == ERROR_ACCESS_DENIED || err == ERROR_SHARING_VIOLATION)
 			_stprintf_s(msg, 600,
-			          TEXT("Couldn't update the program icon on disk.\n\nSnes9x may be in a write-protected folder (such as Program Files), or another program (e.g. antivirus) is holding the file. ")
+			          TEXT("Couldn't update the program icon on disk.\n\nSuperSnes9x may be in a write-protected folder (such as Program Files), or another program (e.g. antivirus) is holding the file. ")
 			          TEXT("Move it to a writable location or run it as administrator, then try again.\n\n(stage: %s, error %lu)"),
 			          stage, err);
 		else
@@ -5707,6 +5691,9 @@ BOOL CreateToolTip(int toolID, HWND hDlg, TCHAR* pText)
     toolInfo.lpszText = pText;
     SendMessage(hwndTip, TTM_ADDTOOL, 0, (LPARAM)&toolInfo);
 
+    if (_tcschr(pText, TEXT('\n')))
+        SendMessage(hwndTip, TTM_SETMAXTIPWIDTH, 0, 1000);
+
     return TRUE;
 }
 
@@ -6598,6 +6585,8 @@ INT_PTR CALLBACK DlgEmulatorHacksProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM
         CheckDlgButton(hDlg, IDC_SEPARATE_ECHO_BUFFER, Settings.SeparateEchoBuffer);
         CheckDlgButton(hDlg, IDC_NO_SPRITE_LIMIT, Settings.MaxSpriteTilesPerLine == 128);
         CheckDlgButton(hDlg, IDC_ALLOW_EXE_ICON, GUI.ExeIconRewriteOK);
+
+        CreateToolTip(IDC_ALLOW_EXE_ICON, hDlg, TEXT("When checked, choosing a logo also overwrites\nthe icon embedded in the SuperSnes9x .exe on disk,\nso it shows in Explorer, on shortcuts and the\ntaskbar. SuperSnes9x will restart to apply.\nWhen unchecked, only the in-app icon changes."));
 
         return true;
         break;
