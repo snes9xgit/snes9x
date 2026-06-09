@@ -415,8 +415,12 @@ static void HdmaTrigger(Memory &m, uint8_t value)
 		m.hdma_len    = blocks;
 		m.hdma_active = true;
 		m.hdma5       = static_cast<uint8_t>(value & 0x7F);
-		if (m.ppu && (m.ppu->lcdc & 0x80) &&
-		    m.ppu->mode == PpuMode::HBlank && !m.hdma_hblank_latch)
+		if (m.ppu && !(m.ppu->lcdc & 0x80))
+		{
+			HdmaTransferBlock(m);
+		}
+		else if (m.ppu && m.ppu->mode == PpuMode::HBlank &&
+		         !m.hdma_hblank_latch)
 		{
 			HdmaTransferBlock(m);
 			m.hdma_hblank_latch = true;
@@ -446,6 +450,12 @@ void MemHdmaHBlank(Memory &m)
 	if (!m.hdma_active) return;
 	HdmaTransferBlock(m);
 	m.hdma_hblank_latch = true;
+}
+
+void MemHdmaLcdOff(Memory &m)
+{
+	if (!m.hdma_active) return;
+	HdmaTransferBlock(m);
 }
 
 } // namespace SGB
