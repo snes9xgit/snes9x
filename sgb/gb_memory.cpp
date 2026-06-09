@@ -262,7 +262,7 @@ static uint8_t ReadIO(Memory &m, uint16_t addr)
 	}
 	if (addr >= 0xFF10 && addr <= 0xFF3F)
 	{
-		return m.apu ? ApuRead(*m.apu, addr) : 0xFF;
+		return m.apu ? ApuRead(*m.apu, addr, m.ppu && m.ppu->cgb) : 0xFF;
 	}
 	if (addr >= 0xFF40 && addr <= 0xFF4B)
 	{
@@ -340,7 +340,7 @@ static void WriteIO(Memory &m, uint16_t addr, uint8_t value)
 	}
 	if (addr >= 0xFF10 && addr <= 0xFF3F)
 	{
-		if (m.apu) ApuWrite(*m.apu, addr, value);
+		if (m.apu) ApuWrite(*m.apu, addr, value, m.ppu && m.ppu->cgb);
 		return;
 	}
 	if (addr >= 0xFF40 && addr <= 0xFF4B)

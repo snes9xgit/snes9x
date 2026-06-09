@@ -595,13 +595,15 @@ int32_t ApuDrain(Apu &a, int16_t *out, int32_t max_samples)
 // Register access
 // ===================================================================
 
-uint8_t ApuRead(Apu &a, uint16_t addr)
+uint8_t ApuRead(Apu &a, uint16_t addr, bool cgb)
 {
-	// Wave RAM is always accessible; CH3 running is a special-case on
-	// DMG (reads from CH3's internal pos) — we return the backing RAM
-	// which is correct when CH3 is off. Real DMG quirks deferred.
+	// Wave RAM while CH3 runs: CGB redirects the access to the byte at
+	// CH3's current playback position; DMG returns $FF (outside the
+	// brief post-fetch window, which batching can't resolve).
 	if (addr >= 0xFF30 && addr <= 0xFF3F)
 	{
+		if (a.ch3.enabled)
+			return cgb ? a.ch3.ram[a.ch3.pos >> 1] : 0xFF;
 		return a.ch3.ram[addr - 0xFF30];
 	}
 
@@ -645,11 +647,18 @@ uint8_t ApuRead(Apu &a, uint16_t addr)
 	return 0xFF;
 }
 
-void ApuWrite(Apu &a, uint16_t addr, uint8_t value)
+void ApuWrite(Apu &a, uint16_t addr, uint8_t value, bool cgb)
 {
-	// Wave RAM writes pass through regardless of master enable.
+	// Wave RAM writes pass through regardless of master enable, but a
+	// running CH3 redirects them to its current byte (CGB) or drops
+	// them (DMG), same as reads.
 	if (addr >= 0xFF30 && addr <= 0xFF3F)
 	{
+		if (a.ch3.enabled)
+		{
+			if (cgb) a.ch3.ram[a.ch3.pos >> 1] = value;
+			return;
+		}
 		a.ch3.ram[addr - 0xFF30] = value;
 		return;
 	}
