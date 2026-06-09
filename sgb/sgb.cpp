@@ -102,6 +102,20 @@ struct Emulator::Impl
 	PacketState sgb_pkt;
 	SgbState    sgb_state;
 
+	// CGB double-speed CPU-vs-PPU clock ledger. ds_extra is the CPU's
+	// accumulated extra T-cycle budget from double-speed dots; it must
+	// persist across RunCycles calls — re-deriving it from
+	// cpu.t_cycles - ppu.t_cycles each call forgives whatever lag
+	// (≤ kMaxOpcodeTCycles) the CPU ended the previous call with, which
+	// bleeds ~2% of CPU throughput in double-speed and desyncs
+	// cycle-counted raster loops (Demotronic's mid-scanline SCY waves).
+	// -1 = re-derive at next RunCycles (fresh reset / savestate load).
+	// apu_ds_rem is the odd-cycle carry of the CPU→APU clock halving in
+	// double-speed, persisted for the same reason. Neither is serialized;
+	// both re-derive after load.
+	int64_t     ds_extra   = -1;
+	int32_t     apu_ds_rem = 0;
+
 	// 256×224 composite staging buffer — heap-resident to keep a
 	// ~112 KB allocation off the stack of whatever thread drives
 	// S9xMainLoop (snes9x's per-thread stacks aren't always large).
@@ -390,6 +404,8 @@ void Emulator::Reset()
 	impl_->boot_handoff_captured = false;
 	impl_->boot_handoff_regs     = {};
 	impl_->handoff_frames        = 0;
+	impl_->ds_extra              = -1;
+	impl_->apu_ds_rem            = 0;
 	std::memset(&impl_->icd2, 0, sizeof impl_->icd2);
 	// 4-bank LCD ring starts at $00 (matches Mesen2 SuperGameboy::Reset).
 	// $7000-$700F latch buffer starts as $FF so reads before the first
@@ -1096,10 +1112,15 @@ void Emulator::RunCycles(int32_t tcycles)
 	// CGB double-speed: the CPU runs twice per PPU dot. ds_extra is the
 	// accumulated lead of the CPU clock over the PPU clock; it is 0 whenever
 	// double-speed has never engaged, so the DMG/SGB gate is byte-identical.
+	// It lives in Impl and persists across calls — see the field comment.
 	const int64_t target_t = impl_->ppu.t_cycles + tcycles;
-	int64_t ds_extra = impl_->cpu.State().t_cycles - impl_->ppu.t_cycles;
-	if (ds_extra < 0) ds_extra = 0;
-	int32_t apu_rem = 0;
+	if (impl_->ds_extra < 0)
+	{
+		impl_->ds_extra = impl_->cpu.State().t_cycles - impl_->ppu.t_cycles;
+		if (impl_->ds_extra < 0) impl_->ds_extra = 0;
+	}
+	int64_t &ds_extra = impl_->ds_extra;
+	int32_t &apu_rem  = impl_->apu_ds_rem;
 	while (impl_->ppu.t_cycles < target_t)
 	{
 		PpuStep(impl_->ppu, impl_->mem, 1);
@@ -2095,6 +2116,8 @@ bool Emulator::StateLoad(const uint8_t *buffer, size_t size)
 	impl_->mem.cart   = &impl_->cart;
 
 	impl_->cart.sram_dirty = false;
+	impl_->ds_extra        = -1;
+	impl_->apu_ds_rem      = 0;
 
 	// Reset only the sub-sample integration accumulator. The ring buffer
 	// is not serialized but also not wiped — it stays at its current

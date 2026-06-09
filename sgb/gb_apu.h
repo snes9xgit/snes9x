@@ -149,8 +149,8 @@ struct Apu
 void ApuReset(Apu &a);
 void ApuStep(Apu &a, int32_t tcycles);
 
-uint8_t ApuRead(Apu &a, uint16_t addr);
-void    ApuWrite(Apu &a, uint16_t addr, uint8_t value);
+uint8_t ApuRead(Apu &a, uint16_t addr, bool cgb);
+void    ApuWrite(Apu &a, uint16_t addr, uint8_t value, bool cgb);
 
 int32_t ApuDrain(Apu &a, int16_t *out, int32_t max_samples);
 

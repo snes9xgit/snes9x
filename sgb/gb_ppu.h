@@ -85,6 +85,14 @@ struct Ppu
 	// still return the live p.wx.
 	uint8_t   latched_wx = 0;
 
+	// SCY as sampled by the BG fetcher. Real hardware reads SCY at each
+	// tile fetch (8-pixel granularity), so a mid-scanline SCY write takes
+	// effect at the next tile, never mid-tile. Latched at mode 2 → 3 and
+	// re-latched at every BG tile boundary during pixel emission
+	// (Demotronic's per-column SCY waves). Transient — recomputed every
+	// line, not serialized.
+	uint8_t   fetch_scy = 0;
+
 	// BGP snapshot taken at mode 2 → 3 — same rationale as latched_wx.
 	// Initial D Gaiden's per-scanline raster effect handler can extend
 	// into the next line's mode 2 / early mode 3 (handler is ~55 m-cycles,
