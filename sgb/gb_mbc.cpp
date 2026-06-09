@@ -6,7 +6,8 @@
 
 // Memory Bank Controllers. MBC1, MBC3, MBC5 cover ~95% of commercial
 // GB carts; MBC2, HuC1, HuC3, MMM01, and Sachen MMC1 are also
-// handled. MBC6/MBC7 remain stubbed (read-only no-MBC) for now.
+// handled, as is MBC7 (accelerometer + 93LC56 EEPROM). MBC6 remains
+// stubbed (read-only no-MBC) for now.
 //
 // Register meanings per Pan Docs:
 //
@@ -135,6 +136,12 @@ void MbcReset(MbcState &s)
 
 	if (s.type == MbcType::M161) s.rom_bank = 0;   // power-on page 0 = menu
 	if (s.type == MbcType::TAMA5) Tama5SeedRtc(s);
+	if (s.type == MbcType::MBC7)
+	{
+		s.rtc_regs[1] = 0xFF;
+		s.rtc_regs[2] = 0xFF;
+		s.rtc_select  = 0x01;
+	}
 }
 
 namespace {
@@ -356,6 +363,108 @@ inline void Tama5Trigger(Cart &c)
 	}
 }
 
+inline uint16_t Mbc7EepromWord(const std::vector<uint8_t> &sram, uint8_t word)
+{
+	const uint32_t off = static_cast<uint32_t>(word & 0x7F) * 2u;
+	return static_cast<uint16_t>(ReadSram(sram, off) | (ReadSram(sram, off + 1) << 8));
+}
+
+inline void Mbc7EepromSetWord(Cart &c, uint8_t word, uint16_t value)
+{
+	const uint32_t off = static_cast<uint32_t>(word & 0x7F) * 2u;
+	WriteSram(c, off,     static_cast<uint8_t>(value));
+	WriteSram(c, off + 1, static_cast<uint8_t>(value >> 8));
+}
+
+inline void Mbc7EepromFill(Cart &c, uint16_t value)
+{
+	for (uint8_t w = 0; w < 0x80; ++w) Mbc7EepromSetWord(c, w, value);
+}
+
+void Mbc7EepromClock(Cart &c, uint8_t value)
+{
+	MbcState &s = c.mbc;
+	const bool cs       = (value & 0x80) != 0;
+	const bool di       = (value & 0x02) != 0;
+	const bool clk      = (value & 0x40) != 0;
+	const bool clk_prev = (s.rtc_select & 0x40) != 0;
+	bool do_bit = (s.rtc_select & 0x01) != 0;
+
+	if (cs && clk && !clk_prev)
+	{
+		uint16_t read_bits = static_cast<uint16_t>(s.rtc_regs[1] | (s.rtc_regs[2] << 8));
+		uint16_t command   = static_cast<uint16_t>(s.rtc_regs[3] | (s.rtc_regs[4] << 8));
+		uint8_t  args_left = s.rtc_regs[0];
+		bool     we        = s.mmm01_mbc1_mode;
+
+		do_bit    = (read_bits >> 15) & 1;
+		read_bits = static_cast<uint16_t>((read_bits << 1) | 1);
+
+		if (args_left == 0)
+		{
+			command = static_cast<uint16_t>(((command << 1) | (di ? 1 : 0)) & 0x7FF);
+			if (command & 0x400)
+			{
+				const uint8_t word = static_cast<uint8_t>(command & 0x7F);
+				switch ((command >> 6) & 0xF)
+				{
+					case 0x8: case 0x9: case 0xA: case 0xB:
+						read_bits = Mbc7EepromWord(c.sram, word);
+						command = 0;
+						break;
+					case 0x3: we = true;  command = 0; break;
+					case 0x0: we = false; command = 0; break;
+					case 0x4: case 0x5: case 0x6: case 0x7:
+						if (we) Mbc7EepromSetWord(c, word, 0);
+						args_left = 16;
+						break;
+					case 0xC: case 0xD: case 0xE: case 0xF:
+						if (we) { Mbc7EepromSetWord(c, word, 0xFFFF); read_bits = 0x3FFF; }
+						command = 0;
+						break;
+					case 0x2:
+						if (we) { Mbc7EepromFill(c, 0xFFFF); read_bits = 0xFF; }
+						command = 0;
+						break;
+					case 0x1:
+						if (we) Mbc7EepromFill(c, 0);
+						args_left = 16;
+						break;
+				}
+			}
+		}
+		else
+		{
+			--args_left;
+			do_bit = true;
+			if (di && we)
+			{
+				const uint16_t bit = static_cast<uint16_t>(1u << args_left);
+				if (command & 0x100)
+				{
+					const uint8_t w = static_cast<uint8_t>(command & 0x7F);
+					Mbc7EepromSetWord(c, w, static_cast<uint16_t>(Mbc7EepromWord(c.sram, w) | bit));
+				}
+				else
+				{
+					for (uint8_t w = 0; w < 0x80; ++w)
+						Mbc7EepromSetWord(c, w, static_cast<uint16_t>(Mbc7EepromWord(c.sram, w) | bit));
+				}
+			}
+			if (args_left == 0) { command = 0; read_bits = 0x3FFF; }
+		}
+
+		s.rtc_regs[0] = args_left;
+		s.rtc_regs[1] = static_cast<uint8_t>(read_bits);
+		s.rtc_regs[2] = static_cast<uint8_t>(read_bits >> 8);
+		s.rtc_regs[3] = static_cast<uint8_t>(command);
+		s.rtc_regs[4] = static_cast<uint8_t>(command >> 8);
+		s.mmm01_mbc1_mode = we;
+	}
+
+	s.rtc_select = static_cast<uint8_t>((do_bit ? 0x01 : 0) | (di ? 0x02 : 0) | (clk ? 0x40 : 0) | (cs ? 0x80 : 0));
+}
+
 } // anonymous
 
 uint8_t MbcRead(MbcState &s, const std::vector<uint8_t> &rom, const std::vector<uint8_t> &sram, uint16_t addr, bool mbc1_multicart)
@@ -399,6 +508,7 @@ uint8_t MbcRead(MbcState &s, const std::vector<uint8_t> &rom, const std::vector<
 			case MbcType::MBC1: bank = Mbc1BankN(s, mbc1_multicart); break;
 			case MbcType::MBC3: bank = (s.rom_bank ? s.rom_bank : 1) + s.sachen_outer_bank; break;
 			case MbcType::MBC5: bank = s.rom_bank; break;
+			case MbcType::MBC7: bank = s.rom_bank; break;
 			case MbcType::HuC1: bank = s.rom_bank ? s.rom_bank : 1; break;
 			case MbcType::HuC3: bank = s.rom_bank; break;
 			case MbcType::TAMA5: bank = s.rom_bank; break;
@@ -461,6 +571,21 @@ uint8_t MbcRead(MbcState &s, const std::vector<uint8_t> &rom, const std::vector<
 				return static_cast<uint8_t>(value | 0xF0);
 			}
 			return 0xF1;
+		}
+
+		if (s.type == MbcType::MBC7)
+		{
+			if (!s.ram_enable || !s.mbc1_mode || addr >= 0xB000) return 0xFF;
+			switch ((addr >> 4) & 0xF)
+			{
+				case 2: return static_cast<uint8_t>(s.rtc_latch ? 0xD0 : 0x00);
+				case 3: return static_cast<uint8_t>(s.rtc_latch ? 0x81 : 0x80);
+				case 4: return static_cast<uint8_t>(s.rtc_latch ? 0xD0 : 0x00);
+				case 5: return static_cast<uint8_t>(s.rtc_latch ? 0x81 : 0x80);
+				case 6: return 0x00;
+				case 8: return s.rtc_select;
+				default: return 0xFF;
+			}
 		}
 
 		if (!s.ram_enable && s.type != MbcType::MBC5) return 0xFF;
@@ -797,8 +922,34 @@ void MbcWrite(Cart &c, uint16_t addr, uint8_t value)
 		}
 		break;
 
+	case MbcType::MBC7:
+		if (addr < 0x2000)
+		{
+			s.ram_enable = (value == 0x0A);
+		}
+		else if (addr < 0x4000)
+		{
+			s.rom_bank = value;
+		}
+		else if (addr < 0x6000)
+		{
+			s.mbc1_mode = (value == 0x40);
+		}
+		else if (addr >= 0xA000 && addr < 0xC000)
+		{
+			if (!s.ram_enable || !s.mbc1_mode || addr >= 0xB000) break;
+			switch ((addr >> 4) & 0xF)
+			{
+				case 0: if (value == 0x55) s.rtc_latch = false; break;
+				case 1: if (value == 0xAA) s.rtc_latch = true;  break;
+				case 8: Mbc7EepromClock(c, value); break;
+				default: break;
+			}
+		}
+		break;
+
 	default:
-		// MBC6, MBC7: treat as read-only no-MBC.
+		// MBC6: treat as read-only no-MBC.
 		break;
 	}
 }

@@ -368,6 +368,10 @@ bool CartLoad(Cart &c, const uint8_t *data, size_t size, const char *path)
 		// 32-byte EEPROM addressed by the mapper's 5-bit register interface.
 		c.sram.assign(0x20, 0xFF);
 	}
+	else if (c.mbc.type == MbcType::MBC7)
+	{
+		c.sram.assign(0x100, 0xFF);
+	}
 	else if (h.ram_size > 0)
 	{
 		c.sram.assign(h.ram_size, 0xFF);
