@@ -47,6 +47,7 @@ void MemReset(Memory &m)
 	m.hdma5        = 0xFF;
 	m.hdma_src = m.hdma_dst = m.hdma_len = 0;
 	m.hdma_active  = false;
+	m.hdma_hblank_latch = false;
 }
 
 static uint8_t ReadIO(Memory &m, uint16_t addr);
@@ -376,6 +377,31 @@ static void DoGdma(Memory &m, uint16_t src, uint16_t dst, uint16_t blocks)
 	}
 }
 
+static void HdmaTransferBlock(Memory &m)
+{
+	for (uint32_t i = 0; i < 0x10; ++i)
+	{
+		const uint8_t b = MemRead(m, static_cast<uint16_t>(m.hdma_src + i));
+		MemWrite(m, static_cast<uint16_t>(0x8000 + ((m.hdma_dst + i) & 0x1FFF)), b);
+	}
+	m.hdma_src = static_cast<uint16_t>(m.hdma_src + 0x10);
+	m.hdma_dst = static_cast<uint16_t>(m.hdma_dst + 0x10);
+	m.hdma1 = static_cast<uint8_t>(m.hdma_src >> 8);
+	m.hdma2 = static_cast<uint8_t>(m.hdma_src & 0xF0);
+	m.hdma3 = static_cast<uint8_t>(m.hdma_dst >> 8);
+	m.hdma4 = static_cast<uint8_t>(m.hdma_dst & 0xF0);
+	--m.hdma_len;
+	if (m.hdma_len == 0)
+	{
+		m.hdma_active = false;
+		m.hdma5       = 0xFF;
+	}
+	else
+	{
+		m.hdma5 = static_cast<uint8_t>((m.hdma_len - 1) & 0x7F);
+	}
+}
+
 static void HdmaTrigger(Memory &m, uint8_t value)
 {
 	const uint16_t src    = static_cast<uint16_t>(((m.hdma1 << 8) | m.hdma2) & 0xFFF0);
@@ -389,6 +415,12 @@ static void HdmaTrigger(Memory &m, uint8_t value)
 		m.hdma_len    = blocks;
 		m.hdma_active = true;
 		m.hdma5       = static_cast<uint8_t>(value & 0x7F);
+		if (m.ppu && (m.ppu->lcdc & 0x80) &&
+		    m.ppu->mode == PpuMode::HBlank && !m.hdma_hblank_latch)
+		{
+			HdmaTransferBlock(m);
+			m.hdma_hblank_latch = true;
+		}
 	}
 	else if (m.hdma_active)
 	{
@@ -410,24 +442,10 @@ static void HdmaTrigger(Memory &m, uint8_t value)
 
 void MemHdmaHBlank(Memory &m)
 {
+	m.hdma_hblank_latch = false;
 	if (!m.hdma_active) return;
-	for (uint32_t i = 0; i < 0x10; ++i)
-	{
-		const uint8_t b = MemRead(m, static_cast<uint16_t>(m.hdma_src + i));
-		MemWrite(m, static_cast<uint16_t>(0x8000 + ((m.hdma_dst + i) & 0x1FFF)), b);
-	}
-	m.hdma_src = static_cast<uint16_t>(m.hdma_src + 0x10);
-	m.hdma_dst = static_cast<uint16_t>(m.hdma_dst + 0x10);
-	--m.hdma_len;
-	if (m.hdma_len == 0)
-	{
-		m.hdma_active = false;
-		m.hdma5       = 0xFF;
-	}
-	else
-	{
-		m.hdma5 = static_cast<uint8_t>((m.hdma_len - 1) & 0x7F);
-	}
+	HdmaTransferBlock(m);
+	m.hdma_hblank_latch = true;
 }
 
 } // namespace SGB
