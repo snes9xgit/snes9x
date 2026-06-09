@@ -59,6 +59,7 @@ struct Memory
 	uint8_t  hdma5 = 0xFF;        // 0xFF55 status
 	uint16_t hdma_src = 0, hdma_dst = 0, hdma_len = 0;
 	bool     hdma_active = false;
+	bool     hdma_hblank_latch = false;
 };
 
 uint8_t MemRead(Memory &m, uint16_t addr);
