@@ -795,6 +795,7 @@ void WinRegisterConfigItems()
 	AddIntC("Window:Top", GUI.window_size.top, 0, "in pixels from top edge of screen");
 	AddBool("Window:Maximized", GUI.window_maximized, false);
 	AddIntC("Window:Icon", GUI.IconIndex, 1, "selected window/taskbar icon (1-4), choose via File > Choose Logo");
+	AddBoolC("Window:WriteIconToExe", GUI.ExeIconRewriteOK, false, "when true, choosing a logo also rewrites the .exe file icon on disk (toggle via Emulation > Hacks > Allow .exe icon replacement)");
 	AddIntC("CustomRomDialog:Width", GUI.customRomDlgSettings.window_size.right, 660, "");
 	AddIntC("CustomRomDialog:Height", GUI.customRomDlgSettings.window_size.bottom, 400, "");
 	AddIntC("CustomRomDialog:Left", GUI.customRomDlgSettings.window_size.left, 50, "in pixels from left edge of screen");

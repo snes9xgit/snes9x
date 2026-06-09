@@ -203,6 +203,7 @@ struct sGUI {
     RECT window_size;
 	bool window_maximized;
 	int  IconIndex;
+	bool ExeIconRewriteOK;
 	sCustomRomDlgSettings customRomDlgSettings;
 
 	sDialogPos cheatEditorPos;

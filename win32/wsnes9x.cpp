@@ -522,6 +522,9 @@ void CheckDirectoryIsWritable (const char *filename);
 static void CheckMenuStates ();
 static int  ClampLogoIndex (int n);
 static void ApplyLogoIcon  (HWND hWnd, HINSTANCE hInst, int n);
+static bool SetExeFileIcon (int logoIndex);
+static void UpdateLogoMenuBitmaps ();
+static void RestartSnes9x ();
 static void ResetFrameTimer ();
 static bool LoadROM (const TCHAR *filename, const TCHAR *filename2 = NULL);
 static bool LoadROMMulti (const TCHAR *filename, const TCHAR *filename2);
@@ -2725,7 +2728,11 @@ LRESULT CALLBACK WinProc(
 				{
 					GUI.IconIndex = picked;
 					ApplyLogoIcon(GUI.hWnd, GUI.hInstance, GUI.IconIndex);
+					UpdateLogoMenuBitmaps();
 					WinSaveConfigFile();
+
+					if (GUI.ExeIconRewriteOK && SetExeFileIcon(GUI.IconIndex))
+						RestartSnes9x();
 				}
 			}
 			break;
@@ -3283,13 +3290,15 @@ static HICON LoadLogoIcon(HINSTANCE hInst, int n)
 	return LoadIcon(hInst, MAKEINTRESOURCE(LogoIndexToResource(n)));
 }
 
-static HBITMAP IconResourceToMenuBitmap(HINSTANCE hInst, UINT rsrcId)
+static HBITMAP IconResourceToMenuBitmap(HINSTANCE hInst, UINT rsrcId, bool checked)
 {
-	const int cx = GetSystemMetrics(SM_CXSMICON);
-	const int cy = GetSystemMetrics(SM_CYSMICON);
-	HICON hIcon = (HICON)LoadImage(hInst, MAKEINTRESOURCE(rsrcId), IMAGE_ICON, cx, cy, LR_DEFAULTCOLOR);
-	if (!hIcon)
-		return NULL;
+	const int isz    = GetSystemMetrics(SM_CXSMICON);
+	const int cy     = GetSystemMetrics(SM_CYSMICON);
+	const int gap    = isz / 4;
+	const int checkW = isz;
+	const int cx     = checkW + gap + isz;
+
+	HICON hIcon = (HICON)LoadImage(hInst, MAKEINTRESOURCE(rsrcId), IMAGE_ICON, isz, cy, LR_DEFAULTCOLOR);
 
 	HDC hdcScreen = GetDC(NULL);
 	HDC hdcMem = CreateCompatibleDC(hdcScreen);
@@ -3302,20 +3311,74 @@ static HBITMAP IconResourceToMenuBitmap(HINSTANCE hInst, UINT rsrcId)
 	bi.bmiHeader.biBitCount    = 32;
 	bi.bmiHeader.biCompression = BI_RGB;
 
-	void *pbits = NULL;
-	HBITMAP hbm = CreateDIBSection(hdcScreen, &bi, DIB_RGB_COLORS, &pbits, NULL, 0);
+	BYTE *pbits = NULL;
+	HBITMAP hbm = CreateDIBSection(hdcScreen, &bi, DIB_RGB_COLORS, (void **)&pbits, NULL, 0);
 	if (hbm && pbits)
 	{
 		memset(pbits, 0, (size_t)cx * cy * 4);
 		HGDIOBJ hOld = SelectObject(hdcMem, hbm);
-		DrawIconEx(hdcMem, 0, 0, hIcon, cx, cy, 0, NULL, DI_NORMAL);
+		if (hIcon)
+			DrawIconEx(hdcMem, checkW + gap, 0, hIcon, isz, cy, 0, NULL, DI_NORMAL);
 		SelectObject(hdcMem, hOld);
+		GdiFlush();
+
+		if (checked)
+		{
+			HDC hdcTmp = CreateCompatibleDC(hdcScreen);
+			HBITMAP tmpbm = CreateCompatibleBitmap(hdcScreen, checkW, cy);
+			HGDIOBJ tOld = SelectObject(hdcTmp, tmpbm);
+			RECT rc = { 0, 0, checkW, cy };
+			FillRect(hdcTmp, &rc, (HBRUSH)GetStockObject(WHITE_BRUSH));
+			DrawFrameControl(hdcTmp, &rc, DFC_MENU, DFCS_MENUCHECK);
+			for (int y = 0; y < cy; y++)
+				for (int x = 0; x < checkW; x++)
+				{
+					COLORREF c = GetPixel(hdcTmp, x, y);
+					if (c != CLR_INVALID && c != RGB(255, 255, 255))
+					{
+						BYTE *px = pbits + ((size_t)y * cx + x) * 4;
+						px[0] = 0;
+						px[1] = 0;
+						px[2] = 0;
+						px[3] = 255;
+					}
+				}
+			SelectObject(hdcTmp, tOld);
+			DeleteObject(tmpbm);
+			DeleteDC(hdcTmp);
+		}
 	}
 
 	DeleteDC(hdcMem);
 	ReleaseDC(NULL, hdcScreen);
-	DestroyIcon(hIcon);
+	if (hIcon)
+		DestroyIcon(hIcon);
 	return hbm;
+}
+
+static HBITMAP g_logoMenuBmp[4] = { 0 };
+
+static void UpdateLogoMenuBitmaps()
+{
+	if (!GUI.hMenu)
+		return;
+	const int  logoIds[4]  = { ID_FILE_LOGO_1, ID_FILE_LOGO_2, ID_FILE_LOGO_3, ID_FILE_LOGO_4 };
+	const UINT logoRsrc[4] = { IDI_ICON1, IDI_ICON2, IDI_ICON3, IDI_ICON4 };
+	const int  active = ClampLogoIndex(GUI.IconIndex) - 1;
+	for (int i = 0; i < 4; i++)
+	{
+		HBITMAP hbm = IconResourceToMenuBitmap(GUI.hInstance, logoRsrc[i], i == active);
+		if (!hbm)
+			continue;
+		MENUITEMINFO bmii = {};
+		bmii.cbSize   = sizeof(bmii);
+		bmii.fMask    = MIIM_BITMAP;
+		bmii.hbmpItem = hbm;
+		SetMenuItemInfo(GUI.hMenu, logoIds[i], FALSE, &bmii);
+		if (g_logoMenuBmp[i])
+			DeleteObject(g_logoMenuBmp[i]);
+		g_logoMenuBmp[i] = hbm;
+	}
 }
 
 static void ApplyLogoIcon(HWND hWnd, HINSTANCE hInst, int n)
@@ -3334,6 +3397,326 @@ static void ApplyLogoIcon(HWND hWnd, HINSTANCE hInst, int n)
 	{
 		SetClassLongPtr(hWnd, GCLP_HICONSM, (LONG_PTR)hSmall);
 		SendMessage(hWnd, WM_SETICON, ICON_SMALL, (LPARAM)hSmall);
+	}
+}
+
+static TCHAR g_szExeIconPath[PATH_MAX] = { 0 };
+
+#pragma pack(push, 2)
+typedef struct
+{
+	BYTE  bWidth;
+	BYTE  bHeight;
+	BYTE  bColorCount;
+	BYTE  bReserved;
+	WORD  wPlanes;
+	WORD  wBitCount;
+	DWORD dwBytesInRes;
+	WORD  nID;
+} S9xGrpIconDirEntry;
+
+typedef struct
+{
+	WORD idReserved;
+	WORD idType;
+	WORD idCount;
+	S9xGrpIconDirEntry idEntries[1];
+} S9xGrpIconDir;
+#pragma pack(pop)
+
+struct S9xIconImage
+{
+	std::vector<BYTE> bytes;
+	BYTE  bWidth;
+	BYTE  bHeight;
+	BYTE  bColorCount;
+	BYTE  bReserved;
+	WORD  wPlanes;
+	WORD  wBitCount;
+};
+
+static const WORD S9X_SHELL_ICON_GROUP_ID = 1;
+static const WORD S9X_SHELL_ICON_BASE     = 0xE000;
+
+static BOOL CALLBACK S9xEnumIconLangCb(HMODULE, LPCTSTR, LPCTSTR, WORD wLang, LONG_PTR lParam)
+{
+	*reinterpret_cast<WORD *>(lParam) = wLang;
+	return FALSE;
+}
+
+static bool ReadEmbeddedIconGroup(HMODULE hMod, UINT groupId, WORD &outLang, std::vector<S9xIconImage> &out)
+{
+	outLang = MAKELANGID(LANG_ENGLISH, SUBLANG_ENGLISH_US);
+	EnumResourceLanguages(hMod, RT_GROUP_ICON, MAKEINTRESOURCE(groupId), S9xEnumIconLangCb, (LONG_PTR)&outLang);
+
+	HRSRC hRes = FindResource(hMod, MAKEINTRESOURCE(groupId), RT_GROUP_ICON);
+	if (!hRes)
+		return false;
+	DWORD grpSize = SizeofResource(hMod, hRes);
+	HGLOBAL hGlob = LoadResource(hMod, hRes);
+	if (!hGlob)
+		return false;
+	const S9xGrpIconDir *dir = (const S9xGrpIconDir *)LockResource(hGlob);
+	if (!dir || grpSize < sizeof(WORD) * 3)
+		return false;
+
+	int count = dir->idCount;
+	const DWORD maxCount = (grpSize - sizeof(WORD) * 3) / sizeof(S9xGrpIconDirEntry);
+	if ((DWORD)count > maxCount)
+		count = (int)maxCount;
+	for (int i = 0; i < count; i++)
+	{
+		const S9xGrpIconDirEntry &ge = dir->idEntries[i];
+		HRSRC hIco = FindResource(hMod, MAKEINTRESOURCE(ge.nID), RT_ICON);
+		if (!hIco)
+			continue;
+		DWORD sz = SizeofResource(hMod, hIco);
+		HGLOBAL hIcoGlob = LoadResource(hMod, hIco);
+		const BYTE *p = hIcoGlob ? (const BYTE *)LockResource(hIcoGlob) : NULL;
+		if (!p || !sz)
+			continue;
+
+		S9xIconImage img;
+		img.bytes.assign(p, p + sz);
+		img.bWidth      = ge.bWidth;
+		img.bHeight     = ge.bHeight;
+		img.bColorCount = ge.bColorCount;
+		img.bReserved   = ge.bReserved;
+		img.wPlanes     = ge.wPlanes;
+		img.wBitCount   = ge.wBitCount;
+		out.push_back(img);
+	}
+	return !out.empty();
+}
+
+static bool ApplyIconResources(HANDLE hUpd, const std::vector<S9xIconImage> &imgs, WORD lang,
+                               DWORD &outErr, const TCHAR *&outStage)
+{
+	static TCHAR stageBuf[64];
+	for (size_t i = 0; i < imgs.size(); i++)
+	{
+		if (!UpdateResource(hUpd, RT_ICON, MAKEINTRESOURCE(S9X_SHELL_ICON_BASE + (WORD)i), lang,
+		                    (LPVOID)imgs[i].bytes.data(), (DWORD)imgs[i].bytes.size()))
+		{
+			outErr = GetLastError();
+			_stprintf_s(stageBuf, 64, TEXT("UpdateResource(icon %d/%d, %d bytes)"),
+			            (int)i + 1, (int)imgs.size(), (int)imgs[i].bytes.size());
+			outStage = stageBuf;
+			return false;
+		}
+	}
+
+	std::vector<BYTE> grp(sizeof(WORD) * 3 + sizeof(S9xGrpIconDirEntry) * imgs.size());
+	S9xGrpIconDir *gd = (S9xGrpIconDir *)grp.data();
+	gd->idReserved = 0;
+	gd->idType     = 1;
+	gd->idCount    = (WORD)imgs.size();
+	for (size_t i = 0; i < imgs.size(); i++)
+	{
+		S9xGrpIconDirEntry &e = gd->idEntries[i];
+		e.bWidth       = imgs[i].bWidth;
+		e.bHeight      = imgs[i].bHeight;
+		e.bColorCount  = imgs[i].bColorCount;
+		e.bReserved    = imgs[i].bReserved;
+		e.wPlanes      = imgs[i].wPlanes;
+		e.wBitCount    = imgs[i].wBitCount;
+		e.dwBytesInRes = (DWORD)imgs[i].bytes.size();
+		e.nID          = (WORD)(S9X_SHELL_ICON_BASE + i);
+	}
+
+	if (!UpdateResource(hUpd, RT_GROUP_ICON, MAKEINTRESOURCE(S9X_SHELL_ICON_GROUP_ID), lang,
+	                    grp.data(), (DWORD)grp.size()))
+	{
+		outErr = GetLastError();
+		outStage = TEXT("UpdateResource(group)");
+		return false;
+	}
+	return true;
+}
+
+static bool UpdateIconAtPath(const TCHAR *path, const std::vector<S9xIconImage> &imgs, WORD lang,
+                             DWORD &outErr, const TCHAR *&outStage)
+{
+	HANDLE hUpd = BeginUpdateResource(path, FALSE);
+	if (!hUpd)
+	{
+		outErr = GetLastError();
+		outStage = TEXT("BeginUpdateResource");
+		return false;
+	}
+	if (!ApplyIconResources(hUpd, imgs, lang, outErr, outStage))
+	{
+		EndUpdateResource(hUpd, TRUE);
+		return false;
+	}
+	if (!EndUpdateResource(hUpd, FALSE))
+	{
+		outErr = GetLastError();
+		outStage = TEXT("EndUpdateResource");
+		return false;
+	}
+	return true;
+}
+
+static bool WriteShellIconToExe(const TCHAR *exePath, const std::vector<S9xIconImage> &imgs, WORD lang,
+                                DWORD &outErr, const TCHAR *&outStage)
+{
+	outErr   = 0;
+	outStage = TEXT("");
+
+	if (UpdateIconAtPath(exePath, imgs, lang, outErr, outStage))
+		return true;
+
+	TCHAR tmp[PATH_MAX];
+	TCHAR bak[PATH_MAX];
+	_stprintf_s(tmp, PATH_MAX, TEXT("%s.s9xicontmp"), exePath);
+	_stprintf_s(bak, PATH_MAX, TEXT("%s.%lu.s9xoldicon"), exePath, GetTickCount());
+
+	DeleteFile(tmp);
+	if (!CopyFile(exePath, tmp, FALSE))
+	{
+		outErr = GetLastError();
+		outStage = TEXT("CopyFile");
+		return false;
+	}
+
+	if (!UpdateIconAtPath(tmp, imgs, lang, outErr, outStage))
+	{
+		DeleteFile(tmp);
+		return false;
+	}
+
+	if (!MoveFileEx(exePath, bak, MOVEFILE_REPLACE_EXISTING))
+	{
+		outErr = GetLastError();
+		outStage = TEXT("MoveFileEx(exe->bak)");
+		DeleteFile(tmp);
+		return false;
+	}
+	if (!MoveFileEx(tmp, exePath, MOVEFILE_REPLACE_EXISTING))
+	{
+		outErr = GetLastError();
+		if (MoveFileEx(bak, exePath, MOVEFILE_REPLACE_EXISTING))
+			outStage = TEXT("MoveFileEx(tmp->exe)");
+		else
+			outStage = TEXT("MoveFileEx(tmp->exe) [ROLLBACK FAILED: the original program was renamed to a .s9xoldicon file in its folder; rename that file back to the .exe to recover]");
+		DeleteFile(tmp);
+		return false;
+	}
+
+	SetFileAttributes(bak, FILE_ATTRIBUTE_HIDDEN | FILE_ATTRIBUTE_TEMPORARY);
+	if (!DeleteFile(bak))
+		CreateFile(bak, DELETE, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
+		           NULL, OPEN_EXISTING, FILE_FLAG_DELETE_ON_CLOSE, NULL);
+	return true;
+}
+
+static void S9xNotifyShellIconChanged(const TCHAR *exePath)
+{
+	HMODULE h = GetModuleHandle(TEXT("shell32.dll"));
+	if (!h)
+		return;
+	typedef void (WINAPI *PFNSHCN)(LONG, UINT, LPCVOID, LPCVOID);
+	PFNSHCN pSHChangeNotify = (PFNSHCN)GetProcAddress(h, "SHChangeNotify");
+	if (!pSHChangeNotify)
+		return;
+	pSHChangeNotify(SHCNE_ASSOCCHANGED, SHCNF_IDLIST, NULL, NULL);
+	pSHChangeNotify(SHCNE_UPDATEITEM, SHCNF_PATH | SHCNF_FLUSH, exePath, NULL);
+}
+
+static int CleanupStaleExeIconBackups()
+{
+	if (!g_szExeIconPath[0])
+		GetModuleFileName(NULL, g_szExeIconPath, PATH_MAX);
+
+	TCHAR dir[PATH_MAX];
+	_tcscpy_s(dir, PATH_MAX, g_szExeIconPath);
+	PathRemoveFileSpec(dir);
+
+	TCHAR pattern[PATH_MAX];
+	_stprintf_s(pattern, PATH_MAX, TEXT("%s\\*.s9xoldicon"), dir);
+
+	WIN32_FIND_DATA fd;
+	HANDLE hf = FindFirstFile(pattern, &fd);
+	if (hf == INVALID_HANDLE_VALUE)
+		return 0;
+	int remaining = 0;
+	do
+	{
+		TCHAR full[PATH_MAX];
+		_stprintf_s(full, PATH_MAX, TEXT("%s\\%s"), dir, fd.cFileName);
+		if (!DeleteFile(full))
+			remaining++;
+	} while (FindNextFile(hf, &fd));
+	FindClose(hf);
+	return remaining;
+}
+
+static DWORD WINAPI ExeIconCleanupThread(LPVOID)
+{
+	for (int i = 0; i < 12; i++)
+	{
+		if (CleanupStaleExeIconBackups() == 0)
+			break;
+		Sleep(500);
+	}
+	return 0;
+}
+
+static bool SetExeFileIcon(int logoIndex)
+{
+	if (!g_szExeIconPath[0])
+		GetModuleFileName(NULL, g_szExeIconPath, PATH_MAX);
+
+	WORD lang = MAKELANGID(LANG_ENGLISH, SUBLANG_ENGLISH_US);
+	std::vector<S9xIconImage> imgs;
+	if (!ReadEmbeddedIconGroup(GUI.hInstance, LogoIndexToResource(logoIndex), lang, imgs))
+	{
+		MessageBox(GUI.hWnd, TEXT("Couldn't read the selected icon from the application."),
+		           TEXT("SuperSnes9x - Change .exe Icon"), MB_OK | MB_ICONWARNING);
+		return false;
+	}
+
+	DWORD err = 0;
+	const TCHAR *stage = TEXT("");
+	if (!WriteShellIconToExe(g_szExeIconPath, imgs, lang, err, stage))
+	{
+		TCHAR msg[600];
+		if (err == ERROR_ACCESS_DENIED || err == ERROR_SHARING_VIOLATION)
+			_stprintf_s(msg, 600,
+			          TEXT("Couldn't update the program icon on disk.\n\nSuperSnes9x may be in a write-protected folder (such as Program Files), or another program (e.g. antivirus) is holding the file. ")
+			          TEXT("Move it to a writable location or run it as administrator, then try again.\n\n(stage: %s, error %lu)"),
+			          stage, err);
+		else
+			_stprintf_s(msg, 600, TEXT("Couldn't update the program icon on disk.\n\nstage: %s\nerror: %lu"), stage, err);
+		MessageBox(GUI.hWnd, msg, TEXT("SuperSnes9x - Change .exe Icon"), MB_OK | MB_ICONWARNING);
+		return false;
+	}
+
+	S9xNotifyShellIconChanged(g_szExeIconPath);
+	return true;
+}
+
+static void RestartSnes9x()
+{
+	if (!g_szExeIconPath[0])
+		GetModuleFileName(NULL, g_szExeIconPath, PATH_MAX);
+
+	TCHAR cmd[PATH_MAX + 2];
+	_stprintf_s(cmd, PATH_MAX + 2, TEXT("\"%s\""), g_szExeIconPath);
+
+	TCHAR dir[PATH_MAX];
+	_tcscpy_s(dir, PATH_MAX, g_szExeIconPath);
+	PathRemoveFileSpec(dir);
+
+	STARTUPINFO si = {};
+	si.cb = sizeof(si);
+	PROCESS_INFORMATION pi = {};
+	if (CreateProcess(g_szExeIconPath, cmd, NULL, NULL, FALSE, 0, NULL, dir, &si, &pi))
+	{
+		CloseHandle(pi.hThread);
+		CloseHandle(pi.hProcess);
+		PostMessage(GUI.hWnd, WM_CLOSE, 0, 0);
 	}
 }
 
@@ -3357,6 +3740,13 @@ BOOL WinInit( HINSTANCE hInstance)
 	wndclass.hbrBackground=(HBRUSH)GetStockObject(BLACK_BRUSH);
 
     GUI.hInstance = hInstance;
+
+    GetModuleFileName(NULL, g_szExeIconPath, PATH_MAX);
+    {
+        HANDLE hCleanup = CreateThread(NULL, 0, ExeIconCleanupThread, NULL, 0, NULL);
+        if (hCleanup)
+            CloseHandle(hCleanup);
+    }
 
     if (!RegisterClassEx (&wndclass))
 	{
@@ -3405,22 +3795,7 @@ BOOL WinInit( HINSTANCE hInstance)
 		InsertMenuItem(parent_menu_load, i, TRUE, &mii);
 	}
 	if (GUI.hMenu)
-	{
-		const int logoIds[4] = { ID_FILE_LOGO_1, ID_FILE_LOGO_2, ID_FILE_LOGO_3, ID_FILE_LOGO_4 };
-		const UINT logoRsrc[4] = { IDI_ICON1, IDI_ICON2, IDI_ICON3, IDI_ICON4 };
-		for (int i = 0; i < 4; i++)
-		{
-			HBITMAP hbm = IconResourceToMenuBitmap(GUI.hInstance, logoRsrc[i]);
-			if (hbm)
-			{
-				MENUITEMINFO bmii = {};
-				bmii.cbSize  = sizeof(bmii);
-				bmii.fMask   = MIIM_BITMAP;
-				bmii.hbmpItem = hbm;
-				SetMenuItemInfo(GUI.hMenu, logoIds[i], FALSE, &bmii);
-			}
-		}
-	}
+		UpdateLogoMenuBitmaps();
 
 #ifdef DEBUGGER
 	if(GUI.hMenu) {
@@ -4539,16 +4914,6 @@ static void CheckMenuStates ()
 	mii.fState = (Settings.Paused && !Settings.StopEmulation) ? MFS_CHECKED : MFS_UNCHECKED;
     SetMenuItemInfo (GUI.hMenu, ID_FILE_PAUSE, FALSE, &mii);
 
-	{
-		const int logoIds[4] = { ID_FILE_LOGO_1, ID_FILE_LOGO_2, ID_FILE_LOGO_3, ID_FILE_LOGO_4 };
-		const int active = ClampLogoIndex(GUI.IconIndex) - 1;
-		for (int i = 0; i < 4; i++)
-		{
-			mii.fState = (i == active) ? MFS_CHECKED : MFS_UNCHECKED;
-			SetMenuItemInfo(GUI.hMenu, logoIds[i], FALSE, &mii);
-		}
-	}
-
 	mii.fState = (GUI.InactivePause) ? MFS_CHECKED : MFS_UNCHECKED;
     SetMenuItemInfo (GUI.hMenu, ID_EMULATION_PAUSEWHENINACTIVE, FALSE, &mii);
 
@@ -5325,6 +5690,9 @@ BOOL CreateToolTip(int toolID, HWND hDlg, TCHAR* pText)
     toolInfo.uId = (UINT_PTR)hwndTool;
     toolInfo.lpszText = pText;
     SendMessage(hwndTip, TTM_ADDTOOL, 0, (LPARAM)&toolInfo);
+
+    if (_tcschr(pText, TEXT('\n')))
+        SendMessage(hwndTip, TTM_SETMAXTIPWIDTH, 0, 1000);
 
     return TRUE;
 }
@@ -6216,6 +6584,9 @@ INT_PTR CALLBACK DlgEmulatorHacksProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM
         CheckDlgButton(hDlg, IDC_INVALID_VRAM, !Settings.BlockInvalidVRAMAccessMaster);
         CheckDlgButton(hDlg, IDC_SEPARATE_ECHO_BUFFER, Settings.SeparateEchoBuffer);
         CheckDlgButton(hDlg, IDC_NO_SPRITE_LIMIT, Settings.MaxSpriteTilesPerLine == 128);
+        CheckDlgButton(hDlg, IDC_ALLOW_EXE_ICON, GUI.ExeIconRewriteOK);
+
+        CreateToolTip(IDC_ALLOW_EXE_ICON, hDlg, TEXT("When checked, choosing a logo also overwrites\nthe icon embedded in the SuperSnes9x .exe on disk,\nso it shows in Explorer, on shortcuts and the\ntaskbar. SuperSnes9x will restart to apply.\nWhen unchecked, only the in-app icon changes."));
 
         return true;
         break;
@@ -6241,6 +6612,7 @@ INT_PTR CALLBACK DlgEmulatorHacksProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM
             Settings.BlockInvalidVRAMAccessMaster = !IsDlgButtonChecked(hDlg, IDC_INVALID_VRAM);
             Settings.SeparateEchoBuffer = IsDlgButtonChecked(hDlg, IDC_SEPARATE_ECHO_BUFFER);
             Settings.MaxSpriteTilesPerLine = IsDlgButtonChecked(hDlg, IDC_NO_SPRITE_LIMIT) ? 128 : 34;
+            GUI.ExeIconRewriteOK = IsDlgButtonChecked(hDlg, IDC_ALLOW_EXE_ICON);
 
             switch (Settings.OverclockMode)
             {
@@ -6281,6 +6653,7 @@ INT_PTR CALLBACK DlgEmulatorHacksProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM
 			CheckDlgButton(hDlg, IDC_INVALID_VRAM, false);
 			CheckDlgButton(hDlg, IDC_SEPARATE_ECHO_BUFFER, false);
 			CheckDlgButton(hDlg, IDC_NO_SPRITE_LIMIT, false);
+			CheckDlgButton(hDlg, IDC_ALLOW_EXE_ICON, false);
 			break;
         default:
             break;
