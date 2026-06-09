@@ -858,6 +858,8 @@ void PpuWriteReg(Ppu &p, Memory &mem, uint16_t addr, uint8_t value)
 			const bool was_on = (p.lcdc & 0x80) != 0;
 			p.lcdc = value;
 			const bool is_on  = (p.lcdc & 0x80) != 0;
+			if (was_on && !is_on && p.cgb && p.mode != PpuMode::HBlank)
+				MemHdmaLcdOff(mem);
 			// LCD turn-on resets to line 0 / mode 2.
 			if (!was_on && is_on)
 			{
