@@ -69,7 +69,7 @@ void    MemWrite(Memory &m, uint16_t addr, uint8_t value);
 uint16_t MemRead16(Memory &m, uint16_t addr);
 void     MemWrite16(Memory &m, uint16_t addr, uint16_t value);
 
-void MemReset(Memory &m);
+void MemReset(Memory &m, bool cgb);
 
 // Transfer one 0x10-byte CGB HDMA block during HBlank. No-op when inactive.
 void MemHdmaHBlank(Memory &m);

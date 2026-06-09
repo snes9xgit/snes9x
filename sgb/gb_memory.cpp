@@ -25,7 +25,7 @@ uint8_t            g_dma_last  = 0xFF;  // 0xFF46 last written byte — register
 
 void SetSerialCallback(SerialByteCallback cb) { g_serial_cb = cb; }
 
-void MemReset(Memory &m)
+void MemReset(Memory &m, bool cgb)
 {
 	std::memset(m.wram, 0, sizeof m.wram);
 	std::memset(m.hram, 0, sizeof m.hram);
@@ -38,7 +38,7 @@ void MemReset(Memory &m)
 	// GB CPU starts. boot_rom_enabled stays false until LoadBootROM sets it.
 	std::memset(m.boot_rom, 0, sizeof m.boot_rom);
 	m.boot_rom_enabled = false;
-	g_dma_last         = 0xFF;
+	g_dma_last         = cgb ? 0x00 : 0xFF;
 
 	m.svbk         = 1;
 	m.key1_armed   = false;
