@@ -153,7 +153,7 @@ inline uint8_t SampleBgPixel(const Ppu &p, int x)
 {
 	const uint16_t map_base  = (p.lcdc & 0x08) ? 0x1C00 : 0x1800;
 	const bool     tiles_un  = (p.lcdc & 0x10) != 0;
-	const uint8_t  bg_y      = static_cast<uint8_t>(p.ly + p.scy);
+	const uint8_t  bg_y      = static_cast<uint8_t>(p.ly + p.fetch_scy);
 	const uint32_t tile_row  = bg_y >> 3;
 	const uint32_t fine_y    = bg_y & 7;
 	const uint8_t  bg_x      = static_cast<uint8_t>(x + p.scx);
@@ -324,7 +324,7 @@ inline BgPixelCgb SampleBgPixelCgb(const Ppu &p, int x, bool window)
 	else
 	{
 		map_base = (p.lcdc & 0x08) ? 0x1C00 : 0x1800;
-		const uint8_t bg_y = static_cast<uint8_t>(p.ly + p.scy);
+		const uint8_t bg_y = static_cast<uint8_t>(p.ly + p.fetch_scy);
 		tile_row = bg_y >> 3;
 		fine_y   = bg_y & 7;
 		const uint8_t bg_x = static_cast<uint8_t>(x + p.scx);
@@ -653,6 +653,7 @@ inline void ExecPpuDot(Ppu &p, Memory &mem)
 			// single BGP for its entire mode 3.
 			p.latched_wx  = p.wx;
 			p.latched_bgp = p.bgp;
+			p.fetch_scy   = p.scy;
 			// Arm the window WY-trigger once LY == WY while it's enabled. Sampled
 			// after this line's LYC/STAT handler ran in mode 2, so a window kept
 			// disabled across the WY line never arms.
@@ -676,6 +677,8 @@ inline void ExecPpuDot(Ppu &p, Memory &mem)
 			MODE3_SETUP_DOTS + p.mode3_sprite_stall;
 		if (p.mode_clock > pixel_start_dot && p.draw_x < GB_SCREEN_WIDTH)
 		{
+			if (((p.draw_x + p.scx) & 7) == 0)
+				p.fetch_scy = p.scy;
 			if (p.cgb || (p.lcdc & 0x01))
 			{
 				RenderPixel(p);
