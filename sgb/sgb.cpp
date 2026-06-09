@@ -391,7 +391,7 @@ void Emulator::ColdReset()
 void Emulator::Reset()
 {
 	impl_->cpu.Reset();
-	MemReset(impl_->mem);
+	MemReset(impl_->mem, impl_->cgb_mode && !Settings.SGB_BIOSModeActive);
 	PpuReset(impl_->ppu);
 	ApuReset(impl_->apu);
 	TimerReset(impl_->timer);
