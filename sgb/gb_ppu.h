@@ -160,6 +160,13 @@ struct Ppu
 	// "wait until LY=$90" busy loop at $078A to capture LY=144 into A.
 	uint8_t  vblank_irq_delay = 0;
 
+	// STAT counterpart of vblank_irq_delay (PPU-originated edges only).
+	uint8_t  stat_irq_delay = 0;
+
+	// Real panels never display the first frame after LCD enable — hold the prior one.
+	bool     hold_present_on_enable = true;
+	bool     present_hold = false;
+
 	uint8_t  framebuffer[GB_SCREEN_WIDTH * GB_SCREEN_HEIGHT];
 
 	// Per-frame raw 2-bit BG/window/sprite indices (pre-BGP/OBP). The

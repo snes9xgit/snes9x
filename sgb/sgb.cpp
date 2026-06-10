@@ -442,6 +442,8 @@ void Emulator::Reset()
 	impl_->fb.pitch  = GB_SCREEN_WIDTH;
 
 	impl_->ppu.cgb = impl_->cgb_mode && !Settings.SGB_BIOSModeActive;
+	impl_->ppu.hold_present_on_enable = !Settings.SGB_BIOSModeActive &&
+		(impl_->cgb_mode || impl_->run_mode == RunMode::DMG);
 
 	// Apply run-mode specific post-boot register values. The SGB BIOS
 	// hands control to the cart with slightly different register state
@@ -1072,6 +1074,8 @@ void Emulator::RunCycles(int32_t tcycles)
 	// bank-1 attributes, no CGB palettes); rendering it as CGB would read
 	// garbage. Gate the color path off whenever the BIOS is driving.
 	impl_->ppu.cgb = impl_->cgb_mode && !Settings.SGB_BIOSModeActive;
+	impl_->ppu.hold_present_on_enable = !Settings.SGB_BIOSModeActive &&
+		(impl_->cgb_mode || impl_->run_mode == RunMode::DMG);
 
 	// MMM01 multicart just locked into game-mode — inject the SGB
 	// default ("Mario") palette packets so the picked sub-game gets
@@ -2136,6 +2140,8 @@ bool Emulator::StateLoad(const uint8_t *buffer, size_t size)
 	impl_->fb.pitch  = GB_SCREEN_WIDTH;
 
 	impl_->ppu.cgb = impl_->cgb_mode && !Settings.SGB_BIOSModeActive;
+	impl_->ppu.hold_present_on_enable = !Settings.SGB_BIOSModeActive &&
+		(impl_->cgb_mode || impl_->run_mode == RunMode::DMG);
 
 	// Reseed the SGB-bridge mirrors on Joypad from icd2 — these are
 	// not serialized (see VisitState), so a load with the BIOS not
