@@ -115,6 +115,7 @@ struct Emulator::Impl
 	// both re-derive after load.
 	int64_t     ds_extra   = -1;
 	int32_t     apu_ds_rem = 0;
+	double      drc_integ  = 0.0;
 
 	// 256×224 composite staging buffer — heap-resident to keep a
 	// ~112 KB allocation off the stack of whatever thread drives
@@ -406,6 +407,7 @@ void Emulator::Reset()
 	impl_->handoff_frames        = 0;
 	impl_->ds_extra              = -1;
 	impl_->apu_ds_rem            = 0;
+	impl_->drc_integ             = 0.0;
 	std::memset(&impl_->icd2, 0, sizeof impl_->icd2);
 	// 4-bank LCD ring starts at $00 (matches Mesen2 SuperGameboy::Reset).
 	// $7000-$700F latch buffer starts as $FF so reads before the first
@@ -981,6 +983,23 @@ void Emulator::RunFrame()
 		RunCycles(456);
 		safety -= 456;
 	}
+
+	// Frame-locking pins GB time to the host's frame cadence, not the GB's
+	// authentic 59.73 Hz, so APU sample production drifts from the host's
+	// fixed-rate drain; lock production to the drain by steering the APU's
+	// effective clock until the ring buffer fill holds at its setpoint.
+	const uint32_t head = impl_->apu.sample_head;
+	const uint32_t tail = impl_->apu.sample_tail;
+	const uint32_t fill = (head >= tail) ? (head - tail)
+	                                     : (APU_SAMPLE_BUF_SIZE - tail + head);
+	const double err = static_cast<double>(fill) / APU_SAMPLE_BUF_SIZE - 0.125;
+	impl_->drc_integ += 5e-5 * err;
+	if (impl_->drc_integ >  0.03) impl_->drc_integ =  0.03;
+	if (impl_->drc_integ < -0.03) impl_->drc_integ = -0.03;
+	double corr = 0.02 * err + impl_->drc_integ;
+	if (corr >  0.03) corr =  0.03;
+	if (corr < -0.03) corr = -0.03;
+	ApuSetClockHz(impl_->apu, static_cast<int32_t>(base_hz * (1.0 + corr) + 0.5));
 }
 
 // ===================================================================
@@ -2122,6 +2141,7 @@ bool Emulator::StateLoad(const uint8_t *buffer, size_t size)
 	impl_->cart.sram_dirty = false;
 	impl_->ds_extra        = -1;
 	impl_->apu_ds_rem      = 0;
+	impl_->drc_integ       = 0.0;
 
 	// Reset only the sub-sample integration accumulator. The ring buffer
 	// is not serialized but also not wiped — it stays at its current
