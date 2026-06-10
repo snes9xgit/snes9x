@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36908.2 d17.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libretro-win32", "libretro-win32.vcxproj", "{4A2A7544-0547-4539-8B53-047FB9A15C75}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		libretro Debug|x64 = libretro Debug|x64
+		libretro Debug|x86 = libretro Debug|x86
+		libretro Release|x64 = libretro Release|x64
+		libretro Release|x86 = libretro Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4A2A7544-0547-4539-8B53-047FB9A15C75}.libretro Debug|x64.ActiveCfg = libretro Debug|x64
+		{4A2A7544-0547-4539-8B53-047FB9A15C75}.libretro Debug|x64.Build.0 = libretro Debug|x64
+		{4A2A7544-0547-4539-8B53-047FB9A15C75}.libretro Debug|x86.ActiveCfg = libretro Debug|Win32
+		{4A2A7544-0547-4539-8B53-047FB9A15C75}.libretro Debug|x86.Build.0 = libretro Debug|Win32
+		{4A2A7544-0547-4539-8B53-047FB9A15C75}.libretro Release|x64.ActiveCfg = libretro Release|x64
+		{4A2A7544-0547-4539-8B53-047FB9A15C75}.libretro Release|x64.Build.0 = libretro Release|x64
+		{4A2A7544-0547-4539-8B53-047FB9A15C75}.libretro Release|x86.ActiveCfg = libretro Release|Win32
+		{4A2A7544-0547-4539-8B53-047FB9A15C75}.libretro Release|x86.Build.0 = libretro Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {9467EF3C-5F19-4990-88F5-E0BB5C397F5F}
+	EndGlobalSection
+EndGlobal
