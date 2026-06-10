@@ -86,7 +86,7 @@ inline uint8_t ApplyPalette(uint8_t palette, uint8_t color_idx)
 	return static_cast<uint8_t>((palette >> (color_idx * 2)) & 0x03);
 }
 
-void RecomputeStatLine(Ppu &p, Memory &mem)
+void RecomputeStatLine(Ppu &p, Memory &mem, bool defer_irq = false)
 {
 	// Rebuild the low 3 bits of STAT (mode + LYC coincidence). With the LCD
 	// off the PPU comparator is frozen, so the coincidence flag latches the
@@ -129,7 +129,15 @@ void RecomputeStatLine(Ppu &p, Memory &mem)
 
 	// Rising edge on the combined line raises LCDSTAT IRQ.
 	if (line_high && !p.stat_line_high)
-		mem.if_ = static_cast<uint8_t>(mem.if_ | IRQ_LCDSTAT);
+	{
+		if (defer_irq)
+		{
+			if (p.stat_irq_delay == 0)
+				p.stat_irq_delay = 24;
+		}
+		else
+			mem.if_ = static_cast<uint8_t>(mem.if_ | IRQ_LCDSTAT);
+	}
 	p.stat_line_high = line_high;
 }
 
@@ -143,7 +151,7 @@ void RecomputeStatLine(Ppu &p, Memory &mem)
 inline void RelatchLyc(Ppu &p, Memory &mem)
 {
 	p.lyc_relatch = true;
-	RecomputeStatLine(p, mem);
+	RecomputeStatLine(p, mem, true);
 	p.lyc_relatch = false;
 }
 
@@ -428,10 +436,13 @@ void RenderPixelCgb(Ppu &p, int x)
 
 	p.scanline_bg_raw[x] = bg.color;
 	p.scanline_raw[x]    = bg.color;
-	line[x]              = bg.color;
-	lay[x]               = win_active_here ? GB_PIXEL_WINDOW : GB_PIXEL_BG;
-	cline[x]             = bg_hidden ? CgbColor(p.bg_pal, 0, 0)
-	                                 : CgbColor(p.bg_pal, bg.pal, bg.color);
+	if (!p.present_hold)
+	{
+		line[x]  = bg.color;
+		lay[x]   = win_active_here ? GB_PIXEL_WINDOW : GB_PIXEL_BG;
+		cline[x] = bg_hidden ? CgbColor(p.bg_pal, 0, 0)
+		                     : CgbColor(p.bg_pal, bg.pal, bg.color);
+	}
 
 	const SpritePixelCgb sp = SampleSpritePixelCgb(p, x);
 	if (p.show_obj && sp.covered)
@@ -441,9 +452,12 @@ void RenderPixelCgb(Ppu &p, int x)
 		if (!bg_wins)
 		{
 			p.scanline_raw[x] = sp.color;
-			line[x]           = sp.color;
-			lay[x]            = GB_PIXEL_OBJ;
-			cline[x]          = CgbColor(p.obj_pal, sp.pal, sp.color);
+			if (!p.present_hold)
+			{
+				line[x]  = sp.color;
+				lay[x]   = GB_PIXEL_OBJ;
+				cline[x] = CgbColor(p.obj_pal, sp.pal, sp.color);
+			}
 		}
 	}
 }
@@ -526,16 +540,22 @@ void RenderPixel(Ppu &p)
 
 	p.scanline_bg_raw[x] = bg_color;
 	p.scanline_raw[x]    = bg_color;
-	line[x]              = ApplyPalette(p.latched_bgp, disp_bg);
-	lay[x]               = bg_layer;
+	if (!p.present_hold)
+	{
+		line[x] = ApplyPalette(p.latched_bgp, disp_bg);
+		lay[x]  = bg_layer;
+	}
 
 	// Sprite resolve — overwrite if visible.
 	const SpritePixel sp = SampleSpritePixel(p, x);
 	if (p.show_obj && sp.covered && (!sp.bg_over || disp_bg == 0))
 	{
 		p.scanline_raw[x] = sp.color;
-		line[x]           = ApplyPalette(sp.palette, sp.color);
-		lay[x]            = GB_PIXEL_OBJ;
+		if (!p.present_hold)
+		{
+			line[x] = ApplyPalette(sp.palette, sp.color);
+			lay[x]  = GB_PIXEL_OBJ;
+		}
 	}
 }
 
@@ -580,6 +600,8 @@ void PpuReset(Ppu &p)
 	p.window_line   = 0;
 	p.stat_line_high = false;
 	p.vblank_irq_delay = 0;
+	p.stat_irq_delay = 0;
+	p.present_hold  = false;
 	p.frame_ready   = false;
 	p.t_cycles      = 0;
 	p.draw_x        = 0;
@@ -612,6 +634,13 @@ inline void ExecPpuDot(Ppu &p, Memory &mem)
 		--p.vblank_irq_delay;
 		if (p.vblank_irq_delay == 0)
 			mem.if_ = static_cast<uint8_t>(mem.if_ | IRQ_VBLANK);
+	}
+
+	if (p.stat_irq_delay > 0)
+	{
+		--p.stat_irq_delay;
+		if (p.stat_irq_delay == 0)
+			mem.if_ = static_cast<uint8_t>(mem.if_ | IRQ_LCDSTAT);
 	}
 
 	switch (p.mode)
@@ -690,16 +719,22 @@ inline void ExecPpuDot(Ppu &p, Memory &mem)
 				const int x = static_cast<int>(p.draw_x);
 				p.scanline_bg_raw[x] = 0;
 				p.scanline_raw[x]    = 0;
-				p.framebuffer[p.ly * GB_SCREEN_WIDTH + x] =
-					ApplyPalette(p.latched_bgp, 0);
-				p.layer[p.ly * GB_SCREEN_WIDTH + x] = GB_PIXEL_BG;   // blank BG
+				if (!p.present_hold)
+				{
+					p.framebuffer[p.ly * GB_SCREEN_WIDTH + x] =
+						ApplyPalette(p.latched_bgp, 0);
+					p.layer[p.ly * GB_SCREEN_WIDTH + x] = GB_PIXEL_BG;   // blank BG
+				}
 				const SpritePixel sp = SampleSpritePixel(p, x);
 				if (p.show_obj && sp.covered)
 				{
 					p.scanline_raw[x] = sp.color;
-					p.framebuffer[p.ly * GB_SCREEN_WIDTH + x] =
-						ApplyPalette(sp.palette, sp.color);
-					p.layer[p.ly * GB_SCREEN_WIDTH + x] = GB_PIXEL_OBJ;
+					if (!p.present_hold)
+					{
+						p.framebuffer[p.ly * GB_SCREEN_WIDTH + x] =
+							ApplyPalette(sp.palette, sp.color);
+						p.layer[p.ly * GB_SCREEN_WIDTH + x] = GB_PIXEL_OBJ;
+					}
 				}
 			}
 			++p.draw_x;
@@ -729,6 +764,7 @@ inline void ExecPpuDot(Ppu &p, Memory &mem)
 			{
 				p.mode          = PpuMode::VBlank;
 				p.frame_ready   = true;
+				p.present_hold  = false;
 				p.window_line   = 0;
 				p.window_active = false;
 				p.wy_triggered  = false;
@@ -787,7 +823,7 @@ inline void ExecPpuDot(Ppu &p, Memory &mem)
 	}
 
 	if (transitioned)
-		RecomputeStatLine(p, mem);
+		RecomputeStatLine(p, mem, true);
 }
 
 void PpuStep(Ppu &p, Memory &mem, int32_t tcycles)
@@ -815,6 +851,7 @@ void PpuStep(Ppu &p, Memory &mem, int32_t tcycles)
 		p.window_line    = 0;
 		p.stat_line_high = false;
 		p.vblank_irq_delay = 0;
+		p.stat_irq_delay = 0;
 		p.draw_x         = 0;
 		p.window_active  = false;
 		p.wy_triggered   = false;
@@ -870,6 +907,7 @@ void PpuWriteReg(Ppu &p, Memory &mem, uint16_t addr, uint8_t value)
 				p.mode        = PpuMode::OamScan;
 				p.mode_clock  = 0;
 				p.window_line = 0;
+				p.present_hold = p.hold_present_on_enable;
 			}
 			if (is_on) RecomputeStatLine(p, mem);
 			break;
