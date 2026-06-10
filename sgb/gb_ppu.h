@@ -102,11 +102,15 @@ struct Ppu
 	// previous line's BGP, pixels after used the new one. Latching at
 	// the mode 2 → 3 boundary gives each line a single BGP for its
 	// entire mode 3, matching how real DMG sources palette for the
-	// majority of games. $FF47 reads still return live p.bgp. TRADE-OFF:
-	// games that intentionally change BGP mid-mode-3 for a horizontal
-	// gradient (Animaniacs cloud strip, Balloon Kid title) will see one
-	// BGP per line instead of the per-pixel sweep — revisit if those
-	// regress.
+	// majority of games. $FF47 reads still return live p.bgp.
+	// A BGP write that lands DURING mode 3 re-latches immediately, so it
+	// applies from the current pixel onward — real DMG applies BGP
+	// per-pixel, and RoboCop's level-intro venetian blind depends on it
+	// (its STAT handler alternates BGP $FF/$4B per scanline with the
+	// write landing mid-mode-3; without the re-latch the blind renders
+	// as a plain top-to-bottom reveal). Initial D stays protected: its
+	// overrun write lands in the fetcher-setup dots before pixel 0
+	// emits, so the re-latch still covers the whole line.
 	uint8_t   latched_bgp = 0;
 
 	// Monotonic GB t-cycle counter — advanced by PpuStep. Used by

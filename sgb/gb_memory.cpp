@@ -21,6 +21,13 @@ namespace SGB {
 namespace {
 SerialByteCallback g_serial_cb = nullptr;
 uint8_t            g_dma_last  = 0xFF;  // 0xFF46 last written byte — register reads echo this.
+bool               g_dma_vram_bypass = false;
+}
+
+inline bool VramBlocked(const Memory &m)
+{
+	return !g_dma_vram_bypass && m.ppu &&
+	       m.ppu->mode == PpuMode::Transfer && (m.ppu->lcdc & 0x80);
 }
 
 void SetSerialCallback(SerialByteCallback cb) { g_serial_cb = cb; }
@@ -104,7 +111,8 @@ uint8_t MemRead(Memory &m, uint16_t addr)
 	}
 	if (addr < 0xA000)
 	{
-		return m.ppu ? m.ppu->vram[(addr - 0x8000) + VramBankBase(m)] : 0xFF;
+		if (!m.ppu || VramBlocked(m)) return 0xFF;
+		return m.ppu->vram[(addr - 0x8000) + VramBankBase(m)];
 	}
 	if (addr < 0xC000)
 	{
@@ -160,6 +168,7 @@ void MemWrite(Memory &m, uint16_t addr, uint8_t value)
 	{
 		if (m.ppu)
 		{
+			if (VramBlocked(m)) return;
 			m.ppu->vram[(addr - 0x8000) + VramBankBase(m)] = value;
 			m.ppu->vram_writes++;
 		}
@@ -361,29 +370,35 @@ static void DoOamDma(Memory &m, uint8_t value)
 {
 	if (!m.ppu) return;
 	const uint16_t src = static_cast<uint16_t>(value << 8);
+	g_dma_vram_bypass = true;
 	for (int i = 0; i < 0xA0; ++i)
 	{
 		m.ppu->oam[i] = MemRead(m, static_cast<uint16_t>(src + i));
 	}
+	g_dma_vram_bypass = false;
 }
 
 static void DoGdma(Memory &m, uint16_t src, uint16_t dst, uint16_t blocks)
 {
 	const uint32_t n = static_cast<uint32_t>(blocks) * 0x10u;
+	g_dma_vram_bypass = true;
 	for (uint32_t i = 0; i < n; ++i)
 	{
 		const uint8_t b = MemRead(m, static_cast<uint16_t>(src + i));
 		MemWrite(m, static_cast<uint16_t>(0x8000 + ((dst + i) & 0x1FFF)), b);
 	}
+	g_dma_vram_bypass = false;
 }
 
 static void HdmaTransferBlock(Memory &m)
 {
+	g_dma_vram_bypass = true;
 	for (uint32_t i = 0; i < 0x10; ++i)
 	{
 		const uint8_t b = MemRead(m, static_cast<uint16_t>(m.hdma_src + i));
 		MemWrite(m, static_cast<uint16_t>(0x8000 + ((m.hdma_dst + i) & 0x1FFF)), b);
 	}
+	g_dma_vram_bypass = false;
 	m.hdma_src = static_cast<uint16_t>(m.hdma_src + 0x10);
 	m.hdma_dst = static_cast<uint16_t>(m.hdma_dst + 0x10);
 	m.hdma1 = static_cast<uint8_t>(m.hdma_src >> 8);

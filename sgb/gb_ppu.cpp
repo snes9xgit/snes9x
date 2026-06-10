@@ -37,17 +37,16 @@
 // emits ONE pixel per dot (RenderPixel), re-sampling LCDC/SCX/SCY/OBP0/
 // OBP1/WY at each pixel — this catches mid-LY register writes that some
 // games use for parallax (Animaniacs cloud strip), palette effects, and
-// partial-line scroll. WX and BGP are exceptions: both are latched at
-// mode 2 → 3 and held for the line, so STAT-handler-driven mid-mode-3
-// writes apply to the NEXT line. This matches the 8-dot tile-boundary
-// granularity real DMG uses for window engage (rather than per-pixel).
-// Without WX latching, games that toggle WX from a STAT IRQ to engage/
-// disengage the window for a dialog overlay (One Piece - Maboroshi no
-// Grand Line) tear the boundary scanlines. Without BGP latching, games
-// with per-scanline BGP raster effects where the handler runs long
-// (Initial D Gaiden racing speedometer top border) split the next
-// scanline — early pixels with the previous line's BGP, late pixels
-// with the new value.
+// partial-line scroll. WX is an exception: it is latched at mode 2 → 3
+// and held for the line, so STAT-handler-driven mid-mode-3 writes apply
+// to the NEXT line. This matches the 8-dot tile-boundary granularity
+// real DMG uses for window engage (rather than per-pixel). Without WX
+// latching, games that toggle WX from a STAT IRQ to engage/disengage
+// the window for a dialog overlay (One Piece - Maboroshi no Grand Line)
+// tear the boundary scanlines. BGP is also latched at mode 2 → 3 but a
+// write landing during mode 3 re-latches immediately (applies from the
+// current pixel on) — see Ppu::latched_bgp for the Initial D Gaiden /
+// RoboCop trade-off this resolves.
 //
 // OBJ-over-BG priority: the per-pixel BG raw value (scanline_bg_raw) is
 // tracked alongside the palette-mapped framebuffer so SampleSpritePixel
@@ -968,7 +967,11 @@ void PpuWriteReg(Ppu &p, Memory &mem, uint16_t addr, uint8_t value)
 		case 0xFF43: p.scx = value; break;
 		case 0xFF44: p.ly  = 0; RecomputeStatLine(p, mem); break;
 		case 0xFF45: p.lyc = value; RecomputeStatLine(p, mem); break;
-		case 0xFF47: p.bgp  = value; break;
+		case 0xFF47:
+			p.bgp = value;
+			if (p.mode == PpuMode::Transfer)
+				p.latched_bgp = value;
+			break;
 		case 0xFF48: p.obp0 = value; break;
 		case 0xFF49: p.obp1 = value; break;
 		case 0xFF4A: p.wy = value;   break;
