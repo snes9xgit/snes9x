@@ -250,6 +250,18 @@
     <ClInclude Include="..\tile.h" />
     <ClInclude Include="..\tileimpl.h" />
     <ClInclude Include="libretro.h" />
+    <ClInclude Include="..\sgb\gb_apu.h" />
+    <ClInclude Include="..\sgb\gb_cart.h" />
+    <ClInclude Include="..\sgb\gb_cpu.h" />
+    <ClInclude Include="..\sgb\gb_joypad.h" />
+    <ClInclude Include="..\sgb\gb_mbc.h" />
+    <ClInclude Include="..\sgb\gb_memory.h" />
+    <ClInclude Include="..\sgb\gb_ops.h" />
+    <ClInclude Include="..\sgb\gb_ppu.h" />
+    <ClInclude Include="..\sgb\gb_timer.h" />
+    <ClInclude Include="..\sgb\sgb.h" />
+    <ClInclude Include="..\sgb\sgb_packet.h" />
+    <ClInclude Include="..\sgb\sgb_state.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\apu\apu.cpp" />
@@ -316,6 +328,19 @@
     <ClCompile Include="..\tileimpl-h2x1.cpp" />
     <ClCompile Include="libretro.cpp" />
     <ClCompile Include="..\fscompat.cpp" />
+    <ClCompile Include="..\sgb\gb_apu.cpp" />
+    <ClCompile Include="..\sgb\gb_cart.cpp" />
+    <ClCompile Include="..\sgb\gb_cpu.cpp" />
+    <ClCompile Include="..\sgb\gb_joypad.cpp" />
+    <ClCompile Include="..\sgb\gb_mbc.cpp" />
+    <ClCompile Include="..\sgb\gb_memory.cpp" />
+    <ClCompile Include="..\sgb\gb_ops.cpp" />
+    <ClCompile Include="..\sgb\gb_ops_cb.cpp" />
+    <ClCompile Include="..\sgb\gb_ppu.cpp" />
+    <ClCompile Include="..\sgb\gb_timer.cpp" />
+    <ClCompile Include="..\sgb\sgb.cpp" />
+    <ClCompile Include="..\sgb\sgb_packet.cpp" />
+    <ClCompile Include="..\sgb\sgb_state.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
