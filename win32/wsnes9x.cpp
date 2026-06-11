@@ -50,6 +50,7 @@
 #include "../memmap.h"
 #include "../cpuexec.h"
 #include "../display.h"
+#include "../screenshot.h"
 #include "../cheats.h"
 #include "../netplay.h"
 #include "kaillera.h"
@@ -854,6 +855,13 @@ static void MasterHotkeyResetTimer()
 	masterKeyToggled = false;
 }
 
+static void WinRequestScreenshot()
+{
+	Settings.TakeScreenshot = true;
+	if (!Settings.StopEmulation && (Settings.ForcedPause || (Settings.Paused && !Settings.FrameAdvance)))
+		S9xDoScreenshot(IPPU.RenderedScreenWidth, IPPU.RenderedScreenHeight);
+}
+
 int HandleKeyMessage(WPARAM wParam, LPARAM lParam)
 {
 	auto MatchesAnyBinding = [](WPARAM wParam, WORD primary, const WORD* extra) -> bool {
@@ -1187,7 +1195,7 @@ int HandleKeyMessage(WPARAM wParam, LPARAM lParam)
 		}
 		if(HKmatch(SaveScreenShot))
 		{
-			Settings.TakeScreenshot=true;
+			WinRequestScreenshot();
 		}
 		if(HKmatch(ScopePause))
 		{
@@ -2569,7 +2577,7 @@ LRESULT CALLBACK WinProc(
 			S9xFixColourBrightness();
 			break;
 		case ID_SAVESCREENSHOT:
-			Settings.TakeScreenshot=true;
+			WinRequestScreenshot();
 			break;
 		case ID_FILE_SAVE_SPC_DATA:
 			S9xDumpSPCSnapshot();
