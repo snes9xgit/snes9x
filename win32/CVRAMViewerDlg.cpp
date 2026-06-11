@@ -24,10 +24,12 @@ constexpr int kSrcMax = 2048;  // large enough for 64-wide * 256 rows * 8 px
 constexpr int kPalSrcSize = 128;
 
 enum BitDepth { BD_2BPP = 0, BD_4BPP, BD_8BPP, BD_MODE7, BD_MODE7_EXTBG };
+enum TileLayout { TL_NORMAL = 0, TL_8X16, TL_16X16 };
 
 struct VRAMState {
     int  source;             // TILE_SRC_*
     int  bitDepth;
+    int  layout;             // TL_*
     uint32 address;          // byte offset into the selected source
     int  widthTiles;         // tiles per row (8..64)
     int  zoom;               // 1..9
@@ -74,6 +76,49 @@ int ColorsPerTile(int bd) {
 }
 
 bool IsMode7(int bd) { return bd == BD_MODE7 || bd == BD_MODE7_EXTBG; }
+
+int TilesPerBand(int layout, int tilesX) {
+    switch (layout) {
+    case TL_8X16:  return tilesX * 2;
+    case TL_16X16: return (tilesX / 2) * 4;
+    }
+    return tilesX;
+}
+
+void CellForTileIndex(int layout, int tilesX, int t, int *gx, int *gy) {
+    switch (layout) {
+    case TL_8X16: {
+        int tpb = tilesX * 2;
+        int band = t / tpb, r = t % tpb;
+        *gx = r >> 1;
+        *gy = band * 2 + (r & 1);
+        return;
+    }
+    case TL_16X16: {
+        int tpb = (tilesX / 2) * 4;
+        int band = t / tpb, r = t % tpb;
+        int quad = r >> 2, sub = r & 3;
+        *gx = quad * 2 + (sub & 1);
+        *gy = band * 2 + (sub >> 1);
+        return;
+    }
+    }
+    *gx = t % tilesX;
+    *gy = t / tilesX;
+}
+
+int TileIndexAtCell(int layout, int tilesX, int gx, int gy) {
+    switch (layout) {
+    case TL_8X16:
+        return (gy >> 1) * (tilesX * 2) + gx * 2 + (gy & 1);
+    case TL_16X16: {
+        int quadCols = tilesX / 2;
+        if (gx >= quadCols * 2) return -1;
+        return (gy >> 1) * (quadCols * 4) + (gx >> 1) * 4 + (gy & 1) * 2 + (gx & 1);
+    }
+    }
+    return gy * tilesX + gx;
+}
 
 // Tile-alignment mask bits for the given bit depth. We also AND with the
 // source's size, computed separately in SourceAddressMask().
@@ -132,8 +177,10 @@ void DrawMode7TilePixel(uint32 *dstBGRA, int dstStride, uint32 tileIdx,
 
 void DrawTileIntoCanvas(VRAMState *st, int tileIdx, const uint32 pal[256]) {
     int tilesX = st->widthTiles;
-    int gx = (tileIdx % tilesX) * 8;
-    int gy = (tileIdx / tilesX) * 8;
+    int cx, cy;
+    CellForTileIndex(st->layout, tilesX, tileIdx, &cx, &cy);
+    int gx = cx * 8;
+    int gy = cy * 8;
     if (gx + 8 > kSrcMax || gy + 8 > kSrcMax) return;
 
     uint32 *dst = st->tileBits + gy * kSrcMax + gx;
@@ -181,7 +228,11 @@ void RedrawTiles(HWND hDlg) {
     int tilesX = st->widthTiles;
     if (tilesX < 8) tilesX = 8;
     if (tilesX > 64) tilesX = 64;
-    int rows = (maxT + tilesX - 1) / tilesX;
+    int bandRows = (st->layout == TL_NORMAL) ? 1 : 2;
+    int tpb = TilesPerBand(st->layout, tilesX);
+    if (tpb < 1) tpb = 1;
+    int bands = (maxT + tpb - 1) / tpb;
+    int rows = bands * bandRows;
 
     int pxW = tilesX * 8;
     int pxH = rows * 8;
@@ -193,7 +244,7 @@ void RedrawTiles(HWND hDlg) {
     uint32 bg = pal[0];
     for (int i = 0; i < kSrcMax * kSrcMax; ++i) st->tileBits[i] = bg;
 
-    int total = rows * tilesX;
+    int total = ((pxH / 8) / bandRows) * tpb;
     if (total > maxT) total = maxT;
     for (int t = 0; t < total; ++t) DrawTileIntoCanvas(st, t, pal);
 
@@ -347,7 +398,9 @@ void HandleCanvasClick(HWND hDlg, VRAMState *st) {
     if (pxX < 0 || pxX >= st->curSrcW || pxY < 0 || pxY >= st->curSrcH) return;
     int tileX = pxX / 8;
     int tileY = pxY / 8;
-    st->selectedTile = tileY * st->widthTiles + tileX;
+    int idx = TileIndexAtCell(st->layout, st->widthTiles, tileX, tileY);
+    if (idx < 0) return;
+    st->selectedTile = idx;
     UpdateTileInfo(hDlg, st);
 }
 
@@ -396,6 +449,13 @@ void PopulateBitDepth(HWND hCombo) {
     SendMessage(hCombo, CB_ADDSTRING, 0, (LPARAM)_T("Mode 7"));
     SendMessage(hCombo, CB_ADDSTRING, 0, (LPARAM)_T("Mode 7 EXTBG"));
     SendMessage(hCombo, CB_SETCURSEL, BD_4BPP, 0);
+}
+
+void PopulateLayout(HWND hCombo) {
+    SendMessage(hCombo, CB_ADDSTRING, 0, (LPARAM)_T("Normal"));
+    SendMessage(hCombo, CB_ADDSTRING, 0, (LPARAM)_T("8x16 (same line)"));
+    SendMessage(hCombo, CB_ADDSTRING, 0, (LPARAM)_T("16x16 (same line)"));
+    SendMessage(hCombo, CB_SETCURSEL, TL_NORMAL, 0);
 }
 
 constexpr UINT_PTR kAutoRepeatTimerStart  = 0xAB01;
@@ -497,6 +557,7 @@ INT_PTR CALLBACK DlgVRAMViewer(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam
         VRAMState *st = new VRAMState();
         st->source = TILE_SRC_VRAM;
         st->bitDepth = BD_4BPP;
+        st->layout = TL_NORMAL;
         st->address = 0;
         st->widthTiles = 16;
         st->zoom = 1;
@@ -516,6 +577,7 @@ INT_PTR CALLBACK DlgVRAMViewer(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam
         PopulateZoom(GetDlgItem(hDlg, IDC_VRAMV_ZOOM));
         PopulateSource(GetDlgItem(hDlg, IDC_VRAMV_SOURCE));
         PopulateBitDepth(GetDlgItem(hDlg, IDC_VRAMV_BITDEPTH));
+        PopulateLayout(GetDlgItem(hDlg, IDC_VRAMV_LAYOUT));
 
         CheckDlgButton(hDlg, IDC_VRAMV_USECGRAM, BST_CHECKED);
         CheckDlgButton(hDlg, IDC_VRAMV_AUTOUPDATE, BST_CHECKED);
@@ -614,6 +676,19 @@ INT_PTR CALLBACK DlgVRAMViewer(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam
                 int sel = (int)SendDlgItemMessage(hDlg, IDC_VRAMV_BITDEPTH, CB_GETCURSEL, 0, 0);
                 if (sel >= 0) {
                     st->bitDepth = sel;
+                    st->selectedTile = -1;
+                    st->viewX = st->viewY = 0;
+                    UpdateTileInfo(hDlg, st);
+                    RedrawTiles(hDlg);
+                }
+            }
+            return TRUE;
+
+        case IDC_VRAMV_LAYOUT:
+            if (code == CBN_SELCHANGE) {
+                int sel = (int)SendDlgItemMessage(hDlg, IDC_VRAMV_LAYOUT, CB_GETCURSEL, 0, 0);
+                if (sel >= 0) {
+                    st->layout = sel;
                     st->selectedTile = -1;
                     st->viewX = st->viewY = 0;
                     UpdateTileInfo(hDlg, st);

@@ -724,6 +724,7 @@
 #define IDC_VRAMV_WIDTH                 3206
 #define IDC_VRAMV_WIDTH_SPIN            3207
 #define IDC_VRAMV_TILEINFO              3208
+#define IDC_VRAMV_LAYOUT                3209
 
 #define IDC_GBTV_CANVAS                 3262
 #define IDC_GBTV_ZOOM                   3263
