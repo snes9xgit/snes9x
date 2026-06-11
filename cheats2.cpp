@@ -8,10 +8,19 @@
 #include "cheats.h"
 #include "snes9x.h"
 #include "memmap.h"
+#include "sgb/sgb.h"
 #include <cassert>
+
+bool S9xCheatsGBMode(void)
+{
+    return Settings.SuperGameBoy && !Settings.SGB_BIOSModeActive;
+}
 
 static inline uint8 S9xGetByteFree(uint32 Address)
 {
+    if (S9xCheatsGBMode())
+        return S9xSGBCheatRead(Address);
+
     int block = (Address & 0xffffff) >> MEMMAP_SHIFT;
     uint8 *GetAddress = Memory.Map[block];
     uint8 byte;
@@ -104,6 +113,12 @@ static inline uint8 S9xGetByteFree(uint32 Address)
 
 static inline void S9xSetByteFree(uint8 Byte, uint32 Address)
 {
+    if (S9xCheatsGBMode())
+    {
+        S9xSGBCheatWrite(Address, Byte);
+        return;
+    }
+
     int block = (Address & 0xffffff) >> MEMMAP_SHIFT;
     uint8 *SetAddress = Memory.Map[block];
 
@@ -204,9 +219,28 @@ void S9xInitWatchedAddress(void)
 
 void S9xInitCheatData(void)
 {
-    Cheat.RAM = Memory.RAM;
-    Cheat.SRAM = Memory.SRAM;
-    Cheat.FillRAM = Memory.FillRAM;
+    Cheat.gb_mode = S9xCheatsGBMode();
+
+    if (Cheat.gb_mode)
+    {
+        unsigned int wram_size = 0, sram_size = 0, hram_size = 0;
+        Cheat.RAM       = S9xSGBCheatWRAMPtr(&wram_size);
+        Cheat.SRAM      = S9xSGBCheatSRAMPtr(&sram_size);
+        Cheat.IRAM      = S9xSGBCheatHRAMPtr(&hram_size);
+        Cheat.FillRAM   = Memory.FillRAM;
+        Cheat.ram_size  = wram_size;
+        Cheat.sram_size = sram_size > 0x10000 ? 0x10000 : sram_size;
+        Cheat.iram_size = hram_size;
+        return;
+    }
+
+    Cheat.RAM       = Memory.RAM;
+    Cheat.SRAM      = Memory.SRAM;
+    Cheat.FillRAM   = Memory.FillRAM;
+    Cheat.IRAM      = Memory.FillRAM + 0x3000;
+    Cheat.ram_size  = 0x20000;
+    Cheat.sram_size = 0x10000;
+    Cheat.iram_size = 0x2000;
 }
 
 uint32_t S9xCheatFlatToSNES(uint32_t flat_addr)
@@ -249,6 +283,49 @@ uint32_t S9xCheatFlatToSNES(uint32_t flat_addr)
         // (used by the watch system's internal encoding)
         return flat_addr + 0x7E0000;
     }
+}
+
+static uint32_t S9xCheatFlatToGB(uint32_t flat_addr)
+{
+    if (flat_addr < 0x20000)
+    {
+        if (flat_addr < 0x2000)
+            return 0xC000 + flat_addr;
+        return 0x10000 + (flat_addr - 0x2000);
+    }
+    else if (flat_addr < 0x30000)
+    {
+        uint32_t sram_off = flat_addr - 0x20000;
+        if (sram_off < 0x2000)
+            return 0xA000 + sram_off;
+        return 0x16000 + (sram_off - 0x2000);
+    }
+
+    return 0xFF80 + (flat_addr - 0x30000);
+}
+
+int32_t S9xCheatGBToFlat(uint32_t gb_addr)
+{
+    if (gb_addr >= 0xC000 && gb_addr < 0xE000)
+        return gb_addr - 0xC000;
+    if (gb_addr >= 0xE000 && gb_addr < 0xFE00)   // Echo RAM
+        return gb_addr - 0xE000;
+    if (gb_addr >= 0x10000 && gb_addr < 0x16000)
+        return 0x2000 + (gb_addr - 0x10000);
+    if (gb_addr >= 0xA000 && gb_addr < 0xC000)
+        return 0x20000 + (gb_addr - 0xA000);
+    if (gb_addr >= 0x16000 && gb_addr < 0x24000)
+        return 0x22000 + (gb_addr - 0x16000);
+    if (gb_addr >= 0xFF80 && gb_addr < 0xFFFF)
+        return 0x30000 + (gb_addr - 0xFF80);
+    return -1;
+}
+
+uint32_t S9xCheatFlatToAddress(uint32_t flat_addr)
+{
+    if (S9xCheatsGBMode())
+        return S9xCheatFlatToGB(flat_addr);
+    return S9xCheatFlatToSNES(flat_addr);
 }
 
 static inline std::string trim(const std::string &&string)
@@ -462,6 +539,126 @@ bool S9xGameGenieToRaw(const std::string &code, uint32 &address, uint8 &byte)
     return true;
 }
 
+// GB GameShark TTVVAAAA: TT 00/01 = 8-bit RAM write, 8x = SRAM bank x,
+// 9x = CGB WRAM bank x; AAAA is little-endian.
+static bool S9xGBGameSharkToRaw(const std::string &code, uint32 &address, uint8 &byte)
+{
+    if (code.length() != 8 || !is_all_hex(code))
+        return false;
+
+    uint32 data = std::strtoul(code.c_str(), nullptr, 16);
+    uint8  type = data >> 24;
+    uint8  value = (data >> 16) & 0xFF;
+    uint32 addr = ((data & 0xFF) << 8) | ((data >> 8) & 0xFF);
+
+    if (type == 0x00 || type == 0x01)
+    {
+        if (addr < 0x8000)
+            return false;
+    }
+    else if ((type & 0xF0) == 0x80)
+    {
+        if (addr < 0xA000 || addr >= 0xC000)
+            return false;
+        uint8 bank = type & 0x0F;
+        if (bank >= 1)
+            addr = 0x16000 + (bank - 1) * 0x2000 + (addr - 0xA000);
+    }
+    else if ((type & 0xF0) == 0x90)
+    {
+        if (addr < 0xD000 || addr >= 0xE000)
+            return false;
+        uint8 bank = type & 0x07;
+        if (bank >= 2)
+            addr = 0x10000 + (bank - 2) * 0x1000 + (addr - 0xD000);
+    }
+    else
+        return false;
+
+    address = addr;
+    byte = value;
+
+    return true;
+}
+
+// GB Game Genie ABC-DEF[-GHI]: value = AB, address = (F^$F)CDE,
+// compare = GI rotated right 2 then XOR $BA (H is a check digit).
+// ROM patches: bank-0 addresses patch one site; banked addresses
+// (0x4000-0x7FFF) expand to every 16K bank, filtered by the compare
+// byte when present.
+static bool S9xGBGameGenieToCheats(const std::string &code, std::vector<SCheat> &cheats)
+{
+    bool has_compare = false;
+
+    if (code.length() == 11 && code[3] == '-' && code[7] == '-' &&
+        is_all_hex(code.substr(0, 3)) && is_all_hex(code.substr(4, 3)) &&
+        is_all_hex(code.substr(8, 3)))
+        has_compare = true;
+    else if (!(code.length() == 7 && code[3] == '-' &&
+               is_all_hex(code.substr(0, 3)) && is_all_hex(code.substr(4, 3))))
+        return false;
+
+    auto hex = [](char ch) -> uint32 {
+        if (ch >= '0' && ch <= '9') return ch - '0';
+        if (ch >= 'a' && ch <= 'f') return ch - 'a' + 10;
+        return ch - 'A' + 10;
+    };
+
+    uint8  value = (hex(code[0]) << 4) | hex(code[1]);
+    uint32 address = (hex(code[2]) << 8) | (hex(code[4]) << 4) | hex(code[5]) |
+                     ((hex(code[6]) ^ 0xF) << 12);
+    uint8  compare = 0;
+
+    if (address >= 0x8000)
+        return false;
+
+    if (has_compare)
+    {
+        compare = (hex(code[8]) << 4) | hex(code[10]);
+        compare = ((compare >> 2) | (compare << 6)) & 0xFF;
+        compare ^= 0xBA;
+    }
+
+    unsigned int rom_size = 0;
+    const unsigned char *rom = S9xSGBCheatROMPtr(&rom_size);
+    if (!rom || !rom_size)
+        return false;
+
+    SCheat c;
+    c.enabled     = false;
+    c.conditional = false;
+    c.cond_true   = false;
+    c.cond_byte   = 0;
+    c.saved_byte  = 0;
+    c.byte        = value;
+
+    if (address < 0x4000)
+    {
+        if (address >= rom_size)
+            return false;
+        if (has_compare)
+        {
+            c.conditional = true;
+            c.cond_byte = compare;
+        }
+        c.address = 0x01000000 | address;
+        cheats.push_back(c);
+        return true;
+    }
+
+    size_t before = cheats.size();
+    for (uint32 bank = 0; bank * 0x4000 + 0x4000 <= rom_size; bank++)
+    {
+        uint32 ofs = bank * 0x4000 + (address - 0x4000);
+        if (has_compare && rom[ofs] != compare)
+            continue;
+        c.address = 0x01000000 | ofs;
+        cheats.push_back(c);
+    }
+
+    return cheats.size() > before;
+}
+
 SCheat S9xTextToCheat(const std::string &text)
 {
     SCheat c;
@@ -471,11 +668,15 @@ SCheat S9xTextToCheat(const std::string &text)
     c.enabled     = false;
     c.conditional = false;
 
-    if (S9xGameGenieToRaw(text, c.address, c.byte))
+    if (S9xCheatsGBMode() && S9xGBGameSharkToRaw(text, c.address, c.byte))
     {
         byte = c.byte;
     }
-    else if (S9xProActionReplayToRaw(text, c.address, c.byte))
+    else if (!S9xCheatsGBMode() && S9xGameGenieToRaw(text, c.address, c.byte))
+    {
+        byte = c.byte;
+    }
+    else if (!S9xCheatsGBMode() && S9xProActionReplayToRaw(text, c.address, c.byte))
     {
         byte = c.byte;
     }
@@ -547,6 +748,9 @@ SCheatGroup S9xCreateCheatGroup(const std::string &name, const std::string &chea
     auto cheats = split_string(cheat, '+');
     for (const auto &c : cheats)
     {
+        if (S9xCheatsGBMode() && S9xGBGameGenieToCheats(c, g.cheat))
+            continue;
+
         SCheat new_cheat = S9xTextToCheat(c);
         if (new_cheat.address)
             g.cheat.push_back(new_cheat);

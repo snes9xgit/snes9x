@@ -1640,6 +1640,7 @@ bool8 CMemory::LoadROM (const char *filename)
 
         // BIOS-less fallback — the legacy path that runs our GB core directly
         // in S9xMainLoop, gated on Settings.SuperGameBoy.
+        S9xDeleteCheats();
         if (Settings.SuperGameBoy) S9xSGBDeinit();
         if (Settings.SGB_BIOSModeActive) Settings.SGB_BIOSModeActive = FALSE;
         Settings.SuperGameBoy      = TRUE;
@@ -1655,6 +1656,7 @@ bool8 CMemory::LoadROM (const char *filename)
         S9xSGBSetAudioRate(Settings.SoundPlaybackRate);
         S9xInitCheatData();
         ROMFilename = filename;
+        S9xLoadCheatFile(S9xGetFilename(".cht", CHEAT_DIR).c_str());
         EmitSGBLoadBanner(filename, 0);
         return TRUE;
     }
@@ -1715,6 +1717,7 @@ bool8 CMemory::LoadROM (const char *filename)
             }
 
             // BIOS-less fallback (legacy path).
+            S9xDeleteCheats();
             if (Settings.SGB_BIOSModeActive) Settings.SGB_BIOSModeActive = FALSE;
             Settings.SuperGameBoy      = TRUE;
             Settings.GameBoyRunMode    = gbCgb ? 0 : 1;
@@ -1729,6 +1732,7 @@ bool8 CMemory::LoadROM (const char *filename)
             S9xSGBSetAudioRate(Settings.SoundPlaybackRate);
             S9xInitCheatData();
             ROMFilename = filename;
+            S9xLoadCheatFile(S9xGetFilename(".cht", CHEAT_DIR).c_str());
             EmitSGBLoadBanner(filename, 0);
             return TRUE;
         }

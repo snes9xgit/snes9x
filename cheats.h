@@ -41,6 +41,11 @@ struct SCheatData
 	uint8_t	*RAM;
 	uint8_t	*FillRAM;
 	uint8_t	*SRAM;
+	uint8_t	*IRAM;
+	uint32_t	ram_size;
+	uint32_t	sram_size;
+	uint32_t	iram_size;
+	bool8	gb_mode;
 	uint32_t	ALL_BITS[0x32000 >> 5];
 	uint8_t	CWatchRAM[0x32000];
 };
@@ -93,6 +98,9 @@ void S9xCheatsEnable(void);
 std::string S9xCheatValidate(const std::string &cheat);
 
 uint32_t S9xCheatFlatToSNES(uint32_t flat_addr);
+bool S9xCheatsGBMode(void);
+uint32_t S9xCheatFlatToAddress(uint32_t flat_addr);
+int32_t S9xCheatGBToFlat(uint32_t gb_addr);
 
 void S9xInitCheatData (void);
 void S9xInitWatchedAddress (void);

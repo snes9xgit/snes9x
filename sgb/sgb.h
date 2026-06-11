@@ -109,6 +109,21 @@ public:
 	// out-of-range addresses.
 	uint8_t        PeekRAByte(uint32_t addr) const;
 
+	// Cheat-engine memory access. PeekRAByte's address layout, except
+	// 0xA000-0xBFFF is cart SRAM bank 0 fixed (ignores the MBC RAM-enable
+	// gate) and 0x01000000|offset addresses the cart ROM image by
+	// physical byte offset (Game Genie ROM patches). Writes outside
+	// writable regions are dropped.
+	uint8_t        CheatRead(uint32_t addr) const;
+	void           CheatWrite(uint32_t addr, uint8_t value);
+
+	// Live region pointers + byte counts for the cheat-search engine;
+	// nullptr / *size=0 when unavailable.
+	uint8_t       *CheatWRAM(uint32_t *size) const;   // 0x2000 DMG / 0x8000 CGB
+	uint8_t       *CheatSRAM(uint32_t *size) const;
+	uint8_t       *CheatHRAM(uint32_t *size) const;   // 0x7F
+	const uint8_t *CheatROM(uint32_t *size) const;
+
 	// Install the 256-byte DMG/SGB GB-side boot ROM. Takes effect on the
 	// next Reset. Call with nullptr/size=0 to clear. Only loaded in
 	// authentic BIOS mode — BIOS-less continues to start at 0x0100.
@@ -448,6 +463,14 @@ bool          S9xSGBGetROMBytes (const unsigned char **out_data, size_t *out_siz
 // 0x10000-0x33FFF for the extended SRAM/CGB-WRAM bank window). Returns
 // 0 for unmapped or out-of-range addresses.
 unsigned char S9xSGBPeekRAByte (unsigned int addr);
+
+// Cheat-engine GB memory access — see Emulator::CheatRead/CheatWrite.
+unsigned char S9xSGBCheatRead (unsigned int addr);
+void          S9xSGBCheatWrite (unsigned int addr, unsigned char value);
+unsigned char *S9xSGBCheatWRAMPtr (unsigned int *size);
+unsigned char *S9xSGBCheatSRAMPtr (unsigned int *size);
+unsigned char *S9xSGBCheatHRAMPtr (unsigned int *size);
+const unsigned char *S9xSGBCheatROMPtr (unsigned int *size);
 
 bool S9xSGBHasBattery(void);
 bool S9xSGBSaveBatteryToPath(const char *path);
