@@ -2850,6 +2850,11 @@ LRESULT CALLBACK WinProc(
 			}
 			S9xRestoreWindowTitle();
 			break;
+		case ID_RA_TOGGLE_IMAGES:
+			GUI.RAShowChallengeImages = !GUI.RAShowChallengeImages;
+			RA_SetShowChallengeImages(GUI.RAShowChallengeImages);
+			WinSaveConfigFile();
+			break;
 		case ID_RA_UA_SUPERSNES9X:
 			strcpy(GUI.RAEmulatorName, "SuperSnes9x");
 			WinSaveConfigFile();
@@ -4504,6 +4509,7 @@ int WINAPI WinMain(
 	S9xSetupDefaultKeymap();
 
 #ifdef RETROACHIEVEMENTS_SUPPORT
+	RA_SetShowChallengeImages(GUI.RAShowChallengeImages);
 	if (GUI.RAEnabled)
 	{
 		RA_Win32_RegisterCallbacks();
@@ -5125,6 +5131,11 @@ static void CheckMenuStates ()
     if (!GUI.RAEnabled)
         mii.fState |= MFS_DISABLED;
     SetMenuItemInfo(GUI.hMenu, ID_RA_HARDCORE_MODE, FALSE, &mii);
+
+    mii.fState = GUI.RAShowChallengeImages ? MFS_CHECKED : MFS_UNCHECKED;
+    if (!GUI.RAEnabled)
+        mii.fState |= MFS_DISABLED;
+    SetMenuItemInfo(GUI.hMenu, ID_RA_TOGGLE_IMAGES, FALSE, &mii);
 
     mii.fState = GUI.RAEnabled ? MFS_ENABLED : MFS_DISABLED;
     mii.fMask = MIIM_STATE | MIIM_STRING;

@@ -316,6 +316,7 @@ struct sGUI {
     // RetroAchievements
     bool RAEnabled;
     bool RAHardcoreMode;
+    bool RAShowChallengeImages;
     char RAUsername[256];
     char RAApiToken[256];
     char RAEmulatorName[64];

@@ -1074,6 +1074,7 @@ void WinRegisterConfigItems()
 #define CATEGORY "RetroAchievements"
     AddBoolC("Enabled", GUI.RAEnabled, false, "true to enable RetroAchievements support");
     AddBoolC("HardcoreMode", GUI.RAHardcoreMode, false, "true to enable hardcore mode (disables save state loading, rewind, cheats)");
+    AddBoolC("ShowChallengeImages", GUI.RAShowChallengeImages, true, "true to show active challenge achievements as on-screen badge images, false to show them as text toasts");
     AddStringC("Username", GUI.RAUsername, 256, "", "RetroAchievements username");
     AddStringC("ApiToken", GUI.RAApiToken, 256, "", "RetroAchievements API token (set automatically on login)");
     AddStringC("EmulatorName", GUI.RAEmulatorName, 64, "SuperSnes9x", "Emulator name sent to RetroAchievements");
