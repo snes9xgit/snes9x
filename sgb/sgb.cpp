@@ -918,10 +918,10 @@ uint8_t Emulator::PeekRAByte(uint32_t addr) const
 	}
 
 	// Extended bank window 0x10000-0x33FFF.
-	//   0x10000-0x15FFF — GBC system RAM banks 2-7. We don't yet emulate
-	//                     CGB extra WRAM banks; return 0.
+	//   0x10000-0x15FFF — GBC system RAM banks 2-7.
 	//   0x16000-0x33FFF — Cartridge SRAM banks 1-15 (each 0x2000 bytes).
-	if (addr < 0x16000) return 0;
+	if (addr < 0x16000)
+		return impl_->mem.wram[0x2000 + (addr - 0x10000)];
 	if (addr < 0x34000)
 	{
 		const uint32_t off = addr - 0x16000;
@@ -933,6 +933,140 @@ uint8_t Emulator::PeekRAByte(uint32_t addr) const
 		return 0;
 	}
 	return 0;
+}
+
+uint8_t Emulator::CheatRead(uint32_t addr) const
+{
+	if (!impl_->has_rom) return 0;
+
+	if (addr & 0x01000000)
+	{
+		const uint32_t ofs = addr & 0x00FFFFFF;
+		return ofs < impl_->cart.rom.size() ? impl_->cart.rom[ofs] : 0;
+	}
+
+	if (addr < 0x10000)
+	{
+		const uint16_t a = static_cast<uint16_t>(addr);
+		if (a < 0x8000)
+			return MbcRead(const_cast<MbcState &>(impl_->cart.mbc),
+			               impl_->cart.rom, impl_->cart.sram, a, impl_->cart.mbc1_multicart);
+		if (a < 0xA000)        // VRAM — not exposed
+			return 0;
+		if (a < 0xC000)        // Cart SRAM bank 0, fixed, ignores RAM-enable
+		{
+			const uint32_t ofs = a - 0xA000;
+			return ofs < impl_->cart.sram.size() ? impl_->cart.sram[ofs] : 0;
+		}
+		if (a < 0xE000)
+			return impl_->mem.wram[a - 0xC000];
+		if (a < 0xFE00)        // Echo RAM
+			return impl_->mem.wram[a - 0xE000];
+		if (a >= 0xFF80 && a < 0xFFFF)
+			return impl_->mem.hram[a - 0xFF80];
+		return 0;
+	}
+
+	if (addr < 0x16000)        // CGB WRAM banks 2-7
+		return impl_->mem.wram[0x2000 + (addr - 0x10000)];
+	if (addr < 0x34000)        // Cart SRAM banks 1-15
+	{
+		const uint32_t ofs = 0x2000 + (addr - 0x16000);
+		return ofs < impl_->cart.sram.size() ? impl_->cart.sram[ofs] : 0;
+	}
+	return 0;
+}
+
+void Emulator::CheatWrite(uint32_t addr, uint8_t value)
+{
+	if (!impl_->has_rom) return;
+
+	if (addr & 0x01000000)
+	{
+		const uint32_t ofs = addr & 0x00FFFFFF;
+		if (ofs < impl_->cart.rom.size())
+			impl_->cart.rom[ofs] = value;
+		return;
+	}
+
+	if (addr < 0x10000)
+	{
+		const uint16_t a = static_cast<uint16_t>(addr);
+		if (a < 0x4000)        // ROM bank 0 patch
+		{
+			if (a < impl_->cart.rom.size())
+				impl_->cart.rom[a] = value;
+			return;
+		}
+		if (a < 0xA000)        // Switchable ROM / VRAM — not writable here
+			return;
+		if (a < 0xC000)        // Cart SRAM bank 0
+		{
+			const uint32_t ofs = a - 0xA000;
+			if (ofs < impl_->cart.sram.size())
+			{
+				impl_->cart.sram[ofs] = value;
+				impl_->cart.sram_dirty = true;
+			}
+			return;
+		}
+		if (a < 0xE000)
+		{
+			impl_->mem.wram[a - 0xC000] = value;
+			return;
+		}
+		if (a < 0xFE00)        // Echo RAM
+		{
+			impl_->mem.wram[a - 0xE000] = value;
+			return;
+		}
+		if (a >= 0xFF80 && a < 0xFFFF)
+			impl_->mem.hram[a - 0xFF80] = value;
+		return;
+	}
+
+	if (addr < 0x16000)
+	{
+		impl_->mem.wram[0x2000 + (addr - 0x10000)] = value;
+		return;
+	}
+	if (addr < 0x34000)
+	{
+		const uint32_t ofs = 0x2000 + (addr - 0x16000);
+		if (ofs < impl_->cart.sram.size())
+		{
+			impl_->cart.sram[ofs] = value;
+			impl_->cart.sram_dirty = true;
+		}
+	}
+}
+
+uint8_t *Emulator::CheatWRAM(uint32_t *size) const
+{
+	if (!impl_->has_rom) { *size = 0; return nullptr; }
+	*size = impl_->cgb_mode ? 0x8000 : 0x2000;
+	return impl_->mem.wram;
+}
+
+uint8_t *Emulator::CheatSRAM(uint32_t *size) const
+{
+	if (!impl_->has_rom || impl_->cart.sram.empty()) { *size = 0; return nullptr; }
+	*size = static_cast<uint32_t>(impl_->cart.sram.size());
+	return impl_->cart.sram.data();
+}
+
+uint8_t *Emulator::CheatHRAM(uint32_t *size) const
+{
+	if (!impl_->has_rom) { *size = 0; return nullptr; }
+	*size = sizeof(impl_->mem.hram);
+	return impl_->mem.hram;
+}
+
+const uint8_t *Emulator::CheatROM(uint32_t *size) const
+{
+	if (!impl_->has_rom || impl_->cart.rom.empty()) { *size = 0; return nullptr; }
+	*size = static_cast<uint32_t>(impl_->cart.rom.size());
+	return impl_->cart.rom.data();
 }
 
 void Emulator::SetRunMode(RunMode m)
@@ -2550,4 +2684,46 @@ bool S9xSGBGetROMBytes(const unsigned char **out_data, size_t *out_size)
 unsigned char S9xSGBPeekRAByte(unsigned int addr)
 {
 	return SGB::Instance().PeekRAByte(addr);
+}
+
+unsigned char S9xSGBCheatRead(unsigned int addr)
+{
+	return SGB::Instance().CheatRead(addr);
+}
+
+void S9xSGBCheatWrite(unsigned int addr, unsigned char value)
+{
+	SGB::Instance().CheatWrite(addr, value);
+}
+
+unsigned char *S9xSGBCheatWRAMPtr(unsigned int *size)
+{
+	uint32_t n = 0;
+	unsigned char *p = SGB::Instance().CheatWRAM(&n);
+	*size = n;
+	return p;
+}
+
+unsigned char *S9xSGBCheatSRAMPtr(unsigned int *size)
+{
+	uint32_t n = 0;
+	unsigned char *p = SGB::Instance().CheatSRAM(&n);
+	*size = n;
+	return p;
+}
+
+unsigned char *S9xSGBCheatHRAMPtr(unsigned int *size)
+{
+	uint32_t n = 0;
+	unsigned char *p = SGB::Instance().CheatHRAM(&n);
+	*size = n;
+	return p;
+}
+
+const unsigned char *S9xSGBCheatROMPtr(unsigned int *size)
+{
+	uint32_t n = 0;
+	const unsigned char *p = SGB::Instance().CheatROM(&n);
+	*size = n;
+	return p;
 }

@@ -37,17 +37,56 @@
 	 (s) == S9X_24_BITS ? (((int32) ((*((m) + (o)) + (*((m) + (o) + 1) << 8) + (*((m) + (o) + 2) << 16)) << 8)) >> 8): \
                            ((int32)  (*((m) + (o)) + (*((m) + (o) + 1) << 8) + (*((m) + (o) + 2) << 16) + (*((m) + (o) + 3) << 24))))
 
+static void S9xSetBitRange (uint32 *bits, int start, int count)
+{
+	// start is 32-aligned for all three regions (0x00000/0x20000/0x30000)
+	int full = count >> 5;
+	if (full)
+		memset(bits + (start >> 5), 0xff, full * sizeof(uint32));
+
+	int rem = count & 31;
+	if (rem)
+		bits[(start >> 5) + full] = (1u << rem) - 1;
+}
+
 void S9xStartCheatSearch (SCheatData *d)
 {
-	memmove(d->CWRAM, d->RAM, 0x20000);
-	memmove(d->CSRAM, d->SRAM, 0x80000);
-	memmove(d->CIRAM, &d->FillRAM[0x3000], 0x2000);
-	memset((char *) d->ALL_BITS, 0xff, 0x32000 >> 3);
+	if (d->RAM && d->ram_size)
+		memmove(d->CWRAM, d->RAM, d->ram_size);
+	if (d->SRAM && d->sram_size)
+		memmove(d->CSRAM, d->SRAM, d->sram_size);
+	if (d->IRAM && d->iram_size)
+		memmove(d->CIRAM, d->IRAM, d->iram_size);
+
+	memset((char *) d->ALL_BITS, 0, 0x32000 >> 3);
+	S9xSetBitRange(d->ALL_BITS, 0x00000, d->RAM  ? d->ram_size  : 0);
+	S9xSetBitRange(d->ALL_BITS, 0x20000, d->SRAM ? d->sram_size : 0);
+	S9xSetBitRange(d->ALL_BITS, 0x30000, d->IRAM ? d->iram_size : 0);
+}
+
+static void S9xClearTrailingBits (SCheatData *d, int l)
+{
+	int	i;
+	int	ram_n  = (int) d->ram_size;
+	int	sram_n = (int) d->sram_size;
+	int	iram_n = (int) d->iram_size;
+
+	for (i = ram_n - l < 0 ? 0 : ram_n - l; i < ram_n; i++)
+		BIT_CLEAR(d->WRAM_BITS, i);
+
+	for (i = sram_n - l < 0 ? 0 : sram_n - l; i < sram_n; i++)
+		BIT_CLEAR(d->SRAM_BITS, i);
+
+	for (i = iram_n - l < 0 ? 0 : iram_n - l; i < iram_n; i++)
+		BIT_CLEAR(d->IRAM_BITS, i);
 }
 
 void S9xSearchForChange (SCheatData *d, S9xCheatComparisonType cmp, S9xCheatDataSize size, bool8 is_signed, bool8 update)
 {
 	int	l, i;
+	int	ram_n  = (int) d->ram_size;
+	int	sram_n = (int) d->sram_size;
+	int	iram_n = (int) d->iram_size;
 
 	switch (size)
 	{
@@ -60,7 +99,7 @@ void S9xSearchForChange (SCheatData *d, S9xCheatComparisonType cmp, S9xCheatData
 
 	if (is_signed)
 	{
-		for (i = 0; i < 0x20000 - l; i++)
+		for (i = 0; i < ram_n - l; i++)
 		{
 			if (TEST_BIT(d->WRAM_BITS, i) && _S9XCHTC(cmp, _S9XCHTDS(size, d->RAM, i), _S9XCHTDS(size, d->CWRAM, i)))
 			{
@@ -71,7 +110,7 @@ void S9xSearchForChange (SCheatData *d, S9xCheatComparisonType cmp, S9xCheatData
 				BIT_CLEAR(d->WRAM_BITS, i);
 		}
 
-		for (i = 0; i < 0x10000 - l; i++)
+		for (i = 0; i < sram_n - l; i++)
 		{
 			if (TEST_BIT(d->SRAM_BITS, i) && _S9XCHTC(cmp, _S9XCHTDS(size, d->SRAM, i), _S9XCHTDS(size, d->CSRAM, i)))
 			{
@@ -82,12 +121,12 @@ void S9xSearchForChange (SCheatData *d, S9xCheatComparisonType cmp, S9xCheatData
 				BIT_CLEAR(d->SRAM_BITS, i);
 		}
 
-		for (i = 0; i < 0x2000 - l; i++)
+		for (i = 0; i < iram_n - l; i++)
 		{
-			if (TEST_BIT(d->IRAM_BITS, i) && _S9XCHTC(cmp, _S9XCHTDS(size, d->FillRAM + 0x3000, i), _S9XCHTDS(size, d->CIRAM, i)))
+			if (TEST_BIT(d->IRAM_BITS, i) && _S9XCHTC(cmp, _S9XCHTDS(size, d->IRAM, i), _S9XCHTDS(size, d->CIRAM, i)))
 			{
 				if (update)
-					d->CIRAM[i] = d->FillRAM[i + 0x3000];
+					d->CIRAM[i] = d->IRAM[i];
 			}
 			else
 				BIT_CLEAR(d->IRAM_BITS, i);
@@ -95,7 +134,7 @@ void S9xSearchForChange (SCheatData *d, S9xCheatComparisonType cmp, S9xCheatData
 	}
 	else
 	{
-		for (i = 0; i < 0x20000 - l; i++)
+		for (i = 0; i < ram_n - l; i++)
 		{
 			if (TEST_BIT(d->WRAM_BITS, i) && _S9XCHTC(cmp, _S9XCHTD(size, d->RAM, i), _S9XCHTD(size, d->CWRAM, i)))
 			{
@@ -106,7 +145,7 @@ void S9xSearchForChange (SCheatData *d, S9xCheatComparisonType cmp, S9xCheatData
 				BIT_CLEAR(d->WRAM_BITS, i);
 		}
 
-		for (i = 0; i < 0x10000 - l; i++)
+		for (i = 0; i < sram_n - l; i++)
 		{
 			if (TEST_BIT(d->SRAM_BITS, i) && _S9XCHTC(cmp, _S9XCHTD(size, d->SRAM, i), _S9XCHTD(size, d->CSRAM, i)))
 			{
@@ -117,28 +156,27 @@ void S9xSearchForChange (SCheatData *d, S9xCheatComparisonType cmp, S9xCheatData
 				BIT_CLEAR(d->SRAM_BITS, i);
 		}
 
-		for (i = 0; i < 0x2000 - l; i++)
+		for (i = 0; i < iram_n - l; i++)
 		{
-			if (TEST_BIT(d->IRAM_BITS, i) && _S9XCHTC(cmp, _S9XCHTD(size, d->FillRAM + 0x3000, i), _S9XCHTD(size, d->CIRAM, i)))
+			if (TEST_BIT(d->IRAM_BITS, i) && _S9XCHTC(cmp, _S9XCHTD(size, d->IRAM, i), _S9XCHTD(size, d->CIRAM, i)))
 			{
 				if (update)
-					d->CIRAM[i] = d->FillRAM[i + 0x3000];
+					d->CIRAM[i] = d->IRAM[i];
 			}
 			else
 				BIT_CLEAR(d->IRAM_BITS, i);
 		}
 	}
 
-	for (i = 0x20000 - l; i < 0x20000; i++)
-		BIT_CLEAR(d->WRAM_BITS, i);
-
-	for (i = 0x10000 - l; i < 0x10000; i++)
-		BIT_CLEAR(d->SRAM_BITS, i);
+	S9xClearTrailingBits(d, l);
 }
 
 void S9xSearchForValue (SCheatData *d, S9xCheatComparisonType cmp, S9xCheatDataSize size, uint32 value, bool8 is_signed, bool8 update)
 {
-	int l, i;
+	int	l, i;
+	int	ram_n  = (int) d->ram_size;
+	int	sram_n = (int) d->sram_size;
+	int	iram_n = (int) d->iram_size;
 
 	switch (size)
 	{
@@ -151,7 +189,7 @@ void S9xSearchForValue (SCheatData *d, S9xCheatComparisonType cmp, S9xCheatDataS
 
 	if (is_signed)
 	{
-		for (i = 0; i < 0x20000 - l; i++)
+		for (i = 0; i < ram_n - l; i++)
 		{
 			if (TEST_BIT(d->WRAM_BITS, i) && _S9XCHTC(cmp, _S9XCHTDS(size, d->RAM, i), (int32) value))
 			{
@@ -162,7 +200,7 @@ void S9xSearchForValue (SCheatData *d, S9xCheatComparisonType cmp, S9xCheatDataS
 				BIT_CLEAR(d->WRAM_BITS, i);
 		}
 
-		for (i = 0; i < 0x10000 - l; i++)
+		for (i = 0; i < sram_n - l; i++)
 		{
 			if (TEST_BIT(d->SRAM_BITS, i) && _S9XCHTC(cmp, _S9XCHTDS(size, d->SRAM, i), (int32) value))
 			{
@@ -173,12 +211,12 @@ void S9xSearchForValue (SCheatData *d, S9xCheatComparisonType cmp, S9xCheatDataS
 				BIT_CLEAR(d->SRAM_BITS, i);
 		}
 
-		for (i = 0; i < 0x2000 - l; i++)
+		for (i = 0; i < iram_n - l; i++)
 		{
-			if (TEST_BIT(d->IRAM_BITS, i) && _S9XCHTC(cmp, _S9XCHTDS(size, d->FillRAM + 0x3000, i), (int32) value))
+			if (TEST_BIT(d->IRAM_BITS, i) && _S9XCHTC(cmp, _S9XCHTDS(size, d->IRAM, i), (int32) value))
 			{
 				if (update)
-					d->CIRAM[i] = d->FillRAM[i + 0x3000];
+					d->CIRAM[i] = d->IRAM[i];
 			}
 			else
 				BIT_CLEAR(d->IRAM_BITS, i);
@@ -186,7 +224,7 @@ void S9xSearchForValue (SCheatData *d, S9xCheatComparisonType cmp, S9xCheatDataS
 	}
 	else
 	{
-		for (i = 0; i < 0x20000 - l; i++)
+		for (i = 0; i < ram_n - l; i++)
 		{
 			if (TEST_BIT(d->WRAM_BITS, i) && _S9XCHTC(cmp, _S9XCHTD(size, d->RAM, i), value))
 			{
@@ -197,7 +235,7 @@ void S9xSearchForValue (SCheatData *d, S9xCheatComparisonType cmp, S9xCheatDataS
 				BIT_CLEAR(d->WRAM_BITS, i);
 		}
 
-		for (i = 0; i < 0x10000 - l; i++)
+		for (i = 0; i < sram_n - l; i++)
 		{
 			if (TEST_BIT(d->SRAM_BITS, i) && _S9XCHTC(cmp, _S9XCHTD(size, d->SRAM, i), value))
 			{
@@ -208,28 +246,27 @@ void S9xSearchForValue (SCheatData *d, S9xCheatComparisonType cmp, S9xCheatDataS
 				BIT_CLEAR(d->SRAM_BITS, i);
 		}
 
-		for (i = 0; i < 0x2000 - l; i++)
+		for (i = 0; i < iram_n - l; i++)
 		{
-			if (TEST_BIT(d->IRAM_BITS, i) && _S9XCHTC(cmp, _S9XCHTD(size, d->FillRAM + 0x3000, i), value))
+			if (TEST_BIT(d->IRAM_BITS, i) && _S9XCHTC(cmp, _S9XCHTD(size, d->IRAM, i), value))
 			{
 				if (update)
-					d->CIRAM[i] = d->FillRAM[i + 0x3000];
+					d->CIRAM[i] = d->IRAM[i];
 			}
 			else
 				BIT_CLEAR(d->IRAM_BITS, i);
 		}
 	}
 
-	for (i = 0x20000 - l; i < 0x20000; i++)
-		BIT_CLEAR(d->WRAM_BITS, i);
-
-	for (i = 0x10000 - l; i < 0x10000; i++)
-		BIT_CLEAR(d->SRAM_BITS, i);
+	S9xClearTrailingBits(d, l);
 }
 
 void S9xSearchForAddress (SCheatData *d, S9xCheatComparisonType cmp, S9xCheatDataSize size, uint32 value, bool8 update)
 {
 	int	l, i;
+	int	ram_n  = (int) d->ram_size;
+	int	sram_n = (int) d->sram_size;
+	int	iram_n = (int) d->iram_size;
 
 	switch (size)
 	{
@@ -240,7 +277,7 @@ void S9xSearchForAddress (SCheatData *d, S9xCheatComparisonType cmp, S9xCheatDat
 		case S9X_32_BITS:	l = 3; break;
 	}
 
-	for (i = 0; i < 0x20000 - l; i++)
+	for (i = 0; i < ram_n - l; i++)
 	{
 		if (TEST_BIT(d->WRAM_BITS, i) && _S9XCHTC(cmp, i, (int32) value))
 		{
@@ -251,7 +288,7 @@ void S9xSearchForAddress (SCheatData *d, S9xCheatComparisonType cmp, S9xCheatDat
 			BIT_CLEAR(d->WRAM_BITS, i);
 	}
 
-	for (i = 0; i < 0x10000 - l; i++)
+	for (i = 0; i < sram_n - l; i++)
 	{
 		if (TEST_BIT(d->SRAM_BITS, i) && _S9XCHTC(cmp, i + 0x20000, (int32) value))
 		{
@@ -262,43 +299,39 @@ void S9xSearchForAddress (SCheatData *d, S9xCheatComparisonType cmp, S9xCheatDat
 			BIT_CLEAR(d->SRAM_BITS, i);
 	}
 
-	for (i = 0; i < 0x2000 - l; i++)
+	for (i = 0; i < iram_n - l; i++)
 	{
 		if (TEST_BIT(d->IRAM_BITS, i) && _S9XCHTC(cmp, i + 0x30000, (int32) value))
 		{
 			if (update)
-				d->CIRAM[i] = d->FillRAM[i + 0x3000];
+				d->CIRAM[i] = d->IRAM[i];
 		}
 		else
 			BIT_CLEAR(d->IRAM_BITS, i);
 	}
 
-	for (i = 0x20000 - l; i < 0x20000; i++)
-		BIT_CLEAR(d->WRAM_BITS, i);
-
-	for (i = 0x10000 - l; i < 0x10000; i++)
-		BIT_CLEAR(d->SRAM_BITS, i);
+	S9xClearTrailingBits(d, l);
 }
 
 void S9xOutputCheatSearchResults (SCheatData *d)
 {
 	int	i;
 
-	for (i = 0; i < 0x20000; i++)
+	for (i = 0; i < (int) d->ram_size; i++)
 	{
 		if (TEST_BIT(d->WRAM_BITS, i))
 			printf("WRAM: %05x: %02x\n", i, d->RAM[i]);
 	}
 
-	for (i = 0; i < 0x10000; i++)
+	for (i = 0; i < (int) d->sram_size; i++)
 	{
 		if (TEST_BIT(d->SRAM_BITS, i))
 			printf("SRAM: %04x: %02x\n", i, d->SRAM[i]);
 	}
 
-	for (i = 0; i < 0x2000; i++)
+	for (i = 0; i < (int) d->iram_size; i++)
 	{
 		if (TEST_BIT(d->IRAM_BITS, i))
-			printf("IRAM: %05x: %02x\n", i, d->FillRAM[i + 0x3000]);
+			printf("IRAM: %05x: %02x\n", i, d->IRAM[i]);
 	}
 }

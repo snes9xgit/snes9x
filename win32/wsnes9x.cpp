@@ -4558,15 +4558,27 @@ int WINAPI WinMain(
 					if(watches[i].on)
 					{
 						int address = watches[i].address - 0x7E0000;
-						const uint8* source;
+						if(address < 0 || address >= 0x32000)
+							continue;
+						const uint8* source = NULL;
 						if(address < 0x20000)
-							source = Memory.RAM + address ;
+						{
+							if(Cheat.RAM && address + watches[i].size <= (int)Cheat.ram_size)
+								source = Cheat.RAM + address;
+						}
 						else if(address < 0x30000)
-							source = Memory.SRAM + address  - 0x20000;
+						{
+							if(Cheat.SRAM && (address - 0x20000) + watches[i].size <= (int)Cheat.sram_size)
+								source = Cheat.SRAM + address - 0x20000;
+						}
 						else
-							source = Memory.FillRAM + address  - 0x30000;
+						{
+							if(Cheat.IRAM && (address - 0x30000) + watches[i].size <= (int)Cheat.iram_size)
+								source = Cheat.IRAM + address - 0x30000;
+						}
 
-						CopyMemory(Cheat.CWatchRAM + address, source, watches[i].size);
+						if(source)
+							CopyMemory(Cheat.CWatchRAM + address, source, watches[i].size);
 					}
 				}
 			}
@@ -12683,6 +12695,21 @@ static int cheatSortColumn = -1;
 static bool cheatSortAscending = true;
 static std::set<int> cheatMaskedAddrs;
 
+static void FormatCheatSearchAddress(int addr, TCHAR *buf)
+{
+	if (Cheat.gb_mode)
+	{
+		_stprintf(buf, TEXT("%04X"), S9xCheatFlatToAddress(addr));
+		return;
+	}
+	if (addr < 0x20000)
+		_stprintf(buf, TEXT("%06X"), addr + 0x7E0000);
+	else if (addr < 0x30000)
+		_stprintf(buf, TEXT("s%05X"), addr - 0x20000);
+	else
+		_stprintf(buf, TEXT("i%05X"), addr - 0x30000);
+}
+
 static inline int CheatCount(int byteSub)
 {
 	int a, b=0;
@@ -12695,7 +12722,7 @@ static inline int CheatCount(int byteSub)
 	return b;
 }
 
-static int CheatGetValue(int addr, int byteSz, const uint8 *ram, const uint8 *sram, const uint8 *fillram)
+static int CheatGetValue(int addr, int byteSz, const uint8 *ram, const uint8 *sram, const uint8 *iram)
 {
 	int q = 0;
 	for (int r = 0; r <= byteSz; r++)
@@ -12705,19 +12732,35 @@ static int CheatGetValue(int addr, int byteSz, const uint8 *ram, const uint8 *sr
 		else if (addr < 0x30000)
 			q += sram[(addr - 0x20000) + r] << (8 * r);
 		else
-			q += fillram[(addr - 0x30000) + r] << (8 * r);
+			q += iram[(addr - 0x30000) + r] << (8 * r);
 	}
 	return q;
+}
+
+static bool CheatAddrLive(int addr, int byteSz)
+{
+	if (addr < 0x20000)
+		return Cheat.RAM && addr + byteSz < (int)Cheat.ram_size;
+	if (addr < 0x30000)
+		return Cheat.SRAM && (addr - 0x20000) + byteSz < (int)Cheat.sram_size;
+	return Cheat.IRAM && (addr - 0x30000) + byteSz < (int)Cheat.iram_size;
 }
 
 static void CheatSearchBuildIndex(int byteSub)
 {
 	cheatSearchAddrs.clear();
-	for (int a = 0; a < 0x30000 - byteSub; a++)
+	auto scan = [byteSub](int base, int size)
 	{
-		if (TEST_BIT(Cheat.ALL_BITS, a) && cheatMaskedAddrs.find(a) == cheatMaskedAddrs.end())
-			cheatSearchAddrs.push_back(a);
-	}
+		for (int a = base; a < base + size - byteSub; a++)
+		{
+			if (TEST_BIT(Cheat.ALL_BITS, a) && cheatMaskedAddrs.find(a) == cheatMaskedAddrs.end())
+				cheatSearchAddrs.push_back(a);
+		}
+	};
+	scan(0x00000, (int)Cheat.ram_size);
+	scan(0x20000, (int)Cheat.sram_size);
+	if (Cheat.gb_mode)
+		scan(0x30000, (int)Cheat.iram_size);
 }
 
 static std::vector<int> CheatSearchGetSelectedAddresses(HWND hLV)
@@ -12740,8 +12783,8 @@ static void CheatSearchSortIndex(int column, bool ascending, int byteSz)
 			if (column == 0) {
 				va = a; vb = b;
 			} else if (column == 1) {
-				va = CheatGetValue(a, byteSz, Cheat.RAM, Cheat.SRAM, Cheat.FillRAM);
-				vb = CheatGetValue(b, byteSz, Cheat.RAM, Cheat.SRAM, Cheat.FillRAM);
+				va = CheatAddrLive(a, byteSz) ? CheatGetValue(a, byteSz, Cheat.RAM, Cheat.SRAM, Cheat.IRAM) : 0;
+				vb = CheatAddrLive(b, byteSz) ? CheatGetValue(b, byteSz, Cheat.RAM, Cheat.SRAM, Cheat.IRAM) : 0;
 			} else {
 				va = CheatGetValue(a, byteSz, Cheat.CWRAM, Cheat.CSRAM, Cheat.CIRAM);
 				vb = CheatGetValue(b, byteSz, Cheat.CWRAM, Cheat.CSRAM, Cheat.CIRAM);
@@ -12867,13 +12910,7 @@ INT_PTR CALLBACK DlgCheatMask(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 			if (nmlvdi->item.mask & LVIF_TEXT)
 			{
 				static TCHAR buf[16];
-				int addr = cheatMaskedIndex[idx];
-				if (addr < 0x20000)
-					_stprintf(buf, TEXT("%06X"), addr + 0x7E0000);
-				else if (addr < 0x30000)
-					_stprintf(buf, TEXT("s%05X"), addr - 0x20000);
-				else
-					_stprintf(buf, TEXT("i%05X"), addr - 0x30000);
+				FormatCheatSearchAddress(cheatMaskedIndex[idx], buf);
 				nmlvdi->item.pszText = buf;
 			}
 			return TRUE;
@@ -12891,15 +12928,20 @@ INT_PTR CALLBACK DlgCheatMask(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 			if (ScanAddress(buf, address))
 			{
 				int internal;
-				if (address >= 0x7E0000 && address < 0x7E0000 + 0x20000)
+				if (Cheat.gb_mode)
+					internal = S9xCheatGBToFlat(address);
+				else if (address >= 0x7E0000 && address < 0x7E0000 + 0x20000)
 					internal = address - 0x7E0000;
 				else if (address < 0x10000)
 					internal = address + 0x20000;
 				else
 					internal = address + 0x30000;
-				cheatMaskedAddrs.insert(internal);
-				MaskDlgRefresh(hDlg);
-				SetDlgItemText(hDlg, IDC_MASK_ADDRESS, TEXT(""));
+				if (internal >= 0)
+				{
+					cheatMaskedAddrs.insert(internal);
+					MaskDlgRefresh(hDlg);
+					SetDlgItemText(hDlg, IDC_MASK_ADDRESS, TEXT(""));
+				}
 			}
 			return TRUE;
 		}
@@ -13185,19 +13227,16 @@ INT_PTR CALLBACK DlgCheatSearch(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 					i = cheatSearchAddrs[idx];
 					if(j=nmlvdi->item.iSubItem==0)
 					{
-						if(i < 0x20000)
-							_stprintf(buf, TEXT("%06X"), i+0x7E0000);
-						else if(i < 0x30000)
-							_stprintf(buf, TEXT("s%05X"), i-0x20000);
-						else
-							_stprintf(buf, TEXT("i%05X"), i-0x30000);
+						FormatCheatSearchAddress(i, buf);
 						nmlvdi->item.pszText=buf;
 						nmlvdi->item.cchTextMax=8;
 					}
 					if(j=nmlvdi->item.iSubItem==1)
 					{
 						int q=0, r=0;
-						if(i < 0x20000)
+						if(!CheatAddrLive(i, bytes))
+							q = 0;
+						else if(i < 0x20000)
 							for(r=0;r<=bytes;r++)
 								q+=(Cheat.RAM[i+r])<<(8*r);
 						else if(i < 0x30000)
@@ -13205,7 +13244,7 @@ INT_PTR CALLBACK DlgCheatSearch(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 								q+=(Cheat.SRAM[(i-0x20000)+r])<<(8*r);
 						else
 							for(r=0;r<=bytes;r++)
-								q+=(Cheat.FillRAM[(i-0x30000)+r])<<(8*r);
+								q+=(Cheat.IRAM[(i-0x30000)+r])<<(8*r);
 						//needs to account for size
 						switch(val_type)
 						{
@@ -13360,6 +13399,12 @@ INT_PTR CALLBACK DlgCheatSearch(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 
 					int searchNum = 0;
 					ScanAddress(searchstr, searchNum);
+					if (Cheat.gb_mode)
+					{
+						int32_t flat = S9xCheatGBToFlat(searchNum);
+						if (flat >= 0)
+							searchNum = flat;
+					}
 
 					// search through the sorted index
 					for (int n = 0; n < count; n++)
@@ -13517,9 +13562,9 @@ INT_PTR CALLBACK DlgCheatSearch(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 						cht.size = cheatSize;
 						cht.format = val_type;
 
-						cht.address = S9xCheatFlatToSNES(addr);
+						cht.address = S9xCheatFlatToAddress(addr);
 
-						cht.new_val = CheatGetValue(addr, bytes, Cheat.RAM, Cheat.SRAM, Cheat.FillRAM);
+						cht.new_val = CheatAddrLive(addr, bytes) ? CheatGetValue(addr, bytes, Cheat.RAM, Cheat.SRAM, Cheat.IRAM) : 0;
 						cht.saved_val = CheatGetValue(addr, bytes, Cheat.CWRAM, Cheat.CSRAM, Cheat.CIRAM);
 
 						DialogBoxParam(g_hInst, MAKEINTRESOURCE(IDD_CHEAT_FROM_SEARCH), hDlg, DlgCheatSearchAdd, (LPARAM)&cht);
@@ -13529,9 +13574,9 @@ INT_PTR CALLBACK DlgCheatSearch(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 						// Multiple selection: batch add all cheats directly
 						for (int addr : addrs)
 						{
-							uint32 address = S9xCheatFlatToSNES(addr);
+							uint32 address = S9xCheatFlatToAddress(addr);
 
-							int curVal = CheatGetValue(addr, bytes, Cheat.RAM, Cheat.SRAM, Cheat.FillRAM);
+							int curVal = CheatAddrLive(addr, bytes) ? CheatGetValue(addr, bytes, Cheat.RAM, Cheat.SRAM, Cheat.IRAM) : 0;
 
 							std::string code_string;
 							char code[10];
@@ -13635,7 +13680,9 @@ INT_PTR CALLBACK DlgCheatSearch(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 						watches[i].format = val_type;
 						watches[i].address = address;
 						watches[i].buf[0] = '\0';
-						if(address < 0x7E0000 + 0x20000)
+						if(Cheat.gb_mode)
+							sprintf(watches[i].desc, "%04X", S9xCheatFlatToAddress(addrs[n]));
+						else if(address < 0x7E0000 + 0x20000)
 							sprintf(watches[i].desc, "%6X", address);
 						else if(address < 0x7E0000 + 0x30000)
 							sprintf(watches[i].desc, "s%05X", address - 0x7E0000 - 0x20000);
@@ -13657,12 +13704,7 @@ INT_PTR CALLBACK DlgCheatSearch(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 					{
 						int addr = cheatSearchAddrs[sel];
 						TCHAR buf[16];
-						if (addr < 0x20000)
-							_stprintf(buf, TEXT("%06X"), addr + 0x7E0000);
-						else if (addr < 0x30000)
-							_stprintf(buf, TEXT("s%05X"), addr - 0x20000);
-						else
-							_stprintf(buf, TEXT("i%05X"), addr - 0x30000);
+						FormatCheatSearchAddress(addr, buf);
 						if (OpenClipboard(hDlg))
 						{
 							EmptyClipboard();
@@ -13761,7 +13803,9 @@ INT_PTR CALLBACK DlgCheatSearch(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 								fscanf(file, " address = 0x%x, name = \"%31[^\"]\", size = %d, format = %d\n", &watches[i].address, nameStr, &watches[i].size, &watches[i].format);
 								if(nameStr[0] == '\0' || nameStr[0] == '?')
 								{
-									if(watches[i].address < 0x7E0000 + 0x20000)
+									if(Cheat.gb_mode)
+										sprintf(nameStr, "%04X", S9xCheatFlatToAddress(watches[i].address - 0x7E0000));
+									else if(watches[i].address < 0x7E0000 + 0x20000)
 										sprintf(nameStr, "%06X", watches[i].address);
 									else if(watches[i].address < 0x7E0000 + 0x30000)
 										sprintf(nameStr, "s%05X", watches[i].address - 0x7E0000 - 0x20000);
@@ -13895,7 +13939,13 @@ INT_PTR CALLBACK DlgCheatSearch(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 					if(use_entered==2)
 					{
 						ret = ScanAddress(buf, value);
-						value -= 0x7E0000;
+						if (Cheat.gb_mode)
+						{
+							int32_t flat = S9xCheatGBToFlat(value);
+							value = flat >= 0 ? (uint32)flat : 0xFFFFFFFF;
+						}
+						else
+							value -= 0x7E0000;
 						S9xSearchForAddress (&Cheat, comp_type, bytes, value, FALSE);
 					}
 					else
@@ -13940,9 +13990,12 @@ INT_PTR CALLBACK DlgCheatSearch(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 				// if non-modal, update "Prev. Value" column after Search
 				if(cheatSearchHWND)
 				{
-					CopyMemory(Cheat.CWRAM, Cheat.RAM, 0x20000);
-					CopyMemory(Cheat.CSRAM, Cheat.SRAM, 0x10000);
-					CopyMemory(Cheat.CIRAM, Cheat.FillRAM, 0x2000);
+					if (Cheat.RAM && Cheat.ram_size)
+						CopyMemory(Cheat.CWRAM, Cheat.RAM, Cheat.ram_size);
+					if (Cheat.SRAM && Cheat.sram_size)
+						CopyMemory(Cheat.CSRAM, Cheat.SRAM, Cheat.sram_size);
+					if (Cheat.IRAM && Cheat.iram_size)
+						CopyMemory(Cheat.CIRAM, Cheat.IRAM, Cheat.iram_size);
 				}
 
 
@@ -13950,9 +14003,12 @@ INT_PTR CALLBACK DlgCheatSearch(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 				return true;
 				break;
 			case IDOK:
-				CopyMemory(Cheat.CWRAM, Cheat.RAM, 0x20000);
-				CopyMemory(Cheat.CSRAM, Cheat.SRAM, 0x10000);
-				CopyMemory(Cheat.CIRAM, Cheat.FillRAM, 0x2000);
+				if (Cheat.RAM && Cheat.ram_size)
+					CopyMemory(Cheat.CWRAM, Cheat.RAM, Cheat.ram_size);
+				if (Cheat.SRAM && Cheat.sram_size)
+					CopyMemory(Cheat.CSRAM, Cheat.SRAM, Cheat.sram_size);
+				if (Cheat.IRAM && Cheat.iram_size)
+					CopyMemory(Cheat.CIRAM, Cheat.IRAM, Cheat.iram_size);
 				/* fall through */
 			case IDCANCEL:
                 if(cheatSearchHWND)
@@ -13984,7 +14040,10 @@ INT_PTR CALLBACK DlgCheatSearchAdd(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lP
 		{
 			TCHAR buf [12];
 			new_cheat=(struct ICheat*)lParam;
-			_stprintf(buf, TEXT("%06X"), new_cheat->address);
+			if (Cheat.gb_mode)
+				_stprintf(buf, TEXT("%04X"), new_cheat->address);
+			else
+				_stprintf(buf, TEXT("%06X"), new_cheat->address);
 			SetDlgItemText(hDlg, IDC_NC_ADDRESS, buf);
 			switch(new_cheat->format)
 			{
