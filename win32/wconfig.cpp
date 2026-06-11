@@ -1020,7 +1020,7 @@ void WinRegisterConfigItems()
     ADD(SaveScreenShot); ADD(SlotPlus); ADD(SlotMinus); ADD(SlotSave); ADD(SlotLoad); ADD(BankPlus); ADD(BankMinus); ADD(DialogSave); ADD(DialogLoad);
 	ADD(BGL1); ADD(BGL2); ADD(BGL3); ADD(BGL4); ADD(BGL5);
 	ADD(ClippingWindows); /*ADD(BGLHack);*/ ADD(Transparency); /*ADD(HDMA)*/; /*ADD(GLCube);*/
-	/*ADD(InterpMode7);*/ ADD(JoypadSwap); ADD(SwitchControllers); ADD(ResetGame); ADD(ToggleCheats);
+	/*ADD(InterpMode7);*/ ADD(JoypadSwap); ADD(SwitchControllers); ADD(ResetGame); ADD(SoftReset); ADD(ToggleCheats);
 	ADD(TurboA); ADD(TurboB); ADD(TurboY); ADD(TurboX); ADD(TurboL); ADD(TurboR); ADD(TurboStart); ADD(TurboSelect); ADD(TurboUp); ADD(TurboDown); ADD(TurboLeft); ADD(TurboRight);
 	ADD(QuitS9X);ADD(Rewind);
 	ADD(SaveFileSelect); ADD(LoadFileSelect);
@@ -1049,7 +1049,7 @@ void WinRegisterConfigItems()
 	ADDXALL(SaveScreenShot); ADDXALL(SlotPlus); ADDXALL(SlotMinus); ADDXALL(SlotSave); ADDXALL(SlotLoad); ADDXALL(BankPlus); ADDXALL(BankMinus); ADDXALL(DialogSave); ADDXALL(DialogLoad);
 	ADDXALL(BGL1); ADDXALL(BGL2); ADDXALL(BGL3); ADDXALL(BGL4); ADDXALL(BGL5);
 	ADDXALL(ClippingWindows); ADDXALL(Transparency);
-	ADDXALL(JoypadSwap); ADDXALL(SwitchControllers); ADDXALL(ResetGame); ADDXALL(ToggleCheats);
+	ADDXALL(JoypadSwap); ADDXALL(SwitchControllers); ADDXALL(ResetGame); ADDXALL(SoftReset); ADDXALL(ToggleCheats);
 	ADDXALL(TurboA); ADDXALL(TurboB); ADDXALL(TurboY); ADDXALL(TurboX); ADDXALL(TurboL); ADDXALL(TurboR); ADDXALL(TurboStart); ADDXALL(TurboSelect); ADDXALL(TurboUp); ADDXALL(TurboDown); ADDXALL(TurboLeft); ADDXALL(TurboRight);
 	ADDXALL(QuitS9X); ADDXALL(Rewind);
 	ADDXALL(SaveFileSelect); ADDXALL(LoadFileSelect);

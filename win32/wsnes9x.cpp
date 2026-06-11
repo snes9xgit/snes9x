@@ -453,7 +453,8 @@ struct SCustomKeys CustomKeys = {
 	 {0,0}, // Select save slot 7
 	 {0,0}, // Select save slot 8
 	 {0,0}}, // Select save slot 9
-	{'R',CUSTKEY_CTRL_MASK|CUSTKEY_ALT_MASK}, // Reset Game
+	{'R',CUSTKEY_CTRL_MASK|CUSTKEY_ALT_MASK}, // Reset Game (hard)
+	{'R',CUSTKEY_CTRL_MASK}, // Soft Reset
 	{0,0}, // Toggle Cheats
 	{0,0}, // Quit
     {'R',0}, // Rewind
@@ -1334,7 +1335,11 @@ int HandleKeyMessage(WPARAM wParam, LPARAM lParam)
 		}
 		if(HKmatch(ResetGame))
 		{
-			PostMessage(GUI.hWnd, WM_COMMAND, (WPARAM)(ID_FILE_RESET),(LPARAM)(NULL));
+			PostMessage(GUI.hWnd, WM_COMMAND, (WPARAM)(ID_EMULATION_HARD_RESET),(LPARAM)(NULL));
+		}
+		if(HKmatch(SoftReset))
+		{
+			PostMessage(GUI.hWnd, WM_COMMAND, (WPARAM)(ID_EMULATION_SOFT_RESET),(LPARAM)(NULL));
 		}
 		if(HKmatch(ToggleCheats))
 		{
@@ -2599,7 +2604,8 @@ LRESULT CALLBACK WinProc(
 				S9xMessage(S9X_INFO, 0, String);
 			}
 		}	break;
-		case ID_FILE_RESET:
+		case ID_EMULATION_SOFT_RESET:
+		case ID_EMULATION_HARD_RESET:
 #ifdef NETPLAY_SUPPORT
 			if (Settings.NetPlayServer)
 			{
@@ -2613,7 +2619,10 @@ LRESULT CALLBACK WinProc(
 					S9xMovieUpdateOnReset ();
 					if(S9xMoviePlaying())
 						S9xMovieStop (TRUE);
-					S9xSoftReset ();
+					if (cmd_id == ID_EMULATION_HARD_RESET)
+						S9xReset ();
+					else
+						S9xSoftReset ();
 					ReInitSound();
 #ifdef RETROACHIEVEMENTS_SUPPORT
 					RA_OnReset();
@@ -5058,7 +5067,8 @@ static void CheckMenuStates ()
     SetMenuItemInfo(GUI.hMenu, ID_FILE_SAVE_PREVIEW, FALSE, &mii);
     SetMenuItemInfo(GUI.hMenu, ID_FILE_LOAD_PREVIEW, FALSE, &mii);
 
-    SetMenuItemInfo (GUI.hMenu, ID_FILE_RESET, FALSE, &mii);
+    SetMenuItemInfo (GUI.hMenu, ID_EMULATION_SOFT_RESET, FALSE, &mii);
+    SetMenuItemInfo (GUI.hMenu, ID_EMULATION_HARD_RESET, FALSE, &mii);
     SetMenuItemInfo (GUI.hMenu, ID_CHEAT_ENTER, FALSE, &mii);
 	SetMenuItemInfo (GUI.hMenu, IDM_ROM_INFO, FALSE, &mii);
 
@@ -11294,10 +11304,11 @@ static hotkey_dialog_item hotkey_dialog_items[MAX_SWITCHABLE_HOTKEY_DIALOG_PAGES
         { &CustomKeys.SkipDown,          &CustomKeysExtra.SkipDown,          HOTKEYS_LABEL_1_9 },
         { &CustomKeys.Mute,              &CustomKeysExtra.Mute,              HOTKEYS_LABEL_1_10 },
         { &CustomKeys.ToggleCheats,      &CustomKeysExtra.ToggleCheats,      HOTKEYS_LABEL_1_11 },
+        { &CustomKeys.SoftReset,         &CustomKeysExtra.SoftReset,         HOTKEYS_LABEL_1_16 },
         { &CustomKeys.ResetGame,         &CustomKeysExtra.ResetGame,         HOTKEYS_LABEL_1_13 },
         { &CustomKeys.SaveScreenShot,    &CustomKeysExtra.SaveScreenShot,    HOTKEYS_LABEL_1_14 },
         { &CustomKeys.QuitS9X,           &CustomKeysExtra.QuitS9X,           HOTKEYS_LABEL_1_12 },
-        { NULL, NULL, _T("") }, { NULL, NULL, _T("") }, { NULL, NULL, _T("") },
+        { NULL, NULL, _T("") }, { NULL, NULL, _T("") },
     },
     // Tab 1: States — uses dedicated controls (g_savestatesControls), no entries here.
     {
