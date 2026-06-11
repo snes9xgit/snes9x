@@ -15,6 +15,7 @@
 #include "../gfx.h"
 #include "../movie.h"
 #include "../netplay.h"
+#include "../sgb/sgb.h"
 
 #include "wsnes9x.h"
 #include "kaillera.h"
@@ -1092,6 +1093,11 @@ void DoAVIOpen(const TCHAR* filename)
 
 	avi_width = SNES_WIDTH;
 	avi_height = Settings.ShowOverscan ? SNES_HEIGHT_EXTENDED : SNES_HEIGHT;
+	if (Settings.SuperGameBoy)
+	{
+		avi_width = SGB_GB_SCREEN_W;
+		avi_height = SGB_GB_SCREEN_H;
+	}
 	avi_skip_frames = Settings.SkipFrames;
 
 	if(GUI.AVIHiRes) {

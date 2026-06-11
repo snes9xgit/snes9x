@@ -37,9 +37,9 @@ void S9xMainLoop (void)
 		}
 
 		IPPU.RenderThisFrame      = !Settings.InRunAhead;
-		PPU.ScreenHeight          = SNES_HEIGHT;
-		IPPU.RenderedScreenWidth  = SNES_WIDTH;
-		IPPU.RenderedScreenHeight = SNES_HEIGHT;
+		PPU.ScreenHeight          = SGB_GB_SCREEN_H;
+		IPPU.RenderedScreenWidth  = SGB_GB_SCREEN_W;
+		IPPU.RenderedScreenHeight = SGB_GB_SCREEN_H;
 
 		// Pipe the SNES controller 0 bitmask into the GB joypad. P6d's
 		// MLT_REQ handling reads from mlt_current_player; for now we
@@ -67,7 +67,9 @@ void S9xMainLoop (void)
 		S9xSGBRunFrame();
 		if (!Settings.InRunAhead)
 		{
-			S9xSGBBlitScreen(GFX.Screen, GFX.RealPPL);
+			IPPU.RenderedScreenWidth  = SGB_GB_SCREEN_W;
+			IPPU.RenderedScreenHeight = SGB_GB_SCREEN_H;
+			S9xSGBBlitScreenGB(GFX.Screen, GFX.RealPPL);
 			S9xEndScreenRefresh();
 		}
 

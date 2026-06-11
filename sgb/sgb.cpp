@@ -1792,6 +1792,47 @@ void Emulator::BlitScreen(uint16_t *dest, uint32_t pitch_pixels)
 
 }
 
+void Emulator::BlitScreenGB(uint16_t *dest, uint32_t pitch_pixels)
+{
+	if (!impl_->has_rom || !dest) return;
+
+	const uint8_t *src_fb = impl_->ppu.framebuffer;
+	if (impl_->sgb_state.mask_mode == SGB_MASK_FREEZE &&
+	    impl_->sgb_state.frozen_frame_valid)
+	{
+		src_fb = impl_->sgb_state.frozen_frame;
+	}
+
+	for (uint32_t py = 0; py < GB_SCREEN_HEIGHT; ++py)
+	{
+		uint16_t *const dst_row = dest + py * pitch_pixels;
+		for (uint32_t px = 0; px < GB_SCREEN_WIDTH; ++px)
+		{
+			uint16_t color;
+			if (impl_->ppu.cgb)
+			{
+				color = impl_->ppu.color_fb[py * GB_SCREEN_WIDTH + px];
+			}
+			else switch (impl_->sgb_state.mask_mode)
+			{
+				case SGB_MASK_BLACK:
+					color = 0x0000;
+					break;
+				case SGB_MASK_BLANK:
+					color = impl_->sgb_state.active[0].colors[0];
+					break;
+				default:
+				{
+					const uint8_t shade = src_fb[py * GB_SCREEN_WIDTH + px];
+					color = SgbResolveColor(impl_->sgb_state, px / 8, py / 8, shade);
+					break;
+				}
+			}
+			dst_row[px] = BgrToHost(color);
+		}
+	}
+}
+
 static constexpr uint16_t BORDER_FADE_FRAMES = 24;
 
 void Emulator::OverlayBiosBorder(uint16_t *dest, uint32_t pitch_pixels)
@@ -2479,6 +2520,11 @@ void S9xSGBOnJoyserWrite(uint8_t v) { SGB::Instance().OnJoyserWrite(v); }
 void S9xSGBBlitScreen(uint16_t *dest, uint32_t pitch_pixels)
 {
 	SGB::Instance().BlitScreen(dest, pitch_pixels);
+}
+
+void S9xSGBBlitScreenGB(uint16_t *dest, uint32_t pitch_pixels)
+{
+	SGB::Instance().BlitScreenGB(dest, pitch_pixels);
 }
 
 void S9xSGBOverlayBiosBorder(uint16_t *dest, uint32_t pitch_pixels)

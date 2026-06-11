@@ -234,10 +234,8 @@ void S9xStartScreenRefresh (void)
 //     realigns to opposite phase.
 // BIOS-less mode is frame-locked 1:1 by RunFrame, so every frame is a clean
 // distinct step here.
-// GB picture placement inside the 256x224 SGB composite: standard SGB centers
-// the 160x144 GB screen at tile (6,5) = pixel (48,40). Same in BIOS / BIOS-less.
-#define GB_BLEND_X 48
-#define GB_BLEND_Y 40
+// GB picture placement: centered in the frame — (48,40) inside the 256x224
+// SGB composite (BIOS mode), (0,0) in the borderless 160x144 frame.
 #define GB_BLEND_W 160
 #define GB_BLEND_H 144
 
@@ -286,8 +284,9 @@ static void S9xBlendGameBoyFrames (void)
 	//     other frame), so "sprites" blends when OBJ appears in EITHER frame.
 	const uint8  layerSel = Settings.GBFrameBlendLayer;
 	const uint8 *curLayer = (layerSel != GB_BLEND_LAYER_ALL) ? S9xSGBGetGBLayerMask() : NULL;
-	const bool   useLayer = curLayer && w >= GB_BLEND_X + GB_BLEND_W
-	                                 && h >= GB_BLEND_Y + GB_BLEND_H;
+	const bool   useLayer = curLayer && w >= GB_BLEND_W && h >= GB_BLEND_H;
+	const uint32 gbX = useLayer ? (w - GB_BLEND_W) / 2 : 0;
+	const uint32 gbY = useLayer ? (h - GB_BLEND_H) / 2 : 0;
 
 	// In BIOS mode the GB is held in reset during the boot/reset splash (control
 	// bit 7 clear) and produces no frames while the BIOS animates its own logo.
@@ -416,9 +415,9 @@ static void S9xBlendGameBoyFrames (void)
 
 		// Per-row layer pointers (only the GB picture rows carry a layer map;
 		// the surrounding border is treated as background).
-		const bool   yIn = useLayer && y >= GB_BLEND_Y && y < GB_BLEND_Y + GB_BLEND_H;
-		const uint8 *clr = yIn ? curLayer  + (y - GB_BLEND_Y) * GB_BLEND_W : NULL;
-		const uint8 *plr = yIn ? prevLayer + (y - GB_BLEND_Y) * GB_BLEND_W : NULL;
+		const bool   yIn = useLayer && y >= gbY && y < gbY + GB_BLEND_H;
+		const uint8 *clr = yIn ? curLayer  + (y - gbY) * GB_BLEND_W : NULL;
+		const uint8 *plr = yIn ? prevLayer + (y - gbY) * GB_BLEND_W : NULL;
 
 		for (uint32 x = 0; x < w; x++)
 		{
@@ -429,9 +428,9 @@ static void S9xBlendGameBoyFrames (void)
 			if (useLayer)
 			{
 				uint8 cl = 0, pl = 0;   // border defaults to background (0)
-				if (yIn && x >= GB_BLEND_X && x < GB_BLEND_X + GB_BLEND_W)
+				if (yIn && x >= gbX && x < gbX + GB_BLEND_W)
 				{
-					const uint32 gi = x - GB_BLEND_X;
+					const uint32 gi = x - gbX;
 					cl = clr[gi];
 					pl = plr[gi];
 				}

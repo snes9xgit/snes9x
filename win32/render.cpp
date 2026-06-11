@@ -330,6 +330,14 @@ inline void SetRect(RECT* rect, unsigned int width, unsigned int height, int sca
 	rect->bottom = height * scale;
 }
 
+inline void SetRectForSource(RECT* rect, const SSurface &Src, unsigned int width, unsigned int height, int scale)
+{
+	if (Src.Width < SNES_WIDTH)
+		SetRect(rect, Src.Width, Src.Height, scale);
+	else
+		SetRect(rect, width, height, scale);
+}
+
 RECT GetFilterOutputSize(SSurface Src)
 {
 	RECT rect;
@@ -338,7 +346,7 @@ RECT GetFilterOutputSize(SSurface Src)
 		filterID = GUI.ScaleHiRes;
 	}
 	// default to fixed factor
-	SetRect(&rect, SNES_WIDTH, SNES_HEIGHT_EXTENDED, GetFilterScale(filterID));
+	SetRectForSource(&rect, Src, SNES_WIDTH, SNES_HEIGHT_EXTENDED, GetFilterScale(filterID));
 
 	// handle special cases
 	switch (filterID)
@@ -350,8 +358,8 @@ RECT GetFilterOutputSize(SSurface Src)
 	case FILTER_BLARGGCOMP:
 	case FILTER_BLARGGSVID:
 	case FILTER_BLARGGRGB:
-		SetRect(&rect, SNES_WIDTH, SNES_HEIGHT_EXTENDED, 2);
-		rect.right = SNES_NTSC_OUT_WIDTH(256);
+		SetRectForSource(&rect, Src, SNES_WIDTH, SNES_HEIGHT_EXTENDED, 2);
+		rect.right = SNES_NTSC_OUT_WIDTH(Src.Width < SNES_WIDTH ? Src.Width : 256);
 		break;
 	default:
 		break;
@@ -640,7 +648,7 @@ void RenderForced1X( SSurface Src, SSurface Dst, RECT *rect)
     uint16 *lpSrc;
     unsigned int H;
 
-	SetRect(rect, SNES_WIDTH, SNES_HEIGHT_EXTENDED, 1);
+	SetRectForSource(rect, Src, SNES_WIDTH, SNES_HEIGHT_EXTENDED, 1);
 	const uint32 srcHeight = (rect->bottom - rect->top);
 
 	const unsigned int srcPitch = Src.Pitch >> 1;
@@ -693,7 +701,7 @@ void RenderFakeTV( SSurface Src, SSurface Dst, RECT *rect)
     uint16 *lpSrc;
     unsigned int H;
 
-	SetRect(rect, SNES_WIDTH, SNES_HEIGHT_EXTENDED, 2);
+	SetRectForSource(rect, Src, SNES_WIDTH, SNES_HEIGHT_EXTENDED, 2);
 	const uint32 srcHeight = (rect->bottom - rect->top)/2;
 
 	const unsigned int srcPitch = Src.Pitch >> 1;
@@ -707,20 +715,20 @@ void RenderFakeTV( SSurface Src, SSurface Dst, RECT *rect)
 			if(Src.Width != 512)
 				for (H = 0; H < srcHeight; H++, lpSrc += srcPitch)
 					DoubleLine16 (lpDst, lpSrc, Src.Width), lpDst += dstPitch,
-					memset (lpDst, 0, 512*2), lpDst += dstPitch;
+					memset (lpDst, 0, rect->right*2), lpDst += dstPitch;
 			else
 				for (H = 0; H < srcHeight; H++, lpSrc += srcPitch)
 					memcpy (lpDst, lpSrc, Src.Width << 1), lpDst += dstPitch,
-					memset (lpDst, 0, 512*2), lpDst += dstPitch;
+					memset (lpDst, 0, rect->right*2), lpDst += dstPitch;
 		else
 			if(Src.Width != 512)
 				for (H = 0; H < Src.Height >> 1; H++, lpSrc += srcPitch << 1)
 					DoubleLine16 (lpDst, lpSrc, Src.Width), lpDst += dstPitch,
-					memset (lpDst, 0, 512*2), lpDst += dstPitch;
+					memset (lpDst, 0, rect->right*2), lpDst += dstPitch;
 			else
 				for (H = 0; H < Src.Height >> 1; H++, lpSrc += srcPitch << 1)
 					memcpy (lpDst, lpSrc, Src.Width << 1), lpDst += dstPitch,
-					memset (lpDst, 0, 512*2), lpDst += dstPitch;
+					memset (lpDst, 0, rect->right*2), lpDst += dstPitch;
 	}
 	else if(GUI.ScreenDepth == 32)
 	{
@@ -730,20 +738,20 @@ void RenderFakeTV( SSurface Src, SSurface Dst, RECT *rect)
 			if(Src.Width != 512)
 				for (H = 0; H < srcHeight; H++, lpSrc += srcPitch)
 					DoubleLine32 (lpDst, lpSrc, Src.Width), lpDst += dstPitch,
-					memset (lpDst, 0, 512*4), lpDst += dstPitch;
+					memset (lpDst, 0, rect->right*4), lpDst += dstPitch;
 			else
 				for (H = 0; H < srcHeight; H++, lpSrc += srcPitch)
 					SingleLine32 (lpDst, lpSrc, Src.Width), lpDst += dstPitch,
-					memset (lpDst, 0, 512*4), lpDst += dstPitch;
+					memset (lpDst, 0, rect->right*4), lpDst += dstPitch;
 		else
 			if(Src.Width != 512)
 				for (H = 0; H < Src.Height >> 1; H++, lpSrc += srcPitch << 1)
 					DoubleLine32 (lpDst, lpSrc, Src.Width), lpDst += dstPitch,
-					memset (lpDst, 0, 512*4), lpDst += dstPitch;
+					memset (lpDst, 0, rect->right*4), lpDst += dstPitch;
 			else
 				for (H = 0; H < Src.Height >> 1; H++, lpSrc += srcPitch << 1)
 					SingleLine32 (lpDst, lpSrc, Src.Width), lpDst += dstPitch,
-					memset (lpDst, 0, 512*4), lpDst += dstPitch;
+					memset (lpDst, 0, rect->right*4), lpDst += dstPitch;
 	}
 }
 
@@ -756,7 +764,7 @@ void RenderSimple2X( SSurface Src, SSurface Dst, RECT *rect)
     uint16 *lpSrc;
     unsigned int H;
 
-	SetRect(rect, SNES_WIDTH, SNES_HEIGHT_EXTENDED, 2);
+	SetRectForSource(rect, Src, SNES_WIDTH, SNES_HEIGHT_EXTENDED, 2);
 	const uint32 srcHeight = (rect->bottom - rect->top)/2;
 
 	const unsigned int srcPitch = Src.Pitch >> 1;
@@ -886,7 +894,7 @@ void RenderTVMode ( SSurface Src, SSurface Dst, RECT *rect)
     int height = Src.Height;
     uint8 *deltaPtr = ChangeLog [GUI.FlipCounter % GUI.NumFlipFrames];
 
-	SetRect(rect, 256, height, 2);
+	SetRect(rect, width, height, 2);
 
     dstPtr += rect->top * Dst.Pitch + rect->left * 2;
     nextLine = dstPtr + dstPitch;
@@ -1035,7 +1043,7 @@ void RenderSimple3X( SSurface Src, SSurface Dst, RECT *rect)
     uint16 *lpSrc;
     unsigned int H;
 
-	SetRect(rect, 256, 239, 3);
+	SetRectForSource(rect, Src, 256, 239, 3);
 	const uint32 srcHeight = (rect->bottom - rect->top)/3;
 
 	const unsigned int srcPitch = Src.Pitch >> 1;
@@ -1199,7 +1207,7 @@ struct uint96
 #define DrawInit(scale,uintDest)                                                            \
 	uint8 *srcPtr = Src.Surface, *dstPtr = Dst.Surface;                                     \
 	const uint32 srcPitch = Src.Pitch, dstPitch = Dst.Pitch;                                \
-	SetRect(rect, 256, Src.Height, scale);                                                  \
+	SetRectForSource(rect, Src, 256, Src.Height, scale);                                    \
 	dstPtr += rect->top * Dst.Pitch + rect->left * 2;                                       \
 	const uint32 srcHeight = (rect->bottom - rect->top)/scale;                              \
 	const uint32 srcWidth = (rect->right - rect->left)/scale;                               \
@@ -1842,7 +1850,7 @@ void RenderHQ2X (SSurface Src, SSurface Dst, RECT *rect)
     int width = Src.Width;
     int height = Src.Height;
 
-	SetRect(rect, 256, height, 2);
+	SetRect(rect, width, height, 2);
 
     dstPtr += rect->top * Dst.Pitch + rect->left * 2;
 
@@ -2220,7 +2228,7 @@ void RenderHQ3X (SSurface Src, SSurface Dst, RECT *rect)
     int width = Src.Width;
     int height = Src.Height;
 
-	SetRect(rect, 256, height, 3);
+	SetRect(rect, width, height, 3);
 
     dstPtr += rect->top * Dst.Pitch + rect->left * 2;
 
@@ -2376,7 +2384,7 @@ void RenderLQ3XB (SSurface Src, SSurface Dst, RECT *rect)
     int width = Src.Width;
     int height = Src.Height;
 
-	SetRect(rect, 256, height, 3);
+	SetRect(rect, width, height, 3);
 
     dstPtr += rect->top * Dst.Pitch + rect->left * 2;
 	int	w1, w2, w3, w4, w5, w6, w7, w8, w9;
@@ -2486,7 +2494,7 @@ void RenderHQ4X (SSurface Src, SSurface Dst, RECT *rect)
 {
     uint8 *dstPtr = Dst.Surface;
 
-	SetRect(rect, SNES_WIDTH, SNES_HEIGHT_EXTENDED, 4);
+	SetRectForSource(rect, Src, SNES_WIDTH, SNES_HEIGHT_EXTENDED, 4);
     dstPtr += rect->top * Dst.Pitch + rect->left * 2;
 
 	if (Src.Height > SNES_HEIGHT_EXTENDED || Src.Width == 512)
@@ -2507,7 +2515,7 @@ void RenderSimple4X( SSurface Src, SSurface Dst, RECT *rect)
     uint16 *lpSrc;
     unsigned int H;
 
-	SetRect(rect, SNES_WIDTH, SNES_HEIGHT_EXTENDED, 4);
+	SetRectForSource(rect, Src, SNES_WIDTH, SNES_HEIGHT_EXTENDED, 4);
 	const uint32 srcHeight = (rect->bottom - rect->top)/4;
 
 	const unsigned int srcPitch = Src.Pitch >> 1;
@@ -2637,6 +2645,11 @@ DWORD WINAPI ThreadProc_XBRZ(VOID * pParam)
         if (xbrz_thread_data::src->Height % SNES_HEIGHT == 0)
             trgHeight = SNES_HEIGHT * xbrz_thread_data::scalingFactor;
 		trgWidth = SNES_WIDTH * xbrz_thread_data::scalingFactor;
+		if (xbrz_thread_data::src->Width < SNES_WIDTH)
+		{
+			trgWidth  = xbrz_thread_data::src->Width  * xbrz_thread_data::scalingFactor;
+			trgHeight = xbrz_thread_data::src->Height * xbrz_thread_data::scalingFactor;
+		}
         stretchImage32To16(&xbrzBuffer[0], xbrz_thread_data::src->Width * xbrz_thread_data::scalingFactor, xbrz_thread_data::src->Height * xbrz_thread_data::scalingFactor,
                            reinterpret_cast<uint16_t*>(xbrz_thread_data::dstPtr), trgWidth, trgHeight, xbrz_thread_data::dst->Pitch, thread_data->yFirst * xbrz_thread_data::scalingFactor, thread_data->yLast * xbrz_thread_data::scalingFactor);
         SetEvent(thread_data->xbrz_sync_event);
@@ -2674,7 +2687,7 @@ void RenderxBRZ(SSurface Src, SSurface Dst, RECT* rect, int scalingFactor)
     xbrz_thread_data::scalingFactor = scalingFactor;
     
 	xbrz_thread_data::dstPtr = Dst.Surface;
-    SetRect(rect, SNES_WIDTH, SNES_HEIGHT_EXTENDED, xbrz_thread_data::scalingFactor);
+    SetRectForSource(rect, Src, SNES_WIDTH, SNES_HEIGHT_EXTENDED, xbrz_thread_data::scalingFactor);
     xbrz_thread_data::dstPtr += rect->top * Dst.Pitch + rect->left * sizeof(uint16_t);
 
     if (Src.Width  <= 0 || Src.Height <= 0)
@@ -2760,8 +2773,8 @@ void RenderBlarggNTSC(SSurface Src, SSurface Dst, RECT *rect)
 {
     static int burst_phase = 0;
 
-    SetRect(rect, 256, 239, 2);
-    rect->right = SNES_NTSC_OUT_WIDTH(256);
+    SetRectForSource(rect, Src, 256, 239, 2);
+    rect->right = SNES_NTSC_OUT_WIDTH(Src.Width < SNES_WIDTH ? Src.Width : 256);
 
     const unsigned int srcRowPixels = Src.Pitch / 2;
 
@@ -2784,6 +2797,6 @@ void RenderBlarggNTSC(SSurface Src, SSurface Dst, RECT *rect)
 
 void RenderSharpBilinear(SSurface Src, SSurface Dst, RECT *rect)
 {
-    SetRect(rect, SNES_WIDTH, SNES_HEIGHT_EXTENDED, 4);
+    SetRectForSource(rect, Src, SNES_WIDTH, SNES_HEIGHT_EXTENDED, 4);
     sharpbilinear_4x(Src.Surface, Src.Pitch, Dst.Surface, Dst.Pitch, Src.Width, Src.Height);
 }

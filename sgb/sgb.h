@@ -191,6 +191,7 @@ public:
 	// buffer. `pitch_pixels` is the stride in uint16_t units (use 256
 	// for a tightly-packed buffer, or the SNES GFX.Screen's PPL).
 	void  BlitScreen(uint16_t *dest, uint32_t pitch_pixels);
+	void  BlitScreenGB(uint16_t *dest, uint32_t pitch_pixels);
 
 	// BIOS-mode overlay path — see S9xSGBOverlayBiosBorder for the
 	// full description. Renders the captured custom border on top of
@@ -363,6 +364,9 @@ bool S9xSGBIsActive(void);
 // 256 × 224 BGR555 buffer. `pitch_pixels` is the stride in uint16_t
 // units. Call after S9xSGBRunFrame.
 void S9xSGBBlitScreen(uint16_t *dest, uint32_t pitch_pixels);
+void S9xSGBBlitScreenGB(uint16_t *dest, uint32_t pitch_pixels);
+constexpr uint32_t SGB_GB_SCREEN_W = 160;
+constexpr uint32_t SGB_GB_SCREEN_H = 144;
 
 // BIOS-mode border overlay. In BIOS mode the SNES 65816 runs the SGB2
 // BIOS, which renders its OWN device-frame border into GFX.Screen via
