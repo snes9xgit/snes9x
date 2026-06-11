@@ -1283,15 +1283,26 @@ int HandleKeyMessage(WPARAM wParam, LPARAM lParam)
 			}
 			hitHotKey = true;
 		}
+		bool gbCartLoaded = (Settings.SuperGameBoy || Settings.SGB_BIOSModeActive);
 		if(HKmatch(BGL1))
 		{
-			Settings.BG_Forced ^= 1;
-			S9xDisplayStateChange (WINPROC_BG1, !(Settings.BG_Forced & 1));
+			if (gbCartLoaded)
+				PostMessage(GUI.hWnd, WM_COMMAND, (WPARAM)(ID_DEBUG_GB_SHOW_BG),(LPARAM)(NULL));
+			else
+			{
+				Settings.BG_Forced ^= 1;
+				S9xDisplayStateChange (WINPROC_BG1, !(Settings.BG_Forced & 1));
+			}
 		}
 		if(HKmatch(BGL2))
 		{
-			Settings.BG_Forced ^= 2;
-			S9xDisplayStateChange (WINPROC_BG2, !(Settings.BG_Forced & 2));
+			if (gbCartLoaded)
+				PostMessage(GUI.hWnd, WM_COMMAND, (WPARAM)(ID_DEBUG_GB_SHOW_WIN),(LPARAM)(NULL));
+			else
+			{
+				Settings.BG_Forced ^= 2;
+				S9xDisplayStateChange (WINPROC_BG2, !(Settings.BG_Forced & 2));
+			}
 		}
 		if(HKmatch(BGL3))
 		{
@@ -1305,8 +1316,13 @@ int HandleKeyMessage(WPARAM wParam, LPARAM lParam)
 		}
 		if(HKmatch(BGL5))
 		{
-			Settings.BG_Forced ^= 16;
-			S9xDisplayStateChange (WINPROC_SPRITES, !(Settings.BG_Forced & 16));
+			if (gbCartLoaded)
+				PostMessage(GUI.hWnd, WM_COMMAND, (WPARAM)(ID_DEBUG_GB_SHOW_OBJ),(LPARAM)(NULL));
+			else
+			{
+				Settings.BG_Forced ^= 16;
+				S9xDisplayStateChange (WINPROC_SPRITES, !(Settings.BG_Forced & 16));
+			}
 		}
 		if(HKmatch(ResetGame))
 		{
@@ -2643,6 +2659,8 @@ LRESULT CALLBACK WinProc(
 			bool on = !S9xSGBGetLayerEnabled(gbLayer);
 			S9xSGBSetLayerEnabled(gbLayer, on);
 			CheckMenuItem(GetMenu(GUI.hWnd), LOWORD(wParam), on ? MF_CHECKED : MF_UNCHECKED);
+			static const char *gbLayerNames[] = { WINPROC_GB_BG, WINPROC_GB_WINDOW, WINPROC_GB_SPRITES };
+			S9xDisplayStateChange(gbLayerNames[gbLayer], on);
 			break;
 		}
 		case ID_CHEAT_ENTER:
