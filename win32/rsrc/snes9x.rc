@@ -1370,7 +1370,6 @@ BEGIN
             MENUITEM "Icon &4",                     ID_FILE_LOGO_4,MFT_STRING,MFS_ENABLED
         END
         MENUITEM MFT_SEPARATOR
-        MENUITEM "&Reset Game",                 ID_FILE_RESET,MFT_STRING,MFS_ENABLED
         MENUITEM "E&xit\tAlt+F4",               ID_FILE_EXIT,MFT_STRING,MFS_ENABLED
     END
     POPUP "&Emulation",                     0,MFT_STRING,MFS_ENABLED
@@ -1378,6 +1377,9 @@ BEGIN
         MENUITEM "&Pause",                      ID_FILE_PAUSE,MFT_STRING,MFS_ENABLED
         MENUITEM "Pause &When Inactive",        ID_EMULATION_PAUSEWHENINACTIVE,MFT_STRING,MFS_ENABLED
         MENUITEM "&Frame Advance",              ID_FRAME_ADVANCE,MFT_STRING,MFS_ENABLED
+        MENUITEM MFT_SEPARATOR
+        MENUITEM "Soft &Reset",                 ID_EMULATION_SOFT_RESET,MFT_STRING,MFS_ENABLED
+        MENUITEM "&Hard Reset (Power Cycle)",   ID_EMULATION_HARD_RESET,MFT_STRING,MFS_ENABLED
         MENUITEM MFT_SEPARATOR
         POPUP "Run &Ahead",                     0,MFT_STRING,MFS_ENABLED
         BEGIN

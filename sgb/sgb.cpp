@@ -389,6 +389,31 @@ void Emulator::ColdReset()
 	Reset();
 }
 
+bool Emulator::SoftReset()
+{
+	// BIOS mode mid-splash: the BIOS handshake state machine is still
+	// waiting on boot-ROM packets; a warm reset that skips the boot ROM
+	// would strand it on a black screen. Let the caller power-cycle.
+	if (Settings.SGB_BIOSModeActive &&
+	    !(impl_->cache_valid || impl_->boot_handoff_captured))
+		return false;
+
+	const bool    boot_rom       = impl_->boot_rom_loaded;
+	const bool    handoff        = impl_->boot_handoff_captured;
+	const CpuRegs handoff_regs   = impl_->boot_handoff_regs;
+	const uint32_t handoff_count = impl_->handoff_frames;
+	const uint8_t control        = impl_->icd2.control;
+
+	impl_->boot_rom_loaded = false;
+	Reset();
+	impl_->boot_rom_loaded       = boot_rom;
+	impl_->boot_handoff_captured = handoff;
+	impl_->boot_handoff_regs     = handoff_regs;
+	impl_->handoff_frames        = handoff_count;
+	impl_->icd2.control          = control;
+	return true;
+}
+
 void Emulator::Reset()
 {
 	impl_->cpu.Reset();
@@ -2193,6 +2218,7 @@ Emulator &Instance()
 bool S9xSGBInit(void)               { return SGB::Instance().Init(); }
 void S9xSGBDeinit(void)             { SGB::Instance().Deinit(); }
 void S9xSGBReset(void)              { SGB::Instance().ColdReset(); }
+bool S9xSGBSoftReset(void)          { return SGB::Instance().SoftReset(); }
 bool S9xSGBIsActive(void)           { return SGB::Instance().HasROM(); }
 bool S9xSGBHasBattery(void)         { return SGB::Instance().HasBattery(); }
 bool S9xSGBSaveBatteryToPath(const char *path) { return SGB::Instance().SaveBatteryToPath(path); }

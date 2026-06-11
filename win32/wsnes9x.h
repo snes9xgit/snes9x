@@ -396,6 +396,7 @@ struct SCustomKeys {
 	SCustomKey TurboA, TurboB, TurboY, TurboX, TurboL, TurboR, TurboStart, TurboSelect, TurboLeft, TurboUp, TurboRight, TurboDown;
 	SCustomKey SelectSave [SAVE_SLOTS_PER_BANK];
 	SCustomKey ResetGame;
+	SCustomKey SoftReset;
 	SCustomKey ToggleCheats;
 	SCustomKey QuitS9X;
     SCustomKey Rewind;
@@ -451,6 +452,7 @@ struct SCustomKeysExtra {
 	SCustomKeyExtra TurboA, TurboB, TurboY, TurboX, TurboL, TurboR, TurboStart, TurboSelect, TurboLeft, TurboUp, TurboRight, TurboDown;
 	SCustomKeyExtra SelectSave [SAVE_SLOTS_PER_BANK];
 	SCustomKeyExtra ResetGame;
+	SCustomKeyExtra SoftReset;
 	SCustomKeyExtra ToggleCheats;
 	SCustomKeyExtra QuitS9X;
 	SCustomKeyExtra Rewind;

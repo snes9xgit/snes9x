@@ -440,7 +440,6 @@
 #define ID_OPTIONS_JOYPAD               40022
 #define ID_WINDOW_SHOWFPS               40023
 #define ID_OPTIONS_DISPLAY              40024
-#define ID_FILE_RESET                   40025
 #define ID_FILE_PAUSE                   40026
 #define ID_SOUND_INTERPOLATED           40027
 #define ID_SOUND_SYNC                   40028
@@ -661,6 +660,9 @@
 #define ID_FILE_LOGO_2                  44362
 #define ID_FILE_LOGO_3                  44363
 #define ID_FILE_LOGO_4                  44364
+
+#define ID_EMULATION_SOFT_RESET         44365
+#define ID_EMULATION_HARD_RESET         44366
 
 #define IDD_COLORCORRECTION             176
 #define IDC_COLOR_CORRECTION_ENABLE     3111
