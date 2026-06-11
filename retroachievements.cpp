@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 #include <deque>
+#include <map>
 #include <mutex>
 #include <chrono>
 #include <cstdio>
@@ -15,6 +16,7 @@
 #include "rc_hash.h"
 
 #include "imgui.h"
+#include "stb_image.h"
 
 #include "snes9x.h"
 #include "memmap.h"
@@ -70,6 +72,218 @@ static void RA_QueueNotification(const char *title, const char *subtitle, float 
 // use the SGB subsystem's GB-side address space.
 // ---------------------------------------------------------------------------
 static uint32_t g_loadedConsoleId = RC_CONSOLE_SUPER_NINTENDO;
+
+// ---------------------------------------------------------------------------
+// Challenge indicator badges (thread-safe)
+// ---------------------------------------------------------------------------
+struct RABadgeImage
+{
+    int width = 0;
+    int height = 0;
+    std::vector<uint32_t> pixels;
+    bool ready = false;
+    bool failed = false;
+};
+
+struct RAChallengeIndicator
+{
+    uint32_t achievement_id;
+    std::string badge_url;
+    float elapsed;
+};
+
+struct RAProgressIndicator
+{
+    uint32_t achievement_id;
+    std::string badge_url;
+    std::string progress_text;
+    float elapsed;
+};
+
+struct RABadgeFetch
+{
+    std::string url;
+};
+
+static std::map<std::string, RABadgeImage> g_badgeCache;
+static std::vector<RAChallengeIndicator> g_challengeIndicators;
+static std::vector<RAProgressIndicator> g_progressIndicators;
+static std::mutex g_badgeMutex;
+static bool g_showChallengeImages = true;
+
+static const int RA_BADGE_MAX_DIM = 32;
+
+void RA_SetShowChallengeImages(bool show)
+{
+    g_showChallengeImages = show;
+}
+
+static void RC_CCONV ra_badge_fetch_complete(const rc_api_server_response_t *response,
+                                             void *callback_data)
+{
+    RABadgeFetch *fetch = static_cast<RABadgeFetch *>(callback_data);
+
+    int w = 0, h = 0, comp = 0;
+    unsigned char *rgba = nullptr;
+    if (response && response->http_status_code == 200 && response->body && response->body_length > 0)
+        rgba = stbi_load_from_memory(reinterpret_cast<const unsigned char *>(response->body),
+                                     (int)response->body_length, &w, &h, &comp, 4);
+
+    {
+        std::lock_guard<std::mutex> lock(g_badgeMutex);
+        RABadgeImage &img = g_badgeCache[fetch->url];
+        if (rgba && w > 0 && h > 0)
+        {
+            const int out_w = (w > RA_BADGE_MAX_DIM) ? RA_BADGE_MAX_DIM : w;
+            const int out_h = (h > RA_BADGE_MAX_DIM) ? RA_BADGE_MAX_DIM : h;
+            img.width = out_w;
+            img.height = out_h;
+            img.pixels.resize((size_t)out_w * out_h);
+            for (int oy = 0; oy < out_h; oy++)
+            {
+                int sy0 = oy * h / out_h;
+                int sy1 = (oy + 1) * h / out_h;
+                if (sy1 <= sy0)
+                    sy1 = sy0 + 1;
+                for (int ox = 0; ox < out_w; ox++)
+                {
+                    int sx0 = ox * w / out_w;
+                    int sx1 = (ox + 1) * w / out_w;
+                    if (sx1 <= sx0)
+                        sx1 = sx0 + 1;
+                    uint32_t r = 0, g = 0, b = 0, a = 0, n = 0;
+                    for (int sy = sy0; sy < sy1; sy++)
+                    {
+                        const unsigned char *p = rgba + ((size_t)sy * w + sx0) * 4;
+                        for (int sx = sx0; sx < sx1; sx++, p += 4)
+                        {
+                            r += p[0];
+                            g += p[1];
+                            b += p[2];
+                            a += p[3];
+                            n++;
+                        }
+                    }
+                    img.pixels[(size_t)oy * out_w + ox] = IM_COL32(r / n, g / n, b / n, a / n);
+                }
+            }
+            img.ready = true;
+        }
+        else
+        {
+            img.failed = true;
+        }
+    }
+
+    if (rgba)
+        stbi_image_free(rgba);
+    delete fetch;
+}
+
+static void ra_request_badge(const char *url)
+{
+    if (!url || !url[0] || !g_callbacks.server_call)
+        return;
+
+    {
+        std::lock_guard<std::mutex> lock(g_badgeMutex);
+        if (g_badgeCache.find(url) != g_badgeCache.end())
+            return;
+        g_badgeCache.emplace(url, RABadgeImage());
+    }
+
+    rc_api_request_t request = {};
+    request.url = url;
+    g_callbacks.server_call(&request, ra_badge_fetch_complete, new RABadgeFetch{url}, g_rcClient);
+}
+
+static void ra_add_challenge_indicator(const rc_client_achievement_t *achievement)
+{
+    char url[512];
+    if (rc_client_achievement_get_image_url(achievement, RC_CLIENT_ACHIEVEMENT_STATE_UNLOCKED,
+                                            url, sizeof(url)) != RC_OK)
+        url[0] = '\0';
+
+    {
+        std::lock_guard<std::mutex> lock(g_badgeMutex);
+        for (const auto &ind : g_challengeIndicators)
+        {
+            if (ind.achievement_id == achievement->id)
+                return;
+        }
+        g_challengeIndicators.push_back({achievement->id, url, 0.0f});
+    }
+
+    ra_request_badge(url);
+}
+
+static void ra_remove_challenge_indicator(uint32_t achievement_id)
+{
+    std::lock_guard<std::mutex> lock(g_badgeMutex);
+    for (auto it = g_challengeIndicators.begin(); it != g_challengeIndicators.end(); ++it)
+    {
+        if (it->achievement_id == achievement_id)
+        {
+            g_challengeIndicators.erase(it);
+            return;
+        }
+    }
+}
+
+static void ra_show_progress_indicator(const rc_client_achievement_t *achievement)
+{
+    char url[512];
+    if (rc_client_achievement_get_image_url(achievement, achievement->state,
+                                            url, sizeof(url)) != RC_OK)
+        url[0] = '\0';
+
+    {
+        std::lock_guard<std::mutex> lock(g_badgeMutex);
+        RAProgressIndicator *existing = nullptr;
+        for (auto &ind : g_progressIndicators)
+        {
+            if (ind.achievement_id == achievement->id)
+            {
+                existing = &ind;
+                break;
+            }
+        }
+        if (existing)
+        {
+            existing->badge_url = url;
+            existing->progress_text = achievement->measured_progress;
+        }
+        else
+        {
+            g_progressIndicators.push_back({achievement->id, url,
+                                            achievement->measured_progress, 0.0f});
+        }
+    }
+
+    ra_request_badge(url);
+}
+
+static void ra_clear_progress_indicator_for(uint32_t achievement_id)
+{
+    std::lock_guard<std::mutex> lock(g_badgeMutex);
+    for (auto it = g_progressIndicators.begin(); it != g_progressIndicators.end(); ++it)
+    {
+        if (it->achievement_id == achievement_id)
+        {
+            g_progressIndicators.erase(it);
+            return;
+        }
+    }
+}
+
+static void ra_clear_indicators(bool clear_cache)
+{
+    std::lock_guard<std::mutex> lock(g_badgeMutex);
+    g_challengeIndicators.clear();
+    g_progressIndicators.clear();
+    if (clear_cache)
+        g_badgeCache.clear();
+}
 
 // ---------------------------------------------------------------------------
 // Callback: Memory Read
@@ -137,6 +351,8 @@ static void RC_CCONV ra_event_handler(const rc_client_event_t *event, rc_client_
     case RC_CLIENT_EVENT_ACHIEVEMENT_TRIGGERED:
         if (event->achievement)
         {
+            ra_clear_progress_indicator_for(event->achievement->id);
+
             char msg[256];
             snprintf(msg, sizeof(msg), "%s (%u pts)",
                      event->achievement->title, event->achievement->points);
@@ -146,14 +362,28 @@ static void RC_CCONV ra_event_handler(const rc_client_event_t *event, rc_client_
 
     case RC_CLIENT_EVENT_ACHIEVEMENT_CHALLENGE_INDICATOR_SHOW:
         if (event->achievement)
-            RA_QueueNotification("Challenge Active", event->achievement->title, 3.0f);
+        {
+            ra_add_challenge_indicator(event->achievement);
+            if (!g_showChallengeImages)
+                RA_QueueNotification("Challenge Active", event->achievement->title, 3.0f);
+        }
+        break;
+
+    case RC_CLIENT_EVENT_ACHIEVEMENT_CHALLENGE_INDICATOR_HIDE:
+        if (event->achievement)
+            ra_remove_challenge_indicator(event->achievement->id);
         break;
 
     case RC_CLIENT_EVENT_ACHIEVEMENT_PROGRESS_INDICATOR_SHOW:
     case RC_CLIENT_EVENT_ACHIEVEMENT_PROGRESS_INDICATOR_UPDATE:
         if (event->achievement && event->achievement->measured_progress[0])
-            RA_QueueNotification(event->achievement->title,
-                                 event->achievement->measured_progress, 2.0f);
+        {
+            if (g_showChallengeImages)
+                ra_show_progress_indicator(event->achievement);
+            else
+                RA_QueueNotification(event->achievement->title,
+                                     event->achievement->measured_progress, 2.0f);
+        }
         break;
 
     case RC_CLIENT_EVENT_LEADERBOARD_STARTED:
@@ -301,6 +531,8 @@ void RA_Shutdown()
         g_notifications.clear();
     }
 
+    ra_clear_indicators(true);
+
     g_initialized = false;
     g_raEnabled = false;
 }
@@ -320,6 +552,8 @@ void RA_OnLoadROM()
 {
     if (!g_rcClient || !g_raEnabled)
         return;
+
+    ra_clear_indicators(true);
 
     // Game Boy / Game Boy Color routed through SGB. Memory.ROM here either
     // holds the SGB BIOS (authentic-BIOS mode) or the leftover SNES ROM
@@ -361,6 +595,7 @@ void RA_OnReset()
     if (!g_rcClient || !g_raEnabled)
         return;
 
+    ra_clear_indicators(false);
     rc_client_reset(g_rcClient);
 }
 
@@ -369,6 +604,7 @@ void RA_OnCloseROM()
     if (!g_rcClient || !g_raEnabled)
         return;
 
+    ra_clear_indicators(true);
     rc_client_unload_game(g_rcClient);
 }
 
@@ -532,6 +768,151 @@ rc_client_t *RA_GetClient()
 // ---------------------------------------------------------------------------
 // Public API: ImGui Overlay
 // ---------------------------------------------------------------------------
+static float ra_overlay_scale(int height)
+{
+    float scale = (float)height / 720.0f;
+    if (scale < 1.0f)
+        scale = 1.0f;
+    if (scale > 3.0f)
+        scale = 3.0f;
+    return scale;
+}
+
+static void ra_draw_badge(ImDrawList *drawList, const std::string &badge_url,
+                          float x0, float y0, float badge_size, float scale, float fade)
+{
+    const RABadgeImage *img = nullptr;
+    auto found = g_badgeCache.find(badge_url);
+    if (found != g_badgeCache.end() && found->second.ready)
+        img = &found->second;
+
+    if (img)
+    {
+        const float px_w = badge_size / img->width;
+        const float px_h = badge_size / img->height;
+        for (int y = 0; y < img->height; y++)
+        {
+            const uint32_t *row = img->pixels.data() + (size_t)y * img->width;
+            int x = 0;
+            while (x < img->width)
+            {
+                const uint32_t color = row[x];
+                int run = x + 1;
+                while (run < img->width && row[run] == color)
+                    run++;
+
+                uint32_t a = (color >> IM_COL32_A_SHIFT) & 0xFF;
+                if (a != 0)
+                {
+                    a = (uint32_t)(a * fade);
+                    const ImU32 c = (color & ~((ImU32)0xFF << IM_COL32_A_SHIFT)) | (a << IM_COL32_A_SHIFT);
+                    drawList->AddRectFilled(ImVec2(x0 + x * px_w, y0 + y * px_h),
+                                            ImVec2(x0 + run * px_w, y0 + (y + 1) * px_h),
+                                            c);
+                }
+                x = run;
+            }
+        }
+    }
+    else
+    {
+        const ImU32 bg = IM_COL32(0x10, 0x10, 0x40, (int)(0xC0 * fade));
+        const ImU32 frame = IM_COL32(0xFF, 0xD7, 0x00, (int)(0xFF * fade));
+        drawList->AddRectFilled(ImVec2(x0, y0), ImVec2(x0 + badge_size, y0 + badge_size),
+                                bg, 2.0f * scale);
+        drawList->AddRect(ImVec2(x0, y0), ImVec2(x0 + badge_size, y0 + badge_size),
+                          frame, 2.0f * scale);
+    }
+}
+
+static void ra_render_challenge_indicators(ImDrawList *drawList, int width, int height, float dt)
+{
+    std::lock_guard<std::mutex> lock(g_badgeMutex);
+
+    if (g_challengeIndicators.empty())
+        return;
+
+    const float scale = ra_overlay_scale(height);
+    const float badge_size = 32.0f * scale;
+    const float margin = 8.0f * scale;
+    const float gap = 4.0f * scale;
+    const float y0 = (float)height - margin - badge_size;
+
+    float x_right = (float)width - margin;
+
+    int drawn = 0;
+    for (auto &ind : g_challengeIndicators)
+    {
+        if (drawn >= 8)
+            break;
+
+        ind.elapsed += dt;
+        float fade = ind.elapsed / 0.25f;
+        if (fade > 1.0f)
+            fade = 1.0f;
+
+        const float x0 = x_right - badge_size;
+        ra_draw_badge(drawList, ind.badge_url, x0, y0, badge_size, scale, fade);
+
+        x_right = x0 - gap;
+        drawn++;
+    }
+}
+
+static void ra_render_progress_indicators(ImDrawList *drawList, int width, int height, float dt)
+{
+    std::lock_guard<std::mutex> lock(g_badgeMutex);
+
+    if (g_progressIndicators.empty())
+        return;
+
+    const float scale = ra_overlay_scale(height);
+    const float badge_size = 32.0f * scale;
+    const float margin = 8.0f * scale;
+    const float gap = 4.0f * scale;
+    const float pad = 6.0f;
+
+    float y1 = (float)height - margin;
+    if (!g_challengeIndicators.empty())
+        y1 -= badge_size + gap;
+    const float y0 = y1 - badge_size;
+
+    float x_right = (float)width - margin;
+
+    int drawn = 0;
+    for (auto &ind : g_progressIndicators)
+    {
+        if (drawn >= 4)
+            break;
+
+        ind.elapsed += dt;
+        float fade = ind.elapsed / 0.25f;
+        if (fade > 1.0f)
+            fade = 1.0f;
+
+        const float bx1 = x_right;
+        const float bx0 = bx1 - badge_size;
+        float unit_x0 = bx0;
+
+        if (!ind.progress_text.empty())
+        {
+            const ImVec2 textSize = ImGui::CalcTextSize(ind.progress_text.c_str());
+            unit_x0 = bx0 - textSize.x - pad * 2;
+            const ImU32 bg = IM_COL32(0x10, 0x10, 0x40, (int)(0xE0 * fade));
+            const ImU32 txt = IM_COL32(0xFF, 0xFF, 0xFF, (int)(0xFF * fade));
+
+            drawList->AddRectFilled(ImVec2(unit_x0, y0), ImVec2(bx1, y1), bg, 4.0f);
+            drawList->AddText(ImVec2(unit_x0 + pad, y0 + (badge_size - textSize.y) * 0.5f), txt,
+                              ind.progress_text.c_str());
+        }
+
+        ra_draw_badge(drawList, ind.badge_url, bx0, y0, badge_size, scale, fade);
+
+        x_right = unit_x0 - gap;
+        drawn++;
+    }
+}
+
 void RA_RenderOverlay(int width, int height)
 {
     if (!g_initialized)
@@ -544,61 +925,70 @@ void RA_RenderOverlay(int width, int height)
     if (dt > 0.5f)
         dt = 0.5f;
 
-    std::lock_guard<std::mutex> lock(g_notifMutex);
-
     auto *drawList = ImGui::GetForegroundDrawList();
-    float y = 10.0f;
-    const float padding = 8.0f;
-    const float maxWidth = 400.0f;
-    const ImU32 bgColor = IM_COL32(0x10, 0x10, 0x40, 0xE0);
-    const ImU32 titleColor = IM_COL32(0xFF, 0xD7, 0x00, 0xFF);
-    const ImU32 textColor = IM_COL32(0xFF, 0xFF, 0xFF, 0xFF);
 
-    auto it = g_notifications.begin();
-    while (it != g_notifications.end())
     {
-        it->elapsed += dt;
-        if (it->elapsed >= it->duration)
+        std::lock_guard<std::mutex> lock(g_notifMutex);
+
+        float y = 10.0f;
+        const float padding = 8.0f;
+        const float maxWidth = 400.0f;
+        const ImU32 bgColor = IM_COL32(0x10, 0x10, 0x40, 0xE0);
+        const ImU32 titleColor = IM_COL32(0xFF, 0xD7, 0x00, 0xFF);
+        const ImU32 textColor = IM_COL32(0xFF, 0xFF, 0xFF, 0xFF);
+
+        auto it = g_notifications.begin();
+        while (it != g_notifications.end())
         {
-            it = g_notifications.erase(it);
-            continue;
+            it->elapsed += dt;
+            if (it->elapsed >= it->duration)
+            {
+                it = g_notifications.erase(it);
+                continue;
+            }
+
+            float alpha = 1.0f;
+            if (it->elapsed < 0.3f)
+                alpha = it->elapsed / 0.3f;
+            else if (it->elapsed > it->duration - 0.5f)
+                alpha = (it->duration - it->elapsed) / 0.5f;
+
+            ImU32 bg = (bgColor & 0x00FFFFFF) | ((uint32_t)(((bgColor >> 24) & 0xFF) * alpha) << 24);
+            ImU32 tc = (titleColor & 0x00FFFFFF) | ((uint32_t)(((titleColor >> 24) & 0xFF) * alpha) << 24);
+            ImU32 txt = (textColor & 0x00FFFFFF) | ((uint32_t)(((textColor >> 24) & 0xFF) * alpha) << 24);
+
+            ImVec2 titleSize = ImGui::CalcTextSize(it->title.c_str(), nullptr, false, maxWidth);
+            ImVec2 subtitleSize = {0, 0};
+            if (!it->subtitle.empty())
+                subtitleSize = ImGui::CalcTextSize(it->subtitle.c_str(), nullptr, false, maxWidth);
+
+            float boxW = (titleSize.x > subtitleSize.x ? titleSize.x : subtitleSize.x) + padding * 2;
+            float boxH = titleSize.y + subtitleSize.y + padding * 2;
+            if (!it->subtitle.empty())
+                boxH += 4.0f;
+
+            float x = ((float)width - boxW) * 0.5f;
+
+            drawList->AddRectFilled(ImVec2(x, y), ImVec2(x + boxW, y + boxH), bg, 6.0f);
+            drawList->AddText(nullptr, 0.0f, ImVec2(x + padding, y + padding), tc,
+                              it->title.c_str(), nullptr, maxWidth);
+
+            if (!it->subtitle.empty())
+            {
+                drawList->AddText(nullptr, 0.0f,
+                                  ImVec2(x + padding, y + padding + titleSize.y + 4.0f), txt,
+                                  it->subtitle.c_str(), nullptr, maxWidth);
+            }
+
+            y += boxH + 6.0f;
+            ++it;
         }
+    }
 
-        float alpha = 1.0f;
-        if (it->elapsed < 0.3f)
-            alpha = it->elapsed / 0.3f;
-        else if (it->elapsed > it->duration - 0.5f)
-            alpha = (it->duration - it->elapsed) / 0.5f;
-
-        ImU32 bg = (bgColor & 0x00FFFFFF) | ((uint32_t)(((bgColor >> 24) & 0xFF) * alpha) << 24);
-        ImU32 tc = (titleColor & 0x00FFFFFF) | ((uint32_t)(((titleColor >> 24) & 0xFF) * alpha) << 24);
-        ImU32 txt = (textColor & 0x00FFFFFF) | ((uint32_t)(((textColor >> 24) & 0xFF) * alpha) << 24);
-
-        ImVec2 titleSize = ImGui::CalcTextSize(it->title.c_str(), nullptr, false, maxWidth);
-        ImVec2 subtitleSize = {0, 0};
-        if (!it->subtitle.empty())
-            subtitleSize = ImGui::CalcTextSize(it->subtitle.c_str(), nullptr, false, maxWidth);
-
-        float boxW = (titleSize.x > subtitleSize.x ? titleSize.x : subtitleSize.x) + padding * 2;
-        float boxH = titleSize.y + subtitleSize.y + padding * 2;
-        if (!it->subtitle.empty())
-            boxH += 4.0f;
-
-        float x = ((float)width - boxW) * 0.5f;
-
-        drawList->AddRectFilled(ImVec2(x, y), ImVec2(x + boxW, y + boxH), bg, 6.0f);
-        drawList->AddText(nullptr, 0.0f, ImVec2(x + padding, y + padding), tc,
-                          it->title.c_str(), nullptr, maxWidth);
-
-        if (!it->subtitle.empty())
-        {
-            drawList->AddText(nullptr, 0.0f,
-                              ImVec2(x + padding, y + padding + titleSize.y + 4.0f), txt,
-                              it->subtitle.c_str(), nullptr, maxWidth);
-        }
-
-        y += boxH + 6.0f;
-        ++it;
+    if (g_showChallengeImages)
+    {
+        ra_render_challenge_indicators(drawList, width, height, dt);
+        ra_render_progress_indicators(drawList, width, height, dt);
     }
 }
 

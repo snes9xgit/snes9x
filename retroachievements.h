@@ -62,6 +62,11 @@ void RA_SetEnabled(bool enabled);
 void RA_SetHardcoreEnabled(bool enabled);
 
 // ---------------------------------------------------------------------------
+// Challenge indicator display: badge images (true) or text toasts (false)
+// ---------------------------------------------------------------------------
+void RA_SetShowChallengeImages(bool show);
+
+// ---------------------------------------------------------------------------
 // Login
 // ---------------------------------------------------------------------------
 void RA_AttemptLogin(const char *username, const char *token);
