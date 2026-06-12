@@ -572,7 +572,7 @@ void EmuApplication::startInputTimer()
 {
     poll_input_timer = std::make_unique<QTimer>();
     poll_input_timer->setTimerType(Qt::TimerType::PreciseTimer);
-    poll_input_timer->setInterval(4);
+    poll_input_timer->setInterval(1);
     poll_input_timer->setSingleShot(false);
     poll_input_timer->callOnTimeout([&] { pollJoysticks(); });
     poll_input_timer->start();
