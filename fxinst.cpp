@@ -751,7 +751,6 @@ static void fx_rpix_2bit (void)
 	uint8	v;
 
 	R15++;
-	CLRFLAGS;
 
 #ifdef CHECK_LIMITS
 	if (y >= GSU.vScreenHeight)
@@ -765,6 +764,7 @@ static void fx_rpix_2bit (void)
 	DREG |= ((uint32) ((a[0] & v) != 0)) << 0;
 	DREG |= ((uint32) ((a[1] & v) != 0)) << 1;
 	TESTR14;
+	CLRFLAGS;
 }
 
 // 4c - plot - plot pixel with R1, R2 as x, y and the color register as the color
@@ -825,7 +825,6 @@ static void fx_rpix_4bit (void)
 	uint8	v;
 
 	R15++;
-	CLRFLAGS;
 
 #ifdef CHECK_LIMITS
 	if (y >= GSU.vScreenHeight)
@@ -841,6 +840,7 @@ static void fx_rpix_4bit (void)
 	DREG |= ((uint32) ((a[0x10] & v) != 0)) << 2;
 	DREG |= ((uint32) ((a[0x11] & v) != 0)) << 3;
 	TESTR14;
+	CLRFLAGS;
 }
 
 // 4c - plot - plot pixel with R1, R2 as x, y and the color register as the color
@@ -923,7 +923,6 @@ static void fx_rpix_8bit (void)
 	uint8	v;
 
 	R15++;
-	CLRFLAGS;
 
 #ifdef CHECK_LIMITS
 	if (y >= GSU.vScreenHeight)
@@ -944,6 +943,7 @@ static void fx_rpix_8bit (void)
 	DREG |= ((uint32) ((a[0x31] & v) != 0)) << 7;
 	GSU.vZero = DREG;
 	TESTR14;
+	CLRFLAGS;
 }
 
 // 4c - plot - plot pixel with R1, R2 as x, y and the color register as the color
