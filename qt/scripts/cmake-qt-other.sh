@@ -1,2 +1,2 @@
 #!/bin/sh
-CMAKE_PREFIX_PATH=../../../qt/lib/cmake cmake .. -G Ninja $PARAMS
+CMAKE_PREFIX_PATH=../../../Qt/lib/cmake cmake .. -G Ninja $PARAMS
