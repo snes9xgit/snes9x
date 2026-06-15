@@ -246,6 +246,10 @@ bool EmuConfig::setDefaults(int section)
 
         display_messages = eOnscreen;
         osd_size = 24;
+
+        gb_frame_blend = eGBBlendOff;
+        gb_frame_blend_layer = eGBBlendLayerAll;
+        gb_frame_blend_auto = true;
     }
 
     if (section == -1 || section == 2)
@@ -474,6 +478,10 @@ void EmuConfig::config(const std::string &filename, bool write)
 
     Enum("DisplayMessages", display_messages, { "Onscreen", "Inscreen", "None" });
     Int("OSDSize", osd_size);
+
+    Enum("GBFrameBlend", gb_frame_blend, { "Off", "SimpleBlend", "LCDBlend" });
+    Enum("GBFrameBlendLayer", gb_frame_blend_layer, { "All", "Background", "Window", "Sprites" });
+    Bool("GBFrameBlendAuto", gb_frame_blend_auto);
     EndSection();
 
     BeginSection("Sound");

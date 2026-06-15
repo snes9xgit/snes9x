@@ -3,6 +3,8 @@
 #include "EmuConfig.hpp"
 #include <QFileDialog>
 
+#include "snes9x.h"
+
 DisplayPanel::DisplayPanel(EmuApplication *app_)
     : app(app_)
 {
@@ -99,7 +101,53 @@ DisplayPanel::DisplayPanel(EmuApplication *app_)
             app->window->recreateUIAssets();
     });
 
+    // Game Boy frame blending (Super Game Boy). Mirrors the win32 "Game Boy Image"
+    // box: the Auto checkbox picks the blend per game from a built-in table, while
+    // the two dropdowns set it manually when Auto is off.
+    connect(checkBox_gb_frame_blend_auto, &QCheckBox::clicked, [&](bool checked) {
+        app->config->gb_frame_blend_auto = checked;
+        app->updateSettings();
+        if (checked)
+        {
+            // Re-pick the blend for the loaded game from the table (done on the
+            // emu thread by S9xSGBApplyAutoBlend) and reflect it in the now-disabled
+            // dropdowns, persisting it as the manual value like win32's single store.
+            app->emu_thread->runOnThread([&] {
+                app->config->gb_frame_blend = Settings.GBFrameBlend;
+                app->config->gb_frame_blend_layer = Settings.GBFrameBlendLayer;
+            }, true);
+            comboBox_gb_frame_blend->setCurrentIndex(app->config->gb_frame_blend);
+            comboBox_gb_frame_blend_layer->setCurrentIndex(app->config->gb_frame_blend_layer);
+        }
+        updateGBBlendEnabledState();
+    });
+
+    connect(comboBox_gb_frame_blend, &QComboBox::currentIndexChanged, [&](int index) {
+        app->config->gb_frame_blend = index;
+        app->updateSettings();
+        updateGBBlendEnabledState();
+    });
+
+    connect(comboBox_gb_frame_blend_layer, &QComboBox::currentIndexChanged, [&](int index) {
+        app->config->gb_frame_blend_layer = index;
+        app->updateSettings();
+    });
+
     groupBox_software_filters->hide();
+}
+
+void DisplayPanel::updateGBBlendEnabledState()
+{
+    // The Game Boy Image options only apply to a Game Boy / GBC / SGB game — grey
+    // them out for SNES titles (or when nothing is loaded). With Auto on, the two
+    // dropdowns are list-driven so they're greyed too; the layer one also needs
+    // blending to be on (mode != Off).
+    bool gb_active = (Settings.SuperGameBoy || Settings.SGB_BIOSModeActive);
+    bool manual = gb_active && !app->config->gb_frame_blend_auto;
+    groupBox_gb_image->setEnabled(gb_active);
+    checkBox_gb_frame_blend_auto->setEnabled(gb_active);
+    comboBox_gb_frame_blend->setEnabled(manual);
+    comboBox_gb_frame_blend_layer->setEnabled(manual && app->config->gb_frame_blend != EmuConfig::eGBBlendOff);
 }
 
 void DisplayPanel::selectShaderDialog()
@@ -174,6 +222,11 @@ void DisplayPanel::showEvent(QShowEvent *event)
 
     comboBox_messages->setCurrentIndex(config->display_messages);
     spinBox_osd_size->setValue(config->osd_size);
+
+    checkBox_gb_frame_blend_auto->setChecked(config->gb_frame_blend_auto);
+    comboBox_gb_frame_blend->setCurrentIndex(config->gb_frame_blend);
+    comboBox_gb_frame_blend_layer->setCurrentIndex(config->gb_frame_blend_layer);
+    updateGBBlendEnabledState();
 
     QWidget::showEvent(event);
 }

@@ -419,6 +419,120 @@ Output directly will cause the screen to change between the two modes and look w
     </widget>
    </item>
    <item>
+    <widget class="QGroupBox" name="groupBox_gb_image">
+     <property name="toolTip">
+      <string>These options only apply to Game Boy games played through the Super Game Boy.</string>
+     </property>
+     <property name="title">
+      <string>Game Boy Image</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_gb_image">
+      <item>
+       <widget class="QCheckBox" name="checkBox_gb_frame_blend_auto">
+        <property name="toolTip">
+         <string>Auto Layer Transparency: pick the blend per game from a built-in list of known flicker-transparency games (off for the rest). Uncheck to set the mode and layer manually for every Game Boy game.</string>
+        </property>
+        <property name="text">
+         <string>Auto Layer Transparency</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <layout class="QGridLayout" name="gridLayout_gb_blend">
+        <item row="0" column="0">
+         <widget class="QLabel" name="label_gb_frame_blend">
+          <property name="text">
+           <string>Frame blend:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QComboBox" name="comboBox_gb_frame_blend">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="toolTip">
+           <string>Game Boy frame-blend mode: Simple Blend = 50/50 of the last two frames (cancels flicker-transparency); LCD Blend = slow-decay LCD-style ghosting.</string>
+          </property>
+          <item>
+           <property name="text">
+            <string>Off</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Simple Blend</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>LCD Blend</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="label_gb_frame_blend_layer">
+          <property name="text">
+           <string>Blend layer:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QComboBox" name="comboBox_gb_frame_blend_layer">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="toolTip">
+           <string>Which Game Boy layer to blend: Background (BG) keeps moving sprites crisp; Window = the window/HUD layer; Sprites = objects only; All blends everything.</string>
+          </property>
+          <item>
+           <property name="text">
+            <string>All</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Background</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Window</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Sprites</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="0" column="2">
+         <spacer name="horizontalSpacer_gb_blend">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
     <spacer name="verticalSpacer">
      <property name="orientation">
       <enum>Qt::Vertical</enum>

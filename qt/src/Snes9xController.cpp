@@ -20,6 +20,7 @@ namespace fs = std::filesystem;
 #include "display.h"
 #include "conffile.h"
 #include "statemanager.h"
+#include "sgb/sgb.h"
 
 Snes9xController *g_snes9xcontroller = nullptr;
 StateManager g_state_manager;
@@ -196,6 +197,16 @@ void Snes9xController::updateSettings(const EmuConfig * const config)
     Settings.TwoClockCycles = overclock_cycles[config->overclock][0] * 2;
 
     Settings.ShowOverscan = config->show_overscan;
+
+    // Game Boy frame-blend (Super Game Boy). Push the manual mode/layer first, then,
+    // when "Auto Layer Transparency" is on, let the per-title table in sgb.cpp pick
+    // the mode/layer for the loaded Game Boy game (overwriting the manual values).
+    // The actual blending and fast-forward bypass live in S9xBlendGameBoyFrames().
+    Settings.GBFrameBlendAuto  = config->gb_frame_blend_auto;
+    Settings.GBFrameBlend      = config->gb_frame_blend;
+    Settings.GBFrameBlendLayer = config->gb_frame_blend_layer;
+    if (config->gb_frame_blend_auto)
+        S9xSGBApplyAutoBlend();
 
     high_resolution_effect = config->high_resolution_effect;
 

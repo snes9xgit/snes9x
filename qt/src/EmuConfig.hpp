@@ -81,6 +81,29 @@ struct EmuConfig
     int display_messages;
     int osd_size;
 
+    // Game Boy frame blending (Super Game Boy / SGB BIOS games only). Mirrors the
+    // win32 "Game Boy Image" options: a blend mode, the layer it applies to, and an
+    // "Auto Layer Transparency" toggle that picks both per-game from a built-in
+    // known-flicker table. Maps onto Settings.GBFrameBlend / GBFrameBlendLayer /
+    // GBFrameBlendAuto and must stay in sync with the GBBlendMode / GBBlendLayer
+    // enums in snes9x.h.
+    enum GBFrameBlend
+    {
+        eGBBlendOff = 0,
+        eGBBlendSimple = 1,
+        eGBBlendLCD = 2
+    };
+    int gb_frame_blend;
+    enum GBFrameBlendLayer
+    {
+        eGBBlendLayerAll = 0,
+        eGBBlendLayerBackground = 1,
+        eGBBlendLayerWindow = 2,
+        eGBBlendLayerSprites = 3
+    };
+    int gb_frame_blend_layer;
+    bool gb_frame_blend_auto;
+
     // Sound
     std::string sound_driver;
     std::string sound_device;
