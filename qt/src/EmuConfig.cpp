@@ -479,9 +479,11 @@ void EmuConfig::config(const std::string &filename, bool write)
     Enum("DisplayMessages", display_messages, { "Onscreen", "Inscreen", "None" });
     Int("OSDSize", osd_size);
 
-    Enum("GBFrameBlend", gb_frame_blend, { "Off", "SimpleBlend", "LCDBlend" });
-    Enum("GBFrameBlendLayer", gb_frame_blend_layer, { "All", "Background", "Window", "Sprites" });
-    Bool("GBFrameBlendAuto", gb_frame_blend_auto);
+    // Key names match the win32 config (wconfig.cpp) so a shared install reads/writes
+    // the same entries.
+    Enum("BlendGBFrames", gb_frame_blend, { "Off", "SimpleBlend", "LCDBlend" });
+    Enum("BlendGBFramesLayer", gb_frame_blend_layer, { "All", "Background", "Window", "Sprites" });
+    Bool("BlendGBFramesAuto", gb_frame_blend_auto);
     EndSection();
 
     BeginSection("Sound");

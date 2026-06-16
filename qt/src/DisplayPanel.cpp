@@ -109,9 +109,9 @@ DisplayPanel::DisplayPanel(EmuApplication *app_)
         app->updateSettings();
         if (checked)
         {
-            // Re-pick the blend for the loaded game from the table (done on the
-            // emu thread by S9xSGBApplyAutoBlend) and reflect it in the now-disabled
-            // dropdowns, persisting it as the manual value like win32's single store.
+            // updateSettings just re-picked the blend for the loaded game via the
+            // table (S9xSGBApplyAutoBlend on the emu thread) and wrote it back into
+            // the single stored value; read it out to show in the disabled dropdowns.
             app->emu_thread->runOnThread([&] {
                 app->config->gb_frame_blend = Settings.GBFrameBlend;
                 app->config->gb_frame_blend_layer = Settings.GBFrameBlendLayer;
@@ -224,6 +224,16 @@ void DisplayPanel::showEvent(QShowEvent *event)
     spinBox_osd_size->setValue(config->osd_size);
 
     checkBox_gb_frame_blend_auto->setChecked(config->gb_frame_blend_auto);
+    if (config->gb_frame_blend_auto &&
+        (Settings.SuperGameBoy || Settings.SGB_BIOSModeActive))
+    {
+        // win32 shows the single stored value, which the auto table has already
+        // overwritten for the loaded game; mirror that by reading it back from core.
+        app->emu_thread->runOnThread([&] {
+            config->gb_frame_blend = Settings.GBFrameBlend;
+            config->gb_frame_blend_layer = Settings.GBFrameBlendLayer;
+        }, true);
+    }
     comboBox_gb_frame_blend->setCurrentIndex(config->gb_frame_blend);
     comboBox_gb_frame_blend_layer->setCurrentIndex(config->gb_frame_blend_layer);
     updateGBBlendEnabledState();

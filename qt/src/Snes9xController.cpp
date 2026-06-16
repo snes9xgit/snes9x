@@ -115,7 +115,7 @@ void Snes9xController::deinit()
     S9xDeinitAPU();
 }
 
-void Snes9xController::updateSettings(const EmuConfig * const config)
+void Snes9xController::updateSettings(EmuConfig *config)
 {
     Settings.UpAndDown = config->allow_opposing_dpad_directions;
 
@@ -198,15 +198,21 @@ void Snes9xController::updateSettings(const EmuConfig * const config)
 
     Settings.ShowOverscan = config->show_overscan;
 
-    // Game Boy frame-blend (Super Game Boy). Push the manual mode/layer first, then,
+    // Game Boy frame-blend (Super Game Boy). Push the stored mode/layer first, then,
     // when "Auto Layer Transparency" is on, let the per-title table in sgb.cpp pick
-    // the mode/layer for the loaded Game Boy game (overwriting the manual values).
+    // the mode/layer for the loaded Game Boy game. Like win32, there is a single
+    // stored value: the auto pick overwrites it in place (config <- Settings) so it
+    // persists, rather than being kept beside a separate "manual" value.
     // The actual blending and fast-forward bypass live in S9xBlendGameBoyFrames().
     Settings.GBFrameBlendAuto  = config->gb_frame_blend_auto;
     Settings.GBFrameBlend      = config->gb_frame_blend;
     Settings.GBFrameBlendLayer = config->gb_frame_blend_layer;
     if (config->gb_frame_blend_auto)
+    {
         S9xSGBApplyAutoBlend();
+        config->gb_frame_blend       = Settings.GBFrameBlend;
+        config->gb_frame_blend_layer = Settings.GBFrameBlendLayer;
+    }
 
     high_resolution_effect = config->high_resolution_effect;
 
