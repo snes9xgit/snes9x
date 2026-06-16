@@ -134,6 +134,12 @@ int Snes9xConfig::load_defaults()
     ntsc_scanline_intensity = 1;
     scanline_filter_intensity = 0;
     Settings.BilinearFilter = false;
+    // Game Boy frame blending (Super Game Boy only) — single stored value in Settings,
+    // same as the win32 frontend. 0=off, 1=Simple Blend, 2=LCD Blend; layer 0=all,
+    // 1=bg, 2=window, 3=sprites; Auto picks both per-game from a built-in table.
+    Settings.GBFrameBlend = 0;
+    Settings.GBFrameBlendLayer = 0;
+    Settings.GBFrameBlendAuto = true;
     netplay_activated = false;
     netplay_server_up = false;
     netplay_is_server = false;
@@ -246,6 +252,10 @@ int Snes9xConfig::save_config_file()
     outbool("AutoVRR", auto_vrr, "Automatically use the best settings for variable sync in fullscreen mode");
     outint("OSDSize", osd_size, "Size of on-screen display elements. Default: 24pt");
     outint("MessageDisplayTime", Settings.InitialInfoStringTimeout, "Display timeout length of messages, in frames. Set to 0 to disable all message text. Default: 120.");
+    // Key names match the win32 config (wconfig.cpp) so a shared install reads/writes the same entries.
+    outint("BlendGBFrames", Settings.GBFrameBlend, "Game Boy frame-blend mode (Super Game Boy only): 0=off, 1=Simple Blend (mix each frame 50/50 with the previous, fixes flicker-based fake transparency e.g. ZAS), 2=LCD Blend (slow-decay LCD-style ghosting)");
+    outint("BlendGBFramesLayer", Settings.GBFrameBlendLayer, "Which Game Boy layer the frame-blend applies to: 0=all, 1=background (keeps moving sprites crisp), 2=window, 3=sprites");
+    outbool("BlendGBFramesAuto", Settings.GBFrameBlendAuto, "Auto-pick the GB frame-blend per game from a built-in known-flicker-game table at load (off for unlisted games); when false the manual mode/layer apply to every GB game");
     
     
     section = "NTSC";
@@ -479,6 +489,9 @@ int Snes9xConfig::load_config_file()
     inbool("AutoVRR", auto_vrr);
     inint("OSDSize", osd_size);
     inint("MessageDisplayTime", Settings.InitialInfoStringTimeout);
+    inint("BlendGBFrames", Settings.GBFrameBlend);
+    inint("BlendGBFramesLayer", Settings.GBFrameBlendLayer);
+    inbool("BlendGBFramesAuto", Settings.GBFrameBlendAuto);
 
     section = "NTSC";
     indouble("Hue", ntsc_setup.hue);
@@ -674,6 +687,8 @@ int Snes9xConfig::load_config_file()
         Settings.SoundSync = false;
 
     hires_effect = CLAMP(hires_effect, 0, 2);
+    Settings.GBFrameBlend = CLAMP(Settings.GBFrameBlend, 0, 2);
+    Settings.GBFrameBlendLayer = CLAMP(Settings.GBFrameBlendLayer, 0, 3);
     Settings.DynamicRateLimit = CLAMP(Settings.DynamicRateLimit, 1, 1000);
     Settings.SuperFXClockMultiplier = CLAMP(Settings.SuperFXClockMultiplier, 50, 400);
     ntsc_scanline_intensity = MIN(ntsc_scanline_intensity, 4);

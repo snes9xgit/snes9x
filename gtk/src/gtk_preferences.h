@@ -31,6 +31,7 @@ class Snes9xPreferences final : public GtkBuilderWindow
     void connect_signals();
     void input_rate_changed();
     void update_sgb_volume_enable_state();
+    void update_gb_blend_enable_state();
     bool key_pressed(GdkEventKey *event);
     void shader_select();
     void game_data_browse(const std::string &folder);
