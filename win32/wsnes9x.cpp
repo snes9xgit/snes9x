@@ -7999,10 +7999,10 @@ INT_PTR CALLBACK DlgOpenROMProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 						lstrcpy(filename,_tFromChar(Memory.ROMFilename.c_str()));
 						tmp = filename;
 						while(tmp2=_tcsstr(tmp, TEXT("\\")))
-							tmp=tmp2+sizeof(TCHAR);
+							tmp=tmp2+1;
 
 						lvfi.flags=LVFI_STRING;
-						lvfi.psz=tmp2;
+						lvfi.psz=tmp;
 
 						int idx=ListView_FindItem(romList, -1, &lvfi);
 						ListView_SetSelectionMark(romList, idx);
