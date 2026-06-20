@@ -117,7 +117,7 @@ msgstr "XVideo - використовувати апаратний відеоб�
 
 #: src/gtk_preferences.cpp:147
 msgid "Vulkan"
-msgstr ""
+msgstr "Vulkan"
 
 #: src/gtk_preferences.cpp:149
 msgid "None – Use software scaler"
@@ -145,7 +145,7 @@ msgstr[1] "сек після зміни"
 msgstr[2] "сек після зміни"
 
 #: src/gtk_preferences.cpp:271
-msgid "Snes9x version: "
+msgid "SuperSnes9x version: "
 msgstr "Версія: "
 
 #: src/gtk_preferences.cpp:272
@@ -344,11 +344,11 @@ msgid "Shader Parameters"
 msgstr "Параметри шейдерів"
 
 #: src/snes9x.ui:10
-msgid "About Snes9x"
+msgid "About SuperSnes9x"
 msgstr "Про додаток"
 
 #: src/snes9x.ui:283
-msgid "Snes9x Cheats"
+msgid "SuperSnes9x Cheats"
 msgstr "Чіти"
 
 #: src/snes9x.ui:401
@@ -478,43 +478,43 @@ msgstr "Масштабувати екрани низького розміру"
 
 #: src/snes9x.ui:985 src/snes9x.ui:1023
 msgid "1"
-msgstr ""
+msgstr "1"
 
 #: src/snes9x.ui:988 src/snes9x.ui:1026
 msgid "2"
-msgstr ""
+msgstr "2"
 
 #: src/snes9x.ui:991 src/snes9x.ui:1029
 msgid "3"
-msgstr ""
+msgstr "3"
 
 #: src/snes9x.ui:994 src/snes9x.ui:1032
 msgid "4"
-msgstr ""
+msgstr "4"
 
 #: src/snes9x.ui:997 src/snes9x.ui:1035
 msgid "5"
-msgstr ""
+msgstr "5"
 
 #: src/snes9x.ui:1000 src/snes9x.ui:1038
 msgid "1+"
-msgstr ""
+msgstr "1+"
 
 #: src/snes9x.ui:1003 src/snes9x.ui:1041
 msgid "2+"
-msgstr ""
+msgstr "2+"
 
 #: src/snes9x.ui:1006 src/snes9x.ui:1044
 msgid "3+"
-msgstr ""
+msgstr "3+"
 
 #: src/snes9x.ui:1009 src/snes9x.ui:1047
 msgid "4+"
-msgstr ""
+msgstr "4+"
 
 #: src/snes9x.ui:1012 src/snes9x.ui:1050
 msgid "5+"
-msgstr ""
+msgstr "5+"
 
 #: src/snes9x.ui:1061
 msgid "Toggle the menu bar"
@@ -525,7 +525,7 @@ msgid "Exit fullscreen mode"
 msgstr "Вийти з повного екрана"
 
 #: src/snes9x.ui:1067 src/snes9x.ui:6932
-msgid "Quit Snes9x"
+msgid "Quit SuperSnes9x"
 msgstr "Вихід"
 
 #: src/snes9x.ui:1078
@@ -605,7 +605,7 @@ msgid "Sinc"
 msgstr "Синусоїдальна кардинальна"
 
 #: src/snes9x.ui:1175
-msgid "Snes9x"
+msgid "SuperSnes9x"
 msgstr "Super Nintendo Entertainment System 9X"
 
 #: src/snes9x.ui:1195
@@ -706,7 +706,7 @@ msgstr "Показати ROM-_відомості..."
 
 #: src/snes9x.ui:1557
 msgid "gtk-quit"
-msgstr ""
+msgstr "gtk-quit"
 
 #: src/snes9x.ui:1571
 msgid "_Emulation"
@@ -762,47 +762,47 @@ msgstr "_Змінити розмір"
 
 #: src/snes9x.ui:1746
 msgid "_1×"
-msgstr ""
+msgstr "_1×"
 
 #: src/snes9x.ui:1755
 msgid "_2×"
-msgstr ""
+msgstr "_2×"
 
 #: src/snes9x.ui:1764
 msgid "_3×"
-msgstr ""
+msgstr "_3×"
 
 #: src/snes9x.ui:1773
 msgid "_4×"
-msgstr ""
+msgstr "_4×"
 
 #: src/snes9x.ui:1782
 msgid "_5×"
-msgstr ""
+msgstr "_5×"
 
 #: src/snes9x.ui:1791
 msgid "_6×"
-msgstr ""
+msgstr "_6×"
 
 #: src/snes9x.ui:1800
 msgid "_7×"
-msgstr ""
+msgstr "_7×"
 
 #: src/snes9x.ui:1809
 msgid "_8×"
-msgstr ""
+msgstr "_8×"
 
 #: src/snes9x.ui:1818
 msgid "_9×"
-msgstr ""
+msgstr "_9×"
 
 #: src/snes9x.ui:1827
 msgid "1_0×"
-msgstr ""
+msgstr "1_0×"
 
 #: src/snes9x.ui:1844
 msgid "gtk-fullscreen"
-msgstr ""
+msgstr "gtk-fullscreen"
 
 #: src/snes9x.ui:1858
 msgid "_Options"
@@ -834,7 +834,7 @@ msgstr "SNES-порт 2"
 
 #: src/snes9x.ui:1949
 msgid "Multitap"
-msgstr ""
+msgstr "Мультитап"
 
 #: src/snes9x.ui:1970
 msgctxt "SNES port 2"
@@ -851,7 +851,7 @@ msgstr "Параметри _шейдерів..."
 
 #: src/snes9x.ui:2026
 msgid "gtk-preferences"
-msgstr ""
+msgstr "gtk-preferences"
 
 #: src/snes9x.ui:2068
 msgid "Open Multiple ROM Images (MultiCart)"
@@ -874,7 +874,7 @@ msgid "Select an Image for Slot B"
 msgstr "Вибір образу для слота B"
 
 #: src/snes9x.ui:2211
-msgid "Snes9x NetPlay"
+msgid "SuperSnes9x NetPlay"
 msgstr "Мережева гра"
 
 #: src/snes9x.ui:2288
@@ -901,7 +901,7 @@ msgid "Connect to another computer"
 msgstr "З'єднати з іншим комп'ютером"
 
 #: src/snes9x.ui:2378
-msgid "Connect to another computer that is running Snes9x NetPlay as a server"
+msgid "Connect to another computer that is running SuperSnes9x NetPlay as a server"
 msgstr "З'єднання з іншим комп'ютером, де мережеву гру запущено як сервер."
 
 #: src/snes9x.ui:2398
@@ -968,7 +968,7 @@ msgid "<b>Settings</b>"
 msgstr "<b>Налаштування</b>"
 
 #: src/snes9x.ui:2680
-msgid "Snes9x Preferences"
+msgid "SuperSnes9x Preferences"
 msgstr "Налаштування"
 
 #: src/snes9x.ui:2796
@@ -1016,7 +1016,7 @@ msgid "Change fullscreen resolution:"
 msgstr "Змінити розмір повного екрана:"
 
 #: src/snes9x.ui:2944
-msgid "Changes the screen resolution when running Snes9x in fullscreen mode"
+msgid "Changes the screen resolution when running SuperSnes9x in fullscreen mode"
 msgstr "Зміна розміру екрана при запуску в повному екрані."
 
 #: src/snes9x.ui:2989
@@ -1069,11 +1069,11 @@ msgstr "Композитний"
 
 #: src/snes9x.ui:3309
 msgid "S-Video"
-msgstr ""
+msgstr "S-Video"
 
 #: src/snes9x.ui:3323
 msgid "RGB"
-msgstr ""
+msgstr "RGB"
 
 #: src/snes9x.ui:3337
 msgid "Monochrome"
@@ -1333,7 +1333,7 @@ msgstr "Емуляція"
 
 #: src/snes9x.ui:5202
 msgid "SRAM:"
-msgstr ""
+msgstr "SRAM:"
 
 #: src/snes9x.ui:5214
 msgid "Save states:"
@@ -1417,35 +1417,35 @@ msgstr "→"
 
 #: src/snes9x.ui:5635
 msgid "Start"
-msgstr ""
+msgstr "Start"
 
 #: src/snes9x.ui:5649
 msgid "Select"
-msgstr ""
+msgstr "Select"
 
 #: src/snes9x.ui:5790 src/snes9x.ui:6020 src/snes9x.ui:6232
 msgid "A"
-msgstr ""
+msgstr "A"
 
 #: src/snes9x.ui:5802 src/snes9x.ui:6032 src/snes9x.ui:6244
 msgid "B"
-msgstr ""
+msgstr "B"
 
 #: src/snes9x.ui:5816 src/snes9x.ui:6046 src/snes9x.ui:6258
 msgid "X"
-msgstr ""
+msgstr "X"
 
 #: src/snes9x.ui:5830 src/snes9x.ui:6060 src/snes9x.ui:6272
 msgid "Y"
-msgstr ""
+msgstr "Y"
 
 #: src/snes9x.ui:5844 src/snes9x.ui:6074 src/snes9x.ui:6286
 msgid "L"
-msgstr ""
+msgstr "L"
 
 #: src/snes9x.ui:5858 src/snes9x.ui:6088 src/snes9x.ui:6300
 msgid "R"
-msgstr ""
+msgstr "R"
 
 #: src/snes9x.ui:5992
 msgid "Buttons"
@@ -1508,7 +1508,7 @@ msgid "Joypads"
 msgstr "Джойстики"
 
 #: src/snes9x.ui:6742
-msgid "<b>Snes9x Emulator Shortcut Keys</b>"
+msgid "<b>SuperSnes9x Emulator Shortcut Keys</b>"
 msgstr "<b>Гарячі кнопки</b>"
 
 #: src/snes9x.ui:6793
@@ -1736,7 +1736,7 @@ msgid "Shortcuts"
 msgstr "Гарячі кнопки"
 
 #: src/snes9x.ui:9106
-msgid "Pause emulation when switching away from Snes9x"
+msgid "Pause emulation when switching away from SuperSnes9x"
 msgstr "Призупиняти емуляцію при перемиканні поза емулятором"
 
 #: src/snes9x.ui:9120
@@ -1765,14 +1765,14 @@ msgstr "<b>Заставка</b>"
 
 #: src/snes9x.ui:9310
 msgid "UI"
-msgstr ""
+msgstr "Інтерфейс"
 
 #: src/snes9x.ui:9344
 msgid ""
 "  Snes9x – A Portable Super Nintendo Entertainment System™ Emulator\n"
 "\n"
 "  Snes9x homepage: http://www.snes9x.com/\n"
-"  Snes9x source code: https://github.com/snes9xgit/snes9x/\n"
+"  Snes9x source code: https://github.com/shanytc/snes9x/\n"
 "\n"
 "  Permission to use, copy, modify and/or distribute Snes9x in both binary\n"
 "  and source form, for non-commercial purposes, is hereby granted without\n"
@@ -1800,7 +1800,7 @@ msgstr ""
 "Super Nintendo Entertainment System™.\n"
 "\n"
 "Домашня сторінка: http://snes9x.com\n"
-"Код-джерело: https://github.com/snes9xgit/snes9x\n"
+"Код-джерело: https://github.com/shanytc/snes9x\n"
 "\n"
 "Дозвіл використання, копіювання, зміни та / або розповсюдження\n"
 "як у двійковій формі, так і формі-джерелі з некомерційною метою\n"
@@ -1831,2530 +1831,2532 @@ msgstr ""
 
 #: win32/rsrc/snes9x.rc
 msgid "!= (Not Equal To)"
-msgstr ""
+msgstr "!= (не дорівнює)"
 
 #: win32/wlanguage.h
 msgid "(Not Available)"
-msgstr ""
+msgstr "(недоступно)"
 
 #: win32/wlanguage.h
 msgid "(not stored in movie file)"
-msgstr ""
+msgstr "(не зберігається у файлі відео)"
 
 #: win32/rsrc/snes9x.rc
 msgid "(restart required)"
-msgstr ""
+msgstr "(потрібен перезапуск)"
 
 #: win32/rsrc/snes9x.rc
 msgid "0 (off)"
-msgstr ""
+msgstr "0 (вимкнено)"
 
 #: win32/rsrc/snes9x.rc
 msgid "1 byte"
-msgstr ""
+msgstr "1 байт"
 
 #: win32/rsrc/snes9x.rc
 msgid "1 frame"
-msgstr ""
+msgstr "1 кадр"
 
 #: win32/rsrc/snes9x.rc
 msgid "10x"
-msgstr ""
+msgstr "10x"
 
 #: win32/rsrc/snes9x.rc
 msgid "112ms"
-msgstr ""
+msgstr "112ms"
 
 #: win32/rsrc/snes9x.rc
 msgid "11KHz"
-msgstr ""
+msgstr "11KHz"
 
 #: win32/rsrc/snes9x.rc
 msgid "128ms"
-msgstr ""
+msgstr "128ms"
 
 #: win32/rsrc/snes9x.rc
 msgid "144ms"
-msgstr ""
+msgstr "144ms"
 
 #: win32/rsrc/snes9x.rc
 msgid "160ms"
-msgstr ""
+msgstr "160ms"
 
 #: win32/rsrc/snes9x.rc
 msgid "16KHz"
-msgstr ""
+msgstr "16KHz"
 
 #: win32/rsrc/snes9x.rc
 msgid "16ms"
-msgstr ""
+msgstr "16ms"
 
 #: win32/rsrc/snes9x.rc
 msgid "176ms"
-msgstr ""
+msgstr "176ms"
 
 #: win32/rsrc/snes9x.rc
 msgid "192ms"
-msgstr ""
+msgstr "192ms"
 
 #: win32/rsrc/snes9x.rc
 msgid "1x"
-msgstr ""
+msgstr "1x"
 
 #: win32/rsrc/snes9x.rc
 msgid "2 bytes"
-msgstr ""
+msgstr "2 байти"
 
 #: win32/rsrc/snes9x.rc
 msgid "2 frames"
-msgstr ""
+msgstr "2 кадри"
 
 #: win32/rsrc/snes9x.rc
 msgid "208ms"
-msgstr ""
+msgstr "208ms"
 
 #: win32/rsrc/snes9x.rc
 msgid "22KHz"
-msgstr ""
+msgstr "22KHz"
 
 #: win32/rsrc/snes9x.rc
 msgid "2x"
-msgstr ""
+msgstr "2x"
 
 #: win32/rsrc/snes9x.rc
 msgid "3 bytes"
-msgstr ""
+msgstr "3 байти"
 
 #: win32/rsrc/snes9x.rc
 msgid "3 frames"
-msgstr ""
+msgstr "3 кадри"
 
 #: win32/rsrc/snes9x.rc
 msgid "30KHz"
-msgstr ""
+msgstr "30KHz"
 
 #: win32/rsrc/snes9x.rc
 msgid "32KHz"
-msgstr ""
+msgstr "32KHz"
 
 #: win32/rsrc/snes9x.rc
 msgid "32ms"
-msgstr ""
+msgstr "32ms"
 
 #: win32/rsrc/snes9x.rc
 msgid "35KHz"
-msgstr ""
+msgstr "35KHz"
 
 #: win32/rsrc/snes9x.rc
 msgid "3x"
-msgstr ""
+msgstr "3x"
 
 #: win32/rsrc/snes9x.rc
 msgid "4 bytes"
-msgstr ""
+msgstr "4 байти"
 
 #: win32/rsrc/snes9x.rc
 msgid "4 frames"
-msgstr ""
+msgstr "4 кадри"
 
 #: win32/rsrc/snes9x.rc
 msgid "44KHz"
-msgstr ""
+msgstr "44KHz"
 
 #: win32/rsrc/snes9x.rc
 msgid "48KHz"
-msgstr ""
+msgstr "48KHz"
 
 #: win32/rsrc/snes9x.rc
 msgid "48ms"
-msgstr ""
+msgstr "48ms"
 
 #: win32/rsrc/snes9x.rc
 msgid "4x"
-msgstr ""
+msgstr "4x"
 
 #: win32/rsrc/snes9x.rc
 msgid "5x"
-msgstr ""
+msgstr "5x"
 
 #: win32/rsrc/snes9x.rc
 msgid "64ms"
-msgstr ""
+msgstr "64ms"
 
 #: win32/rsrc/snes9x.rc
 msgid "6x"
-msgstr ""
+msgstr "6x"
 
 #: win32/rsrc/snes9x.rc
 msgid "7x"
-msgstr ""
+msgstr "7x"
 
 #: win32/rsrc/snes9x.rc
 msgid "80ms"
-msgstr ""
+msgstr "80ms"
 
 #: win32/rsrc/snes9x.rc
 msgid "8KHz"
-msgstr ""
+msgstr "8KHz"
 
 #: win32/rsrc/snes9x.rc
 msgid "8x"
-msgstr ""
+msgstr "8x"
 
 #: win32/rsrc/snes9x.rc
 msgid "96ms"
-msgstr ""
+msgstr "96ms"
 
 #: win32/rsrc/snes9x.rc
 msgid "9x"
-msgstr ""
+msgstr "9x"
 
 #: win32/rsrc/snes9x.rc
 msgid "< (Less Than)"
-msgstr ""
+msgstr "< (менше)"
 
 #: win32/wlanguage.h
 msgid "<-- MISMATCH !!!"
-msgstr ""
+msgstr "<-- НЕВІДПОВІДНІСТЬ !!!"
 
 #: win32/rsrc/snes9x.rc
 msgid "<= (Less Than or Equal to)"
-msgstr ""
+msgstr "<= (менше або дорівнює)"
 
 #: win32/rsrc/snes9x.rc
 msgid "= (Equal To)"
-msgstr ""
+msgstr "= (дорівнює)"
 
 #: win32/rsrc/snes9x.rc
 msgid "> (Greater Than)"
-msgstr ""
+msgstr "> (більше)"
 
 #: win32/rsrc/snes9x.rc
 msgid ">= (Greater than or Equal To)"
-msgstr ""
+msgstr ">= (більше або дорівнює)"
 
 #: win32/rsrc/snes9x.rc
 msgid "About"
-msgstr ""
+msgstr "Про додаток"
 
 #: win32/rsrc/snes9x.rc
 msgid "Achievement List"
-msgstr ""
+msgstr "Список досягнень"
 
 #: win32/rsrc/snes9x.rc
 msgid "Act as Server"
-msgstr ""
+msgstr "Діяти як сервер"
 
 #: win32/wlanguage.h
 msgid "Act As Server"
-msgstr ""
+msgstr "Діяти як сервер"
 
 #: win32/rsrc/snes9x.rc
 msgid "Add"
-msgstr ""
+msgstr "Додати"
 
 #: win32/rsrc/snes9x.rc
 msgid "Add Cheat"
-msgstr ""
+msgstr "Додати чіт"
 
 #: win32/rsrc/snes9x.rc
-msgid "Add Snes9x to registry for supported file types"
-msgstr ""
+msgid "Add SuperSnes9x to registry for supported file types"
+msgstr "Додати SuperSnes9x до реєстру для підтримуваних типів файлів"
 
 #: win32/rsrc/snes9x.rc
 msgid "Address"
-msgstr ""
+msgstr "Адреса"
 
 #: win32/rsrc/snes9x.rc
 msgid "Address:"
-msgstr ""
+msgstr "Адреса:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Adjustments"
-msgstr ""
+msgstr "Налаштування"
 
 #: win32/wlanguage.h
 msgid "All files"
-msgstr ""
+msgstr "Усі файли"
 
 #: win32/rsrc/snes9x.rc
-msgid "all of Snes9x's settings are stored in this file"
-msgstr ""
+msgid "all of SuperSnes9x's settings are stored in this file"
+msgstr "усі налаштування SuperSnes9x зберігаються в цьому файлі"
 
 #: win32/rsrc/snes9x.rc
 msgid "Allow executable logo override"
-msgstr ""
+msgstr "Дозволити заміну логотипа виконуваного файлу"
 
 #: win32/rsrc/snes9x.rc
 msgid "Allow Invalid VRAM Access"
-msgstr ""
+msgstr "Дозволити хибний VRAM-доступ"
 
 #: win32/rsrc/snes9x.rc
 msgid "Allow Left+Rt/Up+Dn"
-msgstr ""
+msgstr "Дозволити ←+→ / ↑+↓"
 
 #: win32/rsrc/snes9x.rc
 msgid "APP - Emulator Settings"
-msgstr ""
+msgstr "ДОДАТОК - налаштування емулятора"
 
 #: win32/rsrc/snes9x.rc
 msgid "Apply"
-msgstr ""
+msgstr "Застосувати"
 
 #: win32/rsrc/snes9x.rc
 msgid "Apply Adjustments"
-msgstr ""
+msgstr "Застосувати налаштування"
 
 #: win32/rsrc/snes9x.rc
 msgid "Apply Cheats"
-msgstr ""
+msgstr "Застосувати чіти"
 
 #: win32/rsrc/snes9x.rc
 msgid "Ask for confirmation when saving/loading"
-msgstr ""
+msgstr "Запитувати підтвердження при збереженні / завантаженні"
 
 #: win32/rsrc/snes9x.rc
 msgid "Ask Server to Pause when"
-msgstr ""
+msgstr "Запитати паузу сервера при"
 
 #: win32/rsrc/snes9x.rc
 msgid "Author Info:"
-msgstr ""
+msgstr "Відомості автора:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Auto Layer Transparency"
-msgstr ""
+msgstr "Автопрозорість шарів"
 
 #: win32/rsrc/snes9x.rc
 msgid "Auto update"
-msgstr ""
+msgstr "Автооновлення"
 
 #: win32/rsrc/snes9x.rc
 msgid "Auto-Assign"
-msgstr ""
+msgstr "Автопризначення"
 
 #: win32/wlanguage.h
 msgid "Auto-Detect"
-msgstr ""
+msgstr "Автовизначення"
 
 #: win32/rsrc/snes9x.rc
 msgid "Auto-Save S-RAM"
-msgstr ""
+msgstr "Автозбереження S-RAM"
 
 #: win32/wlanguage.h
 msgid "Autofire"
-msgstr ""
+msgstr "Автовогонь"
 
 #: win32/wlanguage.h
 msgid "Autohold"
-msgstr ""
+msgstr "Автоутримання"
 
 #: win32/rsrc/snes9x.rc
 msgid "Automatic Input Rate"
-msgstr ""
+msgstr "Автоматична початкова частота"
 
 #: win32/rsrc/snes9x.rc
 msgid "Automatic, skip at most:"
-msgstr ""
+msgstr "Автоматично, пропускати щонайбільше:"
 
 #: win32/wlanguage.h
 msgid "AVI file"
-msgstr ""
+msgstr "AVI-файл"
 
 #: win32/rsrc/snes9x.rc
 msgid "AVI Recording"
-msgstr ""
+msgstr "Запис AVI"
 
 #: win32/rsrc/snes9x.rc
 msgid "Background Keyboard Hotkeys"
-msgstr ""
+msgstr "Фонові гарячі кнопки клавіатури"
 
 #: win32/rsrc/snes9x.rc
 msgid "Background:"
-msgstr ""
+msgstr "Тло:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Bank +:"
-msgstr ""
+msgstr "Банк +:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Bank -:"
-msgstr ""
+msgstr "Банк -:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Bank:"
-msgstr ""
+msgstr "Банк:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Base Tile Addresses"
-msgstr ""
+msgstr "Базові адреси тайлів"
 
 #: win32/rsrc/snes9x.rc
 msgid "BG1:"
-msgstr ""
+msgstr "BG1:"
 
 #: win32/rsrc/snes9x.rc
 msgid "BG2:"
-msgstr ""
+msgstr "BG2:"
 
 #: win32/rsrc/snes9x.rc
 msgid "BG3:"
-msgstr ""
+msgstr "BG3:"
 
 #: win32/rsrc/snes9x.rc
 msgid "BG4:"
-msgstr ""
+msgstr "BG4:"
 
 #: win32/rsrc/snes9x.rc
 msgid "BG:"
-msgstr ""
+msgstr "BG:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Bilinear Filtering"
-msgstr ""
+msgstr "Білінійне фільтрування"
 
 #: win32/rsrc/snes9x.rc
 msgid "Binding"
-msgstr ""
+msgstr "Прив'язка"
 
 #: win32/rsrc/snes9x.rc
 msgid "BIOS"
-msgstr ""
+msgstr "BIOS"
 
 #: win32/wlanguage.h
 msgid "BIOS files"
-msgstr ""
+msgstr "Файли BIOS"
 
 #: win32/rsrc/snes9x.rc
 msgid "BIOS:"
-msgstr ""
+msgstr "BIOS:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Bit Depth:"
-msgstr ""
+msgstr "Глибина бітів:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Blend Hi-Res Images"
-msgstr ""
+msgstr "Змішувати зображення високого розміру"
 
 #: win32/rsrc/snes9x.rc
 msgid "Blue means already mapped. Pink conflicts with hotkey.\nRed is reserved by Windows. Escape clears bindings.\nPress multiple keys for multi-bind. Delete removes last."
-msgstr ""
+msgstr "Синій означає вже призначено. Рожевий конфліктує з гарячою кнопкою.\nЧервоний зарезервовано Windows. Escape очищує прив'язки.\nНатисни кілька кнопок для мультиприв'язки. Delete вилучає останню."
 
 #: win32/wlanguage.h
 msgid "Blue means the hotkey is already mapped.\nPink means it conflicts with a game button.\nRed means it's reserved by Windows.\nA hotkey can be disabled using Escape."
-msgstr ""
+msgstr "Синій означає, що гарячу кнопку вже призначено.\nРожевий означає конфлікт із ігровою кнопкою.\nЧервоний означає, що її зарезервовано Windows.\nГарячу кнопку можна вимкнути за допомогою Escape."
 
 #: win32/rsrc/snes9x.rc
 msgid "Blue means the hotkey is already mapped. Pink means it conflicts with a game button. Red means it's reserved by Windows. Escape clears bindings.\nPress multiple keys for multi-bind. Delete removes last."
-msgstr ""
+msgstr "Синій означає, що гарячу кнопку вже призначено. Рожевий означає конфлікт із ігровою кнопкою. Червоний означає, що її зарезервовано Windows. Escape очищує прив'язки.\nНатисни кілька кнопок для мультиприв'язки. Delete вилучає останню."
 
 #: win32/rsrc/snes9x.rc
 msgid "Browse"
-msgstr ""
+msgstr "Огляд"
 
 #: win32/rsrc/snes9x.rc
 msgid "Buffer Length"
-msgstr ""
+msgstr "Довжина буфера"
 
 #: win32/rsrc/snes9x.rc
 msgid "Buffer Length:"
-msgstr ""
+msgstr "Довжина буфера:"
 
 #: win32/wlanguage.h
 msgid "Can't Open File"
-msgstr ""
+msgstr "Неможливо відкрити файл"
 
 #: win32/rsrc/snes9x.rc
 msgid "Cancel"
-msgstr ""
+msgstr "Скасувати"
 
 #: win32/rsrc/snes9x.rc
 msgid "Channel 1"
-msgstr ""
+msgstr "Канал 1"
 
 #: win32/rsrc/snes9x.rc
 msgid "Channel 2"
-msgstr ""
+msgstr "Канал 2"
 
 #: win32/rsrc/snes9x.rc
 msgid "Channel 3"
-msgstr ""
+msgstr "Канал 3"
 
 #: win32/rsrc/snes9x.rc
 msgid "Channel 4"
-msgstr ""
+msgstr "Канал 4"
 
 #: win32/rsrc/snes9x.rc
 msgid "Channel 5"
-msgstr ""
+msgstr "Канал 5"
 
 #: win32/rsrc/snes9x.rc
 msgid "Channel 6"
-msgstr ""
+msgstr "Канал 6"
 
 #: win32/rsrc/snes9x.rc
 msgid "Channel 7"
-msgstr ""
+msgstr "Канал 7"
 
 #: win32/rsrc/snes9x.rc
 msgid "Channel 8"
-msgstr ""
+msgstr "Канал 8"
 
 #: win32/rsrc/snes9x.rc
 msgid "Channels"
-msgstr ""
+msgstr "Канали"
 
 #: win32/rsrc/snes9x.rc
 msgid "Chat"
-msgstr ""
+msgstr "Чат"
 
 #: win32/rsrc/snes9x.rc
 msgid "Cheat Description:"
-msgstr ""
+msgstr "Опис чіта:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Cheat Details"
-msgstr ""
+msgstr "Подробиці чіта"
 
 #: win32/rsrc/snes9x.rc
 msgid "Cheat Entry and Editor"
-msgstr ""
+msgstr "Введення та редактор чітів"
 
 #: win32/rsrc/snes9x.rc
 msgid "Cheat Search"
-msgstr ""
+msgstr "Пошук чітів"
 
 #: win32/wlanguage.h
 msgid "Cheats Editor Dialog:"
-msgstr ""
+msgstr "Діалог редактора чітів:"
 
 #: win32/wlanguage.h
 msgid "Cheats Search Dialog:"
-msgstr ""
+msgstr "Діалог пошуку чітів:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Choose Logo"
-msgstr ""
+msgstr "Вибрати логотип"
 
 #: win32/rsrc/snes9x.rc
 msgid "Clear"
-msgstr ""
+msgstr "Очистити"
 
 #: win32/rsrc/snes9x.rc
 msgid "Clear All"
-msgstr ""
+msgstr "Очистити все"
 
 #: win32/rsrc/snes9x.rc
 msgid "Clear History"
-msgstr ""
+msgstr "Очистити історію"
 
 #: win32/rsrc/snes9x.rc
 msgid "Clear SRAM"
-msgstr ""
+msgstr "Очистити SRAM"
 
 #: win32/rsrc/snes9x.rc
 msgid "Clear Watches"
-msgstr ""
+msgstr "Очистити спостереження"
 
 #: win32/rsrc/snes9x.rc
 msgid "Client Settings"
-msgstr ""
+msgstr "Налаштування клієнта"
 
 #: win32/wlanguage.h
 msgid "Clipping Windows:"
-msgstr ""
+msgstr "Вікна обтинання:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Close"
-msgstr ""
+msgstr "Закрити"
 
 #: win32/wlanguage.h
 msgid "Code"
-msgstr ""
+msgstr "Код"
 
 #: win32/rsrc/snes9x.rc
 msgid "Color Correction"
-msgstr ""
+msgstr "Корекція кольору"
 
 #: win32/rsrc/snes9x.rc
 msgid "Compare To"
-msgstr ""
+msgstr "Порівняти з"
 
 #: win32/rsrc/snes9x.rc
 msgid "Comparison Type"
-msgstr ""
+msgstr "Тип порівняння"
 
 #: win32/rsrc/snes9x.rc
 msgid "Config file:"
-msgstr ""
+msgstr "Файл конфігурації:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Connect"
-msgstr ""
+msgstr "З'єднати"
 
 #: win32/rsrc/snes9x.rc
 msgid "Connect clients to: 127.0.0.1 (localhost) or your LAN IP"
-msgstr ""
+msgstr "З'єднати клієнтів із: 127.0.0.1 (localhost) чи твоєю LAN IP-адресою"
 
 #: win32/rsrc/snes9x.rc
 msgid "Connect to Server"
-msgstr ""
+msgstr "З'єднати з сервером"
 
 #: win32/rsrc/snes9x.rc
 msgid "Controller"
-msgstr ""
+msgstr "Контролер"
 
 #: win32/wlanguage.h
 msgid "Could not open movie file."
-msgstr ""
+msgstr "Неможливо відкрити файл відео."
 
 #: win32/rsrc/snes9x.rc
 msgid "CPU Overclock:"
-msgstr ""
+msgstr "Розгін CPU:"
 
 #: win32/wlanguage.h
 msgid "crc32=%08X, name=%s"
-msgstr ""
+msgstr "crc32=%08X, ім'я=%s"
 
 #: win32/wlanguage.h
 msgid "Current ROM:"
-msgstr ""
+msgstr "Поточний ROM:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Current ROM: CRC32=Unknown, Name=Unknown"
-msgstr ""
+msgstr "Поточний ROM: CRC32=Невідомо, Ім'я=Невідомо"
 
 #: win32/rsrc/snes9x.rc
 msgid "Current Value"
-msgstr ""
+msgstr "Поточне значення"
 
 #: win32/rsrc/snes9x.rc
 msgid "Custom ROM Open Dialog"
-msgstr ""
+msgstr "Діалог відкриття власного ROM'у"
 
 #: win32/rsrc/snes9x.rc
 msgid "Custom Screen Mode"
-msgstr ""
+msgstr "Власний режим екрана"
 
 #: win32/rsrc/snes9x.rc
 msgid "Customize Hotkeys"
-msgstr ""
+msgstr "Налаштувати гарячі кнопки"
 
 #: win32/rsrc/snes9x.rc
 msgid "Customize Special Keys"
-msgstr ""
+msgstr "Налаштувати спеціальні кнопки"
 
 #: win32/rsrc/snes9x.rc
 msgid "Data Size"
-msgstr ""
+msgstr "Розмір даних"
 
 #: win32/rsrc/snes9x.rc
 msgid "Data Type"
-msgstr ""
+msgstr "Тип даних"
 
 #: win32/rsrc/snes9x.rc
 msgid "DATE"
-msgstr ""
+msgstr "ДАТА"
 
 #: win32/rsrc/snes9x.rc
 msgid "Defaults"
-msgstr ""
+msgstr "Типові"
 
 #: win32/rsrc/snes9x.rc
 msgid "Delete"
-msgstr ""
+msgstr "Видалити"
 
 #: win32/rsrc/snes9x.rc
 msgid "Detect gamepad changes"
-msgstr ""
+msgstr "Виявляти зміни геймпада"
 
 #: win32/rsrc/snes9x.rc
 msgid "Dialog"
-msgstr ""
+msgstr "Діалог"
 
 #: win32/rsrc/snes9x.rc
 msgid "Direct3D Shader File"
-msgstr ""
+msgstr "Файл шейдера Direct3D"
 
 #: win32/wlanguage.h
 msgid "Directory"
-msgstr ""
+msgstr "Каталог"
 
 #: win32/rsrc/snes9x.rc
 msgid "Directory:"
-msgstr ""
+msgstr "Каталог:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Disable Sprite Limit"
-msgstr ""
+msgstr "Вимкнути обмеження спрайтів"
 
 #: win32/rsrc/snes9x.rc
 msgid "Disconnect"
-msgstr ""
+msgstr "Роз'єднати"
 
 #: win32/rsrc/snes9x.rc
 msgid "Disconnect from Server"
-msgstr ""
+msgstr "Роз'єднати з сервером"
 
 #: win32/rsrc/snes9x.rc
 msgid "Display Configuration"
-msgstr ""
+msgstr "Конфігурація дисплея"
 
 #: win32/rsrc/snes9x.rc
 msgid "Display messages inside SNES image"
-msgstr ""
+msgstr "Показувати повідомлення всередині SNES-зображення"
 
 #: win32/rsrc/snes9x.rc
 msgid "Display Settings"
-msgstr ""
+msgstr "Налаштування дисплея"
 
 #: win32/rsrc/snes9x.rc
 msgid "DN LEFT"
-msgstr ""
+msgstr "↓ ←"
 
 #: win32/wlanguage.h
 msgid "Dn Left"
-msgstr ""
+msgstr "↓ ←"
 
 #: win32/rsrc/snes9x.rc
 msgid "DN RIGHT"
-msgstr ""
+msgstr "↓ →"
 
 #: win32/wlanguage.h
 msgid "Dn Right"
-msgstr ""
+msgstr "↓ →"
 
 #: win32/rsrc/snes9x.rc
 msgid "DOWN"
-msgstr ""
+msgstr "↓"
 
 #: win32/rsrc/snes9x.rc
 msgid "Dummy"
-msgstr ""
+msgstr "Заглушка"
 
 #: win32/rsrc/snes9x.rc
 msgid "Dynamic Rate Control"
-msgstr ""
+msgstr "Динамічне керування частотою"
 
 #: win32/rsrc/snes9x.rc
 msgid "Edit Cheat Group"
-msgstr ""
+msgstr "Редагувати групу чітів"
 
 #: win32/rsrc/snes9x.rc
 msgid "Emulate Fullscreen"
-msgstr ""
+msgstr "Емулювати повний екран"
 
 #: win32/wlanguage.h
 msgid "Emulation Settings"
-msgstr ""
+msgstr "Налаштування емуляції"
 
 #: win32/rsrc/snes9x.rc
 msgid "Emulator Hacks"
-msgstr ""
+msgstr "Хаки емулятора"
 
 #: win32/rsrc/snes9x.rc
 msgid "Enable"
-msgstr ""
+msgstr "Увімкнути"
 
 #: win32/rsrc/snes9x.rc
 msgid "Enable All"
-msgstr ""
+msgstr "Увімкнути все"
 
 #: win32/rsrc/snes9x.rc
 msgid "Enable Background Input"
-msgstr ""
+msgstr "Увімкнути фоновий ввід"
 
 #: win32/rsrc/snes9x.rc
 msgid "Enable Color Correction (accurate SNES colors)"
-msgstr ""
+msgstr "Увімкнути корекцію кольору (точні SNES-кольори)"
 
 #: win32/rsrc/snes9x.rc
 msgid "Enable Triple Buffering"
-msgstr ""
+msgstr "Увімкнути потрійну буферизацію"
 
 #: win32/rsrc/snes9x.rc
 msgid "Enabled"
-msgstr ""
+msgstr "Увімкнено"
 
 #: win32/rsrc/snes9x.rc
 msgid "End Kaillera Game"
-msgstr ""
+msgstr "Завершити гру Kaillera"
 
 #: win32/rsrc/snes9x.rc
 msgid "Enter a Value:"
-msgstr ""
+msgstr "Введи значення:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Enter Cheat Code:"
-msgstr ""
+msgstr "Введи чіт-код:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Enter Cheat codes, one line at a time"
-msgstr ""
+msgstr "Введи чіт-коди, по одному рядку за раз"
 
 #: win32/wlanguage.h
 msgid "enter host name"
-msgstr ""
+msgstr "введи ім'я хоста"
 
 #: win32/rsrc/snes9x.rc
 msgid "Entered Address"
-msgstr ""
+msgstr "Введена адреса"
 
 #: win32/rsrc/snes9x.rc
 msgid "Entered Value"
-msgstr ""
+msgstr "Введене значення"
 
 #: win32/wlanguage.h
 msgid "Error Info:"
-msgstr ""
+msgstr "Відомості про помилку:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Exit"
-msgstr ""
+msgstr "Вихід"
 
 #: win32/rsrc/snes9x.rc
 msgid "Extend Height of SNES Image"
-msgstr ""
+msgstr "Розширити висоту SNES-зображення"
 
 #: win32/wlanguage.h
 msgid "Fast forward:"
-msgstr ""
+msgstr "Прискорення:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Fast-Forward"
-msgstr ""
+msgstr "Прискорення"
 
 #: win32/wlanguage.h
 msgid "Fast-forward toggle:"
-msgstr ""
+msgstr "Перемикання прискорення:"
 
 #: win32/rsrc/snes9x.rc
 msgid "File"
-msgstr ""
+msgstr "Файл"
 
 #: win32/wlanguage.h
 msgid "File not found."
-msgstr ""
+msgstr "Файл не знайдено."
 
 #: win32/rsrc/snes9x.rc
 msgid "First Sprite:"
-msgstr ""
+msgstr "Перший спрайт:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Fixed, always skip:"
-msgstr ""
+msgstr "Фіксовано, завжди пропускати:"
 
 #: win32/wlanguage.h
 msgid "Force GD24"
-msgstr ""
+msgstr "Примусово GD24"
 
 #: win32/wlanguage.h
 msgid "Force Header"
-msgstr ""
+msgstr "Примусовий заголовок"
 
 #: win32/wlanguage.h
 msgid "Force HiROM"
-msgstr ""
+msgstr "Примусово HiROM"
 
 #: win32/wlanguage.h
 msgid "Force LoROM"
-msgstr ""
+msgstr "Примусово LoROM"
 
 #: win32/wlanguage.h
 msgid "Force mode 1"
-msgstr ""
+msgstr "Примусово режим 1"
 
 #: win32/wlanguage.h
 msgid "Force mode 2"
-msgstr ""
+msgstr "Примусово режим 2"
 
 #: win32/wlanguage.h
 msgid "Force No Header"
-msgstr ""
+msgstr "Примусово без заголовка"
 
 #: win32/wlanguage.h
 msgid "Force not interleaved"
-msgstr ""
+msgstr "Примусово без чергування"
 
 #: win32/wlanguage.h
 msgid "Force NTSC"
-msgstr ""
+msgstr "Примусово NTSC"
 
 #: win32/wlanguage.h
 msgid "Force PAL"
-msgstr ""
+msgstr "Примусово PAL"
 
 #: win32/rsrc/snes9x.rc
 msgid "Frame Advance"
-msgstr ""
+msgstr "Покадровий перехід"
 
 #: win32/rsrc/snes9x.rc
 msgid "Frame Advance mute"
-msgstr ""
+msgstr "Притлумлення при покадровому переході"
 
 #: win32/wlanguage.h
 msgid "Frame advance:"
-msgstr ""
+msgstr "Покадровий перехід:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Frame Skipping:"
-msgstr ""
+msgstr "Пропуск кадрів:"
 
 #: win32/rsrc/snes9x.rc
 msgid "frames"
-msgstr ""
+msgstr "кадрів"
 
 #: win32/rsrc/snes9x.rc
 msgid "FRAMES"
-msgstr ""
+msgstr "КАДРИ"
 
 #: win32/rsrc/snes9x.rc
 msgid "frames behind"
-msgstr ""
+msgstr "кадрів позаду"
 
 #: win32/rsrc/snes9x.rc
 msgid "frames in auto-frame rate mode"
-msgstr ""
+msgstr "кадрів у режимі автоматичної частоти кадрів"
 
 #: win32/wlanguage.h
 msgid "frames in fast-forward mode"
-msgstr ""
+msgstr "кадрів у режимі прискорення"
 
 #: win32/rsrc/snes9x.rc
 msgid "frames in Turbo mode"
-msgstr ""
+msgstr "кадрів у режимі турбо"
 
 #: win32/rsrc/snes9x.rc
 msgid "Frames:"
-msgstr ""
+msgstr "Кадри:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Full Screen"
-msgstr ""
+msgstr "Повний екран"
 
 #: win32/rsrc/snes9x.rc
 msgid "Fullscreen"
-msgstr ""
+msgstr "Повний екран"
 
 #: win32/rsrc/snes9x.rc
 msgid "Fullscreen Display Settings"
-msgstr ""
+msgstr "Налаштування дисплея повного екрана"
 
 #: win32/rsrc/snes9x.rc
 msgid "Fullscreen on ROM Open"
-msgstr ""
+msgstr "Повний екран при відкритті ROM'у"
 
 #: win32/rsrc/snes9x.rc
 msgid "Game Boy Image"
-msgstr ""
+msgstr "Game Boy-зображення"
 
 #: win32/rsrc/snes9x.rc
 msgid "Game Genie, Pro-Action Replay Codes"
-msgstr ""
+msgstr "Коди Game Genie, Pro-Action Replay"
 
 #: win32/rsrc/snes9x.rc
 msgid "GB"
-msgstr ""
+msgstr "GB"
 
 #: win32/rsrc/snes9x.rc
 msgid "GB Sprite Viewer"
-msgstr ""
+msgstr "Переглядач спрайтів GB"
 
 #: win32/rsrc/snes9x.rc
 msgid "GB Tile Viewer"
-msgstr ""
+msgstr "Переглядач тайлів GB"
 
 #: win32/rsrc/snes9x.rc
 msgid "GB Tilemap Viewer"
-msgstr ""
+msgstr "Переглядач тайлмапи GB"
 
 #: win32/rsrc/snes9x.rc
 msgid "GB-PPU"
-msgstr ""
+msgstr "GB-PPU"
 
 #: win32/rsrc/snes9x.rc
 msgid "General"
-msgstr ""
+msgstr "Загальне"
 
 #: win32/rsrc/snes9x.rc
 msgid "goto"
-msgstr ""
+msgstr "перейти"
 
 #: win32/wlanguage.h
 msgid "Graphics layer 1:"
-msgstr ""
+msgstr "Графічний шар 1:"
 
 #: win32/wlanguage.h
 msgid "Graphics layer 2:"
-msgstr ""
+msgstr "Графічний шар 2:"
 
 #: win32/wlanguage.h
 msgid "Graphics layer 3:"
-msgstr ""
+msgstr "Графічний шар 3:"
 
 #: win32/wlanguage.h
 msgid "Graphics layer 4:"
-msgstr ""
+msgstr "Графічний шар 4:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Group"
-msgstr ""
+msgstr "Група"
 
 #: win32/rsrc/snes9x.rc
 msgid "Hacks"
-msgstr ""
+msgstr "Хаки"
 
 #: win32/rsrc/snes9x.rc
 msgid "Hard Reset (Power Cycle)"
-msgstr ""
+msgstr "Апаратне перезавантаження (вимикання живлення)"
 
 #: win32/wlanguage.h
 msgid "Hard reset:"
-msgstr ""
+msgstr "Апаратне перезавантаження:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Hardcore Mode"
-msgstr ""
+msgstr "Хардкорний режим"
 
 #: win32/rsrc/snes9x.rc
 msgid "Header:"
-msgstr ""
+msgstr "Заголовок:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Help"
-msgstr ""
+msgstr "Довідка"
 
 #: win32/rsrc/snes9x.rc
 msgid "Hexadecimal"
-msgstr ""
+msgstr "Шістнадцятковий"
 
 #: win32/rsrc/snes9x.rc
 msgid "Hi Res:"
-msgstr ""
+msgstr "Високий розмір:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Hi-Res AVI Recording"
-msgstr ""
+msgstr "Запис AVI високого розміру"
 
 #: win32/rsrc/snes9x.rc
 msgid "Hide Menubar"
-msgstr ""
+msgstr "Сховати панель меню"
 
 #: win32/rsrc/snes9x.rc
 msgid "Host Game"
-msgstr ""
+msgstr "Розмістити гру"
 
 #: win32/rsrc/snes9x.rc
 msgid "Host Kaillera Server"
-msgstr ""
+msgstr "Розмістити сервер Kaillera"
 
 #: win32/wlanguage.h
 msgid "Hotkey Configuration"
-msgstr ""
+msgstr "Конфігурація гарячих кнопок"
 
 #: win32/rsrc/snes9x.rc
 msgid "Icon 1"
-msgstr ""
+msgstr "Піктограма 1"
 
 #: win32/rsrc/snes9x.rc
 msgid "Icon 2"
-msgstr ""
+msgstr "Піктограма 2"
 
 #: win32/rsrc/snes9x.rc
 msgid "Icon 3"
-msgstr ""
+msgstr "Піктограма 3"
 
 #: win32/rsrc/snes9x.rc
 msgid "Icon 4"
-msgstr ""
+msgstr "Піктограма 4"
 
 #: win32/rsrc/snes9x.rc
 msgid "Index:"
-msgstr ""
+msgstr "Індекс:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Input"
-msgstr ""
+msgstr "Ввід"
 
 #: win32/rsrc/snes9x.rc
 msgid "Input Configuration"
-msgstr ""
+msgstr "Конфігурація вводу"
 
 #: win32/rsrc/snes9x.rc
 msgid "Input Rate:"
-msgstr ""
+msgstr "Початкова частота:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Integer Scaling"
-msgstr ""
+msgstr "Ціле масштабування"
 
 #: win32/rsrc/snes9x.rc
 msgid "Interleave Mode:"
-msgstr ""
+msgstr "Режим чергування:"
 
 #: win32/rsrc/snes9x.rc
 msgid "IP:"
-msgstr ""
+msgstr "IP:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Join"
-msgstr ""
+msgstr "Приєднатися"
 
 #: win32/wlanguage.h
 msgid "Joypad #%d"
-msgstr ""
+msgstr "Джойстик #%d"
 
 #: win32/rsrc/snes9x.rc
 msgid "Joypad 1"
-msgstr ""
+msgstr "Джойстик 1"
 
 #: win32/rsrc/snes9x.rc
 msgid "Joypad 2"
-msgstr ""
+msgstr "Джойстик 2"
 
 #: win32/rsrc/snes9x.rc
 msgid "Joypad 3"
-msgstr ""
+msgstr "Джойстик 3"
 
 #: win32/rsrc/snes9x.rc
 msgid "Joypad 4"
-msgstr ""
+msgstr "Джойстик 4"
 
 #: win32/rsrc/snes9x.rc
 msgid "Joypad 5"
-msgstr ""
+msgstr "Джойстик 5"
 
 #: win32/wlanguage.h
 msgid "Joypad swap:"
-msgstr ""
+msgstr "Обмін джойстиків:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Kaillera Netplay"
-msgstr ""
+msgstr "Мережева гра Kaillera"
 
 #: win32/rsrc/snes9x.rc
 msgid "Kaillera Server"
-msgstr ""
+msgstr "Сервер Kaillera"
 
 #: win32/rsrc/snes9x.rc
 msgid "Layout:"
-msgstr ""
+msgstr "Розкладка:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Leave Game"
-msgstr ""
+msgstr "Покинути гру"
 
 #: win32/rsrc/snes9x.rc
 msgid "LEFT"
-msgstr ""
+msgstr "←"
 
 #: win32/rsrc/snes9x.rc
 msgid "LENGTH"
-msgstr ""
+msgstr "ДОВЖИНА"
 
 #: win32/rsrc/snes9x.rc
 msgid "Length:"
-msgstr ""
+msgstr "Довжина:"
 
 #: win32/rsrc/snes9x.rc
 msgid "List1"
-msgstr ""
+msgstr "Список1"
 
 #: win32/rsrc/snes9x.rc
 msgid "Load #:"
-msgstr ""
+msgstr "Завантажити #:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Load 0:"
-msgstr ""
+msgstr "Завантажити 0:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Load 1:"
-msgstr ""
+msgstr "Завантажити 1:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Load 2:"
-msgstr ""
+msgstr "Завантажити 2:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Load 3:"
-msgstr ""
+msgstr "Завантажити 3:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Load 4:"
-msgstr ""
+msgstr "Завантажити 4:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Load 5:"
-msgstr ""
+msgstr "Завантажити 5:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Load 6:"
-msgstr ""
+msgstr "Завантажити 6:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Load 7:"
-msgstr ""
+msgstr "Завантажити 7:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Load 8:"
-msgstr ""
+msgstr "Завантажити 8:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Load 9:"
-msgstr ""
+msgstr "Завантажити 9:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Load Dlg:"
-msgstr ""
+msgstr "Завантажити діалог:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Load File:"
-msgstr ""
+msgstr "Завантажити файл:"
 
 #: win32/wlanguage.h
 msgid "Load from file:"
-msgstr ""
+msgstr "Завантажити з файлу:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Load Game"
-msgstr ""
+msgstr "Завантажити гру"
 
 #: win32/rsrc/snes9x.rc
 msgid "Load Game Position"
-msgstr ""
+msgstr "Завантажити позицію гри"
 
 #: win32/rsrc/snes9x.rc
 msgid "Load MultiCart"
-msgstr ""
+msgstr "Завантажити мультикарту"
 
 #: win32/rsrc/snes9x.rc
 msgid "Load Watches"
-msgstr ""
+msgstr "Завантажити спостереження"
 
 #: win32/rsrc/snes9x.rc
 msgid "Load with Preview"
-msgstr ""
+msgstr "Завантажити з попереднім переглядом"
 
 #: win32/wlanguage.h
 msgid "LOADED FROM MOVIE:"
-msgstr ""
+msgstr "ЗАВАНТАЖЕНО З ВІДЕО:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Location:"
-msgstr ""
+msgstr "Розташування:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Login"
-msgstr ""
+msgstr "Вхід"
 
 #: win32/rsrc/snes9x.rc
 msgid "Maintain Aspect Ratio"
-msgstr ""
+msgstr "Зберегти співвідношення сторін"
 
 #: win32/rsrc/snes9x.rc
 msgid "Map"
-msgstr ""
+msgstr "Мапа"
 
 #: win32/rsrc/snes9x.rc
 msgid "Map Addr:"
-msgstr ""
+msgstr "Адреса мапи:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Map Size:"
-msgstr ""
+msgstr "Розмір мапи:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Map:"
-msgstr ""
+msgstr "Мапа:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Mask"
-msgstr ""
+msgstr "Маска"
 
 #: win32/rsrc/snes9x.rc
 msgid "Masked Addresses"
-msgstr ""
+msgstr "Замасковані адреси"
 
 #: win32/rsrc/snes9x.rc
 msgid "Master Hotkey"
-msgstr ""
+msgstr "Головна гаряча кнопка"
 
 #: win32/rsrc/snes9x.rc
 msgid "Max Clients:"
-msgstr ""
+msgstr "Максимум клієнтів:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Maximum Frame Rate Skip"
-msgstr ""
+msgstr "Максимальний пропуск частоти кадрів"
 
 #: win32/rsrc/snes9x.rc
 msgid "MB (set to 0 to disable rewind support)"
-msgstr ""
+msgstr "Мбайт (встанови 0 для вимкнення підтримки звороту)"
 
 #: win32/rsrc/snes9x.rc
 msgid "Memory Type:"
-msgstr ""
+msgstr "Тип пам'яті:"
 
 #: win32/wlanguage.h
 msgid "Misc. Recording Settings"
-msgstr ""
+msgstr "Інші налаштування запису"
 
 #: win32/rsrc/snes9x.rc
 msgid "Mode:"
-msgstr ""
+msgstr "Режим:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Movie File"
-msgstr ""
+msgstr "Файл відео"
 
 #: win32/wlanguage.h
 msgid "Movie frame count:"
-msgstr ""
+msgstr "Кількість кадрів відео:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Movie Play"
-msgstr ""
+msgstr "Відтворення відео"
 
 #: win32/wlanguage.h
 msgid "Movie read-only:"
-msgstr ""
+msgstr "Відео лише для читання:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Movie Record"
-msgstr ""
+msgstr "Запис відео"
 
 #: win32/rsrc/snes9x.rc
 msgid "Movie Stop"
-msgstr ""
+msgstr "Зупинка відео"
 
 #: win32/wlanguage.h
 msgid "Movie's ROM:"
-msgstr ""
+msgstr "ROM відео:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Movie's ROM: CRC32=Unknown, Name=Unknown"
-msgstr ""
+msgstr "ROM відео: CRC32=Невідомо, Ім'я=Невідомо"
 
 #: win32/wlanguage.h
 msgid "Movies"
-msgstr ""
+msgstr "Відео"
 
 #: win32/rsrc/snes9x.rc
 msgid "Mute"
-msgstr ""
+msgstr "Притлумити"
 
 #: win32/rsrc/snes9x.rc
 msgid "Mute Sound"
-msgstr ""
+msgstr "Притлумити звук"
 
 #: win32/rsrc/snes9x.rc
 msgid "Mute sound"
-msgstr ""
+msgstr "Притлумити звук"
 
 #: win32/rsrc/snes9x.rc
 msgid "Netplay"
-msgstr ""
+msgstr "Мережева гра"
 
 #: win32/rsrc/snes9x.rc
 msgid "Netplay Options"
-msgstr ""
+msgstr "Опції мережевої гри"
 
 #: win32/rsrc/snes9x.rc
 msgid "New Value"
-msgstr ""
+msgstr "Нове значення"
 
 #: win32/rsrc/snes9x.rc
 msgid "No BIOS"
-msgstr ""
+msgstr "Без BIOS"
 
 #: win32/wlanguage.h
 msgid "Not a ROM"
-msgstr ""
+msgstr "Не ROM"
 
 #: win32/rsrc/snes9x.rc
 msgid "Not connected."
-msgstr ""
+msgstr "Не з'єднано."
 
 #: win32/rsrc/snes9x.rc
 msgid "not found"
-msgstr ""
+msgstr "не знайдено"
 
 #: win32/wlanguage.h
 msgid "not found!"
-msgstr ""
+msgstr "не знайдено!"
 
 #: win32/rsrc/snes9x.rc
 msgid "NTSC Filter Scanlines"
-msgstr ""
+msgstr "Рядки сканування фільтра NTSC"
 
 #: win32/rsrc/snes9x.rc
 msgid "OAM1:"
-msgstr ""
+msgstr "OAM1:"
 
 #: win32/rsrc/snes9x.rc
 msgid "OAM2:"
-msgstr ""
+msgstr "OAM2:"
 
 #: win32/rsrc/snes9x.rc
 msgid "OK"
-msgstr ""
+msgstr "OK"
 
 #: win32/rsrc/snes9x.rc
 msgid "On-screen Display Size:"
-msgstr ""
+msgstr "Відображений розмір на екрані:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Online Servers"
-msgstr ""
+msgstr "Онлайн-сервери"
 
 #: win32/rsrc/snes9x.rc
 msgid "Oops File"
-msgstr ""
+msgstr "Файл збою"
 
 #: win32/rsrc/snes9x.rc
 msgid "Open MultiCart"
-msgstr ""
+msgstr "Відкрити мультикарту"
 
 #: win32/rsrc/snes9x.rc
 msgid "Open Read-Only"
-msgstr ""
+msgstr "Відкрити лише для читання"
 
 #: win32/rsrc/snes9x.rc
 msgid "OpenGL/Vulkan Shader File"
-msgstr ""
+msgstr "Файл шейдера OpenGL/Vulkan"
 
 #: win32/rsrc/snes9x.rc
 msgid "Options"
-msgstr ""
+msgstr "Опції"
 
 #: win32/rsrc/snes9x.rc
 msgid "Output Device:"
-msgstr ""
+msgstr "Пристрій виводу:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Output Image Processing"
-msgstr ""
+msgstr "Обробка зображення виводу"
 
 #: win32/rsrc/snes9x.rc
 msgid "Output Method"
-msgstr ""
+msgstr "Спосіб виводу"
 
 #: win32/rsrc/snes9x.rc
 msgid "Override Tilemap"
-msgstr ""
+msgstr "Замінити тайлмапу"
 
 #: win32/wlanguage.h
 msgid "Page %d"
-msgstr ""
+msgstr "Сторінка %d"
 
 #: win32/rsrc/snes9x.rc
 msgid "Palette (click to select offset)"
-msgstr ""
+msgstr "Палітра (натисни для вибору зсуву)"
 
 #: win32/rsrc/snes9x.rc
 msgid "Palette:"
-msgstr ""
+msgstr "Палітра:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Parameters"
-msgstr ""
+msgstr "Параметри"
 
 #: win32/rsrc/snes9x.rc
 msgid "Password:"
-msgstr ""
+msgstr "Пароль:"
 
 #: win32/wlanguage.h
 msgid "Patch"
-msgstr ""
+msgstr "Латка"
 
 #: win32/wlanguage.h
 msgid "Path: %s"
-msgstr ""
+msgstr "Шлях: %s"
 
 #: win32/rsrc/snes9x.rc
 msgid "Pause When Inactive"
-msgstr ""
+msgstr "Призупиняти при неактивності"
 
 #: win32/wlanguage.h
 msgid "Pause:"
-msgstr ""
+msgstr "Призупинення:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Play Movie"
-msgstr ""
+msgstr "Відтворити відео"
 
 #: win32/rsrc/snes9x.rc
 msgid "Playback Rate"
-msgstr ""
+msgstr "Частота відтворення"
 
 #: win32/rsrc/snes9x.rc
 msgid "Playback Rate:"
-msgstr ""
+msgstr "Частота відтворення:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Player Name:"
-msgstr ""
+msgstr "Ім'я гравця:"
 
 #: win32/wlanguage.h
 msgid "Please enter a host name."
-msgstr ""
+msgstr "Введи ім'я хоста."
 
 #: win32/wlanguage.h
 msgid "Please enter a valid value for a search!"
-msgstr ""
+msgstr "Введи дійсне значення для пошуку!"
 
 #: win32/rsrc/snes9x.rc
 msgid "Port Number"
-msgstr ""
+msgstr "Номер порту"
 
 #: win32/rsrc/snes9x.rc
 msgid "Port Settings"
-msgstr ""
+msgstr "Налаштування порту"
 
 #: win32/wlanguage.h
 msgid "Press OK to start playing the movie."
-msgstr ""
+msgstr "Натисни OK для початку відтворення відео."
 
 #: win32/rsrc/snes9x.rc
 msgid "Preview"
-msgstr ""
+msgstr "Попередній перегляд"
 
 #: win32/rsrc/snes9x.rc
 msgid "Previous Value"
-msgstr ""
+msgstr "Попереднє значення"
 
 #: win32/rsrc/snes9x.rc
 msgid "Progress1"
-msgstr ""
+msgstr "Поступ1"
 
 #: win32/rsrc/snes9x.rc
 msgid "Publish Online"
-msgstr ""
+msgstr "Опублікувати онлайн"
 
 #: win32/rsrc/snes9x.rc
 msgid "Publish to master server list"
-msgstr ""
+msgstr "Опублікувати в списку головних серверів"
 
 #: win32/wlanguage.h
-msgid "Quit Snes9x:"
-msgstr ""
+msgid "Quit SuperSnes9x:"
+msgstr "Вихід зі SuperSnes9x:"
 
 #: win32/wlanguage.h
 msgid "Range Error"
-msgstr ""
+msgstr "Помилка діапазону"
 
 #: win32/rsrc/snes9x.rc
 msgid "Rate:"
-msgstr ""
+msgstr "Частота:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Re-record Count:"
-msgstr ""
+msgstr "Кількість перезаписів:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Re-sync all Clients Using Freeze File Now"
-msgstr ""
+msgstr "Пересинхронізувати всіх клієнтів за допомогою файлу зупинки зараз"
 
 #: win32/rsrc/snes9x.rc
 msgid "Recent Games"
-msgstr ""
+msgstr "Останні ігри"
 
 #: win32/rsrc/snes9x.rc
 msgid "Record Controllers"
-msgstr ""
+msgstr "Записувати контролери"
 
 #: win32/rsrc/snes9x.rc
 msgid "Record from now"
-msgstr ""
+msgstr "Записувати від зараз"
 
 #: win32/rsrc/snes9x.rc
 msgid "Record from reset"
-msgstr ""
+msgstr "Записувати від перезавантаження"
 
 #: win32/rsrc/snes9x.rc
 msgid "Record Movie"
-msgstr ""
+msgstr "Записати відео"
 
 #: win32/rsrc/snes9x.rc
 msgid "Record Options"
-msgstr ""
+msgstr "Опції запису"
 
 #: win32/rsrc/snes9x.rc
 msgid "Recording Date:"
-msgstr ""
+msgstr "Дата запису:"
 
 #: win32/wlanguage.h
 msgid "Recording Start"
-msgstr ""
+msgstr "Початок запису"
 
 #: win32/rsrc/snes9x.rc
 msgid "Reduce Input Lag"
-msgstr ""
+msgstr "Зменшити початкову затримку"
 
 #: win32/rsrc/snes9x.rc
 msgid "Refresh"
-msgstr ""
+msgstr "Оновити"
 
 #: win32/rsrc/snes9x.rc
 msgid "Refresh List"
-msgstr ""
+msgstr "Оновити список"
 
 #: win32/rsrc/snes9x.rc
 msgid "Regular"
-msgstr ""
+msgstr "Звичайний"
 
 #: win32/rsrc/snes9x.rc
 msgid "Remove"
-msgstr ""
+msgstr "Вилучити"
 
 #: win32/rsrc/snes9x.rc
 msgid "Remove All"
-msgstr ""
+msgstr "Вилучити все"
 
 #: win32/rsrc/snes9x.rc
 msgid "RERECORD"
-msgstr ""
+msgstr "ПЕРЕЗАПИС"
 
 #: win32/wlanguage.h
 msgid "Reset speed:"
-msgstr ""
+msgstr "Швидкість перезавантаження:"
 
 #: win32/rsrc/snes9x.rc
 msgid "RetroAchievements"
-msgstr ""
+msgstr "RetroAchievements"
 
 #: win32/rsrc/snes9x.rc
 msgid "RetroAchievements Login"
-msgstr ""
+msgstr "Вхід RetroAchievements"
 
 #: win32/rsrc/snes9x.rc
 msgid "Rewind buffer size:"
-msgstr ""
+msgstr "Розмір буфера звороту:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Rewind granularity:"
-msgstr ""
+msgstr "Деталізація звороту:"
 
 #: win32/wlanguage.h
 msgid "Rewind:"
-msgstr ""
+msgstr "Зворот:"
 
 #: win32/rsrc/snes9x.rc
 msgid "RIGHT"
-msgstr ""
+msgstr "→"
 
 #: win32/wlanguage.h
 msgid "ROM files or archives"
-msgstr ""
+msgstr "Файли ROM чи архіви"
 
 #: win32/rsrc/snes9x.rc
 msgid "Rom Info"
-msgstr ""
+msgstr "Відомості ROM"
 
 #: win32/rsrc/snes9x.rc
 msgid "ROM Information"
-msgstr ""
+msgstr "Відомості ROM"
 
 #: win32/rsrc/snes9x.rc
 msgid "ROM:"
-msgstr ""
+msgstr "ROM:"
 
 #: win32/wlanguage.h
 msgid "Roms"
-msgstr ""
+msgstr "ROM'и"
 
 #: win32/rsrc/snes9x.rc
 msgid "Run Ahead"
-msgstr ""
+msgstr "Біг наперед"
 
 #: win32/rsrc/snes9x.rc
 msgid "s"
-msgstr ""
+msgstr "с"
 
 #: win32/rsrc/snes9x.rc
 msgid "S-PPU"
-msgstr ""
+msgstr "S-PPU"
 
 #: win32/wlanguage.h
 msgid "Satellaview"
-msgstr ""
+msgstr "Satellaview"
 
 #: win32/rsrc/snes9x.rc
 msgid "Save #:"
-msgstr ""
+msgstr "Зберегти #:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Save 0:"
-msgstr ""
+msgstr "Зберегти 0:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Save 1:"
-msgstr ""
+msgstr "Зберегти 1:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Save 2:"
-msgstr ""
+msgstr "Зберегти 2:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Save 3:"
-msgstr ""
+msgstr "Зберегти 3:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Save 4:"
-msgstr ""
+msgstr "Зберегти 4:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Save 5:"
-msgstr ""
+msgstr "Зберегти 5:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Save 6:"
-msgstr ""
+msgstr "Зберегти 6:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Save 7:"
-msgstr ""
+msgstr "Зберегти 7:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Save 8:"
-msgstr ""
+msgstr "Зберегти 8:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Save 9:"
-msgstr ""
+msgstr "Зберегти 9:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Save Dlg:"
-msgstr ""
+msgstr "Зберегти діалог:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Save File:"
-msgstr ""
+msgstr "Зберегти файл:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Save Game Position"
-msgstr ""
+msgstr "Зберегти позицію гри"
 
 #: win32/rsrc/snes9x.rc
 msgid "Save Memory Pack"
-msgstr ""
+msgstr "Зберегти пакет пам'яті"
 
 #: win32/rsrc/snes9x.rc
 msgid "Save Other"
-msgstr ""
+msgstr "Зберегти інше"
 
 #: win32/rsrc/snes9x.rc
 msgid "Save S-RAM Data"
-msgstr ""
+msgstr "Зберегти дані S-RAM"
 
 #: win32/rsrc/snes9x.rc
 msgid "Save Screenshot"
-msgstr ""
+msgstr "Зберегти екранний кадр"
 
 #: win32/wlanguage.h
 msgid "Save screenshot"
-msgstr ""
+msgstr "Зберегти екранний кадр"
 
 #: win32/rsrc/snes9x.rc
 msgid "Save SPC Data"
-msgstr ""
+msgstr "Зберегти дані SPC"
 
 #: win32/wlanguage.h
 msgid "Save to file:"
-msgstr ""
+msgstr "Зберегти у файл:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Save Watches"
-msgstr ""
+msgstr "Зберегти спостереження"
 
 #: win32/rsrc/snes9x.rc
 msgid "Save with Preview"
-msgstr ""
+msgstr "Зберегти з попереднім переглядом"
 
 #: win32/wlanguage.h
 msgid "Saves"
-msgstr ""
+msgstr "Збереження"
 
 #: win32/rsrc/snes9x.rc
 msgid "Screen"
-msgstr ""
+msgstr "Екран"
 
 #: win32/wlanguage.h
 msgid "Screenshots"
-msgstr ""
+msgstr "Екранні кадри"
 
 #: win32/rsrc/snes9x.rc
 msgid "Search"
-msgstr ""
+msgstr "Пошук"
 
 #: win32/rsrc/snes9x.rc
 msgid "Search Database"
-msgstr ""
+msgstr "Шукати базу даних"
 
 #: win32/rsrc/snes9x.rc
 msgid "Search for New Cheats"
-msgstr ""
+msgstr "Шукати нові чіти"
 
 #: win32/rsrc/snes9x.rc
 msgid "seconds after last change (0 disables auto-save)"
-msgstr ""
+msgstr "секунд після останньої зміни (0 вимикає автозбереження)"
 
 #: win32/rsrc/snes9x.rc
 msgid "SELECT"
-msgstr ""
+msgstr "SELECT"
 
 #: win32/rsrc/snes9x.rc
 msgid "Select 0:"
-msgstr ""
+msgstr "Вибрати 0:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Select 1:"
-msgstr ""
+msgstr "Вибрати 1:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Select 2:"
-msgstr ""
+msgstr "Вибрати 2:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Select 3:"
-msgstr ""
+msgstr "Вибрати 3:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Select 4:"
-msgstr ""
+msgstr "Вибрати 4:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Select 5:"
-msgstr ""
+msgstr "Вибрати 5:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Select 6:"
-msgstr ""
+msgstr "Вибрати 6:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Select 7:"
-msgstr ""
+msgstr "Вибрати 7:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Select 8:"
-msgstr ""
+msgstr "Вибрати 8:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Select 9:"
-msgstr ""
+msgstr "Вибрати 9:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Select File"
-msgstr ""
+msgstr "Вибрати файл"
 
 #: win32/wlanguage.h
 msgid "Select Folder"
-msgstr ""
+msgstr "Вибрати папку"
 
 #: win32/wlanguage.h
 msgid "Select Slot 0:"
-msgstr ""
+msgstr "Вибрати слот 0:"
 
 #: win32/wlanguage.h
 msgid "Select Slot 1:"
-msgstr ""
+msgstr "Вибрати слот 1:"
 
 #: win32/wlanguage.h
 msgid "Select Slot 2:"
-msgstr ""
+msgstr "Вибрати слот 2:"
 
 #: win32/wlanguage.h
 msgid "Select Slot 3:"
-msgstr ""
+msgstr "Вибрати слот 3:"
 
 #: win32/wlanguage.h
 msgid "Select Slot 4:"
-msgstr ""
+msgstr "Вибрати слот 4:"
 
 #: win32/wlanguage.h
 msgid "Select Slot 5:"
-msgstr ""
+msgstr "Вибрати слот 5:"
 
 #: win32/wlanguage.h
 msgid "Select Slot 6:"
-msgstr ""
+msgstr "Вибрати слот 6:"
 
 #: win32/wlanguage.h
 msgid "Select Slot 7:"
-msgstr ""
+msgstr "Вибрати слот 7:"
 
 #: win32/wlanguage.h
 msgid "Select Slot 8:"
-msgstr ""
+msgstr "Вибрати слот 8:"
 
 #: win32/wlanguage.h
 msgid "Select Slot 9:"
-msgstr ""
+msgstr "Вибрати слот 9:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Send"
-msgstr ""
+msgstr "Надіслати"
 
 #: win32/rsrc/snes9x.rc
 msgid "Send ROM Image to Client on Connect"
-msgstr ""
+msgstr "Надсилати ROM-образ клієнту при з'єднанні"
 
 #: win32/rsrc/snes9x.rc
 msgid "Send ROM Image to Clients"
-msgstr ""
+msgstr "Надсилати ROM-образ клієнтам"
 
 #: win32/rsrc/snes9x.rc
 msgid "Send ROM Image to Clients Now"
-msgstr ""
+msgstr "Надіслати ROM-образ клієнтам зараз"
 
 #: win32/rsrc/snes9x.rc
 msgid "Separate Echo Buffer from RAM"
-msgstr ""
+msgstr "Відокремити буфер відлуння від RAM"
 
 #: win32/rsrc/snes9x.rc
 msgid "Server Address"
-msgstr ""
+msgstr "Адреса сервера"
 
 #: win32/rsrc/snes9x.rc
 msgid "Server is stopped."
-msgstr ""
+msgstr "Сервер зупинено."
 
 #: win32/rsrc/snes9x.rc
 msgid "Server Lobby"
-msgstr ""
+msgstr "Лобі сервера"
 
 #: win32/rsrc/snes9x.rc
 msgid "Server Name:"
-msgstr ""
+msgstr "Ім'я сервера:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Server Settings"
-msgstr ""
+msgstr "Налаштування сервера"
 
 #: win32/rsrc/snes9x.rc
 msgid "Set Defaults"
-msgstr ""
+msgstr "Встановити типові"
 
 #: win32/rsrc/snes9x.rc
 msgid "Set Value"
-msgstr ""
+msgstr "Встановити значення"
 
 #: win32/rsrc/snes9x.rc
 msgid "Settings"
-msgstr ""
+msgstr "Налаштування"
 
 #: win32/wlanguage.h
 msgid "SETTINGS NOT IN MOVIE; VERIFY:"
-msgstr ""
+msgstr "НАЛАШТУВАННЯ ВІДСУТНІ У ВІДЕО; ПЕРЕВІР:"
 
 #: win32/rsrc/snes9x.rc
 msgid "SGB Mix"
-msgstr ""
+msgstr "Суміш SGB"
 
 #: win32/rsrc/snes9x.rc
 msgid "SGB1"
-msgstr ""
+msgstr "SGB1"
 
 #: win32/rsrc/snes9x.rc
 msgid "SGB2"
-msgstr ""
+msgstr "SGB2"
 
 #: win32/rsrc/snes9x.rc
 msgid "Show Audio Waveform"
-msgstr ""
+msgstr "Показати звукову хвилю"
 
 #: win32/rsrc/snes9x.rc
 msgid "Show Background"
-msgstr ""
+msgstr "Показати тло"
 
 #: win32/rsrc/snes9x.rc
 msgid "Show Crosshair"
-msgstr ""
+msgstr "Показати приціл"
 
 #: win32/rsrc/snes9x.rc
 msgid "Show Frame Number"
-msgstr ""
+msgstr "Показати номер кадру"
 
 #: win32/rsrc/snes9x.rc
 msgid "Show Frame Rate"
-msgstr ""
+msgstr "Показати частоту кадрів"
 
 #: win32/rsrc/snes9x.rc
 msgid "Show Grid"
-msgstr ""
+msgstr "Показати сітку"
 
 #: win32/wlanguage.h
 msgid "Show pressed keys:"
-msgstr ""
+msgstr "Показати натиснені кнопки:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Show screen"
-msgstr ""
+msgstr "Показати екран"
 
 #: win32/rsrc/snes9x.rc
 msgid "Show Screen Outline"
-msgstr ""
+msgstr "Показати контур екрана"
 
 #: win32/rsrc/snes9x.rc
 msgid "Show Sprites"
-msgstr ""
+msgstr "Показати спрайти"
 
 #: win32/rsrc/snes9x.rc
 msgid "Show viewport"
-msgstr ""
+msgstr "Показати область перегляду"
 
 #: win32/rsrc/snes9x.rc
 msgid "Show Window"
-msgstr ""
+msgstr "Показати вікно"
 
 #: win32/rsrc/snes9x.rc
 msgid "Signed (+/-)"
-msgstr ""
+msgstr "Знаковий (+/-)"
 
 #: win32/wlanguage.h
 msgid "Size"
-msgstr ""
+msgstr "Розмір"
 
 #: win32/rsrc/snes9x.rc
 msgid "Skip at most"
-msgstr ""
+msgstr "Пропускати щонайбільше"
 
 #: win32/wlanguage.h
 msgid "Skip frames +:"
-msgstr ""
+msgstr "Пропуск кадрів +:"
 
 #: win32/wlanguage.h
 msgid "Skip frames -:"
-msgstr ""
+msgstr "Пропуск кадрів -:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Skip rendering"
-msgstr ""
+msgstr "Пропустити рендеринг"
 
 #: win32/wlanguage.h
 msgid "Skip Rendering"
-msgstr ""
+msgstr "Пропустити рендеринг"
 
 #: win32/rsrc/snes9x.rc
 msgid "Slot +:"
-msgstr ""
+msgstr "Слот +:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Slot -:"
-msgstr ""
+msgstr "Слот -:"
 
 #: win32/rsrc/snes9x.rc
 msgid "SNES Image"
-msgstr ""
+msgstr "SNES-зображення"
 
 #: win32/rsrc/snes9x.rc
-msgid "Snes9x - Unable to Initialize XAudio2"
-msgstr ""
+msgid "SuperSnes9x - Unable to Initialize XAudio2"
+msgstr "SuperSnes9x - неможливо ініціалізувати XAudio2"
 
 #: win32/wlanguage.h
-msgid "Snes9x Cheat Error"
-msgstr ""
+msgid "SuperSnes9x Cheat Error"
+msgstr "Помилка чіта SuperSnes9x"
 
 #: win32/wlanguage.h
-msgid "Snes9x Movie File"
-msgstr ""
+msgid "SuperSnes9x Movie File"
+msgstr "Файл відео SuperSnes9x"
 
 #: win32/rsrc/snes9x.rc
 msgid "Socket Port Number"
-msgstr ""
+msgstr "Номер порту сокета"
 
 #: win32/rsrc/snes9x.rc
 msgid "Soft Reset"
-msgstr ""
+msgstr "Програмне перезавантаження"
 
 #: win32/wlanguage.h
 msgid "Soft reset:"
-msgstr ""
+msgstr "Програмне перезавантаження:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Sound Driver:"
-msgstr ""
+msgstr "Звуковий драйвер:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Sound Interpolation Type:"
-msgstr ""
+msgstr "Тип звукової інтерполяції:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Sound Quality"
-msgstr ""
+msgstr "Якість звуку"
 
 #: win32/rsrc/snes9x.rc
 msgid "Sound Settings"
-msgstr ""
+msgstr "Налаштування звуку"
 
 #: win32/rsrc/snes9x.rc
 msgid "Source:"
-msgstr ""
+msgstr "Джерело:"
 
 #: win32/rsrc/snes9x.rc
 msgid "SPC"
-msgstr ""
+msgstr "SPC"
 
 #: win32/wlanguage.h
 msgid "SPCs"
-msgstr ""
+msgstr "SPC-файли"
 
 #: win32/wlanguage.h
 msgid "Speed +:"
-msgstr ""
+msgstr "Швидкість +:"
 
 #: win32/wlanguage.h
 msgid "Speed -:"
-msgstr ""
+msgstr "Швидкість -:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Spin1"
-msgstr ""
+msgstr "Обертання1"
 
 #: win32/rsrc/snes9x.rc
 msgid "Spin2"
-msgstr ""
+msgstr "Обертання2"
 
 #: win32/rsrc/snes9x.rc
 msgid "Spin3"
-msgstr ""
+msgstr "Обертання3"
 
 #: win32/rsrc/snes9x.rc
 msgid "Spin4"
-msgstr ""
+msgstr "Обертання4"
 
 #: win32/rsrc/snes9x.rc
 msgid "Sprite Viewer"
-msgstr ""
+msgstr "Переглядач спрайтів"
 
 #: win32/rsrc/snes9x.rc
 msgid "Sprite:"
-msgstr ""
+msgstr "Спрайт:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Sprites"
-msgstr ""
+msgstr "Спрайти"
 
 #: win32/wlanguage.h
 msgid "Sprites layer:"
-msgstr ""
+msgstr "Шар спрайтів:"
 
 #: win32/wlanguage.h
 msgid "SRAM"
-msgstr ""
+msgstr "SRAM"
 
 #: win32/rsrc/snes9x.rc
 msgid "START"
-msgstr ""
+msgstr "START"
 
 #: win32/rsrc/snes9x.rc
 msgid "Start Game"
-msgstr ""
+msgstr "Розпочати гру"
 
 #: win32/rsrc/snes9x.rc
 msgid "Start Server"
-msgstr ""
+msgstr "Запустити сервер"
 
 #: win32/rsrc/snes9x.rc
 msgid "Static"
-msgstr ""
+msgstr "Статичний"
 
 #: win32/rsrc/snes9x.rc
 msgid "Status"
-msgstr ""
+msgstr "Стан"
 
 #: win32/rsrc/snes9x.rc
 msgid "Stretch Image"
-msgstr ""
+msgstr "Розтягнути зображення"
 
 #: win32/rsrc/snes9x.rc
 msgid "SuperFX Clock Speed %:"
-msgstr ""
+msgstr "Тактова швидкість SuperFX %:"
 
 #: win32/rsrc/snes9x.rc
 msgid "SuperFX speed:"
-msgstr ""
+msgstr "Швидкість SuperFX:"
 
 #: win32/wlanguage.h
 msgid "SuperScope pause:"
-msgstr ""
+msgstr "Призупинення Super Scope:"
 
 #: win32/wlanguage.h
 msgid "SuperScope turbo:"
-msgstr ""
-
-#: win32/wlanguage.h
-msgid "SuperSnes9x"
-msgstr ""
+msgstr "Турбо Super Scope:"
 
 #: win32/wlanguage.h
 msgid "SuperSnes9x (x64)"
-msgstr ""
+msgstr "SuperSnes9x (x64)"
 
 #: win32/rsrc/snes9x.rc
 msgid "SuperSnes9x - About"
-msgstr ""
+msgstr "SuperSnes9x - про додаток"
 
 #: win32/wlanguage.h
 msgid "SuperSnes9x: DirectSound"
-msgstr ""
+msgstr "SuperSnes9x: DirectSound"
 
 #: win32/wlanguage.h
 msgid "SuperSnes9x: Information"
-msgstr ""
+msgstr "SuperSnes9x: відомості"
 
 #: win32/wlanguage.h
 msgid "SuperSnes9x: NetPlay Error"
-msgstr ""
+msgstr "SuperSnes9x: помилка мережевої гри"
 
 #: win32/wlanguage.h
 msgid "SuperSnes9x: Sound CPU Question"
-msgstr ""
+msgstr "SuperSnes9x: питання звукового CPU"
 
 #: win32/wlanguage.h
 msgid "SuperSnes9x: WARNING!"
-msgstr ""
+msgstr "SuperSnes9x: УВАГА!"
 
 #: win32/rsrc/snes9x.rc
 msgid "Swap A and B"
-msgstr ""
+msgstr "Обміняти A і B"
 
 #: win32/wlanguage.h
 msgid "Switch aspect Ratio:"
-msgstr ""
+msgstr "Перемкнути співвідношення сторін:"
 
 #: win32/wlanguage.h
 msgid "Switch controllers:"
-msgstr ""
+msgstr "Перемкнути контролери:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Sync By Reset"
-msgstr ""
+msgstr "Синхронізувати перезавантаженням"
 
 #: win32/rsrc/snes9x.rc
 msgid "Sync Sound"
-msgstr ""
+msgstr "Синхронізувати звук"
 
 #: win32/rsrc/snes9x.rc
 msgid "Sync Using Reset Game"
-msgstr ""
+msgstr "Синхронізувати перезавантаженням гри"
 
 #: win32/rsrc/snes9x.rc
 msgid "Synchronize with sound core"
-msgstr ""
+msgstr "Синхронізувати зі звуковим ядром"
 
 #: win32/wlanguage.h
 msgid "TempTurbo"
-msgstr ""
+msgstr "ТимчасовеТурбо"
 
 #: win32/wlanguage.h
 msgid "Text file"
-msgstr ""
+msgstr "Текстовий файл"
 
 #: win32/wlanguage.h
 msgid "The movie file is corrupt or in the wrong format."
-msgstr ""
+msgstr "Файл відео пошкоджено або в неправильному форматі."
 
 #: win32/wlanguage.h
 msgid "The movie file was not found or could not be opened."
-msgstr ""
+msgstr "Файл відео не знайдено або неможливо відкрити."
 
 #: win32/rsrc/snes9x.rc
 msgid "Tile Addr:"
-msgstr ""
+msgstr "Адреса тайла:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Tile Data:"
-msgstr ""
+msgstr "Дані тайла:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Tile Size:"
-msgstr ""
+msgstr "Розмір тайла:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Tile Viewer"
-msgstr ""
+msgstr "Переглядач тайлів"
 
 #: win32/rsrc/snes9x.rc
 msgid "Tilemap"
-msgstr ""
+msgstr "Тайлмапа"
 
 #: win32/rsrc/snes9x.rc
 msgid "Tilemap Viewer"
-msgstr ""
+msgstr "Переглядач тайлмапи"
 
 #: win32/rsrc/snes9x.rc
 msgid "Tiles"
-msgstr ""
+msgstr "Тайли"
 
 #: win32/rsrc/snes9x.rc
 msgid "Timeout:"
-msgstr ""
+msgstr "Час очікування:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Toggle Achievements Images"
-msgstr ""
+msgstr "Перемкнути зображення досягнень"
 
 #: win32/wlanguage.h
 msgid "Toggle backdrop:"
-msgstr ""
+msgstr "Перемкнути тло:"
 
 #: win32/wlanguage.h
 msgid "Toggle cheats:"
-msgstr ""
+msgstr "Перемкнути чіти:"
 
 #: win32/wlanguage.h
 msgid "Toggle mute:"
-msgstr ""
+msgstr "Перемкнути притлумлення:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Transparency Effects"
-msgstr ""
+msgstr "Ефекти прозорості"
 
 #: win32/wlanguage.h
 msgid "Transparency:"
-msgstr ""
+msgstr "Прозорість:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Tree1"
-msgstr ""
+msgstr "Дерево1"
 
 #: win32/wlanguage.h
 msgid "Turbo"
-msgstr ""
+msgstr "Турбо"
 
 #: win32/wlanguage.h
 msgid "Turbo A mode:"
-msgstr ""
+msgstr "Режим турбо A:"
 
 #: win32/wlanguage.h
 msgid "Turbo B mode:"
-msgstr ""
+msgstr "Режим турбо B:"
 
 #: win32/wlanguage.h
 msgid "Turbo Down mode:"
-msgstr ""
+msgstr "Режим турбо ↓:"
 
 #: win32/wlanguage.h
 msgid "Turbo L mode:"
-msgstr ""
+msgstr "Режим турбо L:"
 
 #: win32/wlanguage.h
 msgid "Turbo Left mode:"
-msgstr ""
+msgstr "Режим турбо ←:"
 
 #: win32/wlanguage.h
 msgid "Turbo R mode:"
-msgstr ""
+msgstr "Режим турбо R:"
 
 #: win32/wlanguage.h
 msgid "Turbo Right mode:"
-msgstr ""
+msgstr "Режим турбо →:"
 
 #: win32/wlanguage.h
 msgid "Turbo Select mode:"
-msgstr ""
+msgstr "Режим турбо Select:"
 
 #: win32/wlanguage.h
 msgid "Turbo Start mode:"
-msgstr ""
+msgstr "Режим турбо Start:"
 
 #: win32/wlanguage.h
 msgid "Turbo Up mode:"
-msgstr ""
+msgstr "Режим турбо ↑:"
 
 #: win32/wlanguage.h
 msgid "Turbo X mode:"
-msgstr ""
+msgstr "Режим турбо X:"
 
 #: win32/wlanguage.h
 msgid "Turbo Y mode:"
-msgstr ""
+msgstr "Режим турбо Y:"
 
 #: win32/wlanguage.h
 msgid "Uncompressed ROM files"
-msgstr ""
+msgstr "Нестиснені файли ROM"
 
 #: win32/wlanguage.h
 msgid "Unrecognized format."
-msgstr ""
+msgstr "Нерозпізнаний формат."
 
 #: win32/rsrc/snes9x.rc
 msgid "Unsigned (>=0)"
-msgstr ""
+msgstr "Беззнаковий (>=0)"
 
 #: win32/wlanguage.h
 msgid "Unsupported movie version."
-msgstr ""
+msgstr "Непідтримувана версія відео."
 
 #: win32/rsrc/snes9x.rc
 msgid "UP"
-msgstr ""
+msgstr "↑"
 
 #: win32/rsrc/snes9x.rc
 msgid "UP LEFT"
-msgstr ""
+msgstr "↑ ←"
 
 #: win32/wlanguage.h
 msgid "Up Left"
-msgstr ""
+msgstr "↑ ←"
 
 #: win32/rsrc/snes9x.rc
 msgid "UP RIGHT"
-msgstr ""
+msgstr "↑ →"
 
 #: win32/wlanguage.h
 msgid "Up Right"
-msgstr ""
+msgstr "↑ →"
 
 #: win32/rsrc/snes9x.rc
 msgid "Update"
-msgstr ""
+msgstr "Оновити"
 
 #: win32/rsrc/snes9x.rc
 msgid "Use CGRAM"
-msgstr ""
+msgstr "Використовувати CGRAM"
 
 #: win32/rsrc/snes9x.rc
 msgid "Use DirectInput"
-msgstr ""
+msgstr "Використовувати DirectInput"
 
 #: win32/rsrc/snes9x.rc
 msgid "Use Dual Justifiers"
-msgstr ""
+msgstr "Використовувати подвійні Justifier"
 
 #: win32/rsrc/snes9x.rc
 msgid "Use Konami Justifier"
-msgstr ""
+msgstr "Використовувати Konami Justifier"
 
 #: win32/rsrc/snes9x.rc
 msgid "Use M.A.C.S. Rifle"
-msgstr ""
+msgstr "Використовувати рушницю M.A.C.S."
 
 #: win32/rsrc/snes9x.rc
 msgid "Use Mouse in alternate port"
-msgstr ""
+msgstr "Використовувати мишу в альтернативному порту"
 
 #: win32/rsrc/snes9x.rc
 msgid "Use Multitaps (8-player)"
-msgstr ""
+msgstr "Використовувати мультитапи (8 гравців)"
 
 #: win32/rsrc/snes9x.rc
 msgid "Use Shader"
-msgstr ""
+msgstr "Використовувати шейдер"
 
 #: win32/rsrc/snes9x.rc
 msgid "Use SNES Joypad(s)"
-msgstr ""
+msgstr "Використовувати SNES-джойстик(и)"
 
 #: win32/rsrc/snes9x.rc
 msgid "Use SNES Mouse"
-msgstr ""
+msgstr "Використовувати SNES-мишу"
 
 #: win32/rsrc/snes9x.rc
 msgid "Use Super Multitap (5-player)"
-msgstr ""
+msgstr "Використовувати Super Multitap (5 гравців)"
 
 #: win32/rsrc/snes9x.rc
 msgid "Use Super Scope"
-msgstr ""
+msgstr "Використовувати Super Scope"
 
 #: win32/rsrc/snes9x.rc
 msgid "User Agent: SuperSnes9x/1.63"
-msgstr ""
+msgstr "User Agent: SuperSnes9x/1.63"
 
 #: win32/rsrc/snes9x.rc
 msgid "Username:"
-msgstr ""
+msgstr "Ім'я користувача:"
 
 #: win32/wlanguage.h
 msgid "Value"
-msgstr ""
+msgstr "Значення"
 
 #: win32/rsrc/snes9x.rc
 msgid "Value (hex):"
-msgstr ""
+msgstr "Значення (hex):"
 
 #: win32/rsrc/snes9x.rc
 msgid "Video"
-msgstr ""
+msgstr "Відео"
 
 #: win32/rsrc/snes9x.rc
 msgid "Video System:"
-msgstr ""
+msgstr "Відеосистема:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Volume"
-msgstr ""
+msgstr "Гучність"
 
 #: win32/rsrc/snes9x.rc
 msgid "VSync"
-msgstr ""
+msgstr "VSync"
 
 #: win32/wlanguage.h
 msgid "WARNING: You don't have the right ROM loaded!"
-msgstr ""
+msgstr "УВАГА: завантажено неправильний ROM!"
 
 #: win32/rsrc/snes9x.rc
 msgid "Watch"
-msgstr ""
+msgstr "Спостереження"
 
 #: win32/rsrc/snes9x.rc
 msgid "Welcome Message (MOTD)"
-msgstr ""
+msgstr "Вітальне повідомлення (MOTD)"
 
 #: win32/rsrc/snes9x.rc
 msgid "Width:"
-msgstr ""
+msgstr "Ширина:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Window Size"
-msgstr ""
+msgstr "Розмір вікна"
 
 #: win32/rsrc/snes9x.rc
 msgid "WOG!"
-msgstr ""
+msgstr "WOG!"
 
 #: win32/wlanguage.h
 msgid "You have entered an out of range or invalid value for the new value"
-msgstr ""
+msgstr "Введено значення поза діапазоном або хибне значення для нового значення"
 
 #: win32/wlanguage.h
-msgid "You need a different version of Snes9x to play this movie."
-msgstr ""
+msgid "You need a different version of SuperSnes9x to play this movie."
+msgstr "Для відтворення цього відео потрібна інша версія SuperSnes9x."
 
 #: win32/rsrc/snes9x.rc
 msgid "Your password is only used to get an API token.\nIt is never stored."
-msgstr ""
+msgstr "Твій пароль використовується лише для отримання API-токена.\nВін ніколи не зберігається."
 
 #: win32/rsrc/snes9x.rc
 msgid "Zoom:"
-msgstr ""
+msgstr "Масштаб:"
 
 # === Win32 strings (added by i18n/extract_strings.py) ===
 
 #: win32/CSpriteViewerDlg.cpp
 msgid "Export Selected to PNG"
-msgstr ""
+msgstr "Експортувати вибране до PNG"
 
 #: win32/CGBSpriteViewerDlg.cpp
 msgid "Export to PNG"
-msgstr ""
+msgstr "Експортувати до PNG"
 
 #: win32/CSpriteViewerDlg.cpp
 msgid "Show All Objects"
-msgstr ""
+msgstr "Показати всі об'єкти"
 
 #: win32/CSpriteViewerDlg.cpp
 msgid "Show Only Selected Objects"
-msgstr ""
+msgstr "Показати лише вибрані об'єкти"
 
 #: win32/CSpriteViewerDlg.cpp
 msgid "Toggle Visibility"
-msgstr ""
+msgstr "Перемкнути видимість"
 
 #: win32/wsnes9x.cpp
 msgid "Translations"
-msgstr ""
+msgstr "Переклади"
+
+# === Win32 strings (added by i18n/extract_strings.py) ===
+
+#: win32/wsnes9x.cpp
+msgid "Language"
+msgstr "Мова"

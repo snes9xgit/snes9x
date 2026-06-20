@@ -1819,7 +1819,30 @@ static void GbSetSubmenuEnabled(HMENU parent, UINT containedCmd, bool enabled)
 
 static std::vector<std::wstring> g_translationCodes;
 
-static void BuildTranslationsMenu(HMENU bar)
+static bool FindMenuItemParentPos(HMENU root, UINT id, HMENU *outParent, int *outPos)
+{
+	int n = GetMenuItemCount(root);
+	for (int i = 0; i < n; ++i)
+	{
+		MENUITEMINFO mii;
+		ZeroMemory(&mii, sizeof(mii));
+		mii.cbSize = sizeof(mii);
+		mii.fMask = MIIM_ID | MIIM_SUBMENU;
+		if (!GetMenuItemInfo(root, i, TRUE, &mii))
+			continue;
+		if (mii.wID == id)
+		{
+			*outParent = root;
+			*outPos = i;
+			return true;
+		}
+		if (mii.hSubMenu && FindMenuItemParentPos(mii.hSubMenu, id, outParent, outPos))
+			return true;
+	}
+	return false;
+}
+
+static void BuildLanguageMenu(HMENU bar)
 {
 	g_translationCodes.clear();
 	LocaleSetExcludedMenu(NULL);
@@ -1842,7 +1865,23 @@ static void BuildTranslationsMenu(HMENU bar)
 		g_translationCodes.push_back(langs[i].code);
 	}
 	LocaleSetExcludedMenu(sub);
-	AppendMenuW(bar, MF_POPUP | MF_STRING, (UINT_PTR)sub, _L(_T("Translations")));
+
+	HMENU parent = NULL;
+	int pos = -1;
+	if (FindMenuItemParentPos(bar, ID_FILE_LOGO_POPUP, &parent, &pos) && parent)
+	{
+		MENUITEMINFO item;
+		ZeroMemory(&item, sizeof(item));
+		item.cbSize = sizeof(item);
+		item.fMask = MIIM_STRING | MIIM_SUBMENU;
+		item.dwTypeData = (LPWSTR)_T("Language");
+		item.hSubMenu = sub;
+		InsertMenuItem(parent, pos + 1, TRUE, &item);
+	}
+	else
+	{
+		AppendMenuW(bar, MF_POPUP | MF_STRING, (UINT_PTR)sub, _T("Language"));
+	}
 }
 
 LRESULT CALLBACK WinProc(
@@ -3890,7 +3929,7 @@ BOOL WinInit( HINSTANCE hInstance)
 	LocaleLoad(GUI.UILanguage);
 	if (GUI.hMenu)
 	{
-		BuildTranslationsMenu(GUI.hMenu);
+		BuildLanguageMenu(GUI.hMenu);
 		LocalizeMenu(GUI.hMenu);
 	}
 

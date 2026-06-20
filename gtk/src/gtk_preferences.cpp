@@ -346,7 +346,7 @@ void Snes9xPreferences::about_dialog()
     std::string version_string;
     GtkBuilderWindow about_dialog("about_dialog");
 
-    ((version_string += _("Snes9x version: ")) += VERSION_DISPLAY) += ", ";
+    ((version_string += _("SuperSnes9x version: ")) += VERSION_DISPLAY) += ", ";
     ((version_string += _("GTK+ port version: ")) += SNES9X_GTK_VERSION) += "\n";
     (version_string += SNES9X_GTK_AUTHORS) += "\n";
     (version_string += _("English localization by Brandon Wright")) += "\n";

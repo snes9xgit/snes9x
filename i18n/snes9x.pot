@@ -141,7 +141,7 @@ msgstr[0] ""
 msgstr[1] ""
 
 #: src/gtk_preferences.cpp:271
-msgid "Snes9x version: "
+msgid "SuperSnes9x version: "
 msgstr ""
 
 #: src/gtk_preferences.cpp:272
@@ -311,11 +311,11 @@ msgid "Shader Parameters"
 msgstr ""
 
 #: src/snes9x.ui:10
-msgid "About Snes9x"
+msgid "About SuperSnes9x"
 msgstr ""
 
 #: src/snes9x.ui:283
-msgid "Snes9x Cheats"
+msgid "SuperSnes9x Cheats"
 msgstr ""
 
 #: src/snes9x.ui:401
@@ -492,7 +492,7 @@ msgid "Exit fullscreen mode"
 msgstr ""
 
 #: src/snes9x.ui:1067 src/snes9x.ui:6932
-msgid "Quit Snes9x"
+msgid "Quit SuperSnes9x"
 msgstr ""
 
 #: src/snes9x.ui:1078
@@ -572,7 +572,7 @@ msgid "Sinc"
 msgstr ""
 
 #: src/snes9x.ui:1175
-msgid "Snes9x"
+msgid "SuperSnes9x"
 msgstr ""
 
 #: src/snes9x.ui:1195
@@ -841,7 +841,7 @@ msgid "Select an Image for Slot B"
 msgstr ""
 
 #: src/snes9x.ui:2211
-msgid "Snes9x NetPlay"
+msgid "SuperSnes9x NetPlay"
 msgstr ""
 
 #: src/snes9x.ui:2288
@@ -868,7 +868,7 @@ msgid "Connect to another computer"
 msgstr ""
 
 #: src/snes9x.ui:2378
-msgid "Connect to another computer that is running Snes9x NetPlay as a server"
+msgid "Connect to another computer that is running SuperSnes9x NetPlay as a server"
 msgstr ""
 
 #: src/snes9x.ui:2398
@@ -938,7 +938,7 @@ msgid "<b>Settings</b>"
 msgstr ""
 
 #: src/snes9x.ui:2680
-msgid "Snes9x Preferences"
+msgid "SuperSnes9x Preferences"
 msgstr ""
 
 #: src/snes9x.ui:2796
@@ -986,7 +986,7 @@ msgid "Change fullscreen resolution:"
 msgstr ""
 
 #: src/snes9x.ui:2944
-msgid "Changes the screen resolution when running Snes9x in fullscreen mode"
+msgid "Changes the screen resolution when running SuperSnes9x in fullscreen mode"
 msgstr ""
 
 #: src/snes9x.ui:2989
@@ -1476,7 +1476,7 @@ msgid "Joypads"
 msgstr ""
 
 #: src/snes9x.ui:6742
-msgid "<b>Snes9x Emulator Shortcut Keys</b>"
+msgid "<b>SuperSnes9x Emulator Shortcut Keys</b>"
 msgstr ""
 
 #: src/snes9x.ui:6793
@@ -1704,7 +1704,7 @@ msgid "Shortcuts"
 msgstr ""
 
 #: src/snes9x.ui:9106
-msgid "Pause emulation when switching away from Snes9x"
+msgid "Pause emulation when switching away from SuperSnes9x"
 msgstr ""
 
 #: src/snes9x.ui:9120
@@ -1740,7 +1740,7 @@ msgid ""
 "  Snes9x – A Portable Super Nintendo Entertainment System™ Emulator\n"
 "\n"
 "  Snes9x homepage: http://www.snes9x.com/\n"
-"  Snes9x source code: https://github.com/snes9xgit/snes9x/\n"
+"  Snes9x source code: https://github.com/shanytc/snes9x/\n"
 "\n"
 "  Permission to use, copy, modify and/or distribute Snes9x in both binary\n"
 "  and source form, for non‑commercial purposes, is hereby granted without\n"
@@ -1998,7 +1998,7 @@ msgid "Add Cheat"
 msgstr ""
 
 #: win32/rsrc/snes9x.rc
-msgid "Add Snes9x to registry for supported file types"
+msgid "Add SuperSnes9x to registry for supported file types"
 msgstr ""
 
 #: win32/rsrc/snes9x.rc
@@ -2018,7 +2018,7 @@ msgid "All files"
 msgstr ""
 
 #: win32/rsrc/snes9x.rc
-msgid "all of Snes9x's settings are stored in this file"
+msgid "all of SuperSnes9x's settings are stored in this file"
 msgstr ""
 
 #: win32/rsrc/snes9x.rc
@@ -3278,7 +3278,7 @@ msgid "Publish to master server list"
 msgstr ""
 
 #: win32/wlanguage.h
-msgid "Quit Snes9x:"
+msgid "Quit SuperSnes9x:"
 msgstr ""
 
 #: win32/wlanguage.h
@@ -3790,15 +3790,15 @@ msgid "SNES Image"
 msgstr ""
 
 #: win32/rsrc/snes9x.rc
-msgid "Snes9x - Unable to Initialize XAudio2"
+msgid "SuperSnes9x - Unable to Initialize XAudio2"
 msgstr ""
 
 #: win32/wlanguage.h
-msgid "Snes9x Cheat Error"
+msgid "SuperSnes9x Cheat Error"
 msgstr ""
 
 #: win32/wlanguage.h
-msgid "Snes9x Movie File"
+msgid "SuperSnes9x Movie File"
 msgstr ""
 
 #: win32/rsrc/snes9x.rc
@@ -3923,10 +3923,6 @@ msgstr ""
 
 #: win32/wlanguage.h
 msgid "SuperScope turbo:"
-msgstr ""
-
-#: win32/wlanguage.h
-msgid "SuperSnes9x"
 msgstr ""
 
 #: win32/wlanguage.h
@@ -4262,7 +4258,7 @@ msgid "You have entered an out of range or invalid value for the new value"
 msgstr ""
 
 #: win32/wlanguage.h
-msgid "You need a different version of Snes9x to play this movie."
+msgid "You need a different version of SuperSnes9x to play this movie."
 msgstr ""
 
 #: win32/rsrc/snes9x.rc
@@ -4297,4 +4293,10 @@ msgstr ""
 
 #: win32/wsnes9x.cpp
 msgid "Translations"
+msgstr ""
+
+# === Win32 strings (added by i18n/extract_strings.py) ===
+
+#: win32/wsnes9x.cpp
+msgid "Language"
 msgstr ""

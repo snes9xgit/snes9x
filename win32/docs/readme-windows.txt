@@ -9,7 +9,7 @@ Files included in the Snes9x archive:
 
 This document was last updated for version 1.63 in July 2024
 Home page: http://www.snes9x.com/
-Source code: https://github.com/snes9xgit/snes9x/
+Source code: https://github.com/shanytc/snes9x/
 
 
 Contents

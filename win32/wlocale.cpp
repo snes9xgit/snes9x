@@ -3,6 +3,7 @@
 #include <fstream>
 #include <sstream>
 #include <unordered_map>
+#include <unordered_set>
 #include <cwctype>
 
 static std::unordered_map<std::wstring, std::wstring> g_map;
@@ -10,6 +11,9 @@ static std::unordered_map<std::wstring, std::wstring> g_cache;
 static std::wstring g_lang;
 static bool g_translated = false;
 static HMENU g_excludedMenu = NULL;
+static std::unordered_set<std::wstring> g_keys;
+static bool g_keysLoaded = false;
+static std::unordered_map<HMENU, std::vector<std::wstring>> g_origMenu;
 
 static const struct
 {
@@ -392,19 +396,93 @@ void LocalizeDialog(HWND dlg)
 	EnumChildWindows(dlg, LocalizeChildProc, 0);
 }
 
+static void LoadKeysOnce()
+{
+	if (g_keysLoaded)
+		return;
+	g_keysLoaded = true;
+
+	std::wstring pattern = I18nDir() + L"\\*.po";
+	WIN32_FIND_DATAW fd;
+	HANDLE h = FindFirstFileW(pattern.c_str(), &fd);
+	if (h == INVALID_HANDLE_VALUE)
+		return;
+	std::wstring path = I18nDir() + L"\\" + fd.cFileName;
+	FindClose(h);
+
+	std::ifstream f(path.c_str(), std::ios::binary);
+	if (!f)
+		return;
+	std::ostringstream ss;
+	ss << f.rdbuf();
+	std::wstring text = Utf8ToWideString(ss.str());
+
+	std::wstringstream lines(text);
+	std::wstring raw, id;
+	int field = 0;
+	auto flush = [&]() {
+		if (!id.empty())
+			g_keys.insert(id);
+		id.clear();
+		field = 0;
+	};
+	while (std::getline(lines, raw))
+	{
+		if (!raw.empty() && raw.back() == L'\r')
+			raw.pop_back();
+		std::wstring t = TrimWs(raw);
+		if (t.empty())
+		{
+			flush();
+			continue;
+		}
+		if (t[0] == L'#')
+			continue;
+		if (t.compare(0, 6, L"msgid ") == 0)
+		{
+			id = QuotedContent(t);
+			field = 1;
+		}
+		else if (t.compare(0, 6, L"msgstr") == 0)
+		{
+			flush();
+		}
+		else if (t[0] == L'"' && field == 1)
+		{
+			id += QuotedContent(t);
+		}
+		else
+		{
+			field = 0;
+		}
+	}
+	flush();
+}
+
 void LocalizeMenu(HMENU menu)
 {
-	if (!g_translated || menu == NULL)
+	if (menu == NULL)
 		return;
+	LoadKeysOnce();
+
 	int count = GetMenuItemCount(menu);
+	std::vector<std::wstring> &orig = g_origMenu[menu];
+	if ((int)orig.size() < count)
+		orig.resize(count);
+
 	for (int i = 0; i < count; ++i)
 	{
 		wchar_t buf[1024];
 		int n = GetMenuStringW(menu, i, buf, 1024, MF_BYPOSITION);
-		if (n > 0)
+		std::wstring current = (n > 0) ? std::wstring(buf, n) : std::wstring();
+
+		if (orig[i].empty() && !current.empty())
+			orig[i] = current;
+
+		if (!orig[i].empty() && g_keys.count(NormalizeKey(orig[i])))
 		{
-			const TCHAR *tr = _L(buf);
-			if (tr != buf)
+			const TCHAR *tr = g_translated ? _L(orig[i].c_str()) : orig[i].c_str();
+			if (current != tr)
 			{
 				MENUITEMINFOW mii;
 				ZeroMemory(&mii, sizeof(mii));
@@ -414,6 +492,7 @@ void LocalizeMenu(HMENU menu)
 				SetMenuItemInfoW(menu, i, TRUE, &mii);
 			}
 		}
+
 		HMENU sub = GetSubMenu(menu, i);
 		if (sub && sub != g_excludedMenu)
 			LocalizeMenu(sub);
