@@ -91,6 +91,7 @@
 #include <sys/stat.h>
 //#include "string_cache.h"
 #include "wlanguage.h"
+#include "wlocale.h"
 #include "../language.h"
 
 #include <commctrl.h>
@@ -1816,6 +1817,34 @@ static void GbSetSubmenuEnabled(HMENU parent, UINT containedCmd, bool enabled)
 	}
 }
 
+static std::vector<std::wstring> g_translationCodes;
+
+static void BuildTranslationsMenu(HMENU bar)
+{
+	g_translationCodes.clear();
+	LocaleSetExcludedMenu(NULL);
+	if (!bar)
+		return;
+	std::vector<LocaleLanguage> langs = LocaleAvailableLanguages();
+	if (langs.size() <= 1)
+		return;
+
+	HMENU sub = CreatePopupMenu();
+	int count = (int)langs.size();
+	if (count > MAX_TRANSLATIONS)
+		count = MAX_TRANSLATIONS;
+	for (int i = 0; i < count; ++i)
+	{
+		UINT flags = MF_STRING;
+		if (langs[i].code == LocaleGetLanguage())
+			flags |= MF_CHECKED;
+		AppendMenuW(sub, flags, ID_TRANSLATIONS_BASE + i, langs[i].name.c_str());
+		g_translationCodes.push_back(langs[i].code);
+	}
+	LocaleSetExcludedMenu(sub);
+	AppendMenuW(bar, MF_POPUP | MF_STRING, (UINT_PTR)sub, _L(_T("Translations")));
+}
+
 LRESULT CALLBACK WinProc(
 						 HWND hWnd,
 						 UINT uMsg,
@@ -1956,6 +1985,18 @@ LRESULT CALLBACK WinProc(
 		else if (cmd_id >= ID_FILE_LOAD0 && cmd_id < ID_FILE_LOAD0 + NUM_SAVE_BANKS * SAVE_SLOTS_PER_BANK)
 		{
 			FreezeUnfreezeSlot(cmd_id - ID_FILE_LOAD0, FALSE);
+			break;
+		}
+		else if (cmd_id >= ID_TRANSLATIONS_BASE && cmd_id < ID_TRANSLATIONS_BASE + (int)g_translationCodes.size())
+		{
+			std::wstring code = g_translationCodes[cmd_id - ID_TRANSLATIONS_BASE];
+			LocaleSetLanguage(code, GUI.hMenu);
+			lstrcpyn(GUI.UILanguage, code.c_str(), 64);
+			GUI.UILanguage[63] = TEXT('\0');
+			CheckMenuRadioItem(GUI.hMenu, ID_TRANSLATIONS_BASE,
+				ID_TRANSLATIONS_BASE + (int)g_translationCodes.size() - 1, cmd_id, MF_BYCOMMAND);
+			DrawMenuBar(GUI.hWnd);
+			WinSaveConfigFile();
 			break;
 		}
 		switch (cmd_id)
@@ -3845,6 +3886,13 @@ BOOL WinInit( HINSTANCE hInstance)
 		InsertMenu(GUI.hMenu,ID_OPTIONS_SETTINGS,MF_BYCOMMAND | MF_SEPARATOR | MF_ENABLED,NULL,NULL);
 	}
 #endif
+
+	LocaleLoad(GUI.UILanguage);
+	if (GUI.hMenu)
+	{
+		BuildTranslationsMenu(GUI.hMenu);
+		LocalizeMenu(GUI.hMenu);
+	}
 
     TCHAR buf [100];
     _stprintf(buf, TEXT("%s %s"), WINDOW_TITLE, TEXT(VERSION_DISPLAY));
@@ -5790,6 +5838,7 @@ INT_PTR CALLBACK DlgSoundConf(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 	switch(msg)
 	{
 	    case WM_INITDIALOG:
+	    	LocalizeDialog(hDlg);
         {
             WinRefreshDisplay();
 
@@ -6181,6 +6230,7 @@ INT_PTR CALLBACK DlgInfoProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 	switch(msg)
 	{
 	case WM_INITDIALOG:
+		LocalizeDialog(hDlg);
 		WinRefreshDisplay();
 		{
 			char temp[100];
@@ -6582,6 +6632,7 @@ INT_PTR CALLBACK DlgAboutProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 	switch(msg)
 	{
 	case WM_INITDIALOG:
+		LocalizeDialog(hDlg);
 		WinRefreshDisplay();
 		{
 			TCHAR buf[2048];//find better way of dealing.
@@ -6622,6 +6673,7 @@ INT_PTR CALLBACK DlgEmulatorHacksProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM
     switch (msg)
     {
     case WM_INITDIALOG:
+    	LocalizeDialog(hDlg);
 
         SendDlgItemMessage(hDlg, IDC_SFX_CLOCK_SPEED_SPIN, UDM_SETRANGE, 0, MAKELPARAM((short)400, (short)50));
         SendDlgItemMessage(hDlg, IDC_SFX_CLOCK_SPEED_SPIN, UDM_SETPOS, 0, Settings.SuperFXClockMultiplier);
@@ -6756,6 +6808,7 @@ INT_PTR CALLBACK DlgColorCorrectionProc(HWND hDlg, UINT msg, WPARAM wParam, LPAR
 	switch (msg)
 	{
 	case WM_INITDIALOG:
+		LocalizeDialog(hDlg);
 		prevColorCorrection = Settings.ColorCorrection;
 		prevAdjustmentsEnabled = Settings.AdjustmentsEnabled;
 		prevGamma = Settings.Gamma;
@@ -6847,6 +6900,7 @@ INT_PTR CALLBACK DlgEmulatorProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPar
 	switch(msg)
 	{
 	case WM_INITDIALOG:
+		LocalizeDialog(hDlg);
 		WinRefreshDisplay();
 		{
 			SetWindowText(hDlg, EMUSET_TITLE);
@@ -7490,6 +7544,7 @@ INT_PTR CALLBACK DlgMultiROMProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPar
 	switch(msg)
 	{
 	case WM_INITDIALOG:{
+		LocalizeDialog(hDlg);
 		WinRefreshDisplay();
 		TCHAR path[MAX_PATH];
 		SetCurrentDirectory(S9xGetDirectoryT(BIOS_DIR));
@@ -7703,6 +7758,7 @@ INT_PTR CALLBACK DlgOpenROMProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 		RedrawWindow(hDlg, NULL, NULL, RDW_ERASE | RDW_FRAME | RDW_INVALIDATE | RDW_ALLCHILDREN);
 		break;
 	case WM_INITDIALOG:
+		LocalizeDialog(hDlg);
 		WinRefreshDisplay();
 		{
 			initDone = false;
@@ -8560,6 +8616,7 @@ INT_PTR CALLBACK DlgNetConnect(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam
 	switch (msg)
 	{
 	case WM_INITDIALOG:
+		LocalizeDialog(hDlg);
 		WinRefreshDisplay();
 		SetWindowText(hDlg,NPCON_TITLE);
 		SetDlgItemText(hDlg,IDC_LABEL_SERVERADDY,NPCON_LABEL_SERVERADDY);
@@ -8932,6 +8989,7 @@ INT_PTR CALLBACK DlgNPOptions(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 	switch (msg)
 	{
 	case WM_INITDIALOG:
+		LocalizeDialog(hDlg);
 		WinRefreshDisplay();
 		SetWindowText(hDlg,NPOPT_TITLE);
 		SetDlgItemText(hDlg,IDC_LABEL_PORTNUM,NPOPT_LABEL_PORTNUM);
@@ -9103,6 +9161,7 @@ INT_PTR CALLBACK DlgKailleraServer(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lP
 	switch (msg)
 	{
 	case WM_INITDIALOG:
+		LocalizeDialog(hDlg);
 		SetDlgItemText(hDlg, IDC_KAILLERA_SERVER_NAME, TEXT("SuperSnes9x Kaillera Server"));
 		SetDlgItemInt(hDlg, IDC_KAILLERA_PORT, KAILLERA_SERVER_PORT, FALSE);
 		SetDlgItemInt(hDlg, IDC_KAILLERA_MAX_CLIENTS, 8, FALSE);
@@ -9575,6 +9634,7 @@ INT_PTR CALLBACK DlgKailleraClient(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lP
     switch (msg)
     {
     case WM_INITDIALOG:
+    	LocalizeDialog(hDlg);
         {
             WSADATA wsa;
             WSAStartup(MAKEWORD(2, 2), &wsa); // ensure winsock is ready for localhost ping
@@ -10229,6 +10289,7 @@ INT_PTR CALLBACK DlgFunky(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 	{
 
 	case WM_INITDIALOG:
+		LocalizeDialog(hDlg);
     {
         WinRefreshDisplay();
 
@@ -10989,6 +11050,7 @@ INT_PTR CALLBACK DlgInputConfig(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
     switch(msg)
 	{
 	case WM_INITDIALOG:
+		LocalizeDialog(hDlg);
 		s_inputConfigHwnd = hDlg;
 		WinRefreshDisplay();
 		SetWindowText(hDlg,INPUTCONFIG_TITLE);
@@ -11535,6 +11597,7 @@ INT_PTR CALLBACK DlgHotkeyConfig(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPar
     switch(msg)
 	{
 	case WM_INITDIALOG:
+		LocalizeDialog(hDlg);
 		WinRefreshDisplay();
 		SetWindowText(hDlg,HOTKEYS_TITLE);
 
@@ -11831,6 +11894,7 @@ static INT_PTR CALLBACK DlgSetValue(HWND hDlg, UINT msg, WPARAM wParam, LPARAM l
 	switch (msg)
 	{
 	case WM_INITDIALOG:
+		LocalizeDialog(hDlg);
 		result_buf = (char *)lParam;
 		SendDlgItemMessage(hDlg, IDC_SET_VALUE_EDIT, EM_SETLIMITTEXT, 2, 0);
 		return TRUE;
@@ -11966,6 +12030,7 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 	switch(msg)
 	{
 	case WM_INITDIALOG:
+		LocalizeDialog(hDlg);
 			WinRefreshDisplay();
 
 			ListView_SetExtendedListViewStyle(GetDlgItem(hDlg, IDC_CHEAT_LIST), LVS_EX_FULLROWSELECT|LVS_EX_CHECKBOXES);
@@ -12890,6 +12955,7 @@ INT_PTR CALLBACK DlgCheatMask(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 	switch (msg)
 	{
 	case WM_INITDIALOG:
+		LocalizeDialog(hDlg);
 	{
 		HWND hLV = GetDlgItem(hDlg, IDC_MASK_LIST);
 		ListView_SetExtendedListViewStyle(hLV, LVS_EX_FULLROWSELECT | LVS_EX_DOUBLEBUFFER);
@@ -13004,6 +13070,7 @@ INT_PTR CALLBACK DlgCheatSearch(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 	switch(msg)
 	{
 	case WM_INITDIALOG:
+		LocalizeDialog(hDlg);
 		{
 		WinRefreshDisplay();
 			if(val_type==0)
@@ -14041,6 +14108,7 @@ INT_PTR CALLBACK DlgCheatSearchAdd(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lP
 	switch(msg)
 	{
 	case WM_INITDIALOG:
+		LocalizeDialog(hDlg);
 		WinRefreshDisplay();
 		{
 			TCHAR buf [12];
@@ -14460,6 +14528,7 @@ INT_PTR CALLBACK DlgOpenMovie(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 	switch(msg)
 	{
 	case WM_INITDIALOG:
+		LocalizeDialog(hDlg);
 		WinRefreshDisplay();
 		{
 			SetCurrentDirectory(S9xGetDirectoryT(DEFAULT_DIR));
@@ -14585,6 +14654,7 @@ INT_PTR CALLBACK DlgCreateMovie(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 	switch(msg)
 	{
 	case WM_INITDIALOG:
+		LocalizeDialog(hDlg);
 		{
 			WinRefreshDisplay();
 			SetCurrentDirectory(S9xGetDirectoryT(DEFAULT_DIR));

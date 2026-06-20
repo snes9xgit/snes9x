@@ -7,6 +7,7 @@
 #include "CSaveLoadWithPreviewDlg.h"
 
 #include "wsnes9x.h"
+#include "wlocale.h"
 #include "../snes9x.h"
 #include "../ppu.h"
 #include "../display.h"
@@ -265,6 +266,7 @@ INT_PTR CALLBACK CSaveLoadWithPreviewDlg::DlgLoadWithPreview(HWND hDlg, UINT msg
     switch(msg)
     {
         case WM_INITDIALOG:
+        	LocalizeDialog(hDlg);
         {
             SetWindowLongPtr(hDlg, GWLP_USERDATA, lParam);
             dlg = (CSaveLoadWithPreviewDlg*)lParam;

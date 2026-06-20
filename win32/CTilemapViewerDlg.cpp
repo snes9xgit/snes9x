@@ -9,6 +9,7 @@
 #include "debug_viewer_common.h"
 #include "debug_viewer_export.h"
 #include "wsnes9x.h"
+#include "wlocale.h"
 #include "rsrc/resource.h"
 #include "../snes9x.h"
 #include "../memmap.h"
@@ -499,6 +500,7 @@ void ExportTilemapToPng(HWND hDlg) {
 INT_PTR CALLBACK DlgTilemapViewer(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam) {
     switch (msg) {
     case WM_INITDIALOG: {
+    	LocalizeDialog(hDlg);
         TMVState *st = new TMVState();
         st->selectedBG = 0;
         st->zoom = 1;
@@ -567,7 +569,7 @@ INT_PTR CALLBACK DlgTilemapViewer(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPa
         }
 
         HMENU hMenu = CreatePopupMenu();
-        AppendMenu(hMenu, MF_STRING, 1, _T("Export to PNG..."));
+        AppendMenu(hMenu, MF_STRING, 1, _L(_T("Export to PNG...")));
         int cmd = TrackPopupMenu(hMenu,
                                  TPM_LEFTALIGN | TPM_RIGHTBUTTON | TPM_RETURNCMD,
                                  x, y, 0, hDlg, NULL);

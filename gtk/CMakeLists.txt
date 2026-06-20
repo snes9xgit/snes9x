@@ -50,7 +50,7 @@ include(FindGettext)
 
 # Add any new language to this foreach loop
 foreach(lang de es fr_FR ja pl pt_BR ru sr@latin uk zh_CN)
-    GETTEXT_PROCESS_PO_FILES(${lang} ALL PO_FILES po/${lang}.po)
+    GETTEXT_PROCESS_PO_FILES(${lang} ALL PO_FILES ${CMAKE_CURRENT_SOURCE_DIR}/../i18n/${lang}.po)
     install(FILES ${CMAKE_BINARY_DIR}/${lang}.gmo
             DESTINATION ${LOCALEDIR}/${lang}/LC_MESSAGES
             RENAME ${CMAKE_PROJECT_NAME}.mo

@@ -105,6 +105,9 @@
     <ClInclude Include="wlanguage.h">
       <Filter>GUI</Filter>
     </ClInclude>
+    <ClInclude Include="wlocale.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
     <ClInclude Include="wsnes9x.h">
       <Filter>GUI</Filter>
     </ClInclude>
@@ -642,6 +645,9 @@
       <Filter>GUI</Filter>
     </ClCompile>
     <ClCompile Include="wconfig.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="wlocale.cpp">
       <Filter>GUI</Filter>
     </ClCompile>
     <ClCompile Include="win32.cpp">

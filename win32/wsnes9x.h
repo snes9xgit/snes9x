@@ -40,6 +40,9 @@
 #define NUM_SAVE_BANKS 10
 #define LAST_SAVE_BANK (NUM_SAVE_BANKS - 1)
 
+#define ID_TRANSLATIONS_BASE 47000
+#define MAX_TRANSLATIONS 100
+
 constexpr int ASPECT_WIDTH_4_3 = 256;
 constexpr int ASPECT_WIDTH_8_7 = 299;
 
@@ -290,6 +293,8 @@ struct sGUI {
     TCHAR BiosDir [_MAX_PATH];
 	TCHAR SatDir [_MAX_PATH];
 	bool LockDirectories;
+
+	TCHAR UILanguage [64];
 
     TCHAR RecentGames [MAX_RECENT_GAMES_LIST_SIZE][MAX_PATH];
     TCHAR RecentHostNames [MAX_RECENT_HOSTS_LIST_SIZE][MAX_PATH];

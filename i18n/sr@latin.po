@@ -2088,3 +2088,2527 @@ msgstr ""
 
 #~ msgid "Version Info"
 #~ msgstr "O programu"
+
+# === Win32 strings (added by i18n/extract_strings.py) ===
+
+#: win32/rsrc/snes9x.rc
+msgid "!= (Not Equal To)"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "(Not Available)"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "(not stored in movie file)"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "(restart required)"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "0 (off)"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "1 byte"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "1 frame"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "10x"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "112ms"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "11KHz"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "128ms"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "144ms"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "160ms"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "16KHz"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "16ms"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "176ms"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "192ms"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "1x"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "2 bytes"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "2 frames"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "208ms"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "22KHz"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "2x"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "3 bytes"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "3 frames"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "30KHz"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "32KHz"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "32ms"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "35KHz"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "3x"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "4 bytes"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "4 frames"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "44KHz"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "48KHz"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "48ms"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "4x"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "5x"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "64ms"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "6x"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "7x"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "80ms"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "8KHz"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "8x"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "96ms"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "9x"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "< (Less Than)"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "<-- MISMATCH !!!"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "<= (Less Than or Equal to)"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "= (Equal To)"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "> (Greater Than)"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid ">= (Greater than or Equal To)"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "About"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Achievement List"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Act as Server"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "Act As Server"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Add"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Add Cheat"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Add Snes9x to registry for supported file types"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Address"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Address:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Adjustments"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "All files"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "all of Snes9x's settings are stored in this file"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Allow executable logo override"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Allow Invalid VRAM Access"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Allow Left+Rt/Up+Dn"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "APP - Emulator Settings"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Apply"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Apply Adjustments"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Apply Cheats"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Ask for confirmation when saving/loading"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Ask Server to Pause when"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Author Info:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Auto Layer Transparency"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Auto update"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Auto-Assign"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "Auto-Detect"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Auto-Save S-RAM"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "Autofire"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "Autohold"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Automatic Input Rate"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Automatic, skip at most:"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "AVI file"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "AVI Recording"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Background Keyboard Hotkeys"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Background:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Bank +:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Bank -:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Bank:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Base Tile Addresses"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "BG1:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "BG2:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "BG3:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "BG4:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "BG:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Bilinear Filtering"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Binding"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "BIOS"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "BIOS files"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "BIOS:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Bit Depth:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Blend Hi-Res Images"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Blue means already mapped. Pink conflicts with hotkey.\nRed is reserved by Windows. Escape clears bindings.\nPress multiple keys for multi-bind. Delete removes last."
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "Blue means the hotkey is already mapped.\nPink means it conflicts with a game button.\nRed means it's reserved by Windows.\nA hotkey can be disabled using Escape."
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Blue means the hotkey is already mapped. Pink means it conflicts with a game button. Red means it's reserved by Windows. Escape clears bindings.\nPress multiple keys for multi-bind. Delete removes last."
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Browse"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Buffer Length"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Buffer Length:"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "Can't Open File"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Cancel"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Channel 1"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Channel 2"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Channel 3"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Channel 4"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Channel 5"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Channel 6"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Channel 7"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Channel 8"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Channels"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Chat"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Cheat Description:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Cheat Details"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Cheat Entry and Editor"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Cheat Search"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "Cheats Editor Dialog:"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "Cheats Search Dialog:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Choose Logo"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Clear"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Clear All"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Clear History"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Clear SRAM"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Clear Watches"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Client Settings"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "Clipping Windows:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Close"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "Code"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Color Correction"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Compare To"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Comparison Type"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Config file:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Connect"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Connect clients to: 127.0.0.1 (localhost) or your LAN IP"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Connect to Server"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Controller"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "Could not open movie file."
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "CPU Overclock:"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "crc32=%08X, name=%s"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "Current ROM:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Current ROM: CRC32=Unknown, Name=Unknown"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Current Value"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Custom ROM Open Dialog"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Custom Screen Mode"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Customize Hotkeys"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Customize Special Keys"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Data Size"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Data Type"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "DATE"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Defaults"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Delete"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Detect gamepad changes"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Dialog"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Direct3D Shader File"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "Directory"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Directory:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Disable Sprite Limit"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Disconnect"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Disconnect from Server"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Display Configuration"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Display messages inside SNES image"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Display Settings"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "DN LEFT"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "Dn Left"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "DN RIGHT"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "Dn Right"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "DOWN"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Dummy"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Dynamic Rate Control"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Edit Cheat Group"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Emulate Fullscreen"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "Emulation Settings"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Emulator Hacks"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Enable"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Enable All"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Enable Background Input"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Enable Color Correction (accurate SNES colors)"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Enable Triple Buffering"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Enabled"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "End Kaillera Game"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Enter a Value:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Enter Cheat Code:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Enter Cheat codes, one line at a time"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "enter host name"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Entered Address"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Entered Value"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "Error Info:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Exit"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Extend Height of SNES Image"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "Fast forward:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Fast-Forward"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "Fast-forward toggle:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "File"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "File not found."
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "First Sprite:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Fixed, always skip:"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "Force GD24"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "Force Header"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "Force HiROM"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "Force LoROM"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "Force mode 1"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "Force mode 2"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "Force No Header"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "Force not interleaved"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "Force NTSC"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "Force PAL"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Frame Advance"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Frame Advance mute"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "Frame advance:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Frame Skipping:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "frames"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "FRAMES"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "frames in auto-frame rate mode"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "frames in fast-forward mode"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "frames in Turbo mode"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Frames:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Full Screen"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Fullscreen"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Fullscreen Display Settings"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Fullscreen on ROM Open"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Game Boy Image"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Game Genie, Pro-Action Replay Codes"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "GB"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "GB Sprite Viewer"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "GB Tile Viewer"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "GB Tilemap Viewer"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "GB-PPU"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "General"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "goto"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "Graphics layer 1:"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "Graphics layer 2:"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "Graphics layer 3:"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "Graphics layer 4:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Group"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Hacks"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Hard Reset (Power Cycle)"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "Hard reset:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Hardcore Mode"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Header:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Help"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Hexadecimal"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Hi Res:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Hi-Res AVI Recording"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Hide Menubar"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Host Game"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Host Kaillera Server"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "Hotkey Configuration"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Icon 1"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Icon 2"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Icon 3"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Icon 4"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Index:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Input"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Input Configuration"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Input Rate:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Integer Scaling"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Interleave Mode:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "IP:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Join"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "Joypad #%d"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Joypad 1"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Joypad 2"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Joypad 3"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Joypad 4"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Joypad 5"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "Joypad swap:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Kaillera Netplay"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Kaillera Server"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Layout:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Leave Game"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "LEFT"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "LENGTH"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Length:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "List1"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Load #:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Load 0:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Load 1:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Load 2:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Load 3:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Load 4:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Load 5:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Load 6:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Load 7:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Load 8:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Load 9:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Load Dlg:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Load File:"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "Load from file:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Load Game"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Load Game Position"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Load MultiCart"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Load Watches"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Load with Preview"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "LOADED FROM MOVIE:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Location:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Login"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Maintain Aspect Ratio"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Map"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Map Addr:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Map Size:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Map:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Mask"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Masked Addresses"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Master Hotkey"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Max Clients:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Maximum Frame Rate Skip"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "MB (set to 0 to disable rewind support)"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Memory Type:"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "Misc. Recording Settings"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Mode:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Movie File"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "Movie frame count:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Movie Play"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "Movie read-only:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Movie Record"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Movie Stop"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "Movie's ROM:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Movie's ROM: CRC32=Unknown, Name=Unknown"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "Movies"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Mute"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Mute Sound"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Mute sound"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Netplay"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Netplay Options"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "New Value"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "No BIOS"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "Not a ROM"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Not connected."
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "not found"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "not found!"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "NTSC Filter Scanlines"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "OAM1:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "OAM2:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "OK"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "On-screen Display Size:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Online Servers"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Oops File"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Open MultiCart"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Open Read-Only"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "OpenGL/Vulkan Shader File"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Options"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Output Device:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Output Image Processing"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Output Method"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Override Tilemap"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "Page %d"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Palette (click to select offset)"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Palette:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Parameters"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Password:"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "Patch"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "Path: %s"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Pause When Inactive"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "Pause:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Play Movie"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Playback Rate"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Playback Rate:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Player Name:"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "Please enter a host name."
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "Please enter a valid value for a search!"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Port Number"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Port Settings"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "Press OK to start playing the movie."
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Preview"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Previous Value"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Progress1"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Publish Online"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Publish to master server list"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "Quit Snes9x:"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "Range Error"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Rate:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Re-record Count:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Re-sync all Clients Using Freeze File Now"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Recent Games"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Record Controllers"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Record from now"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Record from reset"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Record Movie"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Record Options"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Recording Date:"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "Recording Start"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Reduce Input Lag"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Refresh"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Refresh List"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Regular"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Remove"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Remove All"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "RERECORD"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "Reset speed:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "RetroAchievements"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "RetroAchievements Login"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Rewind buffer size:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Rewind granularity:"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "Rewind:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "RIGHT"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "ROM files or archives"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Rom Info"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "ROM Information"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "ROM:"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "Roms"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Run Ahead"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "s"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "S-PPU"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "Satellaview"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Save #:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Save 0:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Save 1:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Save 2:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Save 3:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Save 4:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Save 5:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Save 6:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Save 7:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Save 8:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Save 9:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Save Dlg:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Save File:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Save Game Position"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Save Memory Pack"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Save Other"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Save S-RAM Data"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Save Screenshot"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "Save screenshot"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Save SPC Data"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "Save to file:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Save Watches"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Save with Preview"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "Saves"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Screen"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "Screenshots"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Search"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Search Database"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Search for New Cheats"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "seconds after last change (0 disables auto-save)"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "SELECT"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Select 0:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Select 1:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Select 2:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Select 3:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Select 4:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Select 5:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Select 6:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Select 7:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Select 8:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Select 9:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Select File"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "Select Slot 0:"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "Select Slot 1:"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "Select Slot 2:"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "Select Slot 3:"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "Select Slot 4:"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "Select Slot 5:"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "Select Slot 6:"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "Select Slot 7:"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "Select Slot 8:"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "Select Slot 9:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Send"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Send ROM Image to Client on Connect"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Send ROM Image to Clients"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Send ROM Image to Clients Now"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Separate Echo Buffer from RAM"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Server Address"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Server is stopped."
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Server Lobby"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Server Name:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Server Settings"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Set Defaults"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Set Value"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Settings"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "SETTINGS NOT IN MOVIE; VERIFY:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "SGB Mix"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "SGB1"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "SGB2"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Show Audio Waveform"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Show Background"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Show Crosshair"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Show Frame Number"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Show Frame Rate"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Show Grid"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "Show pressed keys:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Show screen"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Show Screen Outline"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Show Sprites"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Show viewport"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Show Window"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Signed (+/-)"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "Size"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Skip at most"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "Skip frames +:"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "Skip frames -:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Skip rendering"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "Skip Rendering"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Slot +:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Slot -:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "SNES Image"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Snes9x - Unable to Initialize XAudio2"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "Snes9x Cheat Error"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "Snes9x Movie File"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Socket Port Number"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Soft Reset"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "Soft reset:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Sound Driver:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Sound Interpolation Type:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Sound Quality"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Sound Settings"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Source:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "SPC"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "SPCs"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "Speed +:"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "Speed -:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Spin1"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Spin2"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Spin3"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Spin4"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Sprite Viewer"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Sprite:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Sprites"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "Sprites layer:"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "SRAM"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "START"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Start Game"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Start Server"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Static"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Status"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Stretch Image"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "SuperFX Clock Speed %:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "SuperFX speed:"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "SuperScope pause:"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "SuperScope turbo:"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "SuperSnes9x"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "SuperSnes9x (x64)"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "SuperSnes9x - About"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "SuperSnes9x: DirectSound"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "SuperSnes9x: Information"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "SuperSnes9x: NetPlay Error"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "SuperSnes9x: Sound CPU Question"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "SuperSnes9x: WARNING!"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Swap A and B"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "Switch aspect Ratio:"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "Switch controllers:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Sync By Reset"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Sync Sound"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Sync Using Reset Game"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Synchronize with sound core"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "TempTurbo"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "Text file"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "The movie file is corrupt or in the wrong format."
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "The movie file was not found or could not be opened."
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Tile Addr:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Tile Data:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Tile Size:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Tile Viewer"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Tilemap"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Tilemap Viewer"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Tiles"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Timeout:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Toggle Achievements Images"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "Toggle backdrop:"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "Toggle cheats:"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "Toggle mute:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Transparency Effects"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "Transparency:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Tree1"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "Turbo"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "Turbo A mode:"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "Turbo B mode:"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "Turbo Down mode:"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "Turbo L mode:"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "Turbo Left mode:"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "Turbo R mode:"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "Turbo Right mode:"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "Turbo Select mode:"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "Turbo Start mode:"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "Turbo Up mode:"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "Turbo X mode:"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "Turbo Y mode:"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "Uncompressed ROM files"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "Unrecognized format."
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Unsigned (>=0)"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "Unsupported movie version."
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "UP"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "UP LEFT"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "Up Left"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "UP RIGHT"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "Up Right"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Update"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Use CGRAM"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Use DirectInput"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Use Dual Justifiers"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Use Konami Justifier"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Use M.A.C.S. Rifle"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Use Mouse in alternate port"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Use Multitaps (8-player)"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Use Shader"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Use SNES Joypad(s)"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Use SNES Mouse"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Use Super Multitap (5-player)"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Use Super Scope"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "User Agent: SuperSnes9x/1.63"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Username:"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "Value"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Value (hex):"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Video"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Video System:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Volume"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "VSync"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "WARNING: You don't have the right ROM loaded!"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Watch"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Welcome Message (MOTD)"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Width:"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Window Size"
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "WOG!"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "You have entered an out of range or invalid value for the new value"
+msgstr ""
+
+#: win32/wlanguage.h
+msgid "You need a different version of Snes9x to play this movie."
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Your password is only used to get an API token.\nIt is never stored."
+msgstr ""
+
+#: win32/rsrc/snes9x.rc
+msgid "Zoom:"
+msgstr ""
+
+# === Win32 strings (added by i18n/extract_strings.py) ===
+
+#: win32/CSpriteViewerDlg.cpp
+msgid "Export Selected to PNG"
+msgstr ""
+
+#: win32/CGBSpriteViewerDlg.cpp
+msgid "Export to PNG"
+msgstr ""
+
+#: win32/CSpriteViewerDlg.cpp
+msgid "Show All Objects"
+msgstr ""
+
+#: win32/CSpriteViewerDlg.cpp
+msgid "Show Only Selected Objects"
+msgstr ""
+
+#: win32/CSpriteViewerDlg.cpp
+msgid "Toggle Visibility"
+msgstr ""
+
+#: win32/wsnes9x.cpp
+msgid "Translations"
+msgstr ""

@@ -9,6 +9,7 @@
 #include "../apu/apu.h"
 #include "../sgb/sgb.h"
 #include "wsnes9x.h"
+#include "wlocale.h"
 #include <process.h>
 #include "dxerr.h"
 #include "commctrl.h"
@@ -86,6 +87,7 @@ INT_PTR CALLBACK DlgXAudio2InitError(HWND hDlg, UINT msg, WPARAM wParam, LPARAM 
 	switch (msg)
 	{
 	case WM_INITDIALOG:
+		LocalizeDialog(hDlg);
 		{
 			// display warning icon and set text of sys control (too long for resource)
 			HICON aIcn = LoadIcon(NULL, IDI_WARNING);

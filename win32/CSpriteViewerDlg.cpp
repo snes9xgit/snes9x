@@ -17,6 +17,7 @@
 #include "debug_viewer_common.h"
 #include "debug_viewer_export.h"
 #include "wsnes9x.h"
+#include "wlocale.h"
 #include "rsrc/resource.h"
 #include "../snes9x.h"
 #include "../memmap.h"
@@ -639,6 +640,7 @@ void ExportScreenToPng(HWND hDlg) {
 INT_PTR CALLBACK DlgSpriteViewer(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam) {
     switch (msg) {
     case WM_INITDIALOG: {
+    	LocalizeDialog(hDlg);
         SPVState *st = new SPVState();
         st->selected = 0;
         st->autoUpdate = true;
@@ -753,11 +755,11 @@ INT_PTR CALLBACK DlgSpriteViewer(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPar
             adjustKeyboardPos(hList);
             enum { CTX_TOGGLE = 1, CTX_ONLY = 2, CTX_ALL = 3, CTX_EXPORT = 4 };
             HMENU hMenu = CreatePopupMenu();
-            AppendMenu(hMenu, MF_STRING, CTX_TOGGLE, _T("Toggle Visibility"));
-            AppendMenu(hMenu, MF_STRING, CTX_ONLY,   _T("Show Only Selected Objects"));
-            AppendMenu(hMenu, MF_STRING, CTX_ALL,    _T("Show All Objects"));
+            AppendMenu(hMenu, MF_STRING, CTX_TOGGLE, _L(_T("Toggle Visibility")));
+            AppendMenu(hMenu, MF_STRING, CTX_ONLY,   _L(_T("Show Only Selected Objects")));
+            AppendMenu(hMenu, MF_STRING, CTX_ALL,    _L(_T("Show All Objects")));
             AppendMenu(hMenu, MF_SEPARATOR, 0, NULL);
-            AppendMenu(hMenu, MF_STRING, CTX_EXPORT, _T("Export Selected to PNG..."));
+            AppendMenu(hMenu, MF_STRING, CTX_EXPORT, _L(_T("Export Selected to PNG...")));
             int cmd = TrackPopupMenu(hMenu,
                                      TPM_LEFTALIGN | TPM_RIGHTBUTTON | TPM_RETURNCMD,
                                      x, y, 0, hDlg, NULL);
@@ -806,7 +808,7 @@ INT_PTR CALLBACK DlgSpriteViewer(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPar
         if (hSrc == hPrev) {
             adjustKeyboardPos(hPrev);
             HMENU hMenu = CreatePopupMenu();
-            AppendMenu(hMenu, MF_STRING, 1, _T("Export to PNG..."));
+            AppendMenu(hMenu, MF_STRING, 1, _L(_T("Export to PNG...")));
             int cmd = TrackPopupMenu(hMenu,
                                      TPM_LEFTALIGN | TPM_RIGHTBUTTON | TPM_RETURNCMD,
                                      x, y, 0, hDlg, NULL);
@@ -818,7 +820,7 @@ INT_PTR CALLBACK DlgSpriteViewer(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPar
         if (hSrc == hScrn) {
             adjustKeyboardPos(hScrn);
             HMENU hMenu = CreatePopupMenu();
-            AppendMenu(hMenu, MF_STRING, 1, _T("Export to PNG..."));
+            AppendMenu(hMenu, MF_STRING, 1, _L(_T("Export to PNG...")));
             int cmd = TrackPopupMenu(hMenu,
                                      TPM_LEFTALIGN | TPM_RIGHTBUTTON | TPM_RETURNCMD,
                                      x, y, 0, hDlg, NULL);
