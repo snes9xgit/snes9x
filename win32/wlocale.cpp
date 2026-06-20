@@ -23,7 +23,6 @@ static const struct
 	{L"de", L"Deutsch"},
 	{L"es", L"Espa\u00F1ol"},
 	{L"fr", L"Fran\u00E7ais"},
-	{L"fr_FR", L"Fran\u00E7ais"},
 	{L"it", L"Italiano"},
 	{L"ja", L"\u65E5\u672C\u8A9E"},
 	{L"ko", L"\uD55C\uAD6D\uC5B4"},

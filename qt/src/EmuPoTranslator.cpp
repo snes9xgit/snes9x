@@ -12,7 +12,6 @@ static const struct
     {u"de", u"Deutsch"},
     {u"es", u"Espa\u00F1ol"},
     {u"fr", u"Fran\u00E7ais"},
-    {u"fr_FR", u"Fran\u00E7ais"},
     {u"it", u"Italiano"},
     {u"ja", u"\u65E5\u672C\u8A9E"},
     {u"ko", u"\uD55C\uAD6D\uC5B4"},
