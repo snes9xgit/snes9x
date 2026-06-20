@@ -4725,3 +4725,1077 @@ msgstr "Traduções"
 #: win32/wsnes9x.cpp
 msgid "Language"
 msgstr "Idioma"
+
+# === Win32 strings (added by i18n/extract_strings.py) ===
+
+#: qt/src/SoundPanel.ui
+msgid "44100 Hz"
+msgstr "44100 Hz"
+
+#: qt/src/SoundPanel.ui
+msgid "48000 Hz"
+msgstr "48000 Hz"
+
+#: qt/src/DisplayPanel.ui
+msgid "4:3 - Classic display aspect"
+msgstr "4:3 - Aspecto clássico de exibição"
+
+#: qt/src/DisplayPanel.ui
+msgid "64:49 - NTSC aspect"
+msgstr "64:49 - Aspecto NTSC"
+
+#: qt/src/DisplayPanel.ui
+msgid "8:7 - Square pixels"
+msgstr "8:7 - Pixels quadrados"
+
+#: qt/src/EmulationPanel.ui
+msgid "<html><head/><body><p>A hack option. Only use this if you are running a third-party hack of a game that was designed for emulators and needs this.</p></body></html>"
+msgstr "<html><head/><body><p>Uma opção pra hacks. Só use isto se você estiver executando um hack de terceiros de um jogo que foi projetado para emuladores e precisa disto.</p></body></html>"
+
+#: qt/src/EmulationPanel.ui
+msgid "<html><head/><body><p>Allows more sprites to be displayed on the screen in an attempt to remove flickering.</p><p>Some games take advantage of this limit and use it to hide glitches, and removing the limit will make those visible.</p></body></html>"
+msgstr "<html><head/><body><p>Permite que mais imagens móveis sejam exibidas na tela numa tentativa de remover a tremulação.</p><p>Alguns jogos tiram proveito deste limite e o usam pra esconder falhas, e remover o limite as tornará visíveis.</p></body></html>"
+
+#: qt/src/EmulationPanel.ui
+msgid "<html><head/><body><p>Alternate sound filters can make the audio more crisp than the authentic gaussian filter.</p><p>The Cubic and Sinc filters provide the best improvement, but they can reveal some noise that would normally be hidden by the hardware.</p></body></html>"
+msgstr "<html><head/><body><p>Filtros de som alternativos podem deixar o áudio mais nítido do que o filtro gaussian autêntico.</p><p>Os filtros Cubic e Sinc fornecem a melhor melhoria, mas eles podem revelar algum ruído que normalmente ficaria escondido pelo hardware.</p></body></html>"
+
+#: qt/src/EmulationPanel.ui
+msgid "<html><head/><body><p>Amount of memory to use to enable the rewind function. The amount of time each MB gets you varies based on the complexity of the game. Set to 0 to disable rewind altogether and use less processor time.</p></body></html>"
+msgstr "<html><head/><body><p>Quantidade de memória a usar para ativar a função de rebobinação. A quantidade de tempo que cada MB oferece varia com base na complexidade do jogo. Defina como 0 para desativar completamente a rebobinação e usar menos tempo do processador.</p></body></html>"
+
+#: qt/src/EmulationPanel.ui
+msgid "<html><head/><body><p>Change the speed of the SuperFX chip. The SuperFX had some notoriously slow games, and this can be used to attempt to speed them up.</p></body></html>"
+msgstr "<html><head/><body><p>Muda a velocidade do chip SuperFX. O SuperFX teve alguns jogos notoriamente lentos, e isto pode ser usado pra tentar acelerá-los.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>Choose one of <span style=\" font-style:italic;\">Qt Software, Vulkan, or OpenGL</span>.</p><p>Qt Software will use the CPU to draw the display. Vulkan or OpenGL will use that respective graphics interface to draw the display.</p></body></html>"
+msgstr "<html><head/><body><p>Escolha um entre <span style=\" font-style:italic;\">Qt Software, Vulkan ou OpenGL</span>.</p><p>O Qt Software usará a CPU para desenhar a exibição. O Vulkan ou OpenGL usará a respectiva interface gráfica para desenhar a exibição.</p></body></html>"
+
+#: qt/src/ControllerPanel.ui
+msgid "<html><head/><body><p>Clear or swap sets of bindings between controllers.</p></body></html>"
+msgstr "<html><head/><body><p>Limpe ou troque conjuntos de vinculações entre os controles.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>Control how much the audio is stretched initially.</p><p><br/></p><p>Unless you know what you're doing, it's best to use the option above this to adjust it automatically.</p></body></html>"
+msgstr "<html><head/><body><p>Controla quanto o áudio é esticado inicialmente.</p><p><br/></p><p>A menos que você saiba o que está fazendo, é melhor usar a opção acima desta para ajustá-lo automaticamente.</p></body></html>"
+
+#: qt/src/FoldersPanel.ui
+msgid "<html><head/><body><p>Determines where to look for optional BIOS / boot ROM files (Super Game Boy boot ROM, BS-X.bin, etc).</p><p><span style=\" font-style:italic;\">ROM Folder</span> looks next to the loaded ROM.</p><p><span style=\" font-style:italic;\">Config Folder</span> uses a \"bios\" subfolder of the config folder.</p><p><span style=\" font-style:italic;\">Custom</span> uses an explicit path (default: \"Bios\" relative to the working directory).</p></body></html>"
+msgstr "<html><head/><body><p>Determina onde procurar os arquivos opcionais de BIOS / boot ROM (boot ROM do Super Game Boy, BS-X.bin, etc).</p><p><span style=\" font-style:italic;\">Pasta da ROM</span> procura ao lado da ROM carregada.</p><p><span style=\" font-style:italic;\">Pasta de configuração</span> usa uma subpasta \"bios\" da pasta de configuração.</p><p><span style=\" font-style:italic;\">Personalizado</span> usa um caminho explícito (padrão: \"Bios\" relativo ao diretório de trabalho).</p></body></html>"
+
+#: qt/src/FoldersPanel.ui
+msgid "<html><head/><body><p>Determines where to save these files.</p><p><span style=\" font-style:italic;\">ROM Folder</span> will always save to the same folder as the ROM.</p><p><span style=\" font-style:italic;\">Config Folder</span> will save to a subfolder of the config folder that is shown. If there is a snes9x.conf file next to your executable, Snes9x will operate in portable mode and the config folder will be the folder the executable is in.</p><p><span style=\" font-style:italic;\">Custom</span> allows you to specify exactly where to save these files.</p></body></html>"
+msgstr "<html><head/><body><p>Determina onde salvar estes arquivos.</p><p><span style=\" font-style:italic;\">Pasta da ROM</span> sempre salvará na mesma pasta que a ROM.</p><p><span style=\" font-style:italic;\">Pasta de configuração</span> salvará numa subpasta da pasta de configuração que é mostrada. Se houver um arquivo snes9x.conf ao lado do seu executável, o Snes9x operará no modo portátil e a pasta de configuração será a pasta em que o executável está.</p><p><span style=\" font-style:italic;\">Personalizado</span> permite que você especifique exatamente onde salvar estes arquivos.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>Erases all emulated sound output and just sends out silence.</p></body></html>"
+msgstr "<html><head/><body><p>Apaga toda a saída de som emulada e envia apenas silêncio.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>If after everything, you're still getting pops and crackles in audio, you can increase this value. However, it may cause noticeable distortion.</p></body></html>"
+msgstr "<html><head/><body><p>Se depois de tudo você ainda estiver tendo estalos e crepitações no áudio, você pode aumentar este valor. Porém, isto pode causar uma distorção perceptível.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>Master output volume during normal play. Moving this also drags the per-source SGB sliders so they stay in step.</p></body></html>"
+msgstr "<html><head/><body><p>Volume principal de saída durante o jogo normal. Mover isto também arrasta os controles deslizantes SGB por fonte para que eles fiquem em sincronia.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>Master output volume during turbo and rewind.</p></body></html>"
+msgstr "<html><head/><body><p>Volume principal de saída durante o turbo e a rebobinação.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>Mutes sound when using the turbo and rewind functions, which might be annoying to some users.</p></body></html>"
+msgstr "<html><head/><body><p>Silencia o som ao usar as funções de turbo e rebobinação, o que pode ser irritante para alguns usuários.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>On classic CRT televisions, some areas of the screen were covered by the bezel, so weren't used often in games. This option allows you to show that area, but it will usually be just black bars.</p></body></html>"
+msgstr "<html><head/><body><p>Nas televisões CRT clássicas, algumas áreas da tela eram cobertas pela moldura, então não eram muito usadas nos jogos. Esta opção permite que você mostre essa área, mas normalmente serão apenas barras pretas.</p></body></html>"
+
+#: qt/src/EmulationPanel.ui
+msgid "<html><head/><body><p>Original controllers may have had a small pin in the dpad preventing left and right or up and down from being pressed at the same time. This will allow that behavior if you're using a keyboard or device that can press those buttons at the same time. Some games will glitch when this is done.</p></body></html>"
+msgstr "<html><head/><body><p>Os controles originais podiam ter um pequeno pino no direcional impedindo que esquerda e direita ou cima e baixo fossem pressionados ao mesmo tempo. Isto permitirá esse comportamento se você estiver usando um teclado ou dispositivo que pode pressionar esses botões ao mesmo tempo. Alguns jogos apresentarão falhas quando isto é feito.</p></body></html>"
+
+#: qt/src/EmulationPanel.ui
+msgid "<html><head/><body><p>Override the frame rate of the emulated system. This can be used to run slightly faster or slower than usual, or to match the timer to your exact refresh rate.</p><p><br/></p><p>Set this to 0 to use whatever the emulated system uses.</p></body></html>"
+msgstr "<html><head/><body><p>Substitui a taxa de frames do sistema emulado. Isto pode ser usado para executar um pouco mais rápido ou mais lento que o normal, ou para combinar o cronômetro com a sua taxa de atualização exata.</p><p><br/></p><p>Defina isto como 0 para usar o que quer que o sistema emulado use.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>Selects the driver to output sound with.</p><p><span style=\" font-style:italic;\">Cubeb: </span>The recommended option.</p><p><span style=\" font-style:italic;\">SDL</span>: If Cubeb doesn't work.</p><p><span style=\" font-style:italic;\">PulseAudio:</span> Unix only. May have less latency.</p></body></html>"
+msgstr "<html><head/><body><p>Seleciona o driver com o qual emitir o som.</p><p><span style=\" font-style:italic;\">Cubeb: </span>A opção recomendada.</p><p><span style=\" font-style:italic;\">SDL</span>: Se o Cubeb não funcionar.</p><p><span style=\" font-style:italic;\">PulseAudio:</span> Apenas Unix. Pode ter menos latência.</p></body></html>"
+
+#: qt/src/FoldersPanel.ui
+msgid "<html><head/><body><p>Setting this to anything other than 0 will save the SRAM (internal game saves) file regularly. If it is set to to 0, it will only save when exiting Snes9x or changing games, and you will lose any progress since the last save if your device crashes.</p></body></html>"
+msgstr "<html><head/><body><p>Definir isto como qualquer valor diferente de 0 salvará o arquivo SRAM (saves internos do jogo) regularmente. Se for definido como 0, ele só salvará ao sair do Snes9x ou ao mudar de jogo, e você perderá qualquer progresso desde o último save se o seu dispositivo travar.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>SGB BIOS mix: GB channel volume. Active in SGB1/SGB2 BIOS mode; in BIOS-less mode this mirrors the Regular master, which is what actually scales GB output.</p></body></html>"
+msgstr "<html><head/><body><p>Mixagem da BIOS SGB: volume do canal GB. Ativo no modo BIOS SGB1/SGB2; no modo sem BIOS isto espelha o volume principal Regular, que é o que de fato ajusta a saída GB.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>SGB BIOS mix: SPC channel volume. Only active in SGB1/SGB2 BIOS mode — BIOS-less GB playback discards SPC output.</p></body></html>"
+msgstr "<html><head/><body><p>Mixagem da BIOS SGB: volume do canal SPC. Ativo apenas no modo BIOS SGB1/SGB2 — a reprodução GB sem BIOS descarta a saída SPC.</p></body></html>"
+
+#: qt/src/EmulationPanel.ui
+msgid "<html><head/><body><p>Skips rendering the specified amount of frames when using the fast-forward function. The higher this amount, the faster it goes.</p></body></html>"
+msgstr "<html><head/><body><p>Pula a renderização da quantidade especificada de frames ao usar a função de avanço rápido. Quanto maior essa quantidade, mais rápido ele vai.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>The buffer size for the emulator side of sound playback. Ideally, it should be about two frames worth of audio, or about 32ms at 60Hz. Latency will be half this value.</p></body></html>"
+msgstr "<html><head/><body><p>O tamanho do buffer do lado do emulador na reprodução de som. Idealmente, deveria ser cerca de dois frames de áudio, ou cerca de 32ms a 60Hz. A latência será metade deste valor.</p></body></html>"
+
+#: qt/src/ControllerPanel.ui
+msgid "<html><head/><body><p>The enumerated controller as seen by the SNES. Controller 1 will always be quot;Player 1quot; and so on, no matter what device is assigned to the controller ports.</p></body></html>"
+msgstr "<html><head/><body><p>O controle enumerado como visto pelo SNES. O Controle 1 sempre será o quot;Jogador 1quot; e assim por diante, não importa qual dispositivo seja atribuído às portas dos controles.</p></body></html>"
+
+#: qt/src/EmulationPanel.ui
+msgid "<html><head/><body><p>The number of frames between each rewind snapshot. More frames mean rewind can go back further and will rewind faster. </p></body></html>"
+msgstr "<html><head/><body><p>O número de frames entre cada snapshot de rebobinação. Mais frames significam que a rebobinação pode voltar mais longe e rebobinará mais rápido. </p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>The output playback rate on your computer. This is <span style=\" font-weight:700;\">not</span> the playback rate of the emulated system.</p><p>You should set this to match your operating system's sound server. It should almost always be 48000Hz.</p></body></html>"
+msgstr "<html><head/><body><p>A taxa de reprodução de saída no seu computador. Esta <span style=\" font-weight:700;\">não</span> é a taxa de reprodução do sistema emulado.</p><p>Você deve defini-la para combinar com o servidor de som do seu sistema operacional. Quase sempre deve ser 48000Hz.</p></body></html>"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "<html><head/><body><p>This box lists application shortcuts. There are 4 slots, so you can assign 4 different keys or buttons to one function.</p><p>To set a binding, click a box or highlight it with the keyboard and press Enter/Return. The box will show three dots quot;...quot;. Press the desired key or gamepad button to assign it to that box. The Escape key will clear the box.</p></body></html>"
+msgstr "<html><head/><body><p>Esta caixa lista os atalhos do aplicativo. Há 4 slots, então você pode atribuir 4 teclas ou botões diferentes a uma função.</p><p>Para definir uma vinculação, clique numa caixa ou destaque-a com o teclado e pressione Enter/Return. A caixa mostrará três pontos quot;...quot;. Pressione a tecla ou botão do gamepad desejado para atribuí-lo a essa caixa. A tecla Escape limpará a caixa.</p></body></html>"
+
+#: qt/src/ControllerPanel.ui
+msgid "<html><head/><body><p>This box lists keyboard keys and gamepad buttons mapped to the SNES controller. There are 4 slots, so you can assign 4 different keys or buttons to one SNES button.</p><p>To set a binding, click a box or highlight it with the keyboard and press Enter/Return. The box will show three dots quot;...quot;. Press the desired key or gamepad button to assign it to that box. The Escape key will clear the box.</p></body></html>"
+msgstr "<html><head/><body><p>Esta caixa lista as teclas do teclado e botões do gamepad mapeados para o controle do SNES. Há 4 slots, então você pode atribuir 4 teclas ou botões diferentes a um botão do SNES.</p><p>Para definir uma vinculação, clique numa caixa ou destaque-a com o teclado e pressione Enter/Return. A caixa mostrará três pontos quot;...quot;. Pressione a tecla ou botão do gamepad desejado para atribuí-lo a essa caixa. A tecla Escape limpará a caixa.</p></body></html>"
+
+#: qt/src/EmulationPanel.ui
+msgid "<html><head/><body><p>This controls how the program runs the emulated content at the correct speed.</p><p><span style=\" font-style:italic;\">Timer</span>: This sets a literal timer and shows emulated frames at the exact frame rate specified, or automatically matches the emulated system. It may not match your display's frame rate, which can cause judders.</p><p><span style=\" font-style:italic;\">Timer with Frameskipping</span>: The same as timer, except if your display has a lower refresh rate than the emulated system it will skip frames to keep up.</p><p><span style=\" font-style:italic;\">Sound Synchronization: </span>Assume the sound engine is outputting the sound at the correct speed and match the video output rate with it. This assumes your refresh rate is fairly close to the emulated system and you have vsync turned on.</p><p><span style=\" font-style:italic;\">None:</span> Don't attempt to slow emulation down. If you turn off vsync, this will run as fast as possible. If your display matches the emulated system's refresh rate closely, this with vsync enabled is generally the smoothest option aside from variable refresh rates with a timer.</p></body></html>"
+msgstr "<html><head/><body><p>Isto controla como o programa executa o conteúdo emulado na velocidade correta.</p><p><span style=\" font-style:italic;\">Cronômetro</span>: Isto define um cronômetro literal e mostra os frames emulados na taxa de frames exata especificada, ou combina automaticamente com o sistema emulado. Pode não combinar com a taxa de frames da sua tela, o que pode causar tremores.</p><p><span style=\" font-style:italic;\">Cronômetro com pulo de frames</span>: O mesmo que cronômetro, exceto que se a sua tela tiver uma taxa de atualização mais baixa que o sistema emulado, ela pulará frames para acompanhar.</p><p><span style=\" font-style:italic;\">Sincronização de som: </span>Assume que o motor de som está emitindo o som na velocidade correta e combina a taxa de saída de vídeo com ele. Isto assume que a sua taxa de atualização está razoavelmente próxima do sistema emulado e que você tem o vsync ativado.</p><p><span style=\" font-style:italic;\">Nenhum:</span> Não tenta desacelerar a emulação. Se você desativar o vsync, isto executará o mais rápido possível. Se a sua tela combinar de perto com a taxa de atualização do sistema emulado, isto com o vsync ativado é geralmente a opção mais suave, fora as taxas de atualização variáveis com um cronômetro.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>This option adapts <span style=\" font-style:italic;\">maintain aspect ratio</span> and scales the image in steps of integral scale, so game pixels are never spread across the borders of screen pixels.</p></body></html>"
+msgstr "<html><head/><body><p>Esta opção adapta a <span style=\" font-style:italic;\">manutenção da proporção de aspecto</span> e dimensiona a imagem em passos de escala integral, para que os pixels do jogo nunca sejam espalhados pelas bordas dos pixels da tela.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>This option affects how <span style=\" font-style:italic;\">maintain aspect ratio </span>works. </p><p><span style=\" font-style:italic;\">4:3 </span>will maintain a ratio where the screen is 1.333 times wider than high.</p><p>64:49 presents an idealized ratio where the display output is perfect, but is affected by NTSC compression.</p><p>1:1 Means pixels will be square. This will squeeze the image horizontally.</p></body></html>"
+msgstr "<html><head/><body><p>Esta opção afeta como a <span style=\" font-style:italic;\">manutenção da proporção de aspecto </span>funciona. </p><p><span style=\" font-style:italic;\">4:3 </span>manterá uma proporção em que a tela é 1.333 vezes mais larga do que alta.</p><p>64:49 apresenta uma proporção idealizada em que a saída de exibição é perfeita, mas é afetada pela compressão NTSC.</p><p>1:1 Significa que os pixels serão quadrados. Isto comprimirá a imagem horizontalmente.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>This option causes the audio to be slightly stretched to keep the latency even and to prevent underruns and overruns, which will cause pops and cracks in the audio.</p></body></html>"
+msgstr "<html><head/><body><p>Esta opção faz com que o áudio seja levemente esticado para manter a latência uniforme e evitar underruns e overruns, que causarão estalos e rachaduras no áudio.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>This option determines whether messages show up in the game display:</p><p>Onscreen will show a high resolution overlay when using <span style=\" font-style:italic;\">Vulkan</span> or <span style=\" font-style:italic;\">OpenGL</span>.</p><p>Inscreen will draw in a pixel font to the ingame display.</p><p>Don't display messages will show nothing.</p></body></html>"
+msgstr "<html><head/><body><p>Esta opção determina se as mensagens aparecem na exibição do jogo:</p><p>Na tela mostrará uma sobreposição de alta resolução ao usar <span style=\" font-style:italic;\">Vulkan</span> ou <span style=\" font-style:italic;\">OpenGL</span>.</p><p>Dentro da tela desenhará com uma fonte de pixel na exibição do jogo.</p><p>Não exibir mensagens não mostrará nada.</p></body></html>"
+
+#: qt/src/EmulationPanel.ui
+msgid "<html><head/><body><p>This option is explicitly for old AddMusic hacks. If you know you have one of those, you can enable this. Otherwise, leave it unchecked.</p></body></html>"
+msgstr "<html><head/><body><p>Esta opção é explicitamente para hacks antigos do AddMusic. Se você sabe que tem um desses, você pode ativar isto. Caso contrário, deixe desmarcado.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>This option keeps the proportions of the emulated display the same no matter how you change the size of the window.</p></body></html>"
+msgstr "<html><head/><body><p>Esta opção mantém as proporções da exibição emulada iguais não importa como você mude o tamanho da janela.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>This option only affects the size of the font and the icons shown when display messages are set to the <span style=\" font-style:italic;\">Onscreen</span> option.</p></body></html>"
+msgstr "<html><head/><body><p>Esta opção só afeta o tamanho da fonte e dos ícones mostrados quando as mensagens de exibição estão definidas na opção <span style=\" font-style:italic;\">Na tela</span>.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>This option only affects the SNES's high-resolution, 512 pixel wide mode. Few games use this. </p><p><span style=\" font-style:italic;\">Output directly</span> will use whatever is output directly, but when the game changes modes, the filtering will get sharper or blurrier and may be distracting.</p><p><span style=\" font-style:italic;\">Merge fields </span>will scale the image down and blend the extra pixels together. This is useful in games like Jurassic Park and Kirby's Dreamland 3, which use it for a transparency effect.</p><p><span style=\" font-style:italic;\">Scale low resolution </span>will double the width of low-resolution screens, so when the game switches between modes there isn't any distracting changes in filtering. This is useful when a game uses the high resolution mode often, like Seiken Densetsu 3.</p></body></html>"
+msgstr "<html><head/><body><p>Esta opção só afeta o modo de alta resolução do SNES, de 512 pixels de largura. Poucos jogos usam isto. </p><p><span style=\" font-style:italic;\">Sair diretamente</span> usará o que quer que seja emitido diretamente, mas quando o jogo muda de modo, a filtragem ficará mais nítida ou mais borrada e pode ser distrativa.</p><p><span style=\" font-style:italic;\">Unir os campos </span>reduzirá a imagem e mesclará os pixels extras. Isto é útil em jogos como Jurassic Park e Kirby's Dreamland 3, que o usam para um efeito de transparência.</p><p><span style=\" font-style:italic;\">Dimensionar a baixa resolução </span>dobrará a largura das telas de baixa resolução, então quando o jogo alterna entre os modos não há nenhuma mudança distrativa na filtragem. Isto é útil quando um jogo usa o modo de alta resolução com frequência, como Seiken Densetsu 3.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>This option prevents tearing in the output.</p></body></html>"
+msgstr "<html><head/><body><p>Esta opção evita rasgos na saída.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>This option stretches the emulated audio output to coincide exactly with your display's refresh rate. It automatically handles the <span style=\" font-style:italic;\">Input Rate</span> option.</p></body></html>"
+msgstr "<html><head/><body><p>Esta opção estica a saída de áudio emulada para coincidir exatamente com a taxa de atualização da sua tela. Ela lida automaticamente com a opção <span style=\" font-style:italic;\">Taxa de entrada</span>.</p></body></html>"
+
+#: qt/src/ControllerPanel.ui
+msgid "<html><head/><body><p>This option will use the SDL library to auto-configure gamepads. It will take the XBox mappings for the left D-pad and analog stick, as well as the the face buttons and L/R shoulder buttons, and assign them to relative locations on the first SNES controller.</p><p><br/></p><p>All gamepads will be assigned to player 1. If you need more players, disable this option and set up the mappings manually.</p></body></html>"
+msgstr "<html><head/><body><p>Esta opção usará a biblioteca SDL para configurar os gamepads automaticamente. Ela pegará os mapeamentos do XBox para o D-pad esquerdo e o analógico, assim como os botões frontais e os botões L/R, e os atribuirá a locais relativos no primeiro controle do SNES.</p><p><br/></p><p>Todos os gamepads serão atribuídos ao jogador 1. Se você precisar de mais jogadores, desative esta opção e configure os mapeamentos manualmente.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>This prevents the GPU from queuing up additional frames in advance, reducing the time it takes for the display to react to your input.</p></body></html>"
+msgstr "<html><head/><body><p>Isto evita que a GPU enfileire frames adicionais com antecedência, reduzindo o tempo que a tela leva para reagir à sua entrada.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>Turns on a bilinear smoothing filter to smooth out the pixels. This option won't work with a hardware shader enabled.</p></body></html>"
+msgstr "<html><head/><body><p>Ativa um filtro de suavização bilinear para suavizar os pixels. Esta opção não funcionará com um shader de hardware ativado.</p></body></html>"
+
+#: qt/src/ControllerPanel.ui
+msgid "<html><head/><body><p>Use this to automatically assign the default keyboard mapping or a detected controller to a set of bindings.</p><p>This uses the XInput controller protocol and maps it as close as possible to a SNES controller.</p></body></html>"
+msgstr "<html><head/><body><p>Use isto para atribuir automaticamente o mapeamento de teclado padrão ou um controle detectado a um conjunto de vinculações.</p><p>Isto usa o protocolo de controle XInput e o mapeia o mais próximo possível de um controle do SNES.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>Uses a hardware shader with <span style=\" font-style:italic;\">Vulkan</span> or <span style=\" font-style:italic;\">OpenGL</span> drivers. These can be either .glslp or .slangp preset files.</p><p>GLSL shaders (.glslp) can be downloaded from:</p><p><a href=\"https://github.com/libretro/glsl-shaders\"><span style=\" text-decoration: underline; color:#2980b9;\">https://github.com/libretro/glsl-shaders</span></a></p><p>Slang shaders (.slangp) can be downloaded from:</p><p><a href=\"https://github.com/libretro/slang-shaders\"><span style=\" text-decoration: underline; color:#2980b9;\">https://github.com/libretro/slang-shaders</span></a></p></body></html>"
+msgstr "<html><head/><body><p>Usa um shader de hardware com os drivers <span style=\" font-style:italic;\">Vulkan</span> ou <span style=\" font-style:italic;\">OpenGL</span>. Estes podem ser arquivos de predefinição .glslp ou .slangp.</p><p>Shaders GLSL (.glslp) podem ser baixados em:</p><p><a href=\"https://github.com/libretro/glsl-shaders\"><span style=\" text-decoration: underline; color:#2980b9;\">https://github.com/libretro/glsl-shaders</span></a></p><p>Shaders Slang (.slangp) podem ser baixados em:</p><p><a href=\"https://github.com/libretro/slang-shaders\"><span style=\" text-decoration: underline; color:#2980b9;\">https://github.com/libretro/slang-shaders</span></a></p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>When entering fullscreen mode, this option temporarily sets a number of other options to values that make variable refresh rate monitors that use FreeSync or GSync smoother.</p><p>Enables vsync.</p><p>Sets synchronization mode to timer and the frame rate to exactly that of the SNES.</p><p>Sets input rate to 32040Hz.</p></body></html>"
+msgstr "<html><head/><body><p>Ao entrar no modo de tela cheia, esta opção define temporariamente várias outras opções para valores que tornam mais suaves os monitores de taxa de atualização variável que usam FreeSync ou GSync.</p><p>Ativa o vsync.</p><p>Define o modo de sincronização como cronômetro e a taxa de frames exatamente como a do SNES.</p><p>Define a taxa de entrada como 32040Hz.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>When using <span style=\" font-style:italic;\">Vulkan</span>, this chooses the GPU you wish to render with.</p></body></html>"
+msgstr "<html><head/><body><p>Ao usar <span style=\" font-style:italic;\">Vulkan</span>, isto escolhe a GPU com a qual você deseja renderizar.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "Adjust input rate to display rate automatically"
+msgstr "Ajustar a taxa de entrada à taxa de exibição automaticamente"
+
+#: qt/src/DisplayPanel.ui
+msgid "Adjust settings for VRR in fullscreen mode"
+msgstr "Ajustar configurações para VRR no modo de tela cheia"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "All Files (*)"
+msgstr "Todos os Arquivos (*)"
+
+#: qt/src/EmulationPanel.ui
+msgid "Allow opposite D-pad directions simultaneously"
+msgstr "Permitir direções opostas no D-pad simultaneamente"
+
+#: qt/src/EmulationPanel.ui
+msgid "Alternate sound filter:"
+msgstr "Filtro de som alternativo:"
+
+#: qt/src/ControllerPanel.ui
+msgid "Auto-Assign Gamepad Buttons Using SDL Controller Map"
+msgstr "Atribuir Automaticamente os Botões do Gamepad Usando o Mapa de Controle SDL"
+
+#: qt/src/EmulationPanel.ui
+msgid "Auto-FastROM"
+msgstr "Auto-FastROM"
+
+#: qt/src/ControllerPanel.ui
+msgid "Automatically assign a controller's buttons to a slot"
+msgstr "Atribuir automaticamente os botões de um controle a um slot"
+
+#: qt/src/DisplayPanel.ui
+msgid "Bilinear filter"
+msgstr "Filtro bilinear"
+
+#: qt/src/ControllerPanel.ui
+msgid "Binding #1"
+msgstr "Vinculação #1"
+
+#: qt/src/ControllerPanel.ui
+msgid "Binding #2"
+msgstr "Vinculação #2"
+
+#: qt/src/ControllerPanel.ui
+msgid "Binding #3"
+msgstr "Vinculação #3"
+
+#: qt/src/ControllerPanel.ui
+msgid "Binding #4"
+msgstr "Vinculação #4"
+
+#: qt/src/ControllerPanel.cpp
+msgid "Binding Set #%1"
+msgstr "Conjunto de Vinculações #%1"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Change Backdrop Color"
+msgstr "Mudar a Cor do Fundo"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Cheats"
+msgstr "Trapaças"
+
+#: qt/src/CheatsDialog.cpp
+msgid "cheats.bml was not found."
+msgstr "cheats.bml não foi encontrado."
+
+#: qt/src/CheatsDialog.ui
+msgid "Check Database"
+msgstr "Verificar o Banco de Dados"
+
+#: qt/src/DisplayPanel.ui
+msgid "Choose a device to render output. If you have no integrated graphics, there will be only one choice."
+msgstr "Escolha um dispositivo para renderizar a saída. Se você não tiver gráficos integrados, haverá apenas uma escolha."
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Choose a State File"
+msgstr "Escolha um Arquivo de State"
+
+#: qt/src/ControllerPanel.cpp
+msgid "Clear All Controllers"
+msgstr "Limpar Todos os Controles"
+
+#: qt/src/ControllerPanel.cpp
+msgid "Clear Current Controller"
+msgstr "Limpar o Controle Atual"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Clear Recent Files"
+msgstr "Limpar Arquivos Recentes"
+
+#: qt/src/EmuSettingsWindow.ui
+msgid "Click on a setting to find out more info."
+msgstr "Clique numa configuração para descobrir mais informações."
+
+#: qt/src/FoldersPanel.ui
+msgid "Config Folder"
+msgstr "Pasta de Configuração"
+
+#: qt/src/FoldersPanel.cpp
+msgid "Config folder is %1"
+msgstr "A pasta de configuração é %1"
+
+#: qt/src/ControllerPanel.cpp
+msgid "Controller %1"
+msgstr "Controle %1"
+
+#: qt/src/ControllerPanel.ui
+msgid "Controller + Multitap"
+msgstr "Controle + Multitap"
+
+#: qt/src/ControllerPanel.ui
+msgid "Controller Ports:"
+msgstr "Portas dos Controles:"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Controllers"
+msgstr "Controles"
+
+#: qt/src/FoldersPanel.ui
+msgid "Custom Folder"
+msgstr "Pasta Personalizada"
+
+#: qt/src/FoldersPanel.ui
+msgid "Data Locations"
+msgstr "Locais dos Dados"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Decrease Current Save Slot"
+msgstr "Diminuir o Slot de Save Atual"
+
+#: qt/src/ControllerPanel.cpp
+msgid "Default Keyboard"
+msgstr "Teclado Padrão"
+
+#: qt/src/DisplayPanel.ui
+msgid "Device:"
+msgstr "Dispositivo:"
+
+#: qt/src/GeneralPanel.ui
+msgid "Disable screensaver"
+msgstr "Desativar a proteção de tela"
+
+#: qt/src/DisplayPanel.ui
+msgid "Display messages:"
+msgstr "Exibir mensagens:"
+
+#: qt/src/DisplayPanel.ui
+msgid "Display Output"
+msgstr "Saída de Exibição"
+
+#: qt/src/DisplayPanel.ui
+msgid "Don't display messages"
+msgstr "Não exibir mensagens"
+
+#: qt/src/DisplayPanel.ui
+msgid "Driver:"
+msgstr "Driver:"
+
+#: qt/src/ControllerPanel.ui
+msgid "Edit"
+msgstr "Editar"
+
+#: qt/src/EmulationPanel.ui
+msgid "Emulation Speed"
+msgstr "Velocidade da Emulação"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Enable Fast-Forward"
+msgstr "Ativar o Avanço Rápido"
+
+#: qt/src/DisplayPanel.ui
+msgid "Enable vsync"
+msgstr "Ativar o vsync"
+
+#: qt/src/FoldersPanel.ui
+msgid "Exports"
+msgstr "Exportações"
+
+#: qt/src/EmulationPanel.ui
+msgid "Fast-forward frame skip:"
+msgstr "Pulo de frames do avanço rápido:"
+
+#: qt/src/SoundPanel.ui
+msgid "Fast-Forward:"
+msgstr "Avanço Rápido:"
+
+#: qt/src/ControllerPanel.ui
+msgid "Form"
+msgstr "Formulário"
+
+#: qt/src/EmulationPanel.ui
+msgid "fps"
+msgstr "fps"
+
+#: qt/src/EmulationPanel.ui
+msgid "Frame rate:"
+msgstr "Taxa de frames:"
+
+#: qt/src/EmulationPanel.ui
+msgid "Frames between steps"
+msgstr "Frames entre os passos"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "From File"
+msgstr "Do Arquivo"
+
+#: qt/src/EmulationPanel.ui
+msgid "Gaussian"
+msgstr "Gaussian"
+
+#: qt/src/SoundPanel.ui
+msgid "GB:"
+msgstr "GB:"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Grab Mouse"
+msgstr "Capturar o Mouse"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Hard Reset"
+msgstr "Reset do Hardware"
+
+#: qt/src/EmulationPanel.ui
+msgid "High"
+msgstr "Alto"
+
+#: qt/src/DisplayPanel.ui
+msgid "High-resolution mode:"
+msgstr "Modo de alta resolução:"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Increase Current Save Slot"
+msgstr "Aumentar o Slot de Save Atual"
+
+#: qt/src/DisplayPanel.ui
+msgid "Inside the screen - Low resolution"
+msgstr "Dentro da tela - Baixa resolução"
+
+#: qt/src/CheatsDialog.cpp
+msgid "Invalid Cheat"
+msgstr "Trapaça Inválida"
+
+#: qt/src/DisplayPanel.ui
+msgid "Keep the screen at the requested proportions for width and height."
+msgstr "Manter a tela nas proporções solicitadas de largura e altura."
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Load State"
+msgstr "Carregar o State"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Load State from Current Slot"
+msgstr "Carregar o State do Slot Atual"
+
+#: qt/src/EmulationPanel.ui
+msgid "Low"
+msgstr "Baixo"
+
+#: qt/src/DisplayPanel.ui
+msgid "Maintain aspect ratio"
+msgstr "Manter a proporção de aspecto"
+
+#: qt/src/EmulationPanel.ui
+msgid "MB"
+msgstr "MB"
+
+#: qt/src/DisplayPanel.ui
+msgid "Merge the fields of the high-resolution lines"
+msgstr "Unir os campos das linhas de alta resolução"
+
+#: qt/src/DisplayPanel.ui
+msgid "Messages"
+msgstr "Mensagens"
+
+#: qt/src/ControllerPanel.ui
+msgid "Mouse + Controller"
+msgstr "Mouse + Controle"
+
+#: qt/src/SoundPanel.ui
+msgid "ms"
+msgstr "ms"
+
+#: qt/src/SoundPanel.ui
+msgid "Mute all sound"
+msgstr "Silenciar todo o som"
+
+#: qt/src/SoundPanel.ui
+msgid "Mute sound during turbo or rewind"
+msgstr "Silenciar o som durante o turbo ou a rebobinação"
+
+#: qt/src/CheatsDialog.cpp
+msgid "No cheats for the current game were found in the database."
+msgstr "Nenhuma trapaça para o jogo atual foi encontrada no banco de dados."
+
+#: qt/src/CheatsDialog.cpp
+msgid "No Cheats Found"
+msgstr "Nenhuma Trapaça Encontrada"
+
+#: qt/src/CheatsDialog.cpp
+msgid "No description"
+msgstr "Sem descrição"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "No recent files"
+msgstr "Sem arquivos recentes"
+
+#: qt/src/EmulationPanel.ui
+msgid "None - Run unthrottled, unless vsync is turned on"
+msgstr "Nenhum - Executar sem aceleração, a menos que o vsync esteja ativado"
+
+#: qt/src/ControllerPanel.ui
+msgid "One Controller"
+msgstr "Um Controle"
+
+#: qt/src/DisplayPanel.ui
+msgid "Onscreen - High resolution"
+msgstr "Na tela - Alta resolução"
+
+#: qt/src/DisplayPanel.ui
+msgid "Onscreen display size:"
+msgstr "Tamanho da exibição na tela:"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Open a ROM File"
+msgstr "Abrir um Arquivo de ROM"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Open File"
+msgstr "Abrir Arquivo"
+
+#: qt/src/FoldersPanel.cpp
+msgid "Open Folder"
+msgstr "Abrir Pasta"
+
+#: qt/src/EmuCanvasOpenGL.cpp
+msgid "OpenGL Driver"
+msgstr "Driver OpenGL"
+
+#: qt/src/EmulationPanel.ui
+msgid "Overclock:"
+msgstr "Overclock:"
+
+#: qt/src/GeneralPanel.ui
+msgid "Overlays"
+msgstr "Sobreposições"
+
+#: qt/src/FoldersPanel.ui
+msgid "Patches"
+msgstr "Patches"
+
+#: qt/src/GeneralPanel.ui
+msgid "Pause emulation when window is not focused"
+msgstr "Pausar a emulação quando a janela não estiver em foco"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Pause/Continue"
+msgstr "Pausar/Continuar"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Power Cycle Console"
+msgstr "Reiniciar o Console"
+
+#: qt/src/ShaderParametersDialog.cpp
+msgid "Preset name:"
+msgstr "Nome da predefinição:"
+
+#: qt/src/DisplayPanel.ui
+msgid "Prevent the display driver from getting too far ahead in order to reduce lag."
+msgstr "Impedir que o driver de exibição avance demais para reduzir o lag."
+
+#: qt/src/DisplayPanel.ui
+msgid "pt"
+msgstr "pt"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Load Slot 0"
+msgstr "Carregamento Rápido do Slot 0"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Load Slot 1"
+msgstr "Carregamento Rápido do Slot 1"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Load Slot 2"
+msgstr "Carregamento Rápido do Slot 2"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Load Slot 3"
+msgstr "Carregamento Rápido do Slot 3"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Load Slot 4"
+msgstr "Carregamento Rápido do Slot 4"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Load Slot 5"
+msgstr "Carregamento Rápido do Slot 5"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Load Slot 6"
+msgstr "Carregamento Rápido do Slot 6"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Load Slot 7"
+msgstr "Carregamento Rápido do Slot 7"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Load Slot 8"
+msgstr "Carregamento Rápido do Slot 8"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Load Slot 9"
+msgstr "Carregamento Rápido do Slot 9"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Save Slot 0"
+msgstr "Salvamento Rápido do Slot 0"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Save Slot 1"
+msgstr "Salvamento Rápido do Slot 1"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Save Slot 2"
+msgstr "Salvamento Rápido do Slot 2"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Save Slot 3"
+msgstr "Salvamento Rápido do Slot 3"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Save Slot 4"
+msgstr "Salvamento Rápido do Slot 4"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Save Slot 5"
+msgstr "Salvamento Rápido do Slot 5"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Save Slot 6"
+msgstr "Salvamento Rápido do Slot 6"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Save Slot 7"
+msgstr "Salvamento Rápido do Slot 7"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Save Slot 8"
+msgstr "Salvamento Rápido do Slot 8"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Save Slot 9"
+msgstr "Salvamento Rápido do Slot 9"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quit"
+msgstr "Sair"
+
+#: qt/src/SoundPanel.ui
+msgid "Regular:"
+msgstr "Regular:"
+
+#: qt/src/EmulationPanel.ui
+msgid "Remove the sprite limit"
+msgstr "Remover o limite das imagens móveis"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Reset to Default"
+msgstr "Redefinir para o Padrão"
+
+#: qt/src/EmuSettingsWindow.ui
+msgid "Restore all settings on the current page to their default values."
+msgstr "Restaurar todas as configurações da página atual para seus valores padrão."
+
+#: qt/src/EmuSettingsWindow.ui
+msgid "Restore Defaults"
+msgstr "Restaurar os Padrões"
+
+#: qt/src/EmulationPanel.ui
+msgid "Rewind buffer size (0 to disable):"
+msgstr "Tamanho do buffer de rebobinação (0 para desativar):"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "ROM Files (*.sfc *.smc *.bin *.fig *.msu *.zip)"
+msgstr "Arquivos de ROM (*.sfc *.smc *.bin *.fig *.msu *.zip)"
+
+#: qt/src/FoldersPanel.ui
+msgid "ROM Folder"
+msgstr "Pasta da ROM"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Run"
+msgstr "Executar"
+
+#: qt/src/ShaderParametersDialog.cpp
+msgid "Save"
+msgstr "Salvar"
+
+#: qt/src/ShaderParametersDialog.cpp
+msgid "Save As"
+msgstr "Salvar Como"
+
+#: qt/src/ShaderParametersDialog.cpp
+msgid "Save Shader Preset As"
+msgstr "Salvar a Predefinição do Shader Como"
+
+#: qt/src/FoldersPanel.ui
+msgid "Save SRAM to disk every:"
+msgstr "Salvar a SRAM no disco a cada:"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Save State"
+msgstr "Save State"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Save State to Current Slot"
+msgstr "Salvar o State no Slot Atual"
+
+#: qt/src/FoldersPanel.ui
+msgid "Save states"
+msgstr "Save states"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Save States (*.sst *.oops *.undo *.0?? *.1?? *.2?? *.3?? *.4?? *.5?? *.6?? *.7?? *.8?? *.9*)"
+msgstr "Save States (*.sst *.oops *.undo *.0?? *.1?? *.2?? *.3?? *.4?? *.5?? *.6?? *.7?? *.8?? *.9*)"
+
+#: qt/src/DisplayPanel.ui
+msgid "Scale normal resolution screens up"
+msgstr "Aumentar as telas de resolução normal"
+
+#: qt/src/DisplayPanel.ui
+msgid "Scaling and Aspect Ratio"
+msgstr "Dimensionamento e Proporção de Aspecto"
+
+#: qt/src/FoldersPanel.ui
+msgid "seconds"
+msgstr "segundos"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Seek to Frame"
+msgstr "Avançar para o Frame"
+
+#: qt/src/DisplayPanel.cpp
+msgid "Select a Folder"
+msgstr "Selecione uma Pasta"
+
+#: qt/src/DisplayPanel.ui
+msgid "Select the output driver."
+msgstr "Selecione o driver de saída."
+
+#: qt/src/ControllerPanel.ui
+msgid "Set"
+msgstr "Definir"
+
+#: qt/src/EmulationPanel.ui
+msgid "Set frame rate to 0 to automatically change based on PAL/NTSC and with interlacing on and off."
+msgstr "Defina a taxa de frames como 0 para mudar automaticamente com base em PAL/NTSC e com o entrelaçamento ativado e desativado."
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Set Size"
+msgstr "Definir o Tamanho"
+
+#: qt/src/DisplayPanel.cpp
+msgid "Shader Presets (*.slangp *.glslp)"
+msgstr "Predefinições de Shader (*.slangp *.glslp)"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Shader Settings"
+msgstr "Configurações do Shader"
+
+#: qt/src/GeneralPanel.ui
+msgid "Show fast-forward and pause icons"
+msgstr "Mostrar os ícones de avanço rápido e pausa"
+
+#: qt/src/DisplayPanel.ui
+msgid "Show overscan area"
+msgstr "Mostrar a área de overscan"
+
+#: qt/src/DisplayPanel.ui
+msgid "Show the areas on the top and bottom of the screen that are normally black and hidden by the TV. Some games will draw in these areas."
+msgstr "Mostrar as áreas no topo e no rodapé da tela que normalmente são pretas e escondidas pela TV. Alguns jogos desenharão nessas áreas."
+
+#: qt/src/GeneralPanel.ui
+msgid "Show the time"
+msgstr "Mostrar a hora"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Slot %1"
+msgstr "Slot %1"
+
+#: qt/src/DisplayPanel.ui
+msgid "Smooth screen output."
+msgstr "Suavizar a saída da tela."
+
+#: qt/src/ControllerPanel.ui
+msgid "SNES Controller 1"
+msgstr "Controle SNES 1"
+
+#: qt/src/ControllerPanel.ui
+msgid "SNES Controller 2"
+msgstr "Controle SNES 2"
+
+#: qt/src/ControllerPanel.ui
+msgid "SNES Controller 3 (Multitap)"
+msgstr "Controle SNES 3 (Multitap)"
+
+#: qt/src/ControllerPanel.ui
+msgid "SNES Controller 4 (Multitap)"
+msgstr "Controle SNES 4 (Multitap)"
+
+#: qt/src/ControllerPanel.ui
+msgid "SNES Controller 5 (Multitap)"
+msgstr "Controle SNES 5 (Multitap)"
+
+#: qt/src/DisplayPanel.ui
+msgid "Software Filters"
+msgstr "Filtros de Software"
+
+#: qt/src/SoundPanel.ui
+msgid "Sound Output"
+msgstr "Saída de Som"
+
+#: qt/src/SoundPanel.ui
+msgid "Sound Stretching"
+msgstr "Esticamento do Som"
+
+#: qt/src/EmulationPanel.ui
+msgid "Sound Synchronization - Wait on the sound buffer"
+msgstr "Sincronização de Som - Aguardar o buffer de som"
+
+#: qt/src/SoundPanel.ui
+msgid "SPC:"
+msgstr "SPC:"
+
+#: qt/src/EmulationPanel.ui
+msgid "Speed control method:"
+msgstr "Método de controle de velocidade:"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Start Recording"
+msgstr "Iniciar a Gravação"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Stop Recording"
+msgstr "Parar a Gravação"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Super Game Boy (SGB1)"
+msgstr "Super Game Boy (SGB1)"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Super Game Boy 2 (SGB2)"
+msgstr "Super Game Boy 2 (SGB2)"
+
+#: qt/src/EmulationPanel.ui
+msgid "SuperFX clock speed:"
+msgstr "Velocidade do clock do SuperFX:"
+
+#: qt/src/ControllerPanel.ui
+msgid "SuperScope + Controller"
+msgstr "SuperScope + Controle"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Swap Controllers 1 and 2"
+msgstr "Trocar os Controles 1 e 2"
+
+#: qt/src/ControllerPanel.ui
+msgid "Swap or clear groups of bindings"
+msgstr "Trocar ou limpar grupos de vinculações"
+
+#: qt/src/ControllerPanel.cpp
+msgid "Swap With"
+msgstr "Trocar Com"
+
+#: qt/src/GeneralPanel.ui
+msgid "Switch to fullscreen after opening a ROM"
+msgstr "Mudar para tela cheia após abrir uma ROM"
+
+#: qt/src/DisplayPanel.ui
+msgid "Sync the display to vertical retrace to eliminate tearing."
+msgstr "Sincronizar a exibição com o rastreamento vertical para eliminar os rasgos."
+
+#: qt/src/CheatsDialog.cpp
+msgid "The cheat you entered was not valid."
+msgstr "A trapaça que você inseriu não era válida."
+
+#: qt/src/EmuCanvasOpenGL.cpp
+msgid "The driver isn't using a specialized shader preset right now."
+msgstr "O driver não está usando uma predefinição de shader especializada no momento."
+
+#: qt/src/EmuMainWindow.cpp
+msgid "The language change will take effect after you restart SuperSnes9x."
+msgstr "A mudança de idioma terá efeito após você reiniciar o SuperSnes9x."
+
+#: qt/src/EmuCanvasVulkan.cpp
+msgid "The vulkan display driver hasn't properly loaded."
+msgstr "O driver de exibição vulkan não carregou corretamente."
+
+#: qt/src/DisplayPanel.ui
+msgid "This affects the rarely used 512-pixels-wide mode used by the SNES.\nFor games like Kirby 3 and Jurassic Park, choose the \"merge fields\" option.\nFor games like Seiken Densetsu 3 and Marvelous, choose the \"scale up\" option.\nOutput directly will cause the screen to change between the two modes and look weird."
+msgstr "Isto afeta o modo de 512 pixels de largura raramente usado pelo SNES.\nPara jogos como Kirby 3 e Jurassic Park, escolha a opção \"unir os campos\".\nPara jogos como Seiken Densetsu 3 e Marvelous, escolha a opção \"aumentar\".\nSair diretamente fará com que a tela mude entre os dois modos e pareça estranha."
+
+#: qt/src/EmuCanvasOpenGL.cpp
+msgid "This shader preset doesn't offer any configurable parameters."
+msgstr "Esta predefinição de shader não oferece nenhum parâmetro configurável."
+
+#: qt/src/EmulationPanel.ui
+msgid "Timer - Match the frame rate configured below"
+msgstr "Cronômetro - Combinar com a taxa de frames configurada abaixo"
+
+#: qt/src/EmulationPanel.ui
+msgid "Timer with Frame Skipping - Skip frames if needed"
+msgstr "Cronômetro com Pulo de Frames - Pular frames se necessário"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "To File"
+msgstr "Para o Arquivo"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle All Sound Channels"
+msgstr "Alternar Todos os Canais de Som"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle BG Layer 0"
+msgstr "Alternar a Camada BG 0"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle BG Layer 1"
+msgstr "Alternar a Camada BG 1"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle BG Layer 2"
+msgstr "Alternar a Camada BG 2"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle BG Layer 3"
+msgstr "Alternar a Camada BG 3"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle Fast-Forward"
+msgstr "Alternar o Avanço Rápido"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle Fullscreen"
+msgstr "Alternar a Tela Cheia"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle Sound Channel 1"
+msgstr "Alternar o Canal de Som 1"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle Sound Channel 2"
+msgstr "Alternar o Canal de Som 2"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle Sound Channel 3"
+msgstr "Alternar o Canal de Som 3"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle Sound Channel 4"
+msgstr "Alternar o Canal de Som 4"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle Sound Channel 5"
+msgstr "Alternar o Canal de Som 5"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle Sound Channel 6"
+msgstr "Alternar o Canal de Som 6"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle Sound Channel 7"
+msgstr "Alternar o Canal de Som 7"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle Sound Channel 8"
+msgstr "Alternar o Canal de Som 8"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle Sprites"
+msgstr "Alternar as Imagens Móveis"
+
+#: qt/src/ControllerPanel.ui
+msgid "Turbo A"
+msgstr "Turbo A"
+
+#: qt/src/ControllerPanel.ui
+msgid "Turbo B"
+msgstr "Turbo B"
+
+#: qt/src/ControllerPanel.ui
+msgid "Turbo L"
+msgstr "Turbo L"
+
+#: qt/src/ControllerPanel.ui
+msgid "Turbo R"
+msgstr "Turbo R"
+
+#: qt/src/ControllerPanel.ui
+msgid "Turbo X"
+msgstr "Turbo X"
+
+#: qt/src/ControllerPanel.ui
+msgid "Turbo Y"
+msgstr "Turbo Y"
+
+#: qt/src/ControllerPanel.ui
+msgid "Two Controllers"
+msgstr "Dois Controles"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Unable to create a %1 context. Attempting to use %2."
+msgstr "Não foi possível criar um contexto %1. Tentando usar %2."
+
+#: qt/src/CheatsDialog.cpp
+msgid "Unable to Open Cheats Database"
+msgstr "Não Foi Possível Abrir o Banco de Dados de Trapaças"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Unable to Start Display Driver"
+msgstr "Não Foi Possível Iniciar o Driver de Exibição"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Undo Load State"
+msgstr "Desfazer o Carregamento do State"
+
+#: qt/src/DisplayPanel.ui
+msgid "Use a hardware shader:"
+msgstr "Usar um shader de hardware:"
+
+#: qt/src/DisplayPanel.ui
+msgid "Use a selected .slangp or .glslp shader file. \n.slangp is supported by Vulkan and OpenGL. \n.glslp is supported by OpenGL."
+msgstr "Use um arquivo de shader .slangp ou .glslp selecionado. \n.slangp é suportado pelo Vulkan e OpenGL. \n.glslp é suportado pelo OpenGL."
+
+#: qt/src/EmulationPanel.ui
+msgid "Use a shadow echo buffer"
+msgstr "Usar um buffer de eco de sombra"
+
+#: qt/src/DisplayPanel.ui
+msgid "Use integer scaling"
+msgstr "Usar dimensionamento inteiro"
+
+#: qt/src/ControllerPanel.ui
+msgid "Use SDL to set up the D-pad, face buttons, and L/R. Other buttons may still be configured."
+msgstr "Use o SDL para configurar o D-pad, os botões frontais e L/R. Outros botões ainda podem ser configurados."
+
+#: qt/src/EmuMainWindow.cpp
+msgid "View"
+msgstr "Visualizar"
+
+#: qt/src/EmuCanvasVulkan.cpp
+msgid "Vulkan Driver"
+msgstr "Driver Vulkan"
+
+#: qt/src/DisplayPanel.ui
+msgid "When entering fullscreen mode, temporarily change other settings to use VRR (G-Sync or FreeSync) correctly."
+msgstr "Ao entrar no modo de tela cheia, mudar temporariamente outras configurações para usar o VRR (G-Sync ou FreeSync) corretamente."
+
+#: qt/src/DisplayPanel.ui
+msgid "When scaling up, only use integer multiples of the original height."
+msgstr "Ao aumentar, usar apenas múltiplos inteiros da altura original."

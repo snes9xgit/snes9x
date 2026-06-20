@@ -225,6 +225,7 @@ list(APPEND QT_GUI_SOURCES
     src/Snes9xController.cpp
     src/EmuSettingsWindow.cpp
     src/EmuConfig.cpp
+    src/EmuPoTranslator.cpp
     src/EmuBinding.cpp
     src/EmuCanvas.cpp
     src/BindingPanel.cpp

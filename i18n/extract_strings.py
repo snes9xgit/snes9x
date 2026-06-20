@@ -10,6 +10,7 @@ Usage:  python3 i18n/extract_strings.py [--dry-run]
 """
 
 import glob
+import html
 import os
 import re
 import sys
@@ -102,6 +103,17 @@ def extract_win32():
             add(unescape_c(m.group(1)), rel)
         for m in re.finditer(r'_L\(\s*"((?:[^"\\]|\\.)*)"', src):
             add(unescape_c(m.group(1)), rel)
+
+    for path in sorted(glob.glob(os.path.join(ROOT, "qt", "src", "*.cpp"))):
+        src = open(path, encoding="utf-8", errors="replace").read()
+        rel = "qt/src/" + os.path.basename(path)
+        for m in re.finditer(r'\btr\(\s*"((?:[^"\\]|\\.)*)"', src):
+            add(unescape_c(m.group(1)), rel)
+    for path in sorted(glob.glob(os.path.join(ROOT, "qt", "src", "*.ui"))):
+        src = open(path, encoding="utf-8", errors="replace").read()
+        rel = "qt/src/" + os.path.basename(path)
+        for m in re.finditer(r'<string(?![^>]*notr="true")(?:\s+[^>]*)?>([^<]*)</string>', src):
+            add(html.unescape(m.group(1)), rel)
 
     return keys
 

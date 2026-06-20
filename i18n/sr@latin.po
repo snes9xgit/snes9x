@@ -4614,3 +4614,1073 @@ msgstr "Prevodi"
 #: win32/wsnes9x.cpp
 msgid "Language"
 msgstr "Jezik"
+
+# === Win32 strings (added by i18n/extract_strings.py) ===
+
+#: qt/src/SoundPanel.ui
+msgid "44100 Hz"
+msgstr "44100 Hz"
+
+#: qt/src/SoundPanel.ui
+msgid "48000 Hz"
+msgstr "48000 Hz"
+
+#: qt/src/DisplayPanel.ui
+msgid "4:3 - Classic display aspect"
+msgstr "4:3 - Klasičan odnos prikaza"
+
+#: qt/src/DisplayPanel.ui
+msgid "64:49 - NTSC aspect"
+msgstr "64:49 - NTSC odnos"
+
+#: qt/src/DisplayPanel.ui
+msgid "8:7 - Square pixels"
+msgstr "8:7 - Kvadratni pikseli"
+
+#: qt/src/EmulationPanel.ui
+msgid "<html><head/><body><p>A hack option. Only use this if you are running a third-party hack of a game that was designed for emulators and needs this.</p></body></html>"
+msgstr "<html><head/><body><p>Opcija za hakove. Koristite je samo ako pokrećete hak igre treće strane koji je napravljen za emulatore i zahteva ovo.</p></body></html>"
+
+#: qt/src/EmulationPanel.ui
+msgid "<html><head/><body><p>Allows more sprites to be displayed on the screen in an attempt to remove flickering.</p><p>Some games take advantage of this limit and use it to hide glitches, and removing the limit will make those visible.</p></body></html>"
+msgstr "<html><head/><body><p>Omogućava prikaz više sprajtova na ekranu u pokušaju da se ukloni treperenje.</p><p>Neke igre koriste ovo ograničenje da bi sakrile greške, pa će uklanjanje ograničenja učiniti te greške vidljivim.</p></body></html>"
+
+#: qt/src/EmulationPanel.ui
+msgid "<html><head/><body><p>Alternate sound filters can make the audio more crisp than the authentic gaussian filter.</p><p>The Cubic and Sinc filters provide the best improvement, but they can reveal some noise that would normally be hidden by the hardware.</p></body></html>"
+msgstr "<html><head/><body><p>Alternativni zvučni filteri mogu učiniti zvuk jasnijim nego autentični Gaussian filter.</p><p>Cubic i Sinc filteri pružaju najbolje poboljšanje, ali mogu otkriti šum koji bi hardver inače sakrio.</p></body></html>"
+
+#: qt/src/EmulationPanel.ui
+msgid "<html><head/><body><p>Amount of memory to use to enable the rewind function. The amount of time each MB gets you varies based on the complexity of the game. Set to 0 to disable rewind altogether and use less processor time.</p></body></html>"
+msgstr "<html><head/><body><p>Količina memorije koja se koristi za funkciju premotavanja unazad. Količina vremena koju dobijate po svakom MB zavisi od složenosti igre. Postavite na 0 da potpuno onemogućite premotavanje i koristite manje procesorskog vremena.</p></body></html>"
+
+#: qt/src/EmulationPanel.ui
+msgid "<html><head/><body><p>Change the speed of the SuperFX chip. The SuperFX had some notoriously slow games, and this can be used to attempt to speed them up.</p></body></html>"
+msgstr "<html><head/><body><p>Menja brzinu SuperFX čipa. SuperFX je imao neke ozloglašeno spore igre, pa se ovo može koristiti za pokušaj njihovog ubrzavanja.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>Choose one of <span style=\" font-style:italic;\">Qt Software, Vulkan, or OpenGL</span>.</p><p>Qt Software will use the CPU to draw the display. Vulkan or OpenGL will use that respective graphics interface to draw the display.</p></body></html>"
+msgstr "<html><head/><body><p>Izaberite jedno od <span style=\" font-style:italic;\">Qt Software, Vulkan ili OpenGL</span>.</p><p>Qt Software će koristiti CPU za iscrtavanje prikaza. Vulkan ili OpenGL će koristiti odgovarajući grafički interfejs za iscrtavanje prikaza.</p></body></html>"
+
+#: qt/src/ControllerPanel.ui
+msgid "<html><head/><body><p>Clear or swap sets of bindings between controllers.</p></body></html>"
+msgstr "<html><head/><body><p>Obrišite ili zamenite skupove dodela tastera između kontrolera.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>Control how much the audio is stretched initially.</p><p><br/></p><p>Unless you know what you're doing, it's best to use the option above this to adjust it automatically.</p></body></html>"
+msgstr "<html><head/><body><p>Kontroliše koliko se zvuk inicijalno rasteže.</p><p><br/></p><p>Ako niste sigurni šta radite, najbolje je da koristite opciju iznad ove da se podesi automatski.</p></body></html>"
+
+#: qt/src/FoldersPanel.ui
+msgid "<html><head/><body><p>Determines where to look for optional BIOS / boot ROM files (Super Game Boy boot ROM, BS-X.bin, etc).</p><p><span style=\" font-style:italic;\">ROM Folder</span> looks next to the loaded ROM.</p><p><span style=\" font-style:italic;\">Config Folder</span> uses a \"bios\" subfolder of the config folder.</p><p><span style=\" font-style:italic;\">Custom</span> uses an explicit path (default: \"Bios\" relative to the working directory).</p></body></html>"
+msgstr "<html><head/><body><p>Određuje gde se traže opcionalni BIOS / boot ROM fajlovi (Super Game Boy boot ROM, BS-X.bin, itd).</p><p><span style=\" font-style:italic;\">ROM direktorijum</span> traži pored učitanog ROM-a.</p><p><span style=\" font-style:italic;\">Konfiguracijski direktorijum</span> koristi \"bios\" poddirektorijum konfiguracijskog direktorijuma.</p><p><span style=\" font-style:italic;\">Prilagođeno</span> koristi izričitu putanju (podrazumevano: \"Bios\" u odnosu na radni direktorijum).</p></body></html>"
+
+#: qt/src/FoldersPanel.ui
+msgid "<html><head/><body><p>Determines where to save these files.</p><p><span style=\" font-style:italic;\">ROM Folder</span> will always save to the same folder as the ROM.</p><p><span style=\" font-style:italic;\">Config Folder</span> will save to a subfolder of the config folder that is shown. If there is a snes9x.conf file next to your executable, Snes9x will operate in portable mode and the config folder will be the folder the executable is in.</p><p><span style=\" font-style:italic;\">Custom</span> allows you to specify exactly where to save these files.</p></body></html>"
+msgstr "<html><head/><body><p>Određuje gde se ovi fajlovi čuvaju.</p><p><span style=\" font-style:italic;\">ROM direktorijum</span> uvek čuva u isti direktorijum kao i ROM.</p><p><span style=\" font-style:italic;\">Konfiguracijski direktorijum</span> čuva u prikazani poddirektorijum konfiguracijskog direktorijuma. Ako postoji snes9x.conf fajl pored vaše izvršne datoteke, Snes9x će raditi u prenosivom režimu i konfiguracijski direktorijum će biti direktorijum u kome je izvršna datoteka.</p><p><span style=\" font-style:italic;\">Prilagođeno</span> vam omogućava da tačno odredite gde se ovi fajlovi čuvaju.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>Erases all emulated sound output and just sends out silence.</p></body></html>"
+msgstr "<html><head/><body><p>Briše sav emulirani zvučni izlaz i šalje samo tišinu.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>If after everything, you're still getting pops and crackles in audio, you can increase this value. However, it may cause noticeable distortion.</p></body></html>"
+msgstr "<html><head/><body><p>Ako i nakon svega i dalje čujete pucketanje i krčanje u zvuku, možete povećati ovu vrednost. Međutim, to može izazvati primetno izobličenje.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>Master output volume during normal play. Moving this also drags the per-source SGB sliders so they stay in step.</p></body></html>"
+msgstr "<html><head/><body><p>Glavna jačina izlaza tokom normalne igre. Pomeranje ovoga povlači i pojedinačne SGB klizače po izvoru kako bi ostali usklađeni.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>Master output volume during turbo and rewind.</p></body></html>"
+msgstr "<html><head/><body><p>Glavna jačina izlaza tokom turbo režima i premotavanja unazad.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>Mutes sound when using the turbo and rewind functions, which might be annoying to some users.</p></body></html>"
+msgstr "<html><head/><body><p>Priguši zvuk pri korišćenju turbo funkcije i premotavanja unazad, što nekim korisnicima može biti naporno.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>On classic CRT televisions, some areas of the screen were covered by the bezel, so weren't used often in games. This option allows you to show that area, but it will usually be just black bars.</p></body></html>"
+msgstr "<html><head/><body><p>Na klasičnim CRT televizorima, neki delovi ekrana bili su prekriveni okvirom, pa se nisu često koristili u igrama. Ova opcija vam omogućava da prikažete taj deo, ali to će obično biti samo crne trake.</p></body></html>"
+
+#: qt/src/EmulationPanel.ui
+msgid "<html><head/><body><p>Original controllers may have had a small pin in the dpad preventing left and right or up and down from being pressed at the same time. This will allow that behavior if you're using a keyboard or device that can press those buttons at the same time. Some games will glitch when this is done.</p></body></html>"
+msgstr "<html><head/><body><p>Originalni kontroleri možda su imali malu prečku u dpad-u koja je sprečavala istovremeno pritiskanje levo i desno ili gore i dole. Ovo će dozvoliti takvo ponašanje ako koristite tastaturu ili uređaj koji može istovremeno pritisnuti te tastere. Neke igre će se pokvariti kada se ovo uradi.</p></body></html>"
+
+#: qt/src/EmulationPanel.ui
+msgid "<html><head/><body><p>Override the frame rate of the emulated system. This can be used to run slightly faster or slower than usual, or to match the timer to your exact refresh rate.</p><p><br/></p><p>Set this to 0 to use whatever the emulated system uses.</p></body></html>"
+msgstr "<html><head/><body><p>Premošćava brzinu osvežavanja emuliranog sistema. Ovo se može koristiti za rad nešto brže ili sporije nego inače, ili da se tajmer uskladi sa vašom tačnom stopom osvežavanja.</p><p><br/></p><p>Postavite na 0 da koristite ono što emulirani sistem koristi.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>Selects the driver to output sound with.</p><p><span style=\" font-style:italic;\">Cubeb: </span>The recommended option.</p><p><span style=\" font-style:italic;\">SDL</span>: If Cubeb doesn't work.</p><p><span style=\" font-style:italic;\">PulseAudio:</span> Unix only. May have less latency.</p></body></html>"
+msgstr "<html><head/><body><p>Bira drajver za izlaz zvuka.</p><p><span style=\" font-style:italic;\">Cubeb: </span>Preporučena opcija.</p><p><span style=\" font-style:italic;\">SDL</span>: Ako Cubeb ne radi.</p><p><span style=\" font-style:italic;\">PulseAudio:</span> Samo Unix. Može imati manje kašnjenje.</p></body></html>"
+
+#: qt/src/FoldersPanel.ui
+msgid "<html><head/><body><p>Setting this to anything other than 0 will save the SRAM (internal game saves) file regularly. If it is set to to 0, it will only save when exiting Snes9x or changing games, and you will lose any progress since the last save if your device crashes.</p></body></html>"
+msgstr "<html><head/><body><p>Postavljanje na bilo šta osim 0 redovno će čuvati SRAM fajl (interne snimke igre). Ako je postavljeno na 0, čuvaće se samo pri izlasku iz Snes9x-a ili promeni igre, i izgubićete sav napredak od poslednjeg čuvanja ako se vaš uređaj sruši.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>SGB BIOS mix: GB channel volume. Active in SGB1/SGB2 BIOS mode; in BIOS-less mode this mirrors the Regular master, which is what actually scales GB output.</p></body></html>"
+msgstr "<html><head/><body><p>SGB BIOS miks: jačina GB kanala. Aktivno u SGB1/SGB2 BIOS režimu; u režimu bez BIOS-a ovo prati glavnu Regular jačinu, koja zapravo skalira GB izlaz.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>SGB BIOS mix: SPC channel volume. Only active in SGB1/SGB2 BIOS mode — BIOS-less GB playback discards SPC output.</p></body></html>"
+msgstr "<html><head/><body><p>SGB BIOS miks: jačina SPC kanala. Aktivno samo u SGB1/SGB2 BIOS režimu — GB reprodukcija bez BIOS-a odbacuje SPC izlaz.</p></body></html>"
+
+#: qt/src/EmulationPanel.ui
+msgid "<html><head/><body><p>Skips rendering the specified amount of frames when using the fast-forward function. The higher this amount, the faster it goes.</p></body></html>"
+msgstr "<html><head/><body><p>Preskače iscrtavanje navedenog broja frejmova pri korišćenju funkcije premotavanja unapred. Što je ovaj broj veći, to ide brže.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>The buffer size for the emulator side of sound playback. Ideally, it should be about two frames worth of audio, or about 32ms at 60Hz. Latency will be half this value.</p></body></html>"
+msgstr "<html><head/><body><p>Veličina bafera za reprodukciju zvuka na strani emulatora. U idealnom slučaju, trebalo bi da bude oko dva frejma zvuka, ili oko 32ms pri 60Hz. Kašnjenje će biti polovina ove vrednosti.</p></body></html>"
+
+#: qt/src/ControllerPanel.ui
+msgid "<html><head/><body><p>The enumerated controller as seen by the SNES. Controller 1 will always be quot;Player 1quot; and so on, no matter what device is assigned to the controller ports.</p></body></html>"
+msgstr "<html><head/><body><p>Numerisani kontroler kako ga vidi SNES. Kontroler 1 će uvek biti quot;Igrač 1quot; i tako dalje, bez obzira na to koji je uređaj dodeljen portovima kontrolera.</p></body></html>"
+
+#: qt/src/EmulationPanel.ui
+msgid "<html><head/><body><p>The number of frames between each rewind snapshot. More frames mean rewind can go back further and will rewind faster. </p></body></html>"
+msgstr "<html><head/><body><p>Broj frejmova između svakog snimka za premotavanje. Više frejmova znači da premotavanje može ići dalje unazad i da će premotavati brže. </p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>The output playback rate on your computer. This is <span style=\" font-weight:700;\">not</span> the playback rate of the emulated system.</p><p>You should set this to match your operating system's sound server. It should almost always be 48000Hz.</p></body></html>"
+msgstr "<html><head/><body><p>Izlazna stopa reprodukcije na vašem računaru. Ovo <span style=\" font-weight:700;\">nije</span> stopa reprodukcije emuliranog sistema.</p><p>Trebalo bi da je postavite tako da odgovara zvučnom serveru vašeg operativnog sistema. Skoro uvek bi trebalo da bude 48000Hz.</p></body></html>"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "<html><head/><body><p>This box lists application shortcuts. There are 4 slots, so you can assign 4 different keys or buttons to one function.</p><p>To set a binding, click a box or highlight it with the keyboard and press Enter/Return. The box will show three dots quot;...quot;. Press the desired key or gamepad button to assign it to that box. The Escape key will clear the box.</p></body></html>"
+msgstr "<html><head/><body><p>Ovo polje prikazuje prečice aplikacije. Postoje 4 slota, pa možete dodeliti 4 različita tastera ili dugmeta jednoj funkciji.</p><p>Da biste postavili dodelu, kliknite na polje ili ga označite tastaturom i pritisnite Enter/Return. Polje će prikazati tri tačke quot;...quot;. Pritisnite željeni taster ili dugme gejmpeda da ga dodelite tom polju. Taster Escape će obrisati polje.</p></body></html>"
+
+#: qt/src/ControllerPanel.ui
+msgid "<html><head/><body><p>This box lists keyboard keys and gamepad buttons mapped to the SNES controller. There are 4 slots, so you can assign 4 different keys or buttons to one SNES button.</p><p>To set a binding, click a box or highlight it with the keyboard and press Enter/Return. The box will show three dots quot;...quot;. Press the desired key or gamepad button to assign it to that box. The Escape key will clear the box.</p></body></html>"
+msgstr "<html><head/><body><p>Ovo polje prikazuje tastere tastature i dugmad gejmpeda mapirane na SNES kontroler. Postoje 4 slota, pa možete dodeliti 4 različita tastera ili dugmeta jednom SNES dugmetu.</p><p>Da biste postavili dodelu, kliknite na polje ili ga označite tastaturom i pritisnite Enter/Return. Polje će prikazati tri tačke quot;...quot;. Pritisnite željeni taster ili dugme gejmpeda da ga dodelite tom polju. Taster Escape će obrisati polje.</p></body></html>"
+
+#: qt/src/EmulationPanel.ui
+msgid "<html><head/><body><p>This controls how the program runs the emulated content at the correct speed.</p><p><span style=\" font-style:italic;\">Timer</span>: This sets a literal timer and shows emulated frames at the exact frame rate specified, or automatically matches the emulated system. It may not match your display's frame rate, which can cause judders.</p><p><span style=\" font-style:italic;\">Timer with Frameskipping</span>: The same as timer, except if your display has a lower refresh rate than the emulated system it will skip frames to keep up.</p><p><span style=\" font-style:italic;\">Sound Synchronization: </span>Assume the sound engine is outputting the sound at the correct speed and match the video output rate with it. This assumes your refresh rate is fairly close to the emulated system and you have vsync turned on.</p><p><span style=\" font-style:italic;\">None:</span> Don't attempt to slow emulation down. If you turn off vsync, this will run as fast as possible. If your display matches the emulated system's refresh rate closely, this with vsync enabled is generally the smoothest option aside from variable refresh rates with a timer.</p></body></html>"
+msgstr "<html><head/><body><p>Ovo kontroliše kako program pokreće emulirani sadržaj ispravnom brzinom.</p><p><span style=\" font-style:italic;\">Tajmer</span>: Ovo postavlja doslovni tajmer i prikazuje emulirane frejmove tačno navedenom brzinom, ili se automatski usklađuje sa emuliranim sistemom. Možda neće odgovarati brzini osvežavanja vašeg ekrana, što može izazvati trzanje.</p><p><span style=\" font-style:italic;\">Tajmer sa preskakanjem frejmova</span>: Isto kao tajmer, osim što ako vaš ekran ima nižu stopu osvežavanja od emuliranog sistema, preskakaće frejmove da bi održao korak.</p><p><span style=\" font-style:italic;\">Sinhronizacija zvuka: </span>Pretpostavlja da zvučni mehanizam emituje zvuk ispravnom brzinom i usklađuje brzinu video izlaza sa njim. Ovo pretpostavlja da je vaša stopa osvežavanja prilično blizu emuliranog sistema i da imate uključen vsync.</p><p><span style=\" font-style:italic;\">Nijedno:</span> Ne pokušava da uspori emulaciju. Ako isključite vsync, ovo će raditi najbrže moguće. Ako vaš ekran blisko odgovara stopi osvežavanja emuliranog sistema, ovo sa uključenim vsync-om je generalno najglatkija opcija, izuzev promenljivih stopa osvežavanja sa tajmerom.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>This option adapts <span style=\" font-style:italic;\">maintain aspect ratio</span> and scales the image in steps of integral scale, so game pixels are never spread across the borders of screen pixels.</p></body></html>"
+msgstr "<html><head/><body><p>Ova opcija prilagođava <span style=\" font-style:italic;\">očuvaj proporciju prizora</span> i skalira sliku u koracima celobrojnog razmera, tako da se pikseli igre nikada ne prostiru preko granica piksela ekrana.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>This option affects how <span style=\" font-style:italic;\">maintain aspect ratio </span>works. </p><p><span style=\" font-style:italic;\">4:3 </span>will maintain a ratio where the screen is 1.333 times wider than high.</p><p>64:49 presents an idealized ratio where the display output is perfect, but is affected by NTSC compression.</p><p>1:1 Means pixels will be square. This will squeeze the image horizontally.</p></body></html>"
+msgstr "<html><head/><body><p>Ova opcija utiče na to kako <span style=\" font-style:italic;\">očuvaj proporciju prizora </span>radi. </p><p><span style=\" font-style:italic;\">4:3 </span>će održati odnos u kome je ekran 1.333 puta širi nego viši.</p><p>64:49 predstavlja idealizovan odnos u kome je izlaz prikaza savršen, ali na njega utiče NTSC kompresija.</p><p>1:1 znači da će pikseli biti kvadratni. Ovo će sabiti sliku horizontalno.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>This option causes the audio to be slightly stretched to keep the latency even and to prevent underruns and overruns, which will cause pops and cracks in the audio.</p></body></html>"
+msgstr "<html><head/><body><p>Ova opcija čini da se zvuk neznatno rasteže kako bi se kašnjenje održalo ujednačenim i sprečili podlivi i prelivi, koji bi izazvali pucketanje i krčanje u zvuku.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>This option determines whether messages show up in the game display:</p><p>Onscreen will show a high resolution overlay when using <span style=\" font-style:italic;\">Vulkan</span> or <span style=\" font-style:italic;\">OpenGL</span>.</p><p>Inscreen will draw in a pixel font to the ingame display.</p><p>Don't display messages will show nothing.</p></body></html>"
+msgstr "<html><head/><body><p>Ova opcija određuje da li se poruke prikazuju na prikazu igre:</p><p>Na ekranu će prikazati sloj visoke rezolucije pri korišćenju <span style=\" font-style:italic;\">Vulkan</span> ili <span style=\" font-style:italic;\">OpenGL</span>.</p><p>Unutar ekrana će iscrtati pikselskim fontom na prikaz unutar igre.</p><p>Ne prikazuj poruke neće prikazati ništa.</p></body></html>"
+
+#: qt/src/EmulationPanel.ui
+msgid "<html><head/><body><p>This option is explicitly for old AddMusic hacks. If you know you have one of those, you can enable this. Otherwise, leave it unchecked.</p></body></html>"
+msgstr "<html><head/><body><p>Ova opcija je izričito za stare AddMusic hakove. Ako znate da imate jedan od njih, možete je omogućiti. U suprotnom, ostavite je neoznačenu.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>This option keeps the proportions of the emulated display the same no matter how you change the size of the window.</p></body></html>"
+msgstr "<html><head/><body><p>Ova opcija održava proporcije emuliranog prikaza istim bez obzira na to kako menjate veličinu prozora.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>This option only affects the size of the font and the icons shown when display messages are set to the <span style=\" font-style:italic;\">Onscreen</span> option.</p></body></html>"
+msgstr "<html><head/><body><p>Ova opcija utiče samo na veličinu fonta i ikona koje se prikazuju kada je prikaz poruka postavljen na opciju <span style=\" font-style:italic;\">Na ekranu</span>.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>This option only affects the SNES's high-resolution, 512 pixel wide mode. Few games use this. </p><p><span style=\" font-style:italic;\">Output directly</span> will use whatever is output directly, but when the game changes modes, the filtering will get sharper or blurrier and may be distracting.</p><p><span style=\" font-style:italic;\">Merge fields </span>will scale the image down and blend the extra pixels together. This is useful in games like Jurassic Park and Kirby's Dreamland 3, which use it for a transparency effect.</p><p><span style=\" font-style:italic;\">Scale low resolution </span>will double the width of low-resolution screens, so when the game switches between modes there isn't any distracting changes in filtering. This is useful when a game uses the high resolution mode often, like Seiken Densetsu 3.</p></body></html>"
+msgstr "<html><head/><body><p>Ova opcija utiče samo na SNES-ov režim visoke rezolucije, širine 512 piksela. Malo igara ga koristi. </p><p><span style=\" font-style:italic;\">Direktan izlaz</span> će koristiti ono što se direktno izlazi, ali kada igra promeni režim, filtriranje će postati oštrije ili mutnije i može odvlačiti pažnju.</p><p><span style=\" font-style:italic;\">Spoji polja </span>će smanjiti sliku i stopiti dodatne piksele. Ovo je korisno u igrama poput Jurassic Park i Kirby's Dreamland 3, koje to koriste za efekat providnosti.</p><p><span style=\" font-style:italic;\">Skaliraj nisku rezoluciju </span>će udvostručiti širinu ekrana niske rezolucije, tako da kada igra prebacuje između režima nema nikakvih ometajućih promena u filtriranju. Ovo je korisno kada igra često koristi režim visoke rezolucije, poput Seiken Densetsu 3.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>This option prevents tearing in the output.</p></body></html>"
+msgstr "<html><head/><body><p>Ova opcija sprečava cepanje slike u izlazu.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>This option stretches the emulated audio output to coincide exactly with your display's refresh rate. It automatically handles the <span style=\" font-style:italic;\">Input Rate</span> option.</p></body></html>"
+msgstr "<html><head/><body><p>Ova opcija rasteže emulirani zvučni izlaz da se tačno poklopi sa stopom osvežavanja vašeg ekrana. Automatski upravlja opcijom <span style=\" font-style:italic;\">Ulazna vrednost</span>.</p></body></html>"
+
+#: qt/src/ControllerPanel.ui
+msgid "<html><head/><body><p>This option will use the SDL library to auto-configure gamepads. It will take the XBox mappings for the left D-pad and analog stick, as well as the the face buttons and L/R shoulder buttons, and assign them to relative locations on the first SNES controller.</p><p><br/></p><p>All gamepads will be assigned to player 1. If you need more players, disable this option and set up the mappings manually.</p></body></html>"
+msgstr "<html><head/><body><p>Ova opcija će koristiti SDL biblioteku za automatsko podešavanje gejmpedova. Uzeće XBox mapiranja za levi D-pad i analognu palicu, kao i prednju dugmad i L/R ramena dugmad, i dodeliti ih relativnim lokacijama na prvom SNES kontroleru.</p><p><br/></p><p>Svi gejmpedovi će biti dodeljeni igraču 1. Ako vam treba više igrača, onemogućite ovu opciju i podesite mapiranja ručno.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>This prevents the GPU from queuing up additional frames in advance, reducing the time it takes for the display to react to your input.</p></body></html>"
+msgstr "<html><head/><body><p>Ovo sprečava GPU da unapred reda dodatne frejmove, smanjujući vreme potrebno da prikaz reaguje na vaš unos.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>Turns on a bilinear smoothing filter to smooth out the pixels. This option won't work with a hardware shader enabled.</p></body></html>"
+msgstr "<html><head/><body><p>Uključuje bilinearni filter za uglađivanje piksela. Ova opcija neće raditi kada je omogućen hardverski shader.</p></body></html>"
+
+#: qt/src/ControllerPanel.ui
+msgid "<html><head/><body><p>Use this to automatically assign the default keyboard mapping or a detected controller to a set of bindings.</p><p>This uses the XInput controller protocol and maps it as close as possible to a SNES controller.</p></body></html>"
+msgstr "<html><head/><body><p>Koristite ovo da automatski dodelite podrazumevano mapiranje tastature ili otkriven kontroler skupu dodela.</p><p>Ovo koristi XInput protokol kontrolera i mapira ga što je moguće bliže SNES kontroleru.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>Uses a hardware shader with <span style=\" font-style:italic;\">Vulkan</span> or <span style=\" font-style:italic;\">OpenGL</span> drivers. These can be either .glslp or .slangp preset files.</p><p>GLSL shaders (.glslp) can be downloaded from:</p><p><a href=\"https://github.com/libretro/glsl-shaders\"><span style=\" text-decoration: underline; color:#2980b9;\">https://github.com/libretro/glsl-shaders</span></a></p><p>Slang shaders (.slangp) can be downloaded from:</p><p><a href=\"https://github.com/libretro/slang-shaders\"><span style=\" text-decoration: underline; color:#2980b9;\">https://github.com/libretro/slang-shaders</span></a></p></body></html>"
+msgstr "<html><head/><body><p>Koristi hardverski shader sa <span style=\" font-style:italic;\">Vulkan</span> ili <span style=\" font-style:italic;\">OpenGL</span> drajverima. To mogu biti .glslp ili .slangp fajlovi sa postavkama.</p><p>GLSL shaderi (.glslp) mogu se preuzeti sa:</p><p><a href=\"https://github.com/libretro/glsl-shaders\"><span style=\" text-decoration: underline; color:#2980b9;\">https://github.com/libretro/glsl-shaders</span></a></p><p>Slang shaderi (.slangp) mogu se preuzeti sa:</p><p><a href=\"https://github.com/libretro/slang-shaders\"><span style=\" text-decoration: underline; color:#2980b9;\">https://github.com/libretro/slang-shaders</span></a></p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>When entering fullscreen mode, this option temporarily sets a number of other options to values that make variable refresh rate monitors that use FreeSync or GSync smoother.</p><p>Enables vsync.</p><p>Sets synchronization mode to timer and the frame rate to exactly that of the SNES.</p><p>Sets input rate to 32040Hz.</p></body></html>"
+msgstr "<html><head/><body><p>Pri ulasku u režim celog ekrana, ova opcija privremeno postavlja niz drugih opcija na vrednosti koje čine monitore sa promenljivom stopom osvežavanja koji koriste FreeSync ili GSync glatkijim.</p><p>Omogućava vsync.</p><p>Postavlja režim sinhronizacije na tajmer i brzinu osvežavanja tačno na onu SNES-a.</p><p>Postavlja ulaznu vrednost na 32040Hz.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>When using <span style=\" font-style:italic;\">Vulkan</span>, this chooses the GPU you wish to render with.</p></body></html>"
+msgstr "<html><head/><body><p>Pri korišćenju <span style=\" font-style:italic;\">Vulkan</span>, ovo bira GPU sa kojim želite da iscrtavate.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "Adjust input rate to display rate automatically"
+msgstr "Automatski prilagodi ulaznu vrednost stopi osvežavanja prikaza"
+
+#: qt/src/DisplayPanel.ui
+msgid "Adjust settings for VRR in fullscreen mode"
+msgstr "Prilagodi podešavanja za VRR u režimu celog ekrana"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "All Files (*)"
+msgstr "Svi fajlovi (*)"
+
+#: qt/src/EmulationPanel.ui
+msgid "Allow opposite D-pad directions simultaneously"
+msgstr "Dozvoli istovremene suprotne D-pad pravce"
+
+#: qt/src/EmulationPanel.ui
+msgid "Alternate sound filter:"
+msgstr "Alternativni zvučni filter:"
+
+#: qt/src/ControllerPanel.ui
+msgid "Auto-Assign Gamepad Buttons Using SDL Controller Map"
+msgstr "Automatski dodeli dugmad gejmpeda pomoću SDL mape kontrolera"
+
+#: qt/src/EmulationPanel.ui
+msgid "Auto-FastROM"
+msgstr "Auto-FastROM"
+
+#: qt/src/ControllerPanel.ui
+msgid "Automatically assign a controller's buttons to a slot"
+msgstr "Automatski dodeli dugmad kontrolera slotu"
+
+#: qt/src/DisplayPanel.ui
+msgid "Bilinear filter"
+msgstr "Bilinearni filter"
+
+#: qt/src/ControllerPanel.ui
+msgid "Binding #1"
+msgstr "Dodela #1"
+
+#: qt/src/ControllerPanel.ui
+msgid "Binding #2"
+msgstr "Dodela #2"
+
+#: qt/src/ControllerPanel.ui
+msgid "Binding #3"
+msgstr "Dodela #3"
+
+#: qt/src/ControllerPanel.ui
+msgid "Binding #4"
+msgstr "Dodela #4"
+
+#: qt/src/ControllerPanel.cpp
+msgid "Binding Set #%1"
+msgstr "Skup dodela #%1"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Change Backdrop Color"
+msgstr "Promeni boju pozadine"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Cheats"
+msgstr "Varanja"
+
+#: qt/src/CheatsDialog.cpp
+msgid "cheats.bml was not found."
+msgstr "cheats.bml nije pronađen."
+
+#: qt/src/CheatsDialog.ui
+msgid "Check Database"
+msgstr "Proveri bazu"
+
+#: qt/src/DisplayPanel.ui
+msgid "Choose a device to render output. If you have no integrated graphics, there will be only one choice."
+msgstr "Izaberite uređaj za iscrtavanje izlaza. Ako nemate integrisanu grafiku, postojaće samo jedan izbor."
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Choose a State File"
+msgstr "Izaberite fajl pozicije"
+
+#: qt/src/ControllerPanel.cpp
+msgid "Clear All Controllers"
+msgstr "Obriši sve kontrolere"
+
+#: qt/src/ControllerPanel.cpp
+msgid "Clear Current Controller"
+msgstr "Obriši trenutni kontroler"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Clear Recent Files"
+msgstr "Obriši poslednje fajlove"
+
+#: qt/src/EmuSettingsWindow.ui
+msgid "Click on a setting to find out more info."
+msgstr "Kliknite na podešavanje da saznate više informacija."
+
+#: qt/src/FoldersPanel.ui
+msgid "Config Folder"
+msgstr "Konfiguracijski direktorijum"
+
+#: qt/src/FoldersPanel.cpp
+msgid "Config folder is %1"
+msgstr "Konfiguracijski direktorijum je %1"
+
+#: qt/src/ControllerPanel.cpp
+msgid "Controller %1"
+msgstr "Kontroler %1"
+
+#: qt/src/ControllerPanel.ui
+msgid "Controller + Multitap"
+msgstr "Kontroler + Multitap"
+
+#: qt/src/ControllerPanel.ui
+msgid "Controller Ports:"
+msgstr "Portovi kontrolera:"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Controllers"
+msgstr "Kontroleri"
+
+#: qt/src/FoldersPanel.ui
+msgid "Custom Folder"
+msgstr "Prilagođeni direktorijum"
+
+#: qt/src/FoldersPanel.ui
+msgid "Data Locations"
+msgstr "Lokacije podataka"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Decrease Current Save Slot"
+msgstr "Smanji trenutni slot za snimanje"
+
+#: qt/src/ControllerPanel.cpp
+msgid "Default Keyboard"
+msgstr "Podrazumevana tastatura"
+
+#: qt/src/DisplayPanel.ui
+msgid "Device:"
+msgstr "Uređaj:"
+
+#: qt/src/GeneralPanel.ui
+msgid "Disable screensaver"
+msgstr "Onemogući čuvar ekrana"
+
+#: qt/src/DisplayPanel.ui
+msgid "Display messages:"
+msgstr "Prikaži poruke:"
+
+#: qt/src/DisplayPanel.ui
+msgid "Display Output"
+msgstr "Izlaz prikaza"
+
+#: qt/src/DisplayPanel.ui
+msgid "Don't display messages"
+msgstr "Ne prikazuj poruke"
+
+#: qt/src/DisplayPanel.ui
+msgid "Driver:"
+msgstr "Drajver:"
+
+#: qt/src/ControllerPanel.ui
+msgid "Edit"
+msgstr "Izmeni"
+
+#: qt/src/EmulationPanel.ui
+msgid "Emulation Speed"
+msgstr "Brzina emulacije"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Enable Fast-Forward"
+msgstr "Omogući premotavanje unapred"
+
+#: qt/src/DisplayPanel.ui
+msgid "Enable vsync"
+msgstr "Omogući vsync"
+
+#: qt/src/FoldersPanel.ui
+msgid "Exports"
+msgstr "Izvozi"
+
+#: qt/src/EmulationPanel.ui
+msgid "Fast-forward frame skip:"
+msgstr "Preskakanje frejmova pri premotavanju unapred:"
+
+#: qt/src/SoundPanel.ui
+msgid "Fast-Forward:"
+msgstr "Premotavanje unapred:"
+
+#: qt/src/ControllerPanel.ui
+msgid "Form"
+msgstr "Forma"
+
+#: qt/src/EmulationPanel.ui
+msgid "fps"
+msgstr "fps"
+
+#: qt/src/EmulationPanel.ui
+msgid "Frame rate:"
+msgstr "Brzina osvežavanja:"
+
+#: qt/src/EmulationPanel.ui
+msgid "Frames between steps"
+msgstr "Frejmova između koraka"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "From File"
+msgstr "Iz fajla"
+
+#: qt/src/EmulationPanel.ui
+msgid "Gaussian"
+msgstr "Gaussian"
+
+#: qt/src/SoundPanel.ui
+msgid "GB:"
+msgstr "GB:"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Grab Mouse"
+msgstr "Uhvati miša"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Hard Reset"
+msgstr "Hardverski reset"
+
+#: qt/src/EmulationPanel.ui
+msgid "High"
+msgstr "Visoka"
+
+#: qt/src/DisplayPanel.ui
+msgid "High-resolution mode:"
+msgstr "Režim visoke rezolucije:"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Increase Current Save Slot"
+msgstr "Uvećaj trenutni slot za snimanje"
+
+#: qt/src/DisplayPanel.ui
+msgid "Inside the screen - Low resolution"
+msgstr "Unutar ekrana - niska rezolucija"
+
+#: qt/src/CheatsDialog.cpp
+msgid "Invalid Cheat"
+msgstr "Nevažeće varanje"
+
+#: qt/src/DisplayPanel.ui
+msgid "Keep the screen at the requested proportions for width and height."
+msgstr "Održavaj ekran u zatraženim proporcijama širine i visine."
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Load State"
+msgstr "Učitaj poziciju"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Load State from Current Slot"
+msgstr "Učitaj poziciju iz trenutnog slota"
+
+#: qt/src/EmulationPanel.ui
+msgid "Low"
+msgstr "Niska"
+
+#: qt/src/DisplayPanel.ui
+msgid "Maintain aspect ratio"
+msgstr "Očuvaj proporciju prizora"
+
+#: qt/src/EmulationPanel.ui
+msgid "MB"
+msgstr "MB"
+
+#: qt/src/DisplayPanel.ui
+msgid "Merge the fields of the high-resolution lines"
+msgstr "Spoji polja linija visoke rezolucije"
+
+#: qt/src/DisplayPanel.ui
+msgid "Messages"
+msgstr "Poruke"
+
+#: qt/src/ControllerPanel.ui
+msgid "Mouse + Controller"
+msgstr "Miš + Kontroler"
+
+#: qt/src/SoundPanel.ui
+msgid "ms"
+msgstr "ms"
+
+#: qt/src/SoundPanel.ui
+msgid "Mute all sound"
+msgstr "Priguši sav zvuk"
+
+#: qt/src/SoundPanel.ui
+msgid "Mute sound during turbo or rewind"
+msgstr "Priguši zvuk tokom turbo režima ili premotavanja unazad"
+
+#: qt/src/CheatsDialog.cpp
+msgid "No cheats for the current game were found in the database."
+msgstr "U bazi nisu pronađena varanja za trenutnu igru."
+
+#: qt/src/CheatsDialog.cpp
+msgid "No Cheats Found"
+msgstr "Nisu pronađena varanja"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "No recent files"
+msgstr "Nema poslednjih fajlova"
+
+#: qt/src/EmulationPanel.ui
+msgid "None - Run unthrottled, unless vsync is turned on"
+msgstr "Nijedno - radi bez ograničavanja, osim ako je vsync uključen"
+
+#: qt/src/ControllerPanel.ui
+msgid "One Controller"
+msgstr "Jedan kontroler"
+
+#: qt/src/DisplayPanel.ui
+msgid "Onscreen - High resolution"
+msgstr "Na ekranu - visoka rezolucija"
+
+#: qt/src/DisplayPanel.ui
+msgid "Onscreen display size:"
+msgstr "Veličina prikaza na ekranu:"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Open a ROM File"
+msgstr "Otvori ROM fajl"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Open File"
+msgstr "Otvori fajl"
+
+#: qt/src/FoldersPanel.cpp
+msgid "Open Folder"
+msgstr "Otvori direktorijum"
+
+#: qt/src/EmuCanvasOpenGL.cpp
+msgid "OpenGL Driver"
+msgstr "OpenGL drajver"
+
+#: qt/src/EmulationPanel.ui
+msgid "Overclock:"
+msgstr "Overklok:"
+
+#: qt/src/GeneralPanel.ui
+msgid "Overlays"
+msgstr "Slojevi"
+
+#: qt/src/FoldersPanel.ui
+msgid "Patches"
+msgstr "Zakrpe"
+
+#: qt/src/GeneralPanel.ui
+msgid "Pause emulation when window is not focused"
+msgstr "Pauziraj emulaciju kada prozor nije u fokusu"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Pause/Continue"
+msgstr "Pauza/Nastavi"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Power Cycle Console"
+msgstr "Hladno pokretanje konzole"
+
+#: qt/src/ShaderParametersDialog.cpp
+msgid "Preset name:"
+msgstr "Naziv postavke:"
+
+#: qt/src/DisplayPanel.ui
+msgid "Prevent the display driver from getting too far ahead in order to reduce lag."
+msgstr "Spreči drajver prikaza da ode predaleko unapred kako bi se smanjilo kašnjenje."
+
+#: qt/src/DisplayPanel.ui
+msgid "pt"
+msgstr "pt"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Load Slot 0"
+msgstr "Brzo učitaj slot 0"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Load Slot 1"
+msgstr "Brzo učitaj slot 1"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Load Slot 2"
+msgstr "Brzo učitaj slot 2"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Load Slot 3"
+msgstr "Brzo učitaj slot 3"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Load Slot 4"
+msgstr "Brzo učitaj slot 4"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Load Slot 5"
+msgstr "Brzo učitaj slot 5"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Load Slot 6"
+msgstr "Brzo učitaj slot 6"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Load Slot 7"
+msgstr "Brzo učitaj slot 7"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Load Slot 8"
+msgstr "Brzo učitaj slot 8"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Load Slot 9"
+msgstr "Brzo učitaj slot 9"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Save Slot 0"
+msgstr "Brzo snimi slot 0"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Save Slot 1"
+msgstr "Brzo snimi slot 1"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Save Slot 2"
+msgstr "Brzo snimi slot 2"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Save Slot 3"
+msgstr "Brzo snimi slot 3"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Save Slot 4"
+msgstr "Brzo snimi slot 4"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Save Slot 5"
+msgstr "Brzo snimi slot 5"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Save Slot 6"
+msgstr "Brzo snimi slot 6"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Save Slot 7"
+msgstr "Brzo snimi slot 7"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Save Slot 8"
+msgstr "Brzo snimi slot 8"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Save Slot 9"
+msgstr "Brzo snimi slot 9"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quit"
+msgstr "Izlaz"
+
+#: qt/src/DisplayPanel.ui
+msgid "Reduce input lag"
+msgstr "Smanji kašnjenje unosa"
+
+#: qt/src/SoundPanel.ui
+msgid "Regular:"
+msgstr "Regular:"
+
+#: qt/src/EmulationPanel.ui
+msgid "Remove the sprite limit"
+msgstr "Ukloni ograničenje sprajtova"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Reset to Default"
+msgstr "Vrati na podrazumevano"
+
+#: qt/src/EmuSettingsWindow.ui
+msgid "Restore all settings on the current page to their default values."
+msgstr "Vrati sva podešavanja na trenutnoj stranici na njihove podrazumevane vrednosti."
+
+#: qt/src/EmuSettingsWindow.ui
+msgid "Restore Defaults"
+msgstr "Vrati podrazumevano"
+
+#: qt/src/EmulationPanel.ui
+msgid "Rewind buffer size (0 to disable):"
+msgstr "Veličina bafera za premotavanje (0 za onemogućavanje):"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "ROM Files (*.sfc *.smc *.bin *.fig *.msu *.zip)"
+msgstr "ROM fajlovi (*.sfc *.smc *.bin *.fig *.msu *.zip)"
+
+#: qt/src/FoldersPanel.ui
+msgid "ROM Folder"
+msgstr "ROM direktorijum"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Run"
+msgstr "Pokreni"
+
+#: qt/src/ShaderParametersDialog.cpp
+msgid "Save"
+msgstr "Snimi"
+
+#: qt/src/ShaderParametersDialog.cpp
+msgid "Save As"
+msgstr "Snimi kao"
+
+#: qt/src/ShaderParametersDialog.cpp
+msgid "Save Shader Preset As"
+msgstr "Snimi shader postavku kao"
+
+#: qt/src/FoldersPanel.ui
+msgid "Save SRAM to disk every:"
+msgstr "Snimi SRAM na disk svakih:"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Save State to Current Slot"
+msgstr "Snimi poziciju u trenutni slot"
+
+#: qt/src/FoldersPanel.ui
+msgid "Save states"
+msgstr "Pozicije"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Save States (*.sst *.oops *.undo *.0?? *.1?? *.2?? *.3?? *.4?? *.5?? *.6?? *.7?? *.8?? *.9*)"
+msgstr "Pozicije (*.sst *.oops *.undo *.0?? *.1?? *.2?? *.3?? *.4?? *.5?? *.6?? *.7?? *.8?? *.9*)"
+
+#: qt/src/DisplayPanel.ui
+msgid "Scale normal resolution screens up"
+msgstr "Uvećaj ekrane normalne rezolucije"
+
+#: qt/src/DisplayPanel.ui
+msgid "Scaling and Aspect Ratio"
+msgstr "Skaliranje i proporcija prizora"
+
+#: qt/src/FoldersPanel.ui
+msgid "seconds"
+msgstr "sekundi"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Seek to Frame"
+msgstr "Pređi na frejm"
+
+#: qt/src/DisplayPanel.cpp
+msgid "Select a Folder"
+msgstr "Izaberite direktorijum"
+
+#: qt/src/DisplayPanel.ui
+msgid "Select the output driver."
+msgstr "Izaberite izlazni drajver."
+
+#: qt/src/ControllerPanel.ui
+msgid "Set"
+msgstr "Postavi"
+
+#: qt/src/EmulationPanel.ui
+msgid "Set frame rate to 0 to automatically change based on PAL/NTSC and with interlacing on and off."
+msgstr "Postavite brzinu osvežavanja na 0 da se automatski menja na osnovu PAL/NTSC i sa uključenim i isključenim preplitanjem."
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Set Size"
+msgstr "Postavi veličinu"
+
+#: qt/src/DisplayPanel.cpp
+msgid "Shader Presets (*.slangp *.glslp)"
+msgstr "Shader postavke (*.slangp *.glslp)"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Shader Settings"
+msgstr "Podešavanja shadera"
+
+#: qt/src/GeneralPanel.ui
+msgid "Show fast-forward and pause icons"
+msgstr "Prikaži ikone premotavanja unapred i pauze"
+
+#: qt/src/DisplayPanel.ui
+msgid "Show overscan area"
+msgstr "Prikaži overscan oblast"
+
+#: qt/src/DisplayPanel.ui
+msgid "Show the areas on the top and bottom of the screen that are normally black and hidden by the TV. Some games will draw in these areas."
+msgstr "Prikaži oblasti na vrhu i dnu ekrana koje su normalno crne i skrivene od strane TV-a. Neke igre će iscrtavati u ovim oblastima."
+
+#: qt/src/GeneralPanel.ui
+msgid "Show the time"
+msgstr "Prikaži vreme"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Slot %1"
+msgstr "Slot %1"
+
+#: qt/src/DisplayPanel.ui
+msgid "Smooth screen output."
+msgstr "Uglađen izlaz ekrana."
+
+#: qt/src/ControllerPanel.ui
+msgid "SNES Controller 1"
+msgstr "SNES kontroler 1"
+
+#: qt/src/ControllerPanel.ui
+msgid "SNES Controller 2"
+msgstr "SNES kontroler 2"
+
+#: qt/src/ControllerPanel.ui
+msgid "SNES Controller 3 (Multitap)"
+msgstr "SNES kontroler 3 (Multitap)"
+
+#: qt/src/ControllerPanel.ui
+msgid "SNES Controller 4 (Multitap)"
+msgstr "SNES kontroler 4 (Multitap)"
+
+#: qt/src/ControllerPanel.ui
+msgid "SNES Controller 5 (Multitap)"
+msgstr "SNES kontroler 5 (Multitap)"
+
+#: qt/src/DisplayPanel.ui
+msgid "Software Filters"
+msgstr "Softverski filteri"
+
+#: qt/src/SoundPanel.ui
+msgid "Sound Output"
+msgstr "Izlaz zvuka"
+
+#: qt/src/SoundPanel.ui
+msgid "Sound Stretching"
+msgstr "Rastezanje zvuka"
+
+#: qt/src/EmulationPanel.ui
+msgid "Sound Synchronization - Wait on the sound buffer"
+msgstr "Sinhronizacija zvuka - čekaj na zvučni bafer"
+
+#: qt/src/SoundPanel.ui
+msgid "SPC:"
+msgstr "SPC:"
+
+#: qt/src/EmulationPanel.ui
+msgid "Speed control method:"
+msgstr "Metod kontrole brzine:"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Start Recording"
+msgstr "Započni snimanje"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Stop Recording"
+msgstr "Zaustavi snimanje"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Super Game Boy (SGB1)"
+msgstr "Super Game Boy (SGB1)"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Super Game Boy 2 (SGB2)"
+msgstr "Super Game Boy 2 (SGB2)"
+
+#: qt/src/EmulationPanel.ui
+msgid "SuperFX clock speed:"
+msgstr "Brzina takta SuperFX:"
+
+#: qt/src/ControllerPanel.ui
+msgid "SuperScope + Controller"
+msgstr "SuperScope + Kontroler"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Swap Controllers 1 and 2"
+msgstr "Zameni kontrolere 1 i 2"
+
+#: qt/src/ControllerPanel.ui
+msgid "Swap or clear groups of bindings"
+msgstr "Zameni ili obriši grupe dodela"
+
+#: qt/src/ControllerPanel.cpp
+msgid "Swap With"
+msgstr "Zameni sa"
+
+#: qt/src/GeneralPanel.ui
+msgid "Switch to fullscreen after opening a ROM"
+msgstr "Pređi na ceo ekran nakon otvaranja ROM-a"
+
+#: qt/src/DisplayPanel.ui
+msgid "Sync the display to vertical retrace to eliminate tearing."
+msgstr "Sinhronizuj prikaz sa vertikalnim osvežavanjem da bi se eliminisalo cepanje slike."
+
+#: qt/src/CheatsDialog.cpp
+msgid "The cheat you entered was not valid."
+msgstr "Varanje koje ste uneli nije važeće."
+
+#: qt/src/EmuCanvasOpenGL.cpp
+msgid "The driver isn't using a specialized shader preset right now."
+msgstr "Drajver trenutno ne koristi specijalizovanu shader postavku."
+
+#: qt/src/EmuMainWindow.cpp
+msgid "The language change will take effect after you restart SuperSnes9x."
+msgstr "Promena jezika će stupiti na snagu nakon što ponovo pokrenete SuperSnes9x."
+
+#: qt/src/EmuCanvasVulkan.cpp
+msgid "The vulkan display driver hasn't properly loaded."
+msgstr "Vulkan drajver prikaza nije ispravno učitan."
+
+#: qt/src/DisplayPanel.ui
+msgid "This affects the rarely used 512-pixels-wide mode used by the SNES.\nFor games like Kirby 3 and Jurassic Park, choose the \"merge fields\" option.\nFor games like Seiken Densetsu 3 and Marvelous, choose the \"scale up\" option.\nOutput directly will cause the screen to change between the two modes and look weird."
+msgstr "Ovo utiče na retko korišćeni režim širine 512 piksela koji koristi SNES.\nZa igre poput Kirby 3 i Jurassic Park, izaberite opciju \"spoji polja\".\nZa igre poput Seiken Densetsu 3 i Marvelous, izaberite opciju \"uvećaj\".\nDirektan izlaz će izazvati da se ekran menja između dva režima i da izgleda čudno."
+
+#: qt/src/EmuCanvasOpenGL.cpp
+msgid "This shader preset doesn't offer any configurable parameters."
+msgstr "Ova shader postavka ne nudi nijedan podesiv parametar."
+
+#: qt/src/EmulationPanel.ui
+msgid "Timer - Match the frame rate configured below"
+msgstr "Tajmer - uskladi sa brzinom osvežavanja podešenom ispod"
+
+#: qt/src/EmulationPanel.ui
+msgid "Timer with Frame Skipping - Skip frames if needed"
+msgstr "Tajmer sa preskakanjem frejmova - preskoči frejmove ako je potrebno"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "To File"
+msgstr "U fajl"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle All Sound Channels"
+msgstr "Uključi/Isključi sve zvučne kanale"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle BG Layer 0"
+msgstr "Uključi/Isključi BG sloj 0"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle BG Layer 1"
+msgstr "Uključi/Isključi BG sloj 1"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle BG Layer 2"
+msgstr "Uključi/Isključi BG sloj 2"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle BG Layer 3"
+msgstr "Uključi/Isključi BG sloj 3"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle Fast-Forward"
+msgstr "Uključi/Isključi premotavanje unapred"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle Fullscreen"
+msgstr "Uključi/Isključi ceo ekran"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle Sound Channel 1"
+msgstr "Uključi/Isključi zvučni kanal 1"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle Sound Channel 2"
+msgstr "Uključi/Isključi zvučni kanal 2"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle Sound Channel 3"
+msgstr "Uključi/Isključi zvučni kanal 3"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle Sound Channel 4"
+msgstr "Uključi/Isključi zvučni kanal 4"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle Sound Channel 5"
+msgstr "Uključi/Isključi zvučni kanal 5"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle Sound Channel 6"
+msgstr "Uključi/Isključi zvučni kanal 6"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle Sound Channel 7"
+msgstr "Uključi/Isključi zvučni kanal 7"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle Sound Channel 8"
+msgstr "Uključi/Isključi zvučni kanal 8"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle Sprites"
+msgstr "Uključi/Isključi sprajtove"
+
+#: qt/src/ControllerPanel.ui
+msgid "Turbo A"
+msgstr "Turbo A"
+
+#: qt/src/ControllerPanel.ui
+msgid "Turbo B"
+msgstr "Turbo B"
+
+#: qt/src/ControllerPanel.ui
+msgid "Turbo L"
+msgstr "Turbo L"
+
+#: qt/src/ControllerPanel.ui
+msgid "Turbo R"
+msgstr "Turbo R"
+
+#: qt/src/ControllerPanel.ui
+msgid "Turbo X"
+msgstr "Turbo X"
+
+#: qt/src/ControllerPanel.ui
+msgid "Turbo Y"
+msgstr "Turbo Y"
+
+#: qt/src/ControllerPanel.ui
+msgid "Two Controllers"
+msgstr "Dva kontrolera"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Unable to create a %1 context. Attempting to use %2."
+msgstr "Nije moguće kreirati %1 kontekst. Pokušavam da koristim %2."
+
+#: qt/src/CheatsDialog.cpp
+msgid "Unable to Open Cheats Database"
+msgstr "Nije moguće otvoriti bazu varanja"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Unable to Start Display Driver"
+msgstr "Nije moguće pokrenuti drajver prikaza"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Undo Load State"
+msgstr "Poništi učitavanje pozicije"
+
+#: qt/src/DisplayPanel.ui
+msgid "Use a hardware shader:"
+msgstr "Koristi hardverski shader:"
+
+#: qt/src/DisplayPanel.ui
+msgid "Use a selected .slangp or .glslp shader file. \n.slangp is supported by Vulkan and OpenGL. \n.glslp is supported by OpenGL."
+msgstr "Koristi izabrani .slangp ili .glslp shader fajl. \n.slangp podržavaju Vulkan i OpenGL. \n.glslp podržava OpenGL."
+
+#: qt/src/EmulationPanel.ui
+msgid "Use a shadow echo buffer"
+msgstr "Koristi senku eho bafera"
+
+#: qt/src/DisplayPanel.ui
+msgid "Use integer scaling"
+msgstr "Koristi celobrojno skaliranje"
+
+#: qt/src/ControllerPanel.ui
+msgid "Use SDL to set up the D-pad, face buttons, and L/R. Other buttons may still be configured."
+msgstr "Koristi SDL za podešavanje D-pada, prednje dugmadi i L/R. Ostala dugmad se i dalje mogu podesiti."
+
+#: qt/src/EmuMainWindow.cpp
+msgid "View"
+msgstr "Pregled"
+
+#: qt/src/EmuCanvasVulkan.cpp
+msgid "Vulkan Driver"
+msgstr "Vulkan drajver"
+
+#: qt/src/DisplayPanel.ui
+msgid "When entering fullscreen mode, temporarily change other settings to use VRR (G-Sync or FreeSync) correctly."
+msgstr "Pri ulasku u režim celog ekrana, privremeno promeni druga podešavanja da bi se ispravno koristio VRR (G-Sync ili FreeSync)."
+
+#: qt/src/DisplayPanel.ui
+msgid "When scaling up, only use integer multiples of the original height."
+msgstr "Pri uvećavanju, koristi samo celobrojne umnoške originalne visine."
