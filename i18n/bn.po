@@ -1,0 +1,5461 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: SuperSnes9x\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-10-29 23:56+0100\n"
+"PO-Revision-Date: 2026-06-21 00:10-0300\n"
+"Last-Translator: Gemini AI \n"
+"Language-Team: Bengali / বাংলা\n"
+"Language: bn\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"SuperSnes9x-gtk: 1.5.2\n"
+"X-Generator: Poedit 3.8\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-Basepath: ../..\n"
+"X-Poedit-SearchPath-0: gtk\n"
+"X-Poedit-SearchPath-1: gtk/src\n"
+"X-Poedit-SearchPath-2: gtk/data\n"
+"X-Poedit-SearchPath-3: gtk/doc\n"
+"X-Poedit-SearchPath-4: gtk/src/snes9x.ui\n"
+"X-Poedit-SearchPath-5: filter\n"
+"X-Poedit-SearchPath-6: apu\n"
+"X-Poedit-SearchPath-7: docs\n"
+"X-Poedit-SearchPath-8: jma\n"
+"X-Poedit-SearchPath-9: libretro\n"
+"X-Poedit-SearchPath-10: macosx\n"
+"X-Poedit-SearchPath-11: unzip\n"
+"X-Poedit-SearchPath-12: unix\n"
+"X-Poedit-SearchPath-13: win32\n"
+"X-Poedit-SearchPath-14: .\n"
+
+#: src/gtk_binding.cpp:248
+msgid "Unknown"
+msgstr "অজানা"
+
+#: src/gtk_binding.cpp:257
+msgid "Keyboard {}{}{}{}"
+msgstr "কীবোর্ড {}{}{}{}"
+
+#: src/gtk_binding.cpp:267
+msgid "Axis {} {} {}%"
+msgstr "অক্ষ {} {} {}%"
+
+#: src/gtk_binding.cpp:272
+msgid "Button {}"
+msgstr "বাটন {}"
+
+#: src/gtk_binding.cpp:274
+msgid "Joystick {} {}"
+msgstr "জয়স্টিক {} {}"
+
+#: src/gtk_binding.cpp:278
+msgid "Unset"
+msgstr "অনির্ধারিত"
+
+#: src/gtk_cheat.cpp:24
+msgid "Error"
+msgstr "ত্রুটি"
+
+#: src/gtk_cheat.cpp:60
+msgid "Description"
+msgstr "বিবরণ"
+
+#: src/gtk_cheat.cpp:66
+msgid "Cheat"
+msgstr "চিট"
+
+#: src/gtk_cheat.cpp:227 src/gtk_cheat.cpp:355
+msgid "No description"
+msgstr "কোনো বিবরণ নেই"
+
+#: src/gtk_cheat.cpp:231 src/gtk_cheat.cpp:360
+msgid "Couldn't find any cheat codes in input."
+msgstr "ইনপুটে কোনো চিট কোড খুঁজে পাওয়া যায়নি।"
+
+#: src/gtk_cheat.cpp:306
+msgid "Couldn't Find Cheats Database"
+msgstr "চিট ডাটাবেস খুঁজে পাওয়া যায়নি"
+
+#: src/gtk_cheat.cpp:306
+msgid "No Matching Game Found"
+msgstr "কোনো মিল থাকা গেম পাওয়া যায়নি"
+
+#: src/gtk_cheat.cpp:307
+msgid ""
+"The database file <b>cheats.bml</b> was not found. It is normally installed "
+"with Snes9x, but you may also place a custom copy in your configuration or "
+"cheats directory."
+msgstr ""
+"ডাটাবেস ফাইল <b>cheats.bml</b> খুঁজে পাওয়া যায়নি। এটি সাধারণত Snes9x এর সাথে "
+"ইনস্টল করা থাকে, তবে আপনি চাইলে আপনার কনফিগারেশন বা চিট ডিরেক্টরিতে একটি কাস্টম কপিও রাখতে পারেন।"
+
+#: src/gtk_cheat.cpp:309
+msgid ""
+"No matching game was found in the databases. If you are using a non-official "
+"translation or modified copy, you may be able to find and manually enter the "
+"codes."
+msgstr ""
+"ডাটাবেসে মিল থাকা কোনো গেম পাওয়া যায়নি। আপনি যদি কোনো আনঅফিসিয়াল অনুবাদ বা "
+"পরিবর্তিত কপি ব্যবহার করেন, তবে আপনি কোডগুলো খুঁজে নিয়ে ম্যানুয়ালি ইনপুট করতে পারেন।"
+
+#: src/gtk_config.cpp:407
+msgid "Couldn't create config directory: {}\n"
+msgstr "কনফিগারেশন ডিরেক্টরি তৈরি করা যায়নি: {}\n"
+
+#: src/gtk_netplay.cpp:66
+msgid "Connection Error"
+msgstr "সংযোগ ত্রুটি"
+
+#: src/gtk_netplay_dialog.cpp:31
+msgid "frame behind"
+msgid_plural "frames behind"
+msgstr[0] "ফ্রেম পেছনে"
+msgstr[1] "ফ্রেম পেছনে"
+
+#: src/gtk_preferences.cpp:19
+msgid "Same location as current game"
+msgstr "বর্তমান গেমের একই লোকেশন"
+
+#: src/gtk_preferences.cpp:110
+msgid "{0:Ld}×{1:Ld} @ {2:.3Lf} Hz"
+msgstr "{0:Ld}×{1:Ld} @ {2:.3Lf} হার্জ"
+
+#: src/gtk_preferences.cpp:143
+msgid "OpenGL – Use 3D graphics hardware"
+msgstr "OpenGL – থ্রিডি গ্রাফিক্স হার্ডওয়্যার ব্যবহার করুন"
+
+#: src/gtk_preferences.cpp:145
+msgid "XVideo – Use hardware video blitter"
+msgstr "XVideo – হার্ডওয়্যার ভিডিও ব্লিটার ব্যবহার করুন"
+
+#: src/gtk_preferences.cpp:147
+msgid "Vulkan"
+msgstr "ভলকান (Vulkan)"
+
+#: src/gtk_preferences.cpp:149
+msgid "None – Use software scaler"
+msgstr "কিছুই না – সফটওয়্যার স্কেলার ব্যবহার করুন"
+
+#: src/gtk_preferences.cpp:179 src/gtk_preferences.cpp:446
+msgid "thread for filtering and scaling"
+msgid_plural "threads for filtering and scaling"
+msgstr[0] "ফিল্টারিং এবং স্কেলিংয়ের জন্য থ্রেড"
+msgstr[1] "ফিল্টারিং এবং স্কেলিংয়ের জন্য থ্রেড"
+
+#: src/gtk_preferences.cpp:236 src/gtk_preferences.cpp:500
+msgid "millisecond"
+msgid_plural "milliseconds"
+msgstr[0] "মিলিসেকেন্ড"
+msgstr[1] "মিলিসেকেন্ড"
+
+#: src/gtk_preferences.cpp:260 src/gtk_preferences.cpp:476
+msgid "second after change"
+msgid_plural "seconds after change"
+msgstr[0] "পরিবর্তনের পর সেকেন্ড"
+msgstr[1] "পরিবর্তনের পর সেকেন্ড"
+
+#: src/gtk_preferences.cpp:271
+msgid "SuperSnes9x version: "
+msgstr "SuperSnes9x ভার্সন: "
+
+#: src/gtk_preferences.cpp:272
+msgid "GTK+ port version: "
+msgstr "GTK+ পোর্ট ভার্সন: "
+
+#: src/gtk_preferences.cpp:274
+msgid "English localization by Brandon Wright"
+msgstr "ব্র্যান্ডন রাইট দ্বারা ইংরেজি রূপান্তর"
+
+#: src/gtk_preferences.cpp:298
+msgid "Select directory"
+msgstr "ডিরেক্টরি নির্বাচন করুন"
+
+#: src/gtk_preferences.cpp:323
+msgid "{0:.4Lf} Hz"
+msgstr "{0:.4Lf} হার্জ"
+
+#: src/gtk_preferences.cpp:328
+msgid "{0:Ld} Hz"
+msgstr "{0:Ld} হার্জ"
+
+#: src/gtk_preferences.cpp:379
+msgid "Select Shader File"
+msgstr "শেডার ফাইল নির্বাচন করুন"
+
+#: src/gtk_preferences.cpp:720
+msgid ""
+"Changing the SRAM directory with a game loaded will replace the .srm file in "
+"the selected directory with the SRAM from the running game. If this is not "
+"what you want, click 'cancel'."
+msgstr ""
+"গেম লোড থাকা অবস্থায় SRAM ডিরেক্টরি পরিবর্তন করলে নির্বাচিত ডিরেক্টরির .srm ফাইলটি "
+"চলমান গেমের SRAM দ্বারা প্রতিস্থাপিত হবে। আপনি যদি এটি না চান, তবে 'বাতিল' ক্লিক করুন।"
+
+#: src/gtk_preferences.cpp:725
+msgid "Warning: Possible File Overwrite"
+msgstr "সতর্কতা: ফাইল ওভাররাইট হওয়ার সম্ভাবনা রয়েছে"
+
+#: src/gtk_preferences.cpp:980
+msgid "Current joystick centers have been saved."
+msgstr "বর্তমান জয়স্টিক সেন্টারগুলো সংরক্ষণ করা হয়েছে।"
+
+#: src/gtk_preferences.cpp:981
+msgid "Calibration Complete"
+msgstr "ক্যালিব্রেশন সম্পন্ন"
+
+#: src/gtk_s9x.cpp:206
+msgid "Using rewind buffer of {0}\n"
+msgstr "{0} এর রিওয়াইন্ড বাফার ব্যবহার করা হচ্ছে\n"
+
+#: src/gtk_s9x.cpp:598
+msgid ""
+"GTK port options:\n"
+"-filter [option]               Use a filter to scale the image.\n"
+"                               [option] is one of: none supereagle 2xsai\n"
+"                               super2xsai hq2x hq3x hq4x 2xbrz 3xbrz 4xbrz "
+"epx ntsc\n"
+"\n"
+"-mutesound                     Disables sound output.\n"
+msgstr ""
+"GTK পোর্ট অপশনসমূহ:\n"
+"-filter [অপশন]               ছবি স্কেল করার জন্য ফিল্টার ব্যবহার করুন।\n"
+"                               [অপশন]-টি হতে পারে: none supereagle 2xsai\n"
+"                               super2xsai hq2x hq3x hq4x 2xbrz 3xbrz 4xbrz epx ntsc\n"
+"\n"
+"-mutesound                     সাউন্ড আউটপুট নিষ্ক্রিয় করে।\n"
+
+#: src/gtk_s9xwindow.cpp:48 src/snes9x.ui:8405
+msgid "Save States"
+msgstr "স্টেট সংরক্ষণ (Save States)"
+
+#: src/gtk_s9xwindow.cpp:57
+msgid "All Files"
+msgstr "সব ফাইল"
+
+#: src/gtk_s9xwindow.cpp:616
+msgid "Couldn't load files."
+msgstr "ফাইলগুলো লোড করা যায়নি।"
+
+#: src/gtk_s9xwindow.cpp:637
+msgid "Open SNES Movie"
+msgstr "SNES মুভি খুলুন"
+
+#: src/gtk_s9xwindow.cpp:642
+msgid "New SNES Movie"
+msgstr "নতুন SNES মুভি"
+
+#: src/gtk_s9xwindow.cpp:661
+msgid "SNES Movies"
+msgstr "SNES মুভিসমূহ"
+
+#: src/gtk_s9xwindow.cpp:690
+msgid "Open SNES ROM Image"
+msgstr "SNES ROM ইমেজ খুলুন"
+
+#: src/gtk_s9xwindow.cpp:695
+msgid "SNES ROM Images"
+msgstr "SNES ROM ইমেজসমূহ"
+
+#: src/gtk_s9xwindow.cpp:740
+msgid "Couldn't load file: "
+msgstr "ফাইল লোড করা যায়নি: "
+
+#: src/gtk_s9xwindow.cpp:767
+msgid "Load Saved State"
+msgstr "সংরক্ষিত স্টেট লোড করুন"
+
+#: src/gtk_s9xwindow.cpp:796
+msgid "The current frame in the movie is <b>{0:Ld}</b>."
+msgstr "মুভির বর্তমান ফ্রেমটি হলো <b>{0:Ld}</b>।"
+
+#: src/gtk_s9xwindow.cpp:829
+msgid "Save State"
+msgstr "স্টেট সংরক্ষণ করুন"
+
+#: src/gtk_s9xwindow.cpp:850
+msgid "Save SPC file..."
+msgstr "SPC ফাইল সংরক্ষণ করুন..."
+
+#: src/gtk_s9xwindow.cpp:872
+msgid "Couldn't save SPC file:"
+msgstr "SPC ফাইল সংরক্ষণ করা যায়নি:"
+
+#: src/gtk_s9xwindow.cpp:888
+#, c-format
+msgid ""
+"<b>Information for %s</b>\n"
+"\n"
+"<i>Name:</i> %s\n"
+"<i>Speed:</i> %02X/%s\n"
+"<i>Map:</i> %s\n"
+"<i>Type:</i> %02x\n"
+"<i>Contents:</i> %s\n"
+"<i>ROM Size:</i> %s\n"
+"<i>Calculated Size:</i> %d\n"
+"<i>SRAM Size:</i> %s\n"
+"<i>Header Checksum:</i> %04X\n"
+"<i>Checksum Complement:</i> %04X\n"
+"<i>Actual Checksum:</i> %04X\n"
+"<i>Video:</i> %s\n"
+"<i>CRC32:</i> %08X\n"
+"<i>Revision:</i> %s\n"
+"<b><i>%s%s</i></b>"
+msgstr ""
+"<b>%s এর তথ্য</b>\n"
+"\n"
+"<i>নাম:</i> %s\n"
+"<i>গতি:</i> %02X/%s\n"
+"<i>ম্যাপ:</i> %s\n"
+"<i>টাইপ:</i> %02x\n"
+"<i>বিষয়বস্তু:</i> %s\n"
+"<i>ROM সাইজ:</i> %s\n"
+"<i>হিসাবকৃত সাইজ:</i> %d\n"
+"<i>SRAM সাইজ:</i> %s\n"
+"<i>হেডার চেকসাম:</i> %04X\n"
+"<i>চেকসাম কমপ্লিমেন্ট:</i> %04X\n"
+"<i>প্রকৃত চেকসাম:</i> %04X\n"
+"<i>ভিডিও:</i> %s\n"
+"<i>CRC32:</i> %08X\n"
+"<i>রিভিশন:</i> %s\n"
+"<b><i>%s%s</i></b>"
+
+#: src/gtk_s9xwindow.cpp:924
+msgid ""
+"\n"
+"\n"
+"This ROM has been auto-patched with "
+msgstr ""
+"\n"
+"\n"
+"এই ROM-টি স্বয়ংক্রিয়ভাবে প্যাচ করা হয়েছে এর দ্বারা "
+
+#: src/gtk_s9xwindow.cpp:924
+msgid ""
+"\n"
+"\n"
+"This ROM has been modified or damaged"
+msgstr ""
+"\n"
+"\n"
+"এই ROM ফাইলটি পরিবর্তিত অথবা ক্ষতিগ্রস্ত"
+
+#: src/gtk_s9xwindow.cpp:938
+msgid "File Information"
+msgstr "ফাইল তথ্য"
+
+#: src/gtk_shader_parameters.cpp:67
+msgid "Export Shader Preset to:"
+msgstr "শেডার প্রিসেট এক্সপোর্ট করুন এখানে:"
+
+#: src/gtk_shader_parameters.cpp:90
+msgid "Shader Preset"
+msgstr "শেডার প্রিসেট"
+
+#: src/gtk_shader_parameters.cpp:131
+msgid "Shader Parameters"
+msgstr "শেডার প্যারামিটার"
+
+#: src/snes9x.ui:10
+msgid "About SuperSnes9x"
+msgstr "SuperSnes9x সম্পর্কে"
+
+#: src/snes9x.ui:283
+msgid "SuperSnes9x Cheats"
+msgstr "SuperSnes9x চিটস"
+
+#: src/snes9x.ui:401
+msgid "Update Cheat"
+msgstr "চিট আপডেট করুন"
+
+#: src/snes9x.ui:416
+msgid "Disable All"
+msgstr "সব নিষ্ক্রিয় করুন"
+
+#: src/snes9x.ui:432
+msgid "Delete All Cheats"
+msgstr "সব চিট মুছে ফেলুন"
+
+#: src/snes9x.ui:447
+msgid "Search Cheat Database"
+msgstr "চিট ডাটাবেস অনুসন্ধান করুন"
+
+#: src/snes9x.ui:489
+msgid "Code:"
+msgstr "কোড:"
+
+#: src/snes9x.ui:526
+msgid "Description:"
+msgstr "বিবরণ:"
+
+#: src/snes9x.ui:573
+msgid "Advance to Frame"
+msgstr "ফ্রেমে এগিয়ে যান"
+
+#: src/snes9x.ui:642
+msgid "The current frame in the movie is"
+msgstr "মুভির বর্তমান ফ্রেমটি হলো"
+
+#: src/snes9x.ui:663
+msgid "Fast‑forward to frame"
+msgstr "ফ্রেমে ফাস্ট-ফরওয়ার্ড করুন"
+
+#: src/snes9x.ui:806
+msgid "Black"
+msgstr "কালো"
+
+#: src/snes9x.ui:809
+msgid "Color bars"
+msgstr "কালার বার"
+
+#: src/snes9x.ui:812
+msgid "Pixel art patterns"
+msgstr "পিক্সেল আর্ট প্যাটার্ন"
+
+#: src/snes9x.ui:815
+msgid "Dithered gradient"
+msgstr "ডিদারড গ্রেডিয়েন্ট"
+
+#: src/snes9x.ui:818
+msgid "Color bars and patterns"
+msgstr "কালার বার এবং প্যাটার্ন"
+
+#: src/snes9x.ui:821
+msgid "Starfield"
+msgstr "স্টারফিল্ড"
+
+#: src/snes9x.ui:824
+msgid "Snow"
+msgstr "স্নো (ঝিরঝির)"
+
+#: src/snes9x.ui:852 src/snes9x.ui:875
+msgid "12.5%"
+msgstr "১২.৫%"
+
+#: src/snes9x.ui:855 src/snes9x.ui:878
+msgid "25%"
+msgstr "২৫%"
+
+#: src/snes9x.ui:858 src/snes9x.ui:881
+msgid "50%"
+msgstr "৫০%"
+
+#: src/snes9x.ui:861 src/snes9x.ui:884
+msgid "100%"
+msgstr "১০০%"
+
+#: src/snes9x.ui:872
+msgid "0%"
+msgstr "০%"
+
+#: src/snes9x.ui:895
+msgid "None"
+msgstr "কিছুই না"
+
+#: src/snes9x.ui:936
+msgid "8:7 Square pixels"
+msgstr "8:7 স্কয়ার পিক্সেল"
+
+#: src/snes9x.ui:939
+msgid "8:7 Square pixels, integer multiples"
+msgstr "8:7 স্কয়ার পিক্সেল, পূর্ণসংখ্যা গুণিতক"
+
+#: src/snes9x.ui:942
+msgid "4:3 SNES correct aspect"
+msgstr "4:3 SNES সঠিক অ্যাসপেক্ট"
+
+#: src/snes9x.ui:945
+msgid "4:3 SNES correct aspect, integer multiples"
+msgstr "4:3 SNES সঠিক অ্যাসপেক্ট, পূর্ণসংখ্যা গুণিতক"
+
+#: src/snes9x.ui:948
+msgid "8*8:7*7 NTSC"
+msgstr "8*8:7*7 NTSC"
+
+#: src/snes9x.ui:951
+msgid "8*8:7*7 NTSC, integer multiples"
+msgstr "8*8:7*7 NTSC, পূর্ণসংখ্যা গুণিতক"
+
+#: src/snes9x.ui:968
+msgid "Merge adjacent pairs"
+msgstr "পাশাপাশি জোড়া একত্রিত করুন"
+
+#: src/snes9x.ui:971
+msgid "Output directly"
+msgstr "সরাসরি আউটপুট"
+
+#: src/snes9x.ui:974
+msgid "Scale low‑resolution screens"
+msgstr "কম রেজোলিউশনের স্ক্রিন স্কেল করুন"
+
+#: src/snes9x.ui:985 src/snes9x.ui:1023
+msgid "1"
+msgstr "১"
+
+#: src/snes9x.ui:988 src/snes9x.ui:1026
+msgid "2"
+msgstr "২"
+
+#: src/snes9x.ui:991 src/snes9x.ui:1029
+msgid "3"
+msgstr "৩"
+
+#: src/snes9x.ui:994 src/snes9x.ui:1032
+msgid "4"
+msgstr "৪"
+
+#: src/snes9x.ui:997 src/snes9x.ui:1035
+msgid "5"
+msgstr "৫"
+
+#: src/snes9x.ui:1000 src/snes9x.ui:1038
+msgid "1+"
+msgstr "১+"
+
+#: src/snes9x.ui:1003 src/snes9x.ui:1041
+msgid "2+"
+msgstr "২+"
+
+#: src/snes9x.ui:1006 src/snes9x.ui:1044
+msgid "3+"
+msgstr "৩+"
+
+#: src/snes9x.ui:1009 src/snes9x.ui:1047
+msgid "4+"
+msgstr "৪+"
+
+#: src/snes9x.ui:1012 src/snes9x.ui:1050
+msgid "5+"
+msgstr "৫+"
+
+#: src/snes9x.ui:1061
+msgid "Toggle the menu bar"
+msgstr "মেনু বার টগল করুন"
+
+#: src/snes9x.ui:1064
+msgid "Exit fullscreen mode"
+msgstr "ফুলস্ক্রিন মোড থেকে বের হন"
+
+#: src/snes9x.ui:1067 src/snes9x.ui:6932
+msgid "Quit SuperSnes9x"
+msgstr "SuperSnes9x বন্ধ করুন"
+
+#: src/snes9x.ui:1078
+msgid "Timer‑based"
+msgstr "টাইমার-ভিত্তিক"
+
+#: src/snes9x.ui:1081
+msgid "Timer‑based with automatic frame-skipping"
+msgstr "স্বয়ংক্রিয় ফ্রেম-স্কিপিংসহ টাইমার-ভিত্তিক"
+
+#: src/snes9x.ui:1084
+msgid "Sound buffer synchronization"
+msgstr "সাউন্ড বাফার সিঙ্ক্রোনাইজেশন"
+
+#: src/snes9x.ui:1087
+msgid "No throttling, use vsync to control speed"
+msgstr "কোনো থ্রটলিং নেই, গতি নিয়ন্ত্রণের জন্য vsync ব্যবহার করুন"
+
+#: src/snes9x.ui:1098
+msgid "48,000 Hz"
+msgstr "৪৮,০০০ হার্জ"
+
+#: src/snes9x.ui:1101
+msgid "44,100 Hz"
+msgstr "৪৪,১০০ হার্জ"
+
+#: src/snes9x.ui:1104
+msgid "32,000 Hz"
+msgstr "৩২,০০০ হার্জ"
+
+#: src/snes9x.ui:1107
+msgid "22,050 Hz"
+msgstr "২২,০৫০ হার্জ"
+
+#: src/snes9x.ui:1110
+msgid "16,000 Hz"
+msgstr "১৬,০০০ হার্জ"
+
+#: src/snes9x.ui:1113
+msgid "11,025 Hz"
+msgstr "১১,০২৫ হার্জ"
+
+#: src/snes9x.ui:1116
+msgid "8,000 Hz"
+msgstr "৮,০০০ হার্জ"
+
+#: src/snes9x.ui:1119
+msgid "0 Hz"
+msgstr "০ হার্জ"
+
+#: src/snes9x.ui:1136
+msgid "16‑bit (GL_RGB)"
+msgstr "১৬-বিট (GL_RGB)"
+
+#: src/snes9x.ui:1139
+msgid "32‑bit (GL_BGRA)"
+msgstr "৩২-বিট (GL_BGRA)"
+
+#: src/snes9x.ui:1150
+msgid "Nearest"
+msgstr "নিকটবর্তী"
+
+#: src/snes9x.ui:1153
+msgid "Linear"
+msgstr "লিনিয়ার"
+
+#: src/snes9x.ui:1156
+msgid "Gaussian (correct)"
+msgstr "গাউসিয়ান (সঠিক)"
+
+#: src/snes9x.ui:1159
+msgid "Cubic"
+msgstr "কিউবিক"
+
+#: src/snes9x.ui:1162
+msgid "Sinc"
+msgstr "সিঙ্ক (Sinc)"
+
+#: src/snes9x.ui:1175
+msgid "SuperSnes9x"
+msgstr "SuperSnes9x"
+
+#: src/snes9x.ui:1195
+msgid "_File"
+msgstr "ফাইল (_F)"
+
+#: src/snes9x.ui:1202
+msgid "_Open ROM Image…"
+msgstr "ROM ইমেজ খুলুন (_O)…"
+
+#: src/snes9x.ui:1216
+msgid "Open Recent"
+msgstr "সাম্প্রতিক ফাইল খুলুন"
+
+#: src/snes9x.ui:1225
+msgid "Clear Recent Items"
+msgstr "সাম্প্রতিক আইটেম মুছে ফেলুন"
+
+#: src/snes9x.ui:1237
+msgid "Open with _NetPlay…"
+msgstr "NetPlay দিয়ে খুলুন (_N)…"
+
+#: src/snes9x.ui:1240
+msgid "Open a ROM to use with NetPlay"
+msgstr "NetPlay-তে ব্যবহারের জন্য একটি ROM খুলুন"
+
+#: src/snes9x.ui:1251
+msgid "Open _MultiCart…"
+msgstr "MultiCart খুলুন (_M)…"
+
+#: src/snes9x.ui:1266
+msgid "_Load State"
+msgstr "স্টেট লোড করুন (_L)"
+
+#: src/snes9x.ui:1276 src/snes9x.ui:1410
+msgid "Slot _0"
+msgstr "স্লট _০"
+
+#: src/snes9x.ui:1285 src/snes9x.ui:1419
+msgid "Slot _1"
+msgstr "স্লট _১"
+
+#: src/snes9x.ui:1294 src/snes9x.ui:1428
+msgid "Slot _2"
+msgstr "স্লট _২"
+
+#: src/snes9x.ui:1303 src/snes9x.ui:1437
+msgid "Slot _3"
+msgstr "স্লট _৩"
+
+#: src/snes9x.ui:1312 src/snes9x.ui:1446
+msgid "Slot _4"
+msgstr "স্লট _৪"
+
+#: src/snes9x.ui:1321 src/snes9x.ui:1455
+msgid "Slot _5"
+msgstr "স্লট _৫"
+
+#: src/snes9x.ui:1330 src/snes9x.ui:1464
+msgid "Slot _6"
+msgstr "স্লট _৬"
+
+#: src/snes9x.ui:1339 src/snes9x.ui:1473
+msgid "Slot _7"
+msgstr "স্লট _৭"
+
+#: src/snes9x.ui:1348 src/snes9x.ui:1482
+msgid "Slot _8"
+msgstr "স্লট _৮"
+
+#: src/snes9x.ui:1357 src/snes9x.ui:1491
+msgid "Slot _9"
+msgstr "স্লট _৯"
+
+#: src/snes9x.ui:1372
+msgid "From _File…"
+msgstr "ফাইল থেকে (_F)…"
+
+#: src/snes9x.ui:1387
+msgid "_Undo Load State"
+msgstr "স্টেট লোড আনডু করুন (_U)"
+
+#: src/snes9x.ui:1400
+msgid "_Save State"
+msgstr "স্টেট সংরক্ষণ করুন (_S)"
+
+#: src/snes9x.ui:1506
+msgid "To _File…"
+msgstr "ফাইলে (_F)…"
+
+#: src/snes9x.ui:1523
+msgid "Save SPC…"
+msgstr "SPC সংরক্ষণ করুন…"
+
+#: src/snes9x.ui:1540
+msgid "Show ROM _Info…"
+msgstr "ROM তথ্য দেখান (_I)…"
+
+#: src/snes9x.ui:1557
+msgid "gtk-quit"
+msgstr "বন্ধ করুন"
+
+#: src/snes9x.ui:1571
+msgid "_Emulation"
+msgstr "ইমুলেশন (_E)"
+
+#: src/snes9x.ui:1578
+msgid "Run / _Continue"
+msgstr "চালান / চালিয়ে যান (_C)"
+
+#: src/snes9x.ui:1589
+msgid "_Pause"
+msgstr "সাময়িক বিরতি (_P)"
+
+#: src/snes9x.ui:1607
+msgid "Load _Movie…"
+msgstr "মুভি লোড করুন (_M)…"
+
+#: src/snes9x.ui:1619
+msgid "R_ecord Movie…"
+msgstr "মুভি রেকর্ড করুন (_e)…"
+
+#: src/snes9x.ui:1631
+msgid "_Stop Recording"
+msgstr "রেকর্ডিং বন্ধ করুন (_S)"
+
+#: src/snes9x.ui:1643
+msgid "_Jump to Frame…"
+msgstr "ফ্রেমে যান (_J)…"
+
+#: src/snes9x.ui:1661
+msgid "Sy_nc Clients"
+msgstr "ক্লায়েন্ট সিঙ্ক করুন (_n)"
+
+#: src/snes9x.ui:1678
+msgid "Reset"
+msgstr "রিসেট"
+
+#: src/snes9x.ui:1690
+msgid "Soft _Reset"
+msgstr "সফট রিসেট (_R)"
+
+#: src/snes9x.ui:1707
+msgid "_View"
+msgstr "প্রদর্শন (_V)"
+
+#: src/snes9x.ui:1715
+msgid "_Toggle Menubar"
+msgstr "মেনুবার টগল করুন (_T)"
+
+#: src/snes9x.ui:1732
+msgid "_Change Size"
+msgstr "সাইজ পরিবর্তন করুন (_C)"
+
+#: src/snes9x.ui:1746
+msgid "_1×"
+msgstr "১× (_1)"
+
+#: src/snes9x.ui:1755
+msgid "_2×"
+msgstr "২× (_2)"
+
+#: src/snes9x.ui:1764
+msgid "_3×"
+msgstr "৩× (_3)"
+
+#: src/snes9x.ui:1773
+msgid "_4×"
+msgstr "৪× (_4)"
+
+#: src/snes9x.ui:1782
+msgid "_5×"
+msgstr "৫× (_5)"
+
+#: src/snes9x.ui:1791
+msgid "_6×"
+msgstr "৬× (_6)"
+
+#: src/snes9x.ui:1800
+msgid "_7×"
+msgstr "৭× (_7)"
+
+#: src/snes9x.ui:1809
+msgid "_8×"
+msgstr "৮× (_8)"
+
+#: src/snes9x.ui:1818
+msgid "_9×"
+msgstr "৯× (_9)"
+
+#: src/snes9x.ui:1827
+msgid "1_0×"
+msgstr "১০× (_0)"
+
+#: src/snes9x.ui:1844
+msgid "gtk-fullscreen"
+msgstr "ফুলস্ক্রিন"
+
+#: src/snes9x.ui:1858
+msgid "_Options"
+msgstr "অপশনসমূহ (_O)"
+
+#: src/snes9x.ui:1867
+msgid "Controller Ports"
+msgstr "কন্ট্রোলার পোর্টসমূহ"
+
+#: src/snes9x.ui:1876
+msgid "SNES Port 1"
+msgstr "SNES পোর্ট ১"
+
+#: src/snes9x.ui:1886 src/snes9x.ui:1930
+msgid "Joypad"
+msgstr "জয়প্যাড"
+
+#: src/snes9x.ui:1895 src/snes9x.ui:1939
+msgid "Mouse"
+msgstr "মাউস"
+
+#: src/snes9x.ui:1905 src/snes9x.ui:1959
+msgid "Superscope"
+msgstr "সুপারস্কোপ"
+
+#: src/snes9x.ui:1920
+msgid "SNES Port 2"
+msgstr "SNES পোর্ট ২"
+
+#: src/snes9x.ui:1949
+msgid "Multitap"
+msgstr "মাল্টিট্যাপ"
+
+#: src/snes9x.ui:1970
+msg2 "SNES port 2"
+msgid "None"
+msgstr "কিছুই না"
+
+#: src/snes9x.ui:1996
+msgid "_Cheats…"
+msgstr "চিটস (_C)…"
+
+#: src/snes9x.ui:2010
+msgid "_Shader Parameters…"
+msgstr "শেডার প্যারামিটার (_S)…"
+
+#: src/snes9x.ui:2026
+msgid "gtk-preferences"
+msgstr "পছন্দসমূহ"
+
+#: src/snes9x.ui:2068
+msgid "Open Multiple ROM Images (MultiCart)"
+msgstr "একাধিক ROM ইমেজ খুলুন (MultiCart)"
+
+#: src/snes9x.ui:2131
+msgid "Slot A:"
+msgstr "স্লট A:"
+
+#: src/snes9x.ui:2143
+msgid "Select an Image for Slot A"
+msgstr "স্লট A এর জন্য একটি ইমেজ নির্বাচন করুন"
+
+#: src/snes9x.ui:2167
+msgid "Slot B:"
+msgstr "স্লট B:"
+
+#: src/snes9x.ui:2179
+msgid "Select an Image for Slot B"
+msgstr "স্লট B এর জন্য একটি ইমেজ নির্বাচন করুন"
+
+#: src/snes9x.ui:2211
+msgid "SuperSnes9x NetPlay"
+msgstr "SuperSnes9x নেটপ্লে"
+
+#: src/snes9x.ui:2288
+msgid ""
+"The game chosen will be loaded before connecting. This field can be blank if "
+"the server will send the ROM image"
+msgstr ""
+"সংযোগ করার আগে নির্বাচিত গেমটি লোড করা হবে। সার্ভার যদি ROM ইমেজ পাঠায়, "
+"তবে এই ঘরটি ফাঁকা রাখা যেতে পারে"
+
+#: src/snes9x.ui:2303 src/snes9x.ui:4001 src/snes9x.ui:5116 src/snes9x.ui:5131
+#: src/snes9x.ui:5148 src/snes9x.ui:5165 src/snes9x.ui:5182
+msgid "Browse…"
+msgstr "ব্রাউজ করুন…"
+
+#: src/snes9x.ui:2325
+msgid "Clear entry"
+msgstr "এন্ট্রি মুছে ফেলুন"
+
+#: src/snes9x.ui:2345
+msgid "<b>ROM Image</b>"
+msgstr "<b>ROM ইমেজ</b>"
+
+#: src/snes9x.ui:2374
+msgid "Connect to another computer"
+msgstr "অন্য কম্পিউটারের সাথে সংযোগ করুন"
+
+#: src/snes9x.ui:2378
+msgid "Connect to another computer that is running SuperSnes9x NetPlay as a server"
+msgstr "সার্ভার হিসেবে চলমান অন্য একটি কম্পিউটারের SuperSnes9x নেটপ্লে-র সাথে সংযোগ করুন"
+
+#: src/snes9x.ui:2398
+msgid "Name or IP address:"
+msgstr "নাম অথবা আইপি ঠিকানা:"
+
+#: src/snes9x.ui:2410
+msgid "Domain name or internet protocol address of a remote computer"
+msgstr "একটি রিমোট কম্পিউটারের ডোমেন নাম বা ইন্টারনেট প্রোটোকল (IP) ঠিকানা"
+
+#: src/snes9x.ui:2426
+msgid "Port:"
+msgstr "পোর্ট:"
+
+#: src/snes9x.ui:2438
+msgid "Connect to specified TCP port on remote computer"
+msgstr "রিমোট কম্পিউটারের নির্দিষ্ট TCP পোর্টে সংযোগ করুন"
+
+#: src/snes9x.ui:2463
+msgid "Act as a server"
+msgstr "সার্ভার হিসেবে কাজ করুন"
+
+#: src/snes9x.ui:2467
+msgid ""
+"Host a game on this computer as Player 1, requiring extra throughput to "
+"support multitple users"
+msgstr ""
+"প্লেয়ার ১ হিসেবে এই কম্পিউটারে গেম হোস্ট করুন, একাধিক ইউজার সমর্থনের জন্য অতিরিক্ত থ্রুপুট প্রয়োজন"
+
+#: src/snes9x.ui:2487
+msgid "<b>Server</b>"
+msgstr "<b>সার্ভার</b>"
+
+#: src/snes9x.ui:2517
+msgid "Sync using reset"
+msgstr "রিসেট ব্যবহার করে সিঙ্ক করুন"
+
+#: src/snes9x.ui:2521
+msgid ""
+"Reset the game when players join instead of transferring potentially "
+"unreliable freeze states"
+msgstr ""
+"সম্ভাব্য নির্ভরযোগ্য নয় এমন ফ্রিজ স্টেট ট্রান্সফার করার পরিবর্তে প্লেয়াররা যোগ দিলে গেমটি রিসেট করুন"
+
+#: src/snes9x.ui:2532
+msgid "Send ROM image to clients"
+msgstr "ক্লায়েন্টদের কাছে ROM ইমেজ পাঠান"
+
+#: src/snes9x.ui:2536
+msgid ""
+"Send the running game image to players instead of requiring them to have "
+"their own copies"
+msgstr ""
+"প্লেয়ারদের নিজস্ব কপির প্রয়োজন হওয়ার পরিবর্তে তাদের কাছে চলমান গেমের ইমেজটি পাঠান"
+
+#: src/snes9x.ui:2554
+msgid "Default port:"
+msgstr "ডিফল্ট পোর্ট:"
+
+#: src/snes9x.ui:2566
+msgid "TCP port used as a connection point for remote clients"
+msgstr "রিমোট ক্লায়েন্টদের সংযোগের পয়েন্ট হিসেবে ব্যবহৃত TCP পোর্ট"
+
+#: src/snes9x.ui:2598
+msgid "Ask server to pause when"
+msgstr "সার্ভারকে সাময়িক বিরতি দিতে বলুন যখন"
+
+#: src/snes9x.ui:2652
+msgid "<b>Settings</b>"
+msgstr "<b>সেটিংস</b>"
+
+#: src/snes9x.ui:2680
+msgid "SuperSnes9x Preferences"
+msgstr "SuperSnes9x পছন্দসমূহ"
+
+#: src/snes9x.ui:2796
+msgid "Use fullscreen on ROM open"
+msgstr "ROM খোলার সময় ফুলস্ক্রিন ব্যবহার করুন"
+
+#: src/snes9x.ui:2800
+msgid "Go to fullscreen mode immediately after opening a ROM"
+msgstr "একটি ROM খোলার সাথে সাথেই ফুলস্ক্রিন মোডে চলে যান"
+
+#: src/snes9x.ui:2812
+msgid "Show local time"
+msgstr "স্থানীয় সময় দেখান"
+
+#: src/snes9x.ui:2827
+msgid "Show frame rate"
+msgstr "ফ্রেম রেট দেখান"
+
+#: src/snes9x.ui:2842
+msgid "Show pressed keys"
+msgstr "প্রেস করা কীসমূহ দেখান"
+
+#: src/snes9x.ui:2857
+msgid "Show fast‑forward and pause indicators"
+msgstr "ফাস্ট-ফরওয়ার্ড এবং পজ ইন্ডিকেটর দেখান"
+
+#: src/snes9x.ui:2872
+msgid "Use overscanned height"
+msgstr "ওভারস্ক্যানড হাইট ব্যবহার করুন"
+
+#: src/snes9x.ui:2876
+msgid "Use SNES extended height. Will probably cause letterboxing"
+msgstr "SNES বর্ধিত উচ্চতা ব্যবহার করুন। এর ফলে লেটারবক্সিং হতে পারে"
+
+#: src/snes9x.ui:2898
+msgid "On‑screen display size:"
+msgstr "অন-স্ক্রিন ডিসপ্লে সাইজ:"
+
+#: src/snes9x.ui:2909
+msgid "The size of on‑screen display messages in pixels"
+msgstr "পিক্সেলে অন-স্ক্রিন ডিসপ্লে বার্তার সাইজ"
+
+#: src/snes9x.ui:2940
+msgid "Change fullscreen resolution:"
+msgstr "ফুলস্ক্রিন রেজোলিউশন পরিবর্তন করুন:"
+
+#: src/snes9x.ui:2944
+msgid "Changes the screen resolution when running SuperSnes9x in fullscreen mode"
+msgstr "ফুলস্ক্রিন মোডে SuperSnes9x চালানোর সময় স্ক্রিন রেজোলিউশন পরিবর্তন করে"
+
+#: src/snes9x.ui:2989
+msgid "Basic Settings"
+msgstr "বেসিক সেটিংস"
+
+#: src/snes9x.ui:3030
+msgid "Scale image to fit window"
+msgstr "উইন্ডোতে ফিট করার জন্য ইমেজ স্কেল করুন"
+
+#: src/snes9x.ui:3034
+msgid "Scales the image so no black bars are present"
+msgstr "ইমেজটি এমনভাবে স্কেল করে যাতে কোনো ব্ল্যাক বার না থাকে"
+
+#: src/snes9x.ui:3054
+msgid "Aspect ratio:"
+msgstr "অ্যাসপেক্ট রেশিও:"
+
+#: src/snes9x.ui:3089
+msgid "Maintain aspect ratio"
+msgstr "অ্যাসপেক্ট রেশিও বজায় রাখুন"
+
+#: src/snes9x.ui:3093
+msgid "Scales the image as large as possible without distortion"
+msgstr "কোনো বিকৃতি ছাড়াই ইমেজটি যত বড় করা সম্ভব স্কেল করে"
+
+#: src/snes9x.ui:3108
+msgid "Allows scaling and filtering to use multiple processors"
+msgstr "একাধিক প্রসেসর ব্যবহার করে স্কেলিং এবং ফিল্টারিংয়ের অনুমতি দেয়"
+
+#: src/snes9x.ui:3111
+msgid "Use"
+msgstr "ব্যবহার করুন"
+
+#: src/snes9x.ui:3170
+msgid "High‑resolution effect:"
+msgstr "হাই-রেজোলিউশন ইফেক্ট:"
+
+#: src/snes9x.ui:3213
+msgid "Apply scaling filter:"
+msgstr "স্কেলিং ফিল্টার প্রয়োগ করুন:"
+
+#: src/snes9x.ui:3281
+msgid "Video preset:"
+msgstr "ভিডিও প্রিসেট:"
+
+#: src/snes9x.ui:3295
+msgid "Composite"
+msgstr "কম্পোজিট"
+
+#: src/snes9x.ui:3309
+msgid "S‑Video"
+msgstr "S-ভিডিও"
+
+#: src/snes9x.ui:3323
+msgid "RGB"
+msgstr "RGB"
+
+#: src/snes9x.ui:3337
+msgid "Monochrome"
+msgstr "মনোক্রোম (একক রঙ)"
+
+#: src/snes9x.ui:3378
+msgid "Artifacts:"
+msgstr "আর্টিফ্যাক্টস:"
+
+#: src/snes9x.ui:3393
+msgid "Sharpness:"
+msgstr "শার্পনেস (তীক্ষ্ণতা):"
+
+#: src/snes9x.ui:3408
+msgid "Brightness:"
+msgstr "ব্রাইটনেস (উজ্জ্বলতা):"
+
+#: src/snes9x.ui:3423
+msgid "Contrast:"
+msgstr "কনট্রাস্ট:"
+
+#: src/snes9x.ui:3438
+msgid "Saturation:"
+msgstr "স্যাচুরেশন (রঙের ঘনত্ব):"
+
+#: src/snes9x.ui:3453
+msgid "Hue:"
+msgstr "হিউ (রঙের আভা):"
+
+#: src/snes9x.ui:3654
+msgid "Gamma:"
+msgstr "গামা:"
+
+#: src/snes9x.ui:3669
+msgid "Fringing:"
+msgstr "ফ্রিঞ্জিং:"
+
+#: src/snes9x.ui:3684
+msgid "Bleed:"
+msgstr "ব্লিড (রঙ ছড়িয়ে পড়া):"
+
+#: src/snes9x.ui:3699
+msgid "Resolution:"
+msgstr "রেজোলিউশন:"
+
+#: src/snes9x.ui:3729
+msgid "Merge odd and even fields"
+msgstr "বিজোড় এবং জোড় ফিল্ড একত্রিত করুন"
+
+#: src/snes9x.ui:3751 src/snes9x.ui:3810
+msgid "Scanline intensity:"
+msgstr "স্ক্যানলাইন তীব্রতা:"
+
+#: src/snes9x.ui:3855
+msgid "Scaling"
+msgstr "স্কেলিং"
+
+#: src/snes9x.ui:3897
+msgid "Bilinear‐filter output"
+msgstr "বাইলাইনার-ফিল্টার আউটপুট"
+
+#: src/snes9x.ui:3912
+msgid "Use best settings for FreeSync/G‑Sync when in fullscreen"
+msgstr "ফুলস্ক্রিনে থাকার সময় FreeSync/G-Sync এর জন্য সেরা সেটিংস ব্যবহার করুন"
+
+#: src/snes9x.ui:3933
+msgid "Sync to vertical blank"
+msgstr "ভার্টিকাল ব্ল্যাঙ্কে সিঙ্ক করুন"
+
+#: src/snes9x.ui:3937
+msgid "Sync the image to the vertical retrace to stop tearing"
+msgstr "স্ক্রিন টিয়ারিং বন্ধ করতে ইমেজটি ভার্টিকাল রিট্রেসের সাথে সিঙ্ক করুন"
+
+#: src/snes9x.ui:3949
+msgid "Reduce input lag"
+msgstr "ইনপুট ল্যাগ কমান"
+
+#: src/snes9x.ui:3953
+msgid ""
+"Sync the program with the video output after every displayed frame to reduce "
+"input latency"
+msgstr ""
+"ইনপুট লেটেন্সি কমানোর জন্য প্রতিটি প্রদর্শিত ফ্রেমের পর প্রোগ্রামটিকে ভিডিও আউটপুটের সাথে সিঙ্ক করুন"
+
+#: src/snes9x.ui:3969
+msgid "Shader:"
+msgstr "শেডার:"
+
+#: src/snes9x.ui:4033
+msgid "Force an inverted byte‑ordering"
+msgstr "একটি ইনভার্টেড বাইট-অর্ডারিং বাধ্য করুন"
+
+#: src/snes9x.ui:4037
+msgid ""
+"Forces a swapped byte‑ordering for cases where the system’s endian is used "
+"instead of the video card"
+msgstr ""
+"ভিডিও কার্ডের পরিবর্তে সিস্টেমের এন্ডিয়ান ব্যবহৃত হওয়ার ক্ষেত্রে একটি সোয়্যাপড বাইট-অর্ডারিং বাধ্য করে"
+
+#: src/snes9x.ui:4061
+msgid "Hardware Acceleration"
+msgstr "হার্ডওয়্যার এক্সিলারেশন"
+
+#: src/snes9x.ui:4090
+msgid "Display"
+msgstr "ডিসপ্লে"
+
+#: src/snes9x.ui:4143
+msgid "Sound driver:"
+msgstr "সাউন্ড ড্রাইভার:"
+
+#: src/snes9x.ui:4178
+msgid "Automatically adjust input rate to display"
+msgstr "ডিসপ্লের সাথে ইনপুট রেট স্বয়ংক্রিয়ভাবে সমন্বয় করুন"
+
+#: src/snes9x.ui:4182
+msgid "Sets the correct input rate based on the display’s refresh rate"
+msgstr "ডিসপ্লের রিফ্রেশ রেটের ওপর ভিত্তি করে সঠিক ইনপুট রেট নির্ধারণ করে"
+
+#: src/snes9x.ui:4194
+msgid "Dynamic rate control"
+msgstr "ডাইনামিক রেট কন্ট্রোল"
+
+#: src/snes9x.ui:4198
+msgid "Smooth out slight hiccups in sound input rate"
+msgstr "সাউন্ড ইনপুট রেটের সামান্য সমস্যাগুলো দূর করে মসৃণ করে"
+
+#: src/snes9x.ui:4209
+msgid "Mute sound output"
+msgstr "সাউন্ড আউটপুট মিউট করুন"
+
+#: src/snes9x.ui:4213
+msgid "Disables output of sound"
+msgstr "সাউন্ডের আউটপুট নিষ্ক্রিয় করে"
+
+#: src/snes9x.ui:4225
+msgid "Mute sound when using turbo or rewind"
+msgstr "টার্বো বা রিওয়াইন্ড ব্যবহারের সময় সাউন্ড মিউট করুন"
+
+#: src/snes9x.ui:4229
+msgid "Disables output of sound when using turbo or rewind"
+msgstr "টার্বো বা রিওয়াইন্ড ব্যবহারের সময় সাউন্ডের আউটপুট নিষ্ক্রিয় করে"
+
+#: src/snes9x.ui:4252
+msgid "Playback rate:"
+msgstr "প্লেব্যাক রেট:"
+
+#: src/snes9x.ui:4310
+msgid "Buffer size:"
+msgstr "বাফার সাইজ:"
+
+#: src/snes9x.ui:4324
+msgid "Dynamic rate limit:"
+msgstr "ডাইনামিক রেট লিমিট:"
+
+#: src/snes9x.ui:4369
+msgid "Input rate:"
+msgstr "ইনপুট রেট:"
+
+#: src/snes9x.ui:4382
+msgid ""
+"Adjust to produce more or less data. Decrease the rate if experiencing "
+"crackling. Increase the rate if experiencing frame rate stuttering. Best "
+"used with the “Sound buffer synchronization” option."
+msgstr ""
+"কম বা বেশি ডাটা তৈরি করতে সমন্বয় করুন। খড়খড়ে শব্দ হলে রেট কমান। ফ্রেম রেট আটকে গেলে রেট বাড়ান। "
+"“সাউন্ড বাফার সিঙ্ক্রোনাইজেশন” অপশনের সাথে এটি সবচেয়ে ভালো কাজ করে।"
+
+#: src/snes9x.ui:4432
+msgid "Video rate:"
+msgstr "ভিডিও রেট:"
+
+#: src/snes9x.ui:4469
+msgid "<b>Sound Settings</b>"
+msgstr "<b>সাউন্ড সেটিংস</b>"
+
+#: src/snes9x.ui:4503 src/snes9x.ui:8730
+msgid "Sound"
+msgstr "সাউন্ড"
+
+#: src/snes9x.ui:4561
+msgid "Throttling method:"
+msgstr "থ্রটলিং পদ্ধতি:"
+
+#: src/snes9x.ui:4603
+msgid "<b>Speed Control</b>"
+msgstr "<b>স্পীড কন্ট্রোল</b>"
+
+#: src/snes9x.ui:4641
+msgid "Rewind buffer size (MB):"
+msgstr "রিওয়াইন্ড বাফার সাইজ (MB):"
+
+#: src/snes9x.ui:4683
+msgid "Number of frames between rewind snapshots:"
+msgstr "রিওয়াইন্ড স্ন্যাপশটের মধ্যকার ফ্রেম সংখ্যা:"
+
+#: src/snes9x.ui:4724
+msgid "<b>Rewind Settings</b>"
+msgstr "<b>রিওয়াইন্ড সেটিংস</b>"
+
+#: src/snes9x.ui:4755
+msgid "Allow invalid VRAM access"
+msgstr "অবৈধ VRAM অ্যাক্সেসের অনুমতি দিন"
+
+#: src/snes9x.ui:4759
+msgid ""
+"Allows ROM hacks to write to screen at the wrong time. Only use if you know "
+"your ROM hack expects this"
+msgstr ""
+"ভুল সময়ে ROM হ্যাকগুলোকে স্ক্রিনে লেখার অনুমতি দেয়। আপনার ROM হ্যাকটি এটি প্রত্যাশা করে "
+"তা নিশ্চিত হলেই কেবল এটি ব্যবহার করুন"
+
+#: src/snes9x.ui:4769
+msgid "Allow opposing dpad directions"
+msgstr "বিপরীত dpad দিকের অনুমতি দিন"
+
+#: src/snes9x.ui:4773
+msgid "Let left and right or up and down be pressed at the same time"
+msgstr "বাম ও ডান অথবা উপর ও নিচ একই সময়ে প্রেস করার অনুমতি দিন"
+
+#: src/snes9x.ui:4784
+msgid "Overclock CPU"
+msgstr "CPU ওভারক্লক করুন"
+
+#: src/snes9x.ui:4788
+msgid "Reduces slowdown, but has potential to break games"
+msgstr "স্লোডাউন কমায়, তবে গেম ক্র্যাশ বা ভেঙে যাওয়ার সম্ভাবনা থাকে"
+
+#: src/snes9x.ui:4799
+msgid "Remove sprite limit"
+msgstr "স্প্রাইট লিমিট সরিয়ে ফেলুন"
+
+#: src/snes9x.ui:4803
+msgid "Reduces flicker, but may cause graphical artifacts"
+msgstr "ঝিলিক বা ফ্লিকার কমায়, তবে গ্রাফিক্যাল ত্রুটি ঘটাতে পারে"
+
+#: src/snes9x.ui:4814
+msgid "Redirect echo buffer overflow"
+msgstr "ইকো বাফার ওভারফ্লো রিডাইরেক্ট করুন"
+
+#: src/snes9x.ui:4818
+msgid "Allows old addmusic hacks to work, but will likely hurt other games"
+msgstr "পুরানো addmusic হ্যাকগুলোকে কাজ করার অনুমতি দেয়, তবে অন্যান্য গেমের ক্ষতি করতে পারে"
+
+#: src/snes9x.ui:4836
+msgid "SuperFX clock speed %:"
+msgstr "SuperFX ক্লক স্পীড %:"
+
+#: src/snes9x.ui:4875
+msgid "Gaussian is the correct behavior for SNES hardware"
+msgstr "SNES হার্ডওয়্যারের জন্য গাউসিয়ান হলো সঠিক আচরণ"
+
+#: src/snes9x.ui:4882
+msgid "Sound filter:"
+msgstr "সাউন্ড ফিল্টার:"
+
+#: src/snes9x.ui:4919
+msgid "<b>Hacks</b>"
+msgstr "<b>হ্যাকস</b>"
+
+#: src/snes9x.ui:4961 src/snes9x.ui:7147
+msgid "Emulation"
+msgstr "ইমুলেশন"
+
+#: src/snes9x.ui:5202
+msgid "SRAM:"
+msgstr "SRAM:"
+
+#: src/snes9x.ui:5214
+msgid "Save states:"
+msgstr "সংরক্ষিত স্টেটসমূহ:"
+
+#: src/snes9x.ui:5228
+msgid "Cheats:"
+msgstr "চিটস:"
+
+#: src/snes9x.ui:5242
+msgid "Patches:"
+msgstr "প্যাচেস:"
+
+#: src/snes9x.ui:5256
+msgid "Exports:"
+msgstr "এক্সপোর্টস:"
+
+#: src/snes9x.ui:5280
+msgid "<b>Game Data Locations</b>"
+msgstr "<b>গেম ডাটা লোকেশন</b>"
+
+#: src/snes9x.ui:5313
+msgid "Save SRAM:"
+msgstr "SRAM সংরক্ষণ:"
+
+#: src/snes9x.ui:5325
+msgid ""
+"Automatically save the game’s SRAM at this interval. Setting this to 0 will "
+"only save when quitting or changing ROMs"
+msgstr ""
+"এই নির্দিষ্ট বিরতিতে গেমের SRAM স্বয়ংক্রিয়ভাবে সংরক্ষণ করুন। এটি ০ সেট করলে "
+"কেবলমাত্র গেম বন্ধ করার সময় বা ROM পরিবর্তন করার সময় সংরক্ষিত হবে"
+
+#: src/snes9x.ui:5355
+msgid "<b>Automatic Saving</b>"
+msgstr "<b>স্বয়ংক্রিয় সংরক্ষণ</b>"
+
+#: src/snes9x.ui:5392
+msgid "Files"
+msgstr "ফাইলসমূহ"
+
+#: src/snes9x.ui:5423
+msgid "<b>Joypad:</b>"
+msgstr "<b>জয়প্যাড:</b>"
+
+#: src/snes9x.ui:5464
+msgid "_Reset"
+msgstr "রিসেট (_R)"
+
+#: src/snes9x.ui:5492
+msgid "Swap with:"
+msgstr "বিনিময় করুন এর সাথে:"
+
+#: src/snes9x.ui:5520
+msgid "_Swap"
+msgstr "বিনিময় (_S)"
+
+#: src/snes9x.ui:5542
+msgid "Use _modifier keys (Ctrl, Shift, Alt) directly"
+msgstr "সরাসরি মডিফায়ার কী (Ctrl, Shift, Alt) ব্যবহার করুন (_m)"
+
+#: src/snes9x.ui:5546
+msgid "Allow using modifier keys as independent keys instead of modifiers"
+msgstr "মডিফায়ার কীসমূহকে মডিফায়ার হিসেবে ব্যবহারের বদলে স্বাধীন কী হিসেবে ব্যবহারের অনুমতি দিন"
+
+#: src/snes9x.ui:5581
+msgid "Up"
+msgstr "উপরে"
+
+#: src/snes9x.ui:5593
+msgid "Down"
+msgstr "নিচে"
+
+#: src/snes9x.ui:5607
+msgid "Left"
+msgstr "বামে"
+
+#: src/snes9x.ui:5621
+msgid "Right"
+msgstr "ডানে"
+
+#: src/snes9x.ui:5635
+msgid "Start"
+msgstr "স্টার্ট"
+
+#: src/snes9x.ui:5649
+msgid "Select"
+msgstr "সিলেক্ট"
+
+#: src/snes9x.ui:5790 src/snes9x.ui:6020 src/snes9x.ui:6232
+msgid "A"
+msgstr "A"
+
+#: src/snes9x.ui:5802 src/snes9x.ui:6032 src/snes9x.ui:6244
+msgid "B"
+msgstr "B"
+
+#: src/snes9x.ui:5816 src/snes9x.ui:6046 src/snes9x.ui:6258
+msgid "X"
+msgstr "X"
+
+#: src/snes9x.ui:5830 src/snes9x.ui:6060 src/snes9x.ui:6272
+msgid "Y"
+msgstr "Y"
+
+#: src/snes9x.ui:5844 src/snes9x.ui:6074 src/snes9x.ui:6286
+msgid "L"
+msgstr "L"
+
+#: src/snes9x.ui:5858 src/snes9x.ui:6088 src/snes9x.ui:6300
+msgid "R"
+msgstr "R"
+
+#: src/snes9x.ui:5992
+msgid "Buttons"
+msgstr "বাটনসমূহ"
+
+#: src/snes9x.ui:6433
+msgid "<b>Sticky</b>"
+msgstr "<b>স্টিকি</b>"
+
+#: src/snes9x.ui:6449
+msgid "<b>Turbo</b>"
+msgstr "<b>টার্বো</b>"
+
+#: src/snes9x.ui:6468
+msgid "Turbo / Sticky Buttons"
+msgstr "টার্বো / স্টিকি বাটনসমূহ"
+
+#: src/snes9x.ui:6505
+msgid "Set new axis bindings at:"
+msgstr "নতুন অক্ষ বাইন্ডিং নির্ধারণ করুন এখানে:"
+
+#: src/snes9x.ui:6517
+msgid ""
+"Changes the amount a joystick should be tilted to register a button press"
+msgstr ""
+"একটি বাটন প্রেস রেজিস্টার করার জন্য জয়স্টিক কতটা বাঁকাতে হবে তা পরিবর্তন করে"
+
+#: src/snes9x.ui:6536
+msgid "percent"
+msgstr "শতাংশ"
+
+#: src/snes9x.ui:6553
+msgid "<b>Joystick Axis Threshold</b>"
+msgstr "<b>জয়স্টিক অক্ষ থ্রেশহোল্ড</b>"
+
+#: src/snes9x.ui:6590
+msgid "Center all axes on all joysticks and press Calibrate."
+msgstr "সব জয়স্টিকের সব অক্ষ মাঝখানে আনুন এবং ক্যালিব্রেট প্রেস করুন।"
+
+#: src/snes9x.ui:6605
+msgid "Cali_brate"
+msgstr "ক্যালিব্রেট (_b)"
+
+#: src/snes9x.ui:6638
+msgid "<b>Calibration</b>"
+msgstr "<b>ক্যালিব্রেশন</b>"
+
+#: src/snes9x.ui:6659
+msgid "Joystick Options"
+msgstr "জয়স্টিক অপশনসমূহ"
+
+#: src/snes9x.ui:6677 src/snes9x.ui:9029
+msgid ""
+"<small>Click an entry and then press the desired keys or joystick button\n"
+"<tt>Escape</tt>: Move to next  <tt>Shift+Escape</tt>: Clear selected</small>"
+msgstr ""
+"<small>একটি এন্ট্রিতে ক্লিক করুন এবং তারপর কাঙ্খিত কী বা জয়স্টিক বাটন প্রেস করুন\n"
+"<tt>Escape</tt>: পরবর্তীতে যান  <tt>Shift+Escape</tt>: নির্বাচিতটি মুছুন</small>"
+
+#: src/snes9x.ui:6715
+msgid "Joypads"
+msgstr "জয়প্যাডসমূহ"
+
+#: src/snes9x.ui:6742
+msgid "<b>SuperSnes9x Emulator Shortcut Keys</b>"
+msgstr "<b>SuperSnes9x ইমুলেটর শর্টকাট কীসমূহ</b>"
+
+#: src/snes9x.ui:6793
+msgid "Soft reset"
+msgstr "সফট রিসেট"
+
+#: src/snes9x.ui:6807
+msgid "Hardware reset"
+msgstr "হার্ডওয়্যার রিসেট"
+
+#: src/snes9x.ui:6821
+msgid "Increase frame time"
+msgstr "ফ্রেম টাইম বাড়ান"
+
+#: src/snes9x.ui:6835
+msgid "Decrease frame time"
+msgstr "ফ্রেম টাইম কমান"
+
+#: src/snes9x.ui:6849
+msgid "Increase frame rate"
+msgstr "ফ্রেম রেট বাড়ান"
+
+#: src/snes9x.ui:6863
+msgid "Decrease frame rate"
+msgstr "ফ্রেম রেট কমান"
+
+#: src/snes9x.ui:6877
+msgid "Pause"
+msgstr "সাময়িক বিরতি"
+
+#: src/snes9x.ui:6891
+msgid "Toggle turbo"
+msgstr "টার্বো টগল করুন"
+
+#: src/snes9x.ui:6905
+msgid "Enable turbo"
+msgstr "টার্বো সক্রিয় করুন"
+
+#: src/snes9x.ui:6920
+msgid "Open ROM"
+msgstr "ROM খুলুন"
+
+#: src/snes9x.ui:7179
+msgid "Toggle BG layer 0"
+msgstr "BG লেয়ার ০ টগল করুন"
+
+#: src/snes9x.ui:7191
+msgid "Toggle BG layer 1"
+msgstr "BG লেয়ার ১ টগল করুন"
+
+#: src/snes9x.ui:7205
+msgid "Toggle BG layer 2"
+msgstr "BG লেয়ার ২ টগল করুন"
+
+#: src/snes9x.ui:7219
+msgid "Toggle BG layer 3"
+msgstr "BG লেয়ার ৩ টগল করুন"
+
+#: src/snes9x.ui:7233
+msgid "Toggle sprites"
+msgstr "স্প্রাইটস টগল করুন"
+
+#: src/snes9x.ui:7247
+msgid "Toggle forced backdrop color"
+msgstr "ফোর্সড ব্যাকড্রপ কালার টগল করুন"
+
+#: src/snes9x.ui:7261
+msgid "Screenshot"
+msgstr "স্ক্রিনশট"
+
+#: src/snes9x.ui:7275
+msgid "Toggle fullscreen"
+msgstr "ফুলস্ক্রিন টগল করুন"
+
+#: src/snes9x.ui:7439
+msgid "Graphics"
+msgstr "গ্রাফিক্স"
+
+#: src/snes9x.ui:7476
+msgid "Save current slot"
+msgstr "বর্তমান স্লট সংরক্ষণ করুন"
+
+#: src/snes9x.ui:7509
+msgid "Load current slot"
+msgstr "বর্তমান স্লট লোড করুন"
+
+#: src/snes9x.ui:7542
+msgid "Increment and save"
+msgstr "বৃদ্ধি করুন এবং সংরক্ষণ করুন"
+
+#: src/snes9x.ui:7575
+msgid "Decrement and load"
+msgstr "হ্রাস করুন এবং লোড করুন"
+
+#: src/snes9x.ui:7608
+msgid "Increment slot"
+msgstr "স্লট বাড়ান"
+
+#: src/snes9x.ui:7641
+msgid "Decrement slot"
+msgstr "স্লট কমান"
+
+#: src/snes9x.ui:7685
+msgid "<b>Quick save state</b>"
+msgstr "<b>কুইক সেভ স্টেট</b>"
+
+#: src/snes9x.ui:7700
+msgid "<b>Quick load state</b>"
+msgstr "<b>কুইক লোড স্টেট</b>"
+
+#: src/snes9x.ui:7715 src/snes9x.ui:7855
+msgid "Slot 0"
+msgstr "স্লট ০"
+
+#: src/snes9x.ui:7729 src/snes9x.ui:7871
+msgid "Slot 1"
+msgstr "স্লট ১"
+
+#: src/snes9x.ui:7743 src/snes9x.ui:7887
+msgid "Slot 2"
+msgstr "স্লট ২"
+
+#: src/snes9x.ui:7757 src/snes9x.ui:7903
+msgid "Slot 3"
+msgstr "স্লট ৩"
+
+#: src/snes9x.ui:7771 src/snes9x.ui:7919
+msgid "Slot 4"
+msgstr "স্লট ৪"
+
+#: src/snes9x.ui:7785 src/snes9x.ui:7935
+msgid "Slot 5"
+msgstr "স্লট ৫"
+
+#: src/snes9x.ui:7799 src/snes9x.ui:7951
+msgid "Slot 6"
+msgstr "স্লট ৬"
+
+#: src/snes9x.ui:7813 src/snes9x.ui:7967
+msgid "Slot 7"
+msgstr "স্লট ৭"
+
+#: src/snes9x.ui:7827 src/snes9x.ui:7983
+msgid "Slot 8"
+msgstr "স্লট ৮"
+
+#: src/snes9x.ui:7841 src/snes9x.ui:7999
+msgid "Slot 9"
+msgstr "স্লট ৯"
+
+#: src/snes9x.ui:8438
+msgid "Toggle sound channel 0"
+msgstr "সাউন্ড চ্যানেল ০ টগল করুন"
+
+#: src/snes9x.ui:8450
+msgid "Toggle sound channel 1"
+msgstr "সাউন্ড চ্যানেল ১ টগল করুন"
+
+#: src/snes9x.ui:8464
+msgid "Toggle sound channel 2"
+msgstr "সাউন্ড channel ২ টগল করুন"
+
+#: src/snes9x.ui:8478
+msgid "Toggle sound channel 3"
+msgstr "সাউন্ড চ্যানেল ৩ টগল করুন"
+
+#: src/snes9x.ui:8492
+msgid "Toggle sound channel 4"
+msgstr "সাউন্ড চ্যানেল ৪ টগল করুন"
+
+#: src/snes9x.ui:8506
+msgid "Toggle sound channel 5"
+msgstr "সাউন্ড চ্যানেল ৫ টগল করুন"
+
+#: src/snes9x.ui:8520
+msgid "Toggle sound channel 6"
+msgstr "সাউন্ড চ্যানেল ৬ টগল করুন"
+
+#: src/snes9x.ui:8534
+msgid "Toggle sound channel 7"
+msgstr "সাউন্ড চ্যানেল ৭ টগল করুন"
+
+#: src/snes9x.ui:8548
+msgid "Toggle all sound channels"
+msgstr "সব সাউন্ড চ্যানেল টগল করুন"
+
+#: src/snes9x.ui:8753
+msgid "Seek to frame"
+msgstr "ফ্রেমে সন্ধান করুন (Seek)"
+
+#: src/snes9x.ui:8768
+msgid "Load Movie"
+msgstr "মুভি লোড করুন"
+
+#: src/snes9x.ui:8783
+msgid "Stop movie recording"
+msgstr "মুভি রেকর্ডিং বন্ধ করুন"
+
+#: src/snes9x.ui:8798
+msgid "Begin movie recording"
+msgstr "মুভি রেকর্ডিং শুরু করুন"
+
+#: src/snes9x.ui:8813
+msgid "Save SPC"
+msgstr "SPC সংরক্ষণ করুন"
+
+#: src/snes9x.ui:8913
+msgid "Swap controllers 1 & 2"
+msgstr "কন্ট্রোলার ১ এবং ২ বিনিময় করুন"
+
+#: src/snes9x.ui:8944
+msgid "Rewind"
+msgstr "রিওয়াইন্ড"
+
+#: src/snes9x.ui:8975
+msgid "Capture/release mouse"
+msgstr "মাউস ক্যাপচার/রিলিজ করুন"
+
+#: src/snes9x.ui:9011
+msgid "Misc"
+msgstr "বিবিধ"
+
+#: src/snes9x.ui:9067
+msgid "Shortcuts"
+msgstr "শর্টকাটসমূহ"
+
+#: src/snes9x.ui:9106
+msgid "Pause emulation when switching away from SuperSnes9x"
+msgstr "SuperSnes9x থেকে অন্য কোথাও চলে গেলে ইমুলেশন সাময়িক বিরতি দিন"
+
+#: src/snes9x.ui:9120
+msgid "Force‑enable button and menu icons"
+msgstr "বাটন এবং মেনু আইকন বাধ্যতামূলক সক্রিয় করুন"
+
+#: src/snes9x.ui:9141
+msgid "The <tt>Esc</tt> key should:"
+msgstr "<tt>Esc</tt> কী-টির করা উচিত:"
+
+#: src/snes9x.ui:9185
+msgid "Initial background:"
+msgstr "প্রারম্ভিক ব্যাকগ্রাউন্ড:"
+
+#: src/snes9x.ui:9226
+msgid "<b>Window Behavior</b>"
+msgstr "<b>উইন্ডো আচরণ</b>"
+
+#: src/snes9x.ui:9256
+msgid "Prevent the screensaver from activating"
+msgstr "স্ক্রিনসেভার সক্রিয় হওয়া প্রতিরোধ করুন"
+
+#: src/snes9x.ui:9276
+msgid "<b>Screensaver</b>"
+msgstr "<b>স্ক্রিনসেভার</b>"
+
+#: src/snes9x.ui:9310
+msgid "UI"
+msgstr "ইউজার ইন্টারফেস (UI)"
+
+#: src/snes9x.ui:9344
+msgid ""
+"  Snes9x – A Portable Super Nintendo Entertainment System™ Emulator\n"
+"\n"
+"  Snes9x homepage: http://www.snes9x.com/\n"
+"  Snes9x source code: https://github.com/shanytc/snes9x/\n"
+"\n"
+"  Permission to use, copy, modify and/or distribute Snes9x in both binary\n"
+"  and source form, for non‑commercial purposes, is hereby granted without\n"
+"  fee, providing that this license information and copyright notice appear\n"
+"  with all copies and any derived work.\n"
+"\n"
+"  This software is provided ‘as‑is’, without any express or implied\n"
+"  warranty. In no event shall the authors be held liable for any damages\n"
+"  arising from the use of this software or it’s derivatives.\n"
+"\n"
+"  Snes9x is freeware for PERSONAL USE only. Commercial users should\n"
+"  seek permission of the copyright holders first. Commercial use includes,\n"
+"  but is not limited to, charging money for Snes9x or software derived from\n"
+"  Snes9x, including Snes9x or derivatives in commercial game bundles, and/"
+"or\n"
+"  using Snes9x as a promotion for your commercial product.\n"
+"\n"
+"  The copyright holders request that bug fixes and improvements to the code\n"
+"  should be forwarded to them so everyone can benefit from the "
+"modifications\n"
+"  in future versions.\n"
+"\n"
+"  Super NES and Super Nintendo Entertainment System are trademarks of\n"
+"  Nintendo Co., Limited and its subsidiary companies."
+msgstr ""
+"  Snes9x – একটি পোর্টেবল সুপার নিন্টেন্ডো এন্টারটেইনমেন্ট সিস্টেম™ ইমুলেটর\n"
+"\n"
+"  Snes9x হোমপেজ: http://www.snes9x.com/\n"
+"  Snes9x সোর্স কোড: https://github.com/shanytc/snes9x/\n"
+"\n"
+"  অ-বাণিজ্যিক উদ্দেশ্যে বাইনারি এবং সোর্স উভয় ফর্মে Snes9x ব্যবহার, অনুলিপি, পরিবর্তন এবং/অথবা বিতরণের\n"
+"  অনুমতি বিনা মূল্যে প্রদান করা হলো, শর্ত থাকে যে এই লাইসেন্সের তথ্য এবং কপিরাইট নোটিশটি\n"
+"  সব কপি এবং যেকোনো প্রাপ্ত কাজের সাথে দৃশ্যমান থাকতে হবে।\n"
+"\n"
+"  এই সফটওয়্যারটি ‘যেমন আছে’ (as-is) ভিত্তিতে প্রদান করা হয়েছে, কোনো প্রকাশ্য বা উহ্য\n"
+"  ওয়ারেন্টি ছাড়াই। এই সফটওয়্যার বা এর থেকে তৈরি কোনো কিছু ব্যবহারের ফলে সৃষ্ট কোনো ক্ষতির জন্য\n"
+"  লেখকগণ কোনোভাবেই দায়ী থাকবেন না।\n"
+"\n"
+"  Snes9x শুধুমাত্র ব্যক্তিগত ব্যবহারের (PERSONAL USE) জন্য একটি ফ্রিওয়্যার। বাণিজ্যিক ব্যবহারকারীদের\n"
+"  প্রথমে কপিরাইট হোল্ডারদের অনুমতি নেওয়া উচিত। বাণিজ্যিক ব্যবহারের অন্তর্ভুক্ত কিন্তু সীমাবদ্ধ নয়,\n"
+"  Snes9x বা এর থেকে প্রাপ্ত সফটওয়্যারের জন্য অর্থ দাবি করা, বাণিজ্যিক গেম বান্ডেলে Snes9x বা এর ডেরিভেটিভস অন্তর্ভুক্ত করা,\n"
+"  এবং/অথবা আপনার বাণিজ্যিক পণ্যের প্রচার হিসেবে Snes9x ব্যবহার করা।\n"
+"\n"
+"  কপিরাইট হোল্ডারগণ অনুরোধ করছেন যে কোডের যেকোনো বাগ ফিক্স এবং উন্নতি যেন তাদের কাছে\n"
+"  পাঠানো হয় যাতে পরবর্তী ভার্সনগুলোতে এই পরিবর্তনগুলো থেকে সবাই উপকৃত হতে পারে।\n"
+"\n"
+"  Super NES এবং Super Nintendo Entertainment System হলো Nintendo Co., Limited\n"
+"  এবং এর সহযোগী প্রতিষ্ঠানসমূহের ট্রেডমার্ক।"
+
+# === Win32 strings (added by i18n/extract_strings.py) ===
+
+#: win32/rsrc/snes9x.rc
+msgid "!= (Not Equal To)"
+msgstr "!= (সমান নয়)"
+
+#: win32/wlanguage.h
+msgid "(Not Available)"
+msgstr "(উপলব্ধ নেই)"
+
+#: win32/wlanguage.h
+msgid "(not stored in movie file)"
+msgstr "(মুভি ফাইলে সংরক্ষিত নয়)"
+
+#: win32/rsrc/snes9x.rc
+msgid "(restart required)"
+msgstr "(রিস্টার্ট প্রয়োজন)"
+
+#: win32/rsrc/snes9x.rc
+msgid "0 (off)"
+msgstr "০ (বন্ধ)"
+
+#: win32/rsrc/snes9x.rc
+msgid "1 byte"
+msgstr "১ বাইট"
+
+#: win32/rsrc/snes9x.rc
+msgid "1 frame"
+msgstr "১ ফ্রেম"
+
+#: win32/rsrc/snes9x.rc
+msgid "10x"
+msgstr "১০ গুণ"
+
+#: win32/rsrc/snes9x.rc
+msgid "112ms"
+msgstr "১১২ মিলি-সেকেন্ড"
+
+#: win32/rsrc/snes9x.rc
+msgid "11KHz"
+msgstr "১১ কিলো-হার্জ"
+
+#: win32/rsrc/snes9x.rc
+msgid "128ms"
+msgstr "১২৮ মিলি-সেকেন্ড"
+
+#: win32/rsrc/snes9x.rc
+msgid "144ms"
+msgstr "১৪৪ মিলি-সেকেন্ড"
+
+#: win32/rsrc/snes9x.rc
+msgid "160ms"
+msgstr "১৬০ মিলি-সেকেন্ড"
+
+#: win32/rsrc/snes9x.rc
+msgid "16KHz"
+msgstr "১৬ কিলো-হার্জ"
+
+#: win32/rsrc/snes9x.rc
+msgid "16ms"
+msgstr "১৬ মিলি-সেকেন্ড"
+
+#: win32/rsrc/snes9x.rc
+msgid "176ms"
+msgstr "১৭৬ মিলি-সেকেন্ড"
+
+#: win32/rsrc/snes9x.rc
+msgid "192ms"
+msgstr "১৯২ মিলি-সেকেন্ড"
+
+#: win32/rsrc/snes9x.rc
+msgid "1x"
+msgstr "১ গুণ"
+
+#: win32/rsrc/snes9x.rc
+msgid "2 bytes"
+msgstr "২ বাইট"
+
+#: win32/rsrc/snes9x.rc
+msgid "2 frames"
+msgstr "২ ফ্রেম"
+
+#: win32/rsrc/snes9x.rc
+msgid "208ms"
+msgstr "২০৮ মিলি-সেকেন্ড"
+
+#: win32/rsrc/snes9x.rc
+msgid "22KHz"
+msgstr "২২ কিলো-হার্জ"
+
+#: win32/rsrc/snes9x.rc
+msgid "2x"
+msgstr "২ গুণ"
+
+#: win32/rsrc/snes9x.rc
+msgid "3 bytes"
+msgstr "৩ বাইট"
+
+#: win32/rsrc/snes9x.rc
+msgid "3 frames"
+msgstr "৩ ফ্রেম"
+
+#: win32/rsrc/snes9x.rc
+msgid "30KHz"
+msgstr "৩০ কিলো-হার্জ"
+
+#: win32/rsrc/snes9x.rc
+msgid "32KHz"
+msgstr "৩২ কিলো-হার্জ"
+
+#: win32/rsrc/snes9x.rc
+msgid "32ms"
+msgstr "৩২ মিলি-সেকেন্ড"
+
+#: win32/rsrc/snes9x.rc
+msgid "35KHz"
+msgstr "৩৫ কিলো-হার্জ"
+
+#: win32/rsrc/snes9x.rc
+msgid "3x"
+msgstr "৩ গুণ"
+
+#: win32/rsrc/snes9x.rc
+msgid "4 bytes"
+msgstr "৪ বাইট"
+
+#: win32/rsrc/snes9x.rc
+msgid "4 frames"
+msgstr "৪ ফ্রেম"
+
+#: win32/rsrc/snes9x.rc
+msgid "44KHz"
+msgstr "৪৪ কিলো-হার্জ"
+
+#: win32/rsrc/snes9x.rc
+msgid "48KHz"
+msgstr "৪৮ কিলো-হার্জ"
+
+#: win32/rsrc/snes9x.rc
+msgid "48ms"
+msgstr "৪৮ মিলি-সেকেন্ড"
+
+#: win32/rsrc/snes9x.rc
+msgid "4x"
+msgstr "৪ গুণ"
+
+#: win32/rsrc/snes9x.rc
+msgid "5x"
+msgstr "৫ গুণ"
+
+#: win32/rsrc/snes9x.rc
+msgid "64ms"
+msgstr "৬৪ মিলি-সেকেন্ড"
+
+#: win32/rsrc/snes9x.rc
+msgid "6x"
+msgstr "৬ গুণ"
+
+#: win32/rsrc/snes9x.rc
+msgid "7x"
+msgstr "৭ গুণ"
+
+#: win32/rsrc/snes9x.rc
+msgid "80ms"
+msgstr "৮০ মিলি-সেকেন্ড"
+
+#: win32/rsrc/snes9x.rc
+msgid "8KHz"
+msgstr "৮ কিলো-হার্জ"
+
+#: win32/rsrc/snes9x.rc
+msgid "8x"
+msgstr "৮ গুণ"
+
+#: win32/rsrc/snes9x.rc
+msgid "96ms"
+msgstr "৯৬ মিলি-সেকেন্ড"
+
+#: win32/rsrc/snes9x.rc
+msgid "9x"
+msgstr "৯ গুণ"
+
+#: win32/rsrc/snes9x.rc
+msgid "< (Less Than)"
+msgstr "< (কম)"
+
+#: win32/wlanguage.h
+msgid "<-- MISMATCH !!!"
+msgstr "<-- অমিল বা মিসম্যাচ !!!"
+
+#: win32/rsrc/snes9x.rc
+msgid "<= (Less Than or Equal to)"
+msgstr "<= (কম অথবা সমান)"
+
+#: win32/rsrc/snes9x.rc
+msgid "= (Equal To)"
+msgstr "= (সমান)"
+
+#: win32/rsrc/snes9x.rc
+msgid "> (Greater Than)"
+msgstr "> (বেশি)"
+
+#: win32/rsrc/snes9x.rc
+msgid ">= (Greater than or Equal To)"
+msgstr ">= (বেশি অথবা সমান)"
+
+#: win32/rsrc/snes9x.rc
+msgid "About"
+msgstr "সম্পর্কে"
+
+#: win32/rsrc/snes9x.rc
+msgid "Achievement List"
+msgstr "অর্জন তালিকা"
+
+#: win32/rsrc/snes9x.rc
+msgid "Act as Server"
+msgstr "সার্ভার হিসেবে কাজ করুন"
+
+#: win32/wlanguage.h
+msgid "Act As Server"
+msgstr "সার্ভার হিসেবে কাজ করুন"
+
+#: win32/rsrc/snes9x.rc
+msgid "Add"
+msgstr "যোগ করুন"
+
+#: win32/rsrc/snes9x.rc
+msgid "Add Cheat"
+msgstr "চিট যোগ করুন"
+
+#: win32/rsrc/snes9x.rc
+msgid "Add SuperSnes9x to registry for supported file types"
+msgstr "সমর্থিত ফাইল টাইপের জন্য রেজিস্ট্রি-তে SuperSnes9x যোগ করুন"
+
+#: win32/rsrc/snes9x.rc
+msgid "Address"
+msgstr "ঠিকানা (Address)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Address:"
+msgstr "ঠিকানা:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Adjustments"
+msgstr "সমন্বয়সমূহ"
+
+#: win32/wlanguage.h
+msgid "All files"
+msgstr "সব ফাইল"
+
+#: win32/rsrc/snes9x.rc
+msgid "all of SuperSnes9x's settings are stored in this file"
+msgstr "SuperSnes9x এর সব সেটিংস এই ফাইলে সংরক্ষিত থাকে"
+
+#: win32/rsrc/snes9x.rc
+msgid "Allow executable logo override"
+msgstr "এক্সিকিউটেবল লোগো ওভাররাইডের অনুমতি দিন"
+
+#: win32/rsrc/snes9x.rc
+msgid "Allow Invalid VRAM Access"
+msgstr "অবৈধ VRAM অ্যাক্সেসের অনুমতি দিন"
+
+#: win32/rsrc/snes9x.rc
+msgid "Allow Left+Rt/Up+Dn"
+msgstr "বাম+ডান/উপর+নিচ এর অনুমতি দিন"
+
+#: win32/rsrc/snes9x.rc
+msgid "APP - Emulator Settings"
+msgstr "অ্যাপ - ইমুলেটর সেটিংস"
+
+#: win32/rsrc/snes9x.rc
+msgid "Apply"
+msgstr "প্রয়োগ করুন"
+
+#: win32/rsrc/snes9x.rc
+msgid "Apply Adjustments"
+msgstr "সমন্বয়সমূহ প্রয়োগ করুন"
+
+#: win32/rsrc/snes9x.rc
+msgid "Apply Cheats"
+msgstr "চিটস প্রয়োগ করুন"
+
+#: win32/rsrc/snes9x.rc
+msgid "Ask for confirmation when saving/loading"
+msgstr "সংরক্ষণ/লোড করার সময় নিশ্চিতকরণের জন্য জিজ্ঞাসা করুন"
+
+#: win32/rsrc/snes9x.rc
+msgid "Ask Server to Pause when"
+msgstr "সার্ভারকে সাময়িক বিরতি দিতে বলুন যখন"
+
+#: win32/rsrc/snes9x.rc
+msgid "Author Info:"
+msgstr "লেখকের তথ্য:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Auto Layer Transparency"
+msgstr "স্বয়ংক্রিয় লেয়ার ট্রান্সপারেন্সি"
+
+#: win32/rsrc/snes9x.rc
+msgid "Auto update"
+msgstr "স্বয়ংক্রিয় আপডেট"
+
+#: win32/rsrc/snes9x.rc
+msgid "Auto-Assign"
+msgstr "স্বয়ংক্রিয় নির্ধারণ"
+
+#: win32/wlanguage.h
+msgid "Auto-Detect"
+msgstr "স্বয়ংক্রিয় সনাক্তকরণ"
+
+#: win32/rsrc/snes9x.rc
+msgid "Auto-Save S-RAM"
+msgstr "S-RAM স্বয়ংক্রিয় সংরক্ষণ"
+
+#: win32/wlanguage.h
+msgid "Autofire"
+msgstr "অটোফায়ার"
+
+#: win32/wlanguage.h
+msgid "Autohold"
+msgstr "অটোহোল্ড"
+
+#: win32/rsrc/snes9x.rc
+msgid "Automatic Input Rate"
+msgstr "স্বয়ংক্রিয় ইনপুট রেট"
+
+#: win32/rsrc/snes9x.rc
+msgid "Automatic, skip at most:"
+msgstr "স্বয়ংক্রিয়, সর্বোচ্চ স্কিপ করুন:"
+
+#: win32/wlanguage.h
+msgid "AVI file"
+msgstr "AVI ফাইল"
+
+#: win32/rsrc/snes9x.rc
+msgid "AVI Recording"
+msgstr "AVI রেকর্ডিং"
+
+#: win32/rsrc/snes9x.rc
+msgid "Background Keyboard Hotkeys"
+msgstr "ব্যাকগ্রাউন্ড কীবোর্ড হটকীসমূহ"
+
+#: win32/rsrc/snes9x.rc
+msgid "Background:"
+msgstr "ব্যাকগ্রাউন্ড:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Bank +:"
+msgstr "ব্যাংক +:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Bank -:"
+msgstr "ব্যাংক -:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Bank:"
+msgstr "ব্যাংক:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Base Tile Addresses"
+msgstr "বেস টাইল ঠিকানাসমূহ"
+
+#: win32/rsrc/snes9x.rc
+msgid "BG1:"
+msgstr "BG১:"
+
+#: win32/rsrc/snes9x.rc
+msgid "BG2:"
+msgstr "BG২:"
+
+#: win32/rsrc/snes9x.rc
+msgid "BG3:"
+msgstr "BG৩:"
+
+#: win32/rsrc/snes9x.rc
+msgid "BG4:"
+msgstr "BG৪:"
+
+#: win32/rsrc/snes9x.rc
+msgid "BG:"
+msgstr "BG:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Bilinear Filtering"
+msgstr "বাইলাইনার ফিল্টারিং"
+
+#: win32/rsrc/snes9x.rc
+msgid "Binding"
+msgstr "বাইন্ডিং"
+
+#: win32/rsrc/snes9x.rc
+msgid "BIOS"
+msgstr "BIOS"
+
+#: win32/wlanguage.h
+msgid "BIOS files"
+msgstr "BIOS ফাইলসমূহ"
+
+#: win32/rsrc/snes9x.rc
+msgid "BIOS:"
+msgstr "BIOS:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Bit Depth:"
+msgstr "বিট ডেপথ:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Blend Hi-Res Images"
+msgstr "হাই-রেজ ইমেজ ব্লেন্ড করুন"
+
+#: win32/rsrc/snes9x.rc
+msgid "Blue means already mapped. Pink conflicts with hotkey.\nRed is reserved by Windows. Escape clears bindings.\nPress multiple keys for multi-bind. Delete removes last."
+msgstr ""
+"নীল মানে ইতিমধ্যে ম্যাপ করা হয়েছে। গোলাপী মানে হটকী-র সাথে সংঘাত (conflict) হচ্ছে।\nলাল উইন্ডোজ দ্বারা সংরক্ষিত। Escape বাইন্ডিং মুছে ফেলে।\nমাল্টি-বাইন্ডের জন্য একাধিক কী একসাথে প্রেস করুন। Delete শেষটি সরিয়ে ফেলে।"
+
+#: win32/wlanguage.h
+msgid "Blue means the hotkey is already mapped.\nPink means it conflicts with a game button.\nRed means it's reserved by Windows.\nA hotkey can be disabled using Escape."
+msgstr ""
+"নীল মানে হটকীটি ইতিমধ্যে ম্যাপ করা হয়েছে।\nগোলাপী মানে এটি একটি গেম বাটনের সাথে সংঘাত তৈরি করছে।\nলাল মানে এটি উইন্ডোজ দ্বারা সংরক্ষিত।\nEscape কী ব্যবহার করে একটি হটকী নিষ্ক্রিয় করা যেতে পারে।"
+
+#: win32/rsrc/snes9x.rc
+msgid "Blue means the hotkey is already mapped. Pink means it conflicts with a game button. Red means it's reserved by Windows. Escape clears bindings.\nPress multiple keys for multi-bind. Delete removes last."
+msgstr ""
+"নীল মানে হটকীটি ইতিমধ্যে ম্যাপ করা হয়েছে। গোলাপী মানে এটি একটি গেম বাটনের সাথে সংঘাত তৈরি করছে। লাল মানে এটি উইন্ডোজ দ্বারা সংরক্ষিত। Escape বাইন্ডিং মুছে ফেলে।\nমাল্টি-বাইন্ডের জন্য একাধিক কী একসাথে প্রেস করুন। Delete শেষটি সরিয়ে ফেলে।"
+
+#: win32/rsrc/snes9x.rc
+msgid "Browse"
+msgstr "ব্রাউজ"
+
+#: win32/rsrc/snes9x.rc
+msgid "Buffer Length"
+msgstr "বাফার দৈর্ঘ্য"
+
+#: win32/rsrc/snes9x.rc
+msgid "Buffer Length:"
+msgstr "বাফার দৈর্ঘ্য:"
+
+#: win32/wlanguage.h
+msgid "Can't Open File"
+msgstr "ফাইল খোলা যাচ্ছে না"
+
+#: win32/rsrc/snes9x.rc
+msgid "Cancel"
+msgstr "বাতিল"
+
+#: win32/rsrc/snes9x.rc
+msgid "Channel 1"
+msgstr "চ্যানেল ১"
+
+#: win32/rsrc/snes9x.rc
+msgid "Channel 2"
+msgstr "চ্যানেল ২"
+
+#: win32/rsrc/snes9x.rc
+msgid "Channel 3"
+msgstr "চ্যানেল ৩"
+
+#: win32/rsrc/snes9x.rc
+msgid "Channel 4"
+msgstr "চ্যানেল ৪"
+
+#: win32/rsrc/snes9x.rc
+msgid "Channel 5"
+msgstr "চ্যানেল ৫"
+
+#: win32/rsrc/snes9x.rc
+msgid "Channel 6"
+msgstr "চ্যানেল ৬"
+
+#: win32/rsrc/snes9x.rc
+msgid "Channel 7"
+msgstr "চ্যানেল ৭"
+
+#: win32/rsrc/snes9x.rc
+msgid "Channel 8"
+msgstr "চ্যানেল ৮"
+
+#: win32/rsrc/snes9x.rc
+msgid "Channels"
+msgstr "চ্যানেলসমূহ"
+
+#: src/snes9x.ui:283 src/snes9x.ui:401 src/snes9x.ui:416 src/snes9x.ui:432
+#: src/snes9x.ui:447 src/snes9x.ui:489 src/snes9x.ui:526
+#: win32/rsrc/snes9x.rc
+msgid "Chat"
+msgstr "চ্যাট"
+
+#: win32/rsrc/snes9x.rc
+msgid "Cheat Description:"
+msgstr "চিট বিবরণ:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Cheat Details"
+msgstr "চিট বিস্তারিত"
+
+#: win32/rsrc/snes9x.rc
+msgid "Cheat Entry and Editor"
+msgstr "চিট এন্ট্রি এবং এডিটর"
+
+#: win32/rsrc/snes9x.rc
+msgid "Cheat Search"
+msgstr "চিট অনুসন্ধান"
+
+#: win32/wlanguage.h
+msgid "Cheats Editor Dialog:"
+msgstr "চিটস এডিটর ডায়ালগ:"
+
+#: win32/wlanguage.h
+msgid "Cheats Search Dialog:"
+msgstr "চিটস অনুসন্ধান ডায়ালগ:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Choose Logo"
+msgstr "লোগো নির্বাচন করুন"
+
+#: win32/rsrc/snes9x.rc
+msgid "Clear"
+msgstr "মুছে ফেলুন"
+
+#: win32/rsrc/snes9x.rc
+msgid "Clear All"
+msgstr "সব মুছে ফেলুন"
+
+#: win32/rsrc/snes9x.rc
+msgid "Clear History"
+msgstr "ইতিহাস মুছে ফেলুন"
+
+#: win32/rsrc/snes9x.rc
+msgid "Clear SRAM"
+msgstr "SRAM মুছে ফেলুন"
+
+#: win32/rsrc/snes9x.rc
+msgid "Clear Watches"
+msgstr "ওয়াচ তালিকা মুছে ফেলুন"
+
+#: win32/rsrc/snes9x.rc
+msgid "Client Settings"
+msgstr "ক্লায়েন্ট সেটিংস"
+
+#: win32/wlanguage.h
+msgid "Clipping Windows:"
+msgstr "ক্লিপিং উইন্ডোজ:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Close"
+msgstr "বন্ধ করুন"
+
+#: win32/wlanguage.h
+msgid "Code"
+msgstr "কোড"
+
+#: win32/rsrc/snes9x.rc
+msgid "Color Correction"
+msgstr "কালার কারেকশন (রঙের সংশোধন)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Compare To"
+msgstr "তুলনা করুন এর সাথে"
+
+#: win32/rsrc/snes9x.rc
+msgid "Comparison Type"
+msgstr "তুলনার ধরণ"
+
+#: win32/rsrc/snes9x.rc
+msgid "Config file:"
+msgstr "কনফিগ ফাইল:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Connect"
+msgstr "সংযোগ করুন"
+
+#: win32/rsrc/snes9x.rc
+msgid "Connect clients to: 127.0.0.1 (localhost) or your LAN IP"
+msgstr "ক্লায়েন্টদের সংযোগ করুন এখানে: 127.0.0.1 (লোকালহোস্ট) অথবা আপনার ল্যান আইপিতে"
+
+#: win32/rsrc/snes9x.rc
+msgid "Connect to Server"
+msgstr "সার্ভারে সংযোগ করুন"
+
+#: win32/rsrc/snes9x.rc
+msgid "Controller"
+msgstr "কন্ট্রোলার"
+
+#: win32/wlanguage.h
+msgid "Could not open movie file."
+msgstr "মুভি ফাইল খোলা যায়নি।"
+
+#: win32/rsrc/snes9x.rc
+msgid "CPU Overclock:"
+msgstr "CPU ওভারক্লক:"
+
+#: win32/wlanguage.h
+msgid "crc32=%08X, name=%s"
+msgstr "crc32=%08X, নাম=%s"
+
+#: win32/wlanguage.h
+msgid "Current ROM:"
+msgstr "বর্তমান ROM:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Current ROM: CRC32=Unknown, Name=Unknown"
+msgstr "বর্তমান ROM: CRC32=অজানা, নাম=অজানা"
+
+#: win32/rsrc/snes9x.rc
+msgid "Current Value"
+msgstr "বর্তমান মান"
+
+#: win32/rsrc/snes9x.rc
+msgid "Custom ROM Open Dialog"
+msgstr "কাস্টম ROM ওপেন ডায়ালগ"
+
+#: win32/rsrc/snes9x.rc
+msgid "Custom Screen Mode"
+msgstr "কাস্টম স্ক্রিন মোড"
+
+#: win32/rsrc/snes9x.rc
+msgid "Customize Hotkeys"
+msgstr "হটকীসমূহ কাস্টমাইজ করুন"
+
+#: win32/rsrc/snes9x.rc
+msgid "Customize Special Keys"
+msgstr "বিশেষ কীসমূহ কাস্টমাইজ করুন"
+
+#: win32/rsrc/snes9x.rc
+msgid "Data Size"
+msgstr "ডাটা সাইজ"
+
+#: win32/rsrc/snes9x.rc
+msgid "Data Type"
+msgstr "ডাটা টাইপ"
+
+#: win32/rsrc/snes9x.rc
+msgid "DATE"
+msgstr "তারিখ"
+
+#: win32/rsrc/snes9x.rc
+msgid "Defaults"
+msgstr "ডিফল্টসমূহ"
+
+#: win32/rsrc/snes9x.rc
+msgid "Delete"
+msgstr "মুছে ফেলুন"
+
+#: win32/rsrc/snes9x.rc
+msgid "Detect gamepad changes"
+msgstr "গেমপ্যাড পরিবর্তন সনাক্ত করুন"
+
+#: win32/rsrc/snes9x.rc
+msgid "Dialog"
+msgstr "ডায়ালগ"
+
+#: win32/rsrc/snes9x.rc
+msgid "Direct3D Shader File"
+msgstr "Direct3D শেডার ফাইল"
+
+#: win32/wlanguage.h
+msgid "Directory"
+msgstr "ডিরেক্টরি"
+
+#: win32/rsrc/snes9x.rc
+msgid "Directory:"
+msgstr "ডিরেক্টরি:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Disable Sprite Limit"
+msgstr "স্প্রাইট লিমিট নিষ্ক্রিয় করুন"
+
+#: win32/rsrc/snes9x.rc
+msgid "Disconnect"
+msgstr "সংযোগ বিচ্ছিন্ন করুন"
+
+#: win32/rsrc/snes9x.rc
+msgid "Disconnect from Server"
+msgstr "সার্ভার থেকে সংযোগ বিচ্ছিন্ন করুন"
+
+#: win32/rsrc/snes9x.rc
+msgid "Display Configuration"
+msgstr "ডিসপ্লে কনফিগারেশন"
+
+#: win32/rsrc/snes9x.rc
+msgid "Display messages inside SNES image"
+msgstr "SNES ইমেজের ভেতরে বার্তা প্রদর্শন করুন"
+
+#: win32/rsrc/snes9x.rc
+msgid "Display Settings"
+msgstr "ডিসপ্লে সেটিংস"
+
+#: win32/rsrc/snes9x.rc
+msgid "DN LEFT"
+msgstr "নিচে বামে"
+
+#: win32/wlanguage.h
+msgid "Dn Left"
+msgstr "নিচে বামে"
+
+#: win32/rsrc/snes9x.rc
+msgid "DN RIGHT"
+msgstr "নিচে ডানে"
+
+#: win32/wlanguage.h
+msgid "Dn Right"
+msgstr "নিচে ডানে"
+
+#: win32/rsrc/snes9x.rc
+msgid "DOWN"
+msgstr "নিচে"
+
+#: win32/rsrc/snes9x.rc
+msgid "Dummy"
+msgstr "ডামি"
+
+#: win32/rsrc/snes9x.rc
+msgid "Dynamic Rate Control"
+msgstr "ডাইনামিক রেট কন্ট্রোল"
+
+#: win32/rsrc/snes9x.rc
+msgid "Edit Cheat Group"
+msgstr "চিট গ্রুপ এডিট করুন"
+
+#: win32/rsrc/snes9x.rc
+msgid "Emulate Fullscreen"
+msgstr "ফুলস্ক্রিন ইমুলেট করুন"
+
+#: win32/wlanguage.h
+msgid "Emulation Settings"
+msgstr "ইমুলেশন সেটিংস"
+
+#: win32/rsrc/snes9x.rc
+msgid "Emulator Hacks"
+msgstr "ইমুলেটর হ্যাকস"
+
+#: win32/rsrc/snes9x.rc
+msgid "Enable"
+msgstr "সক্রিয় করুন"
+
+#: win32/rsrc/snes9x.rc
+msgid "Enable All"
+msgstr "সব সক্রিয় করুন"
+
+#: win32/rsrc/snes9x.rc
+msgid "Enable Background Input"
+msgstr "ব্যাকগ্রাউন্ড ইনপুট সক্রিয় করুন"
+
+#: win32/rsrc/snes9x.rc
+msgid "Enable Color Correction (accurate SNES colors)"
+msgstr "কালার কারেকশন সক্রিয় করুন (সঠিক SNES রঙ)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Enable Triple Buffering"
+msgstr "ট্রিপল বাফারিং সক্রিয় করুন"
+
+#: win32/rsrc/snes9x.rc
+msgid "Enabled"
+msgstr "সক্রিয়"
+
+#: win32/rsrc/snes9x.rc
+msgid "End Kaillera Game"
+msgstr "Kaillera গেম শেষ করুন"
+
+#: win32/rsrc/snes9x.rc
+msgid "Enter a Value:"
+msgstr "একটি মান লিখুন:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Enter Cheat Code:"
+msgstr "চিট কোড লিখুন:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Enter Cheat codes, one line at a time"
+msgstr "চিট কোড লিখুন, প্রতি লাইনে একটি"
+
+#: win32/wlanguage.h
+msgid "enter host name"
+msgstr "হোস্ট নাম লিখুন"
+
+#: win32/rsrc/snes9x.rc
+msgid "Entered Address"
+msgstr "ইনপুটকৃত ঠিকানা"
+
+#: win32/rsrc/snes9x.rc
+msgid "Entered Value"
+msgstr "ইনপুটকৃত মান"
+
+#: win32/wlanguage.h
+msgid "Error Info:"
+msgstr "ত্রুটি তথ্য:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Exit"
+msgstr "বের হন"
+
+#: win32/rsrc/snes9x.rc
+msgid "Extend Height of SNES Image"
+msgstr "SNES ইমেজের উচ্চতা প্রসারিত করুন"
+
+#: win32/wlanguage.h
+msgid "Fast forward:"
+msgstr "ফাস্ট ফরওয়ার্ড:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Fast-Forward"
+msgstr "ফাস্ট-ফরওয়ার্ড"
+
+#: win32/wlanguage.h
+msgid "Fast-forward toggle:"
+msgstr "ফাস্ট-ফরওয়ার্ড টগল:"
+
+#: src/snes9x.ui:5392 win32/rsrc/snes9x.rc
+msgid "File"
+msgstr "ফাইল"
+
+#: win32/wlanguage.h
+msgid "File not found."
+msgstr "ফাইল খুঁজে পাওয়া যায়নি।"
+
+#: win32/rsrc/snes9x.rc
+msgid "First Sprite:"
+msgstr "প্রথম স্প্রাইট:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Fixed, always skip:"
+msgstr "স্থির, সর্বদা স্কিপ করুন:"
+
+#: win32/wlanguage.h
+msgid "Force GD24"
+msgstr "ফোর্স GD24"
+
+#: win32/wlanguage.h
+msgid "Force Header"
+msgstr "ফোর্স হেডার"
+
+#: win32/wlanguage.h
+msgid "Force HiROM"
+msgstr "ফোর্স HiROM"
+
+#: win32/wlanguage.h
+msgid "Force LoROM"
+msgstr "ফোর্স LoROM"
+
+#: win32/wlanguage.h
+msgid "Force mode 1"
+msgstr "ফোর্স মোড ১"
+
+#: win32/wlanguage.h
+msgid "Force mode 2"
+msgstr "ফোর্স মোড ২"
+
+#: win32/wlanguage.h
+msgid "Force No Header"
+msgstr "ফোর্স নো হেডার"
+
+#: win32/wlanguage.h
+msgid "Force not interleaved"
+msgstr "ফোর্স নট ইন্টারলিভড"
+
+#: win32/wlanguage.h
+msgid "Force NTSC"
+msgstr "ফোর্স NTSC"
+
+#: win32/wlanguage.h
+msgid "Force PAL"
+msgstr "ফোর্স PAL"
+
+#: win32/rsrc/snes9x.rc
+msgid "Frame Advance"
+msgstr "ফ্রেম অ্যাডভান্স"
+
+#: win32/rsrc/snes9x.rc
+msgid "Frame Advance mute"
+msgstr "ফ্রেম অ্যাডভান্সে মিউট"
+
+#: win32/wlanguage.h
+msgid "Frame advance:"
+msgstr "ফ্রেম অ্যাডভান্স:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Frame Skipping:"
+msgstr "ফ্রেম স্কিপিং:"
+
+#: win32/rsrc/snes9x.rc
+msgid "frames"
+msgstr "ফ্রেমসমূহ"
+
+#: win32/rsrc/snes9x.rc
+msgid "FRAMES"
+msgstr "ফ্রেমসমূহ"
+
+#: win32/rsrc/snes9x.rc
+msgid "frames behind"
+msgstr "ফ্রেম পেছনে"
+
+#: win32/rsrc/snes9x.rc
+msgid "frames in auto-frame rate mode"
+msgstr "অটো-ফ্রেম রেট মোডে ফ্রেম"
+
+#: win32/wlanguage.h
+msgid "frames in fast-forward mode"
+msgstr "ফাস্ট-ফরওয়ার্ড মোডে ফ্রেম"
+
+#: win32/rsrc/snes9x.rc
+msgid "frames in Turbo mode"
+msgstr "টার্বো মোডে ফ্রেম"
+
+#: win32/rsrc/snes9x.rc
+msgid "Frames:"
+msgstr "ফ্রেমসমূহ:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Full Screen"
+msgstr "ফুল স্ক্রিন"
+
+#: win32/rsrc/snes9x.rc
+msgid "Fullscreen"
+msgstr "ফুলস্ক্রিন"
+
+#: win32/rsrc/snes9x.rc
+msgid "Fullscreen Display Settings"
+msgstr "ফুলস্ক্রিন ডিসপ্লে সেটিংস"
+
+#: win32/rsrc/snes9x.rc
+msgid "Fullscreen on ROM Open"
+msgstr "ROM খোলার সময় ফুলস্ক্রিন"
+
+#: win32/rsrc/snes9x.rc
+msgid "Game Boy Image"
+msgstr "গেম বয় ইমেজ"
+
+#: win32/rsrc/snes9x.rc
+msgid "Game Genie, Pro-Action Replay Codes"
+msgstr "গেম জেনি, প্রো-অ্যাকশন রিপ্লে কোডসমূহ"
+
+#: win32/rsrc/snes9x.rc
+msgid "GB"
+msgstr "GB"
+
+#: win32/rsrc/snes9x.rc
+msgid "GB Sprite Viewer"
+msgstr "GB স্প্রাইট ভিউয়ার"
+
+#: win32/rsrc/snes9x.rc
+msgid "GB Tile Viewer"
+msgstr "GB টাইল ভিউয়ার"
+
+#: win32/rsrc/snes9x.rc
+msgid "GB Tilemap Viewer"
+msgstr "GB টাইলম্যাপ ভিউয়ার"
+
+#: win32/rsrc/snes9x.rc
+msgid "GB-PPU"
+msgstr "GB-PPU"
+
+#: win32/rsrc/snes9x.rc
+msgid "General"
+msgstr "সাধারণ (General)"
+
+#: win32/rsrc/snes9x.rc
+msgid "goto"
+msgstr "যাও (goto)"
+
+#: win32/wlanguage.h
+msgid "Graphics layer 1:"
+msgstr "গ্রাফিক্স লেয়ার ১:"
+
+#: win32/wlanguage.h
+msgid "Graphics layer 2:"
+msgstr "গ্রাফিক্স লেয়ার ২:"
+
+#: win32/wlanguage.h
+msgid "Graphics layer 3:"
+msgstr "গ্রাফিক্স লেয়ার ৩:"
+
+#: win32/wlanguage.h
+msgid "Graphics layer 4:"
+msgstr "গ্রাফিক্স লেয়ার ৪:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Group"
+msgstr "গ্রুপ"
+
+#: src/snes9x.ui:4919 win32/rsrc/snes9x.rc
+msgid "Hacks"
+msgstr "হ্যাকস"
+
+#: win32/rsrc/snes9x.rc
+msgid "Hard Reset (Power Cycle)"
+msgstr "হার্ড রিসেট (পাওয়ার সাইকেল)"
+
+#: win32/wlanguage.h
+msgid "Hard reset:"
+msgstr "হার্ড রিসেট:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Hardcore Mode"
+msgstr "হার্ডকোর মোড"
+
+#: win32/rsrc/snes9x.rc
+msgid "Header:"
+msgstr "হেডার:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Help"
+msgstr "সাহায্য"
+
+#: win32/rsrc/snes9x.rc
+msgid "Hexadecimal"
+msgstr "হেক্সাডেসিমেল"
+
+#: win32/rsrc/snes9x.rc
+msgid "Hi Res:"
+msgstr "হাই রেজোলিউশন:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Hi-Res AVI Recording"
+msgstr "হাই-রেজোলিউশন AVI রেকর্ডিং"
+
+#: win32/rsrc/snes9x.rc
+msgid "Hide Menubar"
+msgstr "মেনুবার লুকিয়ে রাখুন"
+
+#: win32/rsrc/snes9x.rc
+msgid "Host Game"
+msgstr "গেম হোস্ট করুন"
+
+#: win32/rsrc/snes9x.rc
+msgid "Host Kaillera Server"
+msgstr "Kaillera সার্ভার হোস্ট করুন"
+
+#: win32/wlanguage.h
+msgid "Hotkey Configuration"
+msgstr "হটকী কনফিগারেশন"
+
+#: win32/rsrc/snes9x.rc
+msgid "Icon 1"
+msgstr "আইকন ১"
+
+#: win32/rsrc/snes9x.rc
+msgid "Icon 2"
+msgstr "আইকন ২"
+
+#: win32/rsrc/snes9x.rc
+msgid "Icon 3"
+msgstr "আইকন ৩"
+
+#: win32/rsrc/snes9x.rc
+msgid "Icon 4"
+msgstr "আইকন ৪"
+
+#: win32/rsrc/snes9x.rc
+msgid "Index:"
+msgstr "ইনডেক্স:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Input"
+msgstr "ইনপুট"
+
+#: win32/rsrc/snes9x.rc
+msgid "Input Configuration"
+msgstr "ইনপুট কনফিগারেশন"
+
+#: win32/rsrc/snes9x.rc
+msgid "Input Rate:"
+msgstr "ইনপুট রেট:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Integer Scaling"
+msgstr "পূর্ণসংখ্যা স্কেলিং"
+
+#: win32/rsrc/snes9x.rc
+msgid "Interleave Mode:"
+msgstr "ইন্টারলিভ মোড:"
+
+#: win32/rsrc/snes9x.rc
+msgid "IP:"
+msgstr "IP:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Join"
+msgstr "যোগ দিন"
+
+#: win32/wlanguage.h
+msgid "Joypad #%d"
+msgstr "জয়প্যাড #%d"
+
+#: win32/rsrc/snes9x.rc
+msgid "Joypad 1"
+msgstr "জয়প্যাড ১"
+
+#: win32/rsrc/snes9x.rc
+msgid "Joypad 2"
+msgstr "জয়প্যাড ২"
+
+#: win32/rsrc/snes9x.rc
+msgid "Joypad 3"
+msgstr "জয়প্যাড ৩"
+
+#: win32/rsrc/snes9x.rc
+msgid "Joypad 4"
+msgstr "জয়প্যাড ৪"
+
+#: win32/rsrc/snes9x.rc
+msgid "Joypad 5"
+msgstr "জয়প্যাড ৫"
+
+#: win32/wlanguage.h
+msgid "Joypad swap:"
+msgstr "জয়প্যাড বিনিময়:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Kaillera Netplay"
+msgstr "Kaillera নেটপ্লে"
+
+#: win32/rsrc/snes9x.rc
+msgid "Kaillera Server"
+msgstr "Kaillera সার্ভার"
+
+#: win32/rsrc/snes9x.rc
+msgid "Layout:"
+msgstr "লেআউট (বিন্যাস):"
+
+#: win32/rsrc/snes9x.rc
+msgid "Leave Game"
+msgstr "গেম থেকে বের হয়ে যান"
+
+#: win32/rsrc/snes9x.rc
+msgid "LEFT"
+msgstr "বাম"
+
+#: win32/rsrc/snes9x.rc
+msgid "LENGTH"
+msgstr "দৈর্ঘ্য"
+
+#: win32/rsrc/snes9x.rc
+msgid "Length:"
+msgstr "দৈর্ঘ্য:"
+
+#: win32/rsrc/snes9x.rc
+msgid "List1"
+msgstr "তালিকা১"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load #:"
+msgstr "লোড #:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load 0:"
+msgstr "লোড ০:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load 1:"
+msgstr "লোড ১:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load 2:"
+msgstr "লোড ২:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load 3:"
+msgstr "লোড ৩:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load 4:"
+msgstr "লোড ৪:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load 5:"
+msgstr "লোড ৫:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load 6:"
+msgstr "লোড ৬:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load 7:"
+msgstr "লোড ৭:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load 8:"
+msgstr "লোড ৮:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load 9:"
+msgstr "লোড ৯:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load Dlg:"
+msgstr "লোড ডায়ালগ:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load File:"
+msgstr "ফাইল লোড করুন:"
+
+#: win32/wlanguage.h
+msgid "Load from file:"
+msgstr "ফাইল থেকে লোড করুন:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load Game"
+msgstr "গেম লোড করুন"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load Game Position"
+msgstr "গেম পজিশন লোড করুন"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load MultiCart"
+msgstr "MultiCart লোড করুন"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load Watches"
+msgstr "ওয়াচ তালিকা লোড করুন"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load with Preview"
+msgstr "প্রিভিউ সহ লোড করুন"
+
+#: win32/wlanguage.h
+msgid "LOADED FROM MOVIE:"
+msgstr "মুভি থেকে লোড করা হয়েছে:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Location:"
+msgstr "লোকেশন:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Login"
+msgstr "লগইন"
+
+#: win32/rsrc/snes9x.rc
+msgid "Maintain Aspect Ratio"
+msgstr "অ্যাসপেক্ট রেশিও বজায় রাখুন"
+
+#: win32/rsrc/snes9x.rc
+msgid "Map"
+msgstr "ম্যাপ"
+
+#: win32/rsrc/snes9x.rc
+msgid "Map Addr:"
+msgstr "ম্যাপ ঠিকানা:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Map Size:"
+msgstr "ম্যাপ সাইজ:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Map:"
+msgstr "ম্যাপ:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Mask"
+msgstr "মাস্ক"
+
+#: win32/rsrc/snes9x.rc
+msgid "Masked Addresses"
+msgstr "মাস্কড ঠিকানাসমূহ"
+
+#: win32/rsrc/snes9x.rc
+msgid "Master Hotkey"
+msgstr "মাস্টার হটকী"
+
+#: win32/rsrc/snes9x.rc
+msgid "Max Clients:"
+msgstr "সর্বোচ্চ ক্লায়েন্ট:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Maximum Frame Rate Skip"
+msgstr "সর্বোচ্চ ফ্রেম রেট স্কিপ"
+
+#: win32/rsrc/snes9x.rc
+msgid "MB (set to 0 to disable rewind support)"
+msgstr "MB (রিওয়াইন্ড সমর্থন নিষ্ক্রিয় করতে ০ সেট করুন)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Memory Type:"
+msgstr "মেমরি টাইপ:"
+
+#: win32/wlanguage.h
+msgid "Misc. Recording Settings"
+msgstr "বিবিধ রেকর্ডিং সেটিংস"
+
+#: win32/rsrc/snes9x.rc
+msgid "Mode:"
+msgstr "মোড:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Movie File"
+msgstr "মুভি ফাইল"
+
+#: win32/wlanguage.h
+msgid "Movie frame count:"
+msgstr "মুভি ফ্রেম সংখ্যা:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Movie Play"
+msgstr "মুভি প্লে"
+
+#: win32/wlanguage.h
+msgid "Movie read-only:"
+msgstr "মুভি রিড-অনলি:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Movie Record"
+msgstr "মুভি রেকর্ড"
+
+#: win32/rsrc/snes9x.rc
+msgid "Movie Stop"
+msgstr "মুভি স্টপ"
+
+#: win32/wlanguage.h
+msgid "Movie's ROM:"
+msgstr "মুভির ROM:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Movie's ROM: CRC32=Unknown, Name=Unknown"
+msgstr "মুভির ROM: CRC32=অজানা, নাম=অজানা"
+
+#: win32/wlanguage.h
+msgid "Movies"
+msgstr "মুভিসমূহ"
+
+#: win32/rsrc/snes9x.rc
+msgid "Mute"
+msgstr "মিউট"
+
+#: win32/rsrc/snes9x.rc
+msgid "Mute Sound"
+msgstr "সাউন্ড মিউট করুন"
+
+#: win32/rsrc/snes9x.rc
+msgid "Mute sound"
+msgstr "সাউন্ড মিউট করুন"
+
+#: win32/rsrc/snes9x.rc
+msgid "Netplay"
+msgstr "নেটপ্লে"
+
+#: win32/rsrc/snes9x.rc
+msgid "Netplay Options"
+msgstr "নেটপ্লে অপশনসমূহ"
+
+#: win32/rsrc/snes9x.rc
+msgid "New Value"
+msgstr "নতুন মান"
+
+#: win32/rsrc/snes9x.rc
+msgid "No BIOS"
+msgstr "কোনো BIOS নেই"
+
+#: win32/wlanguage.h
+msgid "Not a ROM"
+msgstr "এটি কোনো ROM নয়"
+
+#: win32/rsrc/snes9x.rc
+msgid "Not connected."
+msgstr "সংযুক্ত নয়।"
+
+#: win32/rsrc/snes9x.rc
+msgid "not found"
+msgstr "খুঁজে পাওয়া যায়নি"
+
+#: win32/wlanguage.h
+msgid "not found!"
+msgstr "খুঁজে পাওয়া যায়নি!"
+
+#: win32/rsrc/snes9x.rc
+msgid "NTSC Filter Scanlines"
+msgstr "NTSC ফিল্টার স্ক্যানলাইনসমূহ"
+
+#: win32/rsrc/snes9x.rc
+msgid "OAM1:"
+msgstr "OAM১:"
+
+#: win32/rsrc/snes9x.rc
+msgid "OAM2:"
+msgstr "OAM২:"
+
+#: win32/rsrc/snes9x.rc
+msgid "OK"
+msgstr "ঠিক আছে (OK)"
+
+#: win32/rsrc/snes9x.rc
+msgid "On-screen Display Size:"
+msgstr "অন-স্ক্রিন ডিসপ্লে সাইজ:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Online Servers"
+msgstr "অনলাইন সার্ভারসমূহ"
+
+#: win32/rsrc/snes9x.rc
+msgid "Oops File"
+msgstr "Oops ফাইল"
+
+#: win32/rsrc/snes9x.rc
+msgid "Open MultiCart"
+msgstr "MultiCart খুলুন"
+
+#: win32/rsrc/snes9x.rc
+msgid "Open Read-Only"
+msgstr "রিড-অনলি হিসেবে খুলুন"
+
+#: win32/rsrc/snes9x.rc
+msgid "OpenGL/Vulkan Shader File"
+msgstr "OpenGL/Vulkan শেডার ফাইল"
+
+#: src/snes9x.ui:1858 win32/rsrc/snes9x.rc
+msgid "Options"
+msgstr "অপশনসমূহ"
+
+#: win32/rsrc/snes9x.rc
+msgid "Output Device:"
+msgstr "আউটপুট ডিভাইস:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Output Image Processing"
+msgstr "আউটপুট ইমেজ প্রসেসিং"
+
+#: win32/rsrc/snes9x.rc
+msgid "Output Method"
+msgstr "আউটপুট পদ্ধতি"
+
+#: win32/rsrc/snes9x.rc
+msgid "Override Tilemap"
+msgstr "টাইলম্যাপ ওভাররাইড করুন"
+
+#: win32/wlanguage.h
+msgid "Page %d"
+msgstr "পৃষ্ঠা %d"
+
+#: win32/rsrc/snes9x.rc
+msgid "Palette (click to select offset)"
+msgstr "প্যালেট (অফসেট নির্বাচন করতে ক্লিক করুন)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Palette:"
+msgstr "প্যালেট:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Parameters"
+msgstr "প্যারামিটারসমূহ"
+
+#: win32/rsrc/snes9x.rc
+msgid "Password:"
+msgstr "পাসওয়ার্ড:"
+
+#: win32/wlanguage.h
+msgid "Patch"
+msgstr "প্যাচ"
+
+#: win32/wlanguage.h
+msgid "Path: %s"
+msgstr "পাথ: %s"
+
+#: win32/rsrc/snes9x.rc
+msgid "Pause When Inactive"
+msgstr "নিষ্ক্রিয় থাকলে সাময়িক বিরতি দিন"
+
+#: win32/wlanguage.h
+msgid "Pause:"
+msgstr "সাময়িক বিরতি:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Play Movie"
+msgstr "মুভি প্লে করুন"
+
+#: win32/rsrc/snes9x.rc
+msgid "Playback Rate"
+msgstr "প্লেব্যাক রেট"
+
+#: win32/rsrc/snes9x.rc
+msgid "Playback Rate:"
+msgstr "প্লেব্যাক রেট:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Player Name:"
+msgstr "প্লেয়ারের নাম:"
+
+#: win32/wlanguage.h
+msgid "Please enter a host name."
+msgstr "দয়া করে একটি হোস্ট নাম লিখুন।"
+
+#: win32/wlanguage.h
+msgid "Please enter a valid value for a search!"
+msgstr "দয়া করে অনুসন্ধানের জন্য একটি সঠিক মান লিখুন!"
+
+#: win32/rsrc/snes9x.rc
+msgid "Port Number"
+msgstr "পোর্ট নম্বর"
+
+#: win32/rsrc/snes9x.rc
+msgid "Port Settings"
+msgstr "পোর্ট সেটিংস"
+
+#: win32/wlanguage.h
+msgid "Press OK to start playing the movie."
+msgstr "মুভি চালানো শুরু করতে ঠিক আছে (OK) প্রেস করুন।"
+
+#: win32/rsrc/snes9x.rc
+msgid "Preview"
+msgstr "প্রিভিউ"
+
+#: win32/rsrc/snes9x.rc
+msgid "Previous Value"
+msgstr "পূর্ববর্তী মান"
+
+#: win32/rsrc/snes9x.rc
+msgid "Progress1"
+msgstr "অগ্রগতি১"
+
+#: win32/rsrc/snes9x.rc
+msgid "Publish Online"
+msgstr "অনলাইনে প্রকাশ করুন"
+
+#: win32/rsrc/snes9x.rc
+msgid "Publish to master server list"
+msgstr "মাস্টার সার্ভার তালিকায় প্রকাশ করুন"
+
+#: win32/wlanguage.h
+msgid "Quit SuperSnes9x:"
+msgstr "SuperSnes9x বন্ধ করুন:"
+
+#: win32/wlanguage.h
+msgid "Range Error"
+msgstr "রেঞ্জ ত্রুটি (নভেম্বর)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Rate:"
+msgstr "রেট:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Re-record Count:"
+msgstr "পুনরায় রেকর্ডিং সংখ্যা:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Re-sync all Clients Using Freeze File Now"
+msgstr "এখনই ফ্রিজ ফাইল ব্যবহার করে সব ক্লায়েন্ট পুনরায় সিঙ্ক করুন"
+
+#: win32/rsrc/snes9x.rc
+msgid "Recent Games"
+msgstr "সাম্প্রতিক গেমসমূহ"
+
+#: win32/rsrc/snes9x.rc
+msgid "Record Controllers"
+msgstr "কন্ট্রোলার রেকর্ড করুন"
+
+#: win32/rsrc/snes9x.rc
+msgid "Record from now"
+msgstr "এখন থেকে রেকর্ড করুন"
+
+#: win32/rsrc/snes9x.rc
+msgid "Record from reset"
+msgstr "রিসেট থেকে রেকর্ড করুন"
+
+#: win32/rsrc/snes9x.rc
+msgid "Record Movie"
+msgstr "মুভি রেকর্ড করুন"
+
+#: win32/rsrc/snes9x.rc
+msgid "Record Options"
+msgstr "রেকর্ড অপশনসমূহ"
+
+#: win32/rsrc/snes9x.rc
+msgid "Recording Date:"
+msgstr "রেকর্ডিং তারিখ:"
+
+#: win32/wlanguage.h
+msgid "Recording Start"
+msgstr "রেকর্ডিং শুরু"
+
+#: win32/rsrc/snes9x.rc
+msgid "Reduce Input Lag"
+msgstr "ইনপুট ল্যাগ কমান"
+
+#: win32/rsrc/snes9x.rc
+msgid "Refresh"
+msgstr "রিফ্রেশ"
+
+#: win32/rsrc/snes9x.rc
+msgid "Refresh List"
+msgstr "তালিকা রিফ্রেশ করুন"
+
+#: win32/rsrc/snes9x.rc
+msgid "Regular"
+msgstr "স্বাভাবিক (Regular)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Remove"
+msgstr "সরিয়ে ফেলুন"
+
+#: win32/rsrc/snes9x.rc
+msgid "Remove All"
+msgstr "সব সরিয়ে ফেলুন"
+
+#: win32/rsrc/snes9x.rc
+msgid "RERECORD"
+msgstr "পুনরায় রেকর্ড"
+
+#: win32/wlanguage.h
+msgid "Reset speed:"
+msgstr "গতি রিসেট করুন:"
+
+#: win32/rsrc/snes9x.rc
+msgid "RetroAchievements"
+msgstr "রেট্রো-অ্যাচিভমেন্টস"
+
+#: win32/rsrc/snes9x.rc
+msgid "RetroAchievements Login"
+msgstr "রেট্রো-অ্যাচিভমেন্টস লগইন"
+
+#: win32/rsrc/snes9x.rc
+msgid "Rewind buffer size:"
+msgstr "রিওয়াইন্ড বাফার সাইজ:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Rewind granularity:"
+msgstr "রিওয়াইন্ড গ্র্যানুলারিটি (সূক্ষ্মতা):"
+
+#: win32/wlanguage.h
+msgid "Rewind:"
+msgstr "রিওয়াইন্ড:"
+
+#: win32/rsrc/snes9x.rc
+msgid "RIGHT"
+msgstr "ডান"
+
+#: win32/wlanguage.h
+msgid "ROM files or archives"
+msgstr "ROM ফাইল বা আর্কাইভসমূহ"
+
+#: win32/rsrc/snes9x.rc
+msgid "Rom Info"
+msgstr "ROM তথ্য"
+
+#: win32/rsrc/snes9x.rc
+msgid "ROM Information"
+msgstr "ROM তথ্য"
+
+#: win32/rsrc/snes9x.rc
+msgid "ROM:"
+msgstr "ROM:"
+
+#: win32/wlanguage.h
+msgid "Roms"
+msgstr "Roms"
+
+#: win32/rsrc/snes9x.rc
+msgid "Run Ahead"
+msgstr "রান অ্যাহেড (Run Ahead)"
+
+#: win32/rsrc/snes9x.rc
+msgid "s"
+msgstr "সেকেন্ড"
+
+#: win32/rsrc/snes9x.rc
+msgid "S-PPU"
+msgstr "S-PPU"
+
+#: win32/wlanguage.h
+msgid "Satellaview"
+msgstr "স্যাটেলাভিউ"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save #:"
+msgstr "সংরক্ষণ #:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save 0:"
+msgstr "সংরক্ষণ ০:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save 1:"
+msgstr "সংরক্ষণ ১:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save 2:"
+msgstr "সংরक्षण ২:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save 3:"
+msgstr "সংরক্ষণ ৩:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save 4:"
+msgstr "সংরক্ষণ ৪:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save 5:"
+msgstr "সংরক্ষণ ৫:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save 6:"
+msgstr "সংরক্ষণ ৬:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save 7:"
+msgstr "সংরক্ষণ ৭:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save 8:"
+msgstr "সংরক্ষণ ৮:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save 9:"
+msgstr "সংরক্ষণ ৯:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save Dlg:"
+msgstr "সংরক্ষণ ডায়ালগ:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save File:"
+msgstr "ফাইল সংরক্ষণ করুন:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save Game Position"
+msgstr "গেম পজিশন সংরক্ষণ করুন"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save Memory Pack"
+msgstr "মেমরি প্যাক সংরক্ষণ করুন"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save Other"
+msgstr "অন্যান্য সংরক্ষণ করুন"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save S-RAM Data"
+msgstr "S-RAM ডাটা সংরক্ষণ করুন"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save Screenshot"
+msgstr "স্ক্রিনশট সংরক্ষণ করুন"
+
+#: win32/wlanguage.h
+msgid "Save screenshot"
+msgstr "স্ক্রিনশট সংরক্ষণ করুন"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save SPC Data"
+msgstr "SPC ডাটা সংরক্ষণ করুন"
+
+#: win32/wlanguage.h
+msgid "Save to file:"
+msgstr "ফাইলে সংরক্ষণ করুন:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save Watches"
+msgstr "ওয়াচ তালিকা সংরক্ষণ করুন"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save with Preview"
+msgstr "প্রিভিউ সহ সংরক্ষণ করুন"
+
+#: win32/wlanguage.h
+msgid "Saves"
+msgstr "সংরক্ষিত ফাইলসমূহ"
+
+#: win32/rsrc/snes9x.rc
+msgid "Screen"
+msgstr "স্ক্রিন"
+
+#: win32/wlanguage.h
+msgid "Screenshots"
+msgstr "স্ক্রিনশটসমূহ"
+
+#: win32/rsrc/snes9x.rc
+msgid "Search"
+msgstr "অনুসন্ধান"
+
+#: win32/rsrc/snes9x.rc
+msgid "Search Database"
+msgstr "ডাটাবেস অনুসন্ধান করুন"
+
+#: win32/rsrc/snes9x.rc
+msgid "Search for New Cheats"
+msgstr "নতুন চিটস অনুসন্ধান করুন"
+
+#: win32/rsrc/snes9x.rc
+msgid "seconds after last change (0 disables auto-save)"
+msgstr "শেষ পরিবর্তনের পর সেকেন্ড (০ দিলে অটো-সেভ নিষ্ক্রিয় হবে)"
+
+#: win32/rsrc/snes9x.rc
+msgid "SELECT"
+msgstr "সিলেক্ট"
+
+#: win32/rsrc/snes9x.rc
+msgid "Select 0:"
+msgstr "নির্বাচন করুন ০:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Select 1:"
+msgstr "নির্বাচন করুন ১:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Select 2:"
+msgstr "নির্বাচন করুন ২:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Select 3:"
+msgstr "নির্বাচন করুন ৩:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Select 4:"
+msgstr "নির্বাচন করুন ৪:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Select 5:"
+msgstr "নির্বাচন করুন ৫:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Select 6:"
+msgstr "নির্বাচন করুন ৬:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Select 7:"
+msgstr "নির্বাচন করুন ৭:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Select 8:"
+msgstr "নির্বাচন করুন ৮:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Select 9:"
+msgstr "নির্বাচন করুন ৯:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Select File"
+msgstr "ফাইল নির্বাচন করুন"
+
+#: win32/wlanguage.h
+msgid "Select Folder"
+msgstr "ফোল্ডার নির্বাচন করুন"
+
+#: win32/wlanguage.h
+msgid "Select Slot 0:"
+msgstr "স্লট ০ নির্বাচন করুন:"
+
+#: win32/wlanguage.h
+msgid "Select Slot 1:"
+msgstr "স্লট ১ নির্বাচন করুন:"
+
+#: win32/wlanguage.h
+msgid "Select Slot 2:"
+msgstr "স্লট ২ নির্বাচন করুন:"
+
+#: win32/wlanguage.h
+msgid "Select Slot 3:"
+msgstr "স্লট ৩ নির্বাচন করুন:"
+
+#: win32/wlanguage.h
+msgid "Select Slot 4:"
+msgstr "স্লট ৪ নির্বাচন করুন:"
+
+#: win32/wlanguage.h
+msgid "Select Slot 5:"
+msgstr "স্লট ৫ নির্বাচন করুন:"
+
+#: win32/wlanguage.h
+msgid "Select Slot 6:"
+msgstr "স্লট ৬ নির্বাচন করুন:"
+
+#: win32/wlanguage.h
+msgid "Select Slot 7:"
+msgstr "স্লট ৭ নির্বাচন করুন:"
+
+#: win32/wlanguage.h
+msgid "Select Slot 8:"
+msgstr "স্লট ৮ নির্বাচন করুন:"
+
+#: win32/wlanguage.h
+msgid "Select Slot 9:"
+msgstr "স্লট ৯ নির্বাচন করুন:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Send"
+msgstr "পাঠান"
+
+#: win32/rsrc/snes9x.rc
+msgid "Send ROM Image to Client on Connect"
+msgstr "সংযোগের সময় ক্লায়েন্টকে ROM ইমেজ পাঠান"
+
+#: win32/rsrc/snes9x.rc
+msgid "Send ROM Image to Clients"
+msgstr "ক্লায়েন্টদের কাছে ROM ইমেজ পাঠান"
+
+#: win32/rsrc/snes9x.rc
+msgid "Send ROM Image to Clients Now"
+msgstr "এখনই ক্লায়েন্টদের কাছে ROM ইমেজ পাঠান"
+
+#: win32/rsrc/snes9x.rc
+msgid "Separate Echo Buffer from RAM"
+msgstr "RAM থেকে ইকো বাফার আলাদা করুন"
+
+#: win32/rsrc/snes9x.rc
+msgid "Server Address"
+msgstr "সার্ভার ঠিকানা"
+
+#: win32/rsrc/snes9x.rc
+msgid "Server is stopped."
+msgstr "সার্ভার বন্ধ আছে।"
+
+#: win32/rsrc/snes9x.rc
+msgid "Server Lobby"
+msgstr "সার্ভার লবি"
+
+#: win32/rsrc/snes9x.rc
+msgid "Server Name:"
+msgstr "সার্ভারের নাম:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Server Settings"
+msgstr "সার্ভার সেটিংস"
+
+#: win32/rsrc/snes9x.rc
+msgid "Set Defaults"
+msgstr "ডিফল্ট সেট করুন"
+
+#: win32/rsrc/snes9x.rc
+msgid "Set Value"
+msgstr "মান নির্ধারণ করুন"
+
+#: src/snes9x.ui:2652 win32/rsrc/snes9x.rc
+msgid "Settings"
+msgstr "সেটিংস"
+
+#: win32/wlanguage.h
+msgid "SETTINGS NOT IN MOVIE; VERIFY:"
+msgstr "সেটিংস মুভিতে নেই; যাচাই করুন:"
+
+#: win32/rsrc/snes9x.rc
+msgid "SGB Mix"
+msgstr "SGB মিক্স"
+
+#: win32/rsrc/snes9x.rc
+msgid "SGB1"
+msgstr "SGB১"
+
+#: win32/rsrc/snes9x.rc
+msgid "SGB2"
+msgstr "SGB২"
+
+#: win32/rsrc/snes9x.rc
+msgid "Show Audio Waveform"
+msgstr "অডিও ওয়েভফর্ম দেখান"
+
+#: win32/rsrc/snes9x.rc
+msgid "Show Background"
+msgstr "ব্যাকগ্রাউন্ড দেখান"
+
+#: win32/rsrc/snes9x.rc
+msgid "Show Crosshair"
+msgstr "ক্রসহেয়ার (লক্ষ্যবিন্দু) দেখান"
+
+#: win32/rsrc/snes9x.rc
+msgid "Show Frame Number"
+msgstr "ফ্রেম নম্বর দেখান"
+
+#: win32/rsrc/snes9x.rc
+msgid "Show Frame Rate"
+msgstr "ফ্রেম রেট দেখান"
+
+#: win32/rsrc/snes9x.rc
+msgid "Show Grid"
+msgstr "গ্রিড দেখান"
+
+#: win32/wlanguage.h
+msgid "Show pressed keys:"
+msgstr "প্রেস করা কীসমূহ দেখান:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Show screen"
+msgstr "স্ক্রিন দেখান"
+
+#: win32/rsrc/snes9x.rc
+msgid "Show Screen Outline"
+msgstr "স্ক্রিন আউটলাইন দেখান"
+
+#: win32/rsrc/snes9x.rc
+msgid "Show Sprites"
+msgstr "স্প্রাইটস দেখান"
+
+#: win32/rsrc/snes9x.rc
+msgid "Show viewport"
+msgstr "ভিউপোর্ট দেখান"
+
+#: win32/rsrc/snes9x.rc
+msgid "Show Window"
+msgstr "উইন্ডো দেখান"
+
+#: win32/rsrc/snes9x.rc
+msgid "Signed (+/-)"
+msgstr "সাইন্ড (+/-)"
+
+#: win32/wlanguage.h
+msgid "Size"
+msgstr "সাইজ"
+
+#: win32/rsrc/snes9x.rc
+msgid "Skip at most"
+msgstr "সর্বোচ্চ স্কিপ করুন"
+
+#: win32/wlanguage.h
+msgid "Skip frames +:"
+msgstr "ফ্রেম স্কিপ +:"
+
+#: win32/wlanguage.h
+msgid "Skip frames -:"
+msgstr "ফ্রেম স্কিপ -:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Skip rendering"
+msgstr "রেন্ডারিং স্কিপ করুন"
+
+#: win32/wlanguage.h
+msgid "Skip Rendering"
+msgstr "রেন্ডারিং স্কিপ করুন"
+
+#: win32/rsrc/snes9x.rc
+msgid "Slot +:"
+msgstr "স্লট +:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Slot -:"
+msgstr "স্লট -:"
+
+#: win32/rsrc/snes9x.rc
+msgid "SNES Image"
+msgstr "SNES ইমেজ"
+
+#: win32/rsrc/snes9x.rc
+msgid "SuperSnes9x - Unable to Initialize XAudio2"
+msgstr "SuperSnes9x - XAudio2 ইনিশিয়েলাইজ করা যায়নি"
+
+#: win32/wlanguage.h
+msgid "SuperSnes9x Cheat Error"
+msgstr "SuperSnes9x চিট ত্রুটি"
+
+#: win32/wlanguage.h
+msgid "SuperSnes9x Movie File"
+msgstr "SuperSnes9x মুভি ফাইল"
+
+#: win32/rsrc/snes9x.rc
+msgid "Socket Port Number"
+msgstr "সকেট পোর্ট নম্বর"
+
+#: win32/rsrc/snes9x.rc
+msgid "Soft Reset"
+msgstr "সফট রিসেট"
+
+#: win32/wlanguage.h
+msgid "Soft reset:"
+msgstr "সফট রিসেট:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Sound Driver:"
+msgstr "সাউন্ড ড্রাইভার:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Sound Interpolation Type:"
+msgstr "সাউন্ড ইন্টারপোলেশন ধরণ:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Sound Quality"
+msgstr "সাউন্ড কোয়ালিটি"
+
+#: win32/rsrc/snes9x.rc
+msgid "Sound Settings"
+msgstr "সাউন্ড সেটিংস"
+
+#: win32/rsrc/snes9x.rc
+msgid "Source:"
+msgstr "উৎস:"
+
+#: win32/rsrc/snes9x.rc
+msgid "SPC"
+msgstr "SPC"
+
+#: win32/wlanguage.h
+msgid "SPCs"
+msgstr "SPCs"
+
+#: win32/wlanguage.h
+msgid "Speed +:"
+msgstr "গতি +:"
+
+#: win32/wlanguage.h
+msgid "Speed -:"
+msgstr "গতি -:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Spin1"
+msgstr "স্পিন১"
+
+#: win32/rsrc/snes9x.rc
+msgid "Spin2"
+msgstr "স্পিন২"
+
+#: win32/rsrc/snes9x.rc
+msgid "Spin3"
+msgstr "স্পিন৩"
+
+#: win32/rsrc/snes9x.rc
+msgid "Spin4"
+msgstr "স্পিন৪"
+
+#: win32/rsrc/snes9x.rc
+msgid "Sprite Viewer"
+msgstr "স্প্রাইট ভিউয়ার"
+
+#: win32/rsrc/snes9x.rc
+msgid "Sprite:"
+msgstr "স্প্রাইট:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Sprites"
+msgstr "স্প্রাইটস"
+
+#: win32/wlanguage.h
+msgid "Sprites layer:"
+msgstr "স্প্রাইটস লেয়ার:"
+
+#: win32/wlanguage.h
+msgid "SRAM"
+msgstr "SRAM"
+
+#: win32/rsrc/snes9x.rc
+msgid "START"
+msgstr "স্টার্ট"
+
+#: win32/rsrc/snes9x.rc
+msgid "Start Game"
+msgstr "গেম শুরু করুন"
+
+#: win32/rsrc/snes9x.rc
+msgid "Start Server"
+msgstr "সার্ভার শুরু করুন"
+
+#: win32/rsrc/snes9x.rc
+msgid "Static"
+msgstr "স্ট্যাটিক"
+
+#: win32/rsrc/snes9x.rc
+msgid "Status"
+msgstr "স্ট্যাটাস (অবস্থা)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Stretch Image"
+msgstr "ইমেজ প্রসারিত (Stretch) করুন"
+
+#: win32/rsrc/snes9x.rc
+msgid "SuperFX Clock Speed %:"
+msgstr "SuperFX ক্লক স্পীড %:"
+
+#: win32/rsrc/snes9x.rc
+msgid "SuperFX speed:"
+msgstr "SuperFX গতি:"
+
+#: win32/wlanguage.h
+msgid "SuperScope pause:"
+msgstr "সুপারস্কোপ সাময়িক বিরতি:"
+
+#: win32/wlanguage.h
+msgid "SuperScope turbo:"
+msgstr "সুপারস্কোপ টার্বো:"
+
+#: win32/wlanguage.h
+msgid "SuperSnes9x (x64)"
+msgstr "SuperSnes9x (x64)"
+
+#: win32/rsrc/snes9x.rc
+msgid "SuperSnes9x - About"
+msgstr "SuperSnes9x - সম্পর্কে"
+
+#: win32/wlanguage.h
+msgid "SuperSnes9x: DirectSound"
+msgstr "SuperSnes9x: DirectSound"
+
+#: win32/wlanguage.h
+msgid "SuperSnes9x: Information"
+msgstr "SuperSnes9x: তথ্য"
+
+#: win32/wlanguage.h
+msgid "SuperSnes9x: NetPlay Error"
+msgstr "SuperSnes9x: নেটপ্লে ত্রুটি"
+
+#: win32/wlanguage.h
+msgid "SuperSnes9x: Sound CPU Question"
+msgstr "SuperSnes9x: সাউন্ড CPU প্রশ্ন"
+
+#: win32/wlanguage.h
+msgid "SuperSnes9x: WARNING!"
+msgstr "SuperSnes9x: সতর্কতা!"
+
+#: win32/rsrc/snes9x.rc
+msgid "Swap A and B"
+msgstr "A এবং B বিনিময় করুন"
+
+#: win32/wlanguage.h
+msgid "Switch aspect Ratio:"
+msgstr "অ্যাসপেক্ট রেশিও পরিবর্তন করুন:"
+
+#: win32/wlanguage.h
+msgid "Switch controllers:"
+msgstr "কন্ট্রোলার পরিবর্তন করুন:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Sync By Reset"
+msgstr "রিসেট দ্বারা সিঙ্ক করুন"
+
+#: win32/rsrc/snes9x.rc
+msgid "Sync Sound"
+msgstr "সাউন্ড সিঙ্ক করুন"
+
+#: win32/rsrc/snes9x.rc
+msgid "Sync Using Reset Game"
+msgstr "গেম রিসেট করে সিঙ্ক করুন"
+
+#: win32/rsrc/snes9x.rc
+msgid "Synchronize with sound core"
+msgstr "সাউন্ড কোরের সাথে সিঙ্ক্রোনাইজ করুন"
+
+#: win32/wlanguage.h
+msgid "TempTurbo"
+msgstr "সাময়িকটার্বো"
+
+#: win32/wlanguage.h
+msgid "Text file"
+msgstr "টেক্সট ফাইল"
+
+#: win32/wlanguage.h
+msgid "The movie file is corrupt or in the wrong format."
+msgstr "মুভি ফাইলটি ক্ষতিগ্রস্ত অথবা এর ফরম্যাট ভুল।"
+
+#: win32/wlanguage.h
+msgid "The movie file was not found or could not be opened."
+msgstr "মুভি ফাইলটি খুঁজে পাওয়া যায়নি অথবা খোলা যায়নি।"
+
+#: win32/rsrc/snes9x.rc
+msgid "Tile Addr:"
+msgstr "টাইল ঠিকানা:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Tile Data:"
+msgstr "টাইল ডাটা:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Tile Size:"
+msgstr "টাইল সাইজ:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Tile Viewer"
+msgstr "টাইল ভিউয়ার"
+
+#: win32/rsrc/snes9x.rc
+msgid "Tilemap"
+msgstr "টাইলম্যাপ"
+
+#: win32/rsrc/snes9x.rc
+msgid "Tilemap Viewer"
+msgstr "টাইলম্যাপ ভিউয়ার"
+
+#: win32/rsrc/snes9x.rc
+msgid "Tiles"
+msgstr "টাইলস"
+
+#: win32/rsrc/snes9x.rc
+msgid "Timeout:"
+msgstr "সময় শেষ (Timeout):"
+
+#: win32/rsrc/snes9x.rc
+msgid "Toggle Achievements Images"
+msgstr "অর্জন ইমেজ টগল করুন"
+
+#: win32/wlanguage.h
+msgid "Toggle backdrop:"
+msgstr "ব্যাকড্রপ টগল করুন:"
+
+#: win32/wlanguage.h
+msgid "Toggle cheats:"
+msgstr "চিটস টগল করুন:"
+
+#: win32/wlanguage.h
+msgid "Toggle mute:"
+msgstr "মিউট টগল করুন:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Transparency Effects"
+msgstr "ট্রান্সপারেন্সি ইফেক্টস"
+
+#: win32/wlanguage.h
+msgid "Transparency:"
+msgstr "ট্রান্সপারেন্সি:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Tree1"
+msgstr "ট্রি১"
+
+#: win32/wlanguage.h
+msgid "Turbo"
+msgstr "টার্বো"
+
+#: win32/wlanguage.h
+msgid "Turbo A mode:"
+msgstr "টার্বো A মোড:"
+
+#: win32/wlanguage.h
+msgid "Turbo B mode:"
+msgstr "টার্বো B মোড:"
+
+#: win32/wlanguage.h
+msgid "Turbo Down mode:"
+msgstr "টার্বো ডাউন মোড:"
+
+#: win32/wlanguage.h
+msgid "Turbo L mode:"
+msgstr "টার্বো L মোড:"
+
+#: win32/wlanguage.h
+msgid "Turbo Left mode:"
+msgstr "টার্বো লেফট মোড:"
+
+#: win32/wlanguage.h
+msgid "Turbo R mode:"
+msgstr "টার্বো R মোড:"
+
+#: win32/wlanguage.h
+msgid "Turbo Right mode:"
+msgstr "টার্বো রাইট মোড:"
+
+#: win32/wlanguage.h
+msgid "Turbo Select mode:"
+msgstr "টার্বো সিলেক্ট মোড:"
+
+#: win32/wlanguage.h
+msgid "Turbo Start mode:"
+msgstr "টার্বো স্টার্ট মোড:"
+
+#: win32/wlanguage.h
+msgid "Turbo Up mode:"
+msgstr "টার্বো আপ মোড:"
+
+#: win32/wlanguage.h
+msgid "Turbo X mode:"
+msgstr "টার্বো X মোড:"
+
+#: win32/wlanguage.h
+msgid "Turbo Y mode:"
+msgstr "টার্বো Y মোড:"
+
+#: win32/wlanguage.h
+msgid "Uncompressed ROM files"
+msgstr "আনকম্প্রেসড ROM ফাইলসমূহ"
+
+#: win32/wlanguage.h
+msgid "Unrecognized format."
+msgstr "অস্বীকৃত ফরম্যাট।"
+
+#: win32/rsrc/snes9x.rc
+msgid "Unsigned (>=0)"
+msgstr "আনসাইন্ড (>=০)"
+
+#: win32/wlanguage.h
+msgid "Unsupported movie version."
+msgstr "অসমর্থিত মুভি ভার্সন।"
+
+#: win32/rsrc/snes9x.rc
+msgid "UP"
+msgstr "উপরে"
+
+#: win32/rsrc/snes9x.rc
+msgid "UP LEFT"
+msgstr "উপরে বামে"
+
+#: win32/wlanguage.h
+msgid "Up Left"
+msgstr "উপরে বামে"
+
+#: win32/rsrc/snes9x.rc
+msgid "UP RIGHT"
+msgstr "উপরে ডানে"
+
+#: win32/wlanguage.h
+msgid "Up Right"
+msgstr "উপরে ডানে"
+
+#: win32/rsrc/snes9x.rc
+msgid "Update"
+msgstr "আপডেট"
+
+#: win32/rsrc/snes9x.rc
+msgid "Use CGRAM"
+msgstr "CGRAM ব্যবহার করুন"
+
+#: win32/rsrc/snes9x.rc
+msgid "Use DirectInput"
+msgstr "DirectInput ব্যবহার করুন"
+
+#: win32/rsrc/snes9x.rc
+msgid "Use Dual Justifiers"
+msgstr "ডুয়াল জাস্টিফায়ার ব্যবহার করুন"
+
+#: win32/rsrc/snes9x.rc
+msgid "Use Konami Justifier"
+msgstr "কোনামি জাস্টিফায়ার ব্যবহার করুন"
+
+#: win32/rsrc/snes9x.rc
+msgid "Use M.A.C.S. Rifle"
+msgstr "M.A.C.S. রাইফেল ব্যবহার করুন"
+
+#: win32/rsrc/snes9x.rc
+msgid "Use Mouse in alternate port"
+msgstr "বিকল্প পোর্টে মাউস ব্যবহার করুন"
+
+#: win32/rsrc/snes9x.rc
+msgid "Use Multitaps (8-player)"
+msgstr "মাল্টিট্যাপ ব্যবহার করুন (৮-প্লেয়ার)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Use Shader"
+msgstr "শেডার ব্যবহার করুন"
+
+#: win32/rsrc/snes9x.rc
+msgid "Use SNES Joypad(s)"
+msgstr "SNES জয়প্যাড ব্যবহার করুন"
+
+#: win32/rsrc/snes9x.rc
+msgid "Use SNES Mouse"
+msgstr "SNES মাউস ব্যবহার করুন"
+
+#: win32/rsrc/snes9x.rc
+msgid "Use Super Multitap (5-player)"
+msgstr "সুপার মাল্টিট্যাপ ব্যবহার করুন (৫-প্লেয়ার)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Use Super Scope"
+msgstr "সুপার স্কোপ ব্যবহার করুন"
+
+#: win32/rsrc/snes9x.rc
+msgid "User Agent: SuperSnes9x/1.63"
+msgstr "User Agent: SuperSnes9x/1.63"
+
+#: win32/rsrc/snes9x.rc
+msgid "Username:"
+msgstr "ইউজারনেম:"
+
+#: win32/wlanguage.h
+msgid "Value"
+msgstr "মান"
+
+#: win32/rsrc/snes9x.rc
+msgid "Value (hex):"
+msgstr "মান (হেক্স):"
+
+#: win32/rsrc/snes9x.rc
+msgid "Video"
+msgstr "ভিডিও"
+
+#: win32/rsrc/snes9x.rc
+msgid "Video System:"
+msgstr "ভিডিও সিস্টেম:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Volume"
+msgstr "ভলিউম"
+
+#: win32/rsrc/snes9x.rc
+msgid "VSync"
+msgstr "VSync"
+
+#: win32/wlanguage.h
+msgid "WARNING: You don't have the right ROM loaded!"
+msgstr "সতর্কতা: আপনি সঠিক ROM লোড করেননি!"
+
+#: win32/rsrc/snes9x.rc
+msgid "Watch"
+msgstr "ওয়াচ"
+
+#: win32/rsrc/snes9x.rc
+msgid "Welcome Message (MOTD)"
+msgstr "স্বাগতম বার্তা (MOTD)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Width:"
+msgstr "প্রস্থ:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Window Size"
+msgstr "উইন্ডো সাইজ"
+
+#: win32/rsrc/snes9x.rc
+msgid "WOG!"
+msgstr "WOG!"
+
+#: win32/wlanguage.h
+msgid "You have entered an out of range or invalid value for the new value"
+msgstr "আপনি নতুন মানের জন্য সীমার বাইরে বা একটি ভুল মান লিখেছেন"
+
+#: win32/wlanguage.h
+msgid "You need a different version of SuperSnes9x to play this movie."
+msgstr "এই মুভিটি চালানোর জন্য আপনার SuperSnes9x এর একটি ভিন্ন ভার্সন প্রয়োজন।"
+
+#: win32/rsrc/snes9x.rc
+msgid "Your password is only used to get an API token.\nIt is never stored."
+msgstr "আপনার পাসওয়ার্ডটি শুধুমাত্র একটি API টোকেন পাওয়ার জন্য ব্যবহৃত হয়।\nএটি কখনো সংরক্ষণ করা হয় না।"
+
+#: win32/rsrc/snes9x.rc
+msgid "Zoom:"
+msgstr "জুম:"
+
+# === Win32 strings (added by i18n/extract_strings.py) ===
+
+#: win32/CSpriteViewerDlg.cpp
+msgid "Export Selected to PNG"
+msgstr "নির্বাচিতটি PNG-তে এক্সপোর্ট করুন"
+
+#: win32/CGBSpriteViewerDlg.cpp
+msgid "Export to PNG"
+msgstr "PNG-তে এক্সপোর্ট করুন"
+
+#: win32/CSpriteViewerDlg.cpp
+msgid "Show All Objects"
+msgstr "সব অবজেক্ট দেখান"
+
+#: win32/CSpriteViewerDlg.cpp
+msgid "Show Only Selected Objects"
+msgstr "শুধুমাত্র নির্বাচিত অবজেক্ট দেখান"
+
+#: win32/CSpriteViewerDlg.cpp
+msgid "Toggle Visibility"
+msgstr "দৃশ্যমানতা টগল করুন"
+
+#: win32/wsnes9x.cpp
+msgid "Translations"
+msgstr "অনুবাদসমূহ"
+
+# === Win32 strings (added by i18n/extract_strings.py) ===
+
+#: win32/wsnes9x.cpp
+msgid "Language"
+msgstr "ভাষা"
+
+# === Win32 strings (added by i18n/extract_strings.py) ===
+
+#: qt/src/SoundPanel.ui
+msgid "44100 Hz"
+msgstr "৪৪১০০ হার্জ"
+
+#: qt/src/SoundPanel.ui
+msgid "48000 Hz"
+msgstr "৪৮০০০ হার্জ"
+
+#: qt/src/DisplayPanel.ui
+msgid "4:3 - Classic display aspect"
+msgstr "4:3 - ক্লাসিক ডিসপ্লে অ্যাসপেক্ট"
+
+#: qt/src/DisplayPanel.ui
+msgid "64:49 - NTSC aspect"
+msgstr "64:49 - NTSC অ্যাসপেক্ট"
+
+#: qt/src/DisplayPanel.ui
+msgid "8:7 - Square pixels"
+msgstr "8:7 - স্কয়ার পিক্সেল"
+
+#: qt/src/EmulationPanel.ui
+msgid "<html><head/><body><p>A hack option. Only use this if you are running a third-party hack of a game that was designed for emulators and needs this.</p></body></html>"
+msgstr "<html><head/><body><p>একটি হ্যাক অপশন। এটি কেবলমাত্র তখনই ব্যবহার করুন যদি আপনি কোনো গেমের থার্ড-পার্টি হ্যাক চালাচ্ছেন যা ইমুলেটরের জন্য ডিজাইন করা হয়েছে এবং এটির প্রয়োজন।</p></body></html>"
+
+#: qt/src/EmulationPanel.ui
+msgid "<html><head/><body><p>Allows more sprites to be displayed on the screen in an attempt to remove flickering.</p><p>Some games take advantage of this limit and use it to hide glitches, and removing the limit will make those visible.</p></body></html>"
+msgstr "<html><head/><body><p>স্ক্রিনে ফ্লিকারিং বা ঝিলিক দূর করার প্রচেষ্টায় আরও বেশি স্প্রাইট প্রদর্শনের অনুমতি দেয়।</p><p>কিছু গেম এই সীমার সুবিধা নিয়ে ত্রুটি লুকিয়ে রাখে, এবং এই সীমা সরিয়ে ফেললে সেগুলো দৃশ্যমান হয়ে উঠবে।</p></body></html>"
+
+#: qt/src/EmulationPanel.ui
+msgid "<html><head/><body><p>Alternate sound filters can make the audio more crisp than the authentic gaussian filter.</p><p>The Cubic and Sinc filters provide the best improvement, but they can reveal some noise that would normally be hidden by the hardware.</p></body></html>"
+msgstr "<html><head/><body><p>বিকল্প সাউন্ড ফিল্টারগুলো অডিওকে আসল গাউসিয়ান ফিল্টারের চেয়ে আরও বেশি স্পষ্ট করতে পারে।</p><p>Cubic এবং Sinc ফিল্টারগুলো সবচেয়ে ভালো উন্নতি প্রদান করে, তবে তারা কিছু নয়েজ বা শব্দ প্রকাশ করে দিতে পারে যা সাধারণত হার্ডওয়্যার দ্বারা লুকানো থাকে।</p></body></html>"
+
+#: qt/src/EmulationPanel.ui
+msgid "<html><head/><body><p>Amount of memory to use to enable the rewind function. The amount of time each MB gets you varies based on the complexity of the game. Set to 0 to disable rewind altogether and use less processor time.</p></body></html>"
+msgstr "<html><head/><body><p>রিওয়াইন্ড ফাংশন সক্রিয় করতে মেমরির পরিমাণ। প্রতি মেগাবাইটে আপনি কতটা সময় পাবেন তা গেমের জটিলতার ওপর নির্ভর করে। রিওয়াইন্ড পুরোপুরি নিষ্ক্রিয় করতে এবং প্রসেসরের সময় বাঁচাতে এটি ০ সেট করুন।</p></body></html>"
+
+#: qt/src/EmulationPanel.ui
+msgid "<html><head/><body><p>Change the speed of the SuperFX chip. The SuperFX had some notoriously slow games, and this can be used to attempt to speed them up.</p></body></html>"
+msgstr "<html><head/><body><p>SuperFX চিপের গতি পরিবর্তন করুন। SuperFX-এর কিছু কুখ্যাত রকমের ধীরগতির গেম ছিল, এবং এটি তাদের গতি বাড়ানোর চেষ্টায় ব্যবহার করা যেতে পারে।</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>Choose one of <span style=\" font-style:italic;\">Qt Software, Vulkan, or OpenGL</span>.</p><p>Qt Software will use the CPU to draw the display. Vulkan or OpenGL will use that respective graphics interface to draw the display.</p></body></html>"
+msgstr "<html><head/><body><p><span style=\" font-style:italic;\">Qt Software, Vulkan, অথবা OpenGL</span> এর মধ্যে একটি বেছে নিন।</p><p>Qt Software ডিসপ্লে আঁকার জন্য CPU ব্যবহার করবে। Vulkan বা OpenGL ডিসপ্লে আঁকার জন্য তাদের নিজ নিজ গ্রাফিক্স ইন্টারফেস ব্যবহার করবে।</p></body></html>"
+
+#: qt/src/ControllerPanel.ui
+msgid "<html><head/><body><p>Clear or swap sets of bindings between controllers.</p></body></html>"
+msgstr "<html><head/><body><p>কন্ট্রোলারগুলোর মধ্যকার বাইন্ডিং সেট মুছে ফেলুন অথবা বিনিময় করুন।</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>Control how much the audio is stretched initially.</p><p><br/></p><p>Unless you know what you're doing, it's best to use the option above this to adjust it automatically.</p></body></html>"
+msgstr "<html><head/><body><p>শুরুতে অডিও কতটা প্রসারিত (stretched) হবে তা নিয়ন্ত্রণ করুন।</p><p><br/></p><p>আপনি কী করছেন তা নিশ্চিত না জানা থাকলে, এটি স্বয়ংক্রিয়ভাবে সমন্বয় করতে ওপরের অপশনটি ব্যবহার করাই শ্রেয়।</p></body></html>"
+
+#: qt/src/FoldersPanel.ui
+msgid "<html><head/><body><p>Determines where to look for optional BIOS / boot ROM files (Super Game Boy boot ROM, BS-X.bin, etc).</p><p><span style=\" font-style:italic;\">ROM Folder</span> looks next to the loaded ROM.</p><p><span style=\" font-style:italic;\">Config Folder</span> uses a \"bios\" subfolder of the config folder.</p><p><span style=\" font-style:italic;\">Custom</span> uses an explicit path (default: \"Bios\" relative to the working directory).</p></body></html>"
+msgstr "<html><head/><body><p>ঐচ্ছিক BIOS / বুট ROM ফাইলসমূহ (Super Game Boy boot ROM, BS-X.bin, ইত্যাদি) কোথায় খুঁজতে হবে তা নির্ধারণ করে।</p><p><span style=\" font-style:italic;\">ROM Folder</span> লোড করা ROM ফাইলের পাশে খোঁজে।</p><p><span style=\" font-style:italic;\">Config Folder</span> কনফিগ ফোল্ডারের একটি \"bios\" সাবফোল্ডার ব্যবহার করে।</p><p><span style=\" font-style:italic;\">Custom</span> একটি নির্দিষ্ট পাথ ব্যবহার করে (ডিফল্ট: ওয়ার্কিং ডিরেক্টরির সাপেক্ষে \"Bios\")।</p></body></html>"
+
+#: qt/src/FoldersPanel.ui
+msgid "<html><head/><body><p>Determines where to save these files.</p><p><span style=\" font-style:italic;\">ROM Folder</span> will always save to the same folder as the ROM.</p><p><span style=\" font-style:italic;\">Config Folder</span> will save to a subfolder of the config folder that is shown. If there is a snes9x.conf file next to your executable, Snes9x will operate in portable mode and the config folder will be the folder the executable is in.</p><p><span style=\" font-style:italic;\">Custom</span> allows you to specify exactly where to save these files.</p></body></html>"
+msgstr "<html><head/><body><p>এই ফাইলগুলো কোথায় সংরক্ষণ করতে হবে তা নির্ধারণ করে।</p><p><span style=\" font-style:italic;\">ROM Folder</span> সর্বদা ROM ফাইলের একই ফোল্ডারে সংরক্ষণ করবে।</p><p><span style=\" font-style:italic;\">Config Folder</span> প্রদর্শিত কনফিগ ফোল্ডারের একটি সাবফোল্ডারে সংরক্ষণ করবে। আপনার এক্সিকিউটেবল ফাইলের পাশে যদি snes9x.conf ফাইল থাকে, তবে Snes9x পোর্টেবল মোডে কাজ করবে এবং এক্সিকিউটেবল ফাইলটি যে ফোল্ডারে আছে সেটিই কনফিগ ফোল্ডার হবে।</p><p><span style=\" font-style:italic;\">Custom</span> আপনাকে এই ফাইলগুলো ঠিক কোথায় সংরক্ষণ করতে হবে তা নির্দিষ্ট করার অনুমতি দেয়।</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>Erases all emulated sound output and just sends out silence.</p></body></html>"
+msgstr "<html><head/><body><p>সব ইমুলেটেড সাউন্ড আউটপুট মুছে ফেলে এবং কেবল নীরবতা (silence) পাঠায়।</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>If after everything, you're still getting pops and crackles in audio, you can increase this value. However, it may cause noticeable distortion.</p></body></html>"
+msgstr "<html><head/><body><p>সবকিছু করার পরেও যদি আপনি অডিওতে খড়খড়ে শব্দ পান, তবে আপনি এই মানটি বাড়াতে পারেন। তবে, এটি লক্ষণীয় বিকৃতি (distortion) ঘটাতে পারে।</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>Master output volume during normal play. Moving this also drags the per-source SGB sliders so they stay in step.</p></body></html>"
+msgstr "<html><head/><body><p>স্বাভাবিক খেলার সময় মাস্টার আউটপুট ভলিউম। এটি নাড়ালে প্রতি-উৎসের SGB স্লাইডারগুলোও একসাথে নড়াচড়া করবে যাতে তারা সামঞ্জস্যপূর্ণ থাকে।</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>Master output volume during turbo and rewind.</p></body></html>"
+msgstr "<html><head/><body><p>টার্বো এবং রিওয়াইন্ডের সময় মাস্টার আউটপুট ভলিউম।</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>Mutes sound when using the turbo and rewind functions, which might be annoying to some users.</p></body></html>"
+msgstr "<html><head/><body><p>টার্বো এবং রিওয়াইন্ড ফাংশন ব্যবহারের সময় সাউন্ড মিউট করে, যা কিছু ব্যবহারকারীর জন্য বিরক্তিকর হতে পারে।</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>On classic CRT televisions, some areas of the screen were covered by the bezel, so weren't used often in games. This option allows you to show that area, but it will usually be just black bars.</p></body></html>"
+msgstr "<html><head/><body><p>ক্লাসিক CRT টেলিভিশনে, স্ক্রিনের কিছু অংশ বেজেল দ্বারা ঢাকা থাকত, তাই গেমগুলোতে সেগুলো প্রায়শই ব্যবহৃত হতো না। এই অপশনটি আপনাকে সেই অংশটি দেখানোর অনুমতি দেয়, তবে এটি সাধারণত কেবল ব্ল্যাক বার হিসেবে দেখাবে।</p></body></html>"
+
+#: qt/src/EmulationPanel.ui
+msgid "<html><head/><body><p>Original controllers may have had a small pin in the dpad preventing left and right or up and down from being pressed at the same time. This will allow that behavior if you're using a keyboard or device that can press those buttons at the same time. Some games will glitch when this is done.</p></body></html>"
+msgstr "<html><head/><body><p>আসল কন্ট্রোলারগুলোর dpad-এ একটি ছোট পিন থাকতে পারে যা একই সময়ে বাম ও ডান বা উপর ও নিচ প্রেস করা প্রতিরোধ করত। আপনি যদি কীবোর্ড বা এমন কোনো ডিভাইস ব্যবহার করেন যা একই সাথে সেই বাটনগুলো প্রেস করতে পারে, তবে এটি সেই আচরণের অনুমতি দেবে। এটি করা হলে কিছু গেমে ত্রুটি দেখা দিতে পারে।</p></body></html>"
+
+#: qt/src/EmulationPanel.ui
+msgid "<html><head/><body><p>Override the frame rate of the emulated system. This can be used to run slightly faster or slower than usual, or to match the timer to your exact refresh rate.</p><p><br/></p><p>Set this to 0 to use whatever the emulated system uses.</p></body></html>"
+msgstr "<html><head/><body><p>ইমুলেটেড সিস্টেমের ফ্রেম রেট ওভাররাইড করুন। এটি গেমটিকে স্বাভাবিকের চেয়ে কিছুটা দ্রুত বা ধীরগতিতে চালাতে অথবা টাইমারটিকে আপনার নিখুঁত রিফ্রেশ রেটের সাথে মেলাতে ব্যবহার করা যেতে পারে।</p><p><br/></p><p>ইমুলেটেড সিস্টেম যা ব্যবহার করে তাই ব্যবহার করতে এটি ০ সেট করুন।</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>Selects the driver to output sound with.</p><p><span style=\" font-style:italic;\">Cubeb: </span>The recommended option.</p><p><span style=\" font-style:italic;\">SDL</span>: If Cubeb doesn't work.</p><p><span style=\" font-style:italic;\">PulseAudio:</span> Unix only. May have less latency.</p></body></html>"
+msgstr "<html><head/><body><p>সাউন্ড আউটপুট করার জন্য ড্রাইভার নির্বাচন করে।</p><p><span style=\" font-style:italic;\">Cubeb: </span>প্রস্তাবিত অপশন।</p><p><span style=\" font-style:italic;\">SDL</span>: Cubeb কাজ না করলে ব্যবহার করুন।</p><p><span style=\" font-style:italic;\">PulseAudio:</span> শুধুমাত্র Unix এর জন্য। কম লেটেন্সি বা ল্যাগ থাকতে পারে।</p></body></html>"
+
+#: qt/src/FoldersPanel.ui
+msgid "<html><head/><body><p>Setting this to anything other than 0 will save the SRAM (internal game saves) file regularly. If it is set to to 0, it will only save when exiting Snes9x or changing games, and you will lose any progress since the last save if your device crashes.</p></body></html>"
+msgstr "<html><head/><body><p>এটি ০ ছাড়া অন্য কিছু সেট করলে SRAM (গেমের অভ্যন্তরীণ সেভ) ফাইল নিয়মিত সংরক্ষিত হবে। এটি ০ সেট করা থাকলে, কেবলমাত্র Snes9x বন্ধ করার সময় বা গেম পরিবর্তন করার সময় সংরক্ষিত হবে, এবং আপনার ডিভাইস ক্র্যাশ করলে শেষ সেভের পর থেকে সব অগ্রগতি হারিয়ে যাবে।</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>SGB BIOS mix: GB channel volume. Active in SGB1/SGB2 BIOS mode; in BIOS-less mode this mirrors the Regular master, which is what actually scales GB output.</p></body></html>"
+msgstr "<html><head/><body><p>SGB BIOS মিক্স: GB চ্যানেল ভলিউম। SGB1/SGB2 BIOS মোডে সক্রিয়; BIOS-বিহীন মোডে এটি রেগুলার মাস্টারকে মিরর করে, যা মূলত GB আউটপুট স্কেল করে।</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>SGB BIOS mix: SPC channel volume. Only active in SGB1/SGB2 BIOS mode — BIOS-less GB playback discards SPC output.</p></body></html>"
+msgstr "<html><head/><body><p>SGB BIOS মিক্স: SPC চ্যানেল ভলিউম। শুধুমাত্র SGB1/SGB2 BIOS মোডে সক্রিয় — BIOS-বিহীন GB প্লেব্যাক SPC আউটপুট বর্জন করে।</p></body></html>"
+
+#: qt/src/EmulationPanel.ui
+msgid "<html><head/><body><p>Skips rendering the specified amount of frames when using the fast-forward function. The higher this amount, the faster it goes.</p></body></html>"
+msgstr "<html><head/><body><p>ফাস্ট-ফরওয়ার্ড ফাংশন ব্যবহারের সময় নির্দিষ্ট পরিমাণ ফ্রেম রেন্ডার করা স্কিপ করে। এই পরিমাণ যত বেশি হবে, গেম তত দ্রুত চলবে।</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>The buffer size for the emulator side of sound playback. Ideally, it should be about two frames worth of audio, or about 32ms at 60Hz. Latency will be half this value.</p></body></html>"
+msgstr "<html><head/><body><p>সাউন্ড প্লেব্যাকের ইমুলেটর পাশের বাফার সাইজ। আদর্শভাবে, এটি প্রায় দুই ফ্রেমের সমতুল্য অডিও হওয়া উচিত, অথবা ৬০ হার্জে প্রায় ৩২ মিলি-সেকেন্ড। লেটেন্সি বা ল্যাগ এই মানের অর্ধেক হবে।</p></body></html>"
+
+#: qt/src/ControllerPanel.ui
+msgid "<html><head/><body><p>The enumerated controller as seen by the SNES. Controller 1 will always be quot;Player 1quot; and so on, no matter what device is assigned to the controller ports.</p></body></html>"
+msgstr "<html><head/><body><p>SNES দ্বারা দেখা গণনাভুক্ত কন্ট্রোলার। কন্ট্রোলার পোর্টগুলোতে যে ডিভাইস-ই দেওয়া হোক না কেন, কন্ট্রোলার ১ সর্বদা &quot;প্লেয়ার ১&quot; হিসেবে থাকবে এবং একইভাবে অন্যান্যগুলোও থাকবে।</p></body></html>"
+
+#: qt/src/EmulationPanel.ui
+msgid "<html><head/><body><p>The number of frames between each rewind snapshot. More frames mean rewind can go back further and will rewind faster. </p></body></html>"
+msgstr "<html><head/><body><p>প্রতিটি রিওয়াইন্ড স্ন্যাপশটের মধ্যকার ফ্রেম সংখ্যা। বেশি ফ্রেমের মানে হলো রিওয়াইন্ড আরও পেছনে যেতে পারবে এবং দ্রুত রিওয়াইন্ড হবে। </p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>The output playback rate on your computer. This is <span style=\" font-weight:700;\">not</span> the playback rate of the emulated system.</p><p>You should set this to match your operating system's sound server. It should almost always be 48000Hz.</p></body></html>"
+msgstr "<html><head/><body><p>আপনার কম্পিউটারের আউটপুট প্লেব্যাক রেট। এটি ইমুলেটেড সিস্টেমের প্লেব্যাক রেট <span style=\" font-weight:700;\">নয়</span>।</p><p>আপনার অপারেটিং সিস্টেমের সাউন্ড সার্ভারের সাথে মিল রাখতে এটি সেট করা উচিত। এটি প্রায় সবসময় ৪৮০০০ হার্জ হওয়া উচিত।</p></body></html>"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "<html><head/><body><p>This box lists application shortcuts. There are 4 slots, so you can assign 4 different keys or buttons to one function.</p><p>To set a binding, click a box or highlight it with the keyboard and press Enter/Return. The box will show three dots quot;...quot;. Press the desired key or gamepad button to assign it to that box. The Escape key will clear the box.</p></body></html>"
+msgstr "<html><head/><body><p>এই বক্সটি অ্যাপ্লিকেশন শর্টকাটগুলোর তালিকা দেখায়। এখানে ৪টি স্লট রয়েছে, তাই আপনি একটি ফাংশনে ৪টি ভিন্ন কী বা বাটন বরাদ্দ করতে পারেন।</p><p>বাইন্ডিং সেট করতে, একটি বক্সে ক্লিক করুন বা কীবোর্ড দিয়ে সেটি হাইলাইট করুন এবং Enter প্রেস করুন। বক্সটিতে তিনটি ডট &quot;...&quot; দেখাবে। সেই বক্সে বরাদ্দ করতে কাঙ্খিত কী বা গেমপ্যাড বাটন প্রেস করুন। Escape কী বক্সটি খালি করে দেবে।</p></body></html>"
+
+#: qt/src/ControllerPanel.ui
+msgid "<html><head/><body><p>This box lists keyboard keys and gamepad buttons mapped to the SNES controller. There are 4 slots, so you can assign 4 different keys or buttons to one SNES button.</p><p>To set a binding, click a box or highlight it with the keyboard and press Enter/Return. The box will show three dots quot;...quot;. Press the desired key or gamepad button to assign it to that box. The Escape key will clear the box.</p></body></html>"
+msgstr "<html><head/><body><p>এই বক্সটি SNES কন্ট্রোলারে ম্যাপ করা কীবোর্ড কী এবং গেমপ্যাড বাটনগুলোর তালিকা দেখায়। এখানে ৪টি স্লট রয়েছে, তাই আপনি একটি SNES বাটনে ৪টি ভিন্ন কী বা বাটন বরাদ্দ করতে পারেন।</p><p>বাইন্ডিং সেট করতে, একটি বক্সে ক্লিক করুন বা কীবোর্ড দিয়ে সেটি হাইলাইট করুন এবং Enter প্রেস করুন। বক্সটিতে তিনটি ডট &quot;...&quot; দেখাবে। সেই বক্সে বরাদ্দ করতে কাঙ্খিত কী বা গেমপ্যাড বাটন প্রেস করুন। Escape কী বক্সটি খালি করে দেবে।</p></body></html>"
+
+#: qt/src/EmulationPanel.ui
+msgid "<html><head/><body><p>This controls how the program runs the emulated content at the correct speed.</p><p><span style=\" font-style:italic;\">Timer</span>: This sets a literal timer and shows emulated frames at the exact frame rate specified, or automatically matches the emulated system. It may not match your display's frame rate, which can cause judders.</p><p><span style=\" font-style:italic;\">Timer with Frameskipping</span>: The same as timer, except if your display has a lower refresh rate than the emulated system it will skip frames to keep up.</p><p><span style=\" font-style:italic;\">Sound Synchronization: </span>Assume the sound engine is outputting the sound at the correct speed and match the video output rate with it. This assumes your refresh rate is fairly close to the emulated system and you have vsync turned on.</p><p><span style=\" font-style:italic;\">None:</span> Don't attempt to slow emulation down. If you turn off vsync, this will run as fast as possible. If your display matches the emulated system's refresh rate closely, this with vsync enabled is generally the smoothest option aside from variable refresh rates with a timer.</p></body></html>"
+msgstr "<html><head/><body><p>এটি নিয়ন্ত্রণ করে যে প্রোগ্রামটি কীভাবে ইমুলেটেড কনটেন্ট সঠিক গতিতে চালাবে।</p><p><span style=\" font-style:italic;\">Timer</span>: এটি একটি নির্দিষ্ট টাইমার সেট করে এবং ফ্রেম রেট অনুযায়ী ফ্রেম দেখায়, অথবা স্বয়ংক্রিয়ভাবে ইমুলেটেড সিস্টেমের সাথে মেলায়। এটি আপনার ডিসপ্লের ফ্রেম রেটের সাথে নাও মিলতে পারে, যার ফলে স্ক্রিন কেঁপেই উঠতে পারে (judders)।</p><p><span style=\" font-style:italic;\">Timer with Frameskipping</span>: টাইমারের মতোই, তবে আপনার ডিসপ্লের রিফ্রেশ রেট ইমুলেটেড সিস্টেমের চেয়ে কম হলে এটি তাল মেলাতে ফ্রেম স্কিপ করবে।</p><p><span style=\" font-style:italic;\">Sound Synchronization: </span>ধরে নেয় যে সাউন্ড ইঞ্জিন সঠিক গতিতে সাউন্ড আউটপুট দিচ্ছে এবং তার সাথে ভিডিও আউটপুট রেট মেলায়। এটি ধরে নেয় যে আপনার রিফ্রেশ রেট ইমুলেটেড সিস্টেমের কাছাকাছি এবং আপনার vsync সক্রিয় আছে।</p><p><span style=\" font-style:italic;\">None:</span> ইমুলেশন ধীর করার কোনো চেষ্টা করে না। আপনি যদি vsync বন্ধ করে দেন, এটি যত দ্রুত সম্ভব চলবে। আপনার ডিসপ্লে যদি ইমুলেটেড সিস্টেমের রিফ্রেশ রেটের সাথে হুবহু মিলে যায়, তবে vsync চালিত এই অপশনটি সাধারণত সবচেয়ে মসৃণ অভিজ্ঞতা দেয়।</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>This option adapts <span style=\" font-style:italic;\">maintain aspect ratio</span> and scales the image in steps of integral scale, so game pixels are never spread across the borders of screen pixels.</p></body></html>"
+msgstr "<html><head/><body><p>এই অপশনটি <span style=\" font-style:italic;\">maintain aspect ratio</span> গ্রহণ করে এবং ছবিটিকে পূর্ণসংখ্যা স্কেলের ধাপে স্কেল করে, যাতে গেমের পিক্সেলগুলো কখনো স্ক্রিন পিক্সেলের সীমানা ছাড়িয়ে ছড়িয়ে না পড়ে বা বিকৃত না হয়।</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>This option affects how <span style=\" font-style:italic;\">maintain aspect ratio </span>works. </p><p><span style=\" font-style:italic;\">4:3 </span>will maintain a ratio where the screen is 1.333 times wider than high.</p><p>64:49 presents an idealized ratio where the display output is perfect, but is affected by NTSC compression.</p><p>1:1 Means pixels will be square. This will squeeze the image horizontally.</p></body></html>"
+msgstr "<html><head/><body><p>এই অপশনটি <span style=\" font-style:italic;\">maintain aspect ratio</span> কীভাবে কাজ করবে তা প্রভাবিত করে। </p><p><span style=\" font-style:italic;\">4:3 </span>এমন একটি রেশিও বজায় রাখবে যেখানে স্ক্রিনের প্রস্থ উচ্চতার চেয়ে ১.৩৩৩ গুণ বেশি হবে।</p><p>64:49 একটি আদর্শ রেশিও উপস্থাপন করে যেখানে ডিসপ্লে আউটপুট নিখুঁত হয়, তবে এটি NTSC কম্প্রেশন দ্বারা প্রভাবিত।</p><p>1:1 মানে পিক্সেলগুলো চারকোণা বা স্কয়ার হবে। এটি ছবিটিকে অনুভূমিকভাবে (horizontally) চেপে দেবে।</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>This option causes the audio to be slightly stretched to keep the latency even and to prevent underruns and overruns, which will cause pops and cracks in the audio.</p></body></html>"
+msgstr "<html><head/><body><p>এই অপশনটি অডিওকে সামান্য প্রসারিত করে যাতে লেটেন্সি সমান থাকে এবং আন্ডাররান ও ওভাররান প্রতিরোধ করা যায়, যা অন্যথায় অডিওতে খড়খড়ে শব্দের সৃষ্টি করতে পারে।</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>This option determines whether messages show up in the game display:</p><p>Onscreen will show a high resolution overlay when using <span style=\" font-style:italic;\">Vulkan</span> or <span style=\" font-style:italic;\">OpenGL</span>.</p><p>Inscreen will draw in a pixel font to the ingame display.</p><p>Don't display messages will show nothing.</p></body></html>"
+msgstr "<html><head/><body><p>এই অপশনটি নির্ধারণ করে যে বার্তাগুলো গেম ডিসপ্লেতে দেখাবে কিনা:</p><p>Onscreen অপশনটি <span style=\" font-style:italic;\">Vulkan</span> বা <span style=\" font-style:italic;\">OpenGL</span> ব্যবহারের সময় একটি হাই-রেজোলিউশন ওভারলে দেখাবে।</p><p>Inscreen অপশনটি ইন-গেম ডিসপ্লেতে একটি পিক্সেল ফন্টে বার্তা আঁকবে।</p><p>Don't display messages কোনো বার্তাই দেখাবে না।</p></body></html>"
+
+#: qt/src/EmulationPanel.ui
+msgid "<html><head/><body><p>This option is explicitly for old AddMusic hacks. If you know you have one of those, you can enable this. Otherwise, leave it unchecked.</p></body></html>"
+msgstr "<html><head/><body><p>এই অপশনটি স্পষ্টভাবেই পুরানো AddMusic হ্যাকগুলোর জন্য। আপনি যদি জানেন যে আপনার কাছে এমন একটি হ্যাক আছে, তবে এটি সক্রিয় করতে পারেন। অন্যথায়, এটি টিক চিহ্ন ছাড়া রেখে দিন।</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>This option keeps the proportions of the emulated display the same no matter how you change the size of the window.</p></body></html>"
+msgstr "<html><head/><body><p>আপনি উইন্ডোর সাইজ যেভাবে-ই পরিবর্তন করুন না কেন, এই অপশনটি ইমুলেটেড ডিসপ্লের অনুপাত একই রাখে।</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>This option only affects the size of the font and the icons shown when display messages are set to the <span style=\" font-style:italic;\">Onscreen</span> option.</p></body></html>"
+msgstr "<html><head/><body><p>ডিসপ্লে বার্তাগুলো যখন <span style=\" font-style:italic;\">Onscreen</span> অপশনে সেট করা থাকে, তখন এই অপশনটি শুধুমাত্র ফন্টের সাইজ এবং প্রদর্শিত আইকনগুলোকে প্রভাবিত করে।</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>This option only affects the SNES's high-resolution, 512 pixel wide mode. Few games use this. </p><p><span style=\" font-style:italic;\">Output directly</span> will use whatever is output directly, but when the game changes modes, the filtering will get sharper or blurrier and may be distracting.</p><p><span style=\" font-style:italic;\">Merge fields </span>will scale the image down and blend the extra pixels together. This is useful in games like Jurassic Park and Kirby's Dreamland 3, which use it for a transparency effect.</p><p><span style=\" font-style:italic;\">Scale low resolution </span>will double the width of low-resolution screens, so when the game switches between modes there isn't any distracting changes in filtering. This is useful when a game uses the high resolution mode often, like Seiken Densetsu 3.</p></body></html>"
+msgstr "<html><head/><body><p>এই অপশনটি শুধুমাত্র SNES-এর হাই-রেজোলিউশন, ৫১২ পিক্সেল চওড়া মোডকে প্রভাবিত করে। খুব কম গেম এটি ব্যবহার করে। </p><p><span style=\" font-style:italic;\">Output directly</span> সরাসরি যা আউটপুট হয় তাই ব্যবহার করবে, তবে গেম যখন মোড পরিবর্তন করবে, ফিল্টারিং আরও তীক্ষ্ণ বা ঝাপসা হতে পারে যা মনোযোগ বিঘ্নিত করতে পারে।</p><p><span style=\" font-style:italic;\">Merge fields </span>ছবিটিকে ছোট স্কেল করবে এবং অতিরিক্ত পিক্সেলগুলো একসাথে ব্লেন্ড বা মিশ্রিত করবে। এটি জুরাসিক পার্ক এবং কিরবি'স ড্রিমল্যান্ড ৩ এর মতো গেমগুলোতে দরকারী, যা এটিকে ট্রান্সপারেন্সি ইফেক্টের জন্য ব্যবহার করে।</p><p><span style=\" font-style:italic;\">Scale low resolution </span>কম রেজোলিউশনের স্ক্রিনের প্রস্থ দ্বিগুণ করবে, যাতে গেম যখন মোডগুলোর মধ্যে পরিবর্তন করে তখন ফিল্টারিংয়ে কোনো বিভ্রান্তিকর পরিবর্তন না ঘটে। কোনো গেম যখন প্রায়শই হাই-রেজোলিউশন মোড ব্যবহার করে, যেমন সাইকেন দেনসেতসু ৩, তখন এটি দরকারী।</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>This option prevents tearing in the output.</p></body></html>"
+msgstr "<html><head/><body><p>এই অপশনটি আউটপুটে স্ক্রিন টিয়ারিং বা ছবি ভেঙে যাওয়া প্রতিরোধ করে।</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>This option stretches the emulated audio output to coincide exactly with your display's refresh rate. It automatically handles the <span style=\" font-style:italic;\">Input Rate</span> option.</p></body></html>"
+msgstr "<html><head/><body><p>এই অপশনটি ইমুলেটেড অডিও আউটপুটকে প্রসারিত করে যাতে এটি আপনার ডিসপ্লের রিফ্রেশ রেটের সাথে হুবহু মিলে যায়। এটি স্বয়ংক্রিয়ভাবে <span style=\" font-style:italic;\">Input Rate</span> অপশনটি পরিচালনা করে।</p></body></html>"
+
+#: qt/src/ControllerPanel.ui
+msgid "<html><head/><body><p>This option will use the SDL library to auto-configure gamepads. It will take the XBox mappings for the left D-pad and analog stick, as well as the the face buttons and L/R shoulder buttons, and assign them to relative locations on the first SNES controller.</p><p><br/></p><p>All gamepads will be assigned to player 1. If you need more players, disable this option and set up the mappings manually.</p></body></html>"
+msgstr "<html><head/><body><p>এই অপশনটি গেমপ্যাড স্বয়ংক্রিয়ভাবে কনফিগার করতে SDL লাইব্রেরি ব্যবহার করবে। এটি বাম D-pad এবং অ্যানালগ স্টিক, সেইসাথে ফেস বাটন এবং L/R শোল্ডার বাটনগুলোর জন্য এক্সবক্স (XBox) ম্যাপিং নেবে এবং প্রথম SNES কন্ট্রোলারের আপেক্ষিক অবস্থানে সেগুলো বরাদ্দ করবে।</p><p><br/></p><p>সব গেমপ্যাড প্লেয়ার ১-এর জন্য বরাদ্দ করা হবে। আপনার যদি আরও প্লেয়ারের প্রয়োজন হয়, তবে এই অপশনটি নিষ্ক্রিয় করুন এবং ম্যানুয়ালি ম্যাপিং সেট আপ করুন।</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>This prevents the GPU from queuing up additional frames in advance, reducing the time it takes for the display to react to your input.</p></body></html>"
+msgstr "<html><head/><body><p>এটি জিপিইউ (GPU)-কে অগ্রিম অতিরিক্ত ফ্রেম লাইনে দাঁড় করানো থেকে বিরত রাখে, যা আপনার ইনপুটে ডিসপ্লের সাড়া দেওয়ার সময় কমিয়ে আনে (ল্যাগ কমায়)।</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>Turns on a bilinear smoothing filter to smooth out the pixels. This option won't work with a hardware shader enabled.</p></body></html>"
+msgstr "<html><head/><body><p>পিক্সেলগুলোকে মসৃণ করার জন্য একটি বাইলাইনার স্মুথিং ফিল্টার চালু করে। হার্ডওয়্যার শেডার সক্রিয় থাকলে এই অপশনটি কাজ করবে না।</p></body></html>"
+
+#: qt/src/ControllerPanel.ui
+msgid "<html><head/><body><p>Use this to automatically assign the default keyboard mapping or a detected controller to a set of bindings.</p><p>This uses the XInput controller protocol and maps it as close as possible to a SNES controller.</p></body></html>"
+msgstr "<html><head/><body><p>ডিফল্ট কীবোর্ড ম্যাপিং বা একটি সনাক্তকৃত কন্ট্রোলারকে বাইন্ডিং সেটে স্বয়ংক্রিয়ভাবে বরাদ্দ করতে এটি ব্যবহার করুন।</p><p>এটি XInput কন্ট্রোলার প্রোটোকল ব্যবহার করে এবং এটিকে একটি SNES কন্ট্রোলারের যত সম্ভব কাছাকাছি ম্যাপ করে।</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>Uses a hardware shader with <span style=\" font-style:italic;\">Vulkan</span> or <span style=\" font-style:italic;\">OpenGL</span> drivers. These can be either .glslp or .slangp preset files.</p><p>GLSL shaders (.glslp) can be downloaded from:</p><p><a href=\"https://github.com/libretro/glsl-shaders\"><span style=\" text-decoration: underline; color:#2980b9;\">https://github.com/libretro/glsl-shaders</span></a></p><p>Slang shaders (.slangp) can be downloaded from:</p><p><a href=\"https://github.com/libretro/slang-shaders\"><span style=\" text-decoration: underline; color:#2980b9;\">https://github.com/libretro/slang-shaders</span></a></p></body></html>"
+msgstr "<html><head/><body><p><span style=\" font-style:italic;\">Vulkan</span> বা <span style=\" font-style:italic;\">OpenGL</span> ড্রাইভারের সাথে একটি হার্ডওয়্যার শেডার ব্যবহার করে। এগুলো .glslp বা .slangp প্রিসেট ফাইল হতে পারে।</p><p>GLSL শেডারসমূহ (.glslp) এই লিঙ্ক থেকে ডাউনলোড করা যাবে:</p><p><a href=\"https://github.com/libretro/glsl-shaders\"><span style=\" text-decoration: underline; color:#2980b9;\">https://github.com/libretro/glsl-shaders</span></a></p><p>Slang শেডারসমূহ (.slangp) এই লিঙ্ক থেকে ডাউনলোড করা যাবে:</p><p><a href=\"https://github.com/libretro/slang-shaders\"><span style=\" text-decoration: underline; color:#2980b9;\">https://github.com/libretro/slang-shaders</span></a></p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>When entering fullscreen mode, this option temporarily sets a number of other options to values that make variable refresh rate monitors that use FreeSync or GSync smoother.</p><p>Enables vsync.</p><p>Sets synchronization mode to timer and the frame rate to exactly that of the SNES.</p><p>Sets input rate to 32040Hz.</p></body></html>"
+msgstr "<html><head/><body><p>ফুলস্ক্রিন মোডে প্রবেশ করার সময়, এই অপশনটি সাময়িকভাবে অন্য কিছু অপশনের মান এমনভাবে সেট করে যা FreeSync বা GSync ব্যবহার করা ভেরিয়েবল রিফ্রেশ রেট মনিটরগুলোকে আরও মসৃণ করে তোলে।</p><p>vsync সক্রিয় করে।</p><p>সিঙ্ক্রোনাইজেশন মোড টাইমার-এ সেট করে এবং ফ্রেম রেট ঠিক SNES-এর ফ্রেম রেটের সমান করে।</p><p>ইনপুট রেট ৩২০৪০ হার্জে সেট করে।</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>When using <span style=\" font-style:italic;\">Vulkan</span>, this chooses the GPU you wish to render with.</p></body></html>"
+msgstr "<html><head/><body><p><span style=\" font-style:italic;\">Vulkan</span> ব্যবহার করার সময়, এটি আপনি যে জিপিইউ (GPU) দিয়ে রেন্ডার করতে চান তা বেছে নেয়।</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "Adjust input rate to display rate automatically"
+msgstr "ইনপুট রেট ডিসপ্লে রেটের সাথে স্বয়ংক্রিয়ভাবে সমন্বয় করুন"
+
+#: qt/src/DisplayPanel.ui
+msgid "Adjust settings for VRR in fullscreen mode"
+msgstr "ফুলস্ক্রিন মোডে VRR এর জন্য সেটিংস সমন্বয় করুন"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "All Files (*)"
+msgstr "সব ফাইল (*)"
+
+#: qt/src/EmulationPanel.ui
+msgid "Allow opposite D-pad directions simultaneously"
+msgstr "একই সাথে বিপরীত D-pad দিকের অনুমতি দিন"
+
+#: qt/src/EmulationPanel.ui
+msgid "Alternate sound filter:"
+msgstr "বিকল্প সাউন্ড ফিল্টার:"
+
+#: qt/src/ControllerPanel.ui
+msgid "Auto-Assign Gamepad Buttons Using SDL Controller Map"
+msgstr "SDL কন্ট্রোলার ম্যাপ ব্যবহার করে গেমপ্যাড বাটন স্বয়ংক্রিয়ভাবে বরাদ্দ করুন"
+
+#: qt/src/EmulationPanel.ui
+msgid "Auto-FastROM"
+msgstr "অটো-ফাস্টROM"
+
+#: qt/src/ControllerPanel.ui
+msgid "Automatically assign a controller's buttons to a slot"
+msgstr "একটি কন্ট্রোলারের বাটন একটি স্লটে স্বয়ংক্রিয়ভাবে বরাদ্দ করুন"
+
+#: qt/src/DisplayPanel.ui
+msgid "Bilinear filter"
+msgstr "বাইলাইনার ফিল্টার"
+
+#: qt/src/ControllerPanel.ui
+msgid "Binding #1"
+msgstr "বাইন্ডিং #১"
+
+#: qt/src/ControllerPanel.ui
+msgid "Binding #2"
+msgstr "বাইন্ডিং #২"
+
+#: qt/src/ControllerPanel.ui
+msgid "Binding #3"
+msgstr "বাইন্ডিং #৩"
+
+#: qt/src/ControllerPanel.ui
+msgid "Binding #4"
+msgstr "বাইন্ডিং #৪"
+
+#: qt/src/ControllerPanel.cpp
+msgid "Binding Set #%1"
+msgstr "বাইন্ডিং সেট #%1"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Change Backdrop Color"
+msgstr "ব্যাকড্রপ কালার পরিবর্তন করুন"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Cheats"
+msgstr "চিটস"
+
+#: qt/src/CheatsDialog.cpp
+msgid "cheats.bml was not found."
+msgstr "cheats.bml খুঁজে পাওয়া যায়নি।"
+
+#: qt/src/CheatsDialog.ui
+msgid "Check Database"
+msgstr "ডাটাবেস চেক করুন"
+
+#: qt/src/DisplayPanel.ui
+msgid "Choose a device to render output. If you have no integrated graphics, there will be only one choice."
+msgstr "আউটপুট রেন্ডার করার জন্য একটি ডিভাইস বেছে নিন। আপনার যদি কোনো ইন্টিগ্রেটেড গ্রাফিক্স না থাকে, তবে কেবলমাত্র একটিই বিকল্প থাকবে।"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Choose a State File"
+msgstr "একটি স্টেট ফাইল বেছে নিন"
+
+#: qt/src/ControllerPanel.cpp
+msgid "Clear All Controllers"
+msgstr "সব কন্ট্রোলার মুছে ফেলুন"
+
+#: qt/src/ControllerPanel.cpp
+msgid "Clear Current Controller"
+msgstr "বর্তমান কন্ট্রোলার মুছে ফেলুন"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Clear Recent Files"
+msgstr "সাম্প্রতিক ফাইল মুছে ফেলুন"
+
+#: qt/src/EmuSettingsWindow.ui
+msgid "Click on a setting to find out more info."
+msgstr "আরও তথ্য জানতে একটি সেটিংসে ক্লিক করুন।"
+
+#: qt/src/FoldersPanel.ui
+msgid "Config Folder"
+msgstr "কনফিগ ফোল্ডার"
+
+#: qt/src/FoldersPanel.cpp
+msgid "Config folder is %1"
+msgstr "কনফিগ ফোল্ডার হলো %1"
+
+#: qt/src/ControllerPanel.cpp
+msgid "Controller %1"
+msgstr "কন্ট্রোলার %1"
+
+#: qt/src/ControllerPanel.ui
+msgid "Controller + Multitap"
+msgstr "কন্ট্রোলার + মাল্টিট্যাপ"
+
+#: qt/src/ControllerPanel.ui
+msgid "Controller Ports:"
+msgstr "কন্ট্রোলার পোর্টসমূহ:"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Controllers"
+msgstr "কন্ট্রোলারসমূহ"
+
+#: qt/src/FoldersPanel.ui
+msgid "Custom Folder"
+msgstr "কাস্টম ফোল্ডার"
+
+#: qt/src/FoldersPanel.ui
+msgid "Data Locations"
+msgstr "ডাটা লোকেশনসমূহ"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Decrease Current Save Slot"
+msgstr "বর্তমান সেভ স্লট কমান"
+
+#: qt/src/ControllerPanel.cpp
+msgid "Default Keyboard"
+msgstr "ডিফল্ট কীবোর্ড"
+
+#: qt/src/DisplayPanel.ui
+msgid "Device:"
+msgstr "ডিভাইস:"
+
+#: qt/src/GeneralPanel.ui
+msgid "Disable screensaver"
+msgstr "স্ক্রিনসেভার নিষ্ক্রিয় করুন"
+
+#: qt/src/DisplayPanel.ui
+msgid "Display messages:"
+msgstr "ডিসপ্লে বার্তাসমূহ:"
+
+#: qt/src/DisplayPanel.ui
+msgid "Display Output"
+msgstr "ডিসপ্লে আউটপুট"
+
+#: qt/src/DisplayPanel.ui
+msgid "Don't display messages"
+msgstr "বার্তা প্রদর্শন করবেন না"
+
+#: qt/src/DisplayPanel.ui
+msgid "Driver:"
+msgstr "ড্রাইভার:"
+
+#: qt/src/ControllerPanel.ui
+msgid "Edit"
+msgstr "এডিট করুন"
+
+#: qt/src/EmulationPanel.ui
+msgid "Emulation Speed"
+msgstr "ইমুলেশন গতি"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Enable Fast-Forward"
+msgstr "ফাস্ট-ফরওয়ার্ড সক্রিয় করুন"
+
+#: qt/src/DisplayPanel.ui
+msgid "Enable vsync"
+msgstr "vsync সক্রিয় করুন"
+
+#: qt/src/FoldersPanel.ui
+msgid "Exports"
+msgstr "এক্সপোর্টস"
+
+#: qt/src/EmulationPanel.ui
+msgid "Fast-forward frame skip:"
+msgstr "ফাস্ট-ফরওয়ার্ড ফ্রেম স্কিপ:"
+
+#: qt/src/SoundPanel.ui
+msgid "Fast-Forward:"
+msgstr "ফাস্ট-ফরওয়ার্ড:"
+
+#: qt/src/ControllerPanel.ui
+msgid "Form"
+msgstr "ফর্ম"
+
+#: qt/src/EmulationPanel.ui
+msgid "fps"
+msgstr "fps (ফ্রেম প্রতি সেকেন্ড)"
+
+#: qt/src/EmulationPanel.ui
+msgid "Frame rate:"
+msgstr "ফ্রেম রেট:"
+
+#: qt/src/EmulationPanel.ui
+msgid "Frames between steps"
+msgstr "ধাপগুলোর মধ্যকার ফ্রেম"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "From File"
+msgstr "ফাইল থেকে"
+
+#: qt/src/EmulationPanel.ui
+msgid "Gaussian"
+msgstr "গাউসিয়ান"
+
+#: qt/src/SoundPanel.ui
+msgid "GB:"
+msgstr "GB:"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Grab Mouse"
+msgstr "মাউস গ্র্যাব (আটক) করুন"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Hard Reset"
+msgstr "হার্ড রিসেট"
+
+#: qt/src/EmulationPanel.ui
+msgid "High"
+msgstr "উচ্চ"
+
+#: qt/src/DisplayPanel.ui
+msgid "High-resolution mode:"
+msgstr "হাই-রেজোলিউশন মোড:"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Increase Current Save Slot"
+msgstr "বর্তমান সেভ স্লট বাড়ান"
+
+#: qt/src/DisplayPanel.ui
+msgid "Inside the screen - Low resolution"
+msgstr "স্ক্রিনের ভেতরে - কম রেজোলিউশন"
+
+#: qt/src/CheatsDialog.cpp
+msgid "Invalid Cheat"
+msgstr "অবৈধ চিট"
+
+#: qt/src/DisplayPanel.ui
+msgid "Keep the screen at the requested proportions for width and height."
+msgstr "প্রস্থ এবং উচ্চতার জন্য অনুরোধকৃত অনুপাতে স্ক্রিনটি বজায় রাখুন।"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Load State"
+msgstr "স্টেট লোড করুন"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Load State from Current Slot"
+msgstr "বর্তমান স্লট থেকে স্টেট লোড করুন"
+
+#: qt/src/EmulationPanel.ui
+msgid "Low"
+msgstr "নিম্ন"
+
+#: qt/src/EmulationPanel.ui
+msgid "MB"
+msgstr "MB"
+
+#: qt/src/DisplayPanel.ui
+msgid "Merge the fields of the high-resolution lines"
+msgstr "হাই-রেজোলিউশন লাইনের ফিল্ডগুলো একত্রিত করুন"
+
+#: qt/src/DisplayPanel.ui
+msgid "Messages"
+msgstr "বার্তাসমূহ"
+
+#: qt/src/ControllerPanel.ui
+msgid "Mouse + Controller"
+msgstr "মাউস + কন্ট্রোলার"
+
+#: qt/src/SoundPanel.ui
+msgid "ms"
+msgstr "মি.সে."
+
+#: qt/src/SoundPanel.ui
+msgid "Mute all sound"
+msgstr "সব সাউন্ড মিউট করুন"
+
+#: qt/src/SoundPanel.ui
+msgid "Mute sound during turbo or rewind"
+msgstr "টার্বো বা রিওয়াইন্ডের সময় সাউন্ড মিউট করুন"
+
+#: qt/src/CheatsDialog.cpp
+msgid "No cheats for the current game were found in the database."
+msgstr "ডাটাবেসে বর্তমান গেমের জন্য কোনো চিট খুঁজে পাওয়া যায়নি।"
+
+#: qt/src/CheatsDialog.cpp
+msgid "No Cheats Found"
+msgstr "কোনো চিট পাওয়া যায়নি"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "No recent files"
+msgstr "কোনো সাম্প্রতিক ফাইল নেই"
+
+#: qt/src/EmulationPanel.ui
+msgid "None - Run unthrottled, unless vsync is turned on"
+msgstr "কিছুই না - vsync চালু না থাকলে আনথ্রোটলড (পূর্ণ গতিতে) চলবে"
+
+#: qt/src/ControllerPanel.ui
+msgid "One Controller"
+msgstr "একটি কন্ট্রোলার"
+
+#: qt/src/DisplayPanel.ui
+msgid "Onscreen - High resolution"
+msgstr "স্ক্রিনের ওপর - হাই রেজোলিউশন"
+
+#: qt/src/DisplayPanel.ui
+msgid "Onscreen display size:"
+msgstr "অন-স্ক্রিন ডিসপ্লে সাইজ:"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Open a ROM File"
+msgstr "একটি ROM ফাইল খুলুন"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Open File"
+msgstr "ফাইল খুলুন"
+
+#: qt/src/FoldersPanel.cpp
+msgid "Open Folder"
+msgstr "ফোল্ডার খুলুন"
+
+#: qt/src/EmuCanvasOpenGL.cpp
+msgid "OpenGL Driver"
+msgstr "OpenGL ড্রাইভার"
+
+#: qt/src/EmulationPanel.ui
+msgid "Overclock:"
+msgstr "ওভারক্লক:"
+
+#: qt/src/GeneralPanel.ui
+msgid "Overlays"
+msgstr "ওভারলেসমূহ"
+
+#: qt/src/FoldersPanel.ui
+msgid "Patches"
+msgstr "প্যাচেস"
+
+#: qt/src/GeneralPanel.ui
+msgid "Pause emulation when window is not focused"
+msgstr "উইন্ডোটি ফোকাসে না থাকলে ইমুলেশন সাময়িক বিরতি দিন"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Pause/Continue"
+msgstr "সাময়িক বিরতি/চালিয়ে যান"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Power Cycle Console"
+msgstr "কনসোল পাওয়ার সাইকেল করুন"
+
+#: qt/src/ShaderParametersDialog.cpp
+msgid "Preset name:"
+msgstr "প্রিসেট নাম:"
+
+#: qt/src/DisplayPanel.ui
+msgid "Prevent the display driver from getting too far ahead in order to reduce lag."
+msgstr "ল্যাগ বা বিলম্ব কমানোর জন্য ডিসপ্লে ড্রাইভারকে অতিরিক্ত এগিয়ে যাওয়া থেকে বিরত রাখুন।"
+
+#: qt/src/DisplayPanel.ui
+msgid "pt"
+msgstr "pt"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Load Slot 0"
+msgstr "কুইক লোড স্লট ০"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Load Slot 1"
+msgstr "কুইক লোড স্লট ১"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Load Slot 2"
+msgstr "কুইক লোড স্লট ২"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Load Slot 3"
+msgstr "কুইক লোড স্লট ৩"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Load Slot 4"
+msgstr "কুইক লোড স্লট ৪"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Load Slot 5"
+msgstr "কুইক লোড স্লট ৫"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Load Slot 6"
+msgstr "কুইক লোড স্লট ৬"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Load Slot 7"
+msgstr "কুইক লোড স্লট ৭"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Load Slot 8"
+msgstr "কুইক লোড স্লট ৮"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Load Slot 9"
+msgstr "কুইক লোড স্লট ৯"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Save Slot 0"
+msgstr "কুইক সেভ স্লট ০"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Save Slot 1"
+msgstr "কুইক সেভ স্লট ১"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Save Slot 2"
+msgstr "কুইক সেভ স্লট ২"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Save Slot 3"
+msgstr "কুইক সেভ স্লট ৩"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Save Slot 4"
+msgstr "কুইক সেভ স্লট ৪"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Save Slot 5"
+msgstr "কুইক সেভ স্লট ৫"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Save Slot 6"
+msgstr "কুইক সেভ স্লট ৬"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Save Slot 7"
+msgstr "কুইক সেভ স্লট ৭"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Save Slot 8"
+msgstr "কুইক সেভ স্লট ৮"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Save Slot 9"
+msgstr "কুইক সেভ স্লট ৯"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quit"
+msgstr "বন্ধ করুন"
+
+#: qt/src/SoundPanel.ui
+msgid "Regular:"
+msgstr "স্বাভাবিক:"
+
+#: qt/src/EmulationPanel.ui
+msgid "Remove the sprite limit"
+msgstr "স্প্রাইট লিমিট সরিয়ে ফেলুন"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Reset to Default"
+msgstr "ডিফল্টে রিসেট করুন"
+
+#: qt/src/EmuSettingsWindow.ui
+msgid "Restore all settings on the current page to their default values."
+msgstr "বর্তমান পৃষ্ঠার সব সেটিংস তাদের ডিফল্ট মানে ফিরিয়ে আনুন।"
+
+#: qt/src/EmuSettingsWindow.ui
+msgid "Restore Defaults"
+msgstr "ডিফল্ট পুনরুদ্ধার করুন"
+
+#: qt/src/EmulationPanel.ui
+msgid "Rewind buffer size (0 to disable):"
+msgstr "রিওয়াইন্ড বাফার সাইজ (নিষ্ক্রিয় করতে ০):"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "ROM Files (*.sfc *.smc *.bin *.fig *.msu *.zip)"
+msgstr "ROM ফাইলসমূহ (*.sfc *.smc *.bin *.fig *.msu *.zip)"
+
+#: qt/src/FoldersPanel.ui
+msgid "ROM Folder"
+msgstr "ROM ফোল্ডার"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Run"
+msgstr "চালান"
+
+#: qt/src/ShaderParametersDialog.cpp
+msgid "Save"
+msgstr "সংরক্ষণ করুন"
+
+#: qt/src/ShaderParametersDialog.cpp
+msgid "Save As"
+msgstr "নতুন নামে সংরক্ষণ"
+
+#: qt/src/ShaderParametersDialog.cpp
+msgid "Save Shader Preset As"
+msgstr "শেডার প্রিসেট নতুন নামে সংরক্ষণ করুন"
+
+#: qt/src/FoldersPanel.ui
+msgid "Save SRAM to disk every:"
+msgstr "প্রতি এই সময়ে SRAM ডিস্কে সংরক্ষণ করুন:"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Save State to Current Slot"
+msgstr "বর্তমান স্লটে স্টেট সংরক্ষণ করুন"
+
+#: qt/src/FoldersPanel.ui
+msgid "Save states"
+msgstr "সংরক্ষিত স্টেটসমূহ"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Save States (*.sst *.oops *.undo *.0?? *.1?? *.2?? *.3?? *.4?? *.5?? *.6?? *.7?? *.8?? *.9*)"
+msgstr "সংরক্ষিত স্টেটসমূহ (*.sst *.oops *.undo *.0?? *.1?? *.2?? *.3?? *.4?? *.5?? *.6?? *.7?? *.8?? *.9*)"
+
+#: qt/src/DisplayPanel.ui
+msgid "Scale normal resolution screens up"
+msgstr "স্বাভাবিক রেজোলিউশনের স্ক্রিন বড় স্কেল করুন"
+
+#: qt/src/DisplayPanel.ui
+msgid "Scaling and Aspect Ratio"
+msgstr "স্কেলিং এবং অ্যাসপেক্ট রেশিও"
+
+#: qt/src/FoldersPanel.ui
+msgid "seconds"
+msgstr "সেকেন্ড"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Seek to Frame"
+msgstr "ফ্রেমে সন্ধান করুন (Seek)"
+
+#: qt/src/DisplayPanel.cpp
+msgid "Select a Folder"
+msgstr "একটি ফোল্ডার নির্বাচন করুন"
+
+#: qt/src/DisplayPanel.ui
+msgid "Select the output driver."
+msgstr "আউটপুট ড্রাইভার নির্বাচন করুন।"
+
+#: qt/src/ControllerPanel.ui
+msgid "Set"
+msgstr "সেট করুন"
+
+#: qt/src/EmulationPanel.ui
+msgid "Set frame rate to 0 to automatically change based on PAL/NTSC and with interlacing on and off."
+msgstr "PAL/NTSC এর ওপর ভিত্তি করে এবং ইন্টারলেসিং চালু/বন্ধের সাথে স্বয়ংক্রিয়ভাবে ফ্রেম রেট পরিবর্তন করতে এটি ০ সেট করুন।"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Set Size"
+msgstr "সাইজ সেট করুন"
+
+#: qt/src/DisplayPanel.cpp
+msgid "Shader Presets (*.slangp *.glslp)"
+msgstr "শেডার প্রিসেটসমূহ (*.slangp *.glslp)"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Shader Settings"
+msgstr "শেডার সেটিংস"
+
+#: qt/src/GeneralPanel.ui
+msgid "Show fast-forward and pause icons"
+msgstr "ফাস্ট-ফরওয়ার্ড এবং বিরতি (pause) আইকন দেখান"
+
+#: qt/src/DisplayPanel.ui
+msgid "Show overscan area"
+msgstr "ওভারস্ক্যান এলাকা দেখান"
+
+#: qt/src/DisplayPanel.ui
+msgid "Show the areas on the top and bottom of the screen that are normally black and hidden by the TV. Some games will draw in these areas."
+msgstr "স্ক্রিনের ওপরের এবং নিচের অংশগুলো দেখান যা সাধারণত কালো থাকে এবং টিভি দ্বারা লুকানো থাকে। কিছু গেম এই অংশগুলোতে ছবি আঁকবে।"
+
+#: qt/src/GeneralPanel.ui
+msgid "Show the time"
+msgstr "সময় দেখান"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Slot %1"
+msgstr "স্লট %1"
+
+#: qt/src/DisplayPanel.ui
+msgid "Smooth screen output."
+msgstr "মসৃণ স্ক্রিন আউটপুট।"
+
+#: qt/src/ControllerPanel.ui
+msgid "SNES Controller 1"
+msgstr "SNES কন্ট্রোলার ১"
+
+#: qt/src/ControllerPanel.ui
+msgid "SNES Controller 2"
+msgstr "SNES কন্ট্রোলার ২"
+
+#: qt/src/ControllerPanel.ui
+msgid "SNES Controller 3 (Multitap)"
+msgstr "SNES কন্ট্রোলার ৩ (মাল্টিট্যাপ)"
+
+#: qt/src/ControllerPanel.ui
+msgid "SNES Controller 4 (Multitap)"
+msgstr "SNES কন্ট্রোলার ৪ (মাল্টিট্যাপ)"
+
+#: qt/src/ControllerPanel.ui
+msgid "SNES Controller 5 (Multitap)"
+msgstr "SNES কন্ট্রোলার ৫ (মাল্টিট্যাপ)"
+
+#: qt/src/DisplayPanel.ui
+msgid "Software Filters"
+msgstr "সফটওয়্যার ফিল্টারসমূহ"
+
+#: qt/src/SoundPanel.ui
+msgid "Sound Output"
+msgstr "সাউন্ড আউটপুট"
+
+#: qt/src/SoundPanel.ui
+msgid "Sound Stretching"
+msgstr "সাউন্ড স্ট্রেচিং"
+
+#: qt/src/EmulationPanel.ui
+msgid "Sound Synchronization - Wait on the sound buffer"
+msgstr "সাউন্ড সিঙ্ক্রোনাইজেশন - সাউন্ড বাফারে অপেক্ষা করুন"
+
+#: qt/src/SoundPanel.ui
+msgid "SPC:"
+msgstr "SPC:"
+
+#: qt/src/EmulationPanel.ui
+msgid "Speed control method:"
+msgstr "গতি নিয়ন্ত্রণ পদ্ধতি:"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Start Recording"
+msgstr "রেকর্ডিং শুরু করুন"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Stop Recording"
+msgstr "রেকর্ডিং বন্ধ করুন"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Super Game Boy (SGB1)"
+msgstr "সুপার গেম বয় (SGB1)"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Super Game Boy 2 (SGB2)"
+msgstr "সুপার গেম বয় ২ (SGB2)"
+
+#: qt/src/EmulationPanel.ui
+msgid "SuperFX clock speed:"
+msgstr "SuperFX ক্লক স্পীড:"
+
+#: qt/src/ControllerPanel.ui
+msgid "SuperScope + Controller"
+msgstr "সুপারস্কোপ + কন্ট্রোলার"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Swap Controllers 1 and 2"
+msgstr "কন্ট্রোলার ১ এবং ২ বিনিময় করুন"
+
+#: qt/src/ControllerPanel.ui
+msgid "Swap or clear groups of bindings"
+msgstr "বাইন্ডিংয়ের গ্রুপগুলো বিনিময় করুন অথবা মুছে ফেলুন"
+
+#: qt/src/ControllerPanel.cpp
+msgid "Swap With"
+msgstr "বিনিময় করুন এর সাথে"
+
+#: qt/src/GeneralPanel.ui
+msgid "Switch to fullscreen after opening a ROM"
+msgstr "একটি ROM খোলার পর ফুলস্ক্রিনে চলে যান"
+
+#: qt/src/DisplayPanel.ui
+msgid "Sync the display to vertical retrace to eliminate tearing."
+msgstr "টিয়ারিং বা ছবি ভেঙে যাওয়া দূর করতে ডিসপ্লেটিকে ভার্টিকাল রিট্রেসের সাথে সিঙ্ক করুন।"
+
+#: qt/src/CheatsDialog.cpp
+msgid "The cheat you entered was not valid."
+msgstr "আপনার ইনপুটকৃত চিট কোডটি সঠিক ছিল না।"
+
+#: qt/src/EmuCanvasOpenGL.cpp
+msgid "The driver isn't using a specialized shader preset right now."
+msgstr "ড্রাইভারটি এই মুহূর্তে কোনো বিশেষায়িত শেডার প্রিসেট ব্যবহার করছে না।"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "The language change will take effect after you restart SuperSnes9x."
+msgstr "SuperSnes9x রিস্টার্ট করার পর ভাষা পরিবর্তন কার্যকর হবে।"
+
+#: qt/src/EmuCanvasVulkan.cpp
+msgid "The vulkan display driver hasn't properly loaded."
+msgstr "ভলকান (vulkan) ডিসপ্লে ড্রাইভারটি সঠিকভাবে লোড হয়নি।"
+
+#: qt/src/DisplayPanel.ui
+msgid "This affects the rarely used 512-pixels-wide mode used by the SNES.\nFor games like Kirby 3 and Jurassic Park, choose the \"merge fields\" option.\nFor games like Seiken Densetsu 3 and Marvelous, choose the \"scale up\" option.\nOutput directly will cause the screen to change between the two modes and look weird."
+msgstr ""
+"এটি SNES দ্বারা ব্যবহৃত কদাচিৎ ব্যবহৃত ৫১২-পিক্সেল চওড়া মোডকে প্রভাবিত করে।\nকিরবি ৩ এবং জুরাসিক পার্কের মতো গেমগুলোর জন্য \"merge fields\" অপশনটি বেছে নিন।\nসাইকেন দেনসেতসু ৩ এবং মার্ভেলাস-এর মতো গেমগুলোর জন্য \"scale up\" অপশনটি বেছে নিন।\nসরাসরি আউটপুট দিলে স্ক্রিন দুটি মোডের মধ্যে পরিবর্তিত হতে থাকবে এবং দেখতে অদ্ভুত লাগবে।"
+
+#: qt/src/EmuCanvasOpenGL.cpp
+msgid "This shader preset doesn't offer any configurable parameters."
+msgstr "এই শেডার প্রিসেটটি কোনো কনফিগারেবল প্যারামিটার অফার করে না।"
+
+#: qt/src/EmulationPanel.ui
+msgid "Timer - Match the frame rate configured below"
+msgstr "টাইমার - নিচে কনফিগার করা ফ্রেম রেটের সাথে মেলান"
+
+#: qt/src/EmulationPanel.ui
+msgid "Timer with Frame Skipping - Skip frames if needed"
+msgstr "টাইমার সহ ফ্রেম স্কিপিং - প্রয়োজন হলে ফ্রেম স্কিপ করুন"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "To File"
+msgstr "ফাইলে"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle All Sound Channels"
+msgstr "সব সাউন্ড চ্যানেল টগল করুন"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle BG Layer 0"
+msgstr "BG লেয়ার ০ টগল করুন"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle BG Layer 1"
+msgstr "BG লেয়ার ১ টগল করুন"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle BG Layer 2"
+msgstr "BG লেয়ার ২ টগল করুন"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle BG Layer 3"
+msgstr "BG লেয়ার ৩ টগল করুন"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle Fast-Forward"
+msgstr "ফাস্ট-ফরওয়ার্ড টগল করুন"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle Fullscreen"
+msgstr "ফুলস্ক্রিন টগল করুন"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle Sound Channel 1"
+msgstr "সাউন্ড চ্যানেল ১ টগল করুন"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle Sound Channel 2"
+msgstr "সাউন্ড চ্যানেল ২ টগল করুন"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle Sound Channel 3"
+msgstr "সাউন্ড চ্যানেল ৩ টগল করুন"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle Sound Channel 4"
+msgstr "সাউন্ড চ্যানেল ৪ টগল করুন"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle Sound Channel 5"
+msgstr "সাউন্ড চ্যানেল ৫ টগল করুন"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle Sound Channel 6"
+msgstr "সাউন্ড চ্যানেল ৬ টগল করুন"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle Sound Channel 7"
+msgstr "সাউন্ড চ্যানেল ৭ টগল করুন"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle Sound Channel 8"
+msgstr "সাউন্ড চ্যানেল ৮ টগল করুন"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle Sprites"
+msgstr "স্প্রাইটস টগল করুন"
+
+#: qt/src/ControllerPanel.ui
+msgid "Turbo A"
+msgstr "টার্বো A"
+
+#: qt/src/ControllerPanel.ui
+msgid "Turbo B"
+msgstr "টার্বো B"
+
+#: qt/src/ControllerPanel.ui
+msgid "Turbo L"
+msgstr "টার্বো L"
+
+#: qt/src/ControllerPanel.ui
+msgid "Turbo R"
+msgstr "টার্বো R"
+
+#: qt/src/ControllerPanel.ui
+msgid "Turbo X"
+msgstr "টার্বো X"
+
+#: qt/src/ControllerPanel.ui
+msgid "Turbo Y"
+msgstr "টার্বো Y"
+
+#: qt/src/ControllerPanel.ui
+msgid "Two Controllers"
+msgstr "দুটি কন্ট্রোলার"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Unable to create a %1 context. Attempting to use %2."
+msgstr "%1 কনটেক্সট তৈরি করা যায়নি। %2 ব্যবহারের চেষ্টা করা হচ্ছে।"
+
+#: qt/src/CheatsDialog.cpp
+msgid "Unable to Open Cheats Database"
+msgstr "চিট ডাটাবেস খোলা যায়নি"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Unable to Start Display Driver"
+msgstr "ডিসপ্লে ড্রাইভার চালু করা যায়নি"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Undo Load State"
+msgstr "স্টেট লোড আনডু করুন"
+
+#: qt/src/DisplayPanel.ui
+msgid "Use a hardware shader:"
+msgstr "একটি হার্ডওয়্যার শেডার ব্যবহার করুন:"
+
+#: qt/src/DisplayPanel.ui
+msgid "Use a selected .slangp or .glslp shader file. \n.slangp is supported by Vulkan and OpenGL. \n.glslp is supported by OpenGL."
+msgstr "একটি নির্বাচিত .slangp বা .glslp শেডার ফাইল ব্যবহার করুন। \n.slangp ভলকান এবং ওপেনজিএল দ্বারা সমর্থিত। \n.glslp ওপেনজিএল দ্বারা সমর্থিত।"
+
+#: qt/src/EmulationPanel.ui
+msgid "Use a shadow echo buffer"
+msgstr "একটি শ্যাডো ইকো বাফার ব্যবহার করুন"
+
+#: qt/src/DisplayPanel.ui
+msgid "Use integer scaling"
+msgstr "পূর্ণসংখ্যা স্কেলিং ব্যবহার করুন"
+
+#: qt/src/ControllerPanel.ui
+msgid "Use SDL to set up the D-pad, face buttons, and L/R. Other buttons may still be configured."
+msgstr "D-pad, ফেস বাটন, এবং L/R সেট আপ করতে SDL ব্যবহার করুন। অন্যান্য বাটনগুলো তবুও কনফিগার করা যেতে পারে।"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "View"
+msgstr "প্রদর্শন"
+
+#: qt/src/EmuCanvasVulkan.cpp
+msgid "Vulkan Driver"
+msgstr "ভলকান (Vulkan) ড্রাইভার"
+
+#: qt/src/DisplayPanel.ui
+msgid "When entering fullscreen mode, temporarily change other settings to use VRR (G-Sync or FreeSync) correctly."
+msgstr "ফুলস্ক্রিন মোডে প্রবেশ করার সময়, VRR (G-Sync বা FreeSync) সঠিকভাবে ব্যবহার করতে সাময়িকভাবে অন্য সেটিংস পরিবর্তন করুন।"
+
+#: qt/src/DisplayPanel.ui
+msgid "When scaling up, only use integer multiples of the original height."
+msgstr "বড় স্কেল করার সময়, শুধুমাত্র মূল উচ্চতার পূর্ণসংখ্যা গুণিতক ব্যবহার করুন।"
