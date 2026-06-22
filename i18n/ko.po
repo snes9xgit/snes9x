@@ -105,8 +105,8 @@ msgid "Same location as current game"
 msgstr "현재 게임과 동일한 위치"
 
 #: src/gtk_preferences.cpp:110
-msgid "{0:Ld}×{1:Ld} @ {2:.3Lf} Hz"
-msgstr "{0:Ld}×{1:Ld} @ {2:.3Lf} Hz"
+msgid "{0:Ld}×{1:Ld} @ {2:.3Lf} Hz"
+msgstr "{0:Ld}×{1:Ld} @ {2:.3Lf} Hz"
 
 #: src/gtk_preferences.cpp:143
 msgid "OpenGL – Use 3D graphics hardware"
@@ -127,20 +127,20 @@ msgstr "없음 – 소프트웨어 스케일러 사용"
 #: src/gtk_preferences.cpp:179 src/gtk_preferences.cpp:446
 msgid "thread for filtering and scaling"
 msgid_plural "threads for filtering and scaling"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "필터링 및 스케일링을 위한 스레드"
+msgstr[1] "필터링 및 스케일링을 위한 스레드"
 
 #: src/gtk_preferences.cpp:236 src/gtk_preferences.cpp:500
 msgid "millisecond"
 msgid_plural "milliseconds"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "밀리초"
+msgstr[1] "밀리초"
 
 #: src/gtk_preferences.cpp:260 src/gtk_preferences.cpp:476
 msgid "second after change"
 msgid_plural "seconds after change"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "변경 후 초"
+msgstr[1] "변경 후 초"
 
 #: src/gtk_preferences.cpp:271
 msgid "SuperSnes9x version: "
@@ -159,12 +159,12 @@ msgid "Select directory"
 msgstr "디렉토리 선택"
 
 #: src/gtk_preferences.cpp:323
-msgid "{0:.4Lf} Hz"
-msgstr "{0:.4Lf} Hz"
+msgid "{0:.4Lf} Hz"
+msgstr "{0:.4Lf} Hz"
 
 #: src/gtk_preferences.cpp:328
-msgid "{0:Ld} Hz"
-msgstr "{0:Ld} Hz"
+msgid "{0:Ld} Hz"
+msgstr "{0:Ld} Hz"
 
 #: src/gtk_preferences.cpp:379
 msgid "Select Shader File"
@@ -191,7 +191,7 @@ msgstr "보정 완료"
 
 #: src/gtk_s9x.cpp:206
 msgid "Using rewind buffer of {0}\n"
-msgstr "Using rewind buffer of {0}\n"
+msgstr "되감기 버퍼로 {0} 사용 중\n"
 
 #: src/gtk_s9x.cpp:598
 msgid ""
@@ -202,7 +202,13 @@ msgid ""
 "epx ntsc\n"
 "\n"
 "-mutesound                     Disables sound output.\n"
-msgstr "GTK port options:\n-filter [option]               Use a filter to scale the image.\n                               [option] is one of: none supereagle 2xsai\n                               super2xsai hq2x hq3x hq4x 2xbrz 3xbrz 4xbrz epx ntsc\n\n-mutesound                     Disables sound output.\n"
+msgstr ""
+"GTK 포트 옵션:\n"
+"-filter [option]               이미지 스케일링에 필터를 사용합니다.\n"
+"                               [option] 종류: none supereagle 2xsai\n"
+"                               super2xsai hq2x hq3x hq4x 2xbrz 3xbrz 4xbrz epx ntsc\n"
+"\n"
+"-mutesound                     오디오 출력을 비활성화합니다.\n"
 
 #: src/gtk_s9xwindow.cpp:48 src/snes9x.ui:8405
 msgid "Save States"
@@ -238,7 +244,7 @@ msgstr "SNES ROM 이미지"
 
 #: src/gtk_s9xwindow.cpp:740
 msgid "Couldn't load file: "
-msgstr "Couldn't load file: "
+msgstr "파일을 불러올 수 없습니다: "
 
 #: src/gtk_s9xwindow.cpp:767
 msgid "Load Saved State"
@@ -246,7 +252,7 @@ msgstr "저장된 상태 불러오기"
 
 #: src/gtk_s9xwindow.cpp:796
 msgid "The current frame in the movie is <b>{0:Ld}</b>."
-msgstr "The current frame in the movie is <b>{0:Ld}</b>."
+msgstr "현재 동영상의 프레임은 <b>{0:Ld}</b>입니다."
 
 #: src/gtk_s9xwindow.cpp:829
 msgid "Save State"
@@ -258,7 +264,7 @@ msgstr "SPC 파일 저장..."
 
 #: src/gtk_s9xwindow.cpp:872
 msgid "Couldn't save SPC file:"
-msgstr "Couldn't save SPC file:"
+msgstr "SPC 파일을 저장할 수 없습니다:"
 
 #: src/gtk_s9xwindow.cpp:888
 #, c-format
@@ -280,21 +286,44 @@ msgid ""
 "<i>CRC32:</i> %08X\n"
 "<i>Revision:</i> %s\n"
 "<b><i>%s%s</i></b>"
-msgstr "<b>Information for %s</b>\n\n<i>Name:</i> %s\n<i>Speed:</i> %02X/%s\n<i>Map:</i> %s\n<i>Type:</i> %02x\n<i>Contents:</i> %s\n<i>ROM Size:</i> %s\n<i>Calculated Size:</i> %d\n<i>SRAM Size:</i> %s\n<i>Header Checksum:</i> %04X\n<i>Checksum Complement:</i> %04X\n<i>Actual Checksum:</i> %04X\n<i>Video:</i> %s\n<i>CRC32:</i> %08X\n<i>Revision:</i> %s\n<b><i>%s%s</i></b>"
+msgstr ""
+"<b>%s 정보</b>\n"
+"\n"
+"<i>이름:</i> %s\n"
+"<i>속도:</i> %02X/%s\n"
+"<i>맵:</i> %s\n"
+"<i>유형:</i> %02x\n"
+"<i>내용:</i> %s\n"
+"<i>ROM 크기:</i> %s\n"
+"<i>계산된 크기:</i> %d\n"
+"<i>SRAM 크기:</i> %s\n"
+"<i>헤더 체크섬:</i> %04X\n"
+"<i>체크섬 보수:</i> %04X\n"
+"<i>실제 체크섬:</i> %04X\n"
+"<i>비디오:</i> %s\n"
+"<i>CRC32:</i> %08X\n"
+"<i>리비전:</i> %s\n"
+"<b><i>%s%s</i></b>"
 
 #: src/gtk_s9xwindow.cpp:924
 msgid ""
 "\n"
 "\n"
 "This ROM has been auto-patched with "
-msgstr "\n\nThis ROM has been auto-patched with "
+msgstr ""
+"\n"
+"\n"
+"이 ROM은 다음 파일로 자동 패치되었습니다: "
 
 #: src/gtk_s9xwindow.cpp:924
 msgid ""
 "\n"
 "\n"
 "This ROM has been modified or damaged"
-msgstr "\n\nThis ROM has been modified or damaged"
+msgstr ""
+"\n"
+"\n"
+"이 ROM은 수정되었거나 손상되었습니다"
 
 #: src/gtk_s9xwindow.cpp:938
 msgid "File Information"
@@ -350,7 +379,7 @@ msgstr "프레임으로 이동"
 
 #: src/snes9x.ui:642
 msgid "The current frame in the movie is"
-msgstr "The current frame in the movie is"
+msgstr "현재 동영상의 프레임은"
 
 #: src/snes9x.ui:663
 msgid "Fast‑forward to frame"
@@ -374,7 +403,7 @@ msgstr "디더링 그라데이션"
 
 #: src/snes9x.ui:818
 msgid "Color bars and patterns"
-msgstr "Color bars and patterns"
+msgstr "색상 막대 및 패턴"
 
 #: src/snes9x.ui:821
 msgid "Starfield"
@@ -415,7 +444,7 @@ msgstr "8:7 정사각 픽셀"
 
 #: src/snes9x.ui:939
 msgid "8:7 Square pixels, integer multiples"
-msgstr "8:7 Square pixels, integer multiples"
+msgstr "8:7 정사각 픽셀, 정수 배수"
 
 #: src/snes9x.ui:942
 msgid "4:3 SNES correct aspect"
@@ -423,7 +452,7 @@ msgstr "4:3 SNES 올바른 종횡비"
 
 #: src/snes9x.ui:945
 msgid "4:3 SNES correct aspect, integer multiples"
-msgstr "4:3 SNES correct aspect, integer multiples"
+msgstr "4:3 SNES 올바른 종횡비, 정수 배수"
 
 #: src/snes9x.ui:948
 msgid "8*8:7*7 NTSC"
@@ -431,7 +460,7 @@ msgstr "8*8:7*7 NTSC"
 
 #: src/snes9x.ui:951
 msgid "8*8:7*7 NTSC, integer multiples"
-msgstr "8*8:7*7 NTSC, integer multiples"
+msgstr "8*8:7*7 NTSC, 정수 배수"
 
 #: src/snes9x.ui:968
 msgid "Merge adjacent pairs"
@@ -503,7 +532,7 @@ msgstr "타이머 기반"
 
 #: src/snes9x.ui:1081
 msgid "Timer‑based with automatic frame-skipping"
-msgstr "Timer‑based with automatic frame-skipping"
+msgstr "자동 프레임 스킵 기능이 포함된 타이머 기반"
 
 #: src/snes9x.ui:1084
 msgid "Sound buffer synchronization"
@@ -514,36 +543,36 @@ msgid "No throttling, use vsync to control speed"
 msgstr "스로틀링 없음, vsync로 속도 제어"
 
 #: src/snes9x.ui:1098
-msgid "48,000 Hz"
-msgstr "48,000 Hz"
+msgid "48,000 Hz"
+msgstr "48,000 Hz"
 
 #: src/snes9x.ui:1101
-msgid "44,100 Hz"
-msgstr "44,100 Hz"
+msgid "44,100 Hz"
+msgstr "44,100 Hz"
 
 #: src/snes9x.ui:1104
-msgid "32,000 Hz"
-msgstr "32,000 Hz"
+msgid "32,000 Hz"
+msgstr "32,000 Hz"
 
 #: src/snes9x.ui:1107
-msgid "22,050 Hz"
-msgstr "22,050 Hz"
+msgid "22,050 Hz"
+msgstr "22,050 Hz"
 
 #: src/snes9x.ui:1110
-msgid "16,000 Hz"
-msgstr "16,000 Hz"
+msgid "16,000 Hz"
+msgstr "16,000 Hz"
 
 #: src/snes9x.ui:1113
-msgid "11,025 Hz"
-msgstr "11,025 Hz"
+msgid "11,025 Hz"
+msgstr "11,025 Hz"
 
 #: src/snes9x.ui:1116
-msgid "8,000 Hz"
-msgstr "8,000 Hz"
+msgid "8,000 Hz"
+msgstr "8,000 Hz"
 
 #: src/snes9x.ui:1119
-msgid "0 Hz"
-msgstr "0 Hz"
+msgid "0 Hz"
+msgstr "0 Hz"
 
 #: src/snes9x.ui:1136
 msgid "16‑bit (GL_RGB)"
@@ -595,15 +624,15 @@ msgstr "최근 항목 지우기"
 
 #: src/snes9x.ui:1237
 msgid "Open with _NetPlay…"
-msgstr "Open with _NetPlay…"
+msgstr "_NetPlay로 열기…"
 
 #: src/snes9x.ui:1240
 msgid "Open a ROM to use with NetPlay"
-msgstr "Open a ROM to use with NetPlay"
+msgstr "NetPlay에서 사용할 ROM 열기"
 
 #: src/snes9x.ui:1251
 msgid "Open _MultiCart…"
-msgstr "Open _MultiCart…"
+msgstr "_멀티카트 열기…"
 
 #: src/snes9x.ui:1266
 msgid "_Load State"
@@ -611,51 +640,51 @@ msgstr "_상태 불러오기"
 
 #: src/snes9x.ui:1276 src/snes9x.ui:1410
 msgid "Slot _0"
-msgstr "Slot _0"
+msgstr "슬롯 _0"
 
 #: src/snes9x.ui:1285 src/snes9x.ui:1419
 msgid "Slot _1"
-msgstr "Slot _1"
+msgstr "슬롯 _1"
 
 #: src/snes9x.ui:1294 src/snes9x.ui:1428
 msgid "Slot _2"
-msgstr "Slot _2"
+msgstr "슬롯 _2"
 
 #: src/snes9x.ui:1303 src/snes9x.ui:1437
 msgid "Slot _3"
-msgstr "Slot _3"
+msgstr "슬롯 _3"
 
 #: src/snes9x.ui:1312 src/snes9x.ui:1446
 msgid "Slot _4"
-msgstr "Slot _4"
+msgstr "슬롯 _4"
 
 #: src/snes9x.ui:1321 src/snes9x.ui:1455
 msgid "Slot _5"
-msgstr "Slot _5"
+msgstr "슬롯 _5"
 
 #: src/snes9x.ui:1330 src/snes9x.ui:1464
 msgid "Slot _6"
-msgstr "Slot _6"
+msgstr "슬롯 _6"
 
 #: src/snes9x.ui:1339 src/snes9x.ui:1473
 msgid "Slot _7"
-msgstr "Slot _7"
+msgstr "슬롯 _7"
 
 #: src/snes9x.ui:1348 src/snes9x.ui:1482
 msgid "Slot _8"
-msgstr "Slot _8"
+msgstr "슬롯 _8"
 
 #: src/snes9x.ui:1357 src/snes9x.ui:1491
 msgid "Slot _9"
-msgstr "Slot _9"
+msgstr "슬롯 _9"
 
 #: src/snes9x.ui:1372
 msgid "From _File…"
-msgstr "From _File…"
+msgstr "_파일에서…"
 
 #: src/snes9x.ui:1387
 msgid "_Undo Load State"
-msgstr "_Undo Load State"
+msgstr "상태 불러오기 _취소"
 
 #: src/snes9x.ui:1400
 msgid "_Save State"
@@ -663,15 +692,15 @@ msgstr "_상태 저장"
 
 #: src/snes9x.ui:1506
 msgid "To _File…"
-msgstr "To _File…"
+msgstr "_파일로 저장…"
 
 #: src/snes9x.ui:1523
 msgid "Save SPC…"
-msgstr "Save SPC…"
+msgstr "SPC 저장…"
 
 #: src/snes9x.ui:1540
 msgid "Show ROM _Info…"
-msgstr "Show ROM _Info…"
+msgstr "ROM 정보 _보기…"
 
 #: src/snes9x.ui:1557
 msgid "gtk-quit"
@@ -695,7 +724,7 @@ msgstr "_동영상 불러오기…"
 
 #: src/snes9x.ui:1619
 msgid "R_ecord Movie…"
-msgstr "R_ecord Movie…"
+msgstr "동영상 _녹화…"
 
 #: src/snes9x.ui:1631
 msgid "_Stop Recording"
@@ -707,7 +736,7 @@ msgstr "_프레임으로 이동…"
 
 #: src/snes9x.ui:1661
 msgid "Sy_nc Clients"
-msgstr "Sy_nc Clients"
+msgstr "클라이언트 동_기화"
 
 #: src/snes9x.ui:1678
 msgid "Reset"
@@ -820,37 +849,37 @@ msgstr "_셰이더 매개변수…"
 
 #: src/snes9x.ui:2026
 msgid "gtk-preferences"
-msgstr "gtk-preferences"
+msgstr "gtk-환경설정"
 
 #: src/snes9x.ui:2068
 msgid "Open Multiple ROM Images (MultiCart)"
-msgstr "Open Multiple ROM Images (MultiCart)"
+msgstr "여러 ROM 이미지 열기 (멀티카트)"
 
 #: src/snes9x.ui:2131
 msgid "Slot A:"
-msgstr "Slot A:"
+msgstr "슬롯 A:"
 
 #: src/snes9x.ui:2143
 msgid "Select an Image for Slot A"
-msgstr "Select an Image for Slot A"
+msgstr "슬롯 A의 이미지 선택"
 
 #: src/snes9x.ui:2167
 msgid "Slot B:"
-msgstr "Slot B:"
+msgstr "슬롯 B:"
 
 #: src/snes9x.ui:2179
 msgid "Select an Image for Slot B"
-msgstr "Select an Image for Slot B"
+msgstr "슬롯 B의 이미지 선택"
 
 #: src/snes9x.ui:2211
 msgid "SuperSnes9x NetPlay"
-msgstr "SuperSnes9x NetPlay"
+msgstr "SuperSnes9x 넷플레이"
 
 #: src/snes9x.ui:2288
 msgid ""
 "The game chosen will be loaded before connecting. This field can be blank if "
 "the server will send the ROM image"
-msgstr "The game chosen will be loaded before connecting. This field can be blank if the server will send the ROM image"
+msgstr "선택한 게임은 연결하기 전에 로드됩니다. 서버가 ROM 이미지를 보낼 경우 이 필드는 비워 둘 수 있습니다."
 
 #: src/snes9x.ui:2303 src/snes9x.ui:4001 src/snes9x.ui:5116 src/snes9x.ui:5131
 #: src/snes9x.ui:5148 src/snes9x.ui:5165 src/snes9x.ui:5182
@@ -859,89 +888,89 @@ msgstr "찾아보기…"
 
 #: src/snes9x.ui:2325
 msgid "Clear entry"
-msgstr "Clear entry"
+msgstr "항목 지우기"
 
 #: src/snes9x.ui:2345
 msgid "<b>ROM Image</b>"
-msgstr "<b>ROM Image</b>"
+msgstr "<b>ROM 이미지</b>"
 
 #: src/snes9x.ui:2374
 msgid "Connect to another computer"
-msgstr "Connect to another computer"
+msgstr "다른 컴퓨터에 연결"
 
 #: src/snes9x.ui:2378
 msgid "Connect to another computer that is running SuperSnes9x NetPlay as a server"
-msgstr "Connect to another computer that is running SuperSnes9x NetPlay as a server"
+msgstr "SuperSnes9x NetPlay를 서버로 실행 중인 다른 컴퓨터에 연결합니다."
 
 #: src/snes9x.ui:2398
 msgid "Name or IP address:"
-msgstr "Name or IP address:"
+msgstr "이름 또는 IP 주소:"
 
 #: src/snes9x.ui:2410
 msgid "Domain name or internet protocol address of a remote computer"
-msgstr "Domain name or internet protocol address of a remote computer"
+msgstr "원격 컴퓨터의 도메인 이름 또는 인터넷 프로토콜 주소"
 
 #: src/snes9x.ui:2426
 msgid "Port:"
-msgstr "Port:"
+msgstr "포트:"
 
 #: src/snes9x.ui:2438
 msgid "Connect to specified TCP port on remote computer"
-msgstr "Connect to specified TCP port on remote computer"
+msgstr "원격 컴퓨터의 지정된 TCP 포트에 연결합니다."
 
 #: src/snes9x.ui:2463
 msgid "Act as a server"
-msgstr "Act as a server"
+msgstr "서버로 동작"
 
 #: src/snes9x.ui:2467
 msgid ""
 "Host a game on this computer as Player 1, requiring extra throughput to "
 "support multitple users"
-msgstr "Host a game on this computer as Player 1, requiring extra throughput to support multitple users"
+msgstr "이 컴퓨터에서 플레이어 1로 게임을 호스트하며, 여러 사용자를 지원하기 위해 추가 대역폭이 필요합니다."
 
 #: src/snes9x.ui:2487
 msgid "<b>Server</b>"
-msgstr "<b>Server</b>"
+msgstr "<b>서버</b>"
 
 #: src/snes9x.ui:2517
 msgid "Sync using reset"
-msgstr "Sync using reset"
+msgstr "리셋을 사용하여 동기화"
 
 #: src/snes9x.ui:2521
 msgid ""
 "Reset the game when players join instead of transferring potentially "
 "unreliable freeze states"
-msgstr "Reset the game when players join instead of transferring potentially unreliable freeze states"
+msgstr "플레이어가 참여할 때 불안정할 수 있는 프리즈 상태를 전송하는 대신 게임을 리셋합니다."
 
 #: src/snes9x.ui:2532
 msgid "Send ROM image to clients"
-msgstr "Send ROM image to clients"
+msgstr "클라이언트에 ROM 이미지 전송"
 
 #: src/snes9x.ui:2536
 msgid ""
 "Send the running game image to players instead of requiring them to have "
 "their own copies"
-msgstr "Send the running game image to players instead of requiring them to have their own copies"
+msgstr "플레이어에게 본인의 복사본을 요구하는 대신 실행 중인 게임 이미지를 전송합니다."
 
 #: src/snes9x.ui:2554
 msgid "Default port:"
-msgstr "Default port:"
+msgstr "기본 포트:"
 
 #: src/snes9x.ui:2566
 msgid "TCP port used as a connection point for remote clients"
-msgstr "TCP port used as a connection point for remote clients"
+msgstr "원격 클라이언트의 연결 지점으로 사용되는 TCP 포트"
 
 #: src/snes9x.ui:2598
 msgid "Ask server to pause when"
-msgstr "Ask server to pause when"
+msgstr "다음의 경우 서버에 일시 정지 요청:"
 
 #: src/snes9x.ui:2652
 msgid "<b>Settings</b>"
-msgstr "<b>Settings</b>"
+msgstr "<b>설정</b>"
 
 #: src/snes9x.ui:2680
 msgid "SuperSnes9x Preferences"
-msgstr "SuperSnes9x Preferences"
+msgstr "SuperSnes9x 환경 설정"
 
 #: src/snes9x.ui:2796
 msgid "Use fullscreen on ROM open"
@@ -949,7 +978,7 @@ msgstr "ROM 열 때 전체 화면 사용"
 
 #: src/snes9x.ui:2800
 msgid "Go to fullscreen mode immediately after opening a ROM"
-msgstr "Go to fullscreen mode immediately after opening a ROM"
+msgstr "ROM을 연 직후 즉시 전체 화면 모드로 전환"
 
 #: src/snes9x.ui:2812
 msgid "Show local time"
@@ -965,31 +994,31 @@ msgstr "누른 키 표시"
 
 #: src/snes9x.ui:2857
 msgid "Show fast‑forward and pause indicators"
-msgstr "Show fast‑forward and pause indicators"
+msgstr "빨리 감기 및 일시 정지 표시기 보기"
 
 #: src/snes9x.ui:2872
 msgid "Use overscanned height"
-msgstr "Use overscanned height"
+msgstr "오버스캔된 높이 사용"
 
 #: src/snes9x.ui:2876
 msgid "Use SNES extended height. Will probably cause letterboxing"
-msgstr "Use SNES extended height. Will probably cause letterboxing"
+msgstr "SNES 확장 높이를 사용합니다. 레터박스가 발생할 수 있습니다."
 
 #: src/snes9x.ui:2898
 msgid "On‑screen display size:"
-msgstr "On‑screen display size:"
+msgstr "화면 표시(OSD) 크기:"
 
 #: src/snes9x.ui:2909
 msgid "The size of on‑screen display messages in pixels"
-msgstr "The size of on‑screen display messages in pixels"
+msgstr "픽셀 단위의 화면 표시 메시지 크기"
 
 #: src/snes9x.ui:2940
 msgid "Change fullscreen resolution:"
-msgstr "Change fullscreen resolution:"
+msgstr "전체 화면 해상도 변경:"
 
 #: src/snes9x.ui:2944
 msgid "Changes the screen resolution when running SuperSnes9x in fullscreen mode"
-msgstr "Changes the screen resolution when running SuperSnes9x in fullscreen mode"
+msgstr "전체 화면 모드에서 SuperSnes9x를 실행할 때 화면 해상도를 변경합니다."
 
 #: src/snes9x.ui:2989
 msgid "Basic Settings"
@@ -1001,7 +1030,7 @@ msgstr "이미지를 창에 맞게 스케일"
 
 #: src/snes9x.ui:3034
 msgid "Scales the image so no black bars are present"
-msgstr "Scales the image so no black bars are present"
+msgstr "검은색 막대가 나타나지 않도록 이미지를 확대/축소합니다."
 
 #: src/snes9x.ui:3054
 msgid "Aspect ratio:"
@@ -1013,23 +1042,23 @@ msgstr "종횡비 유지"
 
 #: src/snes9x.ui:3093
 msgid "Scales the image as large as possible without distortion"
-msgstr "Scales the image as large as possible without distortion"
+msgstr "왜곡 없이 이미지를 가능한 한 크게 확대/축소합니다."
 
 #: src/snes9x.ui:3108
 msgid "Allows scaling and filtering to use multiple processors"
-msgstr "Allows scaling and filtering to use multiple processors"
+msgstr "스케일링 및 필터링 시 다중 프로세서를 사용할 수 있도록 허용합니다."
 
 #: src/snes9x.ui:3111
 msgid "Use"
-msgstr "Use"
+msgstr "사용"
 
 #: src/snes9x.ui:3170
 msgid "High‑resolution effect:"
-msgstr "High‑resolution effect:"
+msgstr "고해상도 효과:"
 
 #: src/snes9x.ui:3213
 msgid "Apply scaling filter:"
-msgstr "Apply scaling filter:"
+msgstr "스케일링 필터 적용:"
 
 #: src/snes9x.ui:3281
 msgid "Video preset:"
@@ -1081,11 +1110,11 @@ msgstr "감마:"
 
 #: src/snes9x.ui:3669
 msgid "Fringing:"
-msgstr "Fringing:"
+msgstr "프린징 효과:"
 
 #: src/snes9x.ui:3684
 msgid "Bleed:"
-msgstr "Bleed:"
+msgstr "번짐 효과:"
 
 #: src/snes9x.ui:3699
 msgid "Resolution:"
@@ -1093,11 +1122,11 @@ msgstr "해상도:"
 
 #: src/snes9x.ui:3729
 msgid "Merge odd and even fields"
-msgstr "Merge odd and even fields"
+msgstr "홀수 및 짝수 필드 병합"
 
 #: src/snes9x.ui:3751 src/snes9x.ui:3810
 msgid "Scanline intensity:"
-msgstr "Scanline intensity:"
+msgstr "스캔라인 강도:"
 
 #: src/snes9x.ui:3855
 msgid "Scaling"
@@ -1105,43 +1134,43 @@ msgstr "스케일링"
 
 #: src/snes9x.ui:3897
 msgid "Bilinear‐filter output"
-msgstr "Bilinear‐filter output"
+msgstr "바이리니어 필터 출력"
 
 #: src/snes9x.ui:3912
 msgid "Use best settings for FreeSync/G‑Sync when in fullscreen"
-msgstr "Use best settings for FreeSync/G‑Sync when in fullscreen"
+msgstr "전체 화면 시 FreeSync/G-Sync에 최적의 설정 사용"
 
 #: src/snes9x.ui:3933
 msgid "Sync to vertical blank"
-msgstr "Sync to vertical blank"
+msgstr "수직 동기화(V-Sync)"
 
 #: src/snes9x.ui:3937
 msgid "Sync the image to the vertical retrace to stop tearing"
-msgstr "Sync the image to the vertical retrace to stop tearing"
+msgstr "화면 찢어짐(테어링)을 방지하기 위해 이미지를 수직 귀선 기간에 동기화합니다."
 
 #: src/snes9x.ui:3949
 msgid "Reduce input lag"
-msgstr "Reduce input lag"
+msgstr "입력 지연(인풋랙) 감소"
 
 #: src/snes9x.ui:3953
 msgid ""
 "Sync the program with the video output after every displayed frame to reduce "
 "input latency"
-msgstr "Sync the program with the video output after every displayed frame to reduce input latency"
+msgstr "입력 대기 시간을 줄이기 위해 화면에 프레임이 표시될 때마다 프로그램을 비디오 출력과 동기화합니다."
 
 #: src/snes9x.ui:3969
 msgid "Shader:"
-msgstr "Shader:"
+msgstr "셰이더:"
 
 #: src/snes9x.ui:4033
 msgid "Force an inverted byte‑ordering"
-msgstr "Force an inverted byte‑ordering"
+msgstr "강제로 바이트 순서(엔디언) 뒤집기"
 
 #: src/snes9x.ui:4037
 msgid ""
 "Forces a swapped byte‑ordering for cases where the system’s endian is used "
 "instead of the video card"
-msgstr "Forces a swapped byte‑ordering for cases where the system’s endian is used instead of the video card"
+msgstr "비디오 카드 대신 시스템의 엔디언이 사용되는 경우 강제로 바이트 순서를 바꿉니다."
 
 #: src/snes9x.ui:4061
 msgid "Hardware Acceleration"
@@ -1157,19 +1186,19 @@ msgstr "사운드 드라이버:"
 
 #: src/snes9x.ui:4178
 msgid "Automatically adjust input rate to display"
-msgstr "Automatically adjust input rate to display"
+msgstr "입력 속도를 디스플레이에 자동으로 맞춤"
 
 #: src/snes9x.ui:4182
 msgid "Sets the correct input rate based on the display’s refresh rate"
-msgstr "Sets the correct input rate based on the display’s refresh rate"
+msgstr "디스플레이의 재생률을 기준으로 올바른 입력 속도를 설정합니다."
 
 #: src/snes9x.ui:4194
 msgid "Dynamic rate control"
-msgstr "Dynamic rate control"
+msgstr "동적 속도 제어"
 
 #: src/snes9x.ui:4198
 msgid "Smooth out slight hiccups in sound input rate"
-msgstr "Smooth out slight hiccups in sound input rate"
+msgstr "사운드 입력 속도의 미세한 끊김을 부드럽게 처리합니다."
 
 #: src/snes9x.ui:4209
 msgid "Mute sound output"
@@ -1177,15 +1206,15 @@ msgstr "사운드 출력 음소거"
 
 #: src/snes9x.ui:4213
 msgid "Disables output of sound"
-msgstr "Disables output of sound"
+msgstr "사운드 출력을 비활성화합니다."
 
 #: src/snes9x.ui:4225
 msgid "Mute sound when using turbo or rewind"
-msgstr "Mute sound when using turbo or rewind"
+msgstr "터보 또는 되감기 시 사운드 음소거"
 
 #: src/snes9x.ui:4229
 msgid "Disables output of sound when using turbo or rewind"
-msgstr "Disables output of sound when using turbo or rewind"
+msgstr "터보 또는 되감기 기능을 사용할 때 사운드 출력을 비활성화합니다."
 
 #: src/snes9x.ui:4252
 msgid "Playback rate:"
@@ -1197,7 +1226,7 @@ msgstr "버퍼 크기:"
 
 #: src/snes9x.ui:4324
 msgid "Dynamic rate limit:"
-msgstr "Dynamic rate limit:"
+msgstr "동적 속도 제한:"
 
 #: src/snes9x.ui:4369
 msgid "Input rate:"
@@ -1208,11 +1237,11 @@ msgid ""
 "Adjust to produce more or less data. Decrease the rate if experiencing "
 "crackling. Increase the rate if experiencing frame rate stuttering. Best "
 "used with the “Sound buffer synchronization” option."
-msgstr "Adjust to produce more or less data. Decrease the rate if experiencing crackling. Increase the rate if experiencing frame rate stuttering. Best used with the “Sound buffer synchronization” option."
+msgstr "데이터 생산량을 조절합니다. 지직거리는 소리가 나면 속도를 낮추십시오. 프레임이 끊기면 속도를 높이십시오. '사운드 버퍼 동기화' 옵션과 함께 사용하는 것이 가장 좋습니다."
 
 #: src/snes9x.ui:4432
 msgid "Video rate:"
-msgstr "Video rate:"
+msgstr "비디오 속도:"
 
 #: src/snes9x.ui:4469
 msgid "<b>Sound Settings</b>"
@@ -1224,7 +1253,7 @@ msgstr "사운드"
 
 #: src/snes9x.ui:4561
 msgid "Throttling method:"
-msgstr "Throttling method:"
+msgstr "속도 제한(스로틀) 방법:"
 
 #: src/snes9x.ui:4603
 msgid "<b>Speed Control</b>"
@@ -1236,7 +1265,7 @@ msgstr "되감기 버퍼 크기 (MB):"
 
 #: src/snes9x.ui:4683
 msgid "Number of frames between rewind snapshots:"
-msgstr "Number of frames between rewind snapshots:"
+msgstr "되감기 스냅샷 간의 프레임 수:"
 
 #: src/snes9x.ui:4724
 msgid "<b>Rewind Settings</b>"
@@ -1250,7 +1279,7 @@ msgstr "잘못된 VRAM 접근 허용"
 msgid ""
 "Allows ROM hacks to write to screen at the wrong time. Only use if you know "
 "your ROM hack expects this"
-msgstr "Allows ROM hacks to write to screen at the wrong time. Only use if you know your ROM hack expects this"
+msgstr "ROM 해크 파일이 잘못된 타이밍에 화면에 데이터를 쓰는 것을 허용합니다. ROM 해크 파일이 이 기능을 요구하는 경우에만 사용하십시오."
 
 #: src/snes9x.ui:4769
 msgid "Allow opposing dpad directions"
@@ -1258,7 +1287,7 @@ msgstr "반대 방향 dpad 허용"
 
 #: src/snes9x.ui:4773
 msgid "Let left and right or up and down be pressed at the same time"
-msgstr "Let left and right or up and down be pressed at the same time"
+msgstr "왼쪽과 오른쪽, 또는 위와 아래를 동시에 누를 수 있도록 허용합니다."
 
 #: src/snes9x.ui:4784
 msgid "Overclock CPU"
@@ -1266,7 +1295,7 @@ msgstr "CPU 오버클럭"
 
 #: src/snes9x.ui:4788
 msgid "Reduces slowdown, but has potential to break games"
-msgstr "Reduces slowdown, but has potential to break games"
+msgstr "느려짐 현상을 줄이지만, 게임이 오작동할 가능성이 있습니다."
 
 #: src/snes9x.ui:4799
 msgid "Remove sprite limit"
@@ -1274,15 +1303,15 @@ msgstr "스프라이트 제한 제거"
 
 #: src/snes9x.ui:4803
 msgid "Reduces flicker, but may cause graphical artifacts"
-msgstr "Reduces flicker, but may cause graphical artifacts"
+msgstr "깜빡임 현상을 줄이지만, 그래픽 아티팩트(깨짐)가 발생할 수 있습니다."
 
 #: src/snes9x.ui:4814
 msgid "Redirect echo buffer overflow"
-msgstr "Redirect echo buffer overflow"
+msgstr "에코 버퍼 오버플로 리다이렉트"
 
 #: src/snes9x.ui:4818
 msgid "Allows old addmusic hacks to work, but will likely hurt other games"
-msgstr "Allows old addmusic hacks to work, but will likely hurt other games"
+msgstr "구형 addmusic 해크 파일을 작동시키지만, 다른 일반 게임에는 문제를 일으킬 수 있습니다."
 
 #: src/snes9x.ui:4836
 msgid "SuperFX clock speed %:"
@@ -1290,7 +1319,7 @@ msgstr "SuperFX 클럭 속도 %:"
 
 #: src/snes9x.ui:4875
 msgid "Gaussian is the correct behavior for SNES hardware"
-msgstr "Gaussian is the correct behavior for SNES hardware"
+msgstr "가우시안 필터는 SNES 하드웨어의 실제 동작 방식입니다."
 
 #: src/snes9x.ui:4882
 msgid "Sound filter:"
@@ -1298,7 +1327,7 @@ msgstr "사운드 필터:"
 
 #: src/snes9x.ui:4919
 msgid "<b>Hacks</b>"
-msgstr "<b>해킹</b>"
+msgstr "<b>해킹 및 특수 옵션</b>"
 
 #: src/snes9x.ui:4961 src/snes9x.ui:7147
 msgid "Emulation"
@@ -1310,19 +1339,19 @@ msgstr "SRAM:"
 
 #: src/snes9x.ui:5214
 msgid "Save states:"
-msgstr "상태 저장:"
+msgstr "상태 저장 파일:"
 
 #: src/snes9x.ui:5228
 msgid "Cheats:"
-msgstr "치트:"
+msgstr "치트 파일:"
 
 #: src/snes9x.ui:5242
 msgid "Patches:"
-msgstr "패치:"
+msgstr "패치 파일:"
 
 #: src/snes9x.ui:5256
 msgid "Exports:"
-msgstr "Exports:"
+msgstr "내보낸 파일:"
 
 #: src/snes9x.ui:5280
 msgid "<b>Game Data Locations</b>"
@@ -1330,17 +1359,17 @@ msgstr "<b>게임 데이터 위치</b>"
 
 #: src/snes9x.ui:5313
 msgid "Save SRAM:"
-msgstr "Save SRAM:"
+msgstr "SRAM 저장:"
 
 #: src/snes9x.ui:5325
 msgid ""
 "Automatically save the game’s SRAM at this interval. Setting this to 0 will "
 "only save when quitting or changing ROMs"
-msgstr "Automatically save the game’s SRAM at this interval. Setting this to 0 will only save when quitting or changing ROMs"
+msgstr "이 시간 간격마다 게임의 SRAM을 자동으로 저장합니다. 0으로 설정하면 종료하거나 ROM을 변경할 때만 저장됩니다."
 
 #: src/snes9x.ui:5355
 msgid "<b>Automatic Saving</b>"
-msgstr "<b>Automatic Saving</b>"
+msgstr "<b>자동 저장</b>"
 
 #: src/snes9x.ui:5392
 msgid "Files"
@@ -1348,27 +1377,27 @@ msgstr "파일"
 
 #: src/snes9x.ui:5423
 msgid "<b>Joypad:</b>"
-msgstr "<b>Joypad:</b>"
+msgstr "<b>조이패드:</b>"
 
 #: src/snes9x.ui:5464
 msgid "_Reset"
-msgstr "_Reset"
+msgstr "_리셋"
 
 #: src/snes9x.ui:5492
 msgid "Swap with:"
-msgstr "Swap with:"
+msgstr "교환 대상:"
 
 #: src/snes9x.ui:5520
 msgid "_Swap"
-msgstr "_Swap"
+msgstr "_교환"
 
 #: src/snes9x.ui:5542
 msgid "Use _modifier keys (Ctrl, Shift, Alt) directly"
-msgstr "Use _modifier keys (Ctrl, Shift, Alt) directly"
+msgstr "조합 키(Ctrl, Shift, Alt)를 독립 키로 직접 사용"
 
 #: src/snes9x.ui:5546
 msgid "Allow using modifier keys as independent keys instead of modifiers"
-msgstr "Allow using modifier keys as independent keys instead of modifiers"
+msgstr "조합 키를 원래 기능 대신 독립된 별개의 키로 사용할 수 있도록 허용합니다."
 
 #: src/snes9x.ui:5581
 msgid "Up"
@@ -1424,7 +1453,7 @@ msgstr "버튼"
 
 #: src/snes9x.ui:6433
 msgid "<b>Sticky</b>"
-msgstr "<b>Sticky</b>"
+msgstr "<b>고정(Sticky)</b>"
 
 #: src/snes9x.ui:6449
 msgid "<b>Turbo</b>"
@@ -1432,16 +1461,16 @@ msgstr "<b>터보</b>"
 
 #: src/snes9x.ui:6468
 msgid "Turbo / Sticky Buttons"
-msgstr "터보 / 고정 버튼"
+msgstr "터보 / 고정 버튼 설정"
 
 #: src/snes9x.ui:6505
 msgid "Set new axis bindings at:"
-msgstr "Set new axis bindings at:"
+msgstr "새 축 매핑 기준 입력 값:"
 
 #: src/snes9x.ui:6517
 msgid ""
 "Changes the amount a joystick should be tilted to register a button press"
-msgstr "Changes the amount a joystick should be tilted to register a button press"
+msgstr "버튼 입력으로 인식되기 위해 조이스틱을 기울여야 하는 물리적인 양을 변경합니다."
 
 #: src/snes9x.ui:6536
 msgid "percent"
@@ -1449,19 +1478,19 @@ msgstr "퍼센트"
 
 #: src/snes9x.ui:6553
 msgid "<b>Joystick Axis Threshold</b>"
-msgstr "<b>Joystick Axis Threshold</b>"
+msgstr "<b>조이스틱 축 임계값(민감도)</b>"
 
 #: src/snes9x.ui:6590
 msgid "Center all axes on all joysticks and press Calibrate."
-msgstr "Center all axes on all joysticks and press Calibrate."
+msgstr "모든 조이스틱의 모든 축을 중앙에 위치시킨 후 보정 버튼을 누르십시오."
 
 #: src/snes9x.ui:6605
 msgid "Cali_brate"
-msgstr "Cali_brate"
+msgstr "보_정"
 
 #: src/snes9x.ui:6638
 msgid "<b>Calibration</b>"
-msgstr "<b>Calibration</b>"
+msgstr "<b>스틱 입력 보정</b>"
 
 #: src/snes9x.ui:6659
 msgid "Joystick Options"
@@ -1471,15 +1500,15 @@ msgstr "조이스틱 옵션"
 msgid ""
 "<small>Click an entry and then press the desired keys or joystick button\n"
 "<tt>Escape</tt>: Move to next  <tt>Shift+Escape</tt>: Clear selected</small>"
-msgstr "<small>Click an entry and then press the desired keys or joystick button\n<tt>Escape</tt>: Move to next  <tt>Shift+Escape</tt>: Clear selected</small>"
+msgstr "<small>항목을 클릭한 다음 원하는 키나 조이스틱 버튼을 누르십시오\n<tt>Escape</tt>: 다음으로 이동  <tt>Shift+Escape</tt>: 선택 항목 지우기</small>"
 
 #: src/snes9x.ui:6715
 msgid "Joypads"
-msgstr "Joypads"
+msgstr "조이패드"
 
 #: src/snes9x.ui:6742
 msgid "<b>SuperSnes9x Emulator Shortcut Keys</b>"
-msgstr "<b>SuperSnes9x Emulator Shortcut Keys</b>"
+msgstr "<b>SuperSnes9x 에뮬레이터 단축키</b>"
 
 #: src/snes9x.ui:6793
 msgid "Soft reset"
@@ -1539,11 +1568,11 @@ msgstr "BG 레이어 3 전환"
 
 #: src/snes9x.ui:7233
 msgid "Toggle sprites"
-msgstr "스프라이트 전환"
+msgstr "스프라이트 레이어 전환"
 
 #: src/snes9x.ui:7247
 msgid "Toggle forced backdrop color"
-msgstr "Toggle forced backdrop color"
+msgstr "강제 배경색 사용 전환"
 
 #: src/snes9x.ui:7261
 msgid "Screenshot"
@@ -1559,27 +1588,27 @@ msgstr "그래픽"
 
 #: src/snes9x.ui:7476
 msgid "Save current slot"
-msgstr "현재 슬롯 저장"
+msgstr "현재 슬롯에 저장"
 
 #: src/snes9x.ui:7509
 msgid "Load current slot"
-msgstr "현재 슬롯 불러오기"
+msgstr "현재 슬롯에서 불러오기"
 
 #: src/snes9x.ui:7542
 msgid "Increment and save"
-msgstr "Increment and save"
+msgstr "슬롯 번호 증가 후 저장"
 
 #: src/snes9x.ui:7575
 msgid "Decrement and load"
-msgstr "Decrement and load"
+msgstr "슬롯 번호 감소 후 불러오기"
 
 #: src/snes9x.ui:7608
 msgid "Increment slot"
-msgstr "슬롯 증가"
+msgstr "슬롯 번호 증가"
 
 #: src/snes9x.ui:7641
 msgid "Decrement slot"
-msgstr "슬롯 감소"
+msgstr "슬롯 번호 감소"
 
 #: src/snes9x.ui:7685
 msgid "<b>Quick save state</b>"
@@ -1667,7 +1696,7 @@ msgstr "모든 사운드 채널 전환"
 
 #: src/snes9x.ui:8753
 msgid "Seek to frame"
-msgstr "프레임으로 이동"
+msgstr "특정 프레임 찾기"
 
 #: src/snes9x.ui:8768
 msgid "Load Movie"
@@ -1695,7 +1724,7 @@ msgstr "되감기"
 
 #: src/snes9x.ui:8975
 msgid "Capture/release mouse"
-msgstr "Capture/release mouse"
+msgstr "마우스 커서 가두기/해제"
 
 #: src/snes9x.ui:9011
 msgid "Misc"
@@ -1707,39 +1736,39 @@ msgstr "단축키"
 
 #: src/snes9x.ui:9106
 msgid "Pause emulation when switching away from SuperSnes9x"
-msgstr "Pause emulation when switching away from SuperSnes9x"
+msgstr "SuperSnes9x 화면에서 벗어날 때 에뮬레이션 일시 정지"
 
 #: src/snes9x.ui:9120
 msgid "Force‑enable button and menu icons"
-msgstr "Force‑enable button and menu icons"
+msgstr "버튼 및 메뉴 아이콘 강제 표시"
 
 #: src/snes9x.ui:9141
 msgid "The <tt>Esc</tt> key should:"
-msgstr "The <tt>Esc</tt> key should:"
+msgstr "<tt>Esc</tt> 키 동작 지정:"
 
 #: src/snes9x.ui:9185
 msgid "Initial background:"
-msgstr "Initial background:"
+msgstr "초기 배경 화면:"
 
 #: src/snes9x.ui:9226
 msgid "<b>Window Behavior</b>"
-msgstr "<b>Window Behavior</b>"
+msgstr "<b>창 동작 설정</b>"
 
 #: src/snes9x.ui:9256
 msgid "Prevent the screensaver from activating"
-msgstr "Prevent the screensaver from activating"
+msgstr "화면 보호기 작동 방지"
 
 #: src/snes9x.ui:9276
 msgid "<b>Screensaver</b>"
-msgstr "<b>Screensaver</b>"
+msgstr "<b>화면 보호기</b>"
 
 #: src/snes9x.ui:9310
 msgid "UI"
-msgstr "UI"
+msgstr "인터페이스(UI)"
 
 #: src/snes9x.ui:9344
 msgid ""
-"  Snes9x – A Portable Super Nintendo Entertainment System™ Emulator\n"
+"  Snes9x – A Portable Super Nintendo Entertainment System™ Emulator\n"
 "\n"
 "  Snes9x homepage: http://www.snes9x.com/\n"
 "  Snes9x source code: https://github.com/shanytc/snes9x/\n"
@@ -1767,41 +1796,64 @@ msgid ""
 "\n"
 "  Super NES and Super Nintendo Entertainment System are trademarks of\n"
 "  Nintendo Co., Limited and its subsidiary companies."
-msgstr "  Snes9x – A Portable Super Nintendo Entertainment System™ Emulator\n\n  Snes9x homepage: http://www.snes9x.com/\n  Snes9x source code: https://github.com/shanytc/snes9x/\n\n  Permission to use, copy, modify and/or distribute Snes9x in both binary\n  and source form, for non‑commercial purposes, is hereby granted without\n  fee, providing that this license information and copyright notice appear\n  with all copies and any derived work.\n\n  This software is provided ‘as‑is’, without any express or implied\n  warranty. In no event shall the authors be held liable for any damages\n  arising from the use of this software or it’s derivatives.\n\n  Snes9x is freeware for PERSONAL USE only. Commercial users should\n  seek permission of the copyright holders first. Commercial use includes,\n  but is not limited to, charging money for Snes9x or software derived from\n  Snes9x, including Snes9x or derivatives in commercial game bundles, and/or\n  using Snes9x as a promotion for your commercial product.\n\n  The copyright holders request that bug fixes and improvements to the code\n  should be forwarded to them so everyone can benefit from the modifications\n  in future versions.\n\n  Super NES and Super Nintendo Entertainment System are trademarks of\n  Nintendo Co., Limited and its subsidiary companies."
+msgstr ""
+"  Snes9x – 이식성이 뛰어난 Super Nintendo Entertainment System™ 에뮬레이터\n"
+"\n"
+"  Snes9x 공식 홈페이지: http://www.snes9x.com/\n"
+"  Snes9x 소스 코드 디렉토리: https://github.com/shanytc/snes9x/\n"
+"\n"
+"  비상업적 목적에 한해, 본 라이선스 정보와 저작권 고지문이 모든 복사본 및\n"
+"  파생 저작물에 명시되는 조건으로 Snes9x를 바이너리와 소스 형태 모두\n"
+"  수수료 없이 사용, 복사, 수정 및/또는 배포할 수 있는 권한을 허용합니다.\n"
+"\n"
+"  본 소프트웨어는 어떠한 명시적/묵시적 보증도 없이 '있는 그대로(as-is)' 제공됩니다.\n"
+"  저작자는 본 소프트웨어 및 파생물 사용으로 인해 발생하는 어떠한 손해에 대해서도\n"
+"  책임을 지지 않습니다.\n"
+"\n"
+"  Snes9x는 '개인적 용도'로만 사용할 수 있는 프리웨어입니다. 상업적 이용을 원하는\n"
+"  경우 저작권자의 사전 허가를 받아야 합니다. 상업적 이용에는 Snes9x 또는 파생 소프트웨어에\n"
+"  비용을 청구하는 행위, 상업용 게임 번들에 포함하는 행위, 제품 홍보용으로\n"
+"  사용하는 행위 등이 포함되나 이에 국한되지 않습니다.\n"
+"\n"
+"  저작권자는 다음 버전에서 모두가 혜택을 누릴 수 있도록 버그 수정 및 코드 개선 사항을\n"
+"  본래 개발진에게 전달해 줄 것을 요청합니다.\n"
+"\n"
+"  Super NES 및 Super Nintendo Entertainment System은 Nintendo Co., Limited 및\n"
+"  그 자회사의 등록 상표입니다."
 
 # === Win32 strings (added by i18n/extract_strings.py) ===
 
 #: win32/rsrc/snes9x.rc
 msgid "!= (Not Equal To)"
-msgstr "!= (Not Equal To)"
+msgstr "!= (같지 않음)"
 
 #: win32/wlanguage.h
 msgid "(Not Available)"
-msgstr "(Not Available)"
+msgstr "(사용 불가능)"
 
 #: win32/wlanguage.h
 msgid "(not stored in movie file)"
-msgstr "(not stored in movie file)"
+msgstr "(동영상 파일에 저장되지 않음)"
 
 #: win32/rsrc/snes9x.rc
 msgid "(restart required)"
-msgstr "(restart required)"
+msgstr "(재시작 필요)"
 
 #: win32/rsrc/snes9x.rc
 msgid "0 (off)"
-msgstr "0 (off)"
+msgstr "0 (끄기)"
 
 #: win32/rsrc/snes9x.rc
 msgid "1 byte"
-msgstr "1 byte"
+msgstr "1 바이트"
 
 #: win32/rsrc/snes9x.rc
 msgid "1 frame"
-msgstr "1 frame"
+msgstr "1 프레임"
 
 #: win32/rsrc/snes9x.rc
 msgid "10x"
-msgstr "10x"
+msgstr "10배"
 
 #: win32/rsrc/snes9x.rc
 msgid "112ms"
@@ -1841,15 +1893,15 @@ msgstr "192ms"
 
 #: win32/rsrc/snes9x.rc
 msgid "1x"
-msgstr "1x"
+msgstr "1배"
 
 #: win32/rsrc/snes9x.rc
 msgid "2 bytes"
-msgstr "2 bytes"
+msgstr "2 바이트"
 
 #: win32/rsrc/snes9x.rc
 msgid "2 frames"
-msgstr "2 frames"
+msgstr "2 프레임"
 
 #: win32/rsrc/snes9x.rc
 msgid "208ms"
@@ -1861,15 +1913,15 @@ msgstr "22KHz"
 
 #: win32/rsrc/snes9x.rc
 msgid "2x"
-msgstr "2x"
+msgstr "2배"
 
 #: win32/rsrc/snes9x.rc
 msgid "3 bytes"
-msgstr "3 bytes"
+msgstr "3 바이트"
 
 #: win32/rsrc/snes9x.rc
 msgid "3 frames"
-msgstr "3 frames"
+msgstr "3 프레임"
 
 #: win32/rsrc/snes9x.rc
 msgid "30KHz"
@@ -1889,15 +1941,15 @@ msgstr "35KHz"
 
 #: win32/rsrc/snes9x.rc
 msgid "3x"
-msgstr "3x"
+msgstr "3배"
 
 #: win32/rsrc/snes9x.rc
 msgid "4 bytes"
-msgstr "4 bytes"
+msgstr "4 바이트"
 
 #: win32/rsrc/snes9x.rc
 msgid "4 frames"
-msgstr "4 frames"
+msgstr "4 프레임"
 
 #: win32/rsrc/snes9x.rc
 msgid "44KHz"
@@ -1913,11 +1965,11 @@ msgstr "48ms"
 
 #: win32/rsrc/snes9x.rc
 msgid "4x"
-msgstr "4x"
+msgstr "4배"
 
 #: win32/rsrc/snes9x.rc
 msgid "5x"
-msgstr "5x"
+msgstr "5배"
 
 #: win32/rsrc/snes9x.rc
 msgid "64ms"
@@ -1925,11 +1977,11 @@ msgstr "64ms"
 
 #: win32/rsrc/snes9x.rc
 msgid "6x"
-msgstr "6x"
+msgstr "6배"
 
 #: win32/rsrc/snes9x.rc
 msgid "7x"
-msgstr "7x"
+msgstr "7배"
 
 #: win32/rsrc/snes9x.rc
 msgid "80ms"
@@ -1941,7 +1993,7 @@ msgstr "8KHz"
 
 #: win32/rsrc/snes9x.rc
 msgid "8x"
-msgstr "8x"
+msgstr "8배"
 
 #: win32/rsrc/snes9x.rc
 msgid "96ms"
@@ -1949,31 +2001,31 @@ msgstr "96ms"
 
 #: win32/rsrc/snes9x.rc
 msgid "9x"
-msgstr "9x"
+msgstr "9배"
 
 #: win32/rsrc/snes9x.rc
 msgid "< (Less Than)"
-msgstr "< (Less Than)"
+msgstr "< (~보다 작음)"
 
 #: win32/wlanguage.h
 msgid "<-- MISMATCH !!!"
-msgstr "<-- MISMATCH !!!"
+msgstr "<-- 불일치 !!!"
 
 #: win32/rsrc/snes9x.rc
 msgid "<= (Less Than or Equal to)"
-msgstr "<= (Less Than or Equal to)"
+msgstr "<= (~보다 작거나 같음)"
 
 #: win32/rsrc/snes9x.rc
 msgid "= (Equal To)"
-msgstr "= (Equal To)"
+msgstr "= (같음)"
 
 #: win32/rsrc/snes9x.rc
 msgid "> (Greater Than)"
-msgstr "> (Greater Than)"
+msgstr "> (~보다 큼)"
 
 #: win32/rsrc/snes9x.rc
 msgid ">= (Greater than or Equal To)"
-msgstr ">= (Greater than or Equal To)"
+msgstr ">= (~보다 크거나 같음)"
 
 #: win32/rsrc/snes9x.rc
 msgid "About"
@@ -1981,15 +2033,15 @@ msgstr "정보"
 
 #: win32/rsrc/snes9x.rc
 msgid "Achievement List"
-msgstr "Achievement List"
+msgstr "도전과제 목록"
 
 #: win32/rsrc/snes9x.rc
 msgid "Act as Server"
-msgstr "Act as Server"
+msgstr "서버로 작동"
 
 #: win32/wlanguage.h
 msgid "Act As Server"
-msgstr "Act As Server"
+msgstr "서버로 작동"
 
 #: win32/rsrc/snes9x.rc
 msgid "Add"
@@ -1997,47 +2049,47 @@ msgstr "추가"
 
 #: win32/rsrc/snes9x.rc
 msgid "Add Cheat"
-msgstr "Add Cheat"
+msgstr "치트 추가"
 
 #: win32/rsrc/snes9x.rc
 msgid "Add SuperSnes9x to registry for supported file types"
-msgstr "Add SuperSnes9x to registry for supported file types"
+msgstr "지원 파일 연결을 위해 레지스트리에 SuperSnes9x 추가"
 
 #: win32/rsrc/snes9x.rc
 msgid "Address"
-msgstr "Address"
+msgstr "주소"
 
 #: win32/rsrc/snes9x.rc
 msgid "Address:"
-msgstr "Address:"
+msgstr "주소:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Adjustments"
-msgstr "Adjustments"
+msgstr "세부 조정"
 
 #: win32/wlanguage.h
 msgid "All files"
-msgstr "All files"
+msgstr "모든 파일"
 
 #: win32/rsrc/snes9x.rc
 msgid "all of SuperSnes9x's settings are stored in this file"
-msgstr "all of SuperSnes9x's settings are stored in this file"
+msgstr "SuperSnes9x의 모든 설정이 이 파일에 저장됩니다"
 
 #: win32/rsrc/snes9x.rc
 msgid "Allow executable logo override"
-msgstr "Allow executable logo override"
+msgstr "실행 파일 내장 로고 교체 허용"
 
 #: win32/rsrc/snes9x.rc
 msgid "Allow Invalid VRAM Access"
-msgstr "Allow Invalid VRAM Access"
+msgstr "잘못된 VRAM 접근 허용"
 
 #: win32/rsrc/snes9x.rc
 msgid "Allow Left+Rt/Up+Dn"
-msgstr "Allow Left+Rt/Up+Dn"
+msgstr "동시 반대 방향 입력 허용 (좌+우 / 상+하)"
 
 #: win32/rsrc/snes9x.rc
 msgid "APP - Emulator Settings"
-msgstr "APP - Emulator Settings"
+msgstr "APP - 에뮬레이터 설정"
 
 #: win32/rsrc/snes9x.rc
 msgid "Apply"
@@ -2045,151 +2097,151 @@ msgstr "적용"
 
 #: win32/rsrc/snes9x.rc
 msgid "Apply Adjustments"
-msgstr "Apply Adjustments"
+msgstr "조정치 적용"
 
 #: win32/rsrc/snes9x.rc
 msgid "Apply Cheats"
-msgstr "Apply Cheats"
+msgstr "치트 적용"
 
 #: win32/rsrc/snes9x.rc
 msgid "Ask for confirmation when saving/loading"
-msgstr "Ask for confirmation when saving/loading"
+msgstr "저장/불러오기 시 확인 창 표시"
 
 #: win32/rsrc/snes9x.rc
 msgid "Ask Server to Pause when"
-msgstr "Ask Server to Pause when"
+msgstr "다음의 경우 서버에 일시 정지 요청:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Author Info:"
-msgstr "Author Info:"
+msgstr "작성자 정보:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Auto Layer Transparency"
-msgstr "Auto Layer Transparency"
+msgstr "자동 레이어 투명도 처리"
 
 #: win32/rsrc/snes9x.rc
 msgid "Auto update"
-msgstr "Auto update"
+msgstr "자동 업데이트"
 
 #: win32/rsrc/snes9x.rc
 msgid "Auto-Assign"
-msgstr "Auto-Assign"
+msgstr "자동 할당"
 
 #: win32/wlanguage.h
 msgid "Auto-Detect"
-msgstr "Auto-Detect"
+msgstr "자동 감지"
 
 #: win32/rsrc/snes9x.rc
 msgid "Auto-Save S-RAM"
-msgstr "Auto-Save S-RAM"
+msgstr "S-RAM 자동 저장"
 
 #: win32/wlanguage.h
 msgid "Autofire"
-msgstr "Autofire"
+msgstr "자동 연사"
 
 #: win32/wlanguage.h
 msgid "Autohold"
-msgstr "Autohold"
+msgstr "자동 고정"
 
 #: win32/rsrc/snes9x.rc
 msgid "Automatic Input Rate"
-msgstr "Automatic Input Rate"
+msgstr "자동 입력 속도 조절"
 
 #: win32/rsrc/snes9x.rc
 msgid "Automatic, skip at most:"
-msgstr "Automatic, skip at most:"
+msgstr "자동 프레임 스킵 최대치:"
 
 #: win32/wlanguage.h
 msgid "AVI file"
-msgstr "AVI file"
+msgstr "AVI 파일"
 
 #: win32/rsrc/snes9x.rc
 msgid "AVI Recording"
-msgstr "AVI Recording"
+msgstr "AVI 녹화 중"
 
 #: win32/rsrc/snes9x.rc
 msgid "Background Keyboard Hotkeys"
-msgstr "Background Keyboard Hotkeys"
+msgstr "백그라운드 키보드 단축키 작동"
 
 #: win32/rsrc/snes9x.rc
 msgid "Background:"
-msgstr "Background:"
+msgstr "배경:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Bank +:"
-msgstr "Bank +:"
+msgstr "뱅크 +:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Bank -:"
-msgstr "Bank -:"
+msgstr "뱅크 -:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Bank:"
-msgstr "Bank:"
+msgstr "뱅크:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Base Tile Addresses"
-msgstr "Base Tile Addresses"
+msgstr "기본 타일 주소"
 
 #: win32/rsrc/snes9x.rc
 msgid "BG1:"
-msgstr "BG1:"
+msgstr "배경 1:"
 
 #: win32/rsrc/snes9x.rc
 msgid "BG2:"
-msgstr "BG2:"
+msgstr "배경 2:"
 
 #: win32/rsrc/snes9x.rc
 msgid "BG3:"
-msgstr "BG3:"
+msgstr "배경 3:"
 
 #: win32/rsrc/snes9x.rc
 msgid "BG4:"
-msgstr "BG4:"
+msgstr "배경 4:"
 
 #: win32/rsrc/snes9x.rc
 msgid "BG:"
-msgstr "BG:"
+msgstr "배경:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Bilinear Filtering"
-msgstr "Bilinear Filtering"
+msgstr "바이리니어 필터링"
 
 #: win32/rsrc/snes9x.rc
 msgid "Binding"
-msgstr "Binding"
+msgstr "키 매핑"
 
 #: win32/rsrc/snes9x.rc
 msgid "BIOS"
-msgstr "BIOS"
+msgstr "바이오스"
 
 #: win32/wlanguage.h
 msgid "BIOS files"
-msgstr "BIOS files"
+msgstr "바이오스 파일"
 
 #: win32/rsrc/snes9x.rc
 msgid "BIOS:"
-msgstr "BIOS:"
+msgstr "바이오스:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Bit Depth:"
-msgstr "Bit Depth:"
+msgstr "색상 깊이(Bit):"
 
 #: win32/rsrc/snes9x.rc
 msgid "Blend Hi-Res Images"
-msgstr "Blend Hi-Res Images"
+msgstr "고해상도 이미지 혼합 처리"
 
 #: win32/rsrc/snes9x.rc
 msgid "Blue means already mapped. Pink conflicts with hotkey.\nRed is reserved by Windows. Escape clears bindings.\nPress multiple keys for multi-bind. Delete removes last."
-msgstr "Blue means already mapped. Pink conflicts with hotkey.\nRed is reserved by Windows. Escape clears bindings.\nPress multiple keys for multi-bind. Delete removes last."
+msgstr "파란색은 이미 할당됨을 뜻합니다. 분홍색은 시스템 단축키와 충돌합니다.\n빨간색은 Windows 전용 키입니다. Escape를 누르면 매핑이 지워집니다.\n여러 키를 누르면 동시 입력이 지정됩니다. Delete는 마지막 키를 지웁니다."
 
 #: win32/wlanguage.h
 msgid "Blue means the hotkey is already mapped.\nPink means it conflicts with a game button.\nRed means it's reserved by Windows.\nA hotkey can be disabled using Escape."
-msgstr "Blue means the hotkey is already mapped.\nPink means it conflicts with a game button.\nRed means it's reserved by Windows.\nA hotkey can be disabled using Escape."
+msgstr "파란색은 단축키가 이미 매핑되었음을 뜻합니다.\n분홍색은 게임 패드 버튼과 충돌함을 뜻합니다.\n빨간색은 Windows 시스템 예약 키입니다.\n단축키 기능은 Escape 키로 비활성화할 수 있습니다."
 
 #: win32/rsrc/snes9x.rc
 msgid "Blue means the hotkey is already mapped. Pink means it conflicts with a game button. Red means it's reserved by Windows. Escape clears bindings.\nPress multiple keys for multi-bind. Delete removes last."
-msgstr "Blue means the hotkey is already mapped. Pink means it conflicts with a game button. Red means it's reserved by Windows. Escape clears bindings.\nPress multiple keys for multi-bind. Delete removes last."
+msgstr "파란색은 이미 매핑된 단축키입니다. 분홍색은 패드 버튼과 충돌합니다. 빨간색은 Windows 시스템 예약 키입니다. Escape를 누르면 매핑이 지워집니다.\n여러 키를 누르면 멀티 바인딩이 지정됩니다. Delete는 마지막 입력을 지웁니다."
 
 #: win32/rsrc/snes9x.rc
 msgid "Browse"
@@ -2197,15 +2249,15 @@ msgstr "찾아보기"
 
 #: win32/rsrc/snes9x.rc
 msgid "Buffer Length"
-msgstr "Buffer Length"
+msgstr "버퍼 길이"
 
 #: win32/rsrc/snes9x.rc
 msgid "Buffer Length:"
-msgstr "Buffer Length:"
+msgstr "버퍼 길이:"
 
 #: win32/wlanguage.h
 msgid "Can't Open File"
-msgstr "Can't Open File"
+msgstr "파일을 열 수 없음"
 
 #: win32/rsrc/snes9x.rc
 msgid "Cancel"
@@ -2213,71 +2265,71 @@ msgstr "취소"
 
 #: win32/rsrc/snes9x.rc
 msgid "Channel 1"
-msgstr "Channel 1"
+msgstr "음향 채널 1"
 
 #: win32/rsrc/snes9x.rc
 msgid "Channel 2"
-msgstr "Channel 2"
+msgstr "음향 채널 2"
 
 #: win32/rsrc/snes9x.rc
 msgid "Channel 3"
-msgstr "Channel 3"
+msgstr "음향 채널 3"
 
 #: win32/rsrc/snes9x.rc
 msgid "Channel 4"
-msgstr "Channel 4"
+msgstr "음향 채널 4"
 
 #: win32/rsrc/snes9x.rc
 msgid "Channel 5"
-msgstr "Channel 5"
+msgstr "음향 채널 5"
 
 #: win32/rsrc/snes9x.rc
 msgid "Channel 6"
-msgstr "Channel 6"
+msgstr "음향 채널 6"
 
 #: win32/rsrc/snes9x.rc
 msgid "Channel 7"
-msgstr "Channel 7"
+msgstr "음향 채널 7"
 
 #: win32/rsrc/snes9x.rc
 msgid "Channel 8"
-msgstr "Channel 8"
+msgstr "음향 채널 8"
 
 #: win32/rsrc/snes9x.rc
 msgid "Channels"
-msgstr "Channels"
+msgstr "음향 채널"
 
 #: win32/rsrc/snes9x.rc
 msgid "Chat"
-msgstr "Chat"
+msgstr "채팅"
 
 #: win32/rsrc/snes9x.rc
 msgid "Cheat Description:"
-msgstr "Cheat Description:"
+msgstr "치트 설명:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Cheat Details"
-msgstr "Cheat Details"
+msgstr "치트 세부 정보"
 
 #: win32/rsrc/snes9x.rc
 msgid "Cheat Entry and Editor"
-msgstr "Cheat Entry and Editor"
+msgstr "치트 입력 및 편집기"
 
 #: win32/rsrc/snes9x.rc
 msgid "Cheat Search"
-msgstr "Cheat Search"
+msgstr "치트 검색"
 
 #: win32/wlanguage.h
 msgid "Cheats Editor Dialog:"
-msgstr "Cheats Editor Dialog:"
+msgstr "치트 편집기 창:"
 
 #: win32/wlanguage.h
 msgid "Cheats Search Dialog:"
-msgstr "Cheats Search Dialog:"
+msgstr "치트 검색 창:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Choose Logo"
-msgstr "Choose Logo"
+msgstr "로고 선택"
 
 #: win32/rsrc/snes9x.rc
 msgid "Clear"
@@ -2285,27 +2337,27 @@ msgstr "지우기"
 
 #: win32/rsrc/snes9x.rc
 msgid "Clear All"
-msgstr "Clear All"
+msgstr "모두 지우기"
 
 #: win32/rsrc/snes9x.rc
 msgid "Clear History"
-msgstr "Clear History"
+msgstr "기록 삭제"
 
 #: win32/rsrc/snes9x.rc
 msgid "Clear SRAM"
-msgstr "Clear SRAM"
+msgstr "SRAM 초기화"
 
 #: win32/rsrc/snes9x.rc
 msgid "Clear Watches"
-msgstr "Clear Watches"
+msgstr "모니터링 값 지우기"
 
 #: win32/rsrc/snes9x.rc
 msgid "Client Settings"
-msgstr "Client Settings"
+msgstr "클라이언트 설정"
 
 #: win32/wlanguage.h
 msgid "Clipping Windows:"
-msgstr "Clipping Windows:"
+msgstr "클리핑 영역 창:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Close"
@@ -2313,35 +2365,35 @@ msgstr "닫기"
 
 #: win32/wlanguage.h
 msgid "Code"
-msgstr "Code"
+msgstr "코드"
 
 #: win32/rsrc/snes9x.rc
 msgid "Color Correction"
-msgstr "Color Correction"
+msgstr "색상 보정 작업"
 
 #: win32/rsrc/snes9x.rc
 msgid "Compare To"
-msgstr "Compare To"
+msgstr "비교 대상"
 
 #: win32/rsrc/snes9x.rc
 msgid "Comparison Type"
-msgstr "Comparison Type"
+msgstr "비교 조건 유형"
 
 #: win32/rsrc/snes9x.rc
 msgid "Config file:"
-msgstr "Config file:"
+msgstr "설정 파일:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Connect"
-msgstr "Connect"
+msgstr "연결"
 
 #: win32/rsrc/snes9x.rc
 msgid "Connect clients to: 127.0.0.1 (localhost) or your LAN IP"
-msgstr "Connect clients to: 127.0.0.1 (localhost) or your LAN IP"
+msgstr "클라이언트 연결 대상: 127.0.0.1(로컬호스트) 또는 사용자의 LAN IP"
 
 #: win32/rsrc/snes9x.rc
 msgid "Connect to Server"
-msgstr "Connect to Server"
+msgstr "서버에 연결"
 
 #: win32/rsrc/snes9x.rc
 msgid "Controller"
@@ -2349,59 +2401,59 @@ msgstr "컨트롤러"
 
 #: win32/wlanguage.h
 msgid "Could not open movie file."
-msgstr "Could not open movie file."
+msgstr "동영상 파일을 열 수 없습니다."
 
 #: win32/rsrc/snes9x.rc
 msgid "CPU Overclock:"
-msgstr "CPU Overclock:"
+msgstr "CPU 오버클럭:"
 
 #: win32/wlanguage.h
 msgid "crc32=%08X, name=%s"
-msgstr "crc32=%08X, name=%s"
+msgstr "crc32=%08X, 이름=%s"
 
 #: win32/wlanguage.h
 msgid "Current ROM:"
-msgstr "Current ROM:"
+msgstr "현재 ROM 파일:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Current ROM: CRC32=Unknown, Name=Unknown"
-msgstr "Current ROM: CRC32=Unknown, Name=Unknown"
+msgstr "현재 ROM: CRC32=알수없음, 이름=알수없음"
 
 #: win32/rsrc/snes9x.rc
 msgid "Current Value"
-msgstr "Current Value"
+msgstr "현재 메모리 값"
 
 #: win32/rsrc/snes9x.rc
 msgid "Custom ROM Open Dialog"
-msgstr "Custom ROM Open Dialog"
+msgstr "사용자 정의 ROM 열기 대화상자"
 
 #: win32/rsrc/snes9x.rc
 msgid "Custom Screen Mode"
-msgstr "Custom Screen Mode"
+msgstr "사용자 정의 화면 모드"
 
 #: win32/rsrc/snes9x.rc
 msgid "Customize Hotkeys"
-msgstr "Customize Hotkeys"
+msgstr "사용자 정의 단축키"
 
 #: win32/rsrc/snes9x.rc
 msgid "Customize Special Keys"
-msgstr "Customize Special Keys"
+msgstr "사용자 정의 특수 키"
 
 #: win32/rsrc/snes9x.rc
 msgid "Data Size"
-msgstr "Data Size"
+msgstr "데이터 크기"
 
 #: win32/rsrc/snes9x.rc
 msgid "Data Type"
-msgstr "Data Type"
+msgstr "데이터 유형"
 
 #: win32/rsrc/snes9x.rc
 msgid "DATE"
-msgstr "DATE"
+msgstr "날짜"
 
 #: win32/rsrc/snes9x.rc
 msgid "Defaults"
-msgstr "Defaults"
+msgstr "기본값"
 
 #: win32/rsrc/snes9x.rc
 msgid "Delete"
@@ -2409,91 +2461,91 @@ msgstr "삭제"
 
 #: win32/rsrc/snes9x.rc
 msgid "Detect gamepad changes"
-msgstr "Detect gamepad changes"
+msgstr "게임패드 변경 사항 감지"
 
 #: win32/rsrc/snes9x.rc
 msgid "Dialog"
-msgstr "Dialog"
+msgstr "대화상자"
 
 #: win32/rsrc/snes9x.rc
 msgid "Direct3D Shader File"
-msgstr "Direct3D Shader File"
+msgstr "Direct3D 셰이더 파일"
 
 #: win32/wlanguage.h
 msgid "Directory"
-msgstr "Directory"
+msgstr "디렉토리"
 
 #: win32/rsrc/snes9x.rc
 msgid "Directory:"
-msgstr "Directory:"
+msgstr "디렉토리:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Disable Sprite Limit"
-msgstr "Disable Sprite Limit"
+msgstr "스프라이트 표시 제한 해제"
 
 #: win32/rsrc/snes9x.rc
 msgid "Disconnect"
-msgstr "Disconnect"
+msgstr "연결 끊기"
 
 #: win32/rsrc/snes9x.rc
 msgid "Disconnect from Server"
-msgstr "Disconnect from Server"
+msgstr "서버와 연결 끊기"
 
 #: win32/rsrc/snes9x.rc
 msgid "Display Configuration"
-msgstr "Display Configuration"
+msgstr "화면 디스플레이 구성"
 
 #: win32/rsrc/snes9x.rc
 msgid "Display messages inside SNES image"
-msgstr "Display messages inside SNES image"
+msgstr "SNES 화면 프레임 내부에 메시지 표시"
 
 #: win32/rsrc/snes9x.rc
 msgid "Display Settings"
-msgstr "Display Settings"
+msgstr "디스플레이 설정"
 
 #: win32/rsrc/snes9x.rc
 msgid "DN LEFT"
-msgstr "DN LEFT"
+msgstr "하좌"
 
 #: win32/wlanguage.h
 msgid "Dn Left"
-msgstr "Dn Left"
+msgstr "하좌"
 
 #: win32/rsrc/snes9x.rc
 msgid "DN RIGHT"
-msgstr "DN RIGHT"
+msgstr "하우"
 
 #: win32/wlanguage.h
 msgid "Dn Right"
-msgstr "Dn Right"
+msgstr "하우"
 
 #: win32/rsrc/snes9x.rc
 msgid "DOWN"
-msgstr "DOWN"
+msgstr "아래"
 
 #: win32/rsrc/snes9x.rc
 msgid "Dummy"
-msgstr "Dummy"
+msgstr "더미"
 
 #: win32/rsrc/snes9x.rc
 msgid "Dynamic Rate Control"
-msgstr "Dynamic Rate Control"
+msgstr "동적 전송률 제어"
 
 #: win32/rsrc/snes9x.rc
 msgid "Edit Cheat Group"
-msgstr "Edit Cheat Group"
+msgstr "치트 그룹 편집"
 
 #: win32/rsrc/snes9x.rc
 msgid "Emulate Fullscreen"
-msgstr "Emulate Fullscreen"
+msgstr "전체 화면 가상 구현"
 
 #: win32/wlanguage.h
 msgid "Emulation Settings"
-msgstr "Emulation Settings"
+msgstr "에뮬레이션 설정"
 
 #: win32/rsrc/snes9x.rc
 msgid "Emulator Hacks"
-msgstr "Emulator Hacks"
+msgstr "에뮬레이터 비표준 해킹 옵션"
 
 #: win32/rsrc/snes9x.rc
 msgid "Enable"
@@ -2501,55 +2553,55 @@ msgstr "활성화"
 
 #: win32/rsrc/snes9x.rc
 msgid "Enable All"
-msgstr "Enable All"
+msgstr "모두 활성화"
 
 #: win32/rsrc/snes9x.rc
 msgid "Enable Background Input"
-msgstr "Enable Background Input"
+msgstr "백그라운드 입력 활성화"
 
 #: win32/rsrc/snes9x.rc
 msgid "Enable Color Correction (accurate SNES colors)"
-msgstr "Enable Color Correction (accurate SNES colors)"
+msgstr "색상 보정 활성화 (실기 SNES 색상 구현)"
 
 #: win32/rsrc/snes9x.rc
 msgid "Enable Triple Buffering"
-msgstr "Enable Triple Buffering"
+msgstr "삼중 버퍼링 활성화"
 
 #: win32/rsrc/snes9x.rc
 msgid "Enabled"
-msgstr "Enabled"
+msgstr "활성화됨"
 
 #: win32/rsrc/snes9x.rc
 msgid "End Kaillera Game"
-msgstr "End Kaillera Game"
+msgstr "Kaillera 게임 종료"
 
 #: win32/rsrc/snes9x.rc
 msgid "Enter a Value:"
-msgstr "Enter a Value:"
+msgstr "값 입력:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Enter Cheat Code:"
-msgstr "Enter Cheat Code:"
+msgstr "치트 코드 입력:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Enter Cheat codes, one line at a time"
-msgstr "Enter Cheat codes, one line at a time"
+msgstr "치트 코드를 한 줄에 하나씩 입력하십시오"
 
 #: win32/wlanguage.h
 msgid "enter host name"
-msgstr "enter host name"
+msgstr "호스트 이름 입력"
 
 #: win32/rsrc/snes9x.rc
 msgid "Entered Address"
-msgstr "Entered Address"
+msgstr "입력된 메모리 주소"
 
 #: win32/rsrc/snes9x.rc
 msgid "Entered Value"
-msgstr "Entered Value"
+msgstr "입력된 값"
 
 #: win32/wlanguage.h
 msgid "Error Info:"
-msgstr "Error Info:"
+msgstr "오류 정보:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Exit"
@@ -2557,99 +2609,99 @@ msgstr "종료"
 
 #: win32/rsrc/snes9x.rc
 msgid "Extend Height of SNES Image"
-msgstr "Extend Height of SNES Image"
+msgstr "SNES 출력 이미지 세로 높이 확장"
 
 #: win32/wlanguage.h
 msgid "Fast forward:"
-msgstr "Fast forward:"
+msgstr "빨리 감기:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Fast-Forward"
-msgstr "Fast-Forward"
+msgstr "빨리 감기"
 
 #: win32/wlanguage.h
 msgid "Fast-forward toggle:"
-msgstr "Fast-forward toggle:"
+msgstr "빨리 감기 전환 키:"
 
 #: win32/rsrc/snes9x.rc
 msgid "File"
-msgstr "File"
+msgstr "파일"
 
 #: win32/wlanguage.h
 msgid "File not found."
-msgstr "File not found."
+msgstr "파일을 찾을 수 없습니다."
 
 #: win32/rsrc/snes9x.rc
 msgid "First Sprite:"
-msgstr "First Sprite:"
+msgstr "첫 번째 스프라이트:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Fixed, always skip:"
-msgstr "Fixed, always skip:"
+msgstr "고정 프레임 스킵 수치:"
 
 #: win32/wlanguage.h
 msgid "Force GD24"
-msgstr "Force GD24"
+msgstr "GD24 모드 강제 적용"
 
 #: win32/wlanguage.h
 msgid "Force Header"
-msgstr "Force Header"
+msgstr "헤더 강제 생성"
 
 #: win32/wlanguage.h
 msgid "Force HiROM"
-msgstr "Force HiROM"
+msgstr "HiROM 구조 강제 적용"
 
 #: win32/wlanguage.h
 msgid "Force LoROM"
-msgstr "Force LoROM"
+msgstr "LoROM 구조 강제 적용"
 
 #: win32/wlanguage.h
 msgid "Force mode 1"
-msgstr "Force mode 1"
+msgstr "화면 모드 1 강제 적용"
 
 #: win32/wlanguage.h
 msgid "Force mode 2"
-msgstr "Force mode 2"
+msgstr "화면 모드 2 강제 적용"
 
 #: win32/wlanguage.h
 msgid "Force No Header"
-msgstr "Force No Header"
+msgstr "헤더 없음 강제 적용"
 
 #: win32/wlanguage.h
 msgid "Force not interleaved"
-msgstr "Force not interleaved"
+msgstr "인터리브 해제 강제 적용"
 
 #: win32/wlanguage.h
 msgid "Force NTSC"
-msgstr "Force NTSC"
+msgstr "NTSC 형식 강제 적용"
 
 #: win32/wlanguage.h
 msgid "Force PAL"
-msgstr "Force PAL"
+msgstr "PAL 형식 강제 적용"
 
 #: win32/rsrc/snes9x.rc
 msgid "Frame Advance"
-msgstr "Frame Advance"
+msgstr "프레임 수동 전진"
 
 #: win32/rsrc/snes9x.rc
 msgid "Frame Advance mute"
-msgstr "Frame Advance mute"
+msgstr "프레임 수동 전진 중 음소거"
 
 #: win32/wlanguage.h
 msgid "Frame advance:"
-msgstr "Frame advance:"
+msgstr "프레임 수동 전진 키:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Frame Skipping:"
-msgstr "Frame Skipping:"
+msgstr "프레임 스킵 설정:"
 
 #: win32/rsrc/snes9x.rc
 msgid "frames"
-msgstr "frames"
+msgstr "프레임"
 
 #: win32/rsrc/snes9x.rc
 msgid "FRAMES"
-msgstr "FRAMES"
+msgstr "프레임"
 
 #: win32/rsrc/snes9x.rc
 msgid "frames behind"
@@ -2657,23 +2709,23 @@ msgstr "프레임 지연"
 
 #: win32/rsrc/snes9x.rc
 msgid "frames in auto-frame rate mode"
-msgstr "frames in auto-frame rate mode"
+msgstr "자동 프레임 동기화 모드 작동 프레임"
 
 #: win32/wlanguage.h
 msgid "frames in fast-forward mode"
-msgstr "frames in fast-forward mode"
+msgstr "빨리 감기 모드 스킵 프레임 수"
 
 #: win32/rsrc/snes9x.rc
 msgid "frames in Turbo mode"
-msgstr "frames in Turbo mode"
+msgstr "터보 모드 스킵 프레임 수"
 
 #: win32/rsrc/snes9x.rc
 msgid "Frames:"
-msgstr "Frames:"
+msgstr "프레임 수:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Full Screen"
-msgstr "Full Screen"
+msgstr "전체 화면"
 
 #: win32/rsrc/snes9x.rc
 msgid "Fullscreen"
@@ -2681,19 +2733,19 @@ msgstr "전체 화면"
 
 #: win32/rsrc/snes9x.rc
 msgid "Fullscreen Display Settings"
-msgstr "Fullscreen Display Settings"
+msgstr "전체 화면 디스플레이 설정"
 
 #: win32/rsrc/snes9x.rc
 msgid "Fullscreen on ROM Open"
-msgstr "Fullscreen on ROM Open"
+msgstr "ROM 파일을 열 때 자동으로 전체 화면 전환"
 
 #: win32/rsrc/snes9x.rc
 msgid "Game Boy Image"
-msgstr "Game Boy Image"
+msgstr "게임보이 영상 화면"
 
 #: win32/rsrc/snes9x.rc
 msgid "Game Genie, Pro-Action Replay Codes"
-msgstr "Game Genie, Pro-Action Replay Codes"
+msgstr "게임 지니, 프로 액션 리플레이 코드"
 
 #: win32/rsrc/snes9x.rc
 msgid "GB"
@@ -2701,15 +2753,15 @@ msgstr "GB"
 
 #: win32/rsrc/snes9x.rc
 msgid "GB Sprite Viewer"
-msgstr "GB Sprite Viewer"
+msgstr "GB 스프라이트 뷰어"
 
 #: win32/rsrc/snes9x.rc
 msgid "GB Tile Viewer"
-msgstr "GB Tile Viewer"
+msgstr "GB 타일 뷰어"
 
 #: win32/rsrc/snes9x.rc
 msgid "GB Tilemap Viewer"
-msgstr "GB Tilemap Viewer"
+msgstr "GB 타일맵 뷰어"
 
 #: win32/rsrc/snes9x.rc
 msgid "GB-PPU"
@@ -2717,51 +2769,51 @@ msgstr "GB-PPU"
 
 #: win32/rsrc/snes9x.rc
 msgid "General"
-msgstr "General"
+msgstr "일반 기본 설정"
 
 #: win32/rsrc/snes9x.rc
 msgid "goto"
-msgstr "goto"
+msgstr "이동"
 
 #: win32/wlanguage.h
 msgid "Graphics layer 1:"
-msgstr "Graphics layer 1:"
+msgstr "그래픽 레이어 1 키:"
 
 #: win32/wlanguage.h
 msgid "Graphics layer 2:"
-msgstr "Graphics layer 2:"
+msgstr "그래픽 레이어 2 키:"
 
 #: win32/wlanguage.h
 msgid "Graphics layer 3:"
-msgstr "Graphics layer 3:"
+msgstr "그래픽 레이어 3 키:"
 
 #: win32/wlanguage.h
 msgid "Graphics layer 4:"
-msgstr "Graphics layer 4:"
+msgstr "그래픽 레이어 4 키:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Group"
-msgstr "Group"
+msgstr "그룹"
 
 #: win32/rsrc/snes9x.rc
 msgid "Hacks"
-msgstr "해킹"
+msgstr "특수 해킹 옵션"
 
 #: win32/rsrc/snes9x.rc
 msgid "Hard Reset (Power Cycle)"
-msgstr "Hard Reset (Power Cycle)"
+msgstr "하드 리셋 (전원 껐다 켜기)"
 
 #: win32/wlanguage.h
 msgid "Hard reset:"
-msgstr "Hard reset:"
+msgstr "하드 리셋 키:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Hardcore Mode"
-msgstr "Hardcore Mode"
+msgstr "하드코어 모드 (치트/편의기능 제한)"
 
 #: win32/rsrc/snes9x.rc
 msgid "Header:"
-msgstr "Header:"
+msgstr "헤더 정보:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Help"
@@ -2769,375 +2821,375 @@ msgstr "도움말"
 
 #: win32/rsrc/snes9x.rc
 msgid "Hexadecimal"
-msgstr "Hexadecimal"
+msgstr "16진수(Hex)"
 
 #: win32/rsrc/snes9x.rc
 msgid "Hi Res:"
-msgstr "Hi Res:"
+msgstr "고해상도 옵션:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Hi-Res AVI Recording"
-msgstr "Hi-Res AVI Recording"
+msgstr "고해상도 AVI 비디오 녹화"
 
 #: win32/rsrc/snes9x.rc
 msgid "Hide Menubar"
-msgstr "Hide Menubar"
+msgstr "메뉴 바 숨기기"
 
 #: win32/rsrc/snes9x.rc
 msgid "Host Game"
-msgstr "Host Game"
+msgstr "방 만들기 (게임 호스트)"
 
 #: win32/rsrc/snes9x.rc
 msgid "Host Kaillera Server"
-msgstr "Host Kaillera Server"
+msgstr "Kaillera 서버 열기"
 
 #: win32/wlanguage.h
 msgid "Hotkey Configuration"
-msgstr "Hotkey Configuration"
+msgstr "단축키 설정 관리"
 
 #: win32/rsrc/snes9x.rc
 msgid "Icon 1"
-msgstr "Icon 1"
+msgstr "아이콘 1"
 
 #: win32/rsrc/snes9x.rc
 msgid "Icon 2"
-msgstr "Icon 2"
+msgstr "아이콘 2"
 
 #: win32/rsrc/snes9x.rc
 msgid "Icon 3"
-msgstr "Icon 3"
+msgstr "아이콘 3"
 
 #: win32/rsrc/snes9x.rc
 msgid "Icon 4"
-msgstr "Icon 4"
+msgstr "아이콘 4"
 
 #: win32/rsrc/snes9x.rc
 msgid "Index:"
-msgstr "Index:"
+msgstr "인덱스 색인:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Input"
-msgstr "입력"
+msgstr "컨트롤러 입력"
 
 #: win32/rsrc/snes9x.rc
 msgid "Input Configuration"
-msgstr "Input Configuration"
+msgstr "입력 키 설정 콘솔"
 
 #: win32/rsrc/snes9x.rc
 msgid "Input Rate:"
-msgstr "Input Rate:"
+msgstr "오디오 입력 전송률:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Integer Scaling"
-msgstr "Integer Scaling"
+msgstr "정수 배율 화면 확대(Integer)"
 
 #: win32/rsrc/snes9x.rc
 msgid "Interleave Mode:"
-msgstr "Interleave Mode:"
+msgstr "인터리브 가공 모드:"
 
 #: win32/rsrc/snes9x.rc
 msgid "IP:"
-msgstr "IP:"
+msgstr "IP 주소:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Join"
-msgstr "Join"
+msgstr "참가하기"
 
 #: win32/wlanguage.h
 msgid "Joypad #%d"
-msgstr "Joypad #%d"
+msgstr "조이패드 #%d"
 
 #: win32/rsrc/snes9x.rc
 msgid "Joypad 1"
-msgstr "Joypad 1"
+msgstr "조이패드 1번"
 
 #: win32/rsrc/snes9x.rc
 msgid "Joypad 2"
-msgstr "Joypad 2"
+msgstr "조이패드 2번"
 
 #: win32/rsrc/snes9x.rc
 msgid "Joypad 3"
-msgstr "Joypad 3"
+msgstr "조이패드 3번"
 
 #: win32/rsrc/snes9x.rc
 msgid "Joypad 4"
-msgstr "Joypad 4"
+msgstr "조이패드 4번"
 
 #: win32/rsrc/snes9x.rc
 msgid "Joypad 5"
-msgstr "Joypad 5"
+msgstr "조이패드 5번"
 
 #: win32/wlanguage.h
 msgid "Joypad swap:"
-msgstr "Joypad swap:"
+msgstr "패드 위치 교환 키:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Kaillera Netplay"
-msgstr "Kaillera Netplay"
+msgstr "Kaillera 네트워크 플레이"
 
 #: win32/rsrc/snes9x.rc
 msgid "Kaillera Server"
-msgstr "Kaillera Server"
+msgstr "Kaillera 서버"
 
 #: win32/rsrc/snes9x.rc
 msgid "Layout:"
-msgstr "Layout:"
+msgstr "VRAM 타일 배치 레이아웃:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Leave Game"
-msgstr "Leave Game"
+msgstr "게임방 나가기"
 
 #: win32/rsrc/snes9x.rc
 msgid "LEFT"
-msgstr "LEFT"
+msgstr "왼쪽"
 
 #: win32/rsrc/snes9x.rc
 msgid "LENGTH"
-msgstr "LENGTH"
+msgstr "길이"
 
 #: win32/rsrc/snes9x.rc
 msgid "Length:"
-msgstr "Length:"
+msgstr "길이 수치:"
 
 #: win32/rsrc/snes9x.rc
 msgid "List1"
-msgstr "List1"
+msgstr "목록리스트 1"
 
 #: win32/rsrc/snes9x.rc
 msgid "Load #:"
-msgstr "Load #:"
+msgstr "슬롯 불러오기 #:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Load 0:"
-msgstr "Load 0:"
+msgstr "0번 슬롯 불러오기:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Load 1:"
-msgstr "Load 1:"
+msgstr "1번 슬롯 불러오기:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Load 2:"
-msgstr "Load 2:"
+msgstr "2번 슬롯 불러오기:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Load 3:"
-msgstr "Load 3:"
+msgstr "3번 슬롯 불러오기:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Load 4:"
-msgstr "Load 4:"
+msgstr "4번 슬롯 불러오기:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Load 5:"
-msgstr "Load 5:"
+msgstr "5번 슬롯 불러오기:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Load 6:"
-msgstr "Load 6:"
+msgstr "6번 슬롯 불러오기:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Load 7:"
-msgstr "Load 7:"
+msgstr "7번 슬롯 불러오기:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Load 8:"
-msgstr "Load 8:"
+msgstr "8번 슬롯 불러오기:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Load 9:"
-msgstr "Load 9:"
+msgstr "9번 슬롯 불러오기:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Load Dlg:"
-msgstr "Load Dlg:"
+msgstr "불러오기 팝업 키:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Load File:"
-msgstr "Load File:"
+msgstr "파일 불러오기:"
 
 #: win32/wlanguage.h
 msgid "Load from file:"
-msgstr "Load from file:"
+msgstr "파일 시스템에서 불러오기:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Load Game"
-msgstr "Load Game"
+msgstr "게임 데이터 불러오기"
 
 #: win32/rsrc/snes9x.rc
 msgid "Load Game Position"
-msgstr "Load Game Position"
+msgstr "저장된 게임 타임라인 불러오기"
 
 #: win32/rsrc/snes9x.rc
 msgid "Load MultiCart"
-msgstr "Load MultiCart"
+msgstr "멀티카트 불러오기"
 
 #: win32/rsrc/snes9x.rc
 msgid "Load Watches"
-msgstr "Load Watches"
+msgstr "메모리 모니터링 설정 불러오기"
 
 #: win32/rsrc/snes9x.rc
 msgid "Load with Preview"
-msgstr "Load with Preview"
+msgstr "미리보기 스크린샷과 함께 불러오기"
 
 #: win32/wlanguage.h
 msgid "LOADED FROM MOVIE:"
-msgstr "LOADED FROM MOVIE:"
+msgstr "동영상 파일 기록에서 불러옴:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Location:"
-msgstr "Location:"
+msgstr "저장 경로 위치:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Login"
-msgstr "Login"
+msgstr "로그인"
 
 #: win32/rsrc/snes9x.rc
 msgid "Maintain Aspect Ratio"
-msgstr "Maintain Aspect Ratio"
+msgstr "원본 가로세로 종횡비 유지"
 
 #: win32/rsrc/snes9x.rc
 msgid "Map"
-msgstr "Map"
+msgstr "매핑 구조(Map)"
 
 #: win32/rsrc/snes9x.rc
 msgid "Map Addr:"
-msgstr "Map Addr:"
+msgstr "타일 맵 주소:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Map Size:"
-msgstr "Map Size:"
+msgstr "타일 맵 해상도 크기:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Map:"
-msgstr "Map:"
+msgstr "맵 양식:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Mask"
-msgstr "Mask"
+msgstr "비트 마스크 값"
 
 #: win32/rsrc/snes9x.rc
 msgid "Masked Addresses"
-msgstr "Masked Addresses"
+msgstr "마스킹 처리된 주소 목록"
 
 #: win32/rsrc/snes9x.rc
 msgid "Master Hotkey"
-msgstr "Master Hotkey"
+msgstr "글로벌 마스터 단축키"
 
 #: win32/rsrc/snes9x.rc
 msgid "Max Clients:"
-msgstr "Max Clients:"
+msgstr "최대 허용 클라이언트 수:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Maximum Frame Rate Skip"
-msgstr "Maximum Frame Rate Skip"
+msgstr "허용 최대 프레임 강제 스킵 한도"
 
 #: win32/rsrc/snes9x.rc
 msgid "MB (set to 0 to disable rewind support)"
-msgstr "MB (set to 0 to disable rewind support)"
+msgstr "MB (되감기 지원을 끄려면 단위를 0으로 설정)"
 
 #: win32/rsrc/snes9x.rc
 msgid "Memory Type:"
-msgstr "Memory Type:"
+msgstr "메모리 에뮬레이션 종류:"
 
 #: win32/wlanguage.h
 msgid "Misc. Recording Settings"
-msgstr "Misc. Recording Settings"
+msgstr "기타 비디오 녹화 제어 설정"
 
 #: win32/rsrc/snes9x.rc
 msgid "Mode:"
-msgstr "Mode:"
+msgstr "작동 모드:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Movie File"
-msgstr "Movie File"
-
-#: win32/wlanguage.h
-msgid "Movie frame count:"
-msgstr "Movie frame count:"
-
-#: win32/rsrc/snes9x.rc
-msgid "Movie Play"
-msgstr "Movie Play"
+msgstr "동영상 녹화 파일"
 
 #: win32/wlanguage.h
 msgid "Movie read-only:"
-msgstr "Movie read-only:"
+msgstr "동영상 파일 수정 불가(읽기 전용):"
+
+#: win32/rsrc/snes9x.rc
+msgid "Movie Play"
+msgstr "동영상 재생"
+
+#: win32/wlanguage.h
+msgid "Movie frame count:"
+msgstr "동영상 총 프레임 카운트 수:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Movie Record"
-msgstr "Movie Record"
+msgstr "동영상 기록 입력"
 
 #: win32/rsrc/snes9x.rc
 msgid "Movie Stop"
-msgstr "Movie Stop"
+msgstr "동영상 작동 정지"
 
 #: win32/wlanguage.h
 msgid "Movie's ROM:"
-msgstr "Movie's ROM:"
+msgstr "동영상 원본 연동 ROM 파일:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Movie's ROM: CRC32=Unknown, Name=Unknown"
-msgstr "Movie's ROM: CRC32=Unknown, Name=Unknown"
+msgstr "동영상 소스 ROM: CRC32=알수없음, 이름=알수없음"
 
 #: win32/wlanguage.h
 msgid "Movies"
-msgstr "Movies"
+msgstr "동영상 녹화 관리"
 
 #: win32/rsrc/snes9x.rc
 msgid "Mute"
-msgstr "Mute"
+msgstr "음소거"
 
 #: win32/rsrc/snes9x.rc
 msgid "Mute Sound"
-msgstr "Mute Sound"
+msgstr "사운드 음소거"
 
 #: win32/rsrc/snes9x.rc
 msgid "Mute sound"
-msgstr "Mute sound"
+msgstr "사운드 음소거"
 
 #: win32/rsrc/snes9x.rc
 msgid "Netplay"
-msgstr "넷플레이"
+msgstr "네트워크 플레이"
 
 #: win32/rsrc/snes9x.rc
 msgid "Netplay Options"
-msgstr "Netplay Options"
+msgstr "네트워크 플레이 옵션 조정"
 
 #: win32/rsrc/snes9x.rc
 msgid "New Value"
-msgstr "New Value"
+msgstr "변경할 새 메모리 값"
 
 #: win32/rsrc/snes9x.rc
 msgid "No BIOS"
-msgstr "No BIOS"
+msgstr "내장 바이오스 없음"
 
 #: win32/wlanguage.h
 msgid "Not a ROM"
-msgstr "Not a ROM"
+msgstr "올바른 ROM 파일 형식이 아님"
 
 #: win32/rsrc/snes9x.rc
 msgid "Not connected."
-msgstr "Not connected."
+msgstr "연결되어 있지 않습니다."
 
 #: win32/rsrc/snes9x.rc
 msgid "not found"
-msgstr "not found"
+msgstr "찾을 수 없음"
 
 #: win32/wlanguage.h
 msgid "not found!"
-msgstr "not found!"
+msgstr "찾을 수 없습니다!"
 
 #: win32/rsrc/snes9x.rc
 msgid "NTSC Filter Scanlines"
-msgstr "NTSC Filter Scanlines"
+msgstr "NTSC 필터용 스캔라인 가공"
 
 #: win32/rsrc/snes9x.rc
 msgid "OAM1:"
-msgstr "OAM1:"
+msgstr "OAM1 영역:"
 
 #: win32/rsrc/snes9x.rc
 msgid "OAM2:"
-msgstr "OAM2:"
+msgstr "OAM2 영역:"
 
 #: win32/rsrc/snes9x.rc
 msgid "OK"
@@ -3145,387 +3197,387 @@ msgstr "확인"
 
 #: win32/rsrc/snes9x.rc
 msgid "On-screen Display Size:"
-msgstr "On-screen Display Size:"
+msgstr "화면 표시(OSD) 텍스트 폰트 크기:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Online Servers"
-msgstr "Online Servers"
+msgstr "온라인 서버 리스트"
 
 #: win32/rsrc/snes9x.rc
 msgid "Oops File"
-msgstr "Oops File"
+msgstr "자동 백업 복구용 파일 (Oops)"
 
 #: win32/rsrc/snes9x.rc
 msgid "Open MultiCart"
-msgstr "Open MultiCart"
+msgstr "멀티카트 불러오기"
 
 #: win32/rsrc/snes9x.rc
 msgid "Open Read-Only"
-msgstr "Open Read-Only"
+msgstr "읽기 전용 모드로 열기"
 
 #: win32/rsrc/snes9x.rc
 msgid "OpenGL/Vulkan Shader File"
-msgstr "OpenGL/Vulkan Shader File"
+msgstr "OpenGL/Vulkan 전용 셰이더 파일"
 
 #: win32/rsrc/snes9x.rc
 msgid "Options"
-msgstr "Options"
+msgstr "환경 제어 옵션"
 
 #: win32/rsrc/snes9x.rc
 msgid "Output Device:"
-msgstr "Output Device:"
+msgstr "사운드 출력 하드웨어 장치:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Output Image Processing"
-msgstr "Output Image Processing"
+msgstr "최종 출력 영상 보정 처리 방식"
 
 #: win32/rsrc/snes9x.rc
 msgid "Output Method"
-msgstr "Output Method"
+msgstr "그래픽 렌더링 출력 API"
 
 #: win32/rsrc/snes9x.rc
 msgid "Override Tilemap"
-msgstr "Override Tilemap"
+msgstr "타일맵 강제 교체 지정"
 
 #: win32/wlanguage.h
 msgid "Page %d"
-msgstr "Page %d"
+msgstr "페이지 %d"
 
 #: win32/rsrc/snes9x.rc
 msgid "Palette (click to select offset)"
-msgstr "Palette (click to select offset)"
+msgstr "팔레트 색상 컬러 레이아웃 (클릭하여 오프셋 선택)"
 
 #: win32/rsrc/snes9x.rc
 msgid "Palette:"
-msgstr "Palette:"
+msgstr "팔레트 종류:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Parameters"
-msgstr "Parameters"
+msgstr "세부 속성 파라미터"
 
 #: win32/rsrc/snes9x.rc
 msgid "Password:"
-msgstr "Password:"
+msgstr "보안 비밀번호:"
 
 #: win32/wlanguage.h
 msgid "Patch"
-msgstr "Patch"
+msgstr "패치 파일 수정"
 
 #: win32/wlanguage.h
 msgid "Path: %s"
-msgstr "Path: %s"
+msgstr "디렉토리 경로: %s"
 
 #: win32/rsrc/snes9x.rc
 msgid "Pause When Inactive"
-msgstr "Pause When Inactive"
+msgstr "비활성 창(백그라운드) 상태일 때 자동 일시 정지"
 
 #: win32/wlanguage.h
 msgid "Pause:"
-msgstr "Pause:"
+msgstr "일시 정지 키 단축키:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Play Movie"
-msgstr "Play Movie"
+msgstr "동영상 파일 구동"
 
 #: win32/rsrc/snes9x.rc
 msgid "Playback Rate"
-msgstr "Playback Rate"
+msgstr "사운드 샘플링 재생 빈도"
 
 #: win32/rsrc/snes9x.rc
 msgid "Playback Rate:"
-msgstr "Playback Rate:"
+msgstr "사운드 주파수 재생 속도:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Player Name:"
-msgstr "Player Name:"
+msgstr "유저 계정 이름:"
 
 #: win32/wlanguage.h
 msgid "Please enter a host name."
-msgstr "Please enter a host name."
+msgstr "호스트 컴퓨터 이름을 입력해 주십시오."
 
 #: win32/wlanguage.h
 msgid "Please enter a valid value for a search!"
-msgstr "Please enter a valid value for a search!"
+msgstr "검색을 위해 올바른 규격의 입력 값을 적어 주십시오!"
 
 #: win32/rsrc/snes9x.rc
 msgid "Port Number"
-msgstr "Port Number"
+msgstr "포트 식별 번호"
 
 #: win32/rsrc/snes9x.rc
 msgid "Port Settings"
-msgstr "Port Settings"
+msgstr "네트워크 포트 관리 설정"
 
 #: win32/wlanguage.h
 msgid "Press OK to start playing the movie."
-msgstr "Press OK to start playing the movie."
+msgstr "확인을 누르면 동영상 구동 기록이 시작됩니다."
 
 #: win32/rsrc/snes9x.rc
 msgid "Preview"
-msgstr "Preview"
+msgstr "미리보기 스크린샷"
 
 #: win32/rsrc/snes9x.rc
 msgid "Previous Value"
-msgstr "Previous Value"
+msgstr "기존 검색된 직전 값"
 
 #: win32/rsrc/snes9x.rc
 msgid "Progress1"
-msgstr "Progress1"
+msgstr "진행 상태 1"
 
 #: win32/rsrc/snes9x.rc
 msgid "Publish Online"
-msgstr "Publish Online"
+msgstr "온라인 서버 리스트에 공개"
 
 #: win32/rsrc/snes9x.rc
 msgid "Publish to master server list"
-msgstr "Publish to master server list"
+msgstr "마스터 서버 전체 리스트 허브에 방 등록"
 
 #: win32/wlanguage.h
 msgid "Quit SuperSnes9x:"
-msgstr "Quit SuperSnes9x:"
+msgstr "SuperSnes9x 안전 종료 단축키:"
 
 #: win32/wlanguage.h
 msgid "Range Error"
-msgstr "Range Error"
+msgstr "검색 주소 데이터 범위 오류"
 
 #: win32/rsrc/snes9x.rc
 msgid "Rate:"
-msgstr "Rate:"
+msgstr "전송 샘플 주파수 속도:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Re-record Count:"
-msgstr "Re-record Count:"
+msgstr "강제 덮어쓰기 기록 횟수:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Re-sync all Clients Using Freeze File Now"
-msgstr "Re-sync all Clients Using Freeze File Now"
+msgstr "즉시 프리즈 상태 저장 파일을 전송하여 모든 클라이언트 강제 동기화"
 
 #: win32/rsrc/snes9x.rc
 msgid "Recent Games"
-msgstr "Recent Games"
+msgstr "최근 구동한 게임 목록"
 
 #: win32/rsrc/snes9x.rc
 msgid "Record Controllers"
-msgstr "Record Controllers"
+msgstr "컨트롤러 입력값 기록 저장"
 
 #: win32/rsrc/snes9x.rc
 msgid "Record from now"
-msgstr "Record from now"
+msgstr "현재 시점부터 새로 비디오 녹화"
 
 #: win32/rsrc/snes9x.rc
 msgid "Record from reset"
-msgstr "Record from reset"
+msgstr "리셋 초기화 시점부터 새로 비디오 녹화"
 
 #: win32/rsrc/snes9x.rc
 msgid "Record Movie"
-msgstr "Record Movie"
+msgstr "비디오 동영상 파일 생성 입력"
 
 #: win32/rsrc/snes9x.rc
 msgid "Record Options"
-msgstr "Record Options"
+msgstr "녹화 대상 세부 설정 옵션"
 
 #: win32/rsrc/snes9x.rc
 msgid "Recording Date:"
-msgstr "Recording Date:"
+msgstr "처음 녹화 생성 날짜:"
 
 #: win32/wlanguage.h
 msgid "Recording Start"
-msgstr "Recording Start"
+msgstr "비디오 녹화 작업 시작"
 
 #: win32/rsrc/snes9x.rc
 msgid "Reduce Input Lag"
-msgstr "Reduce Input Lag"
+msgstr "입력 반응 지연(인풋랙) 최적화 감소"
 
 #: win32/rsrc/snes9x.rc
 msgid "Refresh"
-msgstr "Refresh"
+msgstr "새로고침"
 
 #: win32/rsrc/snes9x.rc
 msgid "Refresh List"
-msgstr "Refresh List"
+msgstr "목록 데이터 새로고침"
 
 #: win32/rsrc/snes9x.rc
 msgid "Regular"
-msgstr "Regular"
+msgstr "일반 기본 규격"
 
 #: win32/rsrc/snes9x.rc
 msgid "Remove"
-msgstr "Remove"
+msgstr "제거"
 
 #: win32/rsrc/snes9x.rc
 msgid "Remove All"
-msgstr "Remove All"
+msgstr "모두 제거"
 
 #: win32/rsrc/snes9x.rc
 msgid "RERECORD"
-msgstr "RERECORD"
+msgstr "강제 재녹화"
 
 #: win32/wlanguage.h
 msgid "Reset speed:"
-msgstr "Reset speed:"
+msgstr "에뮬레이션 배속 속도 초기화 키:"
 
 #: win32/rsrc/snes9x.rc
 msgid "RetroAchievements"
-msgstr "RetroAchievements"
+msgstr "레트로 성취 도전과제 (RetroAchievements)"
 
 #: win32/rsrc/snes9x.rc
 msgid "RetroAchievements Login"
-msgstr "RetroAchievements Login"
+msgstr "RetroAchievements 유저 로그인"
 
 #: win32/rsrc/snes9x.rc
 msgid "Rewind buffer size:"
-msgstr "Rewind buffer size:"
+msgstr "되감기 기록 버퍼 크기 한도:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Rewind granularity:"
-msgstr "Rewind granularity:"
+msgstr "되감기 기록 데이터 정밀 밀도:"
 
 #: win32/wlanguage.h
 msgid "Rewind:"
-msgstr "Rewind:"
+msgstr "타임라인 되감기 단축키:"
 
 #: win32/rsrc/snes9x.rc
 msgid "RIGHT"
-msgstr "RIGHT"
+msgstr "오른쪽"
 
 #: win32/wlanguage.h
 msgid "ROM files or archives"
-msgstr "ROM files or archives"
+msgstr "압축 파일 또는 순수 ROM 파일"
 
 #: win32/rsrc/snes9x.rc
 msgid "Rom Info"
-msgstr "Rom Info"
+msgstr "ROM 파일 속성 정보"
 
 #: win32/rsrc/snes9x.rc
 msgid "ROM Information"
-msgstr "ROM Information"
+msgstr "해당 ROM 데이터 세부 정보"
 
 #: win32/rsrc/snes9x.rc
 msgid "ROM:"
-msgstr "ROM:"
+msgstr "ROM 소스:"
 
 #: win32/wlanguage.h
 msgid "Roms"
-msgstr "Roms"
+msgstr "ROM 아카이브 파일 관리"
 
 #: win32/rsrc/snes9x.rc
 msgid "Run Ahead"
-msgstr "Run Ahead"
+msgstr "입력 지연 연산 선행 처리 (Run Ahead)"
 
 #: win32/rsrc/snes9x.rc
 msgid "s"
-msgstr "s"
+msgstr "초"
 
 #: win32/rsrc/snes9x.rc
 msgid "S-PPU"
-msgstr "S-PPU"
+msgstr "S-PPU 칩셋 사양"
 
 #: win32/wlanguage.h
 msgid "Satellaview"
-msgstr "Satellaview"
+msgstr "위성 방송 위성 연동 Satellaview"
 
 #: win32/rsrc/snes9x.rc
 msgid "Save #:"
-msgstr "Save #:"
+msgstr "슬롯 지정 저장 #:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Save 0:"
-msgstr "Save 0:"
+msgstr "0번 슬롯에 저장:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Save 1:"
-msgstr "Save 1:"
+msgstr "1번 슬롯에 저장:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Save 2:"
-msgstr "Save 2:"
+msgstr "2번 슬롯에 저장:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Save 3:"
-msgstr "Save 3:"
+msgstr "3번 슬롯에 저장:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Save 4:"
-msgstr "Save 4:"
+msgstr "4번 슬롯에 저장:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Save 5:"
-msgstr "Save 5:"
+msgstr "5번 슬롯에 저장:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Save 6:"
-msgstr "Save 6:"
+msgstr "6번 슬롯에 저장:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Save 7:"
-msgstr "Save 7:"
+msgstr "7번 슬롯에 저장:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Save 8:"
-msgstr "Save 8:"
+msgstr "8번 슬롯에 저장:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Save 9:"
-msgstr "Save 9:"
+msgstr "9번 슬롯에 저장:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Save Dlg:"
-msgstr "Save Dlg:"
+msgstr "저장 관리 팝업 키:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Save File:"
-msgstr "Save File:"
+msgstr "내보낼 파일 경로 지정:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Save Game Position"
-msgstr "Save Game Position"
+msgstr "현재 게임 구동 시점 상태 저장"
 
 #: win32/rsrc/snes9x.rc
 msgid "Save Memory Pack"
-msgstr "Save Memory Pack"
+msgstr "메모리 팩 데이터 파일 아웃풋"
 
 #: win32/rsrc/snes9x.rc
 msgid "Save Other"
-msgstr "Save Other"
+msgstr "기타 파일 양식으로 내보내기"
 
 #: win32/rsrc/snes9x.rc
 msgid "Save S-RAM Data"
-msgstr "Save S-RAM Data"
+msgstr "카트리지 SRAM 인게임 내부 저장데이터 덤프"
 
 #: win32/rsrc/snes9x.rc
 msgid "Save Screenshot"
-msgstr "Save Screenshot"
+msgstr "현재 스크린샷 이미지 캡처 저장"
 
 #: win32/wlanguage.h
 msgid "Save screenshot"
-msgstr "Save screenshot"
+msgstr "현재 스크린샷 이미지 캡처 저장"
 
 #: win32/rsrc/snes9x.rc
 msgid "Save SPC Data"
-msgstr "Save SPC Data"
+msgstr "음원 추출용 SPC 오디오 덤프"
 
 #: win32/wlanguage.h
 msgid "Save to file:"
-msgstr "Save to file:"
+msgstr "파일로 저장하기 경로 지정:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Save Watches"
-msgstr "Save Watches"
+msgstr "현재 수립된 메모리 모니터링 값 저장"
 
 #: win32/rsrc/snes9x.rc
 msgid "Save with Preview"
-msgstr "Save with Preview"
+msgstr "미리보기 스크린샷 파일과 함께 안전 저장"
 
 #: win32/wlanguage.h
 msgid "Saves"
-msgstr "Saves"
+msgstr "인게임 세이브 파일 스토리지"
 
 #: win32/rsrc/snes9x.rc
 msgid "Screen"
-msgstr "Screen"
+msgstr "화면 출력"
 
 #: win32/wlanguage.h
 msgid "Screenshots"
-msgstr "Screenshots"
+msgstr "스크린샷 이미지 관리"
 
 #: win32/rsrc/snes9x.rc
 msgid "Search"
@@ -3533,15 +3585,15 @@ msgstr "검색"
 
 #: win32/rsrc/snes9x.rc
 msgid "Search Database"
-msgstr "Search Database"
+msgstr "내부 오프라인 데이터베이스 검색"
 
 #: win32/rsrc/snes9x.rc
 msgid "Search for New Cheats"
-msgstr "Search for New Cheats"
+msgstr "새 커스텀 치트 주소 추적 검색"
 
 #: win32/rsrc/snes9x.rc
 msgid "seconds after last change (0 disables auto-save)"
-msgstr "seconds after last change (0 disables auto-save)"
+msgstr "마지막 데이터 변동 수 초 후 자동 저장 수행 (0으로 두면 작동 안 함)"
 
 #: win32/rsrc/snes9x.rc
 msgid "SELECT"
@@ -3549,343 +3601,343 @@ msgstr "SELECT"
 
 #: win32/rsrc/snes9x.rc
 msgid "Select 0:"
-msgstr "Select 0:"
+msgstr "0번 슬롯 선택 기본 키:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Select 1:"
-msgstr "Select 1:"
+msgstr "1번 슬롯 선택 기본 키:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Select 2:"
-msgstr "Select 2:"
+msgstr "2번 슬롯 선택 기본 키:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Select 3:"
-msgstr "Select 3:"
+msgstr "3번 슬롯 선택 기본 키:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Select 4:"
-msgstr "Select 4:"
+msgstr "4번 슬롯 선택 기본 키:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Select 5:"
-msgstr "Select 5:"
+msgstr "5번 슬롯 선택 기본 키:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Select 6:"
-msgstr "Select 6:"
+msgstr "6번 슬롯 선택 기본 키:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Select 7:"
-msgstr "Select 7:"
+msgstr "7번 슬롯 선택 기본 키:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Select 8:"
-msgstr "Select 8:"
+msgstr "8번 슬롯 선택 기본 키:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Select 9:"
-msgstr "Select 9:"
+msgstr "9번 슬롯 선택 기본 키:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Select File"
-msgstr "Select File"
+msgstr "대상 파일 지정 선택"
 
 #: win32/wlanguage.h
 msgid "Select Folder"
-msgstr "Select Folder"
+msgstr "작업 경로 폴더 선택"
 
 #: win32/wlanguage.h
 msgid "Select Slot 0:"
-msgstr "Select Slot 0:"
+msgstr "세이브 슬롯 0번 선택 지정:"
 
 #: win32/wlanguage.h
 msgid "Select Slot 1:"
-msgstr "Select Slot 1:"
+msgstr "세이브 슬롯 1번 선택 지정:"
 
 #: win32/wlanguage.h
 msgid "Select Slot 2:"
-msgstr "Select Slot 2:"
+msgstr "세이브 슬롯 2번 선택 지정:"
 
 #: win32/wlanguage.h
 msgid "Select Slot 3:"
-msgstr "Select Slot 3:"
+msgstr "세이브 슬롯 3번 선택 지정:"
 
 #: win32/wlanguage.h
 msgid "Select Slot 4:"
-msgstr "Select Slot 4:"
+msgstr "세이브 슬롯 4번 선택 지정:"
 
 #: win32/wlanguage.h
 msgid "Select Slot 5:"
-msgstr "Select Slot 5:"
+msgstr "세이브 슬롯 5번 선택 지정:"
 
 #: win32/wlanguage.h
 msgid "Select Slot 6:"
-msgstr "Select Slot 6:"
+msgstr "세이브 슬롯 6번 선택 지정:"
 
 #: win32/wlanguage.h
 msgid "Select Slot 7:"
-msgstr "Select Slot 7:"
+msgstr "세이브 슬롯 7번 선택 지정:"
 
 #: win32/wlanguage.h
 msgid "Select Slot 8:"
-msgstr "Select Slot 8:"
+msgstr "세이브 슬롯 8번 선택 지정:"
 
 #: win32/wlanguage.h
 msgid "Select Slot 9:"
-msgstr "Select Slot 9:"
+msgstr "세이브 슬롯 9번 선택 지정:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Send"
-msgstr "Send"
+msgstr "전송"
 
 #: win32/rsrc/snes9x.rc
 msgid "Send ROM Image to Client on Connect"
-msgstr "Send ROM Image to Client on Connect"
+msgstr "클라이언트 컴퓨터 입장 시 자동으로 ROM 원본 파일 파일 송신 전송"
 
 #: win32/rsrc/snes9x.rc
 msgid "Send ROM Image to Clients"
-msgstr "Send ROM Image to Clients"
+msgstr "모든 클라이언트 참여 컴퓨터에 ROM 파일 송신"
 
 #: win32/rsrc/snes9x.rc
 msgid "Send ROM Image to Clients Now"
-msgstr "Send ROM Image to Clients Now"
+msgstr "지금 즉시 모든 참여 컴퓨터에 ROM 소스 파일 동시 전송"
 
 #: win32/rsrc/snes9x.rc
 msgid "Separate Echo Buffer from RAM"
-msgstr "Separate Echo Buffer from RAM"
+msgstr "에뮬레이션 작동 상 에코 버퍼 메모리 영역을 메인 RAM과 독립 격리"
 
 #: win32/rsrc/snes9x.rc
 msgid "Server Address"
-msgstr "Server Address"
+msgstr "접속할 대상 네트워크 서버 주소"
 
 #: win32/rsrc/snes9x.rc
 msgid "Server is stopped."
-msgstr "Server is stopped."
+msgstr "네트워크 서버 룸 작동 호스팅이 정지되었습니다."
 
 #: win32/rsrc/snes9x.rc
 msgid "Server Lobby"
-msgstr "Server Lobby"
+msgstr "네트워크 멀티플레이 호스트 로비"
 
 #: win32/rsrc/snes9x.rc
 msgid "Server Name:"
-msgstr "Server Name:"
+msgstr "생성할 호스트 서버 룸 이름:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Server Settings"
-msgstr "Server Settings"
+msgstr "멀티플레이용 서버 구동 규칙 설정"
 
 #: win32/rsrc/snes9x.rc
 msgid "Set Defaults"
-msgstr "Set Defaults"
+msgstr "초기 설정값으로 일괄 되돌리기"
 
 #: win32/rsrc/snes9x.rc
 msgid "Set Value"
-msgstr "Set Value"
+msgstr "고정 메모리 수치 값 대입"
 
 #: win32/rsrc/snes9x.rc
 msgid "Settings"
-msgstr "설정"
+msgstr "환경 설정"
 
 #: win32/wlanguage.h
 msgid "SETTINGS NOT IN MOVIE; VERIFY:"
-msgstr "SETTINGS NOT IN MOVIE; VERIFY:"
+msgstr "해당 동영상 덤프 내부에 설정 기록이 없음; 실기 무결성 검증 요망:"
 
 #: win32/rsrc/snes9x.rc
 msgid "SGB Mix"
-msgstr "SGB Mix"
+msgstr "SGB 믹서 오디오 채널 비율"
 
 #: win32/rsrc/snes9x.rc
 msgid "SGB1"
-msgstr "SGB1"
+msgstr "SGB1 사양"
 
 #: win32/rsrc/snes9x.rc
 msgid "SGB2"
-msgstr "SGB2"
+msgstr "SGB2 사양"
 
 #: win32/rsrc/snes9x.rc
 msgid "Show Audio Waveform"
-msgstr "Show Audio Waveform"
+msgstr "화면에 오디오 주파수 비주얼 파형 시각화 표시"
 
 #: win32/rsrc/snes9x.rc
 msgid "Show Background"
-msgstr "Show Background"
+msgstr "화면 백그라운드 레이어 렌더링 표시"
 
 #: win32/rsrc/snes9x.rc
 msgid "Show Crosshair"
-msgstr "Show Crosshair"
+msgstr "화면 정중앙 타겟 조준 조준선 표시"
 
 #: win32/rsrc/snes9x.rc
 msgid "Show Frame Number"
-msgstr "Show Frame Number"
+msgstr "화면 구석에 실시간 타임라인 프레임 레이트 식별 번호 표시"
 
 #: win32/rsrc/snes9x.rc
 msgid "Show Frame Rate"
-msgstr "Show Frame Rate"
+msgstr "화면 레이트 실시간 프레임 구동 속도(FPS) 표시"
 
 #: win32/rsrc/snes9x.rc
 msgid "Show Grid"
-msgstr "Show Grid"
+msgstr "화면 타일 레이아웃 격자선(Grid) 격자 가이드 라인 표시"
 
 #: win32/wlanguage.h
 msgid "Show pressed keys:"
-msgstr "Show pressed keys:"
+msgstr "유저가 누른 실시간 패드 입력 키 흐름 시각화 표시:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Show screen"
-msgstr "Show screen"
+msgstr "디스플레이 화면 창 렌더링 활성화"
 
 #: win32/rsrc/snes9x.rc
 msgid "Show Screen Outline"
-msgstr "Show Screen Outline"
+msgstr "디스플레이 테두리 아웃라인 가이드 선 시각화 표시"
 
 #: win32/rsrc/snes9x.rc
 msgid "Show Sprites"
-msgstr "Show Sprites"
+msgstr "화면 개별 도트 오브젝트 스프라이트 객체 표시"
 
 #: win32/rsrc/snes9x.rc
 msgid "Show viewport"
-msgstr "Show viewport"
+msgstr "에뮬레이션 렌더링 뷰포트 가시 영역 표시"
 
 #: win32/rsrc/snes9x.rc
 msgid "Show Window"
-msgstr "Show Window"
+msgstr "프로그램 인터페이스 메인 가시 윈도우 창 표시"
 
 #: win32/rsrc/snes9x.rc
 msgid "Signed (+/-)"
-msgstr "Signed (+/-)"
+msgstr "부호값 존재 데이터 형식 (+/-)"
 
 #: win32/wlanguage.h
 msgid "Size"
-msgstr "Size"
+msgstr "데이터 물리 규격 크기"
 
 #: win32/rsrc/snes9x.rc
 msgid "Skip at most"
-msgstr "Skip at most"
+msgstr "자동 연산 상 최대 건너뛸 프레임 한도 수치"
 
 #: win32/wlanguage.h
 msgid "Skip frames +:"
-msgstr "Skip frames +:"
+msgstr "단축키: 수동 스킵 프레임 수치 한 단계 증가:"
 
 #: win32/wlanguage.h
 msgid "Skip frames -:"
-msgstr "Skip frames -:"
+msgstr "단축키: 수동 스킵 프레임 수치 한 단계 감소:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Skip rendering"
-msgstr "Skip rendering"
+msgstr "화면 렌더링 연산 스킵 처리 건너뛰기"
 
 #: win32/wlanguage.h
 msgid "Skip Rendering"
-msgstr "Skip Rendering"
+msgstr "비디오 프레임 그리기 연산 일시 스킵 건너뛰기"
 
 #: win32/rsrc/snes9x.rc
 msgid "Slot +:"
-msgstr "Slot +:"
+msgstr "단축키: 세이브 슬롯 한 단계 뒤로 이동:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Slot -:"
-msgstr "Slot -:"
+msgstr "단축키: 세이브 슬롯 한 단계 앞으로 이동:"
 
 #: win32/rsrc/snes9x.rc
 msgid "SNES Image"
-msgstr "SNES Image"
+msgstr "SNES 원본 해상도 규격 가상 프레임 이미지"
 
 #: win32/rsrc/snes9x.rc
 msgid "SuperSnes9x - Unable to Initialize XAudio2"
-msgstr "SuperSnes9x - Unable to Initialize XAudio2"
+msgstr "SuperSnes9x - 사운드 출력을 위한 XAudio2 모듈 초기화 에러 실패"
 
 #: win32/wlanguage.h
 msgid "SuperSnes9x Cheat Error"
-msgstr "SuperSnes9x Cheat Error"
+msgstr "SuperSnes9x 내부 치트 포맷 엔진 파싱 에러"
 
 #: win32/wlanguage.h
 msgid "SuperSnes9x Movie File"
-msgstr "SuperSnes9x Movie File"
+msgstr "SuperSnes9x 전용 원본 매핑 비디오 동영상 기록 파일 (.smv)"
 
 #: win32/rsrc/snes9x.rc
 msgid "Socket Port Number"
-msgstr "Socket Port Number"
+msgstr "네트워크 통신망 소켓 포트 넘버 번호"
 
 #: win32/rsrc/snes9x.rc
 msgid "Soft Reset"
-msgstr "Soft Reset"
+msgstr "소프트 리셋 소프트웨어 초기화"
 
 #: win32/wlanguage.h
 msgid "Soft reset:"
-msgstr "Soft reset:"
+msgstr "소프트 리셋 실행 단축키 관리:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Sound Driver:"
-msgstr "Sound Driver:"
+msgstr "운영체제 내부 연동 오디오 드라이버 API 사양:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Sound Interpolation Type:"
-msgstr "Sound Interpolation Type:"
+msgstr "오디오 샘플링 부드러운 평활화 음질 보간 처리 유형 알고리즘:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Sound Quality"
-msgstr "Sound Quality"
+msgstr "최종 오디오 가공 레이트 음질 품질"
 
 #: win32/rsrc/snes9x.rc
 msgid "Sound Settings"
-msgstr "사운드 설정"
+msgstr "사운드 제어 시스템 설정"
 
 #: win32/rsrc/snes9x.rc
 msgid "Source:"
-msgstr "Source:"
+msgstr "소스 데이터 리소스 원천 기원 경로:"
 
 #: win32/rsrc/snes9x.rc
 msgid "SPC"
-msgstr "SPC"
+msgstr "SPC 음원 양식 아웃풋 파일"
 
 #: win32/wlanguage.h
 msgid "SPCs"
-msgstr "SPCs"
+msgstr "내보낼 SPC 확장자 개별 파일 스토리지"
 
 #: win32/wlanguage.h
 msgid "Speed +:"
-msgstr "Speed +:"
+msgstr "단축키: 가상 기기 연산 구동 배속 속도 단계 증가 배속 가속:"
 
 #: win32/wlanguage.h
 msgid "Speed -:"
-msgstr "Speed -:"
+msgstr "단축키: 가상 기기 연산 구동 배속 속도 단계 감소 배속 감속:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Spin1"
-msgstr "Spin1"
+msgstr "스핀 컨트롤 눈금 조절 1"
 
 #: win32/rsrc/snes9x.rc
 msgid "Spin2"
-msgstr "Spin2"
+msgstr "스핀 컨트롤 눈금 조절 2"
 
 #: win32/rsrc/snes9x.rc
 msgid "Spin3"
-msgstr "Spin3"
+msgstr "스핀 컨트롤 눈금 조절 3"
 
 #: win32/rsrc/snes9x.rc
 msgid "Spin4"
-msgstr "Spin4"
+msgstr "스핀 컨트롤 눈금 조절 4"
 
 #: win32/rsrc/snes9x.rc
 msgid "Sprite Viewer"
-msgstr "Sprite Viewer"
+msgstr "실시간 생성 VRAM 스프라이트 객체 추적 뷰어"
 
 #: win32/rsrc/snes9x.rc
 msgid "Sprite:"
-msgstr "Sprite:"
+msgstr "추적할 스프라이트 객체 고유 식별 번호:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Sprites"
-msgstr "Sprites"
+msgstr "전체 가시 화면 상 스프라이트 도트 객체 일괄 관리"
 
 #: win32/wlanguage.h
 msgid "Sprites layer:"
-msgstr "Sprites layer:"
+msgstr "스프라이트 전용 시각화 레이어 렌더링 키 단축키:"
 
 #: win32/wlanguage.h
 msgid "SRAM"
-msgstr "SRAM"
+msgstr "SRAM 보존용 데이터 블록"
 
 #: win32/rsrc/snes9x.rc
 msgid "START"
@@ -3893,415 +3945,415 @@ msgstr "START"
 
 #: win32/rsrc/snes9x.rc
 msgid "Start Game"
-msgstr "Start Game"
+msgstr "호스트 방 가상 게임 기기 기동 시작 수행"
 
 #: win32/rsrc/snes9x.rc
 msgid "Start Server"
-msgstr "Start Server"
+msgstr "현재 로컬 PC 환경 기반 단독 서버 구동"
 
 #: win32/rsrc/snes9x.rc
 msgid "Static"
-msgstr "Static"
+msgstr "정적 텍스트 레이블 가이드"
 
 #: win32/rsrc/snes9x.rc
 msgid "Status"
-msgstr "Status"
+msgstr "현재 실행 네트워크 물리 연동 상태 정보"
 
 #: win32/rsrc/snes9x.rc
 msgid "Stretch Image"
-msgstr "Stretch Image"
+msgstr "출력 창 비율 무시하고 윈도우 전체 폭으로 강제 화면 꽉 차게 늘리기 가공"
 
 #: win32/rsrc/snes9x.rc
 msgid "SuperFX Clock Speed %:"
-msgstr "SuperFX Clock Speed %:"
+msgstr "카트리지 내장 특수 연산 SuperFX 보조 칩셋 가상 클럭 가속 수치 배율 %:"
 
 #: win32/rsrc/snes9x.rc
 msgid "SuperFX speed:"
-msgstr "SuperFX speed:"
+msgstr "SuperFX 특수 보조 연산 칩셋 배속 가속 성능 제어 속도:"
 
 #: win32/wlanguage.h
 msgid "SuperScope pause:"
-msgstr "SuperScope pause:"
+msgstr "특수 광선총 하드웨어 SuperScope 일시 정지 매핑 버튼 단축키:"
 
 #: win32/wlanguage.h
 msgid "SuperScope turbo:"
-msgstr "SuperScope turbo:"
+msgstr "특수 광선총 하드웨어 SuperScope 자동 연사 연사 기능 버튼 단축키:"
 
 #: win32/wlanguage.h
 msgid "SuperSnes9x (x64)"
-msgstr "SuperSnes9x (x64)"
+msgstr "SuperSnes9x (윈도우 64비트 전용 네이티브 배포판 사양)"
 
 #: win32/rsrc/snes9x.rc
 msgid "SuperSnes9x - About"
-msgstr "SuperSnes9x - About"
+msgstr "SuperSnes9x 기원 개발진 오픈소스 기여 저작권 기본 정보 확인"
 
 #: win32/wlanguage.h
 msgid "SuperSnes9x: DirectSound"
-msgstr "SuperSnes9x: DirectSound"
+msgstr "SuperSnes9x: 기본 DirectSound 연동 음향 장치 매핑 파이프라인 관리"
 
 #: win32/wlanguage.h
 msgid "SuperSnes9x: Information"
-msgstr "SuperSnes9x: Information"
+msgstr "SuperSnes9x: 실시간 런타임 작업 알림 알림 대화상자 알림"
 
 #: win32/wlanguage.h
 msgid "SuperSnes9x: NetPlay Error"
-msgstr "SuperSnes9x: NetPlay Error"
+msgstr "SuperSnes9x: 원격 참여 멀티플레이 통신망 패킷 소켓 에러 실패 오류"
 
 #: win32/wlanguage.h
 msgid "SuperSnes9x: Sound CPU Question"
-msgstr "SuperSnes9x: Sound CPU Question"
+msgstr "SuperSnes9x: 가상 오디오 독립 사운드 처리 장치 기동 싱크 오류 복구 질의"
 
 #: win32/wlanguage.h
 msgid "SuperSnes9x: WARNING!"
-msgstr "SuperSnes9x: WARNING!"
+msgstr "SuperSnes9x: 작업 수행 안전 주의 안내 치명적 예외 경고 메시지!"
 
 #: win32/rsrc/snes9x.rc
 msgid "Swap A and B"
-msgstr "Swap A and B"
+msgstr "물리 제어 입력 상 기본 페이스 단추 A 버튼과 B 버튼 위치 기능 ho ho 교환"
 
 #: win32/wlanguage.h
 msgid "Switch aspect Ratio:"
-msgstr "Switch aspect Ratio:"
+msgstr "화면 레이아웃 디스플레이 가로세로 폭 종횡비 강제 전환 단축키:"
 
 #: win32/wlanguage.h
 msgid "Switch controllers:"
-msgstr "Switch controllers:"
+msgstr "컨트롤러 물리 포트 하드웨어 매핑 일괄 위치 전환 단축키:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Sync By Reset"
-msgstr "Sync By Reset"
+msgstr "동기화 상 문제 시 룸 전체 기기를 리셋하여 강제 타임라인 싱크 복구"
 
 #: win32/rsrc/snes9x.rc
 msgid "Sync Sound"
-msgstr "Sync Sound"
+msgstr "가상 이미지 드로잉 프레임 레이트를 오디오 코어 출력 속도에 맞추어 강제 동기화 보정"
 
 #: win32/rsrc/snes9x.rc
 msgid "Sync Using Reset Game"
-msgstr "Sync Using Reset Game"
+msgstr "방에 새 클라이언트 유저 진입 시 룸 전체 기기 상태를 리셋하여 타임라인 무결성 동기화 유지"
 
 #: win32/rsrc/snes9x.rc
 msgid "Synchronize with sound core"
-msgstr "Synchronize with sound core"
+msgstr "인공 사운드 버퍼 전송률 주파수를 메인 음향 코어 연산 장치 타이밍과 완전 일치 동기화"
 
 #: win32/wlanguage.h
 msgid "TempTurbo"
-msgstr "TempTurbo"
+msgstr "단축키를 누르고 있는 순간만 작동하는 일시적 고속 터보 기능 배속 (TempTurbo)"
 
 #: win32/wlanguage.h
 msgid "Text file"
-msgstr "Text file"
+msgstr "표준 텍스트 도큐먼트 아카이브 파일 (.txt)"
 
 #: win32/wlanguage.h
 msgid "The movie file is corrupt or in the wrong format."
-msgstr "The movie file is corrupt or in the wrong format."
+msgstr "불러오려는 동영상 조작 매핑 파일 데이터 구조가 심각하게 깨졌거나 지원하지 않는 구형 포맷입니다."
 
 #: win32/wlanguage.h
 msgid "The movie file was not found or could not be opened."
-msgstr "The movie file was not found or could not be opened."
+msgstr "지정된 디렉토리 경로 위치에 해당 동영상 가공 기록 파일이 없거나 디스크 소유권 에러로 열 수 없습니다."
 
 #: win32/rsrc/snes9x.rc
 msgid "Tile Addr:"
-msgstr "Tile Addr:"
+msgstr "VRAM 비디오 메모리 타일 데이터 저장 기원 소스 번지 주소:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Tile Data:"
-msgstr "Tile Data:"
+msgstr "개별 타일이 품고 있는 도트 데이터 원천 리소스:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Tile Size:"
-msgstr "Tile Size:"
+msgstr "물리 그래픽 타일 격자 픽셀 픽셀 해상도 규격 크기:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Tile Viewer"
-msgstr "Tile Viewer"
+msgstr "실시간 수립 비디오 메모리 VRAM 그래픽 소스 타일 패턴 구조 추적 뷰어"
 
 #: win32/rsrc/snes9x.rc
 msgid "Tilemap"
-msgstr "Tilemap"
+msgstr "타일맵 배치 레이아웃"
 
 #: win32/rsrc/snes9x.rc
 msgid "Tilemap Viewer"
-msgstr "Tilemap Viewer"
+msgstr "실시간 수립 가상 배경 화면 렌더링용 그래픽 타일맵 인덱스 구조 추적 뷰어"
 
 #: win32/rsrc/snes9x.rc
 msgid "Tiles"
-msgstr "Tiles"
+msgstr "개별 도트 그래픽 타일 패턴 관리"
 
 #: win32/rsrc/snes9x.rc
 msgid "Timeout:"
-msgstr "Timeout:"
+msgstr "네트워크 통신 응답 패킷 유실 대기 시간 초과(타임아웃) 기준 수치:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Toggle Achievements Images"
-msgstr "Toggle Achievements Images"
+msgstr "화면 OSD UI 상 도전과제 달성 알림 전용 팝업 썸네일 이미지 가시성 토글 작동"
 
 #: win32/wlanguage.h
 msgid "Toggle backdrop:"
-msgstr "Toggle backdrop:"
+msgstr "단축키: 에뮬레이터 화면 밖 여백 영역 채우기용 백드롭 칼라 가시성 토글 제어:"
 
 #: win32/wlanguage.h
 msgid "Toggle cheats:"
-msgstr "Toggle cheats:"
+msgstr "단축키: 현재 활성화 목록에 수립된 일괄 치트 주소 변조 기능 실시간 토글 온오프 작동:"
 
 #: win32/wlanguage.h
 msgid "Toggle mute:"
-msgstr "Toggle mute:"
+msgstr "단축키: 시스템 최종 전송 메인 음향 볼륨 음소거 무음 모드 실시간 토글 전환 작동:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Transparency Effects"
-msgstr "Transparency Effects"
+msgstr "하드웨어 스프라이트/배경 간 알파 블렌딩 반투명 알파 투명도 특수 효과 처리 활성화"
 
 #: win32/wlanguage.h
 msgid "Transparency:"
-msgstr "Transparency:"
+msgstr "반투명 가공 알파 투명도 특수 효과 처리 강제 토글 작동 단축키:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Tree1"
-msgstr "Tree1"
+msgstr "트리 뷰 계층 레이아웃 컨트롤 1"
 
 #: win32/wlanguage.h
 msgid "Turbo"
-msgstr "터보"
+msgstr "고속 에뮬레이션 프레임 배속 터보 모드"
 
 #: win32/wlanguage.h
 msgid "Turbo A mode:"
-msgstr "Turbo A mode:"
+msgstr "패드 A 버튼 전용 고속 자동 연사 터보 주파수 제어 작동:"
 
 #: win32/wlanguage.h
 msgid "Turbo B mode:"
-msgstr "Turbo B mode:"
+msgstr "패드 B 버튼 전용 고속 자동 연사 터보 주파수 제어 작동:"
 
 #: win32/wlanguage.h
 msgid "Turbo Down mode:"
-msgstr "Turbo Down mode:"
+msgstr "방향키 아래 버튼 전용 고속 자동 연사 터보 주파수 제어 작동:"
 
 #: win32/wlanguage.h
 msgid "Turbo L mode:"
-msgstr "Turbo L mode:"
+msgstr "패드 L 트리거 단추 전용 고속 자동 연사 터보 주파수 제어 작동:"
 
 #: win32/wlanguage.h
 msgid "Turbo Left mode:"
-msgstr "Turbo Left mode:"
+msgstr "방향키 왼쪽 버튼 전용 고속 자동 연사 터보 주파수 제어 작동:"
 
 #: win32/wlanguage.h
 msgid "Turbo R mode:"
-msgstr "Turbo R mode:"
+msgstr "패드 R 트리거 단추 전용 고속 자동 연사 터보 주파수 제어 작동:"
 
 #: win32/wlanguage.h
 msgid "Turbo Right mode:"
-msgstr "Turbo Right mode:"
+msgstr "방향키 오른쪽 버튼 전용 고속 자동 연사 터보 주파수 제어 작동:"
 
 #: win32/wlanguage.h
 msgid "Turbo Select mode:"
-msgstr "Turbo Select mode:"
+msgstr "패드 SELECT 단추 전용 고속 자동 연사 터보 주파수 제어 작동:"
 
 #: win32/wlanguage.h
 msgid "Turbo Start mode:"
-msgstr "Turbo Start mode:"
+msgstr "패드 START 단추 전용 고속 자동 연사 터보 주파수 제어 작동:"
 
 #: win32/wlanguage.h
 msgid "Turbo Up mode:"
-msgstr "Turbo Up mode:"
+msgstr "방향키 위 버튼 전용 고속 자동 연사 터보 주파수 제어 작동:"
 
 #: win32/wlanguage.h
 msgid "Turbo X mode:"
-msgstr "Turbo X mode:"
+msgstr "패드 X 버튼 전용 고속 자동 연사 터보 주파수 제어 작동:"
 
 #: win32/wlanguage.h
 msgid "Turbo Y mode:"
-msgstr "Turbo Y mode:"
+msgstr "패드 Y 버튼 전용 고속 자동 연사 터보 주파수 제어 작동:"
 
 #: win32/wlanguage.h
 msgid "Uncompressed ROM files"
-msgstr "Uncompressed ROM files"
+msgstr "별도 아카이브 압축 처리가 가해지지 않은 순수 원본 형태의 ROM 이미지 바이너리 덤프 파일 파일"
 
 #: win32/wlanguage.h
 msgid "Unrecognized format."
-msgstr "Unrecognized format."
+msgstr "에뮬레이터 파싱 엔진이 식별할 수 없는 헤더를 가진 잘못된 물리 파일 파일 규격 구조 포맷입니다."
 
 #: win32/rsrc/snes9x.rc
 msgid "Unsigned (>=0)"
-msgstr "Unsigned (>=0)"
+msgstr "양수 전용 부호값 없는 무부호 데이터 구조 형식 (>=0)"
 
 #: win32/wlanguage.h
 msgid "Unsupported movie version."
-msgstr "Unsupported movie version."
+msgstr "가져오려는 비디오 동영상 기록 매핑 조작 규격의 메인 빌드 버전 사양이 현재 설치된 에뮬레이터 내부 포맷과 맞지 않습니다."
 
 #: win32/rsrc/snes9x.rc
 msgid "UP"
-msgstr "UP"
+msgstr "위"
 
 #: win32/rsrc/snes9x.rc
 msgid "UP LEFT"
-msgstr "UP LEFT"
+msgstr "상좌"
 
 #: win32/wlanguage.h
 msgid "Up Left"
-msgstr "Up Left"
+msgstr "상좌"
 
 #: win32/rsrc/snes9x.rc
 msgid "UP RIGHT"
-msgstr "UP RIGHT"
+msgstr "상우"
 
 #: win32/wlanguage.h
 msgid "Up Right"
-msgstr "Up Right"
+msgstr "상우"
 
 #: win32/rsrc/snes9x.rc
 msgid "Update"
-msgstr "Update"
+msgstr "업데이트 동기화 수정 진행"
 
 #: win32/rsrc/snes9x.rc
 msgid "Use CGRAM"
-msgstr "Use CGRAM"
+msgstr "컬러 팔레트 전용 비디오 메모리 CGRAM 실시간 동기화 사용"
 
 #: win32/rsrc/snes9x.rc
 msgid "Use DirectInput"
-msgstr "Use DirectInput"
+msgstr "가상 기기 물리 컨트롤러 매핑 매커니즘 상 구형 레거시 API 규격 DirectInput 연동 구조 사용"
 
 #: win32/rsrc/snes9x.rc
 msgid "Use Dual Justifiers"
-msgstr "Use Dual Justifiers"
+msgstr "2인용 슈팅 플레이 환경 수립을 위해 가상 코나미 Justifier 건 슈팅 하드웨어 장치 쌍방 사용"
 
 #: win32/rsrc/snes9x.rc
 msgid "Use Konami Justifier"
-msgstr "Use Konami Justifier"
+msgstr "코나미 규격 주변 장치 광선총 전용 저스티파이어(Justifier) 총기 입력 사용"
 
 #: win32/rsrc/snes9x.rc
 msgid "Use M.A.C.S. Rifle"
-msgstr "Use M.A.C.S. Rifle"
+msgstr "미군 사격 군사 훈련용 특수 전용 주변 장치 가상 M.A.C.S. 소총 라이플 총기 입력 사용"
 
 #: win32/rsrc/snes9x.rc
 msgid "Use Mouse in alternate port"
-msgstr "Use Mouse in alternate port"
+msgstr "플레이어 2인용 보조 입력 확장 포트에 가상 마우스 마우스 입력 할당 연동 사용"
 
 #: win32/rsrc/snes9x.rc
 msgid "Use Multitaps (8-player)"
-msgstr "Use Multitaps (8-player)"
+msgstr "더블 구조 멀티탭 멀티탭 부착 어댑터 가상 가동 구현 (최대 8인 동시 협동플레이 지원 사용)"
 
 #: win32/rsrc/snes9x.rc
 msgid "Use Shader"
-msgstr "Use Shader"
+msgstr "최종 화면 그래픽 출력을 위한 하드웨어 연동 필터 셰이더(Shader) 소스 사용"
 
 #: win32/rsrc/snes9x.rc
 msgid "Use SNES Joypad(s)"
-msgstr "Use SNES Joypad(s)"
+msgstr "표준 표준 규격 16단추 사양 가상 SNES 패드 인터페이스 입력 장치 연동 사용"
 
 #: win32/rsrc/snes9x.rc
 msgid "Use SNES Mouse"
-msgstr "Use SNES Mouse"
+msgstr "마리오 페인트 등 전용 특수 주변 기기 가상 SNES 표준 볼 마우스 마우스 입력 장치 사용"
 
 #: win32/rsrc/snes9x.rc
 msgid "Use Super Multitap (5-player)"
-msgstr "Use Super Multitap (5-player)"
+msgstr "표준 규격 허브 4방 확장 어댑터 슈퍼 멀티탭(Super Multitap) 가상 가동 구현 (최대 5인 플레이 사용)"
 
 #: win32/rsrc/snes9x.rc
 msgid "Use Super Scope"
-msgstr "Use Super Scope"
+msgstr "닌텐도 공식 바주카형 무선 광선총 주변 장치 가상 슈퍼 스코프(Super Scope) 총기 입력 연동 사용"
 
 #: win32/rsrc/snes9x.rc
 msgid "User Agent: SuperSnes9x/1.63"
-msgstr "User Agent: SuperSnes9x/1.63"
+msgstr "웹 서버 연동을 위한 전용 식별자 User Agent: SuperSnes9x/1.63"
 
 #: win32/rsrc/snes9x.rc
 msgid "Username:"
-msgstr "Username:"
+msgstr "로그인 연동 전용 유저 고유 ID 계정 명칭:"
 
 #: win32/wlanguage.h
 msgid "Value"
-msgstr "Value"
+msgstr "메모리 바이너리 주소 내부 속성 물리 수치 값"
 
 #: win32/rsrc/snes9x.rc
 msgid "Value (hex):"
-msgstr "Value (hex):"
+msgstr "수치 데이터 값 (16진수 코드 변환 양식 기준 지정):"
 
 #: win32/rsrc/snes9x.rc
 msgid "Video"
-msgstr "비디오"
+msgstr "비디오 디스플레이"
 
 #: win32/rsrc/snes9x.rc
 msgid "Video System:"
-msgstr "Video System:"
+msgstr "비디오 방송 출력 규격 방식 (NTSC / PAL 자동 동기화 제어):"
 
 #: win32/rsrc/snes9x.rc
 msgid "Volume"
-msgstr "Volume"
+msgstr "메인 사운드 마스터 마스터 볼륨 음량"
 
 #: win32/rsrc/snes9x.rc
 msgid "VSync"
-msgstr "VSync"
+msgstr "하드웨어 렌더링 프레임 찢어짐 정밀 억제 수직 동기화(VSync) 제어 작동"
 
 #: win32/wlanguage.h
 msgid "WARNING: You don't have the right ROM loaded!"
-msgstr "WARNING: You don't have the right ROM loaded!"
+msgstr "무결성 안전 주의 조치 경고 메시지: 현재 가상 메모리에 적재된 ROM 소스 파일 버전이 치트/동영상 데이터 파일 조건 사양과 일치하지 않습니다!"
 
 #: win32/rsrc/snes9x.rc
 msgid "Watch"
-msgstr "Watch"
+msgstr "실시간 지정 메모리 번지 데이터 변조 추적 실시간 모니터링 모니터"
 
 #: win32/rsrc/snes9x.rc
 msgid "Welcome Message (MOTD)"
-msgstr "Welcome Message (MOTD)"
+msgstr "방 접속 시 모든 가입 컴퓨터 화면에 자동으로 띄울 로비 오늘의 환영인사 웰컴 메시지(MOTD)"
 
 #: win32/rsrc/snes9x.rc
 msgid "Width:"
-msgstr "Width:"
+msgstr "가로 화면 폭 픽셀 해상도 크기 수치:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Window Size"
-msgstr "Window Size"
+msgstr "운영체제 데스크탑 바탕화면 상 에뮬레이터 윈도우 창 레이아웃 인터페이스 기본 크기"
 
 #: win32/rsrc/snes9x.rc
 msgid "WOG!"
-msgstr "WOG!"
+msgstr "WOG! 특수 조치 이벤트 처리 엔진 식별자"
 
 #: win32/wlanguage.h
 msgid "You have entered an out of range or invalid value for the new value"
-msgstr "You have entered an out of range or invalid value for the new value"
+msgstr "새로 대입하려는 수치 설정값의 범위 데이터 규격 구조가 주소 가용 한도 한계를 넘었거나 올바르지 않은 양식 코드 형식입니다."
 
 #: win32/wlanguage.h
 msgid "You need a different version of SuperSnes9x to play this movie."
-msgstr "You need a different version of SuperSnes9x to play this movie."
+msgstr "본 기계적 입력 동영상 매핑 매니페스트를 정상적으로 구동 구현하여 보려면 이 버전 말고 별도의 다른 특정 배포 버전 빌드의 SuperSnes9x 에뮬레이터 소프트웨어가 필요합니다."
 
 #: win32/rsrc/snes9x.rc
 msgid "Your password is only used to get an API token.\nIt is never stored."
-msgstr "Your password is only used to get an API token.\nIt is never stored."
+msgstr "입력하신 비밀번호는 오직 외부 웹 인증 서버 통신망을 통한 안전한 API 토큰 인증값을 받아오기 위한 일회성 용도로만 소비됩니다.\n로컬 하드 드라이브나 어떠한 내부 경로에도 절대 영구 보존 저장되지 않으므로 안심하십시오."
 
 #: win32/rsrc/snes9x.rc
 msgid "Zoom:"
-msgstr "Zoom:"
+msgstr "출력 프레임 돋보기 배율 그래픽 렌더링 줌(Zoom) 확대 처리 배율 수치:"
 
 # === Win32 strings (added by i18n/extract_strings.py) ===
 
 #: win32/CSpriteViewerDlg.cpp
 msgid "Export Selected to PNG"
-msgstr "Export Selected to PNG"
+msgstr "선택한 스프라이트 데이터 소스를 외부 무손실 알파 PNG 투명도 이미지 파일로 덤프 내보내기"
 
 #: win32/CGBSpriteViewerDlg.cpp
 msgid "Export to PNG"
-msgstr "Export to PNG"
+msgstr "알파 채널 포함 표준 무손실 이미지 PNG 파일 포맷으로 추출 내보내기"
 
 #: win32/CSpriteViewerDlg.cpp
 msgid "Show All Objects"
-msgstr "Show All Objects"
+msgstr "VRAM 테이블에 올라온 모든 실시간 그래픽 도트 오브젝트 요소 일괄 강제 화면에 표시"
 
 #: win32/CSpriteViewerDlg.cpp
 msgid "Show Only Selected Objects"
-msgstr "Show Only Selected Objects"
+msgstr "유저가 마우스로 테이블 마우스 클릭 지정하여 하이라이트한 해당 오브젝트 개체 요소들만 한정 화면에 명시 표시"
 
 #: win32/CSpriteViewerDlg.cpp
 msgid "Toggle Visibility"
-msgstr "Toggle Visibility"
+msgstr "선택한 개별 스프라이트 소스의 화면 출력 가시성 토글 실시간 온오프 처리 토글 변환 작동"
 
 #: win32/wsnes9x.cpp
 msgid "Translations"
-msgstr "Translations"
+msgstr "내장 다국어 번역 언어팩 데이터 모듈 관리"
 
 # === Win32 strings (added by i18n/extract_strings.py) ===
 
 #: win32/wsnes9x.cpp
 msgid "Language"
-msgstr "Language"
+msgstr "지역화 언어팩 현지화 설정"
 
 # === Win32 strings (added by i18n/extract_strings.py) ===
 
@@ -4315,363 +4367,363 @@ msgstr "48000 Hz"
 
 #: qt/src/DisplayPanel.ui
 msgid "4:3 - Classic display aspect"
-msgstr "4:3 - Classic display aspect"
+msgstr "4:3 - 브라운관 브라운관 TV 레트로 표준 클래식 고전 화면 비례 종횡비"
 
 #: qt/src/DisplayPanel.ui
 msgid "64:49 - NTSC aspect"
-msgstr "64:49 - NTSC aspect"
+msgstr "64:49 - NTSC 실기 아날로그 방송 신호 규격 전용 스퀘어 보정 스케일 비례 종횡비"
 
 #: qt/src/DisplayPanel.ui
 msgid "8:7 - Square pixels"
-msgstr "8:7 - Square pixels"
+msgstr "8:7 - 개별 도트 매핑 픽셀을 일대일 정사각형 구조 형태로 뿌리는 순수 원본 도트 픽셀 비례 종횡비"
 
 #: qt/src/EmulationPanel.ui
 msgid "<html><head/><body><p>A hack option. Only use this if you are running a third-party hack of a game that was designed for emulators and needs this.</p></body></html>"
-msgstr "<html><head/><body><p>A hack option. Only use this if you are running a third-party hack of a game that was designed for emulators and needs this.</p></body></html>"
+msgstr "<html><head/><body><p>에뮬레이션 하드웨어 구조 타이밍 변조 관련 비표준 특수 핵(Hack) 수동 제어 변경 옵션입니다. 오직 일반 실기 하드웨어 팩 기동 조건에서는 돌지 않고, PC용 giả lập 구동 구동 최적화 조건만을 기준 상정하여 특수 설계 제작된 비공식 개조 모드(Third-party Hack) 게임 롬 파일을 실행할 때, 해당 롬이 정상 기동을 위해 명시적으로 이 연산 타이밍 변조 기능을 요구하는 특별한 예외 조건 하에서만 선별적으로 켜서 사용하십시오.</p></body></html>"
 
 #: qt/src/EmulationPanel.ui
 msgid "<html><head/><body><p>Allows more sprites to be displayed on the screen in an attempt to remove flickering.</p><p>Some games take advantage of this limit and use it to hide glitches, and removing the limit will make those visible.</p></body></html>"
-msgstr "<html><head/><body><p>Allows more sprites to be displayed on the screen in an attempt to remove flickering.</p><p>Some games take advantage of this limit and use it to hide glitches, and removing the limit will make those visible.</p></body></html>"
+msgstr "<html><head/><body><p>실기 하드웨어가 가진 가로축당 최대 도트 오브젝트 렌더링 한계 한계를 강제 철폐하여, 화면에 한 번에 아주 많은 오브젝트가 몰릴 때 도트 그래픽 소스가 깜빡거리며 사려지던 고전 기기 특유의 스프라이트 점멸 깜빡임(Flickering) 가시 현상을 가상으로 억제 제거 처리합니다.</p><p>주의: 몇몇 고전 명작 타이틀의 경우, 개발 단계에서 실기 하드웨어의 이 한계 사양 한도를 역으로 역이용해 화면 밖 영역의 그래픽 깨짐 Glitch나 연산 오류 찌꺼기를 화면에서 숨기도록 트릭 설계를 가해둔 케이스가 존재합니다. 따라서 이 한계 철폐 옵션을 키면 숨겨져 있던 외곽 픽셀 깨짐 찌꺼기가 눈에 적나라하게 드러나 보일 수 있습니다.</p></body></html>"
 
 #: qt/src/EmulationPanel.ui
 msgid "<html><head/><body><p>Alternate sound filters can make the audio more crisp than the authentic gaussian filter.</p><p>The Cubic and Sinc filters provide the best improvement, but they can reveal some noise that would normally be hidden by the hardware.</p></body></html>"
-msgstr "<html><head/><body><p>Alternate sound filters can make the audio more crisp than the authentic gaussian filter.</p><p>The Cubic and Sinc filters provide the best improvement, but they can reveal some noise that would normally be hidden by the hardware.</p></body></html>"
+msgstr "<html><head/><body><p>실기 사운드 가공 하드웨어 칩셋이 기본 수행하던 흐릿하고 먹먹한 질감의 고증용 오리지널 가우시안(Gaussian) 로우패스 오디오 보간 필터 대신, 가상 에뮬레이션 출력을 현대 멀티미디어 스피커 성향에 맞춰 더욱 칼같이 고음역이 맑고 뚜렷하게 쏘아지도록 맑고 날카롭고 선명한 음질로 오디오 가공 형태를 선별 변경합니다.</p><p>특히 큐빅(Cubic) 및 싱크(Sinc) 주파수 보간 알고리즘 필터를 고르면 가장 하이파이 성향에 가까운 극적인 고음 음질 대역 개선 효과를 볼 수 있으나, 본래 실기 스피커 환경의 먹먹한 가우시안 보간 필터 아래에 숨겨져 부드럽게 감춰져 들리지 않아야 정상인 아날로그 8비트 기원 로우 소스 고유의 로우파이 잡음이나 음원 찌꺼기 잡음 거친 고주파 노이즈까지 날카롭게 증폭되어 귀에 거슬리게 유실 노출될 수도 있습니다.</p></body></html>"
 
 #: qt/src/EmulationPanel.ui
 msgid "<html><head/><body><p>Amount of memory to use to enable the rewind function. The amount of time each MB gets you varies based on the complexity of the game. Set to 0 to disable rewind altogether and use less processor time.</p></body></html>"
-msgstr "<html><head/><body><p>Amount of memory to use to enable the rewind function. The amount of time each MB gets you varies based on the complexity of the game. Set to 0 to disable rewind altogether and use less processor time.</p></body></html>"
+msgstr "<html><head/><body><p>인게임 플레이 중 수시로 시간을 뒤로 되돌려 컨트롤 실수를 임의 만회 복구할 수 있는 실시간 인게임 타임라인 되감기(Rewind) 기능을 작동하기 위해 시스템 메모리 RAM을 실시간 전용 캐시 스토리지 공간으로 임의 선점 할당할 최대 가용 메모리 한도 용량을 정합니다. 1MB 용량당 확보할 수 있는 뒤로 가기 되감기 가용 시간 한계 한도는 실행 중인 해당 게임 타이틀의 실시간 그래픽 갱신량 및 주소 연산 복잡도 규모에 따라 유동적으로 요동치며 변동합니다. 용량 수치를 아예 완전 0으로 세팅하면 실시간 타임라인 되감기 편의 기능 자체가 완전 비활성화 상태로 잠기며, 그와 동시에 되감기 백업 저장을 위해 지속 낭비되던 CPU 멀티스레드 연산 오버헤드 주기가 일절 완전 소멸하므로 호스트 PC의 CPU 프로세서 가용 자원 효율과 프레임 유지력을 소폭 소폭 더 향상시킬 수 있습니다.</p></body></html>"
 
 #: qt/src/EmulationPanel.ui
 msgid "<html><head/><body><p>Change the speed of the SuperFX chip. The SuperFX had some notoriously slow games, and this can be used to attempt to speed them up.</p></body></html>"
-msgstr "<html><head/><body><p>Change the speed of the SuperFX chip. The SuperFX had some notoriously slow games, and this can be used to attempt to speed them up.</p></body></html>"
+msgstr "<html><head/><body><p>게임 카트리지 기판 내부에 특수 부착되어 연산을 보조하던 하드웨어 가속용 3D 도트 벡터 렌더링 내장 연산 칩셋인 가상 슈퍼에프엑스(SuperFX) 보조 코어 장치의 에뮬레이션 주파수 기동 배속 속도를 인위적으로 오버클럭하여 끌어올립니다. 고전 실기 사양 당시 SuperFX 가속을 적극 도입했던 3D 렌더링 타이틀들의 경우 내장 보조 칩셋의 물리적인 한계 한도로 인해 인게임 구동 프레임 속도가 심각하게 낮고 답답하게 요동치며 끊기던 악명이 자자했는데, 이 가상 오버클럭 배속 수치 배율을 인위적으로 높여주면 게임 본연의 속도가 빨라지는 부작용 없이 순수 인게임 프레임 유기적 구동 유지력만을 극적으로 부드럽고 매끄럽게 인위적 가속 보정 처리하여 끊김 없는 아주 쾌적한 고프레임 프레임 렌더링으로 환경을 개선할 수 있습니다.</p></body></html>"
 
 #: qt/src/DisplayPanel.ui
 msgid "<html><head/><body><p>Choose one of <span style=\" font-style:italic;\">Qt Software, Vulkan, or OpenGL</span>.</p><p>Qt Software will use the CPU to draw the display. Vulkan or OpenGL will use that respective graphics interface to draw the display.</p></body></html>"
-msgstr "<html><head/><body><p>Choose one of <span style=\" font-style:italic;\">Qt Software, Vulkan, or OpenGL</span>.</p><p>Qt Software will use the CPU to draw the display. Vulkan or OpenGL will use that respective graphics interface to draw the display.</p></body></html>"
+msgstr "<html><head/><body><p>최종 게임 가상 화면을 유저 모니터에 드로잉 렌더링하기 위한 그래픽 백엔드 출력 API 아키텍처 양식을 <span style=\" font-style:italic;\">Qt Software(소프트웨어 렌더러), Vulkan, 또는 OpenGL</span> 중 하나를 명시적으로 택해 지정합니다.</p><p>Qt Software 환경을 고르면 하드웨어 가속 없이 순수 메인 컴퓨터 CPU 코어 프로세서의 연산 파워만으로 한 땀 한 땀 도트 프레임 화면을 계산해 출력 창을 구성하므로 호환성이 높은 반면 고배속 오버헤드가 크며, 하드웨어 렌더러 기반인 Vulkan 또는 OpenGL 백엔드를 택하면 호스트 그래픽 카드(GPU)의 물리 가속 하드웨어 연산 파이프라인 자원을 다이렉트로 사용하므로 셰이더 적용 및 고해상도 그래픽 출력이 매우 가볍고 부드럽고 매끄럽게 매끄럽게 처리됩니다.</p></body></html>"
 
 #: qt/src/ControllerPanel.ui
 msgid "<html><head/><body><p>Clear or swap sets of bindings between controllers.</p></body></html>"
-msgstr "<html><head/><body><p>Clear or swap sets of bindings between controllers.</p></body></html>"
+msgstr "<html><head/><body><p>현재 할당 지정 수립된 개별 컨트롤러용 물리 키 매핑 프로필 데이터를 일절 완전 초기화하여 지우거나, 서로 다른 포트 칸(예: 1번 플레이어 패드와 2번 플레이어 패드)의 키 매핑 세트 설정을 서로 한 번에 일괄 맞바꿔 ho ho 위치를 스왑 ho 교환합니다.</p></body></html>"
 
 #: qt/src/SoundPanel.ui
 msgid "<html><head/><body><p>Control how much the audio is stretched initially.</p><p><br/></p><p>Unless you know what you're doing, it's best to use the option above this to adjust it automatically.</p></body></html>"
-msgstr "<html><head/><body><p>Control how much the audio is stretched initially.</p><p><br/></p><p>Unless you know what you're doing, it's best to use the option above this to adjust it automatically.</p></body></html>"
+msgstr "<html><head/><body><p>가상 구동 프레임 유동에 대응해 사운드 주파수 파형을 인위적으로 미세 늘리거나 보정 가공할 초기 보정 연산 스트레칭 수치 가중치를 유저가 수동으로 강제 고정 미세 제어합니다.</p><p><br/></p><p>주의: 사운드 싱크 연산 메커니즘을 정밀하게 다룰 줄 아는 고급 고급 엔지니어 유저가 아닌 일반적인 환경의 사용자라면, 인위적인 수동 고정 설정 시 오디오 왜곡이 생기기 쉬우므로 바로 위에 위치한 '자동 입력 속도 조절 및 디스플레이 레이트 자동 추적 일치 매칭' 체크박스 기능을 켜서 giả lập 엔진이 자동으로 싱크를 잡도록 유도 가동하는 편이 최선입니다.</p></body></html>"
 
 #: qt/src/FoldersPanel.ui
 msgid "<html><head/><body><p>Determines where to look for optional BIOS / boot ROM files (Super Game Boy boot ROM, BS-X.bin, etc).</p><p><span style=\" font-style:italic;\">ROM Folder</span> looks next to the loaded ROM.</p><p><span style=\" font-style:italic;\">Config Folder</span> uses a \"bios\" subfolder of the config folder.</p><p><span style=\" font-style:italic;\">Custom</span> uses an explicit path (default: \"Bios\" relative to the working directory).</p></body></html>"
-msgstr "<html><head/><body><p>Determines where to look for optional BIOS / boot ROM files (Super Game Boy boot ROM, BS-X.bin, etc).</p><p><span style=\" font-style:italic;\">ROM Folder</span> looks next to the loaded ROM.</p><p><span style=\" font-style:italic;\">Config Folder</span> uses a \"bios\" subfolder of the config folder.</p><p><span style=\" font-style:italic;\">Custom</span> uses an explicit path (default: \"Bios\" relative to the working directory).</p></body></html>"
+msgstr "<html><head/><body><p>특수 부가 기능 구동 기동을 위해 에뮬레이터 코어가 내부 요구하는 비공식 혹은 주변 기기 전용 확장 시스템 부트 바이오스(BIOS) 및 특수 부트 롬 코드 소스 파일(예: 슈퍼 게임보이 전용 구동용 시스템 부트 바이오스 롬, 사텔라뷰 확장 위성 방송 하드웨어 구동용 BS-X.bin 펌웨어 이미지 파일 등)을 스캔하여 읽어 들일 기원 탐색 디렉토리 루트 위치를 정의합니다.</p><p><span style=\" font-style:italic;\">ROM Folder(ROM 폴더 기준)</span> 양식을 선택하면 현재 유저가 열어서 더블 클릭 구동한 해당 게임 롬 파일 파일이 저장되어 있는 바로 그 동일 물리 폴더 내부 이웃 공간에서 바이오스 소스를 동시 탐색합니다.</p><p><span style=\" font-style:italic;\">Config Folder(설정 폴더 기준)</span> 양식을 선택하면 현재 에뮬레이터 설정 찌꺼기 찌꺼기 conf 파일들이 상주 저장되어 있는 루트 설정 경로 내부에 자동 생성된 \"bios\"라는 명칭의 하위 폴더 서브 디렉토리 내부 공간만을 소스 탐색 경로로 선점 사용합니다.</p><p><span style=\" font-style:italic;\">Custom(사용자 정의 지정 경로)</span> 양식을 선택하면 유저가 탐색기 팝업 창을 통해 컴퓨터 하드 디스크 내의 특정 절대 폴더 경로를 수동으로 박아 고정 지정하여 해당 공간만을 독점 바이오스 탐색 스캔 경로로 선점 세팅합니다 (기본 디폴트 세팅 상태: 에뮬레이터 프로그램 실행 실행 워킹 디렉토리 내의 하위 \"Bios\" 명칭 폴더 연동).</p></body></html>"
 
 #: qt/src/FoldersPanel.ui
 msgid "<html><head/><body><p>Determines where to save these files.</p><p><span style=\" font-style:italic;\">ROM Folder</span> will always save to the same folder as the ROM.</p><p><span style=\" font-style:italic;\">Config Folder</span> will save to a subfolder of the config folder that is shown. If there is a snes9x.conf file next to your executable, Snes9x will operate in portable mode and the config folder will be the folder the executable is in.</p><p><span style=\" font-style:italic;\">Custom</span> allows you to specify exactly where to save these files.</p></body></html>"
-msgstr "<html><head/><body><p>Determines where to save these files.</p><p><span style=\" font-style:italic;\">ROM Folder</span> will always save to the same folder as the ROM.</p><p><span style=\" font-style:italic;\">Config Folder</span> will save to a subfolder of the config folder that is shown. If there is a snes9x.conf file next to your executable, Snes9x will operate in portable mode and the config folder will be the folder the executable is in.</p><p><span style=\" font-style:italic;\">Custom</span> allows you to specify exactly where to save these files.</p></body></html>"
+msgstr "<html><head/><body><p>게임 구동 중 부가 수립되는 유저측 핵심 데이터 파생 파일(강제 세이브 상태 스냅샷 파일, 치트 설정 텍스트 파일, 카트리지 내부 배터리 세이브 인게임 저장 데이터 파일 등)을 영구 보존 저장하여 출력 보존할 최종 목적지 물리 디렉토리 경로 위치 유형을 결정 수립합니다.</p><p><span style=\" font-style:italic;\">ROM Folder(ROM 폴더 기준)</span> 양식을 사용 시, 게임 플레이어가 열어서 기동한 해당 게임 소스 롬 파일이 상주하는 하드 디스크 내의 바로 그 폴더 공간 내부에 파생 데이터 파일들을 동시 이웃 생성하여 영구 적재 저장합니다.</p><p><span style=\" font-style:italic;\">Config Folder(설정 폴더 기준)</span> 양식을 사용 시, 하단 안내 칸에 명시 표기된 에뮬레이터 중앙 관리 설정 디렉토리의 내부 하위 파생 지정 디렉토리 영역으로 데이터들을 일괄 격리 영구 적재 저장합니다. 참고로, 만약 현재 에뮬레이터 실행 실행 바이너리 실행파일(.exe)이 상주하는 바로 그 동일 동일 폴더 최루트 공간에 유저가 임의 수립한 공백 conf 설정 파일인 'snes9x.conf' 파일이 물리 상주 포착되는 경우, Snes9x 에뮬레이터는 윈도우 시스템 레지스트리를 건드리지 않는 단독 di động 가동 체제인 '포터블(Portable) 가동 모드'로 자동 완전 강제 판정 전환되어 작동하므로, 이때의 센트럴 중앙 설정 폴더 루트 위치 역시 실행파일이 상주하는 바로 그 로컬 실행 폴더 공간 자체로 완전 흡수 세팅됩니다.</p><p><span style=\" font-style:italic;\">Custom(사용자 정의 지정 경로)</span> 옵션을 고르면, 유저가 경로 선택 창을 통해 사용자의 물리 하드 디스크 스토리지 내의 완전 별개의 특정 독립 폴더 공간(예: 클라우드 동기화 드라이브 내의 세이브 전용 경로 등)을 수동 지정하여 오직 그 독립 독립 공간으로만 세이브 파생 파일들이 일괄 아웃풋 적재되도록 완전 독점 세팅 환경을 부여할 수 있습니다.</p></body></html>"
 
 #: qt/src/SoundPanel.ui
 msgid "<html><head/><body><p>Erases all emulated sound output and just sends out silence.</p></body></html>"
-msgstr "<html><head/><body><p>Erases all emulated sound output and just sends out silence.</p></body></html>"
+msgstr "<html><head/><body><p>가상 에뮬레이터 기기 상에서 내부 생성되어 흘러나오는 모든 유효 가상 오디오 음향 신호 주파수 스트림 출력을 소프트웨어 가공 단계에서 일절 일괄 지워 소멸 처리하고, 최종 사운드 장치 파이프라인에는 완전 무음 데이터(공백 오디오 신호) 스트림만을 강제 지속 주입 출력하여 완전한 침묵 무음 적막 상태 모드로 환경을 강제 세팅합니다.</p></body></html>"
 
 #: qt/src/SoundPanel.ui
 msgid "<html><head/><body><p>If after everything, you're still getting pops and crackles in audio, you can increase this value. However, it may cause noticeable distortion.</p></body></html>"
-msgstr "<html><head/><body><p>If after everything, you're still getting pops and crackles in audio, you can increase this value. However, it may cause noticeable distortion.</p></body></html>"
+msgstr "<html><head/><body><p>만약 상단에 마련된 사운드 버퍼 유기적 동기화 기능 및 하드웨어 가속 매칭 레이트 연동 설정을 사용자의 PC 환경에 맞추어 완전하게 다 잡아 보았음에도 불구하고, 유저 컴퓨터 메인 보드 사운드 칩셋 고유의 버퍼 유실 오버헤드나 프레임 미세 동기화 불일치 요인 찌꺼기로 인해 오디오가 미세하게 찢어지며 툭툭 거슬리게 튀는 아날로그 노이즈 찌꺼기 팝음 현상이나 지직거리는 r r 잔류 잡음(Pops and Crackles) 증상이 여전히 완전 박멸 복구되지 않고 잔존 포착되는 상황이라면, 이 버퍼 유실 대비 마진 한도 수치 임계값을 인위적으로 추가 상향 조정하여 사운드 주파수 신호 유실을 추가 억제 예방할 수 있습니다. 단, 이 보정 수치 임계값을 과도하게 무리하게 높게 세팅해 버릴 경우 버퍼 파형 연산 마진이 무리하게 늘어지며 최종 스피커로 나가는 소리 질감 자체가 인위적으로 둔하게 왜곡되어 늘어지거나 이질적인 변조 음질 왜곡 왜곡(Noticeable Distortion) 증상이 귀에 뚜렷하게 인지될 정도로 유실 발생할 수 있는 명확한 반동 부작용 반동이 뒤따릅니다.</p></body></html>"
 
 #: qt/src/SoundPanel.ui
 msgid "<html><head/><body><p>Master output volume during normal play. Moving this also drags the per-source SGB sliders so they stay in step.</p></body></html>"
-msgstr "<html><head/><body><p>Master output volume during normal play. Moving this also drags the per-source SGB sliders so they stay in step.</p></body></html>"
+msgstr "<html><head/><body><p>인게임 플레이 및 에뮬레이터 에뮬레이션 가동이 평온하게 정상 가속 없이 1배속 등 표준 속도로 구동 연산되는 일반 정상 플레이(Normal Play) 상태 환경 하에서 시스템 스피커 하드웨어 장치 단으로 최종 송신 아웃풋할 최종 중앙 마스터 음향 볼륨(Master Volume) 총량 크기를 일괄 조절합니다. 이 슬라이더 눈금 핸들을 마우스 클릭 드래그하여 조절 위치를 변경 이동하면, 하단 영역에 특수 마련된 각 개별 사운드 소스 장치 대역별 소스 입력 채널용 슈퍼 게임보이(SGB) 전용 개별 볼륨 세부 슬라이더 눈금들까지 메인 가중치 비율에 발맞추어 실시간으로 유기적으로 연동 연동되어 자석처럼 함께 드래그 이동하므로, 메인 음량 밸런스가 흐트러지지 않고 총량 볼륨 비율 단계 스텝이 완전 동일 보정 규격으로 일정하게 유지됩니다.</p></body></html>"
 
 #: qt/src/SoundPanel.ui
 msgid "<html><head/><body><p>Master output volume during turbo and rewind.</p></body></html>"
-msgstr "<html><head/><body><p>Master output volume during turbo and rewind.</p></body></html>"
+msgstr "<html><head/><body><p>단축키를 눌러 가상 기기 구동 연산 배속을 인위적으로 수 배 이상 폭발적으로 폭증시키는 고속 터보(Turbo) 가속 상태 타이밍이나, 반대로 플레이 타임라인을 실시간 뒤로 역재생하여 감아 올리는 실시간 되감기(Rewind) 편의 편의 기능이 작동 중인 특수 특수 상황 타이밍 환경 하에서 스피커 장치 파이프라인으로 쏘아 보낼 최종 특수 볼륨 총량 크기를 제어 조절합니다.</p></body></html>"
 
 #: qt/src/SoundPanel.ui
 msgid "<html><head/><body><p>Mutes sound when using the turbo and rewind functions, which might be annoying to some users.</p></body></html>"
-msgstr "<html><head/><body><p>Mutes sound when using the turbo and rewind functions, which might be annoying to some users.</p></body></html>"
+msgstr "<html><head/><body><p>에뮬레이터 연산 배속을 폭발적으로 폭증시키는 고속 터보 배속 구동 타이밍이나 플레이 타임라인을 뒤로 실시간 역재생하는 되감기 기능 가동 순간에, 주파수 연산 속도 폭증 반동으로 인해 스피커 장치로 사운드가 극도로 괴상하게 찢어지며 초고속 초고음으로 찢어지듯 앵앵거리며 쏘아지는 기괴한 배속 변조 소음이 출력되는 현상을 원천 방지하기 위해, 해당 되감기 및 터보 편의 기능이 활성화되어 유지되는 그 런타임 순간 동안만 오디오 드라이버 신호를 실시간 음소거(Mute) 차단 처리합니다. 고속 소음 변조 소리가 귀에 매우 거슬리고 스트레스를 유발한다고 느끼는 대다수 일반 게임 사용자 유저들의 청각 피로 억제 환경을 위해 체크 체크해 둘 것이 크게 권장되는 옵션 편의 기능입니다.</p></body></html>"
 
 #: qt/src/DisplayPanel.ui
 msgid "<html><head/><body><p>On classic CRT televisions, some areas of the screen were covered by the bezel, so weren't used often in games. This option allows you to show that area, but it will usually be just black bars.</p></body></html>"
-msgstr "<html><head/><body><p>On classic CRT televisions, some areas of the screen were covered by the bezel, so weren't used often in games. This option allows you to show that area, but it will usually be just black bars.</p></body></html>"
+msgstr "<html><head/><body><p>고전 레트로 아날로그 CRT 브라운관 뚱뚱이 텔레비전 모니터 환경 사양의 경우, 브라운관 유리관 외곽 물리 베젤 두께 구조물 마감으로 인해 가사 화면 영역 가장자리 외곽 스캔라인 일부 부위가 물리적으로 가려져 숨겨지는 '오버스캔(Overscan)' 특성 규격을 지니고 있었습니다. 이로 인해 과거 대다수 고전 게임 타이틀 개발사 제작진들은 어차피 실기 거실 TV 화면에서는 베젤에 파묻혀 유저 눈에 보이지 않을 가장자리 외곽 가사 화면 영역 경계선 부위에는 핵심 UI나 게임 그래픽 요소를 배치하지 않고 여백 비워두는 설계 설계를 취했습니다. 본 옵션을 체크 활성화하면 과거 브라운관 TV 베젤 속에 파묻혀 고증 상 숨겨져 보이지 않던 가장자리 외곽 오버스캔 히든 영역까지 숨김 없이 완전 강제 확장 렌더링하여 현대 모니터 창 화면 화면 상에 남김 없이 적나라하게 노출 명시해 출력합니다. 단, 대다수 일반적인 게임들의 경우 오버스캔 활성화 시 해당 가장자리 영역은 아무런 그래픽 소스 데이터가 채워져 있지 않은 단순 공백 무의미한 검은색 여백 줄 레터박스(Black Bars) 형태로만 무의미하게 공간을 차지해 노출되는 경우가 지배적입니다.</p></body></html>"
 
 #: qt/src/EmulationPanel.ui
 msgid "<html><head/><body><p>Original controllers may have had a small pin in the dpad preventing left and right or up and down from being pressed at the same time. This will allow that behavior if you're using a keyboard or device that can press those buttons at the same time. Some games will glitch when this is done.</p></body></html>"
-msgstr "<html><head/><body><p>Original controllers may have had a small pin in the dpad preventing left and right or up and down from being pressed at the same time. This will allow that behavior if you're using a keyboard or device that can press those buttons at the same time. Some games will glitch when this is done.</p></body></html>"
+msgstr "<html><head/><body><p>과거 실기 공장 출하 정품 오리지널 하드웨어 패드 장치들의 경우, 십자 방향키(D-pad) 부품 플라스틱 사출 내부 정중앙 축 구조물 밑바닥에 물리적 작은 고정 핀 물리 핀 기둥 구조가 설계 박혀 있었습니다. 이 내부 지지 핀 기둥 설계 고증 사양 덕분에 유저가 물리 패드를 손으로 무리하게 짓눌러도 십자키 구조 상 '좌 버튼과 우 버튼 동시 입력' 또는 '위 버튼과 아래 버튼 동시 입력'과 같은 물리적 반대 방향 동시 누름 조작 행위 자체가 원천 불가능하도록 하드웨어 레벨에서 안전 장치로 격리 예방되어 있었습니다. 하지만 현대 PC 환경에서 키보드 자판의 독립된 방향키 배열 조합으로 조작 매핑을 하거나 양 축이 분리된 최신 외부 입력 패드 장치를 물려 조작 시 물리적 제약이 해제되므로 시스템 상 반대 방향 키가 동시에 입력 버퍼로 들어가 연산되는 상황이 발생 가능합니다. 본 옵션을 체크 활성화 상태로 두면 키보드 등 장치 자판 자판 입력을 통해 반대 방향 키가 완전 동시 동시 유입 포착되는 버퍼 조건까지 가상 기기 조작 코어 장치가 필터링 없이 그대로 실기 신호인 것처럼 기기 가상 버퍼 연산에 주입 조작 전달하도록 허용합니다. 주의: 과거 정품 십자키 패드 환경만을 상정 전제해 설계된 대다수 고전 명작 타이틀 게임들의 코어 주소 연산 로직 상, 이 반대 방향 동시 입력 조작 신호가 비정상적으로 유입되면 캐릭터 위치 계산 주소나 물리 엔진 스프라이트 좌표 연산이 꼬여 화면 밖으로 튕겨 나가거나 세이브가 깨지는 등 치명적인 구동 크래시 버그 그래픽 깨짐(Glitch) 이질 현상 변조 버그 오작동 오작동을 유발하기 쉽습니다.</p></body></html>"
 
 #: qt/src/EmulationPanel.ui
 msgid "<html><head/><body><p>Override the frame rate of the emulated system. This can be used to run slightly faster or slower than usual, or to match the timer to your exact refresh rate.</p><p><br/></p><p>Set this to 0 to use whatever the emulated system uses.</p></body></html>"
-msgstr "<html><head/><body><p>Override the frame rate of the emulated system. This can be used to run slightly faster or slower than usual, or to match the timer to your exact refresh rate.</p><p><br/></p><p>Set this to 0 to use whatever the emulated system uses.</p></body></html>"
+msgstr "<html><head/><body><p>가상 에뮬레이션 구동 가동의 심장 주기인 에뮬레이터 코어의 초당 기본 타겟 프레임 레이트(Frame Rate) 제한 기준 수치 사양을 사용자가 인위적으로 수동 강제 재설정하여 덮어쓰기 오버라이드(Override) 제어합니다. 이 수동 오버라이드 설정을 통해 인게임 구동 렌더링 구동 주기를 실기 규격보다 인위적으로 미세하게 조금 더 빠르게 가속 가동하거나 혹은 조금 더 느리게 감속 다운시켜 플레이 페이스를 손보거나, 사용자가 상주 중인 윈도우 바탕화면 모니터 화면 주사율 주사율 환경 타이밍 수치와 에뮬레이터 인터벌 타이머 주기를 소수점 대역까지 완전 1대1로 정밀 정밀 일치 매칭 일치시켜 화면 찢어짐이나 미세 미세 끊김 요소를 최소화로 억제 억제 보정하는 용도로 응용 선점 선점할 수 있습니다.</p><p><br/></p><p>디폴트 셋값 안내: 입력 수치 칸을 완전히 공백 공백 '0' 수치 수치로 세팅 고정해 두면, 인위적인 강제 개입 오버라이드 제어가 일절 비활성화 소멸 처리되며, 가상 giả lập 시스템 코어는 구동하는 해당 게임 소스 타이틀 본연의 원천 국가별 방송 소스 포맷 규격(NTSC의 경우 초당 60프레임 준수 / PAL의 경우 초당 50프레임 준수 사양) 기준 주기를 완전 자동 자동 완전 자동 추적 추적하여 표준 표준 연산 주기로 원천 환원 자동 작동합니다.</p></body></html>"
 
 #: qt/src/SoundPanel.ui
 msgid "<html><head/><body><p>Selects the driver to output sound with.</p><p><span style=\" font-style:italic;\">Cubeb: </span>The recommended option.</p><p><span style=\" font-style:italic;\">SDL</span>: If Cubeb doesn't work.</p><p><span style=\" font-style:italic;\">PulseAudio:</span> Unix only. May have less latency.</p></body></html>"
-msgstr "<html><head/><body><p>Selects the driver to output sound with.</p><p><span style=\" font-style:italic;\">Cubeb: </span>The recommended option.</p><p><span style=\" font-style:italic;\">SDL</span>: If Cubeb doesn't work.</p><p><span style=\" font-style:italic;\">PulseAudio:</span> Unix only. May have less latency.</p></body></html>"
+msgstr "<html><head/><body><p>호스트 운영체제 오디오 제어 커널 단과 giả lập 사운드 출력 신호 파이프라인을 중개 연동할 메인 오디오 가공 드라이버 백엔드 API 아키텍처 규격을 선별 지정합니다.</p><p><span style=\" font-style:italic;\">Cubeb: </span>가장 최신 최신 크로스 플랫폼 최적화 지향형 드라이버 양식으로, 딜레이 및 싱크 버퍼 버퍼 유실 오버헤드가 적어 giả lập 개발진이 전폭 독점 권장 크로스 권장 권장하는 최선 최선의 기본 디폴트 셋값 옵션입니다.</p><p><span style=\" font-style:italic;\">SDL</span>: 멀티미디어 표준 레거시 라이브러리 인터페이스 드라이버로, 만약 사용자의 특수한 사운드 카드 하드웨어 충돌로 인해 메인 추천 사양인 Cubeb 모드에서 사운드 출력이 완전히 안 되거나 사운드가 찢어지는 예외 상황 발생 시 우회 dự phòng 대체용 수단 옵션으로 쓰기 적합합니다.</p><p><span style=\" font-style:italic;\">PulseAudio:</span> 오직 유닉스/리눅스(Unix/Linux) 계열 운영체제 환경 하에서만 가시 노출 및 선점 선택이 가능한 유닉스 전용 커널 파이프라인 드라이버 백엔드 아키텍처로, 해당 환경 하에서는 시스템에 최적화된 극도로 극도로 낮은 사운드 인풋 아웃풋 반응 반응 대기 시간 레이턴시 제어 효율 효율을 달성할 수 있습니다.</p></body></html>"
 
 #: qt/src/FoldersPanel.ui
 msgid "<html><head/><body><p>Setting this to anything other than 0 will save the SRAM (internal game saves) file regularly. If it is set to to 0, it will only save when exiting Snes9x or changing games, and you will lose any progress since the last save if your device crashes.</p></body></html>"
-msgstr "<html><head/><body><p>Setting this to anything other than 0 will save the SRAM (internal game saves) file regularly. If it is set to to 0, it will only save when exiting Snes9x or changing games, and you will lose any progress since the last save if your device crashes.</p></body></html>"
+msgstr "<html><head/><body><p>이 타이머 주기 설정 수치 값을 완전 공백 0이 아닌 다른 특정 양수 초 단위 시간 수치로 세팅 박아 고정해 두면, giả lập 프로그램 엔진은 게임 플레이어가 플레이 도중 게임 내부 인게임 세이브 메뉴를 통해 진행한 SRAM 저장 데이터 내용 결과물을 유저가 지정 지정한 해당 주기 시간(초 단위) 타이머 루프 마다 호스트 PC 하드 디스크의 실제 물리 물리 SRAM 파일 파일(.srm) 저장소 내부 내부 공간 공간으로 강제 자동 물리 동기화 플러시(Flush) 백업 저장을 실시간 자동 수행합니다. 만약 이 수치 세팅 값을 아예 완전 공백 '0' 수치로 고정 비활성화 상태로 잠가 둘 경우, 인게임 메뉴 세이브 데이터는 오직 유저가 구동 중이던 SuperSnes9x 에뮬레이터 프로그램 창을 완전 상단 X 버튼을 눌러 안전 안전 종료 하거나 혹은 다른 게임 롬 파일 파일로 교체 교체하여 가상 가상 기기 가동 인스턴스가 완전히 닫히며 플러시를 날리는 그 최종 마감 타이밍 순간에만 딱 한 번 단독으로 실제 하드 디스크 물리 파일 파일로 변환 저장 백업 플러시가 수행됩니다. 따라서 만약 이 타이머 백업 백업 설정 수치를 0으로 방치한 세팅 환경 하에서 게임을 플레이하다가, 갑작스러운 호스트 PC 본체 낙뢰 정전 사고나 운영체제 블루스크린 크래시 에러 혹은 giả lập 프로그램 강제 비정상 예외 다운 크래시 먹통 다운 다운 현상 등의 돌발 돌발 악재 재앙 상황이 닥쳐서 가상 인스턴스가 플러시 마감을 치지 못하고 프로세스가 비정상 강제 공중 소멸 폭파되어 버리는 경우, 직전 인게임 상에서 백날 열심히 세이브 메뉴를 누르고 플레이했던 모든 인게임 저장 기록 진행도 진행도 결과물이 실제 하드 드라이브 파일 파일로 미처 써지지 못하고 공중 분해 소멸 유실되어 버리는 치명적 예외 반동 치명적 낭패를 겪게 됩니다.</p></body></html>"
 
 #: qt/src/SoundPanel.ui
 msgid "<html><head/><body><p>SGB BIOS mix: GB channel volume. Active in SGB1/SGB2 BIOS mode; in BIOS-less mode this mirrors the Regular master, which is what actually scales GB output.</p></body></html>"
-msgstr "<html><head/><body><p>SGB BIOS mix: GB channel volume. Active in SGB1/SGB2 BIOS mode; in BIOS-less mode this mirrors the Regular master, which is what actually scales GB output.</p></body></html>"
+msgstr "<html><head/><body><p>슈퍼 게임보이(SGB) 가상 에뮬레이션 가동 시 소비되는 부가 제어 하위 볼륨 채널 설정으로, 오리지널 게임보이(GB) 코어 음향 하드웨어 칩셋 소스 소스로부터 흘러나오는 가상 음향 채널 오디오 출력 volume 총량 크기를 전담 미세 제어합니다. 오직 사용자가 공식 SGB1 또는 SGB2 규격용 시스템 정품 BIOS 바이오스 이미지 덤프 파일 소스를 에뮬레이터에 연동 물리 구동한 순수 정품 BIOS 로딩 상태 모드 하에서만 이 슬라이더 눈금 제어 권한이 활성화되어 실시간 연동 작동하며, 만약 별도의 외부 외부 바이오스 연동 파일 없이 에뮬레이터 자체 내장 가상 에뮬레이션 코어 로직만으로 작동하는 '바이오스리스(BIOS-less) 구동 상태 모드' 환경 하에서는 본 슬라이더 슬라이더 제어 제어 링크는 실질적 연동 권한을 상실하고, 상단 영역의 메인 일반 마스터 볼륨(Regular Master Volume) 총량 수치 비중 가중치 설정을 거울처럼 똑같이 미러링 추적하는 종속 종속 상태 링크로만 제한 고정되어 작동합니다 (실질적으로 가상 GB 출력 비율 배율을 스케일링하는 주체는 메인 마스터 볼륨으로 통합 단일화 작동하기 때문).</p></body></html>"
 
 #: qt/src/SoundPanel.ui
 msgid "<html><head/><body><p>SGB BIOS mix: SPC channel volume. Only active in SGB1/SGB2 BIOS mode — BIOS-less GB playback discards SPC output.</p></body></html>"
-msgstr "<html><head/><body><p>SGB BIOS mix: SPC channel volume. Only active in SGB1/SGB2 BIOS mode — BIOS-less GB playback discards SPC output.</p></body></html>"
+msgstr "<html><head/><body><p>슈퍼 게임보이(SGB) 가상 기기 기동 연산 시 종속 활용되는 하위 오디오 채널 볼륨 설정으로, SNES 기기 기반의 메인 오디오 처리 가속 가속 보조 칩셋 코어 장치인 가상 SPC 오디오 처리 장치 장치 대역 채널 단단에서 흘러나오는 사운드 volume 총량 크기만을 독점 미세 제어 조절합니다. 본 세부 오디오 채널 제어 슬라이더 눈금 기능은 오직 사용자가 공식 SGB1 혹은 SGB2용 하드웨어 정품 시스템 BIOS 바이오스 덤프 바이너리 파일 소스를 에뮬레이터에 연결 구동한 상태인 '정품 BIOS 로딩 가동 모드' 조건 하에서만 독립 독립 활성화되어 실시간 기능합니다. 만약 별도의 외부 바이오스 바이너리 파일 없이 에뮬레이터 자체 코드 로직으로만 기동하는 '바이오스리스(BIOS-less) 기동 모드' 상태 하에서 게임보이 게임 사운드를 재생 처리할 시에는, SPC 장치 처리 출력단 자체가 원천 생략 무시되므로 본 슬라이더 제어 제어 기능 역시 일절 무의미하게 연동 차단 생략 스킵 처리됩니다.</p></body></html>"
 
 #: qt/src/EmulationPanel.ui
 msgid "<html><head/><body><p>Skips rendering the specified amount of frames when using the fast-forward function. The higher this amount, the faster it goes.</p></body></html>"
-msgstr "<html><head/><body><p>Skips rendering the specified amount of frames when using the fast-forward function. The higher this amount, the faster it goes.</p></body></html>"
+msgstr "<html><head/><body><p>단축키를 눌러 가상 기기 기동 페이스를 인위적으로 폭발적으로 가속시키는 고속 빨리 감기(Fast-forward) 기능이 지속 홀드되어 기동 중인 그 가속 런타임 타이밍 순간에, 화면 그래픽 출력을 위한 드로잉 프레임 렌더링(Rendering) 처리를 실시간 몇 프레임 주기마다 통째로 생략 건너뛰어 스킵(Skip)해 버릴 것인지 그 고정 스킵 프레임 수치 한도를 결정 결정합니다. 이 건너뛰기 프레임 스킵 설정 수치 한계치를 더 높게 인위적으로 크게 박아 고정할수록 비디오 그래픽 카드와 CPU 프로세서가 화면을 그리느라 소비하던 연산 오버헤드 낭비 주기가 기하급수적으로 대폭 생략 소멸하므로, 결과적으로 빨리 감기 가속 작동 페이스의 한계 가속 배속 속도가 수 배 이상 폭발적으로 대폭 폭증하여 훨씬 쾌적하고 신속하게 고속 가속 빨리감기 스킵 연산을 수행할 수 있게 해줍니다.</p></body></html>"
 
 #: qt/src/SoundPanel.ui
 msgid "<html><head/><body><p>The buffer size for the emulator side of sound playback. Ideally, it should be about two frames worth of audio, or about 32ms at 60Hz. Latency will be half this value.</p></body></html>"
-msgstr "<html><head/><body><p>The buffer size for the emulator side of sound playback. Ideally, it should be about two frames worth of audio, or about 32ms at 60Hz. Latency will be half this value.</p></body></html>"
+msgstr "<html><head/><body><p>가상 에뮬레이터 giả lập 코어 장치가 내부 오디오 신호 소스를 연산 처리해 출력단에 임시 적재할 가상 오디오 믹서 전용 사운드 버퍼(Sound Buffer) 용량 크기 한도를 정합니다. 가장 고증 고증에 부합하고 안정적인 이상적인 버퍼 용량 셋값 조건은 일반적인 초당 60Hz 구동 환경 기준 상 대략 화면 프레임 레이트 2프레임 분량에 수렴하는 시간 가중치 규모인 '약 32ms' 내외 수준 대역 공간입니다. 유저가 체감할 실제 물리 물리 컨트롤 반응 버튼 입력 대비 최종 스피커 사운드 사운드 출력 도달 사이의 메인 오디오 반응 대기 시간(레이턴시/Latency) 효율 수치는 기본적으로 이 버퍼 세팅 용량 수치 값의 딱 절반에 해당하는 절반 레이턴시 비율 속도로 수렴 수렴해 결정 제어됩니다.</p></html>"
 
 #: qt/src/ControllerPanel.ui
 msgid "<html><head/><body><p>The enumerated controller as seen by the SNES. Controller 1 will always be quot;Player 1quot; and so on, no matter what device is assigned to the controller ports.</p></body></html>"
-msgstr "<html><head/><body><p>The enumerated controller as seen by the SNES. Controller 1 will always be quot;Player 1quot; and so on, no matter what device is assigned to the controller ports.</p></body></html>"
+msgstr "<html><head/><body><p>가상 기기 가상 SNES 마더보드 측 아키텍처가 인식하는 논리적인 가상 입력 포트 식별 번호 순서 배열입니다. 외부 가상 혹은 물리 입력 단자에 실제 어떠한 유무선 패드 장치나 키보드 물리 자판 장치가 g g g 할당 할당 연동되어 물려있는지 그 물리 하드웨어 할당 소스 조건과 일절 아무런 상관없이, giả lập 기기 마더보드 단 상의 가상 컨트롤러 1번 포트 칸은 언제나 고정 불변하게 시스템 상 독점적인 &quot;플레이어 1번(유저 1P 담당 계정)&quot; 조작 신호 권한 신호 단자로만 독점 판정 판정되며 이후 포트 배열 순서 역시 순차적으로 완전 동일 동일 고정 논리로 종속 제어됩니다.</p></body></html>"
 
 #: qt/src/EmulationPanel.ui
 msgid "<html><head/><body><p>The number of frames between each rewind snapshot. More frames mean rewind can go back further and will rewind faster. </p></body></html>"
-msgstr "<html><head/><body><p>The number of frames between each rewind snapshot. More frames mean rewind can go back further and will rewind faster. </p></body></html>"
+msgstr "<html><head/><body><p>실시간 인게임 타임라인 되감기 편의 기능을 위해 뒤로 가기용 가상 스냅샷 백업 데이터를 생성 적재할 프레임 주기간의 간격 폭(Granularity) 수치 한도를 결정 조절합니다. 백업 스냅샷 스냅샷 간의 프레임 간격 수치를 더 넓고 크게 인위적으로 벌려 지정해 둘수록 동일 제한된 한도 메모리 용량 캐시 스토리지 환경 하에서도 시간대별 데이터 낭비가 억제되므로, 결과적으로 타임라인을 과거 시점으로 훨씬 더 멀리 아득한 긴 시간 전 시점 상태까지 아득하게 거슬러 올라가 뒤로 되돌릴 수 있게 되며, 그와 동시에 되감기 기능 버튼을 홀드하고 있을 때 과거 타임라인으로 뒤로 감기는 실시간 역재생 백업 속도 배속 자체도 훨씬 성큼성큼 신속하고 빠르게 고속 고속 역진 진행됩니다.</p></body></html>"
 
 #: qt/src/SoundPanel.ui
 msgid "<html><head/><body><p>The output playback rate on your computer. This is <span style=\" font-weight:700;\">not</span> the playback rate of the emulated system.</p><p>You should set this to match your operating system's sound server. It should almost always be 48000Hz.</p></body></html>"
-msgstr "<html><head/><body><p>The output playback rate on your computer. This is <span style=\" font-weight:700;\">not</span> the playback rate of the emulated system.</p><p>You should set this to match your operating system's sound server. It should almost always be 48000Hz.</p></body></html>"
+msgstr "<html><head/><body><p>현재 플레이어 유저가 상주 중인 메인 호스트 Windows 운영체제 컴퓨터 메인보드 사운드 장치 믹서 시스템이 실제 최종 최종 소리를 외부 스피커 전선 단자로 밀어내는 물리적인 오디오 주파수 출력 출력 재생 빈도 전송 속도 샘플링 레이트(Playback Rate) 사양입니다. 본 설정 수치는 에뮬레이터 giả lập 코어 내부에 흐르는 고전 게임 타이틀 본연의 자체 가상 가상 오디오 칩셋 주파수 속도 수치가 <span style=\" font-weight:700;\">절대 아닙니다</span>.</p><p>오디오 버퍼 유실로 인한 잡음 변조 현상을 철저히 예방 박멸하려면, 본 오디오 재생 빈도 전송 레이트 수치를 현재 사용자가 구동 중인 윈도우 운영체제 제어판 제어판 사운드 속성 탭 설정에 영구 박혀 작동 중인 메인 운영체제 사운드 서버 오디오 출력 기본 공유 기본 포맷 샘플링 레이트 수치와 완전하게 1대1로 일치 매칭 매칭시켜 주어야만 합니다. 현대 최신 최신 Windows 10 / 11 HD Audio 장치 환경의 표준 공유 믹서 커널 사양 하에서는 대다수 기본 디폴트 셋값 매칭 효율이 '48000Hz' 대역으로 고정 통합 수립되어 작동하므로 본 수치 역시 이에 발맞추어 48000Hz 수치로 세팅 고정해 둘 것이 전폭 권장됩니다.</p></body></html>"
 
 #: qt/src/ShortcutsPanel.ui
 msgid "<html><head/><body><p>This box lists application shortcuts. There are 4 slots, so you can assign 4 different keys or buttons to one function.</p><p>To set a binding, click a box or highlight it with the keyboard and press Enter/Return. The box will show three dots quot;...quot;. Press the desired key or gamepad button to assign it to that box. The Escape key will clear the box.</p></body></html>"
-msgstr "<html><head/><body><p>This box lists application shortcuts. There are 4 slots, so you can assign 4 different keys or buttons to one function.</p><p>To set a binding, click a box or highlight it with the keyboard and press Enter/Return. The box will show three dots quot;...quot;. Press the desired key or gamepad button to assign it to that box. The Escape key will clear the box.</p></body></html>"
+msgstr "<html><head/><body><p>본 설정 목록 박스 테이블은 giả lập 에뮬레이터 프로그램 제어용 글로벌 시스템 단축키 단축키 지정 프로필 목록 리스트입니다. 개별 핵심 기능 명령어 라인당 최대 4칸의 입력 매핑 세트 슬롯 매핑 칸이 독립 제공되므로, 유저 편의에 따라 무려 4개의 서로 다른 별개의 키보드 자판 키나 외부 패드 물리 버튼 신호를 단 하나의 동일 기능 명령지에 중복 다중 매핑하여 작동시킬 수 있습니다.</p><p>특정 단축키 기능을 새로 할당 매핑하려면, 마우스로 원하는 칸의 공백 박스를 클릭하거나 키보드 방향키 배열 이동 후 엔터(Enter) 키를 눌러 하이라이트 활성화하십시오. 정상 진입 시 해당 매핑 입력 박스 문구 칸이 실시간 세 개의 점 형태인 &quot;...&quot; 대기 문구 모양 양식 양식으로 변환 변환됩니다. 이 대기 상태 상태 유지 주기 타이밍 순간에 사용자가 원하는 키보드 자판 자판 키나 외부 외부 패드 버튼을 한 번 딸깍 눌러 주면 해당 신호가 해당 기능 칸에 즉시 신속하게 할당 매핑 완료됩니다. 참고로 해당 칸의 매핑 설정을 일절 완전히 비워 초기화 삭제하고 싶다면 매핑 대기 상태에서 키보드의 Escape(ESC) 키를 한 번 누르면 깨끗하게 클리어 초기화 지워집니다.</p></body></html>"
 
 #: qt/src/ControllerPanel.ui
 msgid "<html><head/><body><p>This box lists keyboard keys and gamepad buttons mapped to the SNES controller. There are 4 slots, so you can assign 4 different keys or buttons to one SNES button.</p><p>To set a binding, click a box or highlight it with the keyboard and press Enter/Return. The box will show three dots quot;...quot;. Press the desired key or gamepad button to assign it to that box. The Escape key will clear the box.</p></body></html>"
-msgstr "<html><head/><body><p>This box lists keyboard keys and gamepad buttons mapped to the SNES controller. There are 4 slots, so you can assign 4 different keys or buttons to one SNES button.</p><p>To set a binding, click a box or highlight it with the keyboard and press Enter/Return. The box will show three dots quot;...quot;. Press the desired key or gamepad button to assign it to that box. The Escape key will clear the box.</p></body></html>"
+msgstr "<html><head/><body><p>본 매핑 설정 박스 테이블 목록은 호스트 PC 컴퓨터 키보드 자판 키 스위치 신호 및 외부 유무선 게임패드(Gamepad) 물리 버튼 신호들을 가상 SNES 게임 패드의 고전 하드웨어 단추 단자 칸에 일대일로 매칭 매핑 프로필을 수립하는 인터페이스 영역입니다. 가상 패드의 개별 버튼 단자 칸마다 최대 4칸의 독립 매핑 슬롯 세트 슬롯 공간 박스가 병렬 배정되어 제공되므로, 유저 조작 편의에 따라 무려 4개의 서로 다른 별개의 하드웨어 키 스위치 신호나 패드 단추 신호들을 단 하나의 동일한 가상 SNES 게임 단추 단자 기능지 칸에 중복 다중 할당하여 교차 제어할 수 있습니다.</p><p>원하는 특정 버튼 단자에 단축 키를 새로 할당 매핑 지정하려면, 마우스로 해당 칸 박스 영역을 클릭하거나 키보드 이동 후 엔터(Enter) 키를 쳐서 하이라이트 진입시키십시오. 정상 활성 진입 시 해당 입력 매핑 박스 칸 내부 문구가 실시간 세 개의 점 형태 모양인 &quot;...&quot; 매핑 대기 문구 모양으로 양식 변환 작동합니다. 이 입력 대기 상태 타이밍 순간 유지 주기 내에 사용자가 연동 매핑하고자 하는 실제 컴퓨터 키보드 키나 외부 패드 단추 단추 신호를 한 번 딸깍 입력해 주면 해당 신호 코드가 박스에 즉시 매핑 기록 고정됩니다. 추가로 해당 칸에 지정된 기존 매핑 설정을 일절 완전히 삭제하여 공백 클리어하고 싶다면 입력 대기 상태 타임에 키보드의 Escape(ESC) 키를 한 번 누르면 깨끗하게 클리어 지워집니다.</p></body></html>"
 
 #: qt/src/EmulationPanel.ui
 msgid "<html><head/><body><p>This controls how the program runs the emulated content at the correct speed.</p><p><span style=\" font-style:italic;\">Timer</span>: This sets a literal timer and shows emulated frames at the exact frame rate specified, or automatically matches the emulated system. It may not match your display's frame rate, which can cause judders.</p><p><span style=\" font-style:italic;\">Timer with Frameskipping</span>: The same as timer, except if your display has a lower refresh rate than the emulated system it will skip frames to keep up.</p><p><span style=\" font-style:italic;\">Sound Synchronization: </span>Assume the sound engine is outputting the sound at the correct speed and match the video output rate with it. This assumes your refresh rate is fairly close to the emulated system and you have vsync turned on.</p><p><span style=\" font-style:italic;\">None:</span> Don't attempt to slow emulation down. If you turn off vsync, this will run as fast as possible. If your display matches the emulated system's refresh rate closely, this with vsync enabled is generally the smoothest option aside from variable refresh rates with a timer.</p></body></html>"
-msgstr "<html><head/><body><p>This controls how the program runs the emulated content at the correct speed.</p><p><span style=\" font-style:italic;\">Timer</span>: This sets a literal timer and shows emulated frames at the exact frame rate specified, or automatically matches the emulated system. It may not match your display's frame rate, which can cause judders.</p><p><span style=\" font-style:italic;\">Timer with Frameskipping</span>: The same as timer, except if your display has a lower refresh rate than the emulated system it will skip frames to keep up.</p><p><span style=\" font-style:italic;\">Sound Synchronization: </span>Assume the sound engine is outputting the sound at the correct speed and match the video output rate with it. This assumes your refresh rate is fairly close to the emulated system and you have vsync turned on.</p><p><span style=\" font-style:italic;\">None:</span> Don't attempt to slow emulation down. If you turn off vsync, this will run as fast as possible. If your display matches the emulated system's refresh rate closely, this with vsync enabled is generally the smoothest option aside from variable refresh rates with a timer.</p></body></html>"
+msgstr "<html><head/><body><p>본 중앙 핵심 코어 옵션 기능은 giả lập 에뮬레이터 가상 기기 장치 엔진이 구동하는 인게임 프레임 컨텐츠 연산 주기를 호스트 PC 성능에 휩쓸리지 않고 과거 실기 고전 기기 본연의 물리적 정속 속도 페이스에 맞추어 완전 통제 및 정속 제어 구동하는 방식 기준을 결정 수립합니다.</p><p><span style=\" font-style:italic;\">Timer(하드웨어 타이머 단독 기준)</span>: 프로그램 내부 코드 로직에 고정적인 인터벌 수치 타이머 주기를 칼같이 박아 수립해 두고, 하단 속도 제어 옵션에 명시 지정된 타겟 프레임 레이트 스펙 주기에 정확히 맞추어 프레임 드로잉 계산을 정속 밀어내거나, 혹은 구동하는 롬 파일 원천 국가 포맷 규격 주기에 엔진 연산 시계를 강제 고정 정속 동기화합니다. 본 단독 타이머 옵션은 유저가 상주 중인 윈도우 모니터 주사율 주사율 환경 수치와 타이머 주기 연산 마진이 엇박자로 미세하게 어긋날 확률이 매우 높으며, 이 미세 타이밍 주기의 엇박자 불일치 반동 반동으로 인해 프레임이 일정하게 밀려나지 못하고 화면이 미세하게 떨리며 툭툭 밀리는 미세 화면 저더(Judders) 미세 미세 끊김 이질 현상을 유발하기 다반사입니다.</p><p><span style=\" font-style:italic;\">Timer with Frameskipping(타이머 기준 및 자동 프레임 스킵 연동)</span>: 위의 기본 타이머 작동 메커니즘 원리와 완전 동일하게 타이머 시계를 기준으로 정속 구동하되, 만약 유저가 사용하는 컴퓨터 사양 모니터 화면 주사율 주사율 스펙 성능이 giả lập 가상 기기 본연의 초당 기본 요구 연산 프레임 주기 한도 속도보다 훨씬 더 낮게 세팅되어 강제 병목이 걸리는 비정상적인 열세 상황 타이밍 조건 하에 직면하는 경우, 시스템 시계 진도를 정속 유지하기 위해 비디오 화면 그리기 처리를 중간중간 일부러 강제 생략 누락(Frame Skip) 건너뛰며 진도를 정속으로 강제 유지 추적합니다.</p><p><span style=\" font-style:italic;\">Sound Synchronization(사운드 처리 장치 버퍼 기준 강제 동기화)</span>: giả lập 사운드 연산 처리 엔진 장치가 내부에서 주파수 신호 데이터를 밀어내어 소리를 구성하는 그 물리 속도 주기 자체를 완전 무결한 절대 정속 기준 시계로 완전 상정 전제해 버리고, 메인 디스플레이 비디오 화면 프레임 드로잉 출력 속도 타이밍 주기를 오직 사운드 버퍼 전송 시계 속도 진도에 강제로 노예처럼 묶어 1대1 종속 동기화 추적 작동시킵니다. 본 오디오 기준 동기화 옵션이 정상적으로 아주 부드럽고 스무스하게 최상의 효율 효율을 내려면 기본적으로 사용자의 모니터 주사율 설정 수치가 고전 게임 실기 요구 주파수 대역과 매우 근접하게 잘 맞춰져 상주하고 있어야 하며, 그래픽 설정 상 수직 동기화(vsync) 체크박스 기능이 세트로 함께 세트로 활성화되어 가동 중인 환경이어야만 합니다.</p><p><span style=\" font-style:italic;\">None(제한 없음 족쇄 철폐)</span>: giả lập 기기 내부 엔진 시계를 정속으로 억제 통제하려 들던 모든 물리 속도 제어 제한 족쇄 하드웨어 타이머 장치 링크를 일절 완전 철폐 소멸 처리합니다. 만약 본 제한 없음 옵션을 둔 상태에서 추가로 수직 동기화(vsync) 기능까지 체크 해제해 꺼버리면 에뮬레이터는 정속 페이스 억제 족쇄가 완전히 풀려버려 호스트 컴퓨터 그래픽 카드와 CPU 성능 파워가 허용하는 최대 속도 한계까지 수백 ~ 수천 프레임 이상 폭발적으로 폭증하여 초고속 미친 듯한 속도로 폭주 가동합니다. 반면, 만약 본 제한 없음 옵션을 고른 상태에서 모니터 화면 주사율 수치가 고전 게임 실기 사양 주파수 대역과 거의 완벽하게 일치하는 조건이고 여기에 수직 동기화(vsync) 옵션 기능까지 세트로 함께 켜서 가동을 물려준다면, 하드웨어 타이머 기반의 가변 가변 주사율 싱크 보정 연산 개입이 원천 생략되므로 오히려 60Hz 고정 모니터 환경 하에서는 이질적인 화면 밀림 저더 현상 찌꺼기가 일절 일체 소멸하여 가장 고증 상 부드럽고 매끄러운 완벽한 프레임 스무스 스크롤링 출력 효율 효율을 달성할 수 있는 주체적인 옵션이기도 합니다.</p></body></html>"
 
 #: qt/src/DisplayPanel.ui
 msgid "<html><head/><body><p>This option adapts <span style=\" font-style:italic;\">maintain aspect ratio</span> and scales the image in steps of integral scale, so game pixels are never spread across the borders of screen pixels.</p></body></html>"
-msgstr "<html><head/><body><p>This option adapts <span style=\" font-style:italic;\">maintain aspect ratio</span> and scales the image in steps of integral scale, so game pixels are never spread across the borders of screen pixels.</p></body></html>"
+msgstr "<html><head/><body><p>본 옵션 기능은 상단의 <span style=\" font-style:italic;\">원본 가로세로 폭 종횡비 유지(maintain aspect ratio)</span> 메커니즘을 기반으로 화면 크기를 확장하되, 무조건 소수점 배율이 아닌 1배, 2배, 3배, 4배와 같은 칼 같은 '정수 배수 배율(Integral Scale)' 단계 단독 단위로만 가상 프레임 화면 해상도 폭을 정밀 격자 확장 확대합니다. 정수 배수 배율 단위로 스케일링을 제한해 밀어내면 확대 화면 해상도가 모니터 디스플레이 픽셀 격자와 정확히 1대1 혹은 1대다 매칭으로 완전히 맞물려 떨어지므로, 소수점 배율 확대 시 필연적으로 유실 유실 발생하기 마련인 도트 외곽선 픽셀의 미세 뭉개짐이나 픽셀 찢어짐 비대칭 왜곡 현상이 원천 완전 방지 예방되어, 고전 도트 그래픽 고유의 칼같이 깨끗하고 선명한 픽셀 아트 윤곽선 윤곽선 픽셀 감성을 현대 고해상도 모니터 상에서도 완전 무결하게 보존 출력할 수 있습니다.</p></body></html>"
 
 #: qt/src/DisplayPanel.ui
 msgid "<html><head/><body><p>This option affects how <span style=\" font-style:italic;\">maintain aspect ratio </span>works. </p><p><span style=\" font-style:italic;\">4:3 </span>will maintain a ratio where the screen is 1.333 times wider than high.</p><p>64:49 presents an idealized ratio where the display output is perfect, but is affected by NTSC compression.</p><p>1:1 Means pixels will be square. This will squeeze the image horizontally.</p></body></html>"
-msgstr "<html><head/><body><p>This option affects how <span style=\" font-style:italic;\">maintain aspect ratio </span>works. </p><p><span style=\" font-style:italic;\">4:3 </span>will maintain a ratio where the screen is 1.333 times wider than high.</p><p>64:49 presents an idealized ratio where the display output is perfect, but is affected by NTSC compression.</p><p>1:1 Means pixels will be square. This will squeeze the image horizontally.</p></body></html>"
+msgstr "<html><head/><body><p>본 핵심 세부 세부 그래픽 조절 옵션은 상단 체크박스인 <span style=\" font-style:italic;\">원본 종횡비 유지 </span> 기능이 실제로 화면을 늘려 가공할 때 타겟으로 삼을 세부 가로세로 타겟 비율 규격 표준 방식을 미세 결정 제어합니다. </p><p><span style=\" font-style:italic;\">4:3 양식</span>: 과거 거실용 표준 아날로그 텔레비전 모니터 화면 규격인 가로 폭 비례가 세로 높이보다 정확히 1.333배 더 넓게 와이드 형상으로 구성되는 가장 보편적이고 대중적인 추억 고증 고증용 레트로 표준 화면 비율 종횡비 방식으로 타겟 비율을 고정합니다.</p><p>64:49 양식: 실기 그래픽 렌더링 장치 소스 출력이 품고 있는 기하학적 연산 이론 상 가장 완벽 무결하게 떨어지는 이상적인 수학적 원본 비례 종횡비를 화면에 재구성해 주지만, 과거 아날로그 NTSC 방송 신호 규격 전송 상 n n 압축 가공 반동 요소를 미세 반영 보정하므로 시각적 결과물 감성은 세부 타이틀마다 조금씩 이질감을 줄 수도 있습니다.</p><p>1:1 양식: 가상 giả lập 게임 화면 내부의 개별 최소 단위 도트 픽셀 요소를 가로세로 길이가 완전 똑같은 완벽한 정사각 구조 도트 형태 모양으로 모니터에 강제 뿌리도록 규정 제어합니다. 대다수 고전 타이틀 롬 소스 파일들이 애초에 아날로그 4:3 CRT 모니터 화면으로 뿜어져 가로로 살짝 늘어나 출력될 것을 염두 상정해 도트 아트를 가로로 짜부라트려 설계했었기 때문에, 이 1:1 순수 도트 픽셀 모드를 적용해 버리면 인게임 그래픽 결과물 화면이 가로 폭 방향으로 인위적으로 심하게 꽉 짜부라져 좁아 보이고 홀쭉하게 왜곡되어 출력되는 부작용 왜곡이 수반됩니다.</p></body></html>"
 
 #: qt/src/SoundPanel.ui
 msgid "<html><head/><body><p>This option causes the audio to be slightly stretched to keep the latency even and to prevent underruns and overruns, which will cause pops and cracks in the audio.</p></body></html>"
-msgstr "<html><head/><body><p>This option causes the audio to be slightly stretched to keep the latency even and to prevent underruns and overruns, which will cause pops and cracks in the audio.</p></body></html>"
+msgstr "<html><head/><body><p>본 옵션 기능을 켜면 가상 에뮬레이터 시계 작동 진도와 호스트 PC 메인보드 사운드 장치 전송률 간의 미세한 엇박자 불일치 주기를 상쇄 방지하기 위해 가상 오디오 신호 파형 스트림을 실시간 아주 미세하게 스트레칭(인위적 늘림/줄임 미세 가공) 처리합니다. 오디오 파형 스트림을 실시간 유기적으로 미세 스트레칭 보정해 주면 오디오 반응 대기 시간 레이턴시 간격 폭이 늘 일정하고 균일하게 강제 유지되므로, 사운드 버퍼 연산 공급이 하드웨어 요구 타이밍 속도보다 느려져 버퍼가 완전히 고갈 텅 비어버리는 언더런(Underruns) 사고 현상이나 반대로 연산이 너무 과도하게 넘쳐나 유실되는 오버런(Overruns) 예외 오버헤드 사고 현상을 원천 차단 차단 방지할 수 있으며, 결과적으로 오디오 버퍼 유실 사고의 주 반동 요인인 사운드가 지직지직 툭툭 찢어지며 끊기는 개질 잡음 팝음 노이즈 현상 및 불쾌한 오디오 찢어짐 균열 현상(Pops and Cracks) 잔류 소음을 완전하게 제거 박멸하여 맑고 안정적인 음질 음성 출력을 보장해 줍니다.</p></body></html>"
 
 #: qt/src/DisplayPanel.ui
 msgid "<html><head/><body><p>This option determines whether messages show up in the game display:</p><p>Onscreen will show a high resolution overlay when using <span style=\" font-style:italic;\">Vulkan</span> or <span style=\" font-style:italic;\">OpenGL</span>.</p><p>Inscreen will draw in a pixel font to the ingame display.</p><p>Don't display messages will show nothing.</p></body></html>"
-msgstr "<html><head/><body><p>This option determines whether messages show up in the game display:</p><p>Onscreen will show a high resolution overlay when using <span style=\" font-style:italic;\">Vulkan</span> or <span style=\" font-style:italic;\">OpenGL</span>.</p><p>Inscreen will draw in a pixel font to the ingame display.</p><p>Don't display messages will show nothing.</p></body></html>"
+msgstr "<html><head/><body><p>본 설정 옵션 기능은 유저가 실시간 단축키를 눌러 편의 편의 기능을 가동할 때(예: 실시간 강제 세이브 슬롯 번호 변경, 터보 모드 작동 알림 문구 등) giả lập 시스템이 유저 인지용 런타임 문자 알림 통지 메시지 문구를 가상 화면 창에 어떠한 양식 비주얼 양식으로 시각화 노출 표기할 것인지를 선택 제어합니다.</p><p>Onscreen(온스크린 그래픽 오버레이) 양식: 메인 그래픽 API 드라이버 설정을 <span style=\" font-style:italic;\">Vulkan</span> 또는 <span style=\" font-style:italic;\">OpenGL</span> 하드웨어 가속 모드로 구동 중인 환경 사양 하에서 작동하며, 복잡한 인게임 화면 해상도 폭 레이아웃과 완전 독립 격리된 매우 깔끔하고 가독성 가독성이 높은 현대적인 고해상도 벡터 그래픽 오버레이 자막 문자 문자 형태로 자막을 화면 상단에 깔끔하게 오버레이 띄워 명시합니다.</p><p>Inscreen(인스크린 픽셀 폰트 내장) 양식: 외부 독립 레이어 오버레이 자막 기술을 쓰지 않고, 순수 인게임 2D 게임 드로잉 버퍼 신호 내부 픽셀 공간 안에 고전 고전 풍의 투박한 도트 픽셀 폰트(Pixel Font) 형태 모양으로 알림 문자 텍스트를 한 땀 한 땀 직접 도트로 그려 넣어 강제 합성 출력합니다.</p><p>Don't display messages(알림 메시지 비활성화 표시 안 함) 양식: 유저 조작에 따른 어떠한 안내 런타임 문자 알림 텍스트도 디스플레이 창 화면에 일절 노출 팝업시키지 않고 완전 차단 은폐합니다.</p></body></html>"
 
 #: qt/src/EmulationPanel.ui
 msgid "<html><head/><body><p>This option is explicitly for old AddMusic hacks. If you know you have one of those, you can enable this. Otherwise, leave it unchecked.</p></body></html>"
-msgstr "<html><head/><body><p>This option is explicitly for old AddMusic hacks. If you know you have one of those, you can enable this. Otherwise, leave it unchecked.</p></body></html>"
+msgstr "<html><head/><body><p>본 특수 해킹 수동 보정 기능은 오직 아주 과거 시절에 제작 배포되었던 구형 개조 롬 전용 음악 사운드 주입 엔진 공구인 '애드뮤직(AddMusic)' 구버전 툴 트릭이 가해진 특수한 개조 롬 해크 파일 타이틀 전용 구동 환경 보정용 예외 처리 강제 활성화 기능 옵션입니다. 유저가 플레이하려는 해당 개조 롬 배포 도큐먼트 명세 상에서 명시적으로 구형 AddMusic 엔진 연산 우회 보정 기능을 요구하는 특별한 예외 타깃 케이스임이 확실한 조건 상황 하에서만 선별적으로 체크 활성화해 주십시오. 만약 해당 사항 사항이 없는 일반적인 표준 정품 롬 파일이나 최신 툴로 가공된 개조 롬 실행 시 본 옵션을 무리하게 켜두면, 사운드 가속 CPU 연산 루프가 비정상 비대칭 왜곡 엇박자로 꼬여 오디오 싱크 가동이 완전히 다운 먹통 크래시되거나 소리가 아예 먹통 침묵 처리되는 심각한 오작동 오류 부작용 부작용을 동반합니다.</p></body></html>"
 
 #: qt/src/DisplayPanel.ui
 msgid "<html><head/><body><p>This option keeps the proportions of the emulated display the same no matter how you change the size of the window.</p></body></html>"
-msgstr "<html><head/><body><p>This option keeps the proportions of the emulated display the same no matter how you change the size of the window.</p></body></html>"
+msgstr "<html><head/><body><p>본 옵션 기능은 게임플레이 유저가 윈도우 바탕화면 바탕화면 상에서 에뮬레이터 프로그램 테두리를 마우스 클릭 드래그하여 가상 창 출력 화면 크기를 마음대로 임의 조절하거나 늘려 늘려 가공하더라도, 최종 화면 내부 내부 중심 컨텐츠의 가로세로 원본 비율 비율 균형 마진 스펙 사양만큼은 강제로 꽉 고정 유지시켜 늘어짐 없는 균형 잡힌 원본 비례 형상 상태 그대로를 완전 무결하게 영구 보존 출력해 줍니다.</p></body></html>"
 
 #: qt/src/DisplayPanel.ui
 msgid "<html><head/><body><p>This option only affects the size of the font and the icons shown when display messages are set to the <span style=\" font-style:italic;\">Onscreen</span> option.</p></body></html>"
-msgstr "<html><head/><body><p>This option only affects the size of the font and the icons shown when display messages are set to the <span style=\" font-style:italic;\">Onscreen</span> option.</p></body></html>"
+msgstr "<html><head/><body><p>본 조절 슬라이더 및 수치 눈금 설정은 오직 바로 위의 자막 문자 표시 양식 세팅이 고해상도 독립 레이어 기법 자막 모드인 <span style=\" font-style:italic;\">Onscreen(온스크린 오버레이)</span> 사양 옵션 조건으로 매칭 활성화 상태인 환경 하에서만 단독 연동 기능하며, 그때 화면 상단에 팝업 노출 표기될 안내 통지 텍스트 문자 문자 크기 폰트 스케일 및 부착 부착 아이콘 그래픽 아이콘 소스의 물리 출력 물리 크기 한도 총량 볼륨만을 독점 제어 조절합니다.</p></body></html>"
 
 #: qt/src/DisplayPanel.ui
 msgid "<html><head/><body><p>This option only affects the SNES's high-resolution, 512 pixel wide mode. Few games use this. </p><p><span style=\" font-style:italic;\">Output directly</span> will use whatever is output directly, but when the game changes modes, the filtering will get sharper or blurrier and may be distracting.</p><p><span style=\" font-style:italic;\">Merge fields </span>will scale the image down and blend the extra pixels together. This is useful in games like Jurassic Park and Kirby's Dreamland 3, which use it for a transparency effect.</p><p><span style=\" font-style:italic;\">Scale low resolution </span>will double the width of low-resolution screens, so when the game switches between modes there isn't any distracting changes in filtering. This is useful when a game uses the high resolution mode often, like Seiken Densetsu 3.</p></body></html>"
-msgstr "<html><head/><body><p>This option only affects the SNES's high-resolution, 512 pixel wide mode. Few games use this. </p><p><span style=\" font-style:italic;\">Output directly</span> will use whatever is output directly, but when the game changes modes, the filtering will get sharper or blurrier and may be distracting.</p><p><span style=\" font-style:italic;\">Merge fields </span>will scale the image down and blend the extra pixels together. This is useful in games like Jurassic Park and Kirby's Dreamland 3, which use it for a transparency effect.</p><p><span style=\" font-style:italic;\">Scale low resolution </span>will double the width of low-resolution screens, so when the game switches between modes there isn't any distracting changes in filtering. This is useful when a game uses the high resolution mode often, like Seiken Densetsu 3.</p></body></html>"
+msgstr "<html><head/><body><p>본 정밀 조절 그래픽 옵션 기능은 실기 하드웨어인 SNES 내부 비디오 렌더링 설계 사양 중, 극히 드물고 제한적으로만 예외 임의 발동 소비되던 하드웨어 특수 모드인 '가로 512 픽셀 강제 확장 초고해상도 인터레이싱 렌더링 모드' 기동 타이밍 순간 순간에 에뮬레이터 가상 비디오 렌더러 장치가 어떠한 주체적인 방식으로 연산 가공 화면을 재조합해 밀어낼 것인지를 유저가 직접 수동 미세 결정 조절합니다. 참고로 과거 정품 타이틀 전체 리스트 중 이 512 와이드 확장 가로 해상도 특수 특수 모드를 연산 상 적극 차용 소비했던 고전 게임 소스 소스 종류는 손에 꼽을 정도로 매우 드뭅니다. </p><p><span style=\" font-style:italic;\">직접 출력(Output directly) 양식</span>: 가상 에뮬레이터 장치 장치 단단에서 출력 계산되어 뿜어 나오는 로우 비디오 원천 소스 신호를 어떠한 내부 중간 가공 합성 보정 필터링 개입도 일절 없이 가감 없이 모니터 창에 직통 다이렉트로 전송 렌더링합니다. 이 경우, 인게임 상에서 실시간 조건에 따라 일반 해상도 모드와 512 특수 고해상도 모드가 수시로 칼같이 유동 교차 전환될 때마다 화면 필터링 경계 질감 질감 윤곽선이 뚜렷하게 칼같이 날카로워졌다가 갑자기 확 급격히 흐려져 블러링되는 이질적인 질감의 유동적 왜곡 갱신 현상이 반복 노출되므로 유저 시각 인지 상 상당한 눈의 피로나 거슬리는 이질감 방해를 주기 유효합니다.</p><p><span style=\" font-style:italic;\">필드 병합(Merge fields) 양식</span>: 512 모드 기동 시 가로로 넓어진 픽셀 라인 필드 신호를 스케일링 필터 연산으로 아래로 강제 우겨 압축 축소 하향 가공 조절한 후, 넘쳐나던 초과 픽셀 도트 성분 소스들을 서로 부드럽고 매끄럽게 알파 알파 블렌딩 합성 처리하여 한데 섞어 비주얼을 매끄럽게 매끄럽게 가공해 줍니다. 과거 '쥬라기 공원(Jurassic Park)' 타이틀 인게임 스크린이나 '별의 커비 3(Kirby's Dreamland 3)' 타이틀 그래픽 환경처럼, 실기 브라운관의 가로 해상도 번짐 한계 한도를 역이용해 512 도트 쪼개기 징검다리 매핑 트릭으로 반투명 반투명 레이어 시각 가시 효과를 가상 가상으로 사기 구현해 두었던 고전 타이틀들의 특수 그래픽 고증용 반투명 효과를 현대 모니터 환경에서 매끄럽고 아름답게 재현 복구해 내는 데 아주 탁월하고 유용한 필수적인 지정 양식 방식 옵션입니다.</p><p><span style=\" font-style:italic;\">저해상도 기준 강제 정수 배율 업스케일(Scale low resolution) 양식</span>: 일반적인 저해상도 표준 표준 프레임 출력 스크린 상태일 때 미리 가로 해상도 픽셀 폭 라인을 정수 배수 배율 연산으로 2배 강제 오버 스케일링 확장 적재해 두고 대기합니다. 이렇게 사전에 버퍼 기본 규격 체급을 크게 맞춰 확보해 두면, 인게임 플레이 도중 비디오 모드가 일반 사양과 512 초고해상도 특수 사양 사이를 초 단위로 정신없이 유동 교차 전환 스왑 스왑 전환 처리되더라도, 최종 유저 화면 필터링의 밀도감 질감 경계선이 툭툭 변해 뭉개지거나 흐려지던 가시적인 시각 시각 방해 이질감 찌꺼기가 원천 완벽 차단 차단 소멸합니다. 인게임 텍스트 폰트 대화창 인쇄 화면이나 전체 서브 메뉴 메뉴 팝업 레이아웃 가동 순간마다 수시로 512 초고해상도 모드를 밥먹듯이 빈번하게 실시간 스왑 교차 교차 호출 가동 구현해 대던 '성검전설 3(Seiken Densetsu 3)' 타이틀 같은 케이스를 플레이할 때 화면 이질 질감 변동 스트레스를 원천 박멸 예방해 줄 수 있는 매우 쾌적한 그래픽 최적화 양식 방식 옵션입니다.</p></body></html>"
 
 #: qt/src/DisplayPanel.ui
 msgid "<html><head/><body><p>This option prevents tearing in the output.</p></body></html>"
-msgstr "<html><head/><body><p>This option prevents tearing in the output.</p></body></html>"
+msgstr "<html><head/><body><p>본 필수 옵션 기능은 최종 그래픽 가상 프레임 화면 이미지 송신 속도가 호스트 모니터 주사율 물리 갱신 타임 타이밍과 어긋나 어긋나 어긋나 어긋나 어긋나 화면 상하가 수평선 모양으로 찢어져 어긋나 보이던 지저분한 시각적 화면 찢어짐 가시 현상(테어링/Tearing) 결함을 원천 완전 박멸 예방 차단합니다.</p></body></html>"
 
 #: qt/src/SoundPanel.ui
 msgid "<html><head/><body><p>This option stretches the emulated audio output to coincide exactly with your display's refresh rate. It automatically handles the <span style=\" font-style:italic;\">Input Rate</span> option.</p></body></html>"
-msgstr "<html><head/><body><p>This option stretches the emulated audio output to coincide exactly with your display's refresh rate. It automatically handles the <span style=\" font-style:italic;\">Input Rate</span> option.</p></body></html>"
+msgstr "<html><head/><body><p>본 중요 옵션 기능은 가상 giả lập 시스템 장치 내부에서 연산 생성되는 가상 오디오 신호 소스의 파형 출력을, 현재 유저 컴퓨터 하드웨어 시스템 모니터가 가동 중인 윈도우 바탕화면 물리 화면 주사율 주사율(재생률/Refresh Rate) 스펙 타이밍 진도 수치와 정확하게 소수점 대역까지 완전 1대1로 일치 매칭되도록 주파수 파형 진도를 정밀하게 미세 늘려 가공합니다. 본 동기화 추적 기능을 활성화하면 직전 하단 영역에 배치되어 유저의 골치를 썩이던 난해한 수동 설정 옵션인 <span style=\" font-style:italic;\">오디오 입력 속도 비율 조정 제어(Input Rate)</span> 슬라이더 수치 값을 시스템이 전담 선점하여 가장 무결한 상태의 최적 싱크 배율 값으로 완전 실시간 자동 추적 제어 관리하므로 유저가 수동 수동 조작할 필요가 일절 소멸합니다.</p></body></html>"
 
 #: qt/src/ControllerPanel.ui
 msgid "<html><head/><body><p>This option will use the SDL library to auto-configure gamepads. It will take the XBox mappings for the left D-pad and analog stick, as well as the the face buttons and L/R shoulder buttons, and assign them to relative locations on the first SNES controller.</p><p><br/></p><p>All gamepads will be assigned to player 1. If you need more players, disable this option and set up the mappings manually.</p></body></html>"
-msgstr "<html><head/><body><p>This option will use the SDL library to auto-configure gamepads. It will take the XBox mappings for the left D-pad and analog stick, as well as the the face buttons and L/R shoulder buttons, and assign them to relative locations on the first SNES controller.</p><p><br/></p><p>All gamepads will be assigned to player 1. If you need more players, disable this option and set up the mappings manually.</p></body></html>"
+msgstr "<html><head/><body><p>본 원터치 자동화 편의 옵션 기능을 켜두면, 멀티미디어 표준 크로스 라이브러리인 SDL 프레임워크 플러그인 엔진이 호스트 PC에 유무선 블루투스 등으로 연동 포착 감지된 외부 하드웨어 게임패드 장치 사양을 자동 정밀 분석 분석 판정합니다. 시스템은 윈도우 XInput 글로벌 범용 표준인 마이크로소프트 엑스박스(Xbox) 컨트롤러 하드웨어의 정석 버튼 물리 배치 구조 레이아웃(좌측 십자 D-pad 배열, 좌우 아날로그 회전 스틱 축 신호, 패드 전면 메인 4방 페이스 단추 단추 단단 단단, 상단 좌우 트리거 범퍼 숄더 L/R 버튼들) 신호를 고스란히 즉시 다이렉트로 추적 확보하여 가상 기기 가상 SNES 게임기의 첫 번째 1번 기본 마스터 컨트롤러 포트 포트 단자 내부 상의 기하학적 가장 닮은 가장 닮은 인체공학적 상대적 교차 위치지 칸에 원터치로 완전 즉시 일괄 자동 매핑 매핑 자동 입력 수립 완료합니다.</p><p><br/></p><p>주의: 본 원터치 자동 자동 매핑 기능을 체크 활성화해 두면 호스트 PC 본체에 외부 외부 패드 하드웨어 장치를 무려 2개 이상 주렁주렁 다중 연결 물리 연동하더라도, 모든 발견 패드 입력 신호들의 조작 조작 조작 연산 권한이 무조건 한 군데인 '플레이어 1번(1P 자리)' 단일 가상 단자 포트 칸으로만 강제 통합 귀속 수렴하여 묶여 버립니다. 따라서 친구나 자녀와 함께 컴퓨터 한 대로 화면을 분할해 2인용 이상의 다인용 네트워크 협동 협동 멀티 조작 플레이 게임 환경을 구축하고자 상정 세팅하는 상황이라면, 반드시 본 원터치 자동 옵션 체크박스를 해제해 완전히 비활성화 상태로 꺼버린 후, 수동 키 설정 편집 창 팝업 콘솔을 통해 각 개별 플레이어 포트 칸마다 유저 장치 신호들을 수동으로 한 땀 한 땀 따로 격리 분리해 맵 매핑 매핑해 주어야만 정상 정상적인 다인 멀티플레이 조작 조작 조작 분리가 성립 기능합니다.</p></body></html>"
 
 #: qt/src/DisplayPanel.ui
 msgid "<html><head/><body><p>This prevents the GPU from queuing up additional frames in advance, reducing the time it takes for the display to react to your input.</p></body></html>"
-msgstr "<html><head/><body><p>This prevents the GPU from queuing up additional frames in advance, reducing the time it takes for the display to react to your input.</p></body></html>"
+msgstr "<html><head/><body><p>본 중요 최적화 옵션 기능은 컴퓨터 그래픽 카드(GPU) 장치가 프레임 버퍼 렌더링 파이프라인 단단에서 화면에 미처 채 뿌려 출력하기 전 단계에 해당하는 대기 프레임 연산 결과물 찌꺼기들을 그래픽 카드 내장 전용 전용 큐(Queue) 메모리 공간 대기열 영역에 미리 추가로 수 프레임 이상 과도하게 과도하게 선행 계산해 쌓아 적재해 두는 하드웨어 선행 적재 오버헤드 낭비 루프 자체를 철저히 억제 예방 차단합니다. 대기열 대기 프레임 적재 오버헤드를 타이트하게 조여 원천 완전 억제 억제 차단해 버리면, 유저가 조작 조작 조작 패드 단추 단추 스위치를 손가락으로 딸깍 누르는 그 물리 동작 신호 순간 타이밍 대비 최종 모니터 액정 화면 내부의 픽셀 소스 변화 변화 리액션 반응 드로잉 출력이 눈에 나타나기까지 도달 도달 소요되는 인게임 비디오 디스플레이 하드웨어 응답 반응 대기 반응 시간(인풋랙 인풋랙 피로 오버헤드 지연 비율 효율) 수치 폭이 극적으로 대폭 감소 감소 최적화되어, 마치 실기 TV에 팩을 꼽아 다이렉트로 즐기는 듯한 극도로 정밀하고 쾌적한 칼 같은 즉각적인 손맛 반응 패드 조작 조작 조작감 피드백 효율 효율을 실현할 수 있게 해줍니다.</p></body></html>"
 
 #: qt/src/DisplayPanel.ui
 msgid "<html><head/><body><p>Turns on a bilinear smoothing filter to smooth out the pixels. This option won't work with a hardware shader enabled.</p></body></html>"
-msgstr "<html><head/><body><p>Turns on a bilinear smoothing filter to smooth out the pixels. This option won't work with a hardware shader enabled.</p></body></html>"
+msgstr "<html><head/><body><p>가상 화면 도트 픽셀의 경계면 주변 외곽 소스 영역 영역을 소프트웨어 연산으로 주변 픽셀들과 선형 교차 스무딩 보간 연산하여, 거친 도트 계단 현상을 부드럽고 매끄러운 뭉개진 질감 질감 화면으로 바꾸어 출력해 주는 부드러운 바이리니어(Bilinear Smoothing) 보간 보정 필터링 효과를 화면 전체에 일괄 작동시킵니다. 주의: 본 보간 필터는 순수 소프트웨어 방식 가공 연산이므로, 만약 그래픽 설정 단단 상에서 하드웨어 GPU 연산 가속을 타는 .slangp 또는 .glslp 양식의 고성능 외부 '하드웨어 특수 셰이더 프리셋 프리셋 파일' 기능을 유저가 별도로 선점 선택해 켜서 기동하는 런타임 상황 하에서는 본 필터 로직은 충돌을 방지하기 위해 자동으로 우선순위가 완전 밀려나 기능이 비활성화 차단 생략 처리됩니다.</p></body></html>"
 
 #: qt/src/ControllerPanel.ui
 msgid "<html><head/><body><p>Use this to automatically assign the default keyboard mapping or a detected controller to a set of bindings.</p><p>This uses the XInput controller protocol and maps it as close as possible to a SNES controller.</p></body></html>"
-msgstr "<html><head/><body><p>Use this to automatically assign the default keyboard mapping or a detected controller to a set of bindings.</p><p>This uses the XInput controller protocol and maps it as close as possible to a SNES controller.</p></body></html>"
+msgstr "<html><head/><body><p>현재 설정 변경 창에 진입 수립된 가상 게임 제어 단추 단자 슬롯 프로필 전체 칸에, 에뮬레이터 giả lập 시스템에 사전에 기본 프리셋으로 단독 정의되어 박혀 있는 '에뮬레이터 표준 기본 키보드 자판 자판 배열 세트 매핑 프로필' 데이터를 원터치로 한 번에 즉시 자동 일괄 주입 할당하거나, 혹은 호스트 본체 USB 허브 포트에 연결 감지된 외부 표준 게임 패드 장치를 시스템 소스로 잡아 즉각 일괄 자동 매핑 매핑 구조를 입력 수립 완료합니다.</p><p><br/></p><p>본 시스템 자동 할당 메커니즘 엔진은 전 세계 현대 PC 멀티미디어 게임패드 조작 신호 규격의 절대 표준 인터페이스 프로토콜인 마이크로소프트 윈도우 '엑스인풋(XInput)' 통신 규격 규격을 완벽 정밀 추적 다이렉트로 기반하여 매핑을 가공하므로, 엑스박스 계열 패드 및 호환 컨트롤러 장치 연결 시 실기 고전 SNES 조이패드가 지녔던 정품 고유의 물리 단추 단추 기능 배치의 인체공학적 조작 동선 구조 형태 모양과 사실상 거의 완벽하게 일치하는 일치하는 가장 쾌적하고 조작하기 편안한 최적의 키 매핑 세트를 유저에게 즉시 즉각 원터치 제공 성립해 줍니다.</p></body></html>"
 
 #: qt/src/DisplayPanel.ui
 msgid "<html><head/><body><p>Uses a hardware shader with <span style=\" font-style:italic;\">Vulkan</span> or <span style=\" font-style:italic;\">OpenGL</span> drivers. These can be either .glslp or .slangp preset files.</p><p>GLSL shaders (.glslp) can be downloaded from:</p><p><a href=\"https://github.com/libretro/glsl-shaders\"><span style=\" text-decoration: underline; color:#2980b9;\">https://github.com/libretro/glsl-shaders</span></a></p><p>Slang shaders (.slangp) can be downloaded from:</p><p><a href=\"https://github.com/libretro/slang-shaders\"><span style=\" text-decoration: underline; color:#2980b9;\">https://github.com/libretro/slang-shaders</span></a></p></body></html>"
-msgstr "<html><head/><body><p>Uses a hardware shader with <span style=\" font-style:italic;\">Vulkan</span> or <span style=\" font-style:italic;\">OpenGL</span> drivers. These can be either .glslp or .slangp preset files.</p><p>GLSL shaders (.glslp) can be downloaded from:</p><p><a href=\"https://github.com/libretro/glsl-shaders\"><span style=\" text-decoration: underline; color:#2980b9;\">https://github.com/libretro/glsl-shaders</span></a></p><p>Slang shaders (.slangp) can be downloaded from:</p><p><a href=\"https://github.com/libretro/slang-shaders\"><span style=\" text-decoration: underline; color:#2980b9;\">https://github.com/libretro/slang-shaders</span></a></p></body></html>"
+msgstr "<html><head/><body><p>최종 디스플레이 화면 출력 드라이버 가속 백엔드가 하드웨어 가속을 타는 <span style=\" font-style:italic;\">Vulkan(벌칸)</span> 또는 <span style=\" font-style:italic;\">OpenGL(오픈지엘)</span> 커널 장치 모드로 매칭 활성화 기동 중인 고급 하드웨어 그래픽 환경 사양 하에서 작동하며, 그래픽 카드 GPU의 하드웨어 특수 렌더링 셰이더 연산 파이프라인 연동 자원을 다이렉트로 사용하여 화면에 극적인 고전 브라운관 볼록이 모니터 화면 휘어짐 왜곡 입체 효과, CRT 특유의 형광체 도트 RGB 매시 망선 효과, 아날로그 주사선 스캔라인 간섭 효과 등 초고화질 그래픽 비주얼 보정 효과를 입혀 출력하는 고성능 하드웨어 가속용 외부 전문 셰이더 프리셋 프리셋 파일(.glslp / .slangp 양식) 소스를 가져와 화면에 드라이브 적용합니다.</p><p>가장 범용적이고 전 세계 방대한 오픈소스 기여 오픈소스 아카이브 생태계 데이터가 구축 수립되어 있는 검증된 전문 그래픽 셰이더 프리셋 소스 다운로드 허브 공식 공유 링크 디렉토리 안내:</p><p>표준 OpenGL 하드웨어 가속 모드 전용 GLSL 규격 전문 셰이더 파일(.glslp 세트 소스) 공식 오픈 소스 아카이브 허브 공유 저장소 다운로드 경로 링크:</p><p><a href=\"https://github.com/libretro/glsl-shaders\"><span style=\" text-decoration: underline; color:#2980b9;\">https://github.com/libretro/glsl-shaders</span></a></p><p>최신 고성능 Vulkan 및 OpenGL 하드웨어 가속 모드 겸용 Slang 차세대 규격 전문 셰이더 파일(.slangp 세트 소스) 공식 오픈 소스 아카이브 허브 공유 저장소 다운로드 경로 링크:</p><p><a href=\"https://github.com/libretro/slang-shaders\"><span style=\" text-decoration: underline; color:#2980b9;\">https://github.com/libretro/slang-shaders</span></a></p></body></html>"
 
 #: qt/src/DisplayPanel.ui
 msgid "<html><head/><body><p>When entering fullscreen mode, this option temporarily sets a number of other options to values that make variable refresh rate monitors that use FreeSync or GSync smoother.</p><p>Enables vsync.</p><p>Sets synchronization mode to timer and the frame rate to exactly that of the SNES.</p><p>Sets input rate to 32040Hz.</p></body></html>"
-msgstr "<html><head/><body><p>When entering fullscreen mode, this option temporarily sets a number of other options to values that make variable refresh rate monitors that use FreeSync or GSync smoother.</p><p>Enables vsync.</p><p>Sets synchronization mode to timer and the frame rate to exactly that of the SNES.</p><p>Sets input rate to 32040Hz.</p></body></html>"
+msgstr "<html><head/><body><p>가상 구동 화면 출력을 윈도우 창 모드에서 '전체 화면(Fullscreen) 모드' 상태로 전격 전환해 진입하는 그 순간 타이밍에, 에뮬레이터 giả lập 시스템이 유저의 현대형 최신 게이밍 모니터 하드웨어가 품고 있는 물리 가변 주사율 가변 화면 동기화 기술 성능 하드웨어 스펙인 AMD 프리싱크(FreeSync) 혹은 엔비디아 지싱크(G-Sync) 가변 동기화 가속 제어 기능 장치를 인지하여 모니터와 그래픽 카드가 하드웨어 레벨에서 가장 매끄럽고 부드럽고 오차 없는 무결한 주사율 동기화 프레임 동기화 매칭을 칠 수 있도록, 관련된 다수의 핵심 세부 서브 비디오 설정 옵션 가중치 수치 값들을 가변 가동 최적화 전용 수치 상태 모드로 일괄 실시간 가변 자동 임시 강제 가변 강제 완전 자동 자동 자동 자동 재조정 전환 처리 세팅합니다.</p><p>본 가변 모니터 VRR 최적화 가변 연동 기능 작동 시 일괄 수반되는 내부 자동 제어 로직 안내:</p><p>1. 비디오 수직 동기화(vsync) 기능 옵션을 내부 커널 레벨에서 강제로 즉시 강제 활성화 상태로 온 스위치 작동시킵니다.</p><p>2. 프레임 메인 동기화 속도 처리 연산 제어 방식을 표준 '하드웨어 타이머(Timer) 단독 기준 모드'로 강제 임시 락 고정하고, 가상 가상 연산 초당 프레임 레이트 수치 진도를 과거 고전 원본 SNES 실기 기판 하드웨어가 뿜어내던 고유 주파수 진도 수치와 소수점 대역까지 100% 완전 정밀 완벽 일치 고정 세팅합니다.</p><p>3. 오디오 전송 싱크 보정을 위한 가상 입력 신호 전송 주파수 수치(Input Rate) 제한 한도 역시 가변 동기화 매칭 효율이 가장 극대화되는 절대 기준 마진 주파수인 '32040Hz' 고정 대역으로 강제 고정 락 세팅합니다.</p></body></html>"
 
 #: qt/src/DisplayPanel.ui
 msgid "<html><head/><body><p>When using <span style=\" font-style:italic;\">Vulkan</span>, this chooses the GPU you wish to render with.</p></body></html>"
-msgstr "<html><head/><body><p>When using <span style=\" font-style:italic;\">Vulkan</span>, this chooses the GPU you wish to render with.</p></body></html>"
+msgstr "<html><head/><body><p>최종 화면 출력을 처리할 메인 그래픽 드라이버 하드웨어 백엔드 사양이 차세대 초고속 로우레벨 하드웨어 가속 API 규격인 <span style=\" font-style:italic;\">Vulkan(벌칸)</span> 모드로 매칭 지정 가동 중인 고급 그래픽 환경 사양 하에서 작동하며, 유저의 컴퓨터 메인보드 본체 허브 포트에 다중으로 교차 부착 상주 중인 여러 외장 그래픽 카드(GPU) 하드웨어 장치들 혹은 CPU 내장 그래픽 코어 프로세서 리소스 소스 중, 구체적으로 어떠한 독점 독점 그래픽 하드웨어 칩셋의 물리 물리 프로세서 자원을 giả lập 가상 기기 기동 화면 계산 및 셰이더 드로잉 전담 가속 장치 장치로 독점 선점 선점해 사용할 것인지 유저가 하드웨어 대상을 직접 선별 지정 선택합니다.</p></body></html>"
 
 #: qt/src/SoundPanel.ui
 msgid "Adjust input rate to display rate automatically"
-msgstr "입력 속도를 디스플레이 속도에 자동으로 맞춥니다"
+msgstr "오디오 입력 속도를 모니터 주사율 주기에 맞춰 자동으로 실시간 정밀 동기화 조절"
 
 #: qt/src/DisplayPanel.ui
 msgid "Adjust settings for VRR in fullscreen mode"
-msgstr "Adjust settings for VRR in fullscreen mode"
+msgstr "전체 화면 진입 시 가변 주사율 게이밍 모니터(VRR: 지싱크/프리싱크) 가동 최적화 전용 수치 자동 임시 강제 가변 강제 연동 전환 조정"
 
 #: qt/src/EmuMainWindow.cpp
 msgid "All Files (*)"
-msgstr "All Files (*)"
+msgstr "모든 파일 양식 일괄 스캔 (*)"
 
 #: qt/src/EmulationPanel.ui
 msgid "Allow opposite D-pad directions simultaneously"
-msgstr "Allow opposite D-pad directions simultaneously"
+msgstr "십자 방향키(D-pad) 입력 버퍼 상 반대 방향(좌+우 / 상+하) 키의 완전 동시 누름 입력 허용"
 
 #: qt/src/EmulationPanel.ui
 msgid "Alternate sound filter:"
-msgstr "Alternate sound filter:"
+msgstr "오리지널 가우시안 대체용 선명한 하이파이 성향 사운드 필터 선택:"
 
 #: qt/src/ControllerPanel.ui
 msgid "Auto-Assign Gamepad Buttons Using SDL Controller Map"
-msgstr "Auto-Assign Gamepad Buttons Using SDL Controller Map"
+msgstr "SDL 라이브러리 컨트롤러 맵 데이터베이스 정보 기반 외부 게임패드 버튼 자동 원터치 매핑 프로필 수립"
 
 #: qt/src/EmulationPanel.ui
 msgid "Auto-FastROM"
-msgstr "Auto-FastROM"
+msgstr "카트리지 대역폭 향상용 FastROM 규격 조건 자동 가상 활성화 적용"
 
 #: qt/src/ControllerPanel.ui
 msgid "Automatically assign a controller's buttons to a slot"
-msgstr "Automatically assign a controller's buttons to a slot"
+msgstr "발견된 물리 외부 입력 장치 패드의 단추 신호들을 비어있는 입력 슬롯 매핑 칸에 즉시 실시간 일괄 자동 할당 배정"
 
 #: qt/src/DisplayPanel.ui
 msgid "Bilinear filter"
-msgstr "Bilinear filter"
+msgstr "도트 부드럽게 뭉개기 바이리니어 보간 보정 필터(Bilinear)"
 
 #: qt/src/ControllerPanel.ui
 msgid "Binding #1"
-msgstr "Binding #1"
+msgstr "입력 매핑 프로필 슬롯 1번 박스"
 
 #: qt/src/ControllerPanel.ui
 msgid "Binding #2"
-msgstr "Binding #2"
+msgstr "입력 매핑 프로필 슬롯 2번 박스"
 
 #: qt/src/ControllerPanel.ui
 msgid "Binding #3"
-msgstr "Binding #3"
+msgstr "입력 매핑 프로필 슬롯 3번 박스"
 
 #: qt/src/ControllerPanel.ui
 msgid "Binding #4"
-msgstr "Binding #4"
+msgstr "입력 매핑 프로필 슬롯 4번 박스"
 
 #: qt/src/ControllerPanel.cpp
 msgid "Binding Set #%1"
-msgstr "Binding Set #%1"
+msgstr "컨트롤러 매핑 지정 프로필 그룹 세트 #%1"
 
 #: qt/src/ShortcutsPanel.ui
 msgid "Change Backdrop Color"
-msgstr "Change Backdrop Color"
+msgstr "에뮬레이터 내부 화면 활성 프레임 밖 여백 부위 채우기용 백드롭 칼라 색상 수정 변경"
 
 #: qt/src/EmuMainWindow.cpp
 msgid "Cheats"
-msgstr "치트"
+msgstr "치트 관리 콘솔"
 
 #: qt/src/CheatsDialog.cpp
 msgid "cheats.bml was not found."
-msgstr "cheats.bml was not found."
+msgstr "치트 주소 데이터 매핑 관리용 필수 파일인 cheats.bml 소스를 스캔 경로 내에서 찾을 수 없습니다."
 
 #: qt/src/CheatsDialog.ui
 msgid "Check Database"
-msgstr "Check Database"
+msgstr "오프라인 내장 기여 치트 주소 데이터베이스 무결성 검증 검사"
 
 #: qt/src/DisplayPanel.ui
 msgid "Choose a device to render output. If you have no integrated graphics, there will be only one choice."
-msgstr "Choose a device to render output. If you have no integrated graphics, there will be only one choice."
+msgstr "최종 가상 출력 프레임 가속 처리를 전담할 물리 물리 하드웨어 그래픽 카드 장치를 택하십시오. 만약 CPU 내장 그래픽 프로세서 자원이 아예 상주하지 않는 메인보드 사양 본체라면 테이블 리스트에는 단 하나의 외장 그래픽 장치 단독 선택지 옵션만 가시 노출됩니다."
 
 #: qt/src/EmuMainWindow.cpp
 msgid "Choose a State File"
-msgstr "Choose a State File"
+msgstr "가져올 강제 세이브 상태 스냅샷 파일(.sst/.0xx) 스토리지 경로 지정 선택"
 
 #: qt/src/ControllerPanel.cpp
 msgid "Clear All Controllers"
-msgstr "Clear All Controllers"
+msgstr "모든 플레이어 포트(1P ~ 8P 전체) 칸의 키 매핑 세트 설정 설정 일절 일괄 지우기 초기화"
 
 #: qt/src/ControllerPanel.cpp
 msgid "Clear Current Controller"
-msgstr "Clear Current Controller"
+msgstr "현재 선택 탭 창에 수립된 해당 플레이어 포트 칸의 키 매핑 설정만 완전히 초기화 지우기"
 
 #: qt/src/EmuMainWindow.cpp
 msgid "Clear Recent Files"
-msgstr "Clear Recent Files"
+msgstr "최근 구동했던 게임 ROM 파일 파일 경로 스캔 기록 리스트 일괄 완전히 삭제 지우기"
 
 #: qt/src/EmuSettingsWindow.ui
 msgid "Click on a setting to find out more info."
-msgstr "Click on a setting to find out more info."
+msgstr "해당 세부 환경 설정 항목 줄 칸을 마우스 클릭 지정하면 하단 가이드 가이드 대화상자 칸에 작동 원리 설명 도움말이 상세 출력 표기 명시됩니다."
 
 #: qt/src/FoldersPanel.ui
 msgid "Config Folder"
-msgstr "Config Folder"
+msgstr "에뮬레이터 중앙 conf 기본 설정 디렉토리 보존 경로 기준"
 
 #: qt/src/FoldersPanel.cpp
 msgid "Config folder is %1"
-msgstr "Config folder is %1"
+msgstr "현재 에뮬레이터의 메인 기본 환경 설정 도큐먼트 디렉토리 상주 경로는 %1 공간입니다."
 
 #: qt/src/ControllerPanel.cpp
 msgid "Controller %1"
-msgstr "Controller %1"
+msgstr "가상 패드 장치 단자 %1번 칸 포트"
 
 #: qt/src/ControllerPanel.ui
 msgid "Controller + Multitap"
-msgstr "Controller + Multitap"
+msgstr "가상 표준 조이패드 패드 기기 + 멀티탭 부착 어댑터 확장 슬롯 인터페이스"
 
 #: qt/src/ControllerPanel.ui
 msgid "Controller Ports:"
-msgstr "Controller Ports:"
+msgstr "가상 컨트롤러 c c 포트 단자 배열 종류 지정:"
 
 #: qt/src/EmuMainWindow.cpp
 msgid "Controllers"
-msgstr "Controllers"
+msgstr "컨트롤러 조작 입력 매핑 제어 콘솔"
 
 #: qt/src/FoldersPanel.ui
 msgid "Custom Folder"
-msgstr "Custom Folder"
+msgstr "유저 임의 절대 경로 수동 수동 지정 디렉토리 기준"
 
 #: qt/src/FoldersPanel.ui
 msgid "Data Locations"
-msgstr "Data Locations"
+msgstr "런타임 파생 데이터 파일 파일 아웃풋 물리 경로 관리 아웃풋"
 
 #: qt/src/ShortcutsPanel.ui
 msgid "Decrease Current Save Slot"
-msgstr "Decrease Current Save Slot"
+msgstr "현재 선택 활성화된 강제 세이브 상태 스냅샷 저장 슬롯 번호 단계를 한 단계 하향 아래로 변경 감소"
 
 #: qt/src/ControllerPanel.cpp
 msgid "Default Keyboard"
-msgstr "Default Keyboard"
+msgstr "에뮬레이터 내장 팩토리 디폴트 표준 키보드 자판 키 세팅 배열 값 주입"
 
 #: qt/src/DisplayPanel.ui
 msgid "Device:"
-msgstr "Device:"
+msgstr "선택할 가속 처리 하드웨어 그래픽 칩셋 장치명:"
 
 #: qt/src/GeneralPanel.ui
 msgid "Disable screensaver"
-msgstr "화면 보호기 비활성화"
+msgstr "게임 구동 플레이 작동 도중 호스트 윈도우 운영체제 시스템의 화면 보호기(screensaver) 진입 차단 비활성화"
 
 #: qt/src/DisplayPanel.ui
 msgid "Display messages:"
-msgstr "Display messages:"
+msgstr "편의 편의 기능 기동 시 안내 자막 자막 통지 메시지 가시 표시 양식 유형:"
 
 #: qt/src/DisplayPanel.ui
 msgid "Display Output"
-msgstr "Display Output"
+msgstr "최종 프레임 화면 렌더링 디스플레이 출력 장치 관리 사양"
 
 #: qt/src/DisplayPanel.ui
 msgid "Don't display messages"
-msgstr "Don't display messages"
+msgstr "유저 유저 인지용 안내 자막 자막 알림 문구를 화면에 일절 노출시키지 않고 은폐 차단"
 
 #: qt/src/DisplayPanel.ui
 msgid "Driver:"
-msgstr "Driver:"
+msgstr "그래픽 가속 출력을 위한 드라이버 API 백엔드 종류 사양:"
 
 #: qt/src/ControllerPanel.ui
 msgid "Edit"
@@ -4679,688 +4731,156 @@ msgstr "편집"
 
 #: qt/src/EmulationPanel.ui
 msgid "Emulation Speed"
-msgstr "Emulation Speed"
+msgstr "가상 기기 에뮬레이션 기본 인터벌 타임 루프 구동 속도 배속"
 
 #: qt/src/ShortcutsPanel.ui
 msgid "Enable Fast-Forward"
-msgstr "Enable Fast-Forward"
+msgstr "고속 에뮬레이션 프레임 가속 빨리 감기(Fast-Forward) 편의 기능 강제 활성화 키 매핑"
 
 #: qt/src/DisplayPanel.ui
 msgid "Enable vsync"
-msgstr "Enable vsync"
+msgstr "출력 프레임 수평 가로 찢어짐 정밀 억제 수직 동기화(vsync) 기능 가동 온"
 
 #: qt/src/FoldersPanel.ui
 msgid "Exports"
-msgstr "Exports"
+msgstr "치트 코드 추출 혹은 덤프된 개별 특수 파생 파일 저장 폴더"
 
 #: qt/src/EmulationPanel.ui
 msgid "Fast-forward frame skip:"
-msgstr "Fast-forward frame skip:"
+msgstr "고속 빨리 감기 편의 편의 기능 구동 시 가속을 위해 통째로 생략 건너뛸 고정 프레임 스킵 수치 한도:"
 
 #: qt/src/SoundPanel.ui
 msgid "Fast-Forward:"
-msgstr "Fast-Forward:"
+msgstr "고속 빨리 감기 가속 시 볼륨 크기 수치 비율:"
 
 #: qt/src/ControllerPanel.ui
 msgid "Form"
-msgstr "Form"
+msgstr "입력 양식 폼 윈도우 인터페이스"
 
 #: qt/src/EmulationPanel.ui
 msgid "fps"
-msgstr "fps"
+msgstr "초당 프레임 수 (fps)"
 
 #: qt/src/EmulationPanel.ui
 msgid "Frame rate:"
-msgstr "Frame rate:"
+msgstr "가상 코어 기동 타겟 프레임 속도 주 단위 제어:"
 
 #: qt/src/EmulationPanel.ui
 msgid "Frames between steps"
-msgstr "Frames between steps"
+msgstr "되감기 백업 저장을 행할 개별 스냅샷 스냅샷 프레임 간격 주기 밀도 조절"
 
 #: qt/src/EmuMainWindow.cpp
 msgid "From File"
-msgstr "From File"
+msgstr "유저 로컬 컴퓨터 하드 디스크 시스템 경로 위치 내 파일 파일 소스 연동"
 
 #: qt/src/EmulationPanel.ui
 msgid "Gaussian"
-msgstr "Gaussian"
+msgstr "가우시안 (로우패스 필터 성향 실기 고증형 기본 디폴트 오디오 보간 필터)"
 
 #: qt/src/SoundPanel.ui
 msgid "GB:"
-msgstr "GB:"
+msgstr "SGB 기동 시의 게임보이 오리지널 코어 채널 음량 비율 배율 (GB):"
 
 #: qt/src/ShortcutsPanel.ui
 msgid "Grab Mouse"
-msgstr "Grab Mouse"
+msgstr "마우스 마우스 커서를 게임 기동 창 화면 프레임 내부 영역 안에 완전히 가두어 귀속 격리 매핑"
 
 #: qt/src/EmuMainWindow.cpp
 msgid "Hard Reset"
-msgstr "Hard Reset"
+msgstr "에뮬레이터 가상 전원 버튼 스위치를 완전히 껐다 다시 켜는 하드웨어 완전 초기화 기동 (Hard Reset)"
 
 #: qt/src/EmulationPanel.ui
 msgid "High"
-msgstr "High"
+msgstr "고해상도 / 고음질 하이파이 고성능 알고리즘 적용"
 
 #: qt/src/DisplayPanel.ui
 msgid "High-resolution mode:"
-msgstr "High-resolution mode:"
+msgstr "SNES 하드웨어 고유의 가로 512 와이드 확장 고해상도 모드 돌입 시 화면 합성 가공 가공 방식 알고리즘 지정:"
 
 #: qt/src/ShortcutsPanel.ui
 msgid "Increase Current Save Slot"
-msgstr "Increase Current Save Slot"
+msgstr "현재 지정된 강제 세이브 상태 스냅샷 저장 슬롯 번호 단계를 한 단계 위 상향으로 변경 증가"
 
 #: qt/src/DisplayPanel.ui
 msgid "Inside the screen - Low resolution"
-msgstr "Inside the screen - Low resolution"
+msgstr "2D 게임 화면 버퍼 프레임 데이터 내부 공간 합성 - 저해상도 투박한 도트 픽셀 자막 문자 양식"
 
 #: qt/src/CheatsDialog.cpp
 msgid "Invalid Cheat"
-msgstr "Invalid Cheat"
+msgstr "치트 변조 주소 값 문자열 데이터 포맷 양식이 비정상적이거나 유효하지 않습니다."
 
 #: qt/src/DisplayPanel.ui
 msgid "Keep the screen at the requested proportions for width and height."
-msgstr "Keep the screen at the requested proportions for width and height."
+msgstr "창 크기를 늘리거나 줄이더라도 내부 화면 중심 알맹이 알맹이 컨텐츠만큼은 원본 고유의 균형 잡힌 가로세로 폭 비례 비율 상태를 깨트리지 않고 완전 고정 유지 출력 보존합니다."
 
 #: qt/src/EmuMainWindow.cpp
 msgid "Load State"
-msgstr "상태 불러오기"
+msgstr "원하는 타임라인 슬롯 시점 상태 즉시 불러오기 (Load State)"
 
 #: qt/src/ShortcutsPanel.ui
 msgid "Load State from Current Slot"
-msgstr "Load State from Current Slot"
+msgstr "현재 실시간 지정되어 상주 중인 해당 번호 세이브 슬롯 시점 위치 상태 상태 즉시 즉각 불러오기"
 
 #: qt/src/EmulationPanel.ui
 msgid "Low"
-msgstr "Low"
+msgstr "저해상도 / 연산 부하가 극도로 낮고 가벼운 경량형 간소화 알고리즘 적용"
 
 #: qt/src/EmulationPanel.ui
 msgid "MB"
-msgstr "MB"
+msgstr "MB 용량 단위 수치"
 
 #: qt/src/DisplayPanel.ui
 msgid "Merge the fields of the high-resolution lines"
-msgstr "Merge the fields of the high-resolution lines"
+msgstr "와이드 고해상도 인터레이싱 필드 신호 라인을 스케일링으로 뭉개고 보간 알파 합성 혼합 처리"
 
 #: qt/src/DisplayPanel.ui
 msgid "Messages"
-msgstr "Messages"
+msgstr "가상 기기 구동 상태 안내용 자막 문자 정보 메시지 제어"
 
 #: qt/src/ControllerPanel.ui
 msgid "Mouse + Controller"
-msgstr "Mouse + Controller"
+msgstr "가상 주변 기기 마우스 장치 + 1번 기본 표준 조이패드 복합 부착 구성"
 
 #: qt/src/SoundPanel.ui
 msgid "ms"
-msgstr "ms"
+msgstr "밀리초 지연 시간 단위 (ms)"
 
 #: qt/src/SoundPanel.ui
 msgid "Mute all sound"
-msgstr "모든 사운드 음소거"
+msgstr "에뮬레이터 giả lập 최종 오디오 메인 음향 마스터 신호 출력 자체를 차단 일괄 음소거 무음 처리"
 
 #: qt/src/SoundPanel.ui
 msgid "Mute sound during turbo or rewind"
-msgstr "터보 또는 되감기 중 사운드 음소거"
+msgstr "고속 터보 배속 구동 순간이나 조작 실시간 되감기 편의 기능 홀드 런타임 가동 순간 동안만 오디오 강제 실시간 음소거 무음 소음 차단"
 
 #: qt/src/CheatsDialog.cpp
 msgid "No cheats for the current game were found in the database."
-msgstr "No cheats for the current game were found in the database."
+msgstr "오프라인 내장 기여 치트 주소 사전 사전 아카이브 데이터베이스 소스를 검색하였으나, 현재 로드되어 가동 중인 이 게임 ROM 파일 타이틀 명칭 일치 코드와 일치 매칭 매칭되는 치트 변조 번지 리스트 결과물을 단 하나도 찾아내지 못했습니다."
 
 #: qt/src/CheatsDialog.cpp
 msgid "No Cheats Found"
-msgstr "No Cheats Found"
+msgstr "검색 범위 내 매칭 치트 주소 결과물 없음"
 
 #: qt/src/EmuMainWindow.cpp
 msgid "No recent files"
-msgstr "No recent files"
+msgstr "최근 가동을 시도했던 예전 게임 구동 ROM 파일 경로 아카이브 기록이 텅 비어 비어 존재하지 않습니다."
 
 #: qt/src/EmulationPanel.ui
 msgid "None - Run unthrottled, unless vsync is turned on"
-msgstr "None - Run unthrottled, unless vsync is turned on"
+msgstr "None (제한 없음 족쇄 해제) - 정속 구동 족쇄 억제 장치를 끄며, 수직 동기화 vsync 기능조차 안 켜져 있으면 PC 사양이 허용하는 최대 속도까지 폭주 오버 배속 가속 구동"
 
 #: qt/src/ControllerPanel.ui
 msgid "One Controller"
-msgstr "One Controller"
+msgstr "가상 마더보드 포트 칸에 단 하나의 가상 표준 단독 조이패드 장치 단독 배정 구성"
 
 #: qt/src/DisplayPanel.ui
 msgid "Onscreen - High resolution"
-msgstr "Onscreen - High resolution"
+msgstr "외부 독립 레이어 오버레이 자막 레이어 표기 - 가독성 가독성이 높은 현대적 고해상도 아웃라인 문자 양식"
 
 #: qt/src/DisplayPanel.ui
 msgid "Onscreen display size:"
-msgstr "Onscreen display size:"
+msgstr "고해상도 온스크린 오버레이(Onscreen 자막) 자막 안내 문자 메시지 폰트 폰트 스케일 물리 크기 한도:"
 
 #: qt/src/EmuMainWindow.cpp
 msgid "Open a ROM File"
-msgstr "Open a ROM File"
-
-#: qt/src/EmuMainWindow.cpp
-msgid "Open File"
-msgstr "Open File"
-
-#: qt/src/FoldersPanel.cpp
-msgid "Open Folder"
-msgstr "Open Folder"
-
-#: qt/src/EmuCanvasOpenGL.cpp
-msgid "OpenGL Driver"
-msgstr "OpenGL Driver"
-
-#: qt/src/EmulationPanel.ui
-msgid "Overclock:"
-msgstr "Overclock:"
-
-#: qt/src/GeneralPanel.ui
-msgid "Overlays"
-msgstr "Overlays"
-
-#: qt/src/FoldersPanel.ui
-msgid "Patches"
-msgstr "Patches"
-
-#: qt/src/GeneralPanel.ui
-msgid "Pause emulation when window is not focused"
-msgstr "창에 포커스가 없을 때 에뮬레이션 일시 정지"
-
-#: qt/src/ShortcutsPanel.ui
-msgid "Pause/Continue"
-msgstr "Pause/Continue"
-
-#: qt/src/ShortcutsPanel.ui
-msgid "Power Cycle Console"
-msgstr "Power Cycle Console"
-
-#: qt/src/ShaderParametersDialog.cpp
-msgid "Preset name:"
-msgstr "Preset name:"
-
-#: qt/src/DisplayPanel.ui
-msgid "Prevent the display driver from getting too far ahead in order to reduce lag."
-msgstr "지연을 줄이기 위해 디스플레이 드라이버가 너무 앞서가지 않도록 방지합니다."
-
-#: qt/src/DisplayPanel.ui
-msgid "pt"
-msgstr "pt"
-
-#: qt/src/ShortcutsPanel.ui
-msgid "Quick Load Slot 0"
-msgstr "Quick Load Slot 0"
-
-#: qt/src/ShortcutsPanel.ui
-msgid "Quick Load Slot 1"
-msgstr "Quick Load Slot 1"
-
-#: qt/src/ShortcutsPanel.ui
-msgid "Quick Load Slot 2"
-msgstr "Quick Load Slot 2"
-
-#: qt/src/ShortcutsPanel.ui
-msgid "Quick Load Slot 3"
-msgstr "Quick Load Slot 3"
-
-#: qt/src/ShortcutsPanel.ui
-msgid "Quick Load Slot 4"
-msgstr "Quick Load Slot 4"
-
-#: qt/src/ShortcutsPanel.ui
-msgid "Quick Load Slot 5"
-msgstr "Quick Load Slot 5"
-
-#: qt/src/ShortcutsPanel.ui
-msgid "Quick Load Slot 6"
-msgstr "Quick Load Slot 6"
-
-#: qt/src/ShortcutsPanel.ui
-msgid "Quick Load Slot 7"
-msgstr "Quick Load Slot 7"
-
-#: qt/src/ShortcutsPanel.ui
-msgid "Quick Load Slot 8"
-msgstr "Quick Load Slot 8"
-
-#: qt/src/ShortcutsPanel.ui
-msgid "Quick Load Slot 9"
-msgstr "Quick Load Slot 9"
-
-#: qt/src/ShortcutsPanel.ui
-msgid "Quick Save Slot 0"
-msgstr "Quick Save Slot 0"
-
-#: qt/src/ShortcutsPanel.ui
-msgid "Quick Save Slot 1"
-msgstr "Quick Save Slot 1"
-
-#: qt/src/ShortcutsPanel.ui
-msgid "Quick Save Slot 2"
-msgstr "Quick Save Slot 2"
-
-#: qt/src/ShortcutsPanel.ui
-msgid "Quick Save Slot 3"
-msgstr "Quick Save Slot 3"
-
-#: qt/src/ShortcutsPanel.ui
-msgid "Quick Save Slot 4"
-msgstr "Quick Save Slot 4"
-
-#: qt/src/ShortcutsPanel.ui
-msgid "Quick Save Slot 5"
-msgstr "Quick Save Slot 5"
-
-#: qt/src/ShortcutsPanel.ui
-msgid "Quick Save Slot 6"
-msgstr "Quick Save Slot 6"
-
-#: qt/src/ShortcutsPanel.ui
-msgid "Quick Save Slot 7"
-msgstr "Quick Save Slot 7"
-
-#: qt/src/ShortcutsPanel.ui
-msgid "Quick Save Slot 8"
-msgstr "Quick Save Slot 8"
-
-#: qt/src/ShortcutsPanel.ui
-msgid "Quick Save Slot 9"
-msgstr "Quick Save Slot 9"
-
-#: qt/src/ShortcutsPanel.ui
-msgid "Quit"
-msgstr "종료"
-
-#: qt/src/SoundPanel.ui
-msgid "Regular:"
-msgstr "Regular:"
-
-#: qt/src/EmulationPanel.ui
-msgid "Remove the sprite limit"
-msgstr "Remove the sprite limit"
-
-#: qt/src/ShortcutsPanel.ui
-msgid "Reset to Default"
-msgstr "Reset to Default"
-
-#: qt/src/EmuSettingsWindow.ui
-msgid "Restore all settings on the current page to their default values."
-msgstr "Restore all settings on the current page to their default values."
-
-#: qt/src/EmuSettingsWindow.ui
-msgid "Restore Defaults"
-msgstr "Restore Defaults"
-
-#: qt/src/EmulationPanel.ui
-msgid "Rewind buffer size (0 to disable):"
-msgstr "Rewind buffer size (0 to disable):"
-
-#: qt/src/EmuMainWindow.cpp
-msgid "ROM Files (*.sfc *.smc *.bin *.fig *.msu *.zip)"
-msgstr "ROM Files (*.sfc *.smc *.bin *.fig *.msu *.zip)"
-
-#: qt/src/FoldersPanel.ui
-msgid "ROM Folder"
-msgstr "ROM Folder"
-
-#: qt/src/EmuMainWindow.cpp
-msgid "Run"
-msgstr "Run"
-
-#: qt/src/ShaderParametersDialog.cpp
-msgid "Save"
-msgstr "저장"
-
-#: qt/src/ShaderParametersDialog.cpp
-msgid "Save As"
-msgstr "Save As"
-
-#: qt/src/ShaderParametersDialog.cpp
-msgid "Save Shader Preset As"
-msgstr "Save Shader Preset As"
-
-#: qt/src/FoldersPanel.ui
-msgid "Save SRAM to disk every:"
-msgstr "Save SRAM to disk every:"
-
-#: qt/src/ShortcutsPanel.ui
-msgid "Save State to Current Slot"
-msgstr "Save State to Current Slot"
-
-#: qt/src/FoldersPanel.ui
-msgid "Save states"
-msgstr "Save states"
-
-#: qt/src/EmuMainWindow.cpp
-msgid "Save States (*.sst *.oops *.undo *.0?? *.1?? *.2?? *.3?? *.4?? *.5?? *.6?? *.7?? *.8?? *.9*)"
-msgstr "Save States (*.sst *.oops *.undo *.0?? *.1?? *.2?? *.3?? *.4?? *.5?? *.6?? *.7?? *.8?? *.9*)"
-
-#: qt/src/DisplayPanel.ui
-msgid "Scale normal resolution screens up"
-msgstr "Scale normal resolution screens up"
-
-#: qt/src/DisplayPanel.ui
-msgid "Scaling and Aspect Ratio"
-msgstr "Scaling and Aspect Ratio"
-
-#: qt/src/FoldersPanel.ui
-msgid "seconds"
-msgstr "seconds"
-
-#: qt/src/ShortcutsPanel.ui
-msgid "Seek to Frame"
-msgstr "Seek to Frame"
-
-#: qt/src/DisplayPanel.cpp
-msgid "Select a Folder"
-msgstr "Select a Folder"
-
-#: qt/src/DisplayPanel.ui
-msgid "Select the output driver."
-msgstr "Select the output driver."
-
-#: qt/src/ControllerPanel.ui
-msgid "Set"
-msgstr "Set"
-
-#: qt/src/EmulationPanel.ui
-msgid "Set frame rate to 0 to automatically change based on PAL/NTSC and with interlacing on and off."
-msgstr "Set frame rate to 0 to automatically change based on PAL/NTSC and with interlacing on and off."
-
-#: qt/src/EmuMainWindow.cpp
-msgid "Set Size"
-msgstr "Set Size"
-
-#: qt/src/DisplayPanel.cpp
-msgid "Shader Presets (*.slangp *.glslp)"
-msgstr "Shader Presets (*.slangp *.glslp)"
-
-#: qt/src/EmuMainWindow.cpp
-msgid "Shader Settings"
-msgstr "Shader Settings"
-
-#: qt/src/GeneralPanel.ui
-msgid "Show fast-forward and pause icons"
-msgstr "Show fast-forward and pause icons"
-
-#: qt/src/DisplayPanel.ui
-msgid "Show overscan area"
-msgstr "Show overscan area"
-
-#: qt/src/DisplayPanel.ui
-msgid "Show the areas on the top and bottom of the screen that are normally black and hidden by the TV. Some games will draw in these areas."
-msgstr "Show the areas on the top and bottom of the screen that are normally black and hidden by the TV. Some games will draw in these areas."
-
-#: qt/src/GeneralPanel.ui
-msgid "Show the time"
-msgstr "시간 표시"
-
-#: qt/src/EmuMainWindow.cpp
-msgid "Slot %1"
-msgstr "Slot %1"
-
-#: qt/src/DisplayPanel.ui
-msgid "Smooth screen output."
-msgstr "Smooth screen output."
-
-#: qt/src/ControllerPanel.ui
-msgid "SNES Controller 1"
-msgstr "SNES Controller 1"
-
-#: qt/src/ControllerPanel.ui
-msgid "SNES Controller 2"
-msgstr "SNES Controller 2"
-
-#: qt/src/ControllerPanel.ui
-msgid "SNES Controller 3 (Multitap)"
-msgstr "SNES Controller 3 (Multitap)"
-
-#: qt/src/ControllerPanel.ui
-msgid "SNES Controller 4 (Multitap)"
-msgstr "SNES Controller 4 (Multitap)"
-
-#: qt/src/ControllerPanel.ui
-msgid "SNES Controller 5 (Multitap)"
-msgstr "SNES Controller 5 (Multitap)"
-
-#: qt/src/DisplayPanel.ui
-msgid "Software Filters"
-msgstr "Software Filters"
-
-#: qt/src/SoundPanel.ui
-msgid "Sound Output"
-msgstr "Sound Output"
-
-#: qt/src/SoundPanel.ui
-msgid "Sound Stretching"
-msgstr "Sound Stretching"
-
-#: qt/src/EmulationPanel.ui
-msgid "Sound Synchronization - Wait on the sound buffer"
-msgstr "Sound Synchronization - Wait on the sound buffer"
-
-#: qt/src/SoundPanel.ui
-msgid "SPC:"
-msgstr "SPC:"
-
-#: qt/src/EmulationPanel.ui
-msgid "Speed control method:"
-msgstr "Speed control method:"
-
-#: qt/src/ShortcutsPanel.ui
-msgid "Start Recording"
-msgstr "Start Recording"
-
-#: qt/src/ShortcutsPanel.ui
-msgid "Stop Recording"
-msgstr "Stop Recording"
-
-#: qt/src/EmuMainWindow.cpp
-msgid "Super Game Boy (SGB1)"
-msgstr "Super Game Boy (SGB1)"
-
-#: qt/src/EmuMainWindow.cpp
-msgid "Super Game Boy 2 (SGB2)"
-msgstr "Super Game Boy 2 (SGB2)"
-
-#: qt/src/EmulationPanel.ui
-msgid "SuperFX clock speed:"
-msgstr "SuperFX clock speed:"
-
-#: qt/src/ControllerPanel.ui
-msgid "SuperScope + Controller"
-msgstr "SuperScope + Controller"
-
-#: qt/src/ShortcutsPanel.ui
-msgid "Swap Controllers 1 and 2"
-msgstr "Swap Controllers 1 and 2"
-
-#: qt/src/ControllerPanel.ui
-msgid "Swap or clear groups of bindings"
-msgstr "Swap or clear groups of bindings"
-
-#: qt/src/ControllerPanel.cpp
-msgid "Swap With"
-msgstr "Swap With"
-
-#: qt/src/GeneralPanel.ui
-msgid "Switch to fullscreen after opening a ROM"
-msgstr "Switch to fullscreen after opening a ROM"
-
-#: qt/src/DisplayPanel.ui
-msgid "Sync the display to vertical retrace to eliminate tearing."
-msgstr "Sync the display to vertical retrace to eliminate tearing."
-
-#: qt/src/CheatsDialog.cpp
-msgid "The cheat you entered was not valid."
-msgstr "The cheat you entered was not valid."
-
-#: qt/src/EmuCanvasOpenGL.cpp
-msgid "The driver isn't using a specialized shader preset right now."
-msgstr "The driver isn't using a specialized shader preset right now."
-
-#: qt/src/EmuMainWindow.cpp
-msgid "The language change will take effect after you restart SuperSnes9x."
-msgstr "The language change will take effect after you restart SuperSnes9x."
-
-#: qt/src/EmuCanvasVulkan.cpp
-msgid "The vulkan display driver hasn't properly loaded."
-msgstr "The vulkan display driver hasn't properly loaded."
-
-#: qt/src/DisplayPanel.ui
-msgid "This affects the rarely used 512-pixels-wide mode used by the SNES.\nFor games like Kirby 3 and Jurassic Park, choose the \"merge fields\" option.\nFor games like Seiken Densetsu 3 and Marvelous, choose the \"scale up\" option.\nOutput directly will cause the screen to change between the two modes and look weird."
-msgstr "This affects the rarely used 512-pixels-wide mode used by the SNES.\nFor games like Kirby 3 and Jurassic Park, choose the \"merge fields\" option.\nFor games like Seiken Densetsu 3 and Marvelous, choose the \"scale up\" option.\nOutput directly will cause the screen to change between the two modes and look weird."
-
-#: qt/src/EmuCanvasOpenGL.cpp
-msgid "This shader preset doesn't offer any configurable parameters."
-msgstr "This shader preset doesn't offer any configurable parameters."
-
-#: qt/src/EmulationPanel.ui
-msgid "Timer - Match the frame rate configured below"
-msgstr "Timer - Match the frame rate configured below"
-
-#: qt/src/EmulationPanel.ui
-msgid "Timer with Frame Skipping - Skip frames if needed"
-msgstr "Timer with Frame Skipping - Skip frames if needed"
-
-#: qt/src/EmuMainWindow.cpp
-msgid "To File"
-msgstr "To File"
-
-#: qt/src/ShortcutsPanel.ui
-msgid "Toggle All Sound Channels"
-msgstr "Toggle All Sound Channels"
-
-#: qt/src/ShortcutsPanel.ui
-msgid "Toggle BG Layer 0"
-msgstr "Toggle BG Layer 0"
-
-#: qt/src/ShortcutsPanel.ui
-msgid "Toggle BG Layer 1"
-msgstr "Toggle BG Layer 1"
-
-#: qt/src/ShortcutsPanel.ui
-msgid "Toggle BG Layer 2"
-msgstr "Toggle BG Layer 2"
-
-#: qt/src/ShortcutsPanel.ui
-msgid "Toggle BG Layer 3"
-msgstr "Toggle BG Layer 3"
-
-#: qt/src/ShortcutsPanel.ui
-msgid "Toggle Fast-Forward"
-msgstr "Toggle Fast-Forward"
-
-#: qt/src/ShortcutsPanel.ui
-msgid "Toggle Fullscreen"
-msgstr "Toggle Fullscreen"
-
-#: qt/src/ShortcutsPanel.ui
-msgid "Toggle Sound Channel 1"
-msgstr "Toggle Sound Channel 1"
-
-#: qt/src/ShortcutsPanel.ui
-msgid "Toggle Sound Channel 2"
-msgstr "Toggle Sound Channel 2"
-
-#: qt/src/ShortcutsPanel.ui
-msgid "Toggle Sound Channel 3"
-msgstr "Toggle Sound Channel 3"
-
-#: qt/src/ShortcutsPanel.ui
-msgid "Toggle Sound Channel 4"
-msgstr "Toggle Sound Channel 4"
-
-#: qt/src/ShortcutsPanel.ui
-msgid "Toggle Sound Channel 5"
-msgstr "Toggle Sound Channel 5"
-
-#: qt/src/ShortcutsPanel.ui
-msgid "Toggle Sound Channel 6"
-msgstr "Toggle Sound Channel 6"
-
-#: qt/src/ShortcutsPanel.ui
-msgid "Toggle Sound Channel 7"
-msgstr "Toggle Sound Channel 7"
-
-#: qt/src/ShortcutsPanel.ui
-msgid "Toggle Sound Channel 8"
-msgstr "Toggle Sound Channel 8"
-
-#: qt/src/ShortcutsPanel.ui
-msgid "Toggle Sprites"
-msgstr "Toggle Sprites"
-
-#: qt/src/ControllerPanel.ui
-msgid "Turbo A"
-msgstr "터보 A"
-
-#: qt/src/ControllerPanel.ui
-msgid "Turbo B"
-msgstr "터보 B"
-
-#: qt/src/ControllerPanel.ui
-msgid "Turbo L"
-msgstr "터보 L"
-
-#: qt/src/ControllerPanel.ui
-msgid "Turbo R"
-msgstr "터보 R"
-
-#: qt/src/ControllerPanel.ui
-msgid "Turbo X"
-msgstr "터보 X"
-
-#: qt/src/ControllerPanel.ui
-msgid "Turbo Y"
-msgstr "터보 Y"
-
-#: qt/src/ControllerPanel.ui
-msgid "Two Controllers"
-msgstr "Two Controllers"
-
-#: qt/src/EmuMainWindow.cpp
-msgid "Unable to create a %1 context. Attempting to use %2."
-msgstr "Unable to create a %1 context. Attempting to use %2."
-
-#: qt/src/CheatsDialog.cpp
-msgid "Unable to Open Cheats Database"
-msgstr "Unable to Open Cheats Database"
-
-#: qt/src/EmuMainWindow.cpp
-msgid "Unable to Start Display Driver"
-msgstr "Unable to Start Display Driver"
-
-#: qt/src/EmuMainWindow.cpp
-msgid "Undo Load State"
-msgstr "Undo Load State"
-
-#: qt/src/DisplayPanel.ui
-msgid "Use a hardware shader:"
-msgstr "Use a hardware shader:"
-
-#: qt/src/DisplayPanel.ui
-msgid "Use a selected .slangp or .glslp shader file. \n.slangp is supported by Vulkan and OpenGL. \n.glslp is supported by OpenGL."
-msgstr "Use a selected .slangp or .glslp shader file. \n.slangp is supported by Vulkan and OpenGL. \n.glslp is supported by OpenGL."
-
-#: qt/src/EmulationPanel.ui
-msgid "Use a shadow echo buffer"
-msgstr "Use a shadow echo buffer"
-
-#: qt/src/DisplayPanel.ui
-msgid "Use integer scaling"
-msgstr "정수 스케일링 사용"
-
-#: qt/src/ControllerPanel.ui
-msgid "Use SDL to set up the D-pad, face buttons, and L/R. Other buttons may still be configured."
-msgstr "Use SDL to set up the D-pad, face buttons, and L/R. Other buttons may still be configured."
-
-#: qt/src/EmuMainWindow.cpp
-msgid "View"
-msgstr "View"
-
-#: qt/src/EmuCanvasVulkan.cpp
-msgid "Vulkan Driver"
-msgstr "Vulkan Driver"
-
-#: qt/src/DisplayPanel.ui
-msgid "When entering fullscreen mode, temporarily change other settings to use VRR (G-Sync or FreeSync) correctly."
-msgstr "전체 화면 모드 진입 시 VRR(G-Sync 또는 FreeSync)을 올바르게 사용하기 위해 다른 설정을 일시적으로 변경합니다."
-
-#: qt/src/DisplayPanel.ui
-msgid "When scaling up, only use integer multiples of the original height."
-msgstr "확대할 때 원본 높이의 정수 배수만 사용합니다."
+msgstr "가상 기기 에뮬레이션 기동을 시작하기 위해 컴퓨터 드라이브 하드디스크 스토리지 내의 게임 ROM 파일 소스Sorry, something went wrong. Please try your request again.
