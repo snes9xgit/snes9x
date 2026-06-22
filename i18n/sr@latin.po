@@ -1,6 +1,6 @@
-# Serbian translation of snes9x-gtk 
+# Serbian translation of SuperSnes9x-gtk 
 # Copyright (C) 2010
-# This file is distributed under the same license as the snes9x-gtk package.
+# This file is distributed under the same license as the SuperSnes9x-gtk package.
 # Milan Kostić <smoki00790@gmail.com>, 2010.
 #
 msgid ""
@@ -78,7 +78,7 @@ msgstr "Nije pronađena odgovarajuća igra"
 #: src/gtk_cheat.cpp:476
 msgid ""
 "The database file <b>cheats.bml</b> was not found. It is normally installed "
-"with Snes9x, but you may also place a custom copy in your configuration or "
+"with SuperSnes9x, but you may also place a custom copy in your configuration or "
 "cheats directory."
 msgstr "Fajl baze <b>cheats.bml</b> nije pronađen. Obično se instalira uz SuperSnes9x, ali možete postaviti i prilagođenu kopiju u svoj konfiguracijski direktorijum ili direktorijum varanja."
 
@@ -1873,12 +1873,12 @@ msgstr "Korisnički interfejs"
 
 #: src/snes9x.ui:9327
 msgid ""
-"  Snes9x - Portable Super Nintendo Entertainment System (TM) emulator.\n"
+"  SuperSnes9x - Portable Super Nintendo Entertainment System (TM) emulator.\n"
 "\n"
 "  Snes9x homepage: http://www.snes9x.com/\n"
-"  Snes9x source code: https://github.com/shanytc/snes9x/\n"
+"  SuperSnes9x source code: https://github.com/shanytc/snes9x/\n"
 "\n"
-"  Permission to use, copy, modify and/or distribute Snes9x in both binary\n"
+"  Permission to use, copy, modify and/or distribute SuperSnes9x in both binary\n"
 "  and source form, for non-commercial purposes, is hereby granted without\n"
 "  fee, providing that this license information and copyright notice appear\n"
 "  with all copies and any derived work.\n"
@@ -1887,12 +1887,12 @@ msgid ""
 "  warranty. In no event shall the authors be held liable for any damages\n"
 "  arising from the use of this software or it's derivatives.\n"
 "\n"
-"  Snes9x is freeware for PERSONAL USE only. Commercial users should\n"
+"  SuperSnes9x is freeware for PERSONAL USE only. Commercial users should\n"
 "  seek permission of the copyright holders first. Commercial use includes,\n"
-"  but is not limited to, charging money for Snes9x or software derived from\n"
-"  Snes9x, including Snes9x or derivatives in commercial game bundles, and/"
+"  but is not limited to, charging money for SuperSnes9x or software derived from\n"
+"  SuperSnes9x, including SuperSnes9x or derivatives in commercial game bundles, and/"
 "or\n"
-"  using Snes9x as a promotion for your commercial product.\n"
+"  using SuperSnes9x as a promotion for your commercial product.\n"
 "\n"
 "  The copyright holders request that bug fixes and improvements to the code\n"
 "  should be forwarded to them so everyone can benefit from the "
@@ -1901,7 +1901,7 @@ msgid ""
 "\n"
 "  Super NES and Super Nintendo Entertainment System are trademarks of\n"
 "  Nintendo Co., Limited and its subsidiary companies."
-msgstr "  Snes9x - prenosni emulator Super Nintendo Entertainment System (TM).\n\n  Snes9x početna stranica: http://www.snes9x.com/\n  Snes9x izvorni kod: https://github.com/shanytc/snes9x/\n\n  Dozvola za korišćenje, kopiranje, izmenu i/ili distribuciju Snes9x-a u binarnom\n  i izvornom obliku, u nekomercijalne svrhe, ovim se daje bez\n  naknade, pod uslovom da se ova licenca i obaveštenje o autorskim pravima pojave\n  uz sve kopije i bilo koji izvedeni rad.\n\n  Ovaj softver se pruža 'takav-kakav-jeste', bez ikakve izričite ili podrazumevane\n  garancije. Autori ni u kom slučaju ne snose odgovornost za bilo kakvu štetu\n  proisteklu iz korišćenja ovog softvera ili njegovih derivata.\n\n  Snes9x je freeware samo za LIČNU UPOTREBU. Komercijalni korisnici treba\n  prvo da zatraže dozvolu nosilaca autorskih prava. Komercijalna upotreba uključuje,\n  ali nije ograničena na, naplaćivanje novca za Snes9x ili softver izveden iz\n  Snes9x-a, uključujući Snes9x ili derivate u komercijalnim paketima igara, i/ili\n  korišćenje Snes9x-a kao promocije za vaš komercijalni proizvod.\n\n  Nosioci autorskih prava traže da se ispravke grešaka i poboljšanja koda\n  proslede njima kako bi svi mogli imati koristi od izmena\n  u budućim verzijama.\n\n  Super NES i Super Nintendo Entertainment System su zaštitni znakovi\n  Nintendo Co., Limited i njegovih podružnica."
+msgstr "  SuperSnes9x - prenosni emulator Super Nintendo Entertainment System (TM).\n\n  Snes9x početna stranica: http://www.snes9x.com/\n  SuperSnes9x izvorni kod: https://github.com/shanytc/snes9x/\n\n  Dozvola za korišćenje, kopiranje, izmenu i/ili distribuciju SuperSnes9x-a u binarnom\n  i izvornom obliku, u nekomercijalne svrhe, ovim se daje bez\n  naknade, pod uslovom da se ova licenca i obaveštenje o autorskim pravima pojave\n  uz sve kopije i bilo koji izvedeni rad.\n\n  Ovaj softver se pruža 'takav-kakav-jeste', bez ikakve izričite ili podrazumevane\n  garancije. Autori ni u kom slučaju ne snose odgovornost za bilo kakvu štetu\n  proisteklu iz korišćenja ovog softvera ili njegovih derivata.\n\n  SuperSnes9x je freeware samo za LIČNU UPOTREBU. Komercijalni korisnici treba\n  prvo da zatraže dozvolu nosilaca autorskih prava. Komercijalna upotreba uključuje,\n  ali nije ograničena na, naplaćivanje novca za SuperSnes9x ili softver izveden iz\n  SuperSnes9x-a, uključujući SuperSnes9x ili derivate u komercijalnim paketima igara, i/ili\n  korišćenje SuperSnes9x-a kao promocije za vaš komercijalni proizvod.\n\n  Nosioci autorskih prava traže da se ispravke grešaka i poboljšanja koda\n  proslede njima kako bi svi mogli imati koristi od izmena\n  u budućim verzijama.\n\n  Super NES i Super Nintendo Entertainment System su zaštitni znakovi\n  Nintendo Co., Limited i njegovih podružnica."
 
 #~ msgid "<b>Accuracy</b>"
 #~ msgstr "<b>Tačnost</b>"
@@ -1939,8 +1939,8 @@ msgstr "  Snes9x - prenosni emulator Super Nintendo Entertainment System (TM).\n
 #~ msgid "bad option name: %s\n"
 #~ msgstr "pogrešan naziv za opciju: %s\n"
 
-#~ msgid "failure to read snes9x node"
-#~ msgstr "ne mogu da učitam snes9x-ov čvor"
+#~ msgid "failure to read SuperSnes9x node"
+#~ msgstr "ne mogu da učitam SuperSnes9x-ov čvor"
 
 #~ msgid "Couldn't open config file: %s\n"
 #~ msgstr "Ne mogu otvoriti konfiguracijski fajl: %s\n"
@@ -2014,7 +2014,7 @@ msgstr "  Snes9x - prenosni emulator Super Nintendo Entertainment System (TM).\n
 #~ msgstr "Direktorijum po izboru:"
 
 #~ msgid ""
-#~ "Detects frames that are not output by Snes9x in hires, and scales them"
+#~ "Detects frames that are not output by SuperSnes9x in hires, and scales them"
 #~ msgstr ""
 #~ "Pronađi frejmove koji nisu emulirani u većim rezolucijama i prilagodi ih"
 
@@ -2077,11 +2077,11 @@ msgstr "  Snes9x - prenosni emulator Super Nintendo Entertainment System (TM).\n
 #~ msgid ""
 #~ "Toggle the menu bar\n"
 #~ "Exit fullscreen mode\n"
-#~ "Quit Snes9x"
+#~ "Quit SuperSnes9x"
 #~ msgstr ""
 #~ "Uključi/Isključi meni\n"
 #~ "Izađi iz moda celog ekrana\n"
-#~ "Isključi Snes9x"
+#~ "Isključi SuperSnes9x"
 
 #~ msgid "Type:"
 #~ msgstr "Odaberi:"
@@ -4674,8 +4674,8 @@ msgid "<html><head/><body><p>Determines where to look for optional BIOS / boot R
 msgstr "<html><head/><body><p>Određuje gde se traže opcionalni BIOS / boot ROM fajlovi (Super Game Boy boot ROM, BS-X.bin, itd).</p><p><span style=\" font-style:italic;\">ROM direktorijum</span> traži pored učitanog ROM-a.</p><p><span style=\" font-style:italic;\">Konfiguracijski direktorijum</span> koristi \"bios\" poddirektorijum konfiguracijskog direktorijuma.</p><p><span style=\" font-style:italic;\">Prilagođeno</span> koristi izričitu putanju (podrazumevano: \"Bios\" u odnosu na radni direktorijum).</p></body></html>"
 
 #: qt/src/FoldersPanel.ui
-msgid "<html><head/><body><p>Determines where to save these files.</p><p><span style=\" font-style:italic;\">ROM Folder</span> will always save to the same folder as the ROM.</p><p><span style=\" font-style:italic;\">Config Folder</span> will save to a subfolder of the config folder that is shown. If there is a snes9x.conf file next to your executable, Snes9x will operate in portable mode and the config folder will be the folder the executable is in.</p><p><span style=\" font-style:italic;\">Custom</span> allows you to specify exactly where to save these files.</p></body></html>"
-msgstr "<html><head/><body><p>Određuje gde se ovi fajlovi čuvaju.</p><p><span style=\" font-style:italic;\">ROM direktorijum</span> uvek čuva u isti direktorijum kao i ROM.</p><p><span style=\" font-style:italic;\">Konfiguracijski direktorijum</span> čuva u prikazani poddirektorijum konfiguracijskog direktorijuma. Ako postoji snes9x.conf fajl pored vaše izvršne datoteke, Snes9x će raditi u prenosivom režimu i konfiguracijski direktorijum će biti direktorijum u kome je izvršna datoteka.</p><p><span style=\" font-style:italic;\">Prilagođeno</span> vam omogućava da tačno odredite gde se ovi fajlovi čuvaju.</p></body></html>"
+msgid "<html><head/><body><p>Determines where to save these files.</p><p><span style=\" font-style:italic;\">ROM Folder</span> will always save to the same folder as the ROM.</p><p><span style=\" font-style:italic;\">Config Folder</span> will save to a subfolder of the config folder that is shown. If there is a supersnes9x.conf file next to your executable, SuperSnes9x will operate in portable mode and the config folder will be the folder the executable is in.</p><p><span style=\" font-style:italic;\">Custom</span> allows you to specify exactly where to save these files.</p></body></html>"
+msgstr "<html><head/><body><p>Određuje gde se ovi fajlovi čuvaju.</p><p><span style=\" font-style:italic;\">ROM direktorijum</span> uvek čuva u isti direktorijum kao i ROM.</p><p><span style=\" font-style:italic;\">Konfiguracijski direktorijum</span> čuva u prikazani poddirektorijum konfiguracijskog direktorijuma. Ako postoji supersnes9x.conf fajl pored vaše izvršne datoteke, SuperSnes9x će raditi u prenosivom režimu i konfiguracijski direktorijum će biti direktorijum u kome je izvršna datoteka.</p><p><span style=\" font-style:italic;\">Prilagođeno</span> vam omogućava da tačno odredite gde se ovi fajlovi čuvaju.</p></body></html>"
 
 #: qt/src/SoundPanel.ui
 msgid "<html><head/><body><p>Erases all emulated sound output and just sends out silence.</p></body></html>"
@@ -4714,8 +4714,8 @@ msgid "<html><head/><body><p>Selects the driver to output sound with.</p><p><spa
 msgstr "<html><head/><body><p>Bira drajver za izlaz zvuka.</p><p><span style=\" font-style:italic;\">Cubeb: </span>Preporučena opcija.</p><p><span style=\" font-style:italic;\">SDL</span>: Ako Cubeb ne radi.</p><p><span style=\" font-style:italic;\">PulseAudio:</span> Samo Unix. Može imati manje kašnjenje.</p></body></html>"
 
 #: qt/src/FoldersPanel.ui
-msgid "<html><head/><body><p>Setting this to anything other than 0 will save the SRAM (internal game saves) file regularly. If it is set to to 0, it will only save when exiting Snes9x or changing games, and you will lose any progress since the last save if your device crashes.</p></body></html>"
-msgstr "<html><head/><body><p>Postavljanje na bilo šta osim 0 redovno će čuvati SRAM fajl (interne snimke igre). Ako je postavljeno na 0, čuvaće se samo pri izlasku iz Snes9x-a ili promeni igre, i izgubićete sav napredak od poslednjeg čuvanja ako se vaš uređaj sruši.</p></body></html>"
+msgid "<html><head/><body><p>Setting this to anything other than 0 will save the SRAM (internal game saves) file regularly. If it is set to to 0, it will only save when exiting SuperSnes9x or changing games, and you will lose any progress since the last save if your device crashes.</p></body></html>"
+msgstr "<html><head/><body><p>Postavljanje na bilo šta osim 0 redovno će čuvati SRAM fajl (interne snimke igre). Ako je postavljeno na 0, čuvaće se samo pri izlasku iz SuperSnes9x-a ili promeni igre, i izgubićete sav napredak od poslednjeg čuvanja ako se vaš uređaj sruši.</p></body></html>"
 
 #: qt/src/SoundPanel.ui
 msgid "<html><head/><body><p>SGB BIOS mix: GB channel volume. Active in SGB1/SGB2 BIOS mode; in BIOS-less mode this mirrors the Regular master, which is what actually scales GB output.</p></body></html>"

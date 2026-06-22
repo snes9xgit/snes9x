@@ -1806,10 +1806,10 @@ msgstr "Användargränssnitt"
 
 #: src/snes9x.ui:9344
 msgid ""
-"  Snes9x – A Portable Super Nintendo Entertainment System™ Emulator\n"
+"  SuperSnes9x – A Portable Super Nintendo Entertainment System™ Emulator\n"
 "\n"
 "  Snes9x homepage: http://www.snes9x.com/\n"
-"  Snes9x source code: https://github.com/shanytc/snes9x/\n"
+"  SuperSnes9x source code: https://github.com/shanytc/snes9x/\n"
 "\n"
 "  Permission to use, copy, modify and/or distribute Snes9x in both binary\n"
 "  and source form, for non‑commercial purposes, is hereby granted without\n"
@@ -1832,7 +1832,7 @@ msgid ""
 "modifications\n"
 "  in future versions.\n"
 "\n"
-"  Super NES and Super Nintendo Entertainment System are trademarks of\n"
+"  .comSuper NES and Super Nintendo Entertainment System are trademarks of\n"
 "  Nintendo Co., Limited and its subsidiary companies."
 msgstr ""
 "  SuperSnes9x - En bärbar emulator för Super Nintendo Entertainment System™\n"
@@ -4466,8 +4466,8 @@ msgid "<html><head/><body><p>Determines where to look for optional BIOS / boot R
 msgstr "<html><head/><body><p>Bestämmer var valfria BIOS-/boot-ROM-filer ska sökas (Super Game Boy boot-ROM, BS-X.bin osv.).</p><p><span style=\" font-style:italic;\">ROM-mapp</span> söker bredvid den inlästa ROM:en.</p><p><span style=\" font-style:italic;\">Konfigurationsmapp</span> använder en undermapp \"bios\" i konfigurationsmappen.</p><p><span style=\" font-style:italic;\">Anpassad</span> använder en uttrycklig sökväg (standard: \"Bios\" relativt arbetskatalogen).</p></body></html>"
 
 #: qt/src/FoldersPanel.ui
-msgid "<html><head/><body><p>Determines where to save these files.</p><p><span style=\" font-style:italic;\">ROM Folder</span> will always save to the same folder as the ROM.</p><p><span style=\" font-style:italic;\">Config Folder</span> will save to a subfolder of the config folder that is shown. If there is a snes9x.conf file next to your executable, Snes9x will operate in portable mode and the config folder will be the folder the executable is in.</p><p><span style=\" font-style:italic;\">Custom</span> allows you to specify exactly where to save these files.</p></body></html>"
-msgstr "<html><head/><body><p>Bestämmer var dessa filer ska sparas.</p><p><span style=\" font-style:italic;\">ROM-mapp</span> sparar alltid i samma mapp som ROM:en.</p><p><span style=\" font-style:italic;\">Konfigurationsmapp</span> sparar i en undermapp till konfigurationsmappen som visas. Om det finns en snes9x.conf-fil bredvid din körbara fil kommer Snes9x att köras i portabelt läge och konfigurationsmappen blir den mapp som den körbara filen ligger i.</p><p><span style=\" font-style:italic;\">Anpassad</span> låter dig ange exakt var dessa filer ska sparas.</p></body></html>"
+msgid "<html><head/><body><p>Determines where to save these files.</p><p><span style=\" font-style:italic;\">ROM Folder</span> will always save to the same folder as the ROM.</p><p><span style=\" font-style:italic;\">Config Folder</span> will save to a subfolder of the config folder that is shown. If there is a supersnes9x.conf file next to your executable, SuperSnes9x will operate in portable mode and the config folder will be the folder the executable is in.</p><p><span style=\" font-style:italic;\">Custom</span> allows you to specify exactly where to save these files.</p></body></html>"
+msgstr "<html><head/><body><p>Bestämmer var dessa filer ska sparas.</p><p><span style=\" font-style:italic;\">ROM-mapp</span> sparar alltid i samma mapp som ROM:en.</p><p><span style=\" font-style:italic;\">Konfigurationsmapp</span> sparar i en undermapp till konfigurationsmappen som visas. Om det finns en supersnes9x.conf-fil bredvid din körbara fil kommer SuperSnes9x att köras i portabelt läge och konfigurationsmappen blir den mapp som den körbara filen ligger i.</p><p><span style=\" font-style:italic;\">Anpassad</span> låter dig ange exakt var dessa filer ska sparas.</p></body></html>"
 
 #: qt/src/SoundPanel.ui
 msgid "<html><head/><body><p>Erases all emulated sound output and just sends out silence.</p></body></html>"
@@ -4506,8 +4506,8 @@ msgid "<html><head/><body><p>Selects the driver to output sound with.</p><p><spa
 msgstr "<html><head/><body><p>Väljer drivrutinen som ljud ska matas ut med.</p><p><span style=\" font-style:italic;\">Cubeb: </span>Det rekommenderade alternativet.</p><p><span style=\" font-style:italic;\">SDL</span>: Om Cubeb inte fungerar.</p><p><span style=\" font-style:italic;\">PulseAudio:</span> Endast Unix. Kan ha lägre latens.</p></body></html>"
 
 #: qt/src/FoldersPanel.ui
-msgid "<html><head/><body><p>Setting this to anything other than 0 will save the SRAM (internal game saves) file regularly. If it is set to to 0, it will only save when exiting Snes9x or changing games, and you will lose any progress since the last save if your device crashes.</p></body></html>"
-msgstr "<html><head/><body><p>Om detta ställs in på något annat än 0 sparas SRAM-filen (interna spelsparningar) regelbundet. Om det ställs in på 0 sparas det bara när du avslutar Snes9x eller byter spel, och du förlorar alla framsteg sedan den senaste sparningen om din enhet kraschar.</p></body></html>"
+msgid "<html><head/><body><p>Setting this to anything other than 0 will save the SRAM (internal game saves) file regularly. If it is set to to 0, it will only save when exiting SuperSnes9x or changing games, and you will lose any progress since the last save if your device crashes.</p></body></html>"
+msgstr "<html><head/><body><p>Om detta ställs in på något annat än 0 sparas SRAM-filen (interna spelsparningar) regelbundet. Om det ställs in på 0 sparas det bara när du avslutar SuperSnes9x eller byter spel, och du förlorar alla framsteg sedan den senaste sparningen om din enhet kraschar.</p></body></html>"
 
 #: qt/src/SoundPanel.ui
 msgid "<html><head/><body><p>SGB BIOS mix: GB channel volume. Active in SGB1/SGB2 BIOS mode; in BIOS-less mode this mirrors the Regular master, which is what actually scales GB output.</p></body></html>"

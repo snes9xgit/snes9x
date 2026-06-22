@@ -72,9 +72,9 @@ msgstr "Không tìm thấy trò chơi phù hợp"
 #: src/gtk_cheat.cpp:307
 msgid ""
 "The database file <b>cheats.bml</b> was not found. It is normally installed "
-"with Snes9x, but you may also place a custom copy in your configuration or "
+"with SuperSnes9x, but you may also place a custom copy in your configuration or "
 "cheats directory."
-msgstr "Tập tin cơ sở dữ liệu <b>cheats.bml</b> không tìm thấy. Thông thường tệp này được cài đặt cùng Snes9x, nhưng bạn cũng có thể đặt một bản sao tùy chỉnh trong thư mục cấu hình hoặc thư mục chứa cheat."
+msgstr "Tập tin cơ sở dữ liệu <b>cheats.bml</b> không tìm thấy. Thông thường tệp này được cài đặt cùng SuperSnes9x, nhưng bạn cũng có thể đặt một bản sao tùy chỉnh trong thư mục cấu hình hoặc thư mục chứa cheat."
 
 #: src/gtk_cheat.cpp:309
 msgid ""
@@ -1736,12 +1736,12 @@ msgstr "Giao diện (UI)"
 
 #: src/snes9x.ui:9344
 msgid ""
-"  Snes9x – A Portable Super Nintendo Entertainment System™ Emulator\n"
+"  SuperSnes9x – A Portable Super Nintendo Entertainment System™ Emulator\n"
 "\n"
 "  Snes9x homepage: http://www.snes9x.com/\n"
-"  Snes9x source code: https://github.com/shanytc/snes9x/\n"
+"  SuperSnes9x source code: https://github.com/shanytc/snes9x/\n"
 "\n"
-"  Permission to use, copy, modify and/or distribute Snes9x in both binary\n"
+"  Permission to use, copy, modify and/or distribute SuperSnes9x in both binary\n"
 "  and source form, for non‑commercial purposes, is hereby granted without\n"
 "  fee, providing that this license information and copyright notice appear\n"
 "  with all copies and any derived work.\n"
@@ -1750,12 +1750,12 @@ msgid ""
 "  warranty. In no event shall the authors be held liable for any damages\n"
 "  arising from the use of this software or it’s derivatives.\n"
 "\n"
-"  Snes9x is freeware for PERSONAL USE only. Commercial users should\n"
+"  SuperSnes9x is freeware for PERSONAL USE only. Commercial users should\n"
 "  seek permission of the copyright holders first. Commercial use includes,\n"
-"  but is not limited to, charging money for Snes9x or software derived from\n"
-"  Snes9x, including Snes9x or derivatives in commercial game bundles, and/"
+"  but is not limited to, charging money for SuperSnes9x or software derived from\n"
+"  SuperSnes9x, including SuperSnes9x or derivatives in commercial game bundles, and/"
 "or\n"
-"  using Snes9x as a promotion for your commercial product.\n"
+"  using SuperSnes9x as a promotion for your commercial product.\n"
 "\n"
 "  The copyright holders request that bug fixes and improvements to the code\n"
 "  should be forwarded to them so everyone can benefit from the "
@@ -1764,7 +1764,7 @@ msgid ""
 "\n"
 "  Super NES and Super Nintendo Entertainment System are trademarks of\n"
 "  Nintendo Co., Limited and its subsidiary companies."
-msgstr "  Snes9x – A Portable Super Nintendo Entertainment System™ Emulator\n\n  Trang chủ Snes9x: http://www.snes9x.com/\n  Mã nguồn Snes9x: https://github.com/shanytc/snes9x/\n\n  Quyền sử dụng, sao chép, sửa đổi và/hoặc phân phối Snes9x dưới cả dạng mã nhị phân\n  và mã nguồn, cho mục đích phi thương mại, được cấp mà không tốn phí,\n  với điều kiện thông tin giấy phép này và thông báo bản quyền xuất hiện\n  trong tất cả các bản sao và mọi sản phẩm phái sinh.\n\n  Phần mềm này được cung cấp theo nguyên trạng ‘as‑is’, không có bất kỳ sự đảm bảo\n  rõ ràng hay ngầm định nào. Trong mọi trường hợp, các tác giả sẽ không chịu trách nhiệm cho bất kỳ thiệt hại nào\n  phát sinh từ việc sử dụng phần mềm này hoặc các sản phẩm phái sinh từ nó.\n\n  Snes9x là phần mềm miễn phí chỉ dành cho SỬ DỤNG CÁ NHÂN. Người dùng thương mại nên\n  xin phép chủ sở hữu bản quyền trước. Sử dụng thương mại bao gồm,\n  nhưng không giới hạn ở việc thu tiền cho Snes9x hoặc phần mềm phái sinh từ\n  Snes9x, bao gồm cả Snes9x hoặc các phái sinh trong các gói trò chơi thương mại, và/hoặc\n  sử dụng Snes9x như một hình thức quảng bá cho sản phẩm thương mại của bạn.\n\n  Các chủ sở hữu bản quyền yêu cầu các bản sửa lỗi và cải tiến mã nguồn\n  nên được gửi cho họ để mọi người cùng được hưởng lợi từ các sửa đổi\n  trong các phiên bản tương lai.\n\n  Super NES và Super Nintendo Entertainment System là các thương hiệu của\n  Nintendo Co., Limited và các công ty con của nó."
+msgstr "  SuperSnes9x – A Portable Super Nintendo Entertainment System™ Emulator\n\n  Trang chủ Snes9x: http://www.snes9x.com/\n  Mã nguồn SuperSnes9x: https://github.com/shanytc/snes9x/\n\n  Quyền sử dụng, sao chép, sửa đổi và/hoặc phân phối SuperSnes9x dưới cả dạng mã nhị phân\n  và mã nguồn, cho mục đích phi thương mại, được cấp mà không tốn phí,\n  với điều kiện thông tin giấy phép này và thông báo bản quyền xuất hiện\n  trong tất cả các bản sao và mọi sản phẩm phái sinh.\n\n  Phần mềm này được cung cấp theo nguyên trạng ‘as‑is’, không có bất kỳ sự đảm bảo\n  rõ ràng hay ngầm định nào. Trong mọi trường hợp, các tác giả sẽ không chịu trách nhiệm cho bất kỳ thiệt hại nào\n  phát sinh từ việc sử dụng phần mềm này hoặc các sản phẩm phái sinh từ nó.\n\n  SuperSnes9x là phần mềm miễn phí chỉ dành cho SỬ DỤNG CÁ NHÂN. Người dùng thương mại nên\n  xin phép chủ sở hữu bản quyền trước. Sử dụng thương mại bao gồm,\n  nhưng không giới hạn ở việc thu tiền cho SuperSnes9x hoặc phần mềm phái sinh từ\n  SuperSnes9x, bao gồm cả SuperSnes9x hoặc các phái sinh trong các gói trò chơi thương mại, và/hoặc\n  sử dụng SuperSnes9x như một hình thức quảng bá cho sản phẩm thương mại của bạn.\n\n  Các chủ sở hữu bản quyền yêu cầu các bản sửa lỗi và cải tiến mã nguồn\n  nên được gửi cho họ để mọi người cùng được hưởng lợi từ các sửa đổi\n  trong các phiên bản tương lai.\n\n  Super NES và Super Nintendo Entertainment System là các thương hiệu của\n  Nintendo Co., Limited và các công ty con của nó."
 
 # === Win32 strings (added by i18n/extract_strings.py) ===
 
@@ -4359,8 +4359,8 @@ msgid "<html><head/><body><p>Determines where to look for optional BIOS / boot R
 msgstr "<html><head/><body><p>Xác định nơi tìm kiếm tập tin BIOS / tệp khởi động hệ thống tùy chọn (Super Game Boy boot ROM, BS-X.bin, v.v.).</p><p><span style=\" font-style:italic;\">Thư mục ROM</span> tìm ngay bên cạnh tệp ROM đang chạy.</p><p><span style=\" font-style:italic;\">Thư mục cấu hình</span> sử dụng thư mục con tên \"bios\" nằm bên trong thư mục cấu hình chung.</p><p><span style=\" font-style:italic;\">Tùy chỉnh</span> cho phép chỉ định chính xác đường dẫn mong muốn (mặc định: thư mục \"Bios\" trong thư mục đang làm việc).</p></body></html>"
 
 #: qt/src/FoldersPanel.ui
-msgid "<html><head/><body><p>Determines where to save these files.</p><p><span style=\" font-style:italic;\">ROM Folder</span> will always save to the same folder as the ROM.</p><p><span style=\" font-style:italic;\">Config Folder</span> will save to a subfolder of the config folder that is shown. If there is a snes9x.conf file next to your executable, Snes9x will operate in portable mode and the config folder will be the folder the executable is in.</p><p><span style=\" font-style:italic;\">Custom</span> allows you to specify exactly where to save these files.</p></body></html>"
-msgstr "<html><head/><body><p>Xác định vị trí lưu trữ các tập tin này.</p><p><span style=\" font-style:italic;\">Thư mục ROM</span> sẽ luôn lưu dữ liệu vào cùng thư mục chứa tệp ROM.</p><p><span style=\" font-style:italic;\">Thư mục cấu hình</span> sẽ lưu vào một thư mục con của thư mục cấu hình hiển thị bên dưới. Nếu có tập tin snes9x.conf nằm cạnh tệp chạy, Snes9x sẽ hoạt động ở chế độ di động (portable) và thư mục cấu hình chính là thư mục chứa tệp chạy đó.</p><p><span style=\" font-style:italic;\">Tùy chỉnh</span> cho phép bạn chỉ định chính xác vị trí lưu các tập tin này theo ý muốn.</p></body></html>"
+msgid "<html><head/><body><p>Determines where to save these files.</p><p><span style=\" font-style:italic;\">ROM Folder</span> will always save to the same folder as the ROM.</p><p><span style=\" font-style:italic;\">Config Folder</span> will save to a subfolder of the config folder that is shown. If there is a supersnes9x.conf file next to your executable, SuperSnes9x will operate in portable mode and the config folder will be the folder the executable is in.</p><p><span style=\" font-style:italic;\">Custom</span> allows you to specify exactly where to save these files.</p></body></html>"
+msgstr "<html><head/><body><p>Xác định vị trí lưu trữ các tập tin này.</p><p><span style=\" font-style:italic;\">Thư mục ROM</span> sẽ luôn lưu dữ liệu vào cùng thư mục chứa tệp ROM.</p><p><span style=\" font-style:italic;\">Thư mục cấu hình</span> sẽ lưu vào một thư mục con của thư mục cấu hình hiển thị bên dưới. Nếu có tập tin supersnes9x.conf nằm cạnh tệp chạy, SuperSnes9x sẽ hoạt động ở chế độ di động (portable) và thư mục cấu hình chính là thư mục chứa tệp chạy đó.</p><p><span style=\" font-style:italic;\">Tùy chỉnh</span> cho phép bạn chỉ định chính xác vị trí lưu các tập tin này theo ý muốn.</p></body></html>"
 
 #: qt/src/SoundPanel.ui
 msgid "<html><head/><body><p>Erases all emulated sound output and just sends out silence.</p></body></html>"
@@ -4399,8 +4399,8 @@ msgid "<html><head/><body><p>Selects the driver to output sound with.</p><p><spa
 msgstr "<html><head/><body><p>Chọn trình điều khiển âm thanh đầu ra.</p><p><span style=\" font-style:italic;\">Cubeb: </span>Tùy chọn khuyến nghị khuyên dùng.</p><p><span style=\" font-style:italic;\">SDL</span>: Sử dụng dự phòng nếu hệ thống không chạy được Cubeb.</p><p><span style=\" font-style:italic;\">PulseAudio:</span> Chỉ dành cho hệ điều hành Unix/Linux. Có thể đem lại độ trễ thấp hơn.</p></body></html>"
 
 #: qt/src/FoldersPanel.ui
-msgid "<html><head/><body><p>Setting this to anything other than 0 will save the SRAM (internal game saves) file regularly. If it is set to to 0, it will only save when exiting Snes9x or changing games, and you will lose any progress since the last save if your device crashes.</p></body></html>"
-msgstr "<html><head/><body><p>Đặt giá trị này khác 0 sẽ tự động lưu tệp SRAM (lưu game nội bộ) định kỳ theo thời gian. Nếu đặt về 0, hệ thống chỉ lưu khi bạn thoát hẳn phần mềm Snes9x hoặc đổi trò chơi khác, và bạn sẽ mất toàn bộ tiến trình kể từ lần lưu cuối cùng nếu thiết bị hoặc ứng dụng bị sập bất ngờ.</p></body></html>"
+msgid "<html><head/><body><p>Setting this to anything other than 0 will save the SRAM (internal game saves) file regularly. If it is set to to 0, it will only save when exiting SuperSnes9x or changing games, and you will lose any progress since the last save if your device crashes.</p></body></html>"
+msgstr "<html><head/><body><p>Đặt giá trị này khác 0 sẽ tự động lưu tệp SRAM (lưu game nội bộ) định kỳ theo thời gian. Nếu đặt về 0, hệ thống chỉ lưu khi bạn thoát hẳn phần mềm SuperSnes9x hoặc đổi trò chơi khác, và bạn sẽ mất toàn bộ tiến trình kể từ lần lưu cuối cùng nếu thiết bị hoặc ứng dụng bị sập bất ngờ.</p></body></html>"
 
 #: qt/src/SoundPanel.ui
 msgid "<html><head/><body><p>SGB BIOS mix: GB channel volume. Active in SGB1/SGB2 BIOS mode; in BIOS-less mode this mirrors the Regular master, which is what actually scales GB output.</p></body></html>"

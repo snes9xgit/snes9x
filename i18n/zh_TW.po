@@ -8,9 +8,9 @@ msgstr ""
 "Project-Id-Version: SuperSnes9x\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-10-29 23:56+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2026-06-22 19:35+0800\n"
+"Last-Translator: Shany Golan <shanygolan@gmail.com>\n"
+"Language-Team: Traditional Chinese (Taiwan) / 繁體中文 (台灣)\n"
 "Language: zh_TW\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -19,99 +19,98 @@ msgstr ""
 
 #: src/gtk_binding.cpp:248
 msgid "Unknown"
-msgstr "Unknown"
+msgstr "未知"
 
 #: src/gtk_binding.cpp:257
 msgid "Keyboard {}{}{}{}"
-msgstr "Keyboard {}{}{}{}"
+msgstr "鍵盤 {}{}{}{}"
 
 #: src/gtk_binding.cpp:267
 msgid "Axis {} {} {}%"
-msgstr "Axis {} {} {}%"
+msgstr "搖桿軸 {} {} {}%"
 
 #: src/gtk_binding.cpp:272
 msgid "Button {}"
-msgstr "Button {}"
+msgstr "按鈕 {}"
 
 #: src/gtk_binding.cpp:274
 msgid "Joystick {} {}"
-msgstr "Joystick {} {}"
+msgstr "搖桿 {} {}"
 
 #: src/gtk_binding.cpp:278
 msgid "Unset"
-msgstr "Unset"
+msgstr "未設定"
 
 #: src/gtk_cheat.cpp:24
 msgid "Error"
-msgstr "Error"
+msgstr "錯誤"
 
 #: src/gtk_cheat.cpp:60
 msgid "Description"
-msgstr "Description"
+msgstr "描述"
 
 #: src/gtk_cheat.cpp:66
 msgid "Cheat"
-msgstr "Cheat"
+msgstr "作弊金手指"
 
 #: src/gtk_cheat.cpp:227 src/gtk_cheat.cpp:355
 msgid "No description"
-msgstr "No description"
+msgstr "無描述"
 
 #: src/gtk_cheat.cpp:231 src/gtk_cheat.cpp:360
 msgid "Couldn't find any cheat codes in input."
-msgstr "Couldn't find any cheat codes in input."
+msgstr "在輸入內容中找不到任何作弊碼。"
 
 #: src/gtk_cheat.cpp:306
 msgid "Couldn't Find Cheats Database"
-msgstr "Couldn't Find Cheats Database"
+msgstr "找不到金手指資料庫"
 
 #: src/gtk_cheat.cpp:306
 msgid "No Matching Game Found"
-msgstr "No Matching Game Found"
+msgstr "找不到相符的遊戲"
 
 #: src/gtk_cheat.cpp:307
 msgid ""
 "The database file <b>cheats.bml</b> was not found. It is normally installed "
-"with Snes9x, but you may also place a custom copy in your configuration or "
+"with SuperSnes9x, but you may also place a custom copy in your configuration or "
 "cheats directory."
-msgstr "The database file <b>cheats.bml</b> was not found. It is normally installed with Snes9x, but you may also place a custom copy in your configuration or cheats directory."
+msgstr "找不到資料庫檔案 <b>cheats.bml</b>。通常它會隨 SuperSnes9x 一同安裝，但您也可以將自訂複本放進您的設定或作弊碼目錄中。"
 
 #: src/gtk_cheat.cpp:309
 msgid ""
 "No matching game was found in the databases. If you are using a non-official "
 "translation or modified copy, you may be able to find and manually enter the "
 "codes."
-msgstr "No matching game was found in the databases. If you are using a non-official translation or modified copy, you may be able to find and manually enter the codes."
+msgstr "在資料庫中找不到相符的遊戲。如果您使用的是非官方翻譯版或修改版遊戲，您可能需要自行尋找並手動輸入代碼。"
 
 #: src/gtk_config.cpp:407
 msgid "Couldn't create config directory: {}\n"
-msgstr "Couldn't create config directory: {}\n"
+msgstr "無法建立設定目錄：{}\n"
 
 #: src/gtk_netplay.cpp:66
 msgid "Connection Error"
-msgstr "Connection Error"
+msgstr "連線錯誤"
 
 #: src/gtk_netplay_dialog.cpp:31
 msgid "frame behind"
 msgid_plural "frames behind"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "影格延遲"
 
 #: src/gtk_preferences.cpp:19
 msgid "Same location as current game"
-msgstr "Same location as current game"
+msgstr "與目前遊戲相同的位置"
 
 #: src/gtk_preferences.cpp:110
-msgid "{0:Ld}×{1:Ld} @ {2:.3Lf} Hz"
-msgstr "{0:Ld}×{1:Ld} @ {2:.3Lf} Hz"
+msgid "{0:Ld}×{1:Ld} @ {2:.3Lf} Hz"
+msgstr "{0:Ld}×{1:Ld} @ {2:.3Lf} Hz"
 
 #: src/gtk_preferences.cpp:143
 msgid "OpenGL – Use 3D graphics hardware"
-msgstr "OpenGL – Use 3D graphics hardware"
+msgstr "OpenGL – 使用 3D 圖形硬體加速"
 
 #: src/gtk_preferences.cpp:145
 msgid "XVideo – Use hardware video blitter"
-msgstr "XVideo – Use hardware video blitter"
+msgstr "XVideo – 使用硬體視訊 Blitter"
 
 #: src/gtk_preferences.cpp:147
 msgid "Vulkan"
@@ -119,76 +118,73 @@ msgstr "Vulkan"
 
 #: src/gtk_preferences.cpp:149
 msgid "None – Use software scaler"
-msgstr "None – Use software scaler"
+msgstr "無 – 使用軟體縮放器"
 
 #: src/gtk_preferences.cpp:179 src/gtk_preferences.cpp:446
 msgid "thread for filtering and scaling"
 msgid_plural "threads for filtering and scaling"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "個用於濾鏡與縮放 Line 的執行緒"
 
 #: src/gtk_preferences.cpp:236 src/gtk_preferences.cpp:500
 msgid "millisecond"
 msgid_plural "milliseconds"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "毫秒"
 
 #: src/gtk_preferences.cpp:260 src/gtk_preferences.cpp:476
 msgid "second after change"
 msgid_plural "seconds after change"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "秒（於變更後）"
 
 #: src/gtk_preferences.cpp:271
 msgid "SuperSnes9x version: "
-msgstr "SuperSnes9x version: "
+msgstr "SuperSnes9x 版本："
 
 #: src/gtk_preferences.cpp:272
 msgid "GTK+ port version: "
-msgstr "GTK+ port version: "
+msgstr "GTK+ 移植版版本："
 
 #: src/gtk_preferences.cpp:274
 msgid "English localization by Brandon Wright"
-msgstr "English localization by Brandon Wright"
+msgstr "英文在地化由 Brandon Wright 製作"
 
 #: src/gtk_preferences.cpp:298
 msgid "Select directory"
-msgstr "Select directory"
+msgstr "選擇目錄"
 
 #: src/gtk_preferences.cpp:323
-msgid "{0:.4Lf} Hz"
-msgstr "{0:.4Lf} Hz"
+msgid "{0:.4Lf} Hz"
+msgstr "{0:.4Lf} Hz"
 
 #: src/gtk_preferences.cpp:328
-msgid "{0:Ld} Hz"
-msgstr "{0:Ld} Hz"
+msgid "{0:Ld} Hz"
+msgstr "{0:Ld} Hz"
 
 #: src/gtk_preferences.cpp:379
 msgid "Select Shader File"
-msgstr "Select Shader File"
+msgstr "選擇著色器 (Shader) 檔案"
 
 #: src/gtk_preferences.cpp:720
 msgid ""
 "Changing the SRAM directory with a game loaded will replace the .srm file in "
 "the selected directory with the SRAM from the running game. If this is not "
 "what you want, click 'cancel'."
-msgstr "Changing the SRAM directory with a game loaded will replace the .srm file in the selected directory with the SRAM from the running game. If this is not what you want, click 'cancel'."
+msgstr "在已載入遊戲時變更 SRAM 目록，將會用目前運行中遊戲的內存存檔覆蓋並替換所選目錄中的 .srm 檔案。若這不是您要的，請點擊「取消」。"
 
 #: src/gtk_preferences.cpp:725
 msgid "Warning: Possible File Overwrite"
-msgstr "Warning: Possible File Overwrite"
+msgstr "警告：檔案可能被覆蓋"
 
 #: src/gtk_preferences.cpp:980
 msgid "Current joystick centers have been saved."
-msgstr "Current joystick centers have been saved."
+msgstr "目前的搖桿中心校準資料已儲存。"
 
 #: src/gtk_preferences.cpp:981
 msgid "Calibration Complete"
-msgstr "Calibration Complete"
+msgstr "校準已完成"
 
 #: src/gtk_s9x.cpp:206
 msgid "Using rewind buffer of {0}\n"
-msgstr "Using rewind buffer of {0}\n"
+msgstr "正在使用大小為 {0} 的倒帶快取區\n"
 
 #: src/gtk_s9x.cpp:598
 msgid ""
@@ -199,63 +195,69 @@ msgid ""
 "epx ntsc\n"
 "\n"
 "-mutesound                     Disables sound output.\n"
-msgstr "GTK port options:\n-filter [option]               Use a filter to scale the image.\n                               [option] is one of: none supereagle 2xsai\n                               super2xsai hq2x hq3x hq4x 2xbrz 3xbrz 4xbrz epx ntsc\n\n-mutesound                     Disables sound output.\n"
+msgstr ""
+"GTK 移植版選項：\n"
+"-filter [選項]               使用指定的濾鏡來縮放畫面。\n"
+"                               [選項] 可為：none supereagle 2xsai\n"
+"                               super2xsai hq2x hq3x hq4x 2xbrz 3xbrz 4xbrz epx ntsc\n"
+"\n"
+"-mutesound                     關閉聲音輸出。\n"
 
 #: src/gtk_s9xwindow.cpp:48 src/snes9x.ui:8405
 msgid "Save States"
-msgstr "Save States"
+msgstr "即時存檔"
 
 #: src/gtk_s9xwindow.cpp:57
 msgid "All Files"
-msgstr "All Files"
+msgstr "所有檔案"
 
 #: src/gtk_s9xwindow.cpp:616
 msgid "Couldn't load files."
-msgstr "Couldn't load files."
+msgstr "無法載入檔案。"
 
 #: src/gtk_s9xwindow.cpp:637
 msgid "Open SNES Movie"
-msgstr "Open SNES Movie"
+msgstr "開啟 SNES 錄影檔"
 
 #: src/gtk_s9xwindow.cpp:642
 msgid "New SNES Movie"
-msgstr "New SNES Movie"
+msgstr "新建 SNES 錄影檔"
 
 #: src/gtk_s9xwindow.cpp:661
 msgid "SNES Movies"
-msgstr "SNES Movies"
+msgstr "SNES 錄影功能"
 
 #: src/gtk_s9xwindow.cpp:690
 msgid "Open SNES ROM Image"
-msgstr "Open SNES ROM Image"
+msgstr "開啟 SNES ROM 映像檔"
 
 #: src/gtk_s9xwindow.cpp:695
 msgid "SNES ROM Images"
-msgstr "SNES ROM Images"
+msgstr "SNES ROM 映像檔"
 
 #: src/gtk_s9xwindow.cpp:740
 msgid "Couldn't load file: "
-msgstr "Couldn't load file: "
+msgstr "無法載入檔案："
 
 #: src/gtk_s9xwindow.cpp:767
 msgid "Load Saved State"
-msgstr "Load Saved State"
+msgstr "載入即時存檔"
 
 #: src/gtk_s9xwindow.cpp:796
 msgid "The current frame in the movie is <b>{0:Ld}</b>."
-msgstr "The current frame in the movie is <b>{0:Ld}</b>."
+msgstr "目前的錄影影格位於第 <b>{0:Ld}</b> 影格。"
 
 #: src/gtk_s9xwindow.cpp:829
 msgid "Save State"
-msgstr "Save State"
+msgstr "即時存檔"
 
 #: src/gtk_s9xwindow.cpp:850
 msgid "Save SPC file..."
-msgstr "Save SPC file..."
+msgstr "儲存 SPC 音訊檔..."
 
 #: src/gtk_s9xwindow.cpp:872
 msgid "Couldn't save SPC file:"
-msgstr "Couldn't save SPC file:"
+msgstr "無法儲存 SPC 檔案："
 
 #: src/gtk_s9xwindow.cpp:888
 #, c-format
@@ -277,109 +279,132 @@ msgid ""
 "<i>CRC32:</i> %08X\n"
 "<i>Revision:</i> %s\n"
 "<b><i>%s%s</i></b>"
-msgstr "<b>Information for %s</b>\n\n<i>Name:</i> %s\n<i>Speed:</i> %02X/%s\n<i>Map:</i> %s\n<i>Type:</i> %02x\n<i>Contents:</i> %s\n<i>ROM Size:</i> %s\n<i>Calculated Size:</i> %d\n<i>SRAM Size:</i> %s\n<i>Header Checksum:</i> %04X\n<i>Checksum Complement:</i> %04X\n<i>Actual Checksum:</i> %04X\n<i>Video:</i> %s\n<i>CRC32:</i> %08X\n<i>Revision:</i> %s\n<b><i>%s%s</i></b>"
+msgstr ""
+"<b>%s 的詳細資訊</b>\n"
+"\n"
+"<i>名稱:</i> %s\n"
+"<i>速度:</i> %02X/%s\n"
+"<i>地圖型態:</i> %s\n"
+"<i>類型:</i> %02x\n"
+"<i>內容物:</i> %s\n"
+"<i>ROM 大小:</i> %s\n"
+"<i>計算大小:</i> %d\n"
+"<i>SRAM 大小:</i> %s\n"
+"<i>標頭校正碼:</i> %04X\n"
+"<i>校正補碼:</i> %04X\n"
+"<i>實際校正碼:</i> %04X\n"
+"<i>視訊系統:</i> %s\n"
+"<i>CRC32:</i> %08X\n"
+"<i>版本內部修訂:</i> %s\n"
+"<b><i>%s%s</i></b>"
 
 #: src/gtk_s9xwindow.cpp:924
 msgid ""
 "\n"
 "\n"
 "This ROM has been auto-patched with "
-msgstr "\n\nThis ROM has been auto-patched with "
+msgstr ""
+"\n"
+"\n"
+"此 ROM 已自動套用補丁修復："
 
 #: src/gtk_s9xwindow.cpp:924
 msgid ""
 "\n"
 "\n"
 "This ROM has been modified or damaged"
-msgstr "\n\nThis ROM has been modified or damaged"
+msgstr ""
+"\n"
+"\n"
+"此 ROM 檔案已被修改或已毀損"
 
 #: src/gtk_s9xwindow.cpp:938
 msgid "File Information"
-msgstr "File Information"
+msgstr "檔案資訊"
 
 #: src/gtk_shader_parameters.cpp:67
 msgid "Export Shader Preset to:"
-msgstr "Export Shader Preset to:"
+msgstr "匯出著色器參數預設至："
 
 #: src/gtk_shader_parameters.cpp:90
 msgid "Shader Preset"
-msgstr "Shader Preset"
+msgstr "著色器預設值"
 
 #: src/gtk_shader_parameters.cpp:131
 msgid "Shader Parameters"
-msgstr "Shader Parameters"
+msgstr "著色器參數"
 
 #: src/snes9x.ui:10
 msgid "About SuperSnes9x"
-msgstr "About SuperSnes9x"
+msgstr "關於 SuperSnes9x"
 
 #: src/snes9x.ui:283
 msgid "SuperSnes9x Cheats"
-msgstr "SuperSnes9x Cheats"
+msgstr "SuperSnes9x 金手指作弊"
 
 #: src/snes9x.ui:401
 msgid "Update Cheat"
-msgstr "Update Cheat"
+msgstr "更新作弊碼"
 
 #: src/snes9x.ui:416
 msgid "Disable All"
-msgstr "Disable All"
+msgstr "全部停用"
 
 #: src/snes9x.ui:432
 msgid "Delete All Cheats"
-msgstr "Delete All Cheats"
+msgstr "刪除所有金手指"
 
 #: src/snes9x.ui:447
 msgid "Search Cheat Database"
-msgstr "Search Cheat Database"
+msgstr "搜尋作弊碼資料庫"
 
 #: src/snes9x.ui:489
 msgid "Code:"
-msgstr "Code:"
+msgstr "代碼："
 
 #: src/snes9x.ui:526
 msgid "Description:"
-msgstr "Description:"
+msgstr "描述："
 
 #: src/snes9x.ui:573
 msgid "Advance to Frame"
-msgstr "Advance to Frame"
+msgstr "前進至指定影格"
 
 #: src/snes9x.ui:642
 msgid "The current frame in the movie is"
-msgstr "The current frame in the movie is"
+msgstr "目前錄影影片所在的影格為"
 
 #: src/snes9x.ui:663
 msgid "Fast‑forward to frame"
-msgstr "Fast‑forward to frame"
+msgstr "快轉至影格"
 
 #: src/snes9x.ui:806
 msgid "Black"
-msgstr "Black"
+msgstr "黑色"
 
 #: src/snes9x.ui:809
 msgid "Color bars"
-msgstr "Color bars"
+msgstr "彩條測試訊號"
 
 #: src/snes9x.ui:812
 msgid "Pixel art patterns"
-msgstr "Pixel art patterns"
+msgstr "像素藝術圖樣"
 
 #: src/snes9x.ui:815
 msgid "Dithered gradient"
-msgstr "Dithered gradient"
+msgstr "抖動漸層效果"
 
 #: src/snes9x.ui:818
 msgid "Color bars and patterns"
-msgstr "Color bars and patterns"
+msgstr "彩條與圖樣測試"
 
 #: src/snes9x.ui:821
 msgid "Starfield"
-msgstr "Starfield"
+msgstr "星空模擬"
 
 #: src/snes9x.ui:824
 msgid "Snow"
-msgstr "Snow"
+msgstr "電視雪花噪點"
 
 #: src/snes9x.ui:852 src/snes9x.ui:875
 msgid "12.5%"
@@ -404,23 +429,23 @@ msgstr "0%"
 #: src/snes9x.ui:895
 msgctxt "filter list"
 msgid "None"
-msgstr "None"
+msgstr "無"
 
 #: src/snes9x.ui:936
 msgid "8:7 Square pixels"
-msgstr "8:7 Square pixels"
+msgstr "8:7 正方形像素"
 
 #: src/snes9x.ui:939
 msgid "8:7 Square pixels, integer multiples"
-msgstr "8:7 Square pixels, integer multiples"
+msgstr "8:7 正方形像素 (整數倍率)"
 
 #: src/snes9x.ui:942
 msgid "4:3 SNES correct aspect"
-msgstr "4:3 SNES correct aspect"
+msgstr "4:3 SNES 實機修正比例"
 
 #: src/snes9x.ui:945
 msgid "4:3 SNES correct aspect, integer multiples"
-msgstr "4:3 SNES correct aspect, integer multiples"
+msgstr "4:3 SNES 實機修正比例 (整數倍率)"
 
 #: src/snes9x.ui:948
 msgid "8*8:7*7 NTSC"
@@ -428,19 +453,19 @@ msgstr "8*8:7*7 NTSC"
 
 #: src/snes9x.ui:951
 msgid "8*8:7*7 NTSC, integer multiples"
-msgstr "8*8:7*7 NTSC, integer multiples"
+msgstr "8*8:7*7 NTSC (整數倍率)"
 
 #: src/snes9x.ui:968
 msgid "Merge adjacent pairs"
-msgstr "Merge adjacent pairs"
+msgstr "合併相鄰點陣對"
 
 #: src/snes9x.ui:971
 msgid "Output directly"
-msgstr "Output directly"
+msgstr "直接輸出不處理"
 
 #: src/snes9x.ui:974
 msgid "Scale low‑resolution screens"
-msgstr "Scale low‑resolution screens"
+msgstr "拉伸縮放低解析度畫面"
 
 #: src/snes9x.ui:985 src/snes9x.ui:1023
 msgid "1"
@@ -484,63 +509,63 @@ msgstr "5+"
 
 #: src/snes9x.ui:1061
 msgid "Toggle the menu bar"
-msgstr "切換 the menu bar"
+msgstr "切換功能選單列顯示"
 
 #: src/snes9x.ui:1064
 msgid "Exit fullscreen mode"
-msgstr "Exit fullscreen mode"
+msgstr "退出全螢幕模式"
 
 #: src/snes9x.ui:1067 src/snes9x.ui:6932
 msgid "Quit SuperSnes9x"
-msgstr "Quit SuperSnes9x"
+msgstr "退出 SuperSnes9x"
 
 #: src/snes9x.ui:1078
 msgid "Timer‑based"
-msgstr "Timer‑based"
+msgstr "基於計時器"
 
 #: src/snes9x.ui:1081
 msgid "Timer‑based with automatic frame-skipping"
-msgstr "Timer‑based with automatic frame-skipping"
+msgstr "基於計時器並開啟自動跳格 (Frame Skip)"
 
 #: src/snes9x.ui:1084
 msgid "Sound buffer synchronization"
-msgstr "Sound buffer synchronization"
+msgstr "音訊緩衝區同步化"
 
 #: src/snes9x.ui:1087
 msgid "No throttling, use vsync to control speed"
-msgstr "No throttling, use vsync to control speed"
+msgstr "無限制，完全依靠垂直同步控制速度"
 
 #: src/snes9x.ui:1098
-msgid "48,000 Hz"
-msgstr "48,000 Hz"
+msgid "48,000 Hz"
+msgstr "48,000 Hz"
 
 #: src/snes9x.ui:1101
-msgid "44,100 Hz"
-msgstr "44,100 Hz"
+msgid "44,100 Hz"
+msgstr "44,100 Hz"
 
 #: src/snes9x.ui:1104
-msgid "32,000 Hz"
-msgstr "32,000 Hz"
+msgid "32,000 Hz"
+msgstr "32,000 Hz"
 
 #: src/snes9x.ui:1107
-msgid "22,050 Hz"
-msgstr "22,050 Hz"
+msgid "22,050 Hz"
+msgstr "22,050 Hz"
 
 #: src/snes9x.ui:1110
-msgid "16,000 Hz"
-msgstr "16,000 Hz"
+msgid "16,000 Hz"
+msgstr "16,000 Hz"
 
 #: src/snes9x.ui:1113
-msgid "11,025 Hz"
-msgstr "11,025 Hz"
+msgid "11,025 Hz"
+msgstr "11,025 Hz"
 
 #: src/snes9x.ui:1116
-msgid "8,000 Hz"
-msgstr "8,000 Hz"
+msgid "8,000 Hz"
+msgstr "8,000 Hz"
 
 #: src/snes9x.ui:1119
-msgid "0 Hz"
-msgstr "0 Hz"
+msgid "0 Hz"
+msgstr "0 Hz"
 
 #: src/snes9x.ui:1136
 msgid "16‑bit (GL_RGB)"
@@ -552,23 +577,23 @@ msgstr "32‑bit (GL_BGRA)"
 
 #: src/snes9x.ui:1150
 msgid "Nearest"
-msgstr "Nearest"
+msgstr "最鄰近像素 (Nearest)"
 
 #: src/snes9x.ui:1153
 msgid "Linear"
-msgstr "Linear"
+msgstr "線性過濾 (Linear)"
 
 #: src/snes9x.ui:1156
 msgid "Gaussian (correct)"
-msgstr "Gaussian (correct)"
+msgstr "高斯過濾 (實機高證)"
 
 #: src/snes9x.ui:1159
 msgid "Cubic"
-msgstr "Cubic"
+msgstr "三次內插 (Cubic)"
 
 #: src/snes9x.ui:1162
 msgid "Sinc"
-msgstr "Sinc"
+msgstr "Sinc 內插"
 
 #: src/snes9x.ui:1175
 msgid "SuperSnes9x"
@@ -576,99 +601,99 @@ msgstr "SuperSnes9x"
 
 #: src/snes9x.ui:1195
 msgid "_File"
-msgstr "_File"
+msgstr "_檔案"
 
 #: src/snes9x.ui:1202
 msgid "_Open ROM Image…"
-msgstr "_Open ROM Image…"
+msgstr "_開啟 ROM 檔案…"
 
 #: src/snes9x.ui:1216
 msgid "Open Recent"
-msgstr "Open Recent"
+msgstr "開啟最近玩過的遊戲"
 
 #: src/snes9x.ui:1225
 msgid "Clear Recent Items"
-msgstr "Clear Recent Items"
+msgstr "清除最近使用紀錄"
 
 #: src/snes9x.ui:1237
 msgid "Open with _NetPlay…"
-msgstr "Open with _NetPlay…"
+msgstr "使用 _NetPlay 聯機開啟…"
 
 #: src/snes9x.ui:1240
 msgid "Open a ROM to use with NetPlay"
-msgstr "Open a ROM to use with NetPlay"
+msgstr "開啟一個 ROM 檔以配合網路連線功能"
 
 #: src/snes9x.ui:1251
 msgid "Open _MultiCart…"
-msgstr "Open _MultiCart…"
+msgstr "開啟多重卡帶 (_MultiCart)…"
 
 #: src/snes9x.ui:1266
 msgid "_Load State"
-msgstr "_Load State"
+msgstr "_載入進度狀態"
 
 #: src/snes9x.ui:1276 src/snes9x.ui:1410
 msgid "Slot _0"
-msgstr "Slot _0"
+msgstr "槽位 _0"
 
 #: src/snes9x.ui:1285 src/snes9x.ui:1419
 msgid "Slot _1"
-msgstr "Slot _1"
+msgstr "槽位 _1"
 
 #: src/snes9x.ui:1294 src/snes9x.ui:1428
 msgid "Slot _2"
-msgstr "Slot _2"
+msgstr "槽位 _2"
 
 #: src/snes9x.ui:1303 src/snes9x.ui:1437
 msgid "Slot _3"
-msgstr "Slot _3"
+msgstr "槽位 _3"
 
 #: src/snes9x.ui:1312 src/snes9x.ui:1446
 msgid "Slot _4"
-msgstr "Slot _4"
+msgstr "槽位 _4"
 
 #: src/snes9x.ui:1321 src/snes9x.ui:1455
 msgid "Slot _5"
-msgstr "Slot _5"
+msgstr "槽位 _5"
 
 #: src/snes9x.ui:1330 src/snes9x.ui:1464
 msgid "Slot _6"
-msgstr "Slot _6"
+msgstr "槽位 _6"
 
 #: src/snes9x.ui:1339 src/snes9x.ui:1473
 msgid "Slot _7"
-msgstr "Slot _7"
+msgstr "槽位 _7"
 
 #: src/snes9x.ui:1348 src/snes9x.ui:1482
 msgid "Slot _8"
-msgstr "Slot _8"
+msgstr "槽位 _8"
 
 #: src/snes9x.ui:1357 src/snes9x.ui:1491
 msgid "Slot _9"
-msgstr "Slot _9"
+msgstr "槽位 _9"
 
 #: src/snes9x.ui:1372
 msgid "From _File…"
-msgstr "From _File…"
+msgstr "從檔案載入 (_F)…"
 
 #: src/snes9x.ui:1387
 msgid "_Undo Load State"
-msgstr "_Undo Load State"
+msgstr "_撤銷載入進度狀態"
 
 #: src/snes9x.ui:1400
 msgid "_Save State"
-msgstr "_Save State"
+msgstr "_儲存即時進度"
 
 #: src/snes9x.ui:1506
 msgid "To _File…"
-msgstr "To _File…"
+msgstr "至外部檔案 (_F)…"
 
 #: src/snes9x.ui:1523
 msgid "Save SPC…"
-msgstr "Save SPC…"
+msgstr "匯出 SPC 音訊…"
 
 #: src/snes9x.ui:1540
 msgid "Show ROM _Info…"
-msgstr "顯示 ROM _Info…"
+msgstr "顯示 ROM 詳細資訊 (_I)…"
 
 #: src/snes9x.ui:1557
 msgid "gtk-quit"
@@ -676,55 +701,55 @@ msgstr "gtk-quit"
 
 #: src/snes9x.ui:1571
 msgid "_Emulation"
-msgstr "_Emulation"
+msgstr "_模擬控制"
 
 #: src/snes9x.ui:1578
 msgid "Run / _Continue"
-msgstr "Run / _Continue"
+msgstr "執行 / _繼續"
 
 #: src/snes9x.ui:1589
 msgid "_Pause"
-msgstr "_Pause"
+msgstr "_暫停"
 
 #: src/snes9x.ui:1607
 msgid "Load _Movie…"
-msgstr "Load _Movie…"
+msgstr "載入錄影指令檔 (_M)…"
 
 #: src/snes9x.ui:1619
 msgid "R_ecord Movie…"
-msgstr "R_ecord Movie…"
+msgstr "開始錄製功能 (_E)…"
 
 #: src/snes9x.ui:1631
 msgid "_Stop Recording"
-msgstr "_Stop Recording"
+msgstr "_停止錄製"
 
 #: src/snes9x.ui:1643
 msgid "_Jump to Frame…"
-msgstr "_Jump to Frame…"
+msgstr "_跳轉至影格…"
 
 #: src/snes9x.ui:1661
 msgid "Sy_nc Clients"
-msgstr "Sy_nc Clients"
+msgstr "同_步所有聯機端"
 
 #: src/snes9x.ui:1678
 msgid "Reset"
-msgstr "重設"
+msgstr "重設主機"
 
 #: src/snes9x.ui:1690
 msgid "Soft _Reset"
-msgstr "Soft _Reset"
+msgstr "軟體重設 (_R)"
 
 #: src/snes9x.ui:1707
 msgid "_View"
-msgstr "_View"
+msgstr "_視圖"
 
 #: src/snes9x.ui:1715
 msgid "_Toggle Menubar"
-msgstr "_Toggle Menubar"
+msgstr "_切換選單列顯示"
 
 #: src/snes9x.ui:1732
 msgid "_Change Size"
-msgstr "_Change Size"
+msgstr "_變更畫面大小"
 
 #: src/snes9x.ui:1746
 msgid "_1×"
@@ -772,624 +797,624 @@ msgstr "gtk-fullscreen"
 
 #: src/snes9x.ui:1858
 msgid "_Options"
-msgstr "_Options"
+msgstr "_設定選項"
 
 #: src/snes9x.ui:1867
 msgid "Controller Ports"
-msgstr "Controller Ports"
+msgstr "控制器插槽連接埠"
 
 #: src/snes9x.ui:1876
 msgid "SNES Port 1"
-msgstr "SNES Port 1"
+msgstr "SNES 插槽 1"
 
 #: src/snes9x.ui:1886 src/snes9x.ui:1930
 msgid "Joypad"
-msgstr "Joypad"
+msgstr "傳統手把 (Joypad)"
 
 #: src/snes9x.ui:1895 src/snes9x.ui:1939
 msgid "Mouse"
-msgstr "Mouse"
+msgstr "滑鼠"
 
 #: src/snes9x.ui:1905 src/snes9x.ui:1959
 msgid "Superscope"
-msgstr "Superscope"
+msgstr "光線槍 (Superscope)"
 
 #: src/snes9x.ui:1920
 msgid "SNES Port 2"
-msgstr "SNES Port 2"
+msgstr "SNES 插槽 2"
 
 #: src/snes9x.ui:1949
 msgid "Multitap"
-msgstr "Multitap"
+msgstr "手把多人分接器 (Multitap)"
 
 #: src/snes9x.ui:1970
 msgctxt "SNES port 2"
 msgid "None"
-msgstr "None"
+msgstr "無"
 
 #: src/snes9x.ui:1996
 msgid "_Cheats…"
-msgstr "_Cheats…"
+msgstr "_金手指作弊碼…"
 
 #: src/snes9x.ui:2010
 msgid "_Shader Parameters…"
-msgstr "_Shader Parameters…"
+msgstr "_著色器引數偏好…"
 
 #: src/snes9x.ui:2026
 msgid "gtk-preferences"
-msgstr "gtk-preferences"
+msgstr "gtk-偏好設定"
 
 #: src/snes9x.ui:2068
 msgid "Open Multiple ROM Images (MultiCart)"
-msgstr "Open Multiple ROM Images (MultiCart)"
+msgstr "開啟多個卡帶映像檔 (MultiCart)"
 
 #: src/snes9x.ui:2131
 msgid "Slot A:"
-msgstr "Slot A:"
+msgstr "插槽 A："
 
 #: src/snes9x.ui:2143
 msgid "Select an Image for Slot A"
-msgstr "Select an Image for Slot A"
+msgstr "選擇插槽 A 的遊戲 ROM 檔"
 
 #: src/snes9x.ui:2167
 msgid "Slot B:"
-msgstr "Slot B:"
+msgstr "插槽 B："
 
 #: src/snes9x.ui:2179
 msgid "Select an Image for Slot B"
-msgstr "Select an Image for Slot B"
+msgstr "選擇插槽 B 的遊戲 ROM 檔"
 
 #: src/snes9x.ui:2211
 msgid "SuperSnes9x NetPlay"
-msgstr "SuperSnes9x NetPlay"
+msgstr "SuperSnes9x 網路連線大廳"
 
 #: src/snes9x.ui:2288
 msgid ""
 "The game chosen will be loaded before connecting. This field can be blank if "
 "the server will send the ROM image"
-msgstr "The game chosen will be loaded before connecting. This field can be blank if the server will send the ROM image"
+msgstr "所選的遊戲將在連線前載入。若伺服器端會直接傳送 ROM 映像檔，此欄位可留空。"
 
 #: src/snes9x.ui:2303 src/snes9x.ui:4001 src/snes9x.ui:5116 src/snes9x.ui:5131
 #: src/snes9x.ui:5148 src/snes9x.ui:5165 src/snes9x.ui:5182
 msgid "Browse…"
-msgstr "Browse…"
+msgstr "瀏覽搜尋…"
 
 #: src/snes9x.ui:2325
 msgid "Clear entry"
-msgstr "Clear entry"
+msgstr "清除文字輸入"
 
 #: src/snes9x.ui:2345
 msgid "<b>ROM Image</b>"
-msgstr "<b>ROM Image</b>"
+msgstr "<b>ROM 遊戲本體</b>"
 
 #: src/snes9x.ui:2374
 msgid "Connect to another computer"
-msgstr "Connect to another computer"
+msgstr "連線至其他主機"
 
 #: src/snes9x.ui:2378
 msgid "Connect to another computer that is running SuperSnes9x NetPlay as a server"
-msgstr "Connect to another computer that is running SuperSnes9x NetPlay as a server"
+msgstr "連線至另一台正以伺服器端模式執行 SuperSnes9x NetPlay 的電腦"
 
 #: src/snes9x.ui:2398
 msgid "Name or IP address:"
-msgstr "Name or IP address:"
+msgstr "名稱或 IP 位址："
 
 #: src/snes9x.ui:2410
 msgid "Domain name or internet protocol address of a remote computer"
-msgstr "Domain name or internet protocol address of a remote computer"
+msgstr "遠端電腦的網域名稱或 IP 位址協定"
 
 #: src/snes9x.ui:2426
 msgid "Port:"
-msgstr "Port:"
+msgstr "連接埠 (Port)："
 
 #: src/snes9x.ui:2438
 msgid "Connect to specified TCP port on remote computer"
-msgstr "Connect to specified TCP port on remote computer"
+msgstr "連線至遠端電腦指定的 TCP 連接埠"
 
 #: src/snes9x.ui:2463
 msgid "Act as a server"
-msgstr "Act as a server"
+msgstr "充當伺服器端 (Server)"
 
 #: src/snes9x.ui:2467
 msgid ""
 "Host a game on this computer as Player 1, requiring extra throughput to "
 "support multitple users"
-msgstr "Host a game on this computer as Player 1, requiring extra throughput to support multitple users"
+msgstr "將此電腦作為 1 號玩家創立遊戲房間，需要額外的上傳頻寬以支援多位使用者聯機。"
 
 #: src/snes9x.ui:2487
 msgid "<b>Server</b>"
-msgstr "<b>Server</b>"
+msgstr "<b>伺服器</b>"
 
 #: src/snes9x.ui:2517
 msgid "Sync using reset"
-msgstr "Sync using reset"
+msgstr "使用主機重設進行強制同步"
 
 #: src/snes9x.ui:2521
 msgid ""
 "Reset the game when players join instead of transferring potentially "
 "unreliable freeze states"
-msgstr "Reset the game when players join instead of transferring potentially unreliable freeze states"
+msgstr "當玩家加入時直接重設遊戲，而非傳輸可能不穩定的即時凍結狀態資料。"
 
 #: src/snes9x.ui:2532
 msgid "Send ROM image to clients"
-msgstr "Send ROM image to clients"
+msgstr "傳送 ROM 檔案給聯機客戶端"
 
 #: src/snes9x.ui:2536
 msgid ""
 "Send the running game image to players instead of requiring them to have "
 "their own copies"
-msgstr "Send the running game image to players instead of requiring them to have their own copies"
+msgstr "直接將運行中的遊戲映像發送給玩家，而不需要他們自行準備同款 ROM 複本。"
 
 #: src/snes9x.ui:2554
 msgid "Default port:"
-msgstr "Default port:"
+msgstr "預設連接埠："
 
 #: src/snes9x.ui:2566
 msgid "TCP port used as a connection point for remote clients"
-msgstr "TCP port used as a connection point for remote clients"
+msgstr "用作遠端客戶端連線接入點的 TCP 連接埠"
 
 #: src/snes9x.ui:2598
 msgid "Ask server to pause when"
-msgstr "Ask server to pause when"
+msgstr "請求伺服器端暫停，當遭遇以下情況時："
 
 #: src/snes9x.ui:2652
 msgid "<b>Settings</b>"
-msgstr "<b>Settings</b>"
+msgstr "<b>偏好設定</b>"
 
 #: src/snes9x.ui:2680
 msgid "SuperSnes9x Preferences"
-msgstr "SuperSnes9x Preferences"
+msgstr "SuperSnes9x 偏好設定環境控制"
 
 #: src/snes9x.ui:2796
 msgid "Use fullscreen on ROM open"
-msgstr "使用 fullscreen on ROM open"
+msgstr "開啟 ROM 時直接進入全螢幕"
 
 #: src/snes9x.ui:2800
 msgid "Go to fullscreen mode immediately after opening a ROM"
-msgstr "Go to fullscreen mode immediately after opening a ROM"
+msgstr "開啟 ROM 檔案後，立即切換至全螢幕模式"
 
 #: src/snes9x.ui:2812
 msgid "Show local time"
-msgstr "顯示 local time"
+msgstr "顯示目前系統時間"
 
 #: src/snes9x.ui:2827
 msgid "Show frame rate"
-msgstr "顯示 frame rate"
+msgstr "顯示實時運行影格率 (FPS)"
 
 #: src/snes9x.ui:2842
 msgid "Show pressed keys"
-msgstr "顯示 pressed keys"
+msgstr "顯示玩家目前按下的手把按鍵"
 
 #: src/snes9x.ui:2857
 msgid "Show fast‑forward and pause indicators"
-msgstr "顯示 fast‑forward and pause indicators"
+msgstr "顯示快轉與暫停狀態小圖示"
 
 #: src/snes9x.ui:2872
 msgid "Use overscanned height"
-msgstr "使用 overscanned height"
+msgstr "使用過掃描（Overscan）延伸垂直高度"
 
 #: src/snes9x.ui:2876
 msgid "Use SNES extended height. Will probably cause letterboxing"
-msgstr "使用 SNES extended height. Will probably cause letterboxing"
+msgstr "使用 SNES 延伸高度規格。畫面上、下邊緣可能會產生黑邊寬頻 (Letterboxing)"
 
 #: src/snes9x.ui:2898
 msgid "On‑screen display size:"
-msgstr "On‑screen display size:"
+msgstr "螢幕上提示字型 (OSD) 大小："
 
 #: src/snes9x.ui:2909
 msgid "The size of on‑screen display messages in pixels"
-msgstr "The size of on‑screen display messages in pixels"
+msgstr "螢幕上通知提示文字訊息的像素大小"
 
 #: src/snes9x.ui:2940
 msgid "Change fullscreen resolution:"
-msgstr "Change fullscreen resolution:"
+msgstr "變更全螢幕模式解析度："
 
 #: src/snes9x.ui:2944
 msgid "Changes the screen resolution when running SuperSnes9x in fullscreen mode"
-msgstr "Changes the screen resolution when running SuperSnes9x in fullscreen mode"
+msgstr "在全螢幕模式下運行 SuperSnes9x 時，直接改變顯示器的物理硬體解析度"
 
 #: src/snes9x.ui:2989
 msgid "Basic Settings"
-msgstr "Basic Settings"
+msgstr "基本核心設定"
 
 #: src/snes9x.ui:3030
 msgid "Scale image to fit window"
-msgstr "Scale image to fit window"
+msgstr "拉伸縮放畫面以填滿視窗"
 
 #: src/snes9x.ui:3034
 msgid "Scales the image so no black bars are present"
-msgstr "Scales the image so no black bars are present"
+msgstr "拉伸畫面使其完全填滿，不留下任何四周的黑邊"
 
 #: src/snes9x.ui:3054
 msgid "Aspect ratio:"
-msgstr "長寬比："
+msgstr "長寬比例規格："
 
 #: src/snes9x.ui:3089
 msgid "Maintain aspect ratio"
-msgstr "維持長寬比"
+msgstr "維持原始長寬比"
 
 #: src/snes9x.ui:3093
 msgid "Scales the image as large as possible without distortion"
-msgstr "Scales the image as large as possible without distortion"
+msgstr "在不產生畫面拉伸變形的前提下，盡可能放大圖像"
 
 #: src/snes9x.ui:3108
 msgid "Allows scaling and filtering to use multiple processors"
-msgstr "Allows scaling and filtering to use multiple processors"
+msgstr "允許畫面縮放與濾鏡處理調用多核心處理器資源進行硬體加速"
 
 #: src/snes9x.ui:3111
 msgid "Use"
-msgstr "Use"
+msgstr "套用使用"
 
 #: src/snes9x.ui:3170
 msgid "High‑resolution effect:"
-msgstr "High‑resolution effect:"
+msgstr "高解析度濾鏡特效："
 
 #: src/snes9x.ui:3213
 msgid "Apply scaling filter:"
-msgstr "Apply scaling filter:"
+msgstr "應用指定畫質縮放濾鏡："
 
 #: src/snes9x.ui:3281
 msgid "Video preset:"
-msgstr "Video preset:"
+msgstr "視訊輸出預設效果組："
 
 #: src/snes9x.ui:3295
 msgid "Composite"
-msgstr "Composite"
+msgstr "傳統複合端子 (Composite)"
 
 #: src/snes9x.ui:3309
 msgid "S‑Video"
-msgstr "S‑Video"
+msgstr "S端子 (S-Video)"
 
 #: src/snes9x.ui:3323
 msgid "RGB"
-msgstr "RGB"
+msgstr "高畫質色差原生 RGB"
 
 #: src/snes9x.ui:3337
 msgid "Monochrome"
-msgstr "Monochrome"
+msgstr "復古單色黑白"
 
 #: src/snes9x.ui:3378
 msgid "Artifacts:"
-msgstr "Artifacts:"
+msgstr "訊號干擾雜訊 (Artifacts)："
 
 #: src/snes9x.ui:3393
 msgid "Sharpness:"
-msgstr "Sharpness:"
+msgstr "輪廓銳利度："
 
 #: src/snes9x.ui:3408
 msgid "Brightness:"
-msgstr "Brightness:"
+msgstr "畫面亮度："
 
 #: src/snes9x.ui:3423
 msgid "Contrast:"
-msgstr "Contrast:"
+msgstr "對比度："
 
 #: src/snes9x.ui:3438
 msgid "Saturation:"
-msgstr "Saturation:"
+msgstr "色彩飽和度："
 
 #: src/snes9x.ui:3453
 msgid "Hue:"
-msgstr "Hue:"
+msgstr "色調偏向 (Hue)："
 
 #: src/snes9x.ui:3654
 msgid "Gamma:"
-msgstr "Gamma:"
+msgstr "伽馬值 (Gamma)："
 
 #: src/snes9x.ui:3669
 msgid "Fringing:"
-msgstr "Fringing:"
+msgstr "邊緣溢色 (Fringing)："
 
 #: src/snes9x.ui:3684
 msgid "Bleed:"
-msgstr "Bleed:"
+msgstr "色彩渲染暈開 (Bleed)："
 
 #: src/snes9x.ui:3699
 msgid "Resolution:"
-msgstr "Resolution:"
+msgstr "模擬渲染解析度："
 
 #: src/snes9x.ui:3729
 msgid "Merge odd and even fields"
-msgstr "Merge odd and even fields"
+msgstr "合併奇數與偶數掃描線欄位"
 
 #: src/snes9x.ui:3751 src/snes9x.ui:3810
 msgid "Scanline intensity:"
-msgstr "Scanline intensity:"
+msgstr "復古電視掃描線 (Scanline) 強度："
 
 #: src/snes9x.ui:3855
 msgid "Scaling"
-msgstr "Scaling"
+msgstr "圖像縮放演算法"
 
 #: src/snes9x.ui:3897
 msgid "Bilinear‐filter output"
-msgstr "Bilinear‐filter output"
+msgstr "雙線性過濾平滑化輸出"
 
 #: src/snes9x.ui:3912
 msgid "Use best settings for FreeSync/G‑Sync when in fullscreen"
-msgstr "使用 best settings for FreeSync/G‑Sync when in fullscreen"
+msgstr "全螢幕時自動調整為支援 FreeSync/G-Sync 的最佳化平滑同步設定"
 
 #: src/snes9x.ui:3933
 msgid "Sync to vertical blank"
-msgstr "Sync to vertical blank"
+msgstr "垂直同步重新整理 (V-Sync)"
 
 #: src/snes9x.ui:3937
 msgid "Sync the image to the vertical retrace to stop tearing"
-msgstr "Sync the image to the vertical retrace to stop tearing"
+msgstr "使圖像更新與顯示器垂直回掃完全同步，消除畫面撕裂缺口"
 
 #: src/snes9x.ui:3949
 msgid "Reduce input lag"
-msgstr "Reduce input lag"
+msgstr "降低手把控制器輸入延遲"
 
 #: src/snes9x.ui:3953
 msgid ""
 "Sync the program with the video output after every displayed frame to reduce "
 "input latency"
-msgstr "Sync the program with the video output after every displayed frame to reduce input latency"
+msgstr "在每個影格顯示後，立即強制程式與硬體視訊輸出同步，以最大程度切斷操作回饋延遲"
 
 #: src/snes9x.ui:3969
 msgid "Shader:"
-msgstr "Shader:"
+msgstr "硬體著色器外掛 (Shader)："
 
 #: src/snes9x.ui:4033
 msgid "Force an inverted byte‑ordering"
-msgstr "Force an inverted byte‑ordering"
+msgstr "強制變更反轉位元組排列順序 (Endian)"
 
 #: src/snes9x.ui:4037
 msgid ""
 "Forces a swapped byte‑ordering for cases where the system’s endian is used "
 "instead of the video card"
-msgstr "Forces a swapped byte‑ordering for cases where the system’s endian is used instead of the video card"
+msgstr "當主機系統架構之端序與視訊顯示卡發生衝突時，強制對調位元組排列順序"
 
 #: src/snes9x.ui:4061
 msgid "Hardware Acceleration"
-msgstr "Hardware Acceleration"
+msgstr "顯示卡硬體加速"
 
 #: src/snes9x.ui:4090
 msgid "Display"
-msgstr "Display"
+msgstr "螢幕與顯示面板"
 
 #: src/snes9x.ui:4143
 msgid "Sound driver:"
-msgstr "Sound driver:"
+msgstr "音訊驅動程式核心："
 
 #: src/snes9x.ui:4178
 msgid "Automatically adjust input rate to display"
-msgstr "Automatically adjust input rate to display"
+msgstr "根據螢幕重新整理率自動修正音訊輸入率"
 
 #: src/snes9x.ui:4182
 msgid "Sets the correct input rate based on the display’s refresh rate"
-msgstr "Sets the correct input rate based on the display’s refresh rate"
+msgstr "自動根據當前顯示面板的實際物理刷新率來計算最精準的音訊傳送率"
 
 #: src/snes9x.ui:4194
 msgid "Dynamic rate control"
-msgstr "Dynamic rate control"
+msgstr "動態音訊同步率控制"
 
 #: src/snes9x.ui:4198
 msgid "Smooth out slight hiccups in sound input rate"
-msgstr "Smooth out slight hiccups in sound input rate"
+msgstr "平滑消除音訊輸入過程中產生的微小爆音或短暫碎音"
 
 #: src/snes9x.ui:4209
 msgid "Mute sound output"
-msgstr "Mute sound output"
+msgstr "關閉所有聲音輸出 (靜音)"
 
 #: src/snes9x.ui:4213
 msgid "Disables output of sound"
-msgstr "Disables output of sound"
+msgstr "完全停用音訊核心的訊號發送"
 
 #: src/snes9x.ui:4225
 msgid "Mute sound when using turbo or rewind"
-msgstr "Mute sound when using turbo or rewind"
+msgstr "在執行加速快轉或倒帶時間時，自動強制靜音"
 
 #: src/snes9x.ui:4229
 msgid "Disables output of sound when using turbo or rewind"
-msgstr "Disables output of sound when using turbo or rewind"
+msgstr "當使用加速快轉功能或倒帶回溯時，暫時關閉吵雜的爆音波輸出"
 
 #: src/snes9x.ui:4252
 msgid "Playback rate:"
-msgstr "Playback rate:"
+msgstr "音訊取樣播放頻率："
 
 #: src/snes9x.ui:4310
 msgid "Buffer size:"
-msgstr "Buffer size:"
+msgstr "音訊快取區緩衝大小："
 
-#: src/snes9x.ui:4324
+#: qt/src/SoundPanel.ui
 msgid "Dynamic rate limit:"
-msgstr "Dynamic rate limit:"
+msgstr "動態傳送率變動限制："
 
 #: src/snes9x.ui:4369
 msgid "Input rate:"
-msgstr "Input rate:"
+msgstr "音訊輸入採樣率："
 
 #: src/snes9x.ui:4382
 msgid ""
 "Adjust to produce more or less data. Decrease the rate if experiencing "
 "crackling. Increase the rate if experiencing frame rate stuttering. Best "
 "used with the “Sound buffer synchronization” option."
-msgstr "Adjust to produce more or less data. Decrease the rate if experiencing crackling. Increase the rate if experiencing frame rate stuttering. Best used with the “Sound buffer synchronization” option."
+msgstr "微調音訊產生量。若常聽到劈啪雜音爆音請降低此速率；若畫面發生微小頓挫與影格不穩，請調高此速率。配合「音訊緩衝區同步化」選項使用效果最佳。"
 
 #: src/snes9x.ui:4432
 msgid "Video rate:"
-msgstr "Video rate:"
+msgstr "視訊同步頻率："
 
 #: src/snes9x.ui:4469
 msgid "<b>Sound Settings</b>"
-msgstr "<b>Sound Settings</b>"
+msgstr "<b>音效與聲音控制設定</b>"
 
 #: src/snes9x.ui:4503 src/snes9x.ui:8730
 msgid "Sound"
-msgstr "Sound"
+msgstr "音效"
 
 #: src/snes9x.ui:4561
 msgid "Throttling method:"
-msgstr "Throttling method:"
+msgstr "運行調速限制方法："
 
 #: src/snes9x.ui:4603
 msgid "<b>Speed Control</b>"
-msgstr "<b>Speed Control</b>"
+msgstr "<b>遊戲速度與調速控制</b>"
 
 #: src/snes9x.ui:4641
 msgid "Rewind buffer size (MB):"
-msgstr "Rewind buffer size (MB):"
+msgstr "時間倒帶回溯快取大小 (MB)："
 
 #: src/snes9x.ui:4683
 msgid "Number of frames between rewind snapshots:"
-msgstr "Number of frames between rewind snapshots:"
+msgstr "兩次時間倒帶紀錄拍照點之間的隔絕影格數："
 
 #: src/snes9x.ui:4724
 msgid "<b>Rewind Settings</b>"
-msgstr "<b>Rewind Settings</b>"
+msgstr "<b>時間倒帶回溯設定</b>"
 
 #: src/snes9x.ui:4755
 msgid "Allow invalid VRAM access"
-msgstr "Allow invalid VRAM access"
+msgstr "允許不合法的非標準 VRAM 存取"
 
 #: src/snes9x.ui:4759
 msgid ""
 "Allows ROM hacks to write to screen at the wrong time. Only use if you know "
 "your ROM hack expects this"
-msgstr "Allows ROM hacks to write to screen at the wrong time. Only use if you know your ROM hack expects this"
+msgstr "允許一些改版改檔 ROM 在錯誤的時間直接寫入畫面數據。僅在您確信所玩的第三方改版作品有此硬體修正要求時開啟。"
 
 #: src/snes9x.ui:4769
 msgid "Allow opposing dpad directions"
-msgstr "Allow opposing dpad directions"
+msgstr "允許同時按下十字鍵中相反的兩個方向"
 
 #: src/snes9x.ui:4773
 msgid "Let left and right or up and down be pressed at the same time"
-msgstr "Let left and right or up and down be pressed at the same time"
+msgstr "解除十字鍵結構實體制約，使「左+右」或「上+下」按鍵信號能同時傳遞進入核心。"
 
 #: src/snes9x.ui:4784
 msgid "Overclock CPU"
-msgstr "Overclock CPU"
+msgstr "對虛擬中央處理器 CPU 進行超頻"
 
 #: src/snes9x.ui:4788
 msgid "Reduces slowdown, but has potential to break games"
-msgstr "Reduces slowdown, but has potential to break games"
+msgstr "能極大消除老遊戲因實機性能不足產生的卡頓，但部分遊戲內部邏輯可能因此發生錯亂故障。"
 
 #: src/snes9x.ui:4799
 msgid "Remove sprite limit"
-msgstr "Remove sprite limit"
+msgstr "解除橫向精靈（Sprite）數量限制"
 
 #: src/snes9x.ui:4803
 msgid "Reduces flicker, but may cause graphical artifacts"
-msgstr "Reduces flicker, but may cause graphical artifacts"
+msgstr "消除因實機同畫面圖塊過多產生的閃爍點，但可能使某些用此極限藏瑕疵的遊戲露出周邊破損破綻。"
 
 #: src/snes9x.ui:4814
 msgid "Redirect echo buffer overflow"
-msgstr "Redirect echo buffer overflow"
+msgstr "重定向音訊迴音緩衝區溢位"
 
 #: src/snes9x.ui:4818
 msgid "Allows old addmusic hacks to work, but will likely hurt other games"
-msgstr "Allows old addmusic hacks to work, but will likely hurt other games"
+msgstr "允許一些使用極舊版 AddMusic 音訊注入工具製作的改版 ROM 正常出聲，但會對一般普通遊戲造成干擾故障。"
 
 #: src/snes9x.ui:4836
 msgid "SuperFX clock speed %:"
-msgstr "SuperFX clock speed %:"
+msgstr "卡帶內置 SuperFX 輔助晶片時脈速度 %："
 
 #: src/snes9x.ui:4875
 msgid "Gaussian is the correct behavior for SNES hardware"
-msgstr "Gaussian is the correct behavior for SNES hardware"
+msgstr "高斯（Gaussian）低通濾波是實機音訊晶片最正宗還원의高鳴物理效果"
 
 #: src/snes9x.ui:4882
 msgid "Sound filter:"
-msgstr "Sound filter:"
+msgstr "音訊補間濾鏡類型："
 
 #: src/snes9x.ui:4919
 msgid "<b>Hacks</b>"
-msgstr "<b>Hacks</b>"
+msgstr "<b>特殊主機修正與非標準 Hack 擴充</b>"
 
 #: src/snes9x.ui:4961 src/snes9x.ui:7147
 msgid "Emulation"
-msgstr "Emulation"
+msgstr "模擬核心"
 
 #: src/snes9x.ui:5202
 msgid "SRAM:"
-msgstr "SRAM:"
+msgstr "SRAM 內部存檔："
 
 #: src/snes9x.ui:5214
 msgid "Save states:"
-msgstr "Save states:"
+msgstr "即時進度快照檔案："
 
 #: src/snes9x.ui:5228
 msgid "Cheats:"
-msgstr "Cheats:"
+msgstr "作弊碼檔案："
 
 #: src/snes9x.ui:5242
 msgid "Patches:"
-msgstr "Patches:"
+msgstr "外置修復補丁檔案 (.ips / .bps)："
 
 #: src/snes9x.ui:5256
 msgid "Exports:"
-msgstr "Exports:"
+msgstr "匯出輸出產物檔案："
 
 #: src/snes9x.ui:5280
 msgid "<b>Game Data Locations</b>"
-msgstr "<b>Game Data Locations</b>"
+msgstr "<b>遊戲關聯衍生資料儲存路徑</b>"
 
 #: src/snes9x.ui:5313
 msgid "Save SRAM:"
-msgstr "Save SRAM:"
+msgstr "寫入存檔暫存："
 
 #: src/snes9x.ui:5325
 msgid ""
 "Automatically save the game’s SRAM at this interval. Setting this to 0 will "
 "only save when quitting or changing ROMs"
-msgstr "Automatically save the game’s SRAM at this interval. Setting this to 0 will only save when quitting or changing ROMs"
+msgstr "設定定時將遊戲內存檔數據同步寫入硬碟的週期。若設為 0，則僅在您完全退出模擬器主程式或切換遊戲時才會執行存檔落地寫入。"
 
 #: src/snes9x.ui:5355
 msgid "<b>Automatic Saving</b>"
-msgstr "<b>Automatic Saving</b>"
+msgstr "<b>自動儲存定時落地機制</b>"
 
 #: src/snes9x.ui:5392
 msgid "Files"
-msgstr "Files"
+msgstr "檔案系統"
 
 #: src/snes9x.ui:5423
 msgid "<b>Joypad:</b>"
-msgstr "<b>Joypad:</b>"
+msgstr "<b>遊戲手把：</b>"
 
 #: src/snes9x.ui:5464
 msgid "_Reset"
-msgstr "_Reset"
+msgstr "_重設還原"
 
 #: src/snes9x.ui:5492
 msgid "Swap with:"
-msgstr "Swap with:"
+msgstr "與其互換位置："
 
 #: src/snes9x.ui:5520
 msgid "_Swap"
-msgstr "_Swap"
+msgstr "_互換對調"
 
 #: src/snes9x.ui:5542
 msgid "Use _modifier keys (Ctrl, Shift, Alt) directly"
-msgstr "使用 _modifier keys (Ctrl, Shift, Alt) directly"
+msgstr "將鍵盤輔助功能鍵 (Ctrl, Shift, Alt) 轉為完全獨立的按鍵使用"
 
 #: src/snes9x.ui:5546
 msgid "Allow using modifier keys as independent keys instead of modifiers"
-msgstr "Allow using modifier keys as independent keys instead of modifiers"
+msgstr "允許將 Ctrl、Shift 等控制鍵當作與普通字母鍵完全平級的對等獨立映射按鍵輸入。"
 
 #: src/snes9x.ui:5581
 msgid "Up"
-msgstr "Up"
+msgstr "上"
 
 #: src/snes9x.ui:5593
 msgid "Down"
-msgstr "Down"
+msgstr "下"
 
 #: src/snes9x.ui:5607
 msgid "Left"
-msgstr "Left"
+msgstr "左"
 
 #: src/snes9x.ui:5621
 msgid "Right"
-msgstr "Right"
+msgstr "右"
 
 #: src/snes9x.ui:5635
 msgid "Start"
-msgstr "Start"
+msgstr "Start 鍵"
 
 #: src/snes9x.ui:5649
 msgid "Select"
-msgstr "Select"
+msgstr "Select 鍵"
 
 #: src/snes9x.ui:5790 src/snes9x.ui:6020 src/snes9x.ui:6232
 msgid "A"
@@ -1409,339 +1434,339 @@ msgstr "Y"
 
 #: src/snes9x.ui:5844 src/snes9x.ui:6074 src/snes9x.ui:6286
 msgid "L"
-msgstr "L"
+msgstr "L 鍵"
 
 #: src/snes9x.ui:5858 src/snes9x.ui:6088 src/snes9x.ui:6300
 msgid "R"
-msgstr "R"
+msgstr "R 鍵"
 
 #: src/snes9x.ui:5992
 msgid "Buttons"
-msgstr "Buttons"
+msgstr "實體鍵位面板"
 
 #: src/snes9x.ui:6433
 msgid "<b>Sticky</b>"
-msgstr "<b>Sticky</b>"
+msgstr "<b>黏性按鍵 (Sticky)</b>"
 
 #: src/snes9x.ui:6449
 msgid "<b>Turbo</b>"
-msgstr "<b>Turbo</b>"
+msgstr "<b>連發速度 (Turbo)</b>"
 
 #: src/snes9x.ui:6468
 msgid "Turbo / Sticky Buttons"
-msgstr "Turbo / Sticky Buttons"
+msgstr "連發快打 / 黏性長按按鈕對應偏好"
 
 #: src/snes9x.ui:6505
 msgid "Set new axis bindings at:"
-msgstr "Set new axis bindings at:"
+msgstr "設定新類比搖桿軸感應判定點於："
 
 #: src/snes9x.ui:6517
 msgid ""
 "Changes the amount a joystick should be tilted to register a button press"
-msgstr "Changes the amount a joystick should be tilted to register a button press"
+msgstr "調整需要將類比搖桿傾斜推動多少百分比幅度，才等同觸發一次方向鍵按壓訊號"
 
 #: src/snes9x.ui:6536
 msgid "percent"
-msgstr "percent"
+msgstr "百分比"
 
 #: src/snes9x.ui:6553
 msgid "<b>Joystick Axis Threshold</b>"
-msgstr "<b>Joystick Axis Threshold</b>"
+msgstr "<b>類比搖桿軸推動信號靈敏度死區臨界點</b>"
 
 #: src/snes9x.ui:6590
 msgid "Center all axes on all joysticks and press Calibrate."
-msgstr "Center all axes on all joysticks and press Calibrate."
+msgstr "請放開手把使所有類比搖桿回到正中央自然死區，然後點擊平衡校準。"
 
 #: src/snes9x.ui:6605
 msgid "Cali_brate"
-msgstr "Cali_brate"
+msgstr "平衡校_準"
 
-#: src/snes9x.ui:6638
+#: win32/rsrc/snes9x.rc
 msgid "<b>Calibration</b>"
-msgstr "<b>Calibration</b>"
+msgstr "<b>類比控制桿平衡校準</b>"
 
 #: src/snes9x.ui:6659
 msgid "Joystick Options"
-msgstr "Joystick Options"
+msgstr "搖桿進階硬體選項"
 
 #: src/snes9x.ui:6677 src/snes9x.ui:9029
 msgid ""
 "<small>Click an entry and then press the desired keys or joystick button\n"
 "<tt>Escape</tt>: Move to next  <tt>Shift+Escape</tt>: Clear selected</small>"
-msgstr "<small>Click an entry and then press the desired keys or joystick button\n<tt>Escape</tt>: Move to next  <tt>Shift+Escape</tt>: Clear selected</small>"
+msgstr "<small>點擊下方任一空白格子，然後按下手把或鍵盤按鍵完成對應設定\n<tt>Escape</tt>：跳至下一欄  <tt>Shift+Escape</tt>：清除所選格子的對應關係</small>"
 
 #: src/snes9x.ui:6715
 msgid "Joypads"
-msgstr "Joypads"
+msgstr "控制器手把對應"
 
 #: src/snes9x.ui:6742
 msgid "<b>SuperSnes9x Emulator Shortcut Keys</b>"
-msgstr "<b>SuperSnes9x Emulator Shortcut Keys</b>"
+msgstr "<b>SuperSnes9x 模擬器系統全局功能快捷鍵</b>"
 
 #: src/snes9x.ui:6793
 msgid "Soft reset"
-msgstr "Soft reset"
+msgstr "模擬主機重設 (Soft reset)"
 
 #: src/snes9x.ui:6807
 msgid "Hardware reset"
-msgstr "Hardware reset"
+msgstr "切斷虛擬電源硬重設"
 
 #: src/snes9x.ui:6821
 msgid "Increase frame time"
-msgstr "Increase frame time"
+msgstr "增進每影格內部時間間隔"
 
 #: src/snes9x.ui:6835
 msgid "Decrease frame time"
-msgstr "Decrease frame time"
+msgstr "減低每影格內部時間間隔"
 
 #: src/snes9x.ui:6849
 msgid "Increase frame rate"
-msgstr "Increase frame rate"
+msgstr "調高模擬基本核心影格速"
 
 #: src/snes9x.ui:6863
 msgid "Decrease frame rate"
-msgstr "Decrease frame rate"
+msgstr "調低模擬基本核心影格速"
 
 #: src/snes9x.ui:6877
 msgid "Pause"
-msgstr "暫停"
+msgstr "暫停模擬運作"
 
 #: src/snes9x.ui:6891
 msgid "Toggle turbo"
-msgstr "切換 turbo"
+msgstr "切換連發加速開關"
 
 #: src/snes9x.ui:6905
 msgid "Enable turbo"
-msgstr "啟用 turbo"
+msgstr "啟用連發加速"
 
 #: src/snes9x.ui:6920
 msgid "Open ROM"
-msgstr "Open ROM"
+msgstr "開啟 ROM 檔案主控台"
 
 #: src/snes9x.ui:7179
 msgid "Toggle BG layer 0"
-msgstr "切換 BG layer 0"
+msgstr "切換圖層顯示狀態 BG layer 0"
 
 #: src/snes9x.ui:7191
 msgid "Toggle BG layer 1"
-msgstr "切換 BG layer 1"
+msgstr "切換圖層顯示狀態 BG layer 1"
 
 #: src/snes9x.ui:7205
 msgid "Toggle BG layer 2"
-msgstr "切換 BG layer 2"
+msgstr "切換圖層顯示狀態 BG layer 2"
 
 #: src/snes9x.ui:7219
 msgid "Toggle BG layer 3"
-msgstr "切換 BG layer 3"
+msgstr "切換圖層顯示狀態 BG layer 3"
 
 #: src/snes9x.ui:7233
 msgid "Toggle sprites"
-msgstr "切換 sprites"
+msgstr "切換精靈（Sprites）物件層顯示狀態"
 
 #: src/snes9x.ui:7247
 msgid "Toggle forced backdrop color"
-msgstr "切換 forced backdrop color"
+msgstr "切換強制覆蓋底色背景效果"
 
 #: src/snes9x.ui:7261
 msgid "Screenshot"
-msgstr "Screenshot"
+msgstr "擷取目前遊戲畫面截圖"
 
 #: src/snes9x.ui:7275
 msgid "Toggle fullscreen"
-msgstr "切換 fullscreen"
+msgstr "切換全螢幕模式"
 
 #: src/snes9x.ui:7439
 msgid "Graphics"
-msgstr "Graphics"
+msgstr "影像圖形顯示"
 
 #: src/snes9x.ui:7476
 msgid "Save current slot"
-msgstr "Save current slot"
+msgstr "儲存至當前所選槽位"
 
 #: src/snes9x.ui:7509
 msgid "Load current slot"
-msgstr "Load current slot"
+msgstr "自當前所選槽位讀取載入"
 
 #: src/snes9x.ui:7542
 msgid "Increment and save"
-msgstr "Increment and save"
+msgstr "跳至下一槽位並即時儲存"
 
 #: src/snes9x.ui:7575
 msgid "Decrement and load"
-msgstr "Decrement and load"
+msgstr "退回前一槽位並即時讀取"
 
 #: src/snes9x.ui:7608
 msgid "Increment slot"
-msgstr "Increment slot"
+msgstr "切換至下一個槽位號碼"
 
 #: src/snes9x.ui:7641
 msgid "Decrement slot"
-msgstr "Decrement slot"
+msgstr "切換至前一個槽位號碼"
 
 #: src/snes9x.ui:7685
 msgid "<b>Quick save state</b>"
-msgstr "<b>Quick save state</b>"
+msgstr "<b>鍵盤快速即時進度存檔</b>"
 
 #: src/snes9x.ui:7700
 msgid "<b>Quick load state</b>"
-msgstr "<b>Quick load state</b>"
+msgstr "<b>鍵盤快速即時進度讀取</b>"
 
 #: src/snes9x.ui:7715 src/snes9x.ui:7855
 msgid "Slot 0"
-msgstr "Slot 0"
+msgstr "槽位 0"
 
 #: src/snes9x.ui:7729 src/snes9x.ui:7871
 msgid "Slot 1"
-msgstr "Slot 1"
+msgstr "槽位 1"
 
 #: src/snes9x.ui:7743 src/snes9x.ui:7887
 msgid "Slot 2"
-msgstr "Slot 2"
+msgstr "槽位 2"
 
 #: src/snes9x.ui:7757 src/snes9x.ui:7903
 msgid "Slot 3"
-msgstr "Slot 3"
+msgstr "槽位 3"
 
 #: src/snes9x.ui:7771 src/snes9x.ui:7919
 msgid "Slot 4"
-msgstr "Slot 4"
+msgstr "槽位 4"
 
 #: src/snes9x.ui:7785 src/snes9x.ui:7935
 msgid "Slot 5"
-msgstr "Slot 5"
+msgstr "槽位 5"
 
 #: src/snes9x.ui:7799 src/snes9x.ui:7951
 msgid "Slot 6"
-msgstr "Slot 6"
+msgstr "槽位 6"
 
 #: src/snes9x.ui:7813 src/snes9x.ui:7967
 msgid "Slot 7"
-msgstr "Slot 7"
+msgstr "槽位 7"
 
 #: src/snes9x.ui:7827 src/snes9x.ui:7983
 msgid "Slot 8"
-msgstr "Slot 8"
+msgstr "槽位 8"
 
 #: src/snes9x.ui:7841 src/snes9x.ui:7999
 msgid "Slot 9"
-msgstr "Slot 9"
+msgstr "槽位 9"
 
 #: src/snes9x.ui:8438
 msgid "Toggle sound channel 0"
-msgstr "切換 sound channel 0"
+msgstr "開啟/切換音訊聲道 0"
 
 #: src/snes9x.ui:8450
 msgid "Toggle sound channel 1"
-msgstr "切換 sound channel 1"
+msgstr "開啟/切換音訊聲道 1"
 
 #: src/snes9x.ui:8464
 msgid "Toggle sound channel 2"
-msgstr "切換 sound channel 2"
+msgstr "開啟/切換音訊聲道 2"
 
 #: src/snes9x.ui:8478
 msgid "Toggle sound channel 3"
-msgstr "切換 sound channel 3"
+msgstr "開啟/切換音訊聲道 3"
 
 #: src/snes9x.ui:8492
 msgid "Toggle sound channel 4"
-msgstr "切換 sound channel 4"
+msgstr "開啟/切換音訊聲道 4"
 
 #: src/snes9x.ui:8506
 msgid "Toggle sound channel 5"
-msgstr "切換 sound channel 5"
+msgstr "開啟/切換音訊聲道 5"
 
 #: src/snes9x.ui:8520
 msgid "Toggle sound channel 6"
-msgstr "切換 sound channel 6"
+msgstr "開啟/切換音訊聲道 6"
 
 #: src/snes9x.ui:8534
 msgid "Toggle sound channel 7"
-msgstr "切換 sound channel 7"
+msgstr "開啟/切換音訊聲道 7"
 
 #: src/snes9x.ui:8548
 msgid "Toggle all sound channels"
-msgstr "切換 all sound channels"
+msgstr "開啟/關閉切換所有音訊聲道層"
 
 #: src/snes9x.ui:8753
 msgid "Seek to frame"
-msgstr "Seek to frame"
+msgstr "直接定位搜尋至核心影格位置"
 
 #: src/snes9x.ui:8768
 msgid "Load Movie"
-msgstr "Load Movie"
+msgstr "讀取錄影操作指令檔"
 
 #: src/snes9x.ui:8783
 msgid "Stop movie recording"
-msgstr "Stop movie recording"
+msgstr "停止當前操作指令錄製"
 
 #: src/snes9x.ui:8798
 msgid "Begin movie recording"
-msgstr "Begin movie recording"
+msgstr "開始錄製目前按鍵指令流程"
 
 #: src/snes9x.ui:8813
 msgid "Save SPC"
-msgstr "Save SPC"
+msgstr "匯出 SPC 數位音訊檔"
 
 #: src/snes9x.ui:8913
 msgid "Swap controllers 1 & 2"
-msgstr "Swap controllers 1 & 2"
+msgstr "互換對調控制器 1 號與 2 號的實體位置"
 
 #: src/snes9x.ui:8944
 msgid "Rewind"
-msgstr "倒帶"
+msgstr "時間逆轉倒帶"
 
 #: src/snes9x.ui:8975
 msgid "Capture/release mouse"
-msgstr "Capture/release mouse"
+msgstr "鎖定/釋放滑鼠游標邊界限制"
 
 #: src/snes9x.ui:9011
 msgid "Misc"
-msgstr "Misc"
+msgstr "其他雜項偏好"
 
 #: src/snes9x.ui:9067
 msgid "Shortcuts"
-msgstr "Shortcuts"
+msgstr "全局快捷熱鍵偏好"
 
 #: src/snes9x.ui:9106
 msgid "Pause emulation when switching away from SuperSnes9x"
-msgstr "Pause emulation when switching away from SuperSnes9x"
+msgstr "當電腦焦點離開 SuperSnes9x 視窗時，自動暫停遊戲模擬"
 
 #: src/snes9x.ui:9120
 msgid "Force‑enable button and menu icons"
-msgstr "Force‑enable button and menu icons"
+msgstr "強制在按鈕與功能選單中啟用小圖示顯示"
 
 #: src/snes9x.ui:9141
 msgid "The <tt>Esc</tt> key should:"
-msgstr "The <tt>Esc</tt> key should:"
+msgstr "按下鍵盤 <tt>Esc</tt> 鍵將會執行："
 
 #: src/snes9x.ui:9185
 msgid "Initial background:"
-msgstr "Initial background:"
+msgstr "主程式開機初始預設底色："
 
 #: src/snes9x.ui:9226
 msgid "<b>Window Behavior</b>"
-msgstr "<b>Window Behavior</b>"
+msgstr "<b>程式視窗行為控制偏好</b>"
 
 #: src/snes9x.ui:9256
 msgid "Prevent the screensaver from activating"
-msgstr "Prevent the screensaver from activating"
+msgstr "在遊戲運行中阻止系統螢幕保護程式 (screensaver) 啟動"
 
 #: src/snes9x.ui:9276
 msgid "<b>Screensaver</b>"
-msgstr "<b>Screensaver</b>"
+msgstr "<b>螢幕保護管理</b>"
 
 #: src/snes9x.ui:9310
 msgid "UI"
-msgstr "UI"
+msgstr "主介面面板外觀 (UI)"
 
 #: src/snes9x.ui:9344
 msgid ""
-"  Snes9x – A Portable Super Nintendo Entertainment System™ Emulator\n"
+"  SuperSnes9x – A Portable Super Nintendo Entertainment System™ Emulator\n"
 "\n"
 "  Snes9x homepage: http://www.snes9x.com/\n"
-"  Snes9x source code: https://github.com/shanytc/snes9x/\n"
+"  SuperSnes9x source code: https://github.com/shanytc/snes9x/\n"
 "\n"
-"  Permission to use, copy, modify and/or distribute Snes9x in both binary\n"
+"  Permission to use, copy, modify and/or distribute SuperSnes9x in both binary\n"
 "  and source form, for non‑commercial purposes, is hereby granted without\n"
 "  fee, providing that this license information and copyright notice appear\n"
 "  with all copies and any derived work.\n"
@@ -1750,12 +1775,12 @@ msgid ""
 "  warranty. In no event shall the authors be held liable for any damages\n"
 "  arising from the use of this software or it’s derivatives.\n"
 "\n"
-"  Snes9x is freeware for PERSONAL USE only. Commercial users should\n"
+"  SuperSnes9x is freeware for PERSONAL USE only. Commercial users should\n"
 "  seek permission of the copyright holders first. Commercial use includes,\n"
-"  but is not limited to, charging money for Snes9x or software derived from\n"
-"  Snes9x, including Snes9x or derivatives in commercial game bundles, and/"
+"  but is not limited to, charging money for SuperSnes9x or software derived from\n"
+"  SuperSnes9x, including SuperSnes9x or derivatives in commercial game bundles, and/"
 "or\n"
-"  using Snes9x as a promotion for your commercial product.\n"
+"  using SuperSnes9x as a promotion for your commercial product.\n"
 "\n"
 "  The copyright holders request that bug fixes and improvements to the code\n"
 "  should be forwarded to them so everyone can benefit from the "
@@ -1764,45 +1789,65 @@ msgid ""
 "\n"
 "  Super NES and Super Nintendo Entertainment System are trademarks of\n"
 "  Nintendo Co., Limited and its subsidiary companies."
-msgstr "  Snes9x – A Portable Super Nintendo Entertainment System™ Emulator\n\n  Snes9x homepage: http://www.snes9x.com/\n  Snes9x source code: https://github.com/shanytc/snes9x/\n\n  Permission to use, copy, modify and/or distribute Snes9x in both binary\n  and source form, for non‑commercial purposes, is hereby granted without\n  fee, providing that this license information and copyright notice appear\n  with all copies and any derived work.\n\n  This software is provided ‘as‑is’, without any express or implied\n  warranty. In no event shall the authors be held liable for any damages\n  arising from the use of this software or it’s derivatives.\n\n  Snes9x is freeware for PERSONAL USE only. Commercial users should\n  seek permission of the copyright holders first. Commercial use includes,\n  but is not limited to, charging money for Snes9x or software derived from\n  Snes9x, including Snes9x or derivatives in commercial game bundles, and/or\n  using Snes9x as a promotion for your commercial product.\n\n  The copyright holders request that bug fixes and improvements to the code\n  should be forwarded to them so everyone can benefit from the modifications\n  in future versions.\n\n  Super NES and Super Nintendo Entertainment System are trademarks of\n  Nintendo Co., Limited and its subsidiary companies."
+msgstr ""
+"  SuperSnes9x – 具備卓越跨平台可攜性的超級任天堂 Super Nintendo Entertainment System™ 模擬器\n"
+"\n"
+"  Snes9x 官方主頁: http://www.snes9x.com/\n"
+"  SuperSnes9x 開源原始碼託管庫: https://github.com/shanytc/snes9x/\n"
+"\n"
+"  在非商業用途的前提下，只要所有複本及衍生作品中均完整包含此許可證說明與版權聲明，\n"
+"  即特此授權免費使用、複製、修改和/或分發二進位（Binary）及原始碼形式的 SuperSnes9x。\n"
+"\n"
+"  本軟體乃依「現況（as-is）」提供，不附帶任何明示或暗示之保證。\n"
+"  在任何情況下，作者均不對因使用本軟體或其衍生作品而產生的任何損害承擔任何賠償責任。\n"
+"\n"
+"  SuperSnes9x 為僅限「個人使用」的免費軟體（Freeware）。若欲進行任何商業營利目的之利用，\n"
+"  必須事先獲得版權所有者的明確許可。商業利用範疇包括但不限於：對 SuperSnes9x 或其衍生軟體收取費用、\n"
+"  將 SuperSnes9x 或衍生作品打包包含在商業遊戲套件包中發售，以及/或者將 SuperSnes9x 作為您商業產品的促銷宣傳手段。\n"
+"\n"
+"  版權所有者懇請各界，若對本軟體程式碼有進行錯誤修復或效能改進，請務必將相關代碼提交反饋給原始開發團隊，\n"
+"  以便所有人都能在未來的官方新版本中共同受益於這些優化成果。\n"
+"\n"
+"  Super NES 及 Super Nintendo Entertainment System 為任天堂株式會社 (Nintendo Co., Limited) \n"
+"  及其子公司之註冊商標。"
 
 # === Win32 strings (added by i18n/extract_strings.py) ===
 
 #: win32/rsrc/snes9x.rc
 msgid "!= (Not Equal To)"
-msgstr "!= (Not Equal To)"
+msgstr "!= (不等於)"
 
 #: win32/wlanguage.h
 msgid "(Not Available)"
-msgstr "(Not Available)"
+msgstr "(無法使用)"
 
 #: win32/wlanguage.h
 msgid "(not stored in movie file)"
-msgstr "(not stored in movie file)"
+msgstr "(不保存在操作錄影指令檔中)"
 
 #: win32/rsrc/snes9x.rc
 msgid "(restart required)"
-msgstr "(restart required)"
+msgstr "(需重啟程式使設定生效)"
 
 #: win32/rsrc/snes9x.rc
 msgid "0 (off)"
-msgstr "0 (off)"
+msgstr "0 (關閉)"
 
 #: win32/rsrc/snes9x.rc
 msgid "1 byte"
-msgstr "1 byte"
+msgstr "1 位元組"
 
 #: win32/rsrc/snes9x.rc
 msgid "1 frame"
-msgstr "1 frame"
+msgstr "1 影格"
 
 #: win32/rsrc/snes9x.rc
 msgid "10x"
-msgstr "10x"
+msgstr "10倍"
 
 #: win32/rsrc/snes9x.rc
 msgid "112ms"
-msgstr "112ms"
+msgstr "112毫秒"
 
 #: win32/rsrc/snes9x.rc
 msgid "11KHz"
@@ -1810,15 +1855,15 @@ msgstr "11KHz"
 
 #: win32/rsrc/snes9x.rc
 msgid "128ms"
-msgstr "128ms"
+msgstr "128毫秒"
 
 #: win32/rsrc/snes9x.rc
 msgid "144ms"
-msgstr "144ms"
+msgstr "144毫秒"
 
 #: win32/rsrc/snes9x.rc
 msgid "160ms"
-msgstr "160ms"
+msgstr "160毫秒"
 
 #: win32/rsrc/snes9x.rc
 msgid "16KHz"
@@ -1826,31 +1871,31 @@ msgstr "16KHz"
 
 #: win32/rsrc/snes9x.rc
 msgid "16ms"
-msgstr "16ms"
+msgstr "16毫秒"
 
 #: win32/rsrc/snes9x.rc
 msgid "176ms"
-msgstr "176ms"
+msgstr "176毫秒"
 
 #: win32/rsrc/snes9x.rc
 msgid "192ms"
-msgstr "192ms"
+msgstr "192毫秒"
 
 #: win32/rsrc/snes9x.rc
 msgid "1x"
-msgstr "1x"
+msgstr "1倍"
 
 #: win32/rsrc/snes9x.rc
 msgid "2 bytes"
-msgstr "2 bytes"
+msgstr "2 位元組"
 
 #: win32/rsrc/snes9x.rc
 msgid "2 frames"
-msgstr "2 frames"
+msgstr "2 影格"
 
 #: win32/rsrc/snes9x.rc
 msgid "208ms"
-msgstr "208ms"
+msgstr "208毫秒"
 
 #: win32/rsrc/snes9x.rc
 msgid "22KHz"
@@ -1858,15 +1903,15 @@ msgstr "22KHz"
 
 #: win32/rsrc/snes9x.rc
 msgid "2x"
-msgstr "2x"
+msgstr "2倍"
 
 #: win32/rsrc/snes9x.rc
 msgid "3 bytes"
-msgstr "3 bytes"
+msgstr "3 位元組"
 
 #: win32/rsrc/snes9x.rc
 msgid "3 frames"
-msgstr "3 frames"
+msgstr "3 影格"
 
 #: win32/rsrc/snes9x.rc
 msgid "30KHz"
@@ -1878,7 +1923,7 @@ msgstr "32KHz"
 
 #: win32/rsrc/snes9x.rc
 msgid "32ms"
-msgstr "32ms"
+msgstr "32毫秒"
 
 #: win32/rsrc/snes9x.rc
 msgid "35KHz"
@@ -1886,15 +1931,15 @@ msgstr "35KHz"
 
 #: win32/rsrc/snes9x.rc
 msgid "3x"
-msgstr "3x"
+msgstr "3倍"
 
 #: win32/rsrc/snes9x.rc
 msgid "4 bytes"
-msgstr "4 bytes"
+msgstr "4 位元組"
 
 #: win32/rsrc/snes9x.rc
 msgid "4 frames"
-msgstr "4 frames"
+msgstr "4 影格"
 
 #: win32/rsrc/snes9x.rc
 msgid "44KHz"
@@ -1906,31 +1951,31 @@ msgstr "48KHz"
 
 #: win32/rsrc/snes9x.rc
 msgid "48ms"
-msgstr "48ms"
+msgstr "48毫秒"
 
 #: win32/rsrc/snes9x.rc
 msgid "4x"
-msgstr "4x"
+msgstr "4倍"
 
 #: win32/rsrc/snes9x.rc
 msgid "5x"
-msgstr "5x"
+msgstr "5倍"
 
 #: win32/rsrc/snes9x.rc
 msgid "64ms"
-msgstr "64ms"
+msgstr "64毫秒"
 
 #: win32/rsrc/snes9x.rc
 msgid "6x"
-msgstr "6x"
+msgstr "6倍"
 
 #: win32/rsrc/snes9x.rc
 msgid "7x"
-msgstr "7x"
+msgstr "7倍"
 
 #: win32/rsrc/snes9x.rc
 msgid "80ms"
-msgstr "80ms"
+msgstr "80毫秒"
 
 #: win32/rsrc/snes9x.rc
 msgid "8KHz"
@@ -1938,39 +1983,39 @@ msgstr "8KHz"
 
 #: win32/rsrc/snes9x.rc
 msgid "8x"
-msgstr "8x"
+msgstr "8倍"
 
 #: win32/rsrc/snes9x.rc
 msgid "96ms"
-msgstr "96ms"
+msgstr "96毫秒"
 
 #: win32/rsrc/snes9x.rc
 msgid "9x"
-msgstr "9x"
+msgstr "9倍"
 
 #: win32/rsrc/snes9x.rc
 msgid "< (Less Than)"
-msgstr "< (Less Than)"
+msgstr "< (小於)"
 
 #: win32/wlanguage.h
 msgid "<-- MISMATCH !!!"
-msgstr "<-- MISMATCH !!!"
+msgstr "<-- 不符不匹配 !!!"
 
 #: win32/rsrc/snes9x.rc
 msgid "<= (Less Than or Equal to)"
-msgstr "<= (Less Than or Equal to)"
+msgstr "<= (小於或等於)"
 
 #: win32/rsrc/snes9x.rc
 msgid "= (Equal To)"
-msgstr "= (Equal To)"
+msgstr "= (等於)"
 
 #: win32/rsrc/snes9x.rc
 msgid "> (Greater Than)"
-msgstr "> (Greater Than)"
+msgstr "> (大於)"
 
 #: win32/rsrc/snes9x.rc
 msgid ">= (Greater than or Equal To)"
-msgstr ">= (Greater than or Equal To)"
+msgstr ">= (大於或等於)"
 
 #: win32/rsrc/snes9x.rc
 msgid "About"
@@ -1978,63 +2023,63 @@ msgstr "關於"
 
 #: win32/rsrc/snes9x.rc
 msgid "Achievement List"
-msgstr "Achievement List"
+msgstr "社群成就清單列表"
 
 #: win32/rsrc/snes9x.rc
 msgid "Act as Server"
-msgstr "Act as Server"
+msgstr "充當伺服器端連線主機"
 
 #: win32/wlanguage.h
 msgid "Act As Server"
-msgstr "Act As Server"
+msgstr "充當伺服器端連線主機"
 
 #: win32/rsrc/snes9x.rc
 msgid "Add"
-msgstr "Add"
+msgstr "新增添加"
 
 #: win32/rsrc/snes9x.rc
 msgid "Add Cheat"
-msgstr "Add Cheat"
+msgstr "添加金手指條目"
 
 #: win32/rsrc/snes9x.rc
 msgid "Add SuperSnes9x to registry for supported file types"
-msgstr "Add SuperSnes9x to registry for supported file types"
+msgstr "將 SuperSnes9x 寫入系統登錄檔以啟用支援副檔名的全自動關聯"
 
 #: win32/rsrc/snes9x.rc
 msgid "Address"
-msgstr "Address"
+msgstr "記憶體地址"
 
 #: win32/rsrc/snes9x.rc
 msgid "Address:"
-msgstr "Address:"
+msgstr "記憶體地址："
 
 #: win32/rsrc/snes9x.rc
 msgid "Adjustments"
-msgstr "Adjustments"
+msgstr "微調參數"
 
 #: win32/wlanguage.h
 msgid "All files"
-msgstr "All files"
+msgstr "所有檔案類型"
 
 #: win32/rsrc/snes9x.rc
 msgid "all of SuperSnes9x's settings are stored in this file"
-msgstr "all of SuperSnes9x's settings are stored in this file"
+msgstr "SuperSnes9x 的所有配置參數偏好均妥善保存在此組態檔中"
 
 #: win32/rsrc/snes9x.rc
 msgid "Allow executable logo override"
-msgstr "Allow executable logo override"
+msgstr "允許主程式內置圖示外觀被外部替換"
 
 #: win32/rsrc/snes9x.rc
 msgid "Allow Invalid VRAM Access"
-msgstr "Allow Invalid VRAM Access"
+msgstr "允許不合法的非標準 VRAM 存取"
 
 #: win32/rsrc/snes9x.rc
 msgid "Allow Left+Rt/Up+Dn"
-msgstr "Allow Left+Rt/Up+Dn"
+msgstr "允許十字鍵相反方向鍵同時按下(左+右 / 上+下)"
 
 #: win32/rsrc/snes9x.rc
 msgid "APP - Emulator Settings"
-msgstr "APP - Emulator Settings"
+msgstr "程式 - 模擬器進階偏好設定"
 
 #: win32/rsrc/snes9x.rc
 msgid "Apply"
@@ -2042,167 +2087,167 @@ msgstr "套用"
 
 #: win32/rsrc/snes9x.rc
 msgid "Apply Adjustments"
-msgstr "Apply Adjustments"
+msgstr "套用目前調整"
 
 #: win32/rsrc/snes9x.rc
 msgid "Apply Cheats"
-msgstr "Apply Cheats"
+msgstr "套用金手指修改"
 
 #: win32/rsrc/snes9x.rc
 msgid "Ask for confirmation when saving/loading"
-msgstr "Ask for confirmation when saving/loading"
+msgstr "在執行存檔與載入時，強制跳出視窗要求玩家確認"
 
 #: win32/rsrc/snes9x.rc
 msgid "Ask Server to Pause when"
-msgstr "Ask Server to Pause when"
+msgstr "請求伺服器端暫停，當遭遇以下情況時："
 
 #: win32/rsrc/snes9x.rc
 msgid "Author Info:"
-msgstr "Author Info:"
+msgstr "作者/貢獻者資訊："
 
 #: win32/rsrc/snes9x.rc
 msgid "Auto Layer Transparency"
-msgstr "Auto Layer Transparency"
+msgstr "自動優化管理圖層透明度通道"
 
 #: win32/rsrc/snes9x.rc
 msgid "Auto update"
-msgstr "Auto update"
+msgstr "自動檢測更新"
 
 #: win32/rsrc/snes9x.rc
 msgid "Auto-Assign"
-msgstr "Auto-Assign"
+msgstr "自動分配映射"
 
 #: win32/wlanguage.h
 msgid "Auto-Detect"
-msgstr "Auto-Detect"
+msgstr "自動辨識檢測"
 
 #: win32/rsrc/snes9x.rc
 msgid "Auto-Save S-RAM"
-msgstr "Auto-Save S-RAM"
+msgstr "定時自動保存 S-RAM 實體存檔"
 
 #: win32/wlanguage.h
 msgid "Autofire"
-msgstr "Autofire"
+msgstr "自動連發連按"
 
 #: win32/wlanguage.h
 msgid "Autohold"
-msgstr "Autohold"
+msgstr "自動黏性長按"
 
 #: win32/rsrc/snes9x.rc
 msgid "Automatic Input Rate"
-msgstr "Automatic Input Rate"
+msgstr "自動管理音訊輸入傳送率"
 
 #: win32/rsrc/snes9x.rc
 msgid "Automatic, skip at most:"
-msgstr "Automatic, skip at most:"
+msgstr "自動調控影格，最大容許跳格上限："
 
 #: win32/wlanguage.h
 msgid "AVI file"
-msgstr "AVI file"
+msgstr "AVI 視訊影片檔案"
 
 #: win32/rsrc/snes9x.rc
 msgid "AVI Recording"
-msgstr "AVI Recording"
+msgstr "正錄製 AVI 影片中"
 
 #: win32/rsrc/snes9x.rc
 msgid "Background Keyboard Hotkeys"
-msgstr "Background Keyboard Hotkeys"
+msgstr "模擬器執行於背景時仍允許快捷鍵響應"
 
 #: win32/rsrc/snes9x.rc
 msgid "Background:"
-msgstr "Background:"
+msgstr "背景色面："
 
 #: win32/rsrc/snes9x.rc
 msgid "Bank +:"
-msgstr "Bank +:"
+msgstr "記憶體 Bank +："
 
 #: win32/rsrc/snes9x.rc
 msgid "Bank -:"
-msgstr "Bank -:"
+msgstr "記憶體 Bank -："
 
 #: win32/rsrc/snes9x.rc
 msgid "Bank:"
-msgstr "Bank:"
+msgstr "記憶體 Bank 位址："
 
 #: win32/rsrc/snes9x.rc
 msgid "Base Tile Addresses"
-msgstr "Base Tile Addresses"
+msgstr "圖形 Tile 基準定址位址"
 
 #: win32/rsrc/snes9x.rc
 msgid "BG1:"
-msgstr "BG1:"
+msgstr "背景背景圖層 1："
 
 #: win32/rsrc/snes9x.rc
 msgid "BG2:"
-msgstr "BG2:"
+msgstr "背景背景圖層 2："
 
 #: win32/rsrc/snes9x.rc
 msgid "BG3:"
-msgstr "BG3:"
+msgstr "背景背景圖層 3："
 
 #: win32/rsrc/snes9x.rc
 msgid "BG4:"
-msgstr "BG4:"
+msgstr "背景背景圖層 4："
 
 #: win32/rsrc/snes9x.rc
 msgid "BG:"
-msgstr "BG:"
+msgstr "背景圖層層："
 
 #: win32/rsrc/snes9x.rc
 msgid "Bilinear Filtering"
-msgstr "Bilinear Filtering"
+msgstr "雙線性圖像平滑濾鏡 (Bilinear)"
 
 #: win32/rsrc/snes9x.rc
 msgid "Binding"
-msgstr "Binding"
+msgstr "實體鍵位映射"
 
 #: win32/rsrc/snes9x.rc
 msgid "BIOS"
-msgstr "BIOS"
+msgstr "核心 BIOS"
 
 #: win32/wlanguage.h
 msgid "BIOS files"
-msgstr "BIOS files"
+msgstr "主機擴充 BIOS 韌體檔案"
 
 #: win32/rsrc/snes9x.rc
 msgid "BIOS:"
-msgstr "BIOS:"
+msgstr "BIOS 檔案映像："
 
 #: win32/rsrc/snes9x.rc
 msgid "Bit Depth:"
-msgstr "Bit Depth:"
+msgstr "像素位元深度深度 (Bit)："
 
 #: win32/rsrc/snes9x.rc
 msgid "Blend Hi-Res Images"
-msgstr "Blend Hi-Res Images"
+msgstr "半透明混合高解析度畫面"
 
 #: win32/rsrc/snes9x.rc
 msgid "Blue means already mapped. Pink conflicts with hotkey.\nRed is reserved by Windows. Escape clears bindings.\nPress multiple keys for multi-bind. Delete removes last."
-msgstr "Blue means already mapped. Pink conflicts with hotkey.\nRed is reserved by Windows. Escape clears bindings.\nPress multiple keys for multi-bind. Delete removes last."
+msgstr "藍色代表此鍵已被指派對應。粉紅色代表與全域快捷熱鍵產生衝突。\n紅色按鍵受 Windows 系統強行獨佔。按 Escape 清空當前欄位對應關係。\n同時按多個鍵可指派多鍵組合輸入。按 Delete 可退格刪除最後一個指定鍵。"
 
 #: win32/wlanguage.h
 msgid "Blue means the hotkey is already mapped.\nPink means it conflicts with a game button.\nRed means it's reserved by Windows.\nA hotkey can be disabled using Escape."
-msgstr "Blue means the hotkey is already mapped.\nPink means it conflicts with a game button.\nRed means it's reserved by Windows.\nA hotkey can be disabled using Escape."
+msgstr "藍色代表該系統快捷鍵已指派對應關係。\n粉紅色代表與遊戲內建手把按鍵發生實體衝突。\n紅色是 Windows 系統核心保留專用按鍵位。\n快捷鍵功能可在選定狀態下按 Escape 鍵予以關閉。"
 
 #: win32/rsrc/snes9x.rc
 msgid "Blue means the hotkey is already mapped. Pink means it conflicts with a game button. Red means it's reserved by Windows. Escape clears bindings.\nPress multiple keys for multi-bind. Delete removes last."
-msgstr "Blue means the hotkey is already mapped. Pink means it conflicts with a game button. Red means it's reserved by Windows. Escape clears bindings.\nPress multiple keys for multi-bind. Delete removes last."
+msgstr "藍色代表該熱鍵已完成指派。粉紅色代表與手把實體控制按鈕發生衝突。紅色代表 Windows 核心保留按鍵。按 Escape 鍵可清空對應關係。\n同時按住多鍵可指派組合鍵輸入。按 Delete 鍵可剔除最後一個按鍵分配。"
 
 #: win32/rsrc/snes9x.rc
 msgid "Browse"
-msgstr "Browse"
+msgstr "瀏覽"
 
 #: win32/rsrc/snes9x.rc
 msgid "Buffer Length"
-msgstr "Buffer Length"
+msgstr "聲道緩衝快取長度"
 
 #: win32/rsrc/snes9x.rc
 msgid "Buffer Length:"
-msgstr "Buffer Length:"
+msgstr "緩衝快取長度："
 
 #: win32/wlanguage.h
 msgid "Can't Open File"
-msgstr "Can't Open File"
+msgstr "無法正常開啟該實體檔案"
 
 #: win32/rsrc/snes9x.rc
 msgid "Cancel"
@@ -2210,71 +2255,71 @@ msgstr "取消"
 
 #: win32/rsrc/snes9x.rc
 msgid "Channel 1"
-msgstr "Channel 1"
+msgstr "聲音播放通道 1"
 
 #: win32/rsrc/snes9x.rc
 msgid "Channel 2"
-msgstr "Channel 2"
+msgstr "聲音播放通道 2"
 
 #: win32/rsrc/snes9x.rc
 msgid "Channel 3"
-msgstr "Channel 3"
+msgstr "聲音播放通道 3"
 
 #: win32/rsrc/snes9x.rc
 msgid "Channel 4"
-msgstr "Channel 4"
+msgstr "聲音播放通道 4"
 
 #: win32/rsrc/snes9x.rc
 msgid "Channel 5"
-msgstr "Channel 5"
+msgstr "聲音播放通道 5"
 
 #: win32/rsrc/snes9x.rc
 msgid "Channel 6"
-msgstr "Channel 6"
+msgstr "聲音播放通道 6"
 
 #: win32/rsrc/snes9x.rc
 msgid "Channel 7"
-msgstr "Channel 7"
+msgstr "聲音播放通道 7"
 
 #: win32/rsrc/snes9x.rc
 msgid "Channel 8"
-msgstr "Channel 8"
+msgstr "聲音播放通道 8"
 
 #: win32/rsrc/snes9x.rc
 msgid "Channels"
-msgstr "Channels"
+msgstr "音訊獨立核心通道"
 
 #: win32/rsrc/snes9x.rc
 msgid "Chat"
-msgstr "Chat"
+msgstr "聊天對話"
 
 #: win32/rsrc/snes9x.rc
 msgid "Cheat Description:"
-msgstr "Cheat Description:"
+msgstr "金手指作弊功能描述："
 
 #: win32/rsrc/snes9x.rc
 msgid "Cheat Details"
-msgstr "Cheat Details"
+msgstr "金手指作弊代碼詳細資訊"
 
 #: win32/rsrc/snes9x.rc
 msgid "Cheat Entry and Editor"
-msgstr "Cheat Entry and Editor"
+msgstr "金手指代碼輸入與編輯主控台"
 
 #: win32/rsrc/snes9x.rc
 msgid "Cheat Search"
-msgstr "Cheat Search"
+msgstr "追蹤搜尋虛擬金手指修改位址"
 
 #: win32/wlanguage.h
 msgid "Cheats Editor Dialog:"
-msgstr "Cheats Editor Dialog:"
+msgstr "金手指編輯管理器視窗："
 
 #: win32/wlanguage.h
 msgid "Cheats Search Dialog:"
-msgstr "Cheats Search Dialog:"
+msgstr "金手指追蹤尋找核心視窗："
 
 #: win32/rsrc/snes9x.rc
 msgid "Choose Logo"
-msgstr "Choose Logo"
+msgstr "選擇自訂商標外觀"
 
 #: win32/rsrc/snes9x.rc
 msgid "Clear"
@@ -2282,415 +2327,415 @@ msgstr "清除"
 
 #: win32/rsrc/snes9x.rc
 msgid "Clear All"
-msgstr "Clear All"
+msgstr "一鍵全部清除"
 
 #: win32/rsrc/snes9x.rc
 msgid "Clear History"
-msgstr "Clear History"
+msgstr "清除所有歷史足跡紀錄"
 
 #: win32/rsrc/snes9x.rc
 msgid "Clear SRAM"
-msgstr "Clear SRAM"
+msgstr "完全清空內存 SRAM 記憶體資料"
 
 #: win32/rsrc/snes9x.rc
 msgid "Clear Watches"
-msgstr "Clear Watches"
+msgstr "清空內存數值監控列表"
 
 #: win32/rsrc/snes9x.rc
 msgid "Client Settings"
-msgstr "Client Settings"
+msgstr "客戶端連線基本設定"
 
 #: win32/wlanguage.h
 msgid "Clipping Windows:"
-msgstr "Clipping Windows:"
+msgstr "圖像剪裁限制遮罩視窗 (Clipping)："
 
 #: win32/rsrc/snes9x.rc
 msgid "Close"
-msgstr "Close"
+msgstr "關閉"
 
 #: win32/wlanguage.h
 msgid "Code"
-msgstr "Code"
+msgstr "代碼"
 
 #: win32/rsrc/snes9x.rc
 msgid "Color Correction"
-msgstr "Color Correction"
+msgstr "色彩補正優化"
 
 #: win32/rsrc/snes9x.rc
 msgid "Compare To"
-msgstr "Compare To"
+msgstr "對照比較目標為"
 
 #: win32/rsrc/snes9x.rc
 msgid "Comparison Type"
-msgstr "Comparison Type"
+msgstr "記憶體數值比較類型條件"
 
 #: win32/rsrc/snes9x.rc
 msgid "Config file:"
-msgstr "Config file:"
+msgstr "主組態配置檔案："
 
 #: win32/rsrc/snes9x.rc
 msgid "Connect"
-msgstr "Connect"
+msgstr "建立連線"
 
 #: win32/rsrc/snes9x.rc
 msgid "Connect clients to: 127.0.0.1 (localhost) or your LAN IP"
-msgstr "Connect clients to: 127.0.0.1 (localhost) or your LAN IP"
+msgstr "要求客戶端電腦連線至：127.0.0.1 (本機) 或您的區域網路局域網 LAN IP"
 
 #: win32/rsrc/snes9x.rc
 msgid "Connect to Server"
-msgstr "Connect to Server"
+msgstr "連線至指定的伺服器主機"
 
 #: win32/rsrc/snes9x.rc
 msgid "Controller"
-msgstr "Controller"
+msgstr "實體映射手把"
 
 #: win32/wlanguage.h
 msgid "Could not open movie file."
-msgstr "Could not open movie file."
+msgstr "無法順利開啟指定的錄影影片檔。"
 
 #: win32/rsrc/snes9x.rc
 msgid "CPU Overclock:"
-msgstr "CPU Overclock:"
+msgstr "主中央處理器虛擬超頻："
 
 #: win32/wlanguage.h
 msgid "crc32=%08X, name=%s"
-msgstr "crc32=%08X, name=%s"
+msgstr "crc32=%08X, 名稱=%s"
 
 #: win32/wlanguage.h
 msgid "Current ROM:"
-msgstr "Current ROM:"
+msgstr "當前運行 ROM 檔案："
 
 #: win32/rsrc/snes9x.rc
 msgid "Current ROM: CRC32=Unknown, Name=Unknown"
-msgstr "Current ROM: CRC32=Unknown, Name=Unknown"
+msgstr "當前 ROM：CRC32=未知, 名稱=未知"
 
 #: win32/rsrc/snes9x.rc
 msgid "Current Value"
-msgstr "Current Value"
+msgstr "當前記憶體數值"
 
 #: win32/rsrc/snes9x.rc
 msgid "Custom ROM Open Dialog"
-msgstr "Custom ROM Open Dialog"
+msgstr "自訂樣式 ROM 檔案開啟對話視窗"
 
 #: win32/rsrc/snes9x.rc
 msgid "Custom Screen Mode"
-msgstr "Custom Screen Mode"
+msgstr "自訂渲染螢幕模式"
 
 #: win32/rsrc/snes9x.rc
 msgid "Customize Hotkeys"
-msgstr "Customize Hotkeys"
+msgstr "自訂功能快捷熱鍵"
 
 #: win32/rsrc/snes9x.rc
 msgid "Customize Special Keys"
-msgstr "Customize Special Keys"
+msgstr "自訂特殊獨立鍵位"
 
 #: win32/rsrc/snes9x.rc
 msgid "Data Size"
-msgstr "Data Size"
+msgstr "數據位元物理規格大小"
 
 #: win32/rsrc/snes9x.rc
 msgid "Data Type"
-msgstr "Data Type"
+msgstr "數據解析編碼類型"
 
 #: win32/rsrc/snes9x.rc
 msgid "DATE"
-msgstr "DATE"
+msgstr "日子日期"
 
 #: win32/rsrc/snes9x.rc
 msgid "Defaults"
-msgstr "Defaults"
+msgstr "原廠初始預設值"
 
 #: win32/rsrc/snes9x.rc
 msgid "Delete"
-msgstr "刪除"
+msgstr "刪除剔除"
 
 #: win32/rsrc/snes9x.rc
 msgid "Detect gamepad changes"
-msgstr "Detect gamepad changes"
+msgstr "自動即時追蹤外部遊戲手把變動狀態"
 
 #: win32/rsrc/snes9x.rc
 msgid "Dialog"
-msgstr "Dialog"
+msgstr "系統對話方塊視窗"
 
 #: win32/rsrc/snes9x.rc
 msgid "Direct3D Shader File"
-msgstr "Direct3D Shader File"
+msgstr "Direct3D 專用硬體著色器外掛檔案"
 
 #: win32/wlanguage.h
 msgid "Directory"
-msgstr "Directory"
+msgstr "資料夾目錄"
 
 #: win32/rsrc/snes9x.rc
 msgid "Directory:"
-msgstr "Directory:"
+msgstr "資料夾目錄："
 
 #: win32/rsrc/snes9x.rc
 msgid "Disable Sprite Limit"
-msgstr "Disable Sprite Limit"
+msgstr "完全停用/解除同畫面精靈（Sprite）顯示上限限制"
 
 #: win32/rsrc/snes9x.rc
 msgid "Disconnect"
-msgstr "Disconnect"
+msgstr "切斷斷開連線"
 
 #: win32/rsrc/snes9x.rc
 msgid "Disconnect from Server"
-msgstr "Disconnect from Server"
+msgstr "中斷與該網路伺服器主機的連線"
 
 #: win32/rsrc/snes9x.rc
 msgid "Display Configuration"
-msgstr "Display Configuration"
+msgstr "影像顯示硬體配置"
 
 #: win32/rsrc/snes9x.rc
 msgid "Display messages inside SNES image"
-msgstr "Display messages inside SNES image"
+msgstr "將系統通知直接繪製集成在虛擬畫面幀內部"
 
 #: win32/rsrc/snes9x.rc
 msgid "Display Settings"
-msgstr "Display Settings"
+msgstr "影像顯示進階設定"
 
 #: win32/rsrc/snes9x.rc
 msgid "DN LEFT"
-msgstr "DN LEFT"
+msgstr "下左"
 
 #: win32/wlanguage.h
 msgid "Dn Left"
-msgstr "Dn Left"
+msgstr "下左"
 
 #: win32/rsrc/snes9x.rc
 msgid "DN RIGHT"
-msgstr "DN RIGHT"
+msgstr "下右"
 
 #: win32/wlanguage.h
 msgid "Dn Right"
-msgstr "Dn Right"
+msgstr "下右"
 
 #: win32/rsrc/snes9x.rc
 msgid "DOWN"
-msgstr "DOWN"
+msgstr "向下"
 
 #: win32/rsrc/snes9x.rc
 msgid "Dummy"
-msgstr "Dummy"
+msgstr "虛設假資料 (Dummy)"
 
 #: win32/rsrc/snes9x.rc
 msgid "Dynamic Rate Control"
-msgstr "Dynamic Rate Control"
+msgstr "動態傳送控制率同步"
 
 #: win32/rsrc/snes9x.rc
 msgid "Edit Cheat Group"
-msgstr "Edit Cheat Group"
+msgstr "編輯所選作弊碼群組"
 
 #: win32/rsrc/snes9x.rc
 msgid "Emulate Fullscreen"
-msgstr "Emulate Fullscreen"
+msgstr "虛擬最大化全螢幕模式"
 
 #: win32/wlanguage.h
 msgid "Emulation Settings"
-msgstr "Emulation Settings"
+msgstr "模擬核心底層設定管理"
 
 #: win32/rsrc/snes9x.rc
 msgid "Emulator Hacks"
-msgstr "Emulator Hacks"
+msgstr "非標準硬體改動修正（Hacks）選項"
 
 #: win32/rsrc/snes9x.rc
 msgid "Enable"
-msgstr "Enable"
+msgstr "啟用開啟"
 
 #: win32/rsrc/snes9x.rc
 msgid "Enable All"
-msgstr "啟用 All"
+msgstr "一鍵啟用全部"
 
 #: win32/rsrc/snes9x.rc
 msgid "Enable Background Input"
-msgstr "啟用 Background Input"
+msgstr "啟用模擬器執行於背景時的手把控制響應"
 
 #: win32/rsrc/snes9x.rc
 msgid "Enable Color Correction (accurate SNES colors)"
-msgstr "啟用 Color Correction (accurate SNES colors)"
+msgstr "啟用實機精準色彩校正效果 (還原實機色彩感)"
 
 #: win32/rsrc/snes9x.rc
 msgid "Enable Triple Buffering"
-msgstr "啟用 Triple Buffering"
+msgstr "啟用影像三重緩衝快取處理 (Triple Buffering)"
 
 #: win32/rsrc/snes9x.rc
 msgid "Enabled"
-msgstr "Enabled"
+msgstr "已啟用"
 
 #: win32/rsrc/snes9x.rc
 msgid "End Kaillera Game"
-msgstr "End Kaillera Game"
+msgstr "終止 Kaillera 網路對戰連線實例"
 
 #: win32/rsrc/snes9x.rc
 msgid "Enter a Value:"
-msgstr "Enter a Value:"
+msgstr "請輸入目標數值值："
 
 #: win32/rsrc/snes9x.rc
 msgid "Enter Cheat Code:"
-msgstr "Enter Cheat Code:"
+msgstr "請輸入作弊金手指代碼："
 
 #: win32/rsrc/snes9x.rc
 msgid "Enter Cheat codes, one line at a time"
-msgstr "Enter Cheat codes, one line at a time"
+msgstr "請填入作弊金手指代碼（每一行代表一條獨立碼）"
 
 #: win32/wlanguage.h
 msgid "enter host name"
-msgstr "enter host name"
+msgstr "請填入連線遠端電腦主機名稱"
 
 #: win32/rsrc/snes9x.rc
 msgid "Entered Address"
-msgstr "Entered Address"
+msgstr "手動指定的內存地址編號"
 
 #: win32/rsrc/snes9x.rc
 msgid "Entered Value"
-msgstr "Entered Value"
+msgstr "手動指定的代入數值值"
 
 #: win32/wlanguage.h
 msgid "Error Info:"
-msgstr "Error Info:"
+msgstr "錯誤系統異常報告："
 
 #: win32/rsrc/snes9x.rc
 msgid "Exit"
-msgstr "離開"
+msgstr "完全關閉離開程式"
 
 #: win32/rsrc/snes9x.rc
 msgid "Extend Height of SNES Image"
-msgstr "Extend Height of SNES Image"
+msgstr "強制擴充增高虛擬輸出幀的垂直高度"
 
 #: win32/wlanguage.h
 msgid "Fast forward:"
-msgstr "Fast forward:"
+msgstr "快轉加速指令按鍵："
 
 #: win32/rsrc/snes9x.rc
 msgid "Fast-Forward"
-msgstr "Fast-Forward"
+msgstr "快轉加速運作"
 
 #: win32/wlanguage.h
 msgid "Fast-forward toggle:"
-msgstr "Fast-forward toggle:"
+msgstr "快轉加速開關切換熱鍵："
 
 #: win32/rsrc/snes9x.rc
 msgid "File"
-msgstr "File"
+msgstr "檔案"
 
 #: win32/wlanguage.h
 msgid "File not found."
-msgstr "File not found."
+msgstr "指定的硬碟檔案未找到。"
 
 #: win32/rsrc/snes9x.rc
 msgid "First Sprite:"
-msgstr "First Sprite:"
+msgstr "第一個精靈（Sprite）對象物件："
 
 #: win32/rsrc/snes9x.rc
 msgid "Fixed, always skip:"
-msgstr "Fixed, always skip:"
+msgstr "採用固定強制跳影格頻率數值："
 
 #: win32/wlanguage.h
 msgid "Force GD24"
-msgstr "Force GD24"
+msgstr "強制鎖定 GD24 視訊架構"
 
 #: win32/wlanguage.h
 msgid "Force Header"
-msgstr "Force Header"
+msgstr "強制主機修補產生標頭資料 (Header)"
 
 #: win32/wlanguage.h
 msgid "Force HiROM"
-msgstr "Force HiROM"
+msgstr "強行以 HiROM 映射架構進行解析編碼"
 
 #: win32/wlanguage.h
 msgid "Force LoROM"
-msgstr "Force LoROM"
+msgstr "強行以 LoROM 映射架構進行解析編碼"
 
 #: win32/wlanguage.h
 msgid "Force mode 1"
-msgstr "Force mode 1"
+msgstr "強制鎖定主機畫面渲染模式 1"
 
 #: win32/wlanguage.h
 msgid "Force mode 2"
-msgstr "Force mode 2"
+msgstr "強制鎖定主機畫面渲染模式 2"
 
 #: win32/wlanguage.h
 msgid "Force No Header"
-msgstr "Force No Header"
+msgstr "強制完全無視/不讀取任何標頭資料"
 
 #: win32/wlanguage.h
 msgid "Force not interleaved"
-msgstr "Force not interleaved"
+msgstr "強制停用訊號交錯排列處理"
 
 #: win32/wlanguage.h
 msgid "Force NTSC"
-msgstr "Force NTSC"
+msgstr "強制以美日規 NTSC 視訊制式標準運作"
 
 #: win32/wlanguage.h
 msgid "Force PAL"
-msgstr "Force PAL"
+msgstr "強制以歐規 PAL 視訊制式標準運作"
 
 #: win32/rsrc/snes9x.rc
 msgid "Frame Advance"
-msgstr "Frame Advance"
+msgstr "單影格手動步進前進"
 
 #: win32/rsrc/snes9x.rc
 msgid "Frame Advance mute"
-msgstr "Frame Advance mute"
+msgstr "單影格步進時自動啟用靜音"
 
 #: win32/wlanguage.h
 msgid "Frame advance:"
-msgstr "Frame advance:"
+msgstr "手動單影格步進前進鍵位："
 
 #: win32/rsrc/snes9x.rc
 msgid "Frame Skipping:"
-msgstr "Frame Skipping:"
+msgstr "畫面跳幀/跳格機制控制 (Frame Skip)："
 
 #: win32/rsrc/snes9x.rc
 msgid "frames"
-msgstr "frames"
+msgstr "影格"
 
 #: win32/rsrc/snes9x.rc
 msgid "FRAMES"
-msgstr "FRAMES"
+msgstr "影格"
 
 #: win32/rsrc/snes9x.rc
 msgid "frames behind"
-msgstr "frames behind"
+msgstr "影格延遲落後"
 
 #: win32/rsrc/snes9x.rc
 msgid "frames in auto-frame rate mode"
-msgstr "frames in auto-frame rate mode"
+msgstr "自動跳格影格調節頻率基準影格影格"
 
 #: win32/wlanguage.h
 msgid "frames in fast-forward mode"
-msgstr "frames in fast-forward mode"
+msgstr "快轉加速運作模式下的單次跳影格數目"
 
 #: win32/rsrc/snes9x.rc
 msgid "frames in Turbo mode"
-msgstr "frames in Turbo mode"
+msgstr "連發 Turbo 加速模式下的單次跳影格數目"
 
 #: win32/rsrc/snes9x.rc
 msgid "Frames:"
-msgstr "Frames:"
+msgstr "總影格計數："
 
 #: win32/rsrc/snes9x.rc
 msgid "Full Screen"
-msgstr "Full Screen"
-
-#: win32/rsrc/snes9x.rc
-msgid "Fullscreen"
 msgstr "全螢幕"
 
 #: win32/rsrc/snes9x.rc
+msgid "Fullscreen"
+msgstr "全螢幕最大化"
+
+#: win32/rsrc/snes9x.rc
 msgid "Fullscreen Display Settings"
-msgstr "Fullscreen Display Settings"
+msgstr "全螢幕最大化顯示偏好設定"
 
 #: win32/rsrc/snes9x.rc
 msgid "Fullscreen on ROM Open"
-msgstr "Fullscreen on ROM Open"
+msgstr "當開啟載入 ROM 遊戲檔案時，自動切換至全螢幕模式"
 
 #: win32/rsrc/snes9x.rc
 msgid "Game Boy Image"
-msgstr "Game Boy Image"
+msgstr "Game Boy 遊戲輸出畫面幀"
 
 #: win32/rsrc/snes9x.rc
 msgid "Game Genie, Pro-Action Replay Codes"
-msgstr "Game Genie, Pro-Action Replay Codes"
+msgstr "Game Genie、Pro-Action Replay 經典舊式作弊硬體條目代碼"
 
 #: win32/rsrc/snes9x.rc
 msgid "GB"
@@ -2698,443 +2743,443 @@ msgstr "GB"
 
 #: win32/rsrc/snes9x.rc
 msgid "GB Sprite Viewer"
-msgstr "GB Sprite Viewer"
+msgstr "Game Boy 手機內存精靈物件追蹤器"
 
 #: win32/rsrc/snes9x.rc
 msgid "GB Tile Viewer"
-msgstr "GB Tile Viewer"
+msgstr "Game Boy 顯示內存 VRAM 圖像單元圖塊圖塊追蹤器"
 
 #: win32/rsrc/snes9x.rc
 msgid "GB Tilemap Viewer"
-msgstr "GB Tilemap Viewer"
+msgstr "Game Boy 顯示內存 VRAM 瓷磚圖塊排佈地圖地圖追蹤器"
 
 #: win32/rsrc/snes9x.rc
 msgid "GB-PPU"
-msgstr "GB-PPU"
+msgstr "GB-PPU 處理核心"
 
 #: win32/rsrc/snes9x.rc
 msgid "General"
-msgstr "General"
+msgstr "一般基本控制常規常規設定"
 
 #: win32/rsrc/snes9x.rc
 msgid "goto"
-msgstr "goto"
+msgstr "前往目標位址"
 
 #: win32/wlanguage.h
 msgid "Graphics layer 1:"
-msgstr "Graphics layer 1:"
+msgstr "切換圖層可視性熱鍵：第 1 圖像背景層："
 
 #: win32/wlanguage.h
 msgid "Graphics layer 2:"
-msgstr "Graphics layer 2:"
+msgstr "切換圖層可視性熱鍵：第 2 圖像背景層："
 
 #: win32/wlanguage.h
 msgid "Graphics layer 3:"
-msgstr "Graphics layer 3:"
+msgstr "切換圖層可視性熱鍵：第 3 圖像背景層："
 
 #: win32/wlanguage.h
 msgid "Graphics layer 4:"
-msgstr "Graphics layer 4:"
+msgstr "切換圖層可視性熱鍵：第 4 圖像背景層："
 
 #: win32/rsrc/snes9x.rc
 msgid "Group"
-msgstr "Group"
+msgstr "金手指分類群組群組"
 
 #: win32/rsrc/snes9x.rc
 msgid "Hacks"
-msgstr "Hacks"
+msgstr "特殊非標準硬體層優化修改（Hacks）"
 
 #: win32/rsrc/snes9x.rc
 msgid "Hard Reset (Power Cycle)"
-msgstr "Hard Reset (Power Cycle)"
+msgstr "物理重設硬重設 (等同虛擬主機拔插頭重開機)"
 
 #: win32/wlanguage.h
 msgid "Hard reset:"
-msgstr "Hard reset:"
+msgstr "物理斷電硬重設執行快捷鍵："
 
 #: win32/rsrc/snes9x.rc
 msgid "Hardcore Mode"
-msgstr "Hardcore Mode"
+msgstr "硬派狂熱模式 (停用任何即時存取與作弊功能)"
 
 #: win32/rsrc/snes9x.rc
 msgid "Header:"
-msgstr "Header:"
+msgstr "卡帶 ROM 標頭區塊數據屬性："
 
 #: win32/rsrc/snes9x.rc
 msgid "Help"
-msgstr "說明"
+msgstr "說明與求助"
 
 #: win32/rsrc/snes9x.rc
 msgid "Hexadecimal"
-msgstr "Hexadecimal"
+msgstr "16進位制原始碼格式(Hex)"
 
 #: win32/rsrc/snes9x.rc
 msgid "Hi Res:"
-msgstr "Hi Res:"
+msgstr "高解析度特殊模式處理偏好："
 
 #: win32/rsrc/snes9x.rc
 msgid "Hi-Res AVI Recording"
-msgstr "Hi-Res AVI Recording"
+msgstr "以高解析度畫質錄製產出標準 AVI 格式影片檔案"
 
 #: win32/rsrc/snes9x.rc
 msgid "Hide Menubar"
-msgstr "Hide Menubar"
+msgstr "完全隱藏程式上方的功能功能選單列"
 
 #: win32/rsrc/snes9x.rc
 msgid "Host Game"
-msgstr "Host Game"
+msgstr "創立遊戲房間 (房間主辦主辦人)"
 
 #: win32/rsrc/snes9x.rc
 msgid "Host Kaillera Server"
-msgstr "Host Kaillera Server"
+msgstr "在目前電腦架設專用 Kaillera 網路聯機對戰伺服器大廳大廳"
 
 #: win32/wlanguage.h
 msgid "Hotkey Configuration"
-msgstr "Hotkey Configuration"
+msgstr "系統全局熱鍵設定與偏好管理偏好"
 
 #: win32/rsrc/snes9x.rc
 msgid "Icon 1"
-msgstr "Icon 1"
+msgstr "小圖示樣式 1"
 
 #: win32/rsrc/snes9x.rc
 msgid "Icon 2"
-msgstr "Icon 2"
+msgstr "小圖示樣式 2"
 
 #: win32/rsrc/snes9x.rc
 msgid "Icon 3"
-msgstr "Icon 3"
+msgstr "小圖示樣式 3"
 
 #: win32/rsrc/snes9x.rc
 msgid "Icon 4"
-msgstr "Icon 4"
+msgstr "小圖示樣式 4"
 
 #: win32/rsrc/snes9x.rc
 msgid "Index:"
-msgstr "Index:"
+msgstr "調色盤調色盤索引編號標籤："
 
 #: win32/rsrc/snes9x.rc
 msgid "Input"
-msgstr "Input"
+msgstr "外接控制輸入"
 
 #: win32/rsrc/snes9x.rc
 msgid "Input Configuration"
-msgstr "Input Configuration"
+msgstr "外接手把鍵盤控制對應鍵位面板"
 
 #: win32/rsrc/snes9x.rc
 msgid "Input Rate:"
-msgstr "Input Rate:"
+msgstr "音訊輸入核心傳送採樣率："
 
 #: win32/rsrc/snes9x.rc
 msgid "Integer Scaling"
-msgstr "Integer Scaling"
+msgstr "硬體畫素整數倍數縮放擴大不變形處理(Integer)"
 
 #: win32/rsrc/snes9x.rc
 msgid "Interleave Mode:"
-msgstr "Interleave Mode:"
+msgstr "內存數據交錯儲存讀取模式："
 
 #: win32/rsrc/snes9x.rc
 msgid "IP:"
-msgstr "IP:"
+msgstr "IP網路網路位址："
 
 #: win32/rsrc/snes9x.rc
 msgid "Join"
-msgstr "Join"
+msgstr "加入聯機"
 
 #: win32/wlanguage.h
 msgid "Joypad #%d"
-msgstr "Joypad #%d"
+msgstr "Joypad 手把控制器 #%d"
 
 #: win32/rsrc/snes9x.rc
 msgid "Joypad 1"
-msgstr "Joypad 1"
+msgstr "第 1 號玩家主手把控制器手把"
 
 #: win32/rsrc/snes9x.rc
 msgid "Joypad 2"
-msgstr "Joypad 2"
+msgstr "第 2 號玩家手把手把控制器手把"
 
 #: win32/rsrc/snes9x.rc
 msgid "Joypad 3"
-msgstr "Joypad 3"
+msgstr "第 3 號玩家手把手把控制器手把"
 
 #: win32/rsrc/snes9x.rc
 msgid "Joypad 4"
-msgstr "Joypad 4"
+msgstr "第 4 號玩家手把手把控制器手把"
 
 #: win32/rsrc/snes9x.rc
 msgid "Joypad 5"
-msgstr "Joypad 5"
+msgstr "第 5 號玩家手把手把控制器手把"
 
 #: win32/wlanguage.h
 msgid "Joypad swap:"
-msgstr "Joypad swap:"
+msgstr "一鍵對調對調 1 號與 2 號虛擬手把物理位置插槽的執行熱鍵鍵："
 
 #: win32/rsrc/snes9x.rc
 msgid "Kaillera Netplay"
-msgstr "Kaillera Netplay"
+msgstr "Kaillera 多人聯機網絡網際網路平台連線"
 
 #: win32/rsrc/snes9x.rc
 msgid "Kaillera Server"
-msgstr "Kaillera Server"
+msgstr "Kaillera 網絡主動伺服器端大廳"
 
 #: win32/rsrc/snes9x.rc
 msgid "Layout:"
-msgstr "Layout:"
+msgstr "VRAM 內存瓷磚圖塊地圖排佈佈局結構："
 
 #: win32/rsrc/snes9x.rc
 msgid "Leave Game"
-msgstr "Leave Game"
+msgstr "中斷退回並離開連線對戰房間"
 
 #: win32/rsrc/snes9x.rc
 msgid "LEFT"
-msgstr "LEFT"
+msgstr "向左"
 
 #: win32/rsrc/snes9x.rc
 msgid "LENGTH"
-msgstr "LENGTH"
+msgstr "數據實體長度"
 
 #: win32/rsrc/snes9x.rc
 msgid "Length:"
-msgstr "Length:"
+msgstr "數據總長度計數："
 
 #: win32/rsrc/snes9x.rc
 msgid "List1"
-msgstr "List1"
+msgstr "主要明細清單清單 1"
 
 #: win32/rsrc/snes9x.rc
 msgid "Load #:"
-msgstr "Load #:"
+msgstr "載入即時進度槽位編號 #："
 
 #: win32/rsrc/snes9x.rc
 msgid "Load 0:"
-msgstr "Load 0:"
+msgstr "載入即時進度 0 號槽位："
 
 #: win32/rsrc/snes9x.rc
 msgid "Load 1:"
-msgstr "Load 1:"
+msgstr "載入即時進度 1 號槽位："
 
 #: win32/rsrc/snes9x.rc
 msgid "Load 2:"
-msgstr "Load 2:"
+msgstr "載入即時進度 2 號槽位："
 
 #: win32/rsrc/snes9x.rc
 msgid "Load 3:"
-msgstr "Load 3:"
+msgstr "載入即時進度 3 號槽位："
 
 #: win32/rsrc/snes9x.rc
 msgid "Load 4:"
-msgstr "Load 4:"
+msgstr "載入即時進度 4 號槽位："
 
 #: win32/rsrc/snes9x.rc
 msgid "Load 5:"
-msgstr "Load 5:"
+msgstr "載入即時進度 5 號槽位："
 
 #: win32/rsrc/snes9x.rc
 msgid "Load 6:"
-msgstr "Load 6:"
+msgstr "載入即時進度 6 號槽位："
 
 #: win32/rsrc/snes9x.rc
 msgid "Load 7:"
-msgstr "Load 7:"
+msgstr "載入即時進度 7 號槽位："
 
 #: win32/rsrc/snes9x.rc
 msgid "Load 8:"
-msgstr "Load 8:"
+msgstr "載入即時進度 8 號槽位："
 
 #: win32/rsrc/snes9x.rc
 msgid "Load 9:"
-msgstr "Load 9:"
+msgstr "載入即時進度 9 號槽位："
 
 #: win32/rsrc/snes9x.rc
 msgid "Load Dlg:"
-msgstr "Load Dlg:"
+msgstr "彈出載入進度選擇對話視窗熱鍵："
 
 #: win32/rsrc/snes9x.rc
 msgid "Load File:"
-msgstr "Load File:"
+msgstr "載入電腦上的本機實體檔案："
 
 #: win32/wlanguage.h
 msgid "Load from file:"
-msgstr "Load from file:"
+msgstr "自外部檔案路徑中手動載入讀取進度："
 
 #: win32/rsrc/snes9x.rc
 msgid "Load Game"
-msgstr "Load Game"
+msgstr "載入並啟動新的遊戲本體資料"
 
 #: win32/rsrc/snes9x.rc
 msgid "Load Game Position"
-msgstr "Load Game Position"
+msgstr "還原讀取載入到指定的遊戲歷史進度時點位置"
 
 #: win32/rsrc/snes9x.rc
 msgid "Load MultiCart"
-msgstr "Load MultiCart"
+msgstr "載入多重聯動組合卡帶檔案 (MultiCart)"
 
 #: win32/rsrc/snes9x.rc
 msgid "Load Watches"
-msgstr "Load Watches"
+msgstr "載入已保存的記憶體修改監控變數清單結構偏好"
 
 #: win32/rsrc/snes9x.rc
 msgid "Load with Preview"
-msgstr "Load with Preview"
+msgstr "伴隨展示槽位截圖小縮圖進行載入"
 
 #: win32/wlanguage.h
 msgid "LOADED FROM MOVIE:"
-msgstr "LOADED FROM MOVIE:"
+msgstr "自按鍵指令錄影控制串流紀錄中順利復原載入："
 
 #: win32/rsrc/snes9x.rc
 msgid "Location:"
-msgstr "Location:"
+msgstr "本機檔案硬碟儲存路徑位置："
 
 #: win32/rsrc/snes9x.rc
 msgid "Login"
-msgstr "Login"
+msgstr "進行系統認證登入"
 
 #: win32/rsrc/snes9x.rc
 msgid "Maintain Aspect Ratio"
-msgstr "Maintain Aspect Ratio"
+msgstr "維持畫面長寬縱橫比例比例不變形"
 
 #: win32/rsrc/snes9x.rc
 msgid "Map"
-msgstr "Map"
+msgstr "內存映射架構 (Map)"
 
 #: win32/rsrc/snes9x.rc
 msgid "Map Addr:"
-msgstr "Map Addr:"
+msgstr "內存瓷磚圖塊背景地圖數據定址首位址："
 
 #: win32/rsrc/snes9x.rc
 msgid "Map Size:"
-msgstr "Map Size:"
+msgstr "內存背景地圖瓷磚圖塊地圖排佈物理寬度與高度大小："
 
 #: win32/rsrc/snes9x.rc
 msgid "Map:"
-msgstr "Map:"
+msgstr "內存映射方式種類型："
 
 #: win32/rsrc/snes9x.rc
 msgid "Mask"
-msgstr "Mask"
+msgstr "數據遮罩篩選器 (Mask)"
 
 #: win32/rsrc/snes9x.rc
 msgid "Masked Addresses"
-msgstr "Masked Addresses"
+msgstr "被施加遮罩過濾處理後的指定地址區塊清單"
 
 #: win32/rsrc/snes9x.rc
 msgid "Master Hotkey"
-msgstr "Master Hotkey"
+msgstr "程式主要系統級全局熱鍵"
 
 #: win32/rsrc/snes9x.rc
 msgid "Max Clients:"
-msgstr "Max Clients:"
+msgstr "單一房間最大允許同時容納客戶端連線連線端數量上限："
 
 #: win32/rsrc/snes9x.rc
 msgid "Maximum Frame Rate Skip"
-msgstr "Maximum Frame Rate Skip"
+msgstr "高負載下容許自動跳格 (Frame Skip) 的最大連續影格上限數"
 
 #: win32/rsrc/snes9x.rc
 msgid "MB (set to 0 to disable rewind support)"
-msgstr "MB (set to 0 to disable rewind support)"
+msgstr "MB (若將單位配置數值調整為 0，代表徹底廢止關閉關閉時間倒帶回溯系統功能)"
 
 #: win32/rsrc/snes9x.rc
 msgid "Memory Type:"
-msgstr "Memory Type:"
+msgstr "主核心虛擬記憶體定址定位編碼類型："
 
 #: win32/wlanguage.h
 msgid "Misc. Recording Settings"
-msgstr "Misc. Recording Settings"
+msgstr "其他周邊錄影控制控制偏好設定偏好"
 
 #: win32/rsrc/snes9x.rc
 msgid "Mode:"
-msgstr "Mode:"
+msgstr "當前運行演算模式狀態："
 
 #: win32/rsrc/snes9x.rc
 msgid "Movie File"
-msgstr "Movie File"
+msgstr "按鍵指令流程錄影檔案 (.smv)"
 
 #: win32/wlanguage.h
 msgid "Movie frame count:"
-msgstr "Movie frame count:"
+msgstr "該錄影控制檔案所覆蓋產生的總內部影格數量："
 
 #: win32/rsrc/snes9x.rc
 msgid "Movie Play"
-msgstr "Movie Play"
+msgstr "播放操作指令影片錄影檔"
 
 #: win32/wlanguage.h
 msgid "Movie read-only:"
-msgstr "Movie read-only:"
+msgstr "操作指令影片錄影檔唯讀鎖定狀態 (禁止被新輸入蓋寫)："
 
 #: win32/rsrc/snes9x.rc
 msgid "Movie Record"
-msgstr "Movie Record"
+msgstr "開啟操縱指令錄影錄影寫入"
 
 #: win32/rsrc/snes9x.rc
 msgid "Movie Stop"
-msgstr "Movie Stop"
+msgstr "停止操縱指令影片錄影或停止回放"
 
 #: win32/wlanguage.h
 msgid "Movie's ROM:"
-msgstr "Movie's ROM:"
+msgstr "該操作影片錄影檔所對應關聯的原生遊戲 ROM 檔案來源："
 
 #: win32/rsrc/snes9x.rc
 msgid "Movie's ROM: CRC32=Unknown, Name=Unknown"
-msgstr "Movie's ROM: CRC32=Unknown, Name=Unknown"
+msgstr "錄影檔源 ROM 本體：CRC32=未知, 名稱=未知"
 
 #: win32/wlanguage.h
 msgid "Movies"
-msgstr "Movies"
+msgstr "影片操作指令錄製與重播主控台"
 
 #: win32/rsrc/snes9x.rc
 msgid "Mute"
-msgstr "Mute"
+msgstr "靜音關閉音量"
 
 #: win32/rsrc/snes9x.rc
 msgid "Mute Sound"
-msgstr "Mute Sound"
+msgstr "將聲音輸出全面關閉 (靜音)"
 
 #: win32/rsrc/snes9x.rc
 msgid "Mute sound"
-msgstr "Mute sound"
+msgstr "全面關閉声音輸出 (靜音)"
 
 #: win32/rsrc/snes9x.rc
 msgid "Netplay"
-msgstr "Netplay"
+msgstr "網路連線對戰 (Netplay)"
 
 #: win32/rsrc/snes9x.rc
 msgid "Netplay Options"
-msgstr "Netplay Options"
+msgstr "網路連線對戰 (Netplay) 詳細參數偏好控制偏好"
 
 #: win32/rsrc/snes9x.rc
 msgid "New Value"
-msgstr "New Value"
+msgstr "覆蓋改寫入的全新變更數據值"
 
 #: win32/rsrc/snes9x.rc
 msgid "No BIOS"
-msgstr "No BIOS"
+msgstr "無附加外置官方 BIOS 核心鏡像檔"
 
 #: win32/wlanguage.h
 msgid "Not a ROM"
-msgstr "Not a ROM"
+msgstr "不是合法有效的超級任天堂標準 ROM 卡帶二進位映像檔案"
 
 #: win32/rsrc/snes9x.rc
 msgid "Not connected."
-msgstr "Not connected."
+msgstr "當前处于未連線狀態。"
 
 #: win32/rsrc/snes9x.rc
 msgid "not found"
-msgstr "not found"
+msgstr "未找到目標"
 
 #: win32/wlanguage.h
 msgid "not found!"
-msgstr "not found!"
+msgstr "在目前探測路徑下未找到該資源！"
 
 #: win32/rsrc/snes9x.rc
 msgid "NTSC Filter Scanlines"
-msgstr "NTSC Filter Scanlines"
+msgstr "NTSC 制式視訊濾鏡專用模擬復古電視掃描線"
 
 #: win32/rsrc/snes9x.rc
 msgid "OAM1:"
-msgstr "OAM1:"
+msgstr "精靈物件屬性內存 OAM1 區段："
 
 #: win32/rsrc/snes9x.rc
 msgid "OAM2:"
-msgstr "OAM2:"
+msgstr "精靈物件屬性內存 OAM2 區段："
 
 #: win32/rsrc/snes9x.rc
 msgid "OK"
@@ -3142,387 +3187,387 @@ msgstr "確定"
 
 #: win32/rsrc/snes9x.rc
 msgid "On-screen Display Size:"
-msgstr "On-screen Display Size:"
+msgstr "螢幕頂層通知文字 (OSD) 訊息顯示的字型物理 크기 大小："
 
 #: win32/rsrc/snes9x.rc
 msgid "Online Servers"
-msgstr "Online Servers"
+msgstr "在線遠端主動網際網路伺服器大廳清單"
 
 #: win32/rsrc/snes9x.rc
 msgid "Oops File"
-msgstr "Oops File"
+msgstr "自動崩潰前緊急快照進度備份檔案 (Oops 檔)"
 
 #: win32/rsrc/snes9x.rc
 msgid "Open MultiCart"
-msgstr "Open MultiCart"
+msgstr "加載讀取組合多連動卡帶"
 
 #: win32/rsrc/snes9x.rc
 msgid "Open Read-Only"
-msgstr "Open Read-Only"
+msgstr "以唯讀不可蓋寫模式安全開啟"
 
 #: win32/rsrc/snes9x.rc
 msgid "OpenGL/Vulkan Shader File"
-msgstr "OpenGL/Vulkan Shader File"
+msgstr "OpenGL/Vulkan 圖形 API 架構專用硬體著色器外掛外置檔案 (.slangp/.glslp)"
 
 #: win32/rsrc/snes9x.rc
 msgid "Options"
-msgstr "Options"
+msgstr "進階控制偏好偏好設定"
 
 #: win32/rsrc/snes9x.rc
 msgid "Output Device:"
-msgstr "Output Device:"
+msgstr "系統硬體最終音訊解碼輸出裝置名稱："
 
 #: win32/rsrc/snes9x.rc
 msgid "Output Image Processing"
-msgstr "Output Image Processing"
+msgstr "最終顯示渲染影格圖形之多重優化平滑平滑化校正"
 
 #: win32/rsrc/snes9x.rc
 msgid "Output Method"
-msgstr "Output Method"
+msgstr "影像畫面渲染輸出圖形 API"
 
 #: win32/rsrc/snes9x.rc
 msgid "Override Tilemap"
-msgstr "Override Tilemap"
+msgstr "強制覆蓋替換瓷磚地圖圖塊排佈 (Tilemap)"
 
 #: win32/wlanguage.h
 msgid "Page %d"
-msgstr "Page %d"
+msgstr "第 %d 頁"
 
 #: win32/rsrc/snes9x.rc
 msgid "Palette (click to select offset)"
-msgstr "Palette (click to select offset)"
+msgstr "調色盤顏色配置矩陣 (點擊任一格子可選定特定記憶體 Oﬀset 位址)"
 
 #: win32/rsrc/snes9x.rc
 msgid "Palette:"
-msgstr "Palette:"
+msgstr "調色盤色表種類："
 
 #: win32/rsrc/snes9x.rc
 msgid "Parameters"
-msgstr "Parameters"
+msgstr "濾鏡/著色器內部控制引數"
 
 #: win32/rsrc/snes9x.rc
 msgid "Password:"
-msgstr "Password:"
+msgstr "聯機防護密碼："
 
 #: win32/wlanguage.h
 msgid "Patch"
-msgstr "Patch"
+msgstr "外置修復補丁改檔檔案檔案"
 
 #: win32/wlanguage.h
 msgid "Path: %s"
-msgstr "Path: %s"
+msgstr "實體資料夾路徑位址： %s"
 
 #: win32/rsrc/snes9x.rc
 msgid "Pause When Inactive"
-msgstr "Pause When Inactive"
+msgstr "當失去主程式視窗焦點 (後台背景執行時) 自動強制暫停模擬"
 
 #: win32/wlanguage.h
 msgid "Pause:"
-msgstr "Pause:"
+msgstr "暫停模擬進度執行熱鍵鍵："
 
 #: win32/rsrc/snes9x.rc
 msgid "Play Movie"
-msgstr "Play Movie"
+msgstr "加載並回放操作指令流程錄影檔"
 
 #: win32/rsrc/snes9x.rc
 msgid "Playback Rate"
-msgstr "Playback Rate"
+msgstr "系統終端發送聲音採樣播放率"
 
 #: win32/rsrc/snes9x.rc
 msgid "Playback Rate:"
-msgstr "Playback Rate:"
+msgstr "音訊最終輸出採樣取樣播放率速度："
 
 #: win32/rsrc/snes9x.rc
 msgid "Player Name:"
-msgstr "Player Name:"
+msgstr "玩家聯機暱稱帳號代號："
 
 #: win32/wlanguage.h
 msgid "Please enter a host name."
-msgstr "Please enter a host name."
+msgstr "請完整填寫正確的遠端主機電腦網域名稱或內網識別名稱。"
 
 #: win32/wlanguage.h
 msgid "Please enter a valid value for a search!"
-msgstr "Please enter a valid value for a search!"
+msgstr "請正確填入符合進階十六進位制格式規格的有效搜尋搜索數值！"
 
 #: win32/rsrc/snes9x.rc
 msgid "Port Number"
-msgstr "Port Number"
+msgstr "網路連線通訊埠通訊埠連接埠識別編號"
 
 #: win32/rsrc/snes9x.rc
 msgid "Port Settings"
-msgstr "Port Settings"
+msgstr "網路通信連接埠埠管理設定管理"
 
 #: win32/wlanguage.h
 msgid "Press OK to start playing the movie."
-msgstr "Press OK to start playing the movie."
+msgstr "點擊確認後，將全自動依據录像錄影軌跡開始回放操縱指令 진도。"
 
 #: win32/rsrc/snes9x.rc
 msgid "Preview"
-msgstr "Preview"
+msgstr "進度槽位即時存檔小縮圖預覽"
 
 #: win32/rsrc/snes9x.rc
 msgid "Previous Value"
-msgstr "Previous Value"
+msgstr "上一輪追蹤搜索捕獲到的原數值"
 
 #: win32/rsrc/snes9x.rc
 msgid "Progress1"
-msgstr "Progress1"
+msgstr "核心處理進度 1"
 
 #: win32/rsrc/snes9x.rc
 msgid "Publish Online"
-msgstr "Publish Online"
+msgstr "向互聯網中央主動伺服器大廳發布此聯機房間"
 
 #: win32/rsrc/snes9x.rc
 msgid "Publish to master server list"
-msgstr "Publish to master server list"
+msgstr "將當前自建的房間完全公開註冊到全球 Master Server 中央聯機清單 hub 伺服器"
 
 #: win32/wlanguage.h
 msgid "Quit SuperSnes9x:"
-msgstr "Quit SuperSnes9x:"
+msgstr "安全關閉登出 SuperSnes9x 程式的全局功能鍵快捷鍵："
 
 #: win32/wlanguage.h
 msgid "Range Error"
-msgstr "Range Error"
+msgstr "內存追蹤搜尋定址超越實體合法範疇錯誤"
 
 #: win32/rsrc/snes9x.rc
 msgid "Rate:"
-msgstr "Rate:"
+msgstr "音訊採樣全自動匹配傳送率速度："
 
 #: win32/rsrc/snes9x.rc
 msgid "Re-record Count:"
-msgstr "Re-record Count:"
+msgstr "手動強行覆蓋重新錄製操作次數："
 
 #: win32/rsrc/snes9x.rc
 msgid "Re-sync all Clients Using Freeze File Now"
-msgstr "Re-sync all Clients Using Freeze File Now"
+msgstr "立時將主控即時進度凍結存檔強行向大廳內所有連線客戶端進行一鍵同心同步化"
 
 #: win32/rsrc/snes9x.rc
 msgid "Recent Games"
-msgstr "Recent Games"
+msgstr "最近玩過的歷史 ROM 遊戲本體"
 
 #: win32/rsrc/snes9x.rc
 msgid "Record Controllers"
-msgstr "Record Controllers"
+msgstr "錄製控制器各實體單鈕按壓數據流"
 
 #: win32/rsrc/snes9x.rc
 msgid "Record from now"
-msgstr "Record from now"
+msgstr "自當前秒數時點開始發動覆蓋全新操作操縱錄影"
 
 #: win32/rsrc/snes9x.rc
 msgid "Record from reset"
-msgstr "Record from reset"
+msgstr "自虛擬主機開機 Reset 初始起點發動覆蓋錄製全新操作操縱錄影"
 
 #: win32/rsrc/snes9x.rc
 msgid "Record Movie"
-msgstr "Record Movie"
+msgstr "啟動操縱指令軌跡流程影片錄製"
 
 #: win32/rsrc/snes9x.rc
 msgid "Record Options"
-msgstr "Record Options"
+msgstr "影片軌跡指令錄製對應進階細節微調選項"
 
 #: win32/rsrc/snes9x.rc
 msgid "Recording Date:"
-msgstr "Recording Date:"
+msgstr "首次建檔錄製的時間日子："
 
 #: win32/wlanguage.h
 msgid "Recording Start"
-msgstr "Recording Start"
+msgstr "操作操縱錄影指令寫入作業正式啟動發動"
 
 #: win32/rsrc/snes9x.rc
 msgid "Reduce Input Lag"
-msgstr "Reduce Input Lag"
+msgstr "極大限度切斷降低控制器操作輸入延遲遲滯"
 
 #: win32/rsrc/snes9x.rc
 msgid "Refresh"
-msgstr "Refresh"
+msgstr "重新整理刷新"
 
 #: win32/rsrc/snes9x.rc
 msgid "Refresh List"
-msgstr "Refresh List"
+msgstr "重新整理明細列表數據"
 
 #: win32/rsrc/snes9x.rc
 msgid "Regular"
-msgstr "Regular"
+msgstr "一般常規常規標準體系"
 
 #: win32/rsrc/snes9x.rc
 msgid "Remove"
-msgstr "Remove"
+msgstr "移除剔除"
 
 #: win32/rsrc/snes9x.rc
 msgid "Remove All"
-msgstr "Remove All"
+msgstr "一鍵移除全部項目"
 
 #: win32/rsrc/snes9x.rc
 msgid "RERECORD"
-msgstr "RERECORD"
+msgstr "強行發動重新錄製"
 
 #: win32/wlanguage.h
 msgid "Reset speed:"
-msgstr "Reset speed:"
+msgstr "一鍵將虛擬模擬核心排解倍速還原至 1 倍速常速的全局按鍵熱鍵："
 
 #: win32/rsrc/snes9x.rc
 msgid "RetroAchievements"
-msgstr "RetroAchievements"
+msgstr "RetroAchievements 經典老遊戲聯網社群成就系統"
 
 #: win32/rsrc/snes9x.rc
 msgid "RetroAchievements Login"
-msgstr "RetroAchievements Login"
+msgstr "登入您的 RetroAchievements 社群成就帳號"
 
 #: win32/rsrc/snes9x.rc
 msgid "Rewind buffer size:"
-msgstr "Rewind buffer size:"
+msgstr "時間倒帶回溯最大快取記憶體容量分配："
 
 #: win32/rsrc/snes9x.rc
 msgid "Rewind granularity:"
-msgstr "Rewind granularity:"
+msgstr "時間倒帶回溯快取紀錄的影格精細步進密度："
 
 #: win32/wlanguage.h
 msgid "Rewind:"
-msgstr "Rewind:"
+msgstr "時間逆流倒帶功能全局執行按鍵快捷鍵："
 
 #: win32/rsrc/snes9x.rc
 msgid "RIGHT"
-msgstr "RIGHT"
+msgstr "向右"
 
 #: win32/wlanguage.h
 msgid "ROM files or archives"
-msgstr "ROM files or archives"
+msgstr "壓縮壓縮壓縮封包或純卡帶 ROM 二進位檔案映像"
 
 #: win32/rsrc/snes9x.rc
 msgid "Rom Info"
-msgstr "Rom Info"
+msgstr "卡帶 ROM 唯讀內存物理屬性詳細資訊"
 
 #: win32/rsrc/snes9x.rc
 msgid "ROM Information"
-msgstr "ROM Information"
+msgstr "該遊戲卡帶 ROM 本體數據內部資訊主板"
 
 #: win32/rsrc/snes9x.rc
 msgid "ROM:"
-msgstr "ROM:"
+msgstr "卡帶 ROM 來源端："
 
 #: win32/wlanguage.h
 msgid "Roms"
-msgstr "Roms"
+msgstr "遊戲卡帶 ROM 二進位檔倉庫儲存管理"
 
 #: win32/rsrc/snes9x.rc
 msgid "Run Ahead"
-msgstr "Run Ahead"
+msgstr "預先跑影格以消滅操作輸入延遲阻滯 (Run Ahead)"
 
 #: win32/rsrc/snes9x.rc
 msgid "s"
-msgstr "s"
+msgstr "秒"
 
 #: win32/rsrc/snes9x.rc
 msgid "S-PPU"
-msgstr "S-PPU"
+msgstr "S-PPU 畫面圖形演算中央處理器晶片"
 
 #: win32/wlanguage.h
 msgid "Satellaview"
-msgstr "Satellaview"
+msgstr "衛星廣播接收周邊硬體系統 Satellaview"
 
 #: win32/rsrc/snes9x.rc
 msgid "Save #:"
-msgstr "Save #:"
+msgstr "指定槽位號碼即時儲存進度 #："
 
 #: win32/rsrc/snes9x.rc
 msgid "Save 0:"
-msgstr "Save 0:"
+msgstr "即時儲存進度至 0 號槽位："
 
 #: win32/rsrc/snes9x.rc
 msgid "Save 1:"
-msgstr "Save 1:"
+msgstr "即時儲存進度至 1 號槽位："
 
 #: win32/rsrc/snes9x.rc
 msgid "Save 2:"
-msgstr "Save 2:"
+msgstr "即時儲存進度至 2 號槽位："
 
 #: win32/rsrc/snes9x.rc
 msgid "Save 3:"
-msgstr "Save 3:"
+msgstr "即時儲存進度至 3 號槽位："
 
 #: win32/rsrc/snes9x.rc
 msgid "Save 4:"
-msgstr "Save 4:"
+msgstr "即時儲存進度至 4 號槽位："
 
 #: win32/rsrc/snes9x.rc
 msgid "Save 5:"
-msgstr "Save 5:"
+msgstr "即時儲存進度至 5 號槽位："
 
 #: win32/rsrc/snes9x.rc
 msgid "Save 6:"
-msgstr "Save 6:"
+msgstr "即時儲存進度至 6 號槽位："
 
 #: win32/rsrc/snes9x.rc
 msgid "Save 7:"
-msgstr "Save 7:"
+msgstr "即時儲存進度至 7 號槽位："
 
 #: win32/rsrc/snes9x.rc
 msgid "Save 8:"
-msgstr "Save 8:"
+msgstr "即時儲存進度至 8 號槽位："
 
 #: win32/rsrc/snes9x.rc
 msgid "Save 9:"
-msgstr "Save 9:"
+msgstr "即時儲存進度至 9 號槽位："
 
 #: win32/rsrc/snes9x.rc
 msgid "Save Dlg:"
-msgstr "Save Dlg:"
+msgstr "彈出即時儲存進度確認視窗熱鍵鍵："
 
 #: win32/rsrc/snes9x.rc
 msgid "Save File:"
-msgstr "Save File:"
+msgstr "匯出輸出檔案目的地硬碟路徑："
 
 #: win32/rsrc/snes9x.rc
 msgid "Save Game Position"
-msgstr "Save Game Position"
+msgstr "即時捕捉儲存當前虚擬模擬器核心時點進度"
 
 #: win32/rsrc/snes9x.rc
 msgid "Save Memory Pack"
-msgstr "Save Memory Pack"
+msgstr "匯出輸出擴充記憶體數據包檔案"
 
 #: win32/rsrc/snes9x.rc
 msgid "Save Other"
-msgstr "Save Other"
+msgstr "以其他副檔名衍生格式進行導出匯出"
 
 #: win32/rsrc/snes9x.rc
 msgid "Save S-RAM Data"
-msgstr "Save S-RAM Data"
+msgstr "將卡帶內部電池備份 SRAM 內存存檔強制落地寫入硬碟 (.srm)"
 
 #: win32/rsrc/snes9x.rc
 msgid "Save Screenshot"
-msgstr "Save Screenshot"
+msgstr "將當前渲染畫素幀截圖保存至本機圖片庫"
 
 #: win32/wlanguage.h
 msgid "Save screenshot"
-msgstr "Save screenshot"
+msgstr "將當前渲染畫素幀截圖保存至本機圖片庫"
 
 #: win32/rsrc/snes9x.rc
 msgid "Save SPC Data"
-msgstr "Save SPC Data"
+msgstr "導出抽離當前運行的 SPC 經典 8通道原聲音樂二進位音訊檔"
 
 #: win32/wlanguage.h
 msgid "Save to file:"
-msgstr "Save to file:"
+msgstr "手動指定特定外部硬碟檔案路徑進行即時存檔導出："
 
 #: win32/rsrc/snes9x.rc
 msgid "Save Watches"
-msgstr "Save Watches"
+msgstr "將當前建立好的內存追蹤搜尋地址監控變數清單保存儲存"
 
 #: win32/rsrc/snes9x.rc
 msgid "Save with Preview"
-msgstr "Save with Preview"
+msgstr "隨帶保存附帶槽位當前畫面小縮圖以防載入錯誤"
 
 #: win32/wlanguage.h
 msgid "Saves"
-msgstr "Saves"
+msgstr "遊戲內置電池備份存檔持久化存放資料夾"
 
 #: win32/rsrc/snes9x.rc
 msgid "Screen"
-msgstr "Screen"
+msgstr "渲染螢幕面板"
 
 #: win32/wlanguage.h
 msgid "Screenshots"
-msgstr "Screenshots"
+msgstr "程式截圖外觀保存資料夾管理資料夾"
 
 #: win32/rsrc/snes9x.rc
 msgid "Search"
@@ -3530,15 +3575,15 @@ msgstr "搜尋"
 
 #: win32/rsrc/snes9x.rc
 msgid "Search Database"
-msgstr "Search Database"
+msgstr "搜尋本機內置離線作弊金手指資料庫"
 
 #: win32/rsrc/snes9x.rc
 msgid "Search for New Cheats"
-msgstr "Search for New Cheats"
+msgstr "手動追蹤搜尋追查全新自訂金手指變數修改位址"
 
 #: win32/rsrc/snes9x.rc
 msgid "seconds after last change (0 disables auto-save)"
-msgstr "seconds after last change (0 disables auto-save)"
+msgstr "在內存存檔變動多少秒數後強制自動安全存檔落地 (若輸入0代表廢除定時存檔)"
 
 #: win32/rsrc/snes9x.rc
 msgid "SELECT"
@@ -3546,343 +3591,343 @@ msgstr "SELECT"
 
 #: win32/rsrc/snes9x.rc
 msgid "Select 0:"
-msgstr "Select 0:"
+msgstr "切換選中進度 0 號槽位快捷鍵："
 
 #: win32/rsrc/snes9x.rc
 msgid "Select 1:"
-msgstr "Select 1:"
+msgstr "切換選中進度 1 號槽位快捷鍵："
 
 #: win32/rsrc/snes9x.rc
 msgid "Select 2:"
-msgstr "Select 2:"
+msgstr "切換選中進度 2 號槽位快捷鍵："
 
 #: win32/rsrc/snes9x.rc
 msgid "Select 3:"
-msgstr "Select 3:"
+msgstr "切換選中進度 3 號槽位快捷鍵："
 
 #: win32/rsrc/snes9x.rc
 msgid "Select 4:"
-msgstr "Select 4:"
+msgstr "切換選中進度 4 號槽位快捷鍵："
 
 #: win32/rsrc/snes9x.rc
 msgid "Select 5:"
-msgstr "Select 5:"
+msgstr "切換選中進度 5 號槽位快捷鍵："
 
 #: win32/rsrc/snes9x.rc
 msgid "Select 6:"
-msgstr "Select 6:"
+msgstr "切換選中進度 6 號槽位快捷鍵："
 
 #: win32/rsrc/snes9x.rc
 msgid "Select 7:"
-msgstr "Select 7:"
+msgstr "切換選中進度 7 號槽位快捷鍵："
 
 #: win32/rsrc/snes9x.rc
 msgid "Select 8:"
-msgstr "Select 8:"
+msgstr "切換選中進度 8 號槽位快捷鍵："
 
 #: win32/rsrc/snes9x.rc
 msgid "Select 9:"
-msgstr "Select 9:"
+msgstr "切換選中進度 9 號槽位快捷鍵："
 
 #: win32/rsrc/snes9x.rc
 msgid "Select File"
-msgstr "Select File"
+msgstr "開啟彈出視窗手動選擇目標檔案"
 
 #: win32/wlanguage.h
 msgid "Select Folder"
-msgstr "Select Folder"
+msgstr "開啟視窗手動選擇指定作業資料夾路徑"
 
 #: win32/wlanguage.h
 msgid "Select Slot 0:"
-msgstr "Select Slot 0:"
+msgstr "選定切換進度快照槽位至第 0 號："
 
 #: win32/wlanguage.h
 msgid "Select Slot 1:"
-msgstr "Select Slot 1:"
+msgstr "選定切換進度快照槽位至第 1 號："
 
 #: win32/wlanguage.h
 msgid "Select Slot 2:"
-msgstr "Select Slot 2:"
+msgstr "選定切換進度快照槽位至第 2 號："
 
 #: win32/wlanguage.h
 msgid "Select Slot 3:"
-msgstr "Select Slot 3:"
+msgstr "選定切換進度快照槽位至第 3 號："
 
 #: win32/wlanguage.h
 msgid "Select Slot 4:"
-msgstr "Select Slot 4:"
+msgstr "選定切換進度快照槽位至第 4 號："
 
 #: win32/wlanguage.h
 msgid "Select Slot 5:"
-msgstr "Select Slot 5:"
+msgstr "選定切換進度快照槽位至第 5 號："
 
 #: win32/wlanguage.h
 msgid "Select Slot 6:"
-msgstr "Select Slot 6:"
+msgstr "選定切換進度快照槽位至第 6 號："
 
 #: win32/wlanguage.h
 msgid "Select Slot 7:"
-msgstr "Select Slot 7:"
+msgstr "選定切換進度快照槽位至第 7 號："
 
 #: win32/wlanguage.h
 msgid "Select Slot 8:"
-msgstr "Select Slot 8:"
+msgstr "選定切換進度快照槽位至第 8 號："
 
 #: win32/wlanguage.h
 msgid "Select Slot 9:"
-msgstr "Select Slot 9:"
+msgstr "選定切換進度快照槽位至第 9 號："
 
 #: win32/rsrc/snes9x.rc
 msgid "Send"
-msgstr "Send"
+msgstr "發送"
 
 #: win32/rsrc/snes9x.rc
 msgid "Send ROM Image to Client on Connect"
-msgstr "Send ROM Image to Client on Connect"
+msgstr "當客戶端電腦建立連線接入房間時，自動向其網絡發送 ROM 原始碼二進位檔案"
 
 #: win32/rsrc/snes9x.rc
 msgid "Send ROM Image to Clients"
-msgstr "Send ROM Image to Clients"
+msgstr "向當前所有大廳聯機端的電腦發送遊戲卡帶 ROM 檔案"
 
 #: win32/rsrc/snes9x.rc
 msgid "Send ROM Image to Clients Now"
-msgstr "Send ROM Image to Clients Now"
+msgstr "立時即刻向大廳聯機內的所有客戶端電腦發送卡帶 ROM 二進位檔案"
 
 #: win32/rsrc/snes9x.rc
 msgid "Separate Echo Buffer from RAM"
-msgstr "Separate Echo Buffer from RAM"
+msgstr "在虛擬模擬架構上將迴音音訊快取緩衝區與主要核心內存 RAM 完全切斷隔離"
 
 #: win32/rsrc/snes9x.rc
 msgid "Server Address"
-msgstr "Server Address"
+msgstr "要建立連線的遠端主機網絡伺服器地址"
 
 #: win32/rsrc/snes9x.rc
 msgid "Server is stopped."
-msgstr "Server is stopped."
+msgstr "本地自創的連線對戰房間伺服器主機已停止維護運作。"
 
 #: win32/rsrc/snes9x.rc
 msgid "Server Lobby"
-msgstr "Server Lobby"
+msgstr "自建聯機對戰伺服器房間大廳"
 
 #: win32/rsrc/snes9x.rc
 msgid "Server Name:"
-msgstr "Server Name:"
+msgstr "創立自建的網路連線房間名稱："
 
 #: win32/rsrc/snes9x.rc
 msgid "Server Settings"
-msgstr "Server Settings"
+msgstr "多人聯機大廳主辦規則與通信偏好設定"
 
 #: win32/rsrc/snes9x.rc
 msgid "Set Defaults"
-msgstr "Set Defaults"
+msgstr "將此頁所有偏好完全還原為原廠出廠組態基本值"
 
 #: win32/rsrc/snes9x.rc
 msgid "Set Value"
-msgstr "Set Value"
+msgstr "代入並強制寫入此記憶體數值值"
 
 #: win32/rsrc/snes9x.rc
 msgid "Settings"
-msgstr "Settings"
+msgstr "偏好設定控制偏好"
 
 #: win32/wlanguage.h
 msgid "SETTINGS NOT IN MOVIE; VERIFY:"
-msgstr "SETTINGS NOT IN MOVIE; VERIFY:"
+msgstr "該操縱錄影軌跡檔案內部缺乏基本環境設定組態；請務必手動驗證無誤："
 
 #: win32/rsrc/snes9x.rc
 msgid "SGB Mix"
-msgstr "SGB Mix"
+msgstr "SGB 虛擬混音音訊音量混合權重比"
 
 #: win32/rsrc/snes9x.rc
 msgid "SGB1"
-msgstr "SGB1"
+msgstr "SGB1 規格代號"
 
 #: win32/rsrc/snes9x.rc
 msgid "SGB2"
-msgstr "SGB2"
+msgstr "SGB2 規格代號"
 
 #: win32/rsrc/snes9x.rc
 msgid "Show Audio Waveform"
-msgstr "顯示 Audio Waveform"
+msgstr "在畫面頂層即時繪製並顯示音效的音訊音波頻率波形圖"
 
 #: win32/rsrc/snes9x.rc
 msgid "Show Background"
-msgstr "顯示 Background"
+msgstr "允許並顯示背景圖像背景層渲染"
 
 #: win32/rsrc/snes9x.rc
 msgid "Show Crosshair"
-msgstr "顯示 Crosshair"
+msgstr "在畫素畫面幀最中央疊加顯示射擊游標十字準星線"
 
 #: win32/rsrc/snes9x.rc
 msgid "Show Frame Number"
-msgstr "顯示 Frame Number"
+msgstr "在角落實時疊加顯示目前運行的累計精確影格幀號碼數量"
 
 #: win32/rsrc/snes9x.rc
 msgid "Show Frame Rate"
-msgstr "顯示 Frame Rate"
+msgstr "在角落疊加顯示目前虛擬核心的每秒實時影格重新整理速 (FPS 幀率)"
 
 #: win32/rsrc/snes9x.rc
 msgid "Show Grid"
-msgstr "顯示 Grid"
+msgstr "在畫面上疊加顯示 2D 瓷磚單元格圖塊像素格線網格(Grid)輔助格線"
 
 #: win32/wlanguage.h
 msgid "Show pressed keys:"
-msgstr "顯示 pressed keys:"
+msgstr "在畫面上實時疊加顯示玩家正在按壓的實體控制器鍵位流："
 
 #: win32/rsrc/snes9x.rc
 msgid "Show screen"
-msgstr "顯示 screen"
+msgstr "允許並啟用模擬器最終畫素視窗之顯示渲染畫素"
 
 #: win32/rsrc/snes9x.rc
 msgid "Show Screen Outline"
-msgstr "顯示 Screen Outline"
+msgstr "在視窗邊緣疊加顯示虛擬畫素幀的邊界外廓輔助輔助線"
 
 #: win32/rsrc/snes9x.rc
 msgid "Show Sprites"
-msgstr "顯示 Sprites"
+msgstr "允許並顯示前台單一精靈物件點陣物件 (Sprites) 的渲染"
 
 #: win32/rsrc/snes9x.rc
 msgid "Show viewport"
-msgstr "顯示 viewport"
+msgstr "疊加顯示目前畫面模擬渲染之可視可視可視視口區域"
 
 #: win32/rsrc/snes9x.rc
 msgid "Show Window"
-msgstr "顯示 Window"
+msgstr "允許並顯示作業系統主程式加載後的主要 가시 視窗面板"
 
 #: win32/rsrc/snes9x.rc
 msgid "Signed (+/-)"
-msgstr "Signed (+/-)"
+msgstr "包含正負號之有號代數符號編碼格式 (+/-)"
 
 #: win32/wlanguage.h
 msgid "Size"
-msgstr "Size"
+msgstr "數據長度物理體積 크기 大小"
 
 #: win32/rsrc/snes9x.rc
 msgid "Skip at most"
-msgstr "Skip at most"
+msgstr "在自動優化演算下最大容許連續略過跳過的影格幀數"
 
 #: win32/wlanguage.h
 msgid "Skip frames +:"
-msgstr "Skip frames +:"
-
-#: win32/wlanguage.h
-msgid "Skip frames -:"
-msgstr "Skip frames -:"
-
-#: win32/rsrc/snes9x.rc
-msgid "Skip rendering"
-msgstr "Skip rendering"
+msgstr "功能快捷鍵熱鍵：手動略過跳過的幀影格影格級數增加一檔："
 
 #: win32/wlanguage.h
 msgid "Skip Rendering"
-msgstr "Skip Rendering"
+msgstr "暫時完全略過跳過影格畫面的 드로잉 繪製演算"
+
+#: win32/wlanguage.h
+msgid "Skip frames -:"
+msgstr "功能快捷鍵熱鍵：手動略過跳過的幀影格影格級數減少一檔："
+
+#: win32/rsrc/snes9x.rc
+msgid "Skip rendering"
+msgstr "強制跳過略過目前影像畫面影格幀的渲染繪製繪製"
 
 #: win32/rsrc/snes9x.rc
 msgid "Slot +:"
-msgstr "Slot +:"
+msgstr "功能快捷鍵熱鍵：選中的即時進度快照槽位號碼往後切換一格："
 
 #: win32/rsrc/snes9x.rc
 msgid "Slot -:"
-msgstr "Slot -:"
+msgstr "功能快捷鍵熱鍵：選中的即時進度快照槽位號碼往前切換一格："
 
 #: win32/rsrc/snes9x.rc
 msgid "SNES Image"
-msgstr "SNES Image"
+msgstr "超級任天堂實機原生解析度虛擬畫面幀輸出"
 
 #: win32/rsrc/snes9x.rc
 msgid "SuperSnes9x - Unable to Initialize XAudio2"
-msgstr "SuperSnes9x - Unable to Initialize XAudio2"
+msgstr "SuperSnes9x - 音訊輸出發生致命錯誤：完全無法初始加載系統核心 XAudio2 模塊單元"
 
 #: win32/wlanguage.h
 msgid "SuperSnes9x Cheat Error"
-msgstr "SuperSnes9x Cheat Error"
+msgstr "SuperSnes9x 作弊金手指文字代碼語法結構解析異常錯誤"
 
 #: win32/wlanguage.h
 msgid "SuperSnes9x Movie File"
-msgstr "SuperSnes9x Movie File"
+msgstr "SuperSnes9x 專用操作按鍵指令流程紀錄外置影片檔 (.smv)"
 
 #: win32/rsrc/snes9x.rc
 msgid "Socket Port Number"
-msgstr "Socket Port Number"
+msgstr "網路通訊通訊協定專用通訊埠插槽連接埠號碼"
 
 #: win32/rsrc/snes9x.rc
 msgid "Soft Reset"
-msgstr "Soft Reset"
+msgstr "虛擬模擬主機軟體層輕度重設 (Soft Reset)"
 
 #: win32/wlanguage.h
 msgid "Soft reset:"
-msgstr "Soft reset:"
+msgstr "執行虛擬軟體層重設的系統全局快捷鍵管理快捷鍵："
 
 #: win32/rsrc/snes9x.rc
 msgid "Sound Driver:"
-msgstr "Sound Driver:"
+msgstr "最終與作業系統對接發音的音訊驅動底層核心 API："
 
 #: win32/rsrc/snes9x.rc
 msgid "Sound Interpolation Type:"
-msgstr "Sound Interpolation Type:"
+msgstr "聲音音質平滑化平滑補間補間高保真內插演算法類型："
 
 #: win32/rsrc/snes9x.rc
 msgid "Sound Quality"
-msgstr "Sound Quality"
+msgstr "最終中介中介混音採樣音質頻率品質"
 
 #: win32/rsrc/snes9x.rc
 msgid "Sound Settings"
-msgstr "Sound Settings"
+msgstr "聲音與音效總體控制偏好設定"
 
 #: win32/rsrc/snes9x.rc
 msgid "Source:"
-msgstr "Source:"
+msgstr "數據或資源起點的本機根源路徑根源："
 
 #: win32/rsrc/snes9x.rc
 msgid "SPC"
-msgstr "SPC"
+msgstr "SPC 格式原音抽離音訊檔"
 
 #: win32/wlanguage.h
 msgid "SPCs"
-msgstr "SPCs"
+msgstr "預備導出存放 SPC 卡帶音樂的外部資料夾"
 
 #: win32/wlanguage.h
 msgid "Speed +:"
-msgstr "Speed +:"
+msgstr "功能快捷鍵熱鍵：將虛擬主機核心加載運算配給進度加速加倍速加倍速加倍速加倍速加倍速速過：加倍速過："
 
 #: win32/wlanguage.h
 msgid "Speed -:"
-msgstr "Speed -:"
+msgstr "功能快捷鍵熱鍵：將虛擬主機核心加載運算配給進度減速降倍速降倍速降倍速降倍速速慢：降倍速過："
 
 #: win32/rsrc/snes9x.rc
 msgid "Spin1"
-msgstr "Spin1"
+msgstr "微調旋鈕按鈕步進數值刻度 1"
 
 #: win32/rsrc/snes9x.rc
 msgid "Spin2"
-msgstr "Spin2"
+msgstr "微調旋鈕按鈕步進數值刻度 2"
 
 #: win32/rsrc/snes9x.rc
 msgid "Spin3"
-msgstr "Spin3"
+msgstr "微調旋鈕按鈕步進數值刻度 3"
 
 #: win32/rsrc/snes9x.rc
 msgid "Spin4"
-msgstr "Spin4"
+msgstr "微調旋鈕按鈕步進數值刻度 4"
 
 #: win32/rsrc/snes9x.rc
 msgid "Sprite Viewer"
-msgstr "Sprite Viewer"
+msgstr "實時 VRAM 內存精靈點陣圖塊物件追蹤管理器"
 
 #: win32/rsrc/snes9x.rc
 msgid "Sprite:"
-msgstr "Sprite:"
+msgstr "指定追蹤的單一精靈點陣物件高義代號序號："
 
 #: win32/rsrc/snes9x.rc
 msgid "Sprites"
-msgstr "Sprites"
+msgstr "前台渲染的所有單一精靈點陣對象圖塊物件群組"
 
 #: win32/wlanguage.h
 msgid "Sprites layer:"
-msgstr "Sprites layer:"
+msgstr "切換精靈點陣物件（Sprites）圖層可視性的系統熱鍵快捷鍵："
 
 #: win32/wlanguage.h
 msgid "SRAM"
-msgstr "SRAM"
+msgstr "電池備份持久化存檔 SRAM 數據塊"
 
 #: win32/rsrc/snes9x.rc
 msgid "START"
@@ -3890,415 +3935,415 @@ msgstr "START"
 
 #: win32/rsrc/snes9x.rc
 msgid "Start Game"
-msgstr "Start Game"
+msgstr "創立房間者發動主機加載虛擬遊戲卡帶 기동 開始"
 
 #: win32/rsrc/snes9x.rc
 msgid "Start Server"
-msgstr "Start Server"
+msgstr "在當前個人電腦環境下單獨架設通訊連線伺服器本體"
 
 #: win32/rsrc/snes9x.rc
 msgid "Static"
-msgstr "Static"
+msgstr "靜態文字描述標籤引導引導"
 
 #: win32/rsrc/snes9x.rc
 msgid "Status"
-msgstr "Status"
+msgstr "目前聯機大廳或線路通信之運行狀態"
 
 #: win32/rsrc/snes9x.rc
 msgid "Stretch Image"
-msgstr "Stretch Image"
+msgstr "徹底無視原始比例限制，強行將畫素畫素畫素拉伸擠滿鋪滿整視窗"
 
 #: win32/rsrc/snes9x.rc
 msgid "SuperFX Clock Speed %:"
-msgstr "SuperFX Clock Speed %:"
+msgstr "遊戲卡帶內置 3D 圖形向量硬體加載輔助 SuperFX 晶片虛擬時脈加速比例 %："
 
 #: win32/rsrc/snes9x.rc
 msgid "SuperFX speed:"
-msgstr "SuperFX speed:"
+msgstr "卡帶內置 3D 向量加速 SuperFX 協同處理核心晶片倍速加倍速控制速："
 
 #: win32/wlanguage.h
 msgid "SuperScope pause:"
-msgstr "SuperScope pause:"
+msgstr "光線槍硬體 SuperScope 專屬物理暫停按鍵之對應鍵位熱鍵鍵："
 
 #: win32/wlanguage.h
 msgid "SuperScope turbo:"
-msgstr "SuperScope turbo:"
+msgstr "光線槍硬體 SuperScope 專屬自動連發火速連發開關之對應鍵位熱鍵鍵："
 
 #: win32/wlanguage.h
 msgid "SuperSnes9x (x64)"
-msgstr "SuperSnes9x (x64)"
+msgstr "SuperSnes9x (Windows 64位元原生純架構發行版本尊享規格)"
 
 #: win32/rsrc/snes9x.rc
 msgid "SuperSnes9x - About"
-msgstr "SuperSnes9x - About"
+msgstr "檢視 SuperSnes9x 開源起緣開發小組開源貢獻與版權宣告基本資訊"
 
 #: win32/wlanguage.h
 msgid "SuperSnes9x: DirectSound"
-msgstr "SuperSnes9x: DirectSound"
+msgstr "SuperSnes9x: 傳統 DirectSound 底層音訊中介發音管線配置控制管理配置"
 
 #: win32/wlanguage.h
 msgid "SuperSnes9x: Information"
-msgstr "SuperSnes9x: Information"
+msgstr "SuperSnes9x: 實時執行作業通知提示通知系統方塊"
 
 #: win32/wlanguage.h
 msgid "SuperSnes9x: NetPlay Error"
-msgstr "SuperSnes9x: NetPlay Error"
+msgstr "SuperSnes9x: 多人聯機網絡通信通信通訊封包套接字致命錯誤異常"
 
 #: win32/wlanguage.h
 msgid "SuperSnes9x: Sound CPU Question"
-msgstr "SuperSnes9x: Sound CPU Question"
+msgstr "SuperSnes9x: 虛擬獨立音訊中央處理單元線程同步異常安全復原引導確認"
 
 #: win32/wlanguage.h
 msgid "SuperSnes9x: WARNING!"
-msgstr "SuperSnes9x: WARNING!"
+msgstr "SuperSnes9x: 作業安全維護注意嚴重例外警告異常警告提振！"
 
 #: win32/rsrc/snes9x.rc
 msgid "Swap A and B"
-msgstr "Swap A and B"
+msgstr "將前置實體控制面板上的主要 A 按鈕與 B 按鈕物理映射對調位置互換互換"
 
 #: win32/wlanguage.h
 msgid "Switch aspect Ratio:"
-msgstr "Switch aspect Ratio:"
+msgstr "一鍵強行扭轉切換畫素畫面幀最大長寬高縱橫比例比例的全局快捷熱鍵："
 
 #: win32/wlanguage.h
 msgid "Switch controllers:"
-msgstr "Switch controllers:"
+msgstr "一鍵將插槽內的不同手把物理映射完全一鍵對調互換位置位置位置的全局快捷熱鍵："
 
 #: win32/rsrc/snes9x.rc
 msgid "Sync By Reset"
-msgstr "Sync By Reset"
+msgstr "當大廳產生時間線不同步時，強制重設重設全房主機以暴力強行對齊同步"
 
 #: win32/rsrc/snes9x.rc
 msgid "Sync Sound"
-msgstr "Sync Sound"
+msgstr "強制逼迫每一影格畫面幀繪製繪製進度去完全配合音訊緩衝區的傳送速率進行強制同心同步化"
 
 #: win32/rsrc/snes9x.rc
 msgid "Sync Using Reset Game"
-msgstr "Sync Using Reset Game"
+msgstr "當大廳新接入客戶端玩家時，全自動重設重設全房主機狀態以強行對齊同心同步時間線"
 
 #: win32/rsrc/snes9x.rc
 msgid "Synchronize with sound core"
-msgstr "Synchronize with sound core"
+msgstr "將音訊快取緩衝採樣重新整理頻率完全鎖定配合音效主要主核心的定時器頻率進行完全同步化"
 
 #: win32/wlanguage.h
 msgid "TempTurbo"
-msgstr "TempTurbo"
+msgstr "僅在玩家持續按住熱鍵不放的期間才會短暫發動的高速快進暫時加速功能倍速 (TempTurbo)"
 
 #: win32/wlanguage.h
 msgid "Text file"
-msgstr "Text file"
+msgstr "標準純文字純文字文件文檔 (.txt 格式)"
 
 #: win32/wlanguage.h
 msgid "The movie file is corrupt or in the wrong format."
-msgstr "The movie file is corrupt or in the wrong format."
+msgstr "欲導入加載的操作按鍵軌跡流程錄影檔案結構已遭遇嚴重破損破壞，或是屬於不支援的過舊非標格式。"
 
 #: win32/wlanguage.h
 msgid "The movie file was not found or could not be opened."
-msgstr "The movie file was not found or could not be opened."
+msgstr "在目前指定路徑下未搜尋探測到該按鍵操縱影片錄影檔案，或是由於系統硬碟權限沖突拒絕開啟開機。"
 
 #: win32/rsrc/snes9x.rc
 msgid "Tile Addr:"
-msgstr "Tile Addr:"
+msgstr "VRAM 瓷磚圖塊圖像單元二進位原始數據儲存的起始內存地址位置："
 
 #: win32/rsrc/snes9x.rc
 msgid "Tile Data:"
-msgstr "Tile Data:"
+msgstr "該瓷磚圖塊所包含的原始純點陣畫素像素數據："
 
 #: win32/rsrc/snes9x.rc
 msgid "Tile Size:"
-msgstr "Tile Size:"
+msgstr "單一圖像瓷磚圖塊的物理畫素格點格子長寬解析度大小規格："
 
 #: win32/rsrc/snes9x.rc
 msgid "Tile Viewer"
-msgstr "Tile Viewer"
+msgstr "實時 VRAM 顯示內存瓷磚圖塊圖像單元紋理樣式分布圖追蹤監控器"
 
 #: win32/rsrc/snes9x.rc
 msgid "Tilemap"
-msgstr "Tilemap"
+msgstr "瓷磚背景地圖排佈瓷磚地圖 (Tilemap)"
 
 #: win32/rsrc/snes9x.rc
 msgid "Tilemap Viewer"
-msgstr "Tilemap Viewer"
+msgstr "實時 VRAM 內存背景平鋪瓷磚地圖圖塊排佈索引編號圖案地圖追蹤監控器"
 
 #: win32/rsrc/snes9x.rc
 msgid "Tiles"
-msgstr "Tiles"
+msgstr "圖像基本圖塊單元瓷磚圖塊組"
 
 #: win32/rsrc/snes9x.rc
 msgid "Timeout:"
-msgstr "Timeout:"
+msgstr "網絡通信封包回應最大等候超時(Timeout)臨界限制數值："
 
 #: win32/rsrc/snes9x.rc
 msgid "Toggle Achievements Images"
-msgstr "切換 Achievements Images"
+msgstr "開關/切換頂層 OSD 介面上社群成就達成解鎖彈窗內專用縮圖圖片的可視性"
 
 #: win32/wlanguage.h
 msgid "Toggle backdrop:"
-msgstr "切換 backdrop:"
+msgstr "系統熱鍵快捷鍵：開關/切換渲染畫面視窗外圍多餘黑邊填充用的底色色塊可視性："
 
 #: win32/wlanguage.h
 msgid "Toggle cheats:"
-msgstr "切換 cheats:"
+msgstr "系統熱鍵快捷鍵：一鍵開關/切換當前清單內所有已開啟金手指作弊碼地址修改的運作狀態："
 
 #: win32/wlanguage.h
 msgid "Toggle mute:"
-msgstr "切換 mute:"
+msgstr "系統熱鍵快捷鍵：一鍵開關/切換主程式最終總音量輸出的無音靜音狀態轉換運作："
 
 #: win32/rsrc/snes9x.rc
 msgid "Transparency Effects"
-msgstr "Transparency Effects"
+msgstr "啟用手把對應與背景層圖塊間的半透明硬體混色處理 (Alpha Blending)"
 
 #: win32/wlanguage.h
 msgid "Transparency:"
-msgstr "Transparency:"
+msgstr "一鍵開關/切換半透明硬件混色補間特效層可視性的全局功能熱鍵快捷鍵："
 
 #: win32/rsrc/snes9x.rc
 msgid "Tree1"
-msgstr "Tree1"
+msgstr "樹狀階層分層視圖外觀控制面板 1"
 
 #: win32/wlanguage.h
 msgid "Turbo"
-msgstr "加速"
+msgstr "高速模擬運作配給連發加速功能"
 
 #: win32/wlanguage.h
 msgid "Turbo A mode:"
-msgstr "Turbo A mode:"
+msgstr "手把前置 A 按鈕專屬的高速自動連發頻率與連擊機制配置控制："
 
 #: win32/wlanguage.h
 msgid "Turbo B mode:"
-msgstr "Turbo B mode:"
+msgstr "手把前置 B 按鈕專屬的高速自動連發頻率與連擊機制配置控制："
 
 #: win32/wlanguage.h
 msgid "Turbo Down mode:"
-msgstr "Turbo Down mode:"
+msgstr "方向方向鍵向下按鈕專屬的高速自動連發頻率與連擊機制配置控制："
 
 #: win32/wlanguage.h
 msgid "Turbo L mode:"
-msgstr "Turbo L mode:"
+msgstr "手把上肩 L 側單鈕專屬的高速自動連發頻率與連擊機制配置控制："
 
 #: win32/wlanguage.h
 msgid "Turbo Left mode:"
-msgstr "Turbo Left mode:"
+msgstr "方向方向鍵向左按鈕專屬的高速自動連發頻率與連擊機制配置控制："
 
 #: win32/wlanguage.h
 msgid "Turbo R mode:"
-msgstr "Turbo R mode:"
+msgstr "手把上肩 R 側單鈕專屬的高速自動連發頻率與連擊機制配置控制："
 
 #: win32/wlanguage.h
 msgid "Turbo Right mode:"
-msgstr "Turbo Right mode:"
+msgstr "方向方向鍵向右按鈕專屬的高速自動連發頻率與連擊機制配置控制："
 
 #: win32/wlanguage.h
 msgid "Turbo Select mode:"
-msgstr "Turbo Select mode:"
+msgstr "手把 SELECT 選擇鈕專屬的高速自動連發頻率與連擊機制配置控制："
 
 #: win32/wlanguage.h
 msgid "Turbo Start mode:"
-msgstr "Turbo Start mode:"
+msgstr "手把 START 開始鈕專屬的高速自動連發頻率與連擊機制配置控制："
 
 #: win32/wlanguage.h
 msgid "Turbo Up mode:"
-msgstr "Turbo Up mode:"
+msgstr "方向方向鍵向上按鈕專屬的高速自動連發頻率 holidays 擊機制配置控制："
 
 #: win32/wlanguage.h
 msgid "Turbo X mode:"
-msgstr "Turbo X mode:"
+msgstr "手把前置 X 按鈕專屬的高速自動連發頻率與連擊機制配置控制："
 
 #: win32/wlanguage.h
 msgid "Turbo Y mode:"
-msgstr "Turbo Y mode:"
+msgstr "手把前置 Y 按鈕專屬的高速自動連發頻率與連擊機制配置控制："
 
 #: win32/wlanguage.h
 msgid "Uncompressed ROM files"
-msgstr "Uncompressed ROM files"
+msgstr "未經過任何外部壓縮外殼打包處理的純淨原始超任遊戲卡帶 ROM 二進位檔案映像"
 
 #: win32/wlanguage.h
 msgid "Unrecognized format."
-msgstr "Unrecognized format."
+msgstr "模擬加載解析引擎完全無法讀懂該標頭數據的錯誤非標二進位實體檔案結構檔案格式。"
 
 #: win32/rsrc/snes9x.rc
 msgid "Unsigned (>=0)"
-msgstr "Unsigned (>=0)"
+msgstr "不包含代數正負號之純粹正數無符號數據格式形式 (>=0)"
 
 #: win32/wlanguage.h
 msgid "Unsupported movie version."
-msgstr "Unsupported movie version."
+msgstr "所欲加載導入的操作按鍵動作錄影指令軌跡檔案對應的模擬器內部核心版本與目前不符不相容。"
 
 #: win32/rsrc/snes9x.rc
 msgid "UP"
-msgstr "UP"
+msgstr "向上"
 
 #: win32/rsrc/snes9x.rc
 msgid "UP LEFT"
-msgstr "UP LEFT"
+msgstr "上左"
 
 #: win32/wlanguage.h
 msgid "Up Left"
-msgstr "Up Left"
+msgstr "上左"
 
 #: win32/rsrc/snes9x.rc
 msgid "UP RIGHT"
-msgstr "UP RIGHT"
+msgstr "上右"
 
 #: win32/wlanguage.h
 msgid "Up Right"
-msgstr "Up Right"
+msgstr "上右"
 
 #: win32/rsrc/snes9x.rc
 msgid "Update"
-msgstr "Update"
+msgstr "保存更新同步修復"
 
 #: win32/rsrc/snes9x.rc
 msgid "Use CGRAM"
-msgstr "使用 CGRAM"
+msgstr "使用及加載調色盤專用特殊內存顏色內存 CGRAM"
 
 #: win32/rsrc/snes9x.rc
 msgid "Use DirectInput"
-msgstr "使用 DirectInput"
+msgstr "在控制器手把對應機制上使用舊式傳統 Windows DirectInput API 核心管線"
 
 #: win32/rsrc/snes9x.rc
 msgid "Use Dual Justifiers"
-msgstr "使用 Dual Justifiers"
+msgstr "為支援2人同屏雙人雙打雙槍射擊，同時使用兩把虛擬科南美 Justifier 光線槍射擊周邊設備"
 
 #: win32/rsrc/snes9x.rc
 msgid "Use Konami Justifier"
-msgstr "使用 Konami Justifier"
+msgstr "使用超任特殊光線槍周邊硬體 Konami Justifier 總體輸入對應"
 
 #: win32/rsrc/snes9x.rc
 msgid "Use M.A.C.S. Rifle"
-msgstr "使用 M.A.C.S. Rifle"
+msgstr "使用美軍模擬射擊實戰演練特製周邊虛擬 M.A.C.S. 步槍步槍射擊裝置輸入"
 
 #: win32/rsrc/snes9x.rc
 msgid "Use Mouse in alternate port"
-msgstr "使用 Mouse in alternate port"
+msgstr "在第二玩家手把擴充副插槽上啟用加載虛擬滑鼠滑鼠裝置輸入"
 
 #: win32/rsrc/snes9x.rc
 msgid "Use Multitaps (8-player)"
-msgstr "使用 Multitaps (8-player)"
+msgstr "加載啟用多重手把多人分接器 어댑터 功能 (最大容許解鎖 8位玩家同場協同操作連線使用)"
 
 #: win32/rsrc/snes9x.rc
 msgid "Use Shader"
-msgstr "使用 Shader"
+msgstr "使用及加載外部著色器濾鏡外掛 (Shader)"
 
 #: win32/rsrc/snes9x.rc
 msgid "Use SNES Joypad(s)"
-msgstr "使用 SNES Joypad(s)"
+msgstr "使用超任標準規範 16鍵位虛擬傳統控制手把 Joypad 裝置輸入"
 
 #: win32/rsrc/snes9x.rc
 msgid "Use SNES Mouse"
-msgstr "使用 SNES Mouse"
+msgstr "使用瑪利歐繪圖等遊戲專屬的雙鍵式虛擬超任機械滑鼠滑鼠裝置輸入"
 
 #: win32/rsrc/snes9x.rc
 msgid "Use Super Multitap (5-player)"
-msgstr "使用 Super Multitap (5-player)"
+msgstr "加載啟用超任原廠 4分接多人分接器 Super Multitap 擴充 (最大容許 5位玩家同屏操作連線使用)"
 
 #: win32/rsrc/snes9x.rc
 msgid "Use Super Scope"
-msgstr "使用 Super Scope"
+msgstr "使用任天堂正品火箭筒式無線光線射擊槍虛擬超級火箭筒 (Super Scope) 裝置輸入"
 
 #: win32/rsrc/snes9x.rc
 msgid "User Agent: SuperSnes9x/1.63"
-msgstr "User Agent: SuperSnes9x/1.63"
+msgstr "與遠端網絡對接識別之專屬客戶端代理字串 User Agent: SuperSnes9x/1.63"
 
 #: win32/rsrc/snes9x.rc
 msgid "Username:"
-msgstr "Username:"
+msgstr "大廳聯機連線識別帳號暱稱名稱碼："
 
 #: win32/wlanguage.h
 msgid "Value"
-msgstr "Value"
+msgstr "記憶體地址內部的物理屬性數據值值"
 
 #: win32/rsrc/snes9x.rc
 msgid "Value (hex):"
-msgstr "Value (hex):"
+msgstr "填入欲蓋寫的數據值 (需完全符合十六進位制原始碼格式規範編碼指定)："
 
 #: win32/rsrc/snes9x.rc
 msgid "Video"
-msgstr "Video"
+msgstr "視訊圖像"
 
 #: win32/rsrc/snes9x.rc
 msgid "Video System:"
-msgstr "Video System:"
+msgstr "視訊廣播制式標準系統 (美日規 NTSC / 歐規 PAL 自動檢測同步控制)："
 
 #: win32/rsrc/snes9x.rc
 msgid "Volume"
-msgstr "Volume"
+msgstr "主要聲音輸出總體音量"
 
 #: win32/rsrc/snes9x.rc
 msgid "VSync"
-msgstr "VSync"
+msgstr "啟用硬體層畫面影格流垂直重新整理同步 (VSync) 消除撕裂缺口"
 
 #: win32/wlanguage.h
 msgid "WARNING: You don't have the right ROM loaded!"
-msgstr "WARNING: You don't have the right ROM loaded!"
+msgstr "致命安全注意警告：當前加載進虛擬內存的遊戲卡帶 ROM 檔案版本與您金手指或操作錄影檔的指定需求不符不一致！"
 
 #: win32/rsrc/snes9x.rc
 msgid "Watch"
-msgstr "Watch"
+msgstr "建立實時特定內存地址數據變動追蹤監控 (Watch)"
 
 #: win32/rsrc/snes9x.rc
 msgid "Welcome Message (MOTD)"
-msgstr "Welcome Message (MOTD)"
+msgstr "當玩家加入您自建的房間時，全自動在其大廳視窗頂端印出的今日歡迎公告看板(MOTD)"
 
 #: win32/rsrc/snes9x.rc
 msgid "Width:"
-msgstr "Width:"
+msgstr "渲染畫面幀橫向水平寬度畫素大小："
 
 #: win32/rsrc/snes9x.rc
 msgid "Window Size"
-msgstr "Window Size"
+msgstr "程式主要外觀視窗在 Windows 桌面環境下的初始物理 크기 大小"
 
 #: win32/rsrc/snes9x.rc
 msgid "WOG!"
-msgstr "WOG!"
+msgstr "WOG! 特殊事件調度引擎標籤名"
 
 #: win32/wlanguage.h
 msgid "You have entered an out of range or invalid value for the new value"
-msgstr "You have entered an out of range or invalid value for the new value"
+msgstr "您剛才欲強行寫入的全新變更數據數值已嚴重超越該內存地址硬體合法上限，或是不符合代碼格式規範。"
 
 #: win32/wlanguage.h
 msgid "You need a different version of SuperSnes9x to play this movie."
-msgstr "You need a different version of SuperSnes9x to play this movie."
+msgstr "要正常加載重播這條操縱控制按鍵動作軌跡錄影檔，您必須更換使用另一款特定修訂版本ビルド的 SuperSnes9x 模擬器主程式。"
 
 #: win32/rsrc/snes9x.rc
 msgid "Your password is only used to get an API token.\nIt is never stored."
-msgstr "Your password is only used to get an API token.\nIt is never stored."
+msgstr "您所填入的密碼僅用於單次與官方遠端驗證服務器聯通並獲取高安全性的 API 權限 Token。\n它絕不會在您的本地磁碟或任何路徑環境下遭遇非法留存或永久儲存，請完全放心。"
 
 #: win32/rsrc/snes9x.rc
 msgid "Zoom:"
-msgstr "Zoom:"
+msgstr "最終輸出畫面畫素幀放大之數值倍率放大倍數縮放 (Zoom)："
 
 # === Win32 strings (added by i18n/extract_strings.py) ===
 
 #: win32/CSpriteViewerDlg.cpp
 msgid "Export Selected to PNG"
-msgstr "Export Selected to PNG"
+msgstr "將當前內存中選中的該精靈點陣物件導出為包含透明透明 alpha 通道的 PNG 格式圖片"
 
 #: win32/CGBSpriteViewerDlg.cpp
 msgid "Export to PNG"
-msgstr "Export to PNG"
+msgstr "導出抽離為無損畫質的標準 PNG 圖片文件格式"
 
 #: win32/CSpriteViewerDlg.cpp
 msgid "Show All Objects"
-msgstr "顯示 All Objects"
+msgstr "將目前 VRAM 瓷磚圖塊緩衝表內的所有實時點陣精靈對象一鍵強行完全顯示在螢幕上"
 
 #: win32/CSpriteViewerDlg.cpp
 msgid "Show Only Selected Objects"
-msgstr "顯示 Only Selected Objects"
+msgstr "在螢幕上僅限定單獨顯示目前玩家用滑鼠滑鼠點擊高亮選中的該精靈對象物件"
 
 #: win32/CSpriteViewerDlg.cpp
 msgid "Toggle Visibility"
-msgstr "切換 Visibility"
+msgstr "一鍵開關/切換當前選定精靈點陣圖塊的可視性隱藏狀態切換切換托切換"
 
 #: win32/wsnes9x.cpp
 msgid "Translations"
-msgstr "Translations"
+msgstr "內建多國在地化翻譯語言包數據模組"
 
 # === Win32 strings (added by i18n/extract_strings.py) ===
 
 #: win32/wsnes9x.cpp
 msgid "Language"
-msgstr "Language"
+msgstr "在地化語系選擇"
 
 # === Win32 strings (added by i18n/extract_strings.py) ===
 
@@ -4312,203 +4357,203 @@ msgstr "48000 Hz"
 
 #: qt/src/DisplayPanel.ui
 msgid "4:3 - Classic display aspect"
-msgstr "4:3 - Classic display aspect"
+msgstr "4:3 - 經典老舊復古電視 CRT 傳統大框橫向長寬比"
 
 #: qt/src/DisplayPanel.ui
 msgid "64:49 - NTSC aspect"
-msgstr "64:49 - NTSC aspect"
+msgstr "64:49 - 原生 NTSC 類比電視廣播電視訊號專用補正物理長寬比"
 
 #: qt/src/DisplayPanel.ui
 msgid "8:7 - Square pixels"
-msgstr "8:7 - Square pixels"
+msgstr "8:7 - 完全不加任何外延處理、完全一比一呈現原點陣畫素的純方形像素長寬比"
 
 #: qt/src/EmulationPanel.ui
 msgid "<html><head/><body><p>A hack option. Only use this if you are running a third-party hack of a game that was designed for emulators and needs this.</p></body></html>"
-msgstr "<html><head/><body><p>A hack option. Only use this if you are running a third-party hack of a game that was designed for emulators and needs this.</p></body></html>"
+msgstr "<html><head/><body><p>非標準硬體週邊演算時脈修改專用修正（Hack）控制選項。請僅在您明確準備加載運行的該款非官方第三方改版（Third-party Hack）遊戲卡帶 ROM 明確要求必須配合此時脈變更修正、且該改檔本就是為了在 PC 模擬器環境優化加載下而特製開發的極特殊例行情況下，才需要手動勾選開啟。</p></body></html>"
 
 #: qt/src/EmulationPanel.ui
 msgid "<html><head/><body><p>Allows more sprites to be displayed on the screen in an attempt to remove flickering.</p><p>Some games take advantage of this limit and use it to hide glitches, and removing the limit will make those visible.</p></body></html>"
-msgstr "<html><head/><body><p>Allows more sprites to be displayed on the screen in an attempt to remove flickering.</p><p>Some games take advantage of this limit and use it to hide glitches, and removing the limit will make those visible.</p></body></html>"
+msgstr "<html><head/><body><p>解除超任實機每條橫向掃描線上最大點陣物件（Sprites）的渲染繪製數量限制，進而完美抑制並全面清除老遊戲在畫面圖塊過多時、因硬體超載而產生的經典畫素物件劇烈閃爍、短暫閃爍不見（Flickering）的缺陷視覺感。</p><p>安全提示：有些經典老遊戲在開發時，正是利用了實機這個橫向數量上限硬體缺陷，來故意將畫框外圍多餘的運算碎屑或圖形 Glitch 錯誤隱藏在可見視野之外。此時如果強行拔除此限制，會導致那些本來被蓋掉藏掉的畫面邊緣破綻碎屑完完全全徹底露出來在眼前曝光。</p></body></html>"
 
 #: qt/src/EmulationPanel.ui
 msgid "<html><head/><body><p>Alternate sound filters can make the audio more crisp than the authentic gaussian filter.</p><p>The Cubic and Sinc filters provide the best improvement, but they can reveal some noise that would normally be hidden by the hardware.</p></body></html>"
-msgstr "<html><head/><body><p>Alternate sound filters can make the audio more crisp than the authentic gaussian filter.</p><p>The Cubic and Sinc filters provide the best improvement, but they can reveal some noise that would normally be hidden by the hardware.</p></body></html>"
+msgstr "<html><head/><body><p>允許使用非原廠內置的音訊補間過濾器，使輸出的原聲音樂高音質部分比實機那種極度沉悶、糊成一團的官方原始高斯（Gaussian）低通濾波器顯得更加清脆、通透、響亮、高音高音透亮。</p><p>特別是三次內插（Cubic）與辛克內插（Sinc）數位音訊頻率處理濾波器能帶來極其顯著的高音解析優化度，但其反動是也會把原本低採樣率下因高斯低通而糊掉、被溫柔蓋掉聽不見的微小低保真背景雜音、電流碎屑雜音粗糙高頻顆粒感等雜訊巨細靡遺地銳利放出來，可能會讓部分习惯沉悶暖調聽感的玩家感到些許刺耳。</p></body></html>"
 
 #: qt/src/EmulationPanel.ui
 msgid "<html><head/><body><p>Amount of memory to use to enable the rewind function. The amount of time each MB gets you varies based on the complexity of the game. Set to 0 to disable rewind altogether and use less processor time.</p></body></html>"
-msgstr "<html><head/><body><p>Amount of memory to use to enable the rewind function. The amount of time each MB gets you varies based on the complexity of the game. Set to 0 to disable rewind altogether and use less processor time.</p></body></html>"
+msgstr "<html><head/><body><p>設定在執行時分配多少最大持久化內存 RAM 容量，作為實時時間倒帶（Rewind）時光回溯便利功能專用的數據快取緩衝池。每 1MB 內存空間能為您換回的倒帶可倒回秒數多寡，會根據目前運行的該款遊戲其畫面圖塊變化頻率與內存地址演算複雜度而發生很大變動。若將此容量數值一鍵完全歸零設定為「0」，則代表徹底關閉並停用時間倒帶回溯系統，這能全面解除模擬器為了定時備份快照而對 CPU 處理器帶來的多線程循環演算開銷（Overhead），進而小幅省下 CPU 加載資源、有效提升低配電腦的遊戲幀率穩定度。</p></body></html>"
 
 #: qt/src/EmulationPanel.ui
 msgid "<html><head/><body><p>Change the speed of the SuperFX chip. The SuperFX had some notoriously slow games, and this can be used to attempt to speed them up.</p></body></html>"
-msgstr "<html><head/><body><p>Change the speed of the SuperFX chip. The SuperFX had some notoriously slow games, and this can be used to attempt to speed them up.</p></body></html>"
+msgstr "<html><head/><body><p>手動人為超頻卡帶內部封裝的 SuperFX 特殊 3D 向量點陣多邊形畫面渲染輔助加載晶片的虛擬運行時脈速度。當年使用了 SuperFX 硬體加速的幾款 3D 經典名作，由於實機晶片物理頻率極低，遊戲過程中的 3D 幀率卡頓、降影格、如同幻燈片般跳格運行的糟糕表現可謂惡名昭彰。通過提高此處的虛擬超頻比例，可在完全不加快遊戲音樂或內部邏輯流速的完美條件下，純粹將 3D 多邊形物件的刷新流暢度直接拉高數倍，實現極其滑順、絲滑、不卡頓的高幀率完美流暢體驗。</p></body></html>"
 
 #: qt/src/DisplayPanel.ui
 msgid "<html><head/><body><p>Choose one of <span style=\" font-style:italic;\">Qt Software, Vulkan, or OpenGL</span>.</p><p>Qt Software will use the CPU to draw the display. Vulkan or OpenGL will use that respective graphics interface to draw the display.</p></body></html>"
-msgstr "<html><head/><body><p>Choose one of <span style=\" font-style:italic;\">Qt Software, Vulkan, or OpenGL</span>.</p><p>Qt Software will use the CPU to draw the display. Vulkan or OpenGL will use that respective graphics interface to draw the display.</p></body></html>"
+msgstr "<html><head/><body><p>指定模擬器主要用於將最終畫素畫面幀繪製繪製到您電腦螢幕上的主要圖像渲染底層驅動架構 API，可從 <span style=\" font-style:italic;\">Qt Software (純軟體渲染)、Vulkan(現代硬體加速 API) 或 OpenGL</span> 中擇一指定。</p><p>如果選擇 Qt Software，模擬器將不調用任何獨立顯示卡硬體，全憑中央處理器（CPU）多核心一邊一邊計算一邊一格一格拼出圖像，相容性高但高負載下極其耗費處理器資源；而選擇硬體圖形加速類的 Vulkan 或 OpenGL，則能直接調用顯卡（GPU）的專屬渲染管線硬體資源，使外掛各種畫面特殊著色器（Shader）或高倍率濾鏡時顯得極其流暢、輕盈、不卡頓不掉格。</p></body></html>"
 
 #: qt/src/ControllerPanel.ui
 msgid "<html><head/><body><p>Clear or swap sets of bindings between controllers.</p></body></html>"
-msgstr "<html><head/><body><p>Clear or swap sets of bindings between controllers.</p></body></html>"
+msgstr "<html><head/><body><p>一鍵完全抹除清空或將不同插槽連接埠間（例如 1號玩家手把與 2號玩家手把之間）已配置好的手把實體鍵位映射組態配置進行一鍵一鍵一鍵完全對調對調交換位置位置。</p></body></html>"
 
 #: qt/src/SoundPanel.ui
 msgid "<html><head/><body><p>Control how much the audio is stretched initially.</p><p><br/></p><p>Unless you know what you're doing, it's best to use the option above this to adjust it automatically.</p></body></html>"
-msgstr "<html><head/><body><p>Control how much the audio is stretched initially.</p><p><br/></p><p>Unless you know what you're doing, it's best to use the option above this to adjust it automatically.</p></body></html>"
+msgstr "<html><head/><body><p>手動指定初始音訊波形為了匹配畫面流速而被強制微調拉伸延伸（Stretching）處理的基礎加權幅值 수치。</p><p><br/></p><p>安全建議：除非您是具備專業音訊單元管線控制背景的工程師玩家，否則人為手動死鎖指定數值極易造成發音嚴重扭曲變調，強烈建議直接勾選上方方的「根據顯示器重新整理率自動調整輸入率」複選框，交由模擬器核心自行智能追蹤對齊同步方為最佳手段。</p></body></html>"
 
 #: qt/src/FoldersPanel.ui
 msgid "<html><head/><body><p>Determines where to look for optional BIOS / boot ROM files (Super Game Boy boot ROM, BS-X.bin, etc).</p><p><span style=\" font-style:italic;\">ROM Folder</span> looks next to the loaded ROM.</p><p><span style=\" font-style:italic;\">Config Folder</span> uses a \"bios\" subfolder of the config folder.</p><p><span style=\" font-style:italic;\">Custom</span> uses an explicit path (default: \"Bios\" relative to the working directory).</p></body></html>"
-msgstr "<html><head/><body><p>Determines where to look for optional BIOS / boot ROM files (Super Game Boy boot ROM, BS-X.bin, etc).</p><p><span style=\" font-style:italic;\">ROM Folder</span> looks next to the loaded ROM.</p><p><span style=\" font-style:italic;\">Config Folder</span> uses a \"bios\" subfolder of the config folder.</p><p><span style=\" font-style:italic;\">Custom</span> uses an explicit path (default: \"Bios\" relative to the working directory).</p></body></html>"
+msgstr "<html><head/><body><p>定義模擬核心在發動特殊硬體模擬或附屬功能時，所需探測加載的非標準官方系統拓展 BIOS 韌體鏡像或特殊開機 Boot ROM 原始碼檔案路徑（如：超級遊戲男孩專用開機內核 Super Game Boy boot ROM、衛星連線接收模組開機導引韌體 BS-X.bin 檔等）。</p><p><span style=\" font-style:italic;\">ROM 資料夾</span>：核心將直接前往目前玩家雙擊開啟開啟的該款遊戲卡帶 ROM 檔案所在的同級實體資料夾路徑下同級查找追蹤 BIOS 鏡像。</p><p><span style=\" font-style:italic;\">設定資料夾</span>：核心將直接在當前儲存主要主 conf 設定檔的目錄中，尋找探測名為 \"bios\" 的專用子資料夾內層空間作為唯一掃描路徑。</p><p><span style=\" font-style:italic;\">自訂特定路徑</span>：允許玩家調用系統檔案瀏覽器手動硬性鎖定電腦硬碟中的任一特定資料夾，作為唯一的 BIOS 來源探測路徑（預設基本值：主程式可執行檔所在工作目錄下的子資料夾 \"Bios\" 空間）。</p></body></html>"
 
 #: qt/src/FoldersPanel.ui
-msgid "<html><head/><body><p>Determines where to save these files.</p><p><span style=\" font-style:italic;\">ROM Folder</span> will always save to the same folder as the ROM.</p><p><span style=\" font-style:italic;\">Config Folder</span> will save to a subfolder of the config folder that is shown. If there is a snes9x.conf file next to your executable, Snes9x will operate in portable mode and the config folder will be the folder the executable is in.</p><p><span style=\" font-style:italic;\">Custom</span> allows you to specify exactly where to save these files.</p></body></html>"
-msgstr "<html><head/><body><p>Determines where to save these files.</p><p><span style=\" font-style:italic;\">ROM Folder</span> will always save to the same folder as the ROM.</p><p><span style=\" font-style:italic;\">Config Folder</span> will save to a subfolder of the config folder that is shown. If there is a snes9x.conf file next to your executable, Snes9x will operate in portable mode and the config folder will be the folder the executable is in.</p><p><span style=\" font-style:italic;\">Custom</span> allows you to specify exactly where to save these files.</p></body></html>"
+msgid "<html><head/><body><p>Determines where to save these files.</p><p><span style=\" font-style:italic;\">ROM Folder</span> will always save to the same folder as the ROM.</p><p><span style=\" font-style:italic;\">Config Folder</span> will save to a subfolder of the config folder that is shown. If there is a supersnes9x.conf file next to your executable, SuperSnes9x will operate in portable mode and the config folder will be the folder the executable is in.</p><p><span style=\" font-style:italic;\">Custom</span> allows you to specify exactly where to save these files.</p></body></html>"
+msgstr "<html><head/><body><p>用以定義在模擬遊戲過程中，後續派生衍生產出的各類用戶層核心檔案（即時存檔快照、外置金手指作弊碼文字檔、卡帶內部電池備份 SRAM 內存存檔等）應該輸出並永續儲存落地至硬碟中的哪一類資料夾目錄路徑中。</p><p><span style=\" font-style:italic;\">ROM 資料夾</span>：所有派生存檔、快照均會全自動第一時間直接寫入存放在與目前開啟執行的該款遊戲 ROM 卡帶檔完全相同的同級硬碟資料夾夾目錄空間內。</p><p><span style=\" font-style:italic;\">設定資料夾</span>：檔案將一鍵集中收納至下方顯示的核心主要組態配置資料夾的對應子目錄路徑中。備註：如果您的 SuperSnes9x 主執行二進位執行檔（.exe）所在的同級最外層資料夾路徑下，本身就已經手動建立放置了一個名為「supersnes9x.conf」的設定組態檔，模擬器將自動強行判定切換進入不寫入 Windows 系統登錄檔的綠色獨立運行體系——「可攜式可攜式隨身可攜式（Portable）模式」，此時的主要設定資料夾路徑也會自動全面收縮定位至執行檔所在的該本機資料夾本身。</p><p><span style=\" font-style:italic;\">自訂特定路徑</span>：允許玩家利用開啟視窗手動硬性 Hardlock 鎖定電腦中的任一完全獨立的專屬資料夾路徑（例如您本機的雲端同步硬碟路徑同步路徑等），讓所有衍生存檔進度均只定向往該獨立位置進行落地持久化寫入，打造最清爽的倉庫管理環境。</p></body></html>"
 
 #: qt/src/SoundPanel.ui
 msgid "<html><head/><body><p>Erases all emulated sound output and just sends out silence.</p></body></html>"
-msgstr "<html><head/><body><p>Erases all emulated sound output and just sends out silence.</p></body></html>"
+msgstr "<html><head/><body><p>在核心音訊輸出加載中繼站階段，將所有已運算生成的虛擬聲音信號串流一鍵完全抹除抹滅消滅，改為向最終物理發音裝置管線中強行持續注入空音訊信號（白空數據串流），進而強行實現徹底、完全、不耗費額外資源的全局強制無音靜音適寂狀態。</p></body></html>"
 
 #: qt/src/SoundPanel.ui
 msgid "<html><head/><body><p>If after everything, you're still getting pops and crackles in audio, you can increase this value. However, it may cause noticeable distortion.</p></body></html>"
-msgstr "<html><head/><body><p>If after everything, you're still getting pops and crackles in audio, you can increase this value. However, it may cause noticeable distortion.</p></body></html>"
+msgstr "<html><head/><body><p>如果您在調整了上方的音訊快取緩衝區同步以及硬體刷新率對齊追蹤後，在實際 스피커 播放時，依然因電腦主機板內置聲卡晶片的緩衝區碎屑或微小的幀延遲不同步，導致耳朵能捕捉到極其微小、偶爾發生的斷斷續續、劈啪碎裂的爆音雜音或卡頓劈啪劈啪聲（Pops and Crackles），可嘗試將此快取緩衝預留安全性死區臨界值進一步人為調高來予以進步預防封鎖。但是，如果將此補償數值調整得過度無厘頭的高，會導致音頻波形被反常態地過度拉長，最終導致從揚聲器放出來的聲音質感本身產生肉耳完全可辨識的嚴重走音、發悶、變調與高頻電音化異樣變調歪曲變調（Noticeable Distortion）嚴重副作用 반동。</p></body></html>"
 
 #: qt/src/SoundPanel.ui
 msgid "<html><head/><body><p>Master output volume during normal play. Moving this also drags the per-source SGB sliders so they stay in step.</p></body></html>"
-msgstr "<html><head/><body><p>Master output volume during normal play. Moving this also drags the per-source SGB sliders so they stay in step.</p></body></html>"
+msgstr "<html><head/><body><p>用以控制和調整當虛擬主機核心處於未快轉、未超頻、以 1:1 標準定時常速進行一般正常遊戲（Normal Play）時，最終輸送到外部揚聲器喇叭裝置的全局主要中央總體主音量（Master Volume）總音量 크기 大小。當您用滑鼠滑鼠點擊拖曳移動此主要滑塊的刻度位置時，下方針對各獨立音源大類所細分的超級遊戲男孩（SGB）專用各獨立子通道音量控制滑塊也會自動產生磁吸聯動、按照比例一同跟隨等比拖曳進退，進而維持住既定好的各聲道和弦權重比例，而不會導致整體音場層次跨掉或比例失衡（各步進刻度完全同頻同步化共進退）。</p></body></html>"
 
 #: qt/src/SoundPanel.ui
 msgid "<html><head/><body><p>Master output volume during turbo and rewind.</p></body></html>"
-msgstr "<html><head/><body><p>Master output volume during turbo and rewind.</p></body></html>"
+msgstr "<html><head/><body><p>用以控制當玩家按下快進功能熱鍵使模擬速率成倍暴增的「高速連發加速（Turbo）狀態」下，或者是按住按鍵使時光倒流回溯的「實時時間倒帶（Rewind）狀態」下，這兩種非標加速行進時間線的特殊特殊狀況 타이밍 런타임 期間，最終發送給音響喇叭裝置播放的專用特殊總音量 體積 크기 大小。</p></body></html>"
 
 #: qt/src/SoundPanel.ui
 msgid "<html><head/><body><p>Mutes sound when using the turbo and rewind functions, which might be annoying to some users.</p></body></html>"
-msgstr "<html><head/><body><p>Mutes sound when using the turbo and rewind functions, which might be annoying to some users.</p></body></html>"
+msgstr "<html><head/><body><p>當執行成倍加速快進（Turbo）或是時間軸即時逆流倒帶時，音訊頻率也會因流速暴增而隨之嚴重變調、產生極其刺耳、尖銳、如同尖叫般高速高頻尖銳尖叫的不自然 배속 變音雜音。本選項的作用便是在快進或倒帶快捷鍵被玩家按住生效的該短暫瞬間期間，全自動即時切斷音訊信號，實施高智能的實時靜音（Mute）消音 차단 處置。這是一項專門為了保護玩家聽覺神經、免受高頻變調刺耳雜音干擾而強烈建議勾選開啟的極實用貼心功能選項。</p></body></html>"
 
 #: qt/src/DisplayPanel.ui
 msgid "<html><head/><body><p>On classic CRT televisions, some areas of the screen were covered by the bezel, so weren't used often in games. This option allows you to show that area, but it will usually be just black bars.</p></body></html>"
-msgstr "<html><head/><body><p>On classic CRT televisions, some areas of the screen were covered by the bezel, so weren't used often in games. This option allows you to show that area, but it will usually be just black bars.</p></body></html>"
+msgstr "<html><head/><body><p>在古老傳統的經典 CRT 球面凸面電視機與大型電玩螢幕上，由於四周物理厚重外框塑膠面板（Bezel）的包邊遮擋，導致顯示幀外圍最邊緣的一部分畫面線條在實機物理高證上會被物理遮蓋住看不到（即過掃描 Overscan 特性）。因此當年各大遊戲開發商在設計點陣圖圖層時，均會自覺將最外圍一圈框邊視作「不應放置任何核心 UI 或血條等重要指令的完全留白余白安全邊界」。如果您勾選開啟本選項，模擬器將徹底扒開並解除過掃描黑邊封鎖，將當年被實機電視機塑膠外框包邊擋住、本不可見的最邊緣圖像數據也完完全全毫無保留地在現代顯示器上硬性渲染並徹底曝光出來。不過，對於絕大多數常規遊戲而言，揭開這層外框後，暴露出的極邊緣邊界多半只是一些完全沒有填充任何圖案、一物全無的純黑色死寂黑邊寬頻（Black Bars / 黑條 레터박스）而已。</p></body></html>"
 
 #: qt/src/EmulationPanel.ui
 msgid "<html><head/><body><p>Original controllers may have had a small pin in the dpad preventing left and right or up and down from being pressed at the same time. This will allow that behavior if you're using a keyboard or device that can press those buttons at the same time. Some games will glitch when this is done.</p></body></html>"
-msgstr "<html><head/><body><p>Original controllers may have had a small pin in the dpad preventing left and right or up and down from being pressed at the same time. This will allow that behavior if you're using a keyboard or device that can press those buttons at the same time. Some games will glitch when this is done.</p></body></html>"
+msgstr "<html><head/><body><p>超級任天堂實機當年出廠配備的原裝正品十字方向鍵（D-pad）硬體內部，在十字塑膠鍵帽正核心的最正中央地底，設計有一根物理支撐固定小銷釘固定銷（物理軸心銷）凸起起。得益於這個內部實體支撐銷基座的實機硬體防呆限制高證，玩家在實機操作上手指不論多麼大力去碾壓揉搓十字鍵，結構上都「絕對無法同時按下左鍵+右鍵」或者「絕對無法同時按下上鍵+下鍵」這兩種完全相反的衝突方向信號。然而現代電腦環境下玩家如果用鍵盤鍵盤自訂獨立的字母按鍵來對應方向、或是使用兩軸分離的最新第三方控制器時，該物理防呆限制不復存在，便有機率將這種相反衝突的方向碼同時送入輸入緩衝區內。本選項若勾選開啟，代表要求虛擬主機控制晶片核心完全不加過濾過濾地放行這類相反衝突的同壓操作信號，將其視作正常信號塞入虛擬緩衝區。注意：由於當年 99% 的老遊戲代碼邏輯架構在開發時均完全建立在「相反衝突方向同壓不可能發生」的實機前提下，一旦這類非正常反物理方向信號被強行塞入核心，極易導致遊戲內部角色座標計算 주소 崩潰、2D 物理引擎錯亂移位、圖像貼圖瞬間大面積嚴重崩壞錯位（Glitch）甚至引發內存崩潰死機存檔損壞等惡性 bug 故障與嚴重故障 오작동。</p></body></html>"
 
 #: qt/src/EmulationPanel.ui
 msgid "<html><head/><body><p>Override the frame rate of the emulated system. This can be used to run slightly faster or slower than usual, or to match the timer to your exact refresh rate.</p><p><br/></p><p>Set this to 0 to use whatever the emulated system uses.</p></body></html>"
-msgstr "<html><head/><body><p>Override the frame rate of the emulated system. This can be used to run slightly faster or slower than usual, or to match the timer to your exact refresh rate.</p><p><br/></p><p>Set this to 0 to use whatever the emulated system uses.</p></body></html>"
+msgstr "<html><head/><body><p>允許玩家手動輸入特定數值，去強制改寫並全面覆蓋（Override）模擬器核心內存每秒主要指令影格幀的最高更新率目標上限規格。該手動覆蓋 개입 功能可用於將模擬執行的節奏速率人為調快或稍微調慢一點，用以調整攻關遊戲時的體感難易度，或者是將模擬器的時鐘計時器間隔與玩家目前 Windows 桌面的顯示器面板物理重新整理率（主사율/Refresh Rate）進行 소수점 대역까지 一比一的極精準對齊同心匹配，進而將微小的畫面撕裂、缺口或不規則微小停頓顿挫感知降到完全無法察覺的最底限度。</p><p><br/></p><p>預設基本值說明：若將此輸入欄位徹底清空、或是直接高固定鎖定輸入為「0」，則代表全面作廢撤銷此處的手動強制改寫 개입，虛擬主機核心將自動回歸最正宗的常規自動推演 시계 週期，自動根據當前加載運行的該款遊戲 ROM 檔其原生國家廣播視訊系統格式（美日規 NTSC 格式自動以絕對精準的 초당 60影格幀率為限 / 歐規 PAL 格式自動以絕對精準的 초당 50影格幀率為限）去自動自動全自動自動追蹤並鎖定標準標準 정속 頻率。</p></body></html>"
 
 #: qt/src/SoundPanel.ui
 msgid "<html><head/><body><p>Selects the driver to output sound with.</p><p><span style=\" font-style:italic;\">Cubeb: </span>The recommended option.</p><p><span style=\" font-style:italic;\">SDL</span>: If Cubeb doesn't work.</p><p><span style=\" font-style:italic;\">PulseAudio:</span> Unix only. May have less latency.</p></body></html>"
-msgstr "<html><head/><body><p>Selects the driver to output sound with.</p><p><span style=\" font-style:italic;\">Cubeb: </span>The recommended option.</p><p><span style=\" font-style:italic;\">SDL</span>: If Cubeb doesn't work.</p><p><span style=\" font-style:italic;\">PulseAudio:</span> Unix only. May have less latency.</p></body></html>"
+msgstr "<html><head/><body><p>選擇用於承接虛擬模擬核心音訊流信號並與主機 Windows 作業系統底層音量混音器進行通信和音訊發聲的音訊驅動多媒體底層 API 核心後端類型。</p><p><span style=\" font-style:italic;\">Cubeb：</span>專門針對現代多媒體高度優化的低延遲、低開銷、跨平台開源新型音訊驅動管線，亦是模擬器核心開發團隊全幅獨家推薦的最優先最優先基本預設最佳化選項。</p><p><span style=\" font-style:italic;\">SDL</span>: 歷史悠久的標準跨平台多媒體開發庫底層驅動接口；僅在您的個別高端專用獨立音效卡因硬體相容性衝突而導致在 Cubeb 模式下完全無法正常出聲、或出聲伴隨劇烈割裂雜音的極少數倒楣例外情況下，作為備用 우회 dự phòng 替代方案選項切換使用。</p><p><span style=\" font-style:italic;\">PulseAudio:</span> 唯有當前主程式運行於 Unix/Linux 架構作業系統環境下才會可視、可供勾選的 Unix 專用內核音訊接口，在該特定系統環境下能實現極其流暢、極致最低延遲延時的核心通信傳輸效率效率。</p></body></html>"
 
 #: qt/src/FoldersPanel.ui
-msgid "<html><head/><body><p>Setting this to anything other than 0 will save the SRAM (internal game saves) file regularly. If it is set to to 0, it will only save when exiting Snes9x or changing games, and you will lose any progress since the last save if your device crashes.</p></body></html>"
-msgstr "<html><head/><body><p>Setting this to anything other than 0 will save the SRAM (internal game saves) file regularly. If it is set to to 0, it will only save when exiting Snes9x or changing games, and you will lose any progress since the last save if your device crashes.</p></body></html>"
+msgid "<html><head/><body><p>Setting this to anything other than 0 will save the SRAM (internal game saves) file regularly. If it is set to to 0, it will only save when exiting SuperSnes9x or changing games, and you will lose any progress since the last save if your device crashes.</p></body></html>"
+msgstr "<html><head/><body><p>若將此定時器計時週期配置數值修改為完全大於 0 之外的特定正整數秒數時間，模擬器主程式核心將會依照您設定的這條固定週期秒數（定時器循環），強行將遊戲內部玩家所執行過的所有內存 SRAM（卡帶內部原廠原生自帶的進度存檔功能）數據修改結果，實時定時強行向硬碟中的實體 SRAM 存檔檔案（.srm 檔）中進行強制刷新與自動自動實時寫入落地備份。如果您將此配置數值完全放任置之不理、鎖定保持在「0」狀態，則遊戲內部的選單存檔數據將只會在玩家最後完全關閉 SuperSnes9x 模擬器主程式視窗（按最上方 X 鍵安全退出）、或者是手動切換更換加載下一款新 ROM 檔案、當 가상 模擬實例即將完全關閉的核心最終마감關鍵時刻，才僅僅只單獨執行那麼唯一一次實體硬碟寫入落地刷新。此時如果您的電腦在遊戲過程中遭遇意外突發斷電、雷擊重啟、系統藍屏（BSOD）崩潰、或是模擬器程式遭遇意外強制例外崩潰（Crash）卡死閃退等不可抗力不正常非正常中斷惡性事故，由於內存中的存檔數據未能來得及執行最終落地的 Flush 寫入マ감，導致您自上一次開啟模擬器以來、在遊戲內辛辛苦苦打完選單存檔的所有 인게임 存檔儲存進度進度成果全部徹底在空氣中公중분해完完全全徹底 유실 遺失損毀！強烈建議玩家根據自身 PC 系統穩定度配置大於 0 的秒數進行定時全自動安全落地備份。</p></body></html>"
 
 #: qt/src/SoundPanel.ui
 msgid "<html><head/><body><p>SGB BIOS mix: GB channel volume. Active in SGB1/SGB2 BIOS mode; in BIOS-less mode this mirrors the Regular master, which is what actually scales GB output.</p></body></html>"
-msgstr "<html><head/><body><p>SGB BIOS mix: GB channel volume. Active in SGB1/SGB2 BIOS mode; in BIOS-less mode this mirrors the Regular master, which is what actually scales GB output.</p></body></html>"
+msgstr "<html><head/><body><p>超級遊戲男孩（Super Game Boy / SGB）虛擬模擬器環境下專屬的次級聲音混合權重比通道設定，用以專門調配和微調從 Game Boy (GB) 核心發音晶片組端所發送出來的虛擬音頻 volume 總量總量大小。此項功能唯有在玩家手動將官方 SGB1 或者 SGB2 實機正品硬體系統 BIOS 映像檔完整關聯並成功加載的「正品 BIOS 運行模式」條件下，該滑塊控制權才會真正獨立解鎖並生效；如果玩家未附加任何外部 BIOS 映像檔、完全單純依靠模擬器內建代碼實現模擬的「免 BIOS 運行模式（BIOS-less）」環境下，本調節滑塊將全自動直接喪失獨立支配控制權，僅僅只會如同鏡子般完全同步化鏡像追蹤上方的常規一般 Master 總音量（Regular Master Volume）數值刻度 진도（因為在此免 BIOS 模式下實質主導和縮放 GB 聲道音頻幅度的主要主體已全權歸入 Master 總音量統一單一化集權管轄控制）。</p></body></html>"
 
 #: qt/src/SoundPanel.ui
 msgid "<html><head/><body><p>SGB BIOS mix: SPC channel volume. Only active in SGB1/SGB2 BIOS mode — BIOS-less GB playback discards SPC output.</p></body></html>"
-msgstr "<html><head/><body><p>SGB BIOS mix: SPC channel volume. Only active in SGB1/SGB2 BIOS mode — BIOS-less GB playback discards SPC output.</p></body></html>"
+msgstr "<html><head/><body><p>超級遊戲男孩（SGB）虛擬模擬環境中特有的一條次級音頻通道音量分配控制，用以專門微調超任主機上專司音效處理與多聲道合成的主要聲音處理器核心輔助晶片——虛擬 SPC 晶片單元端所單獨傳送發出的音量 volume 總量大小。本細分通道調節滑塊控制功能，唯有在使用者手動將正品官方 SGB1 或 SGB2 的硬體系統內置 BIOS 鏡像二進位檔案完整連接加載的「正品官方 BIOS 載入模式」條件下才會真正獨立激活生效。如果您是在未掛載任何外部 BIOS 檔案、純代碼模擬的「免 BIOS（BIOS-less）」狀態下播放執行 Game Boy 遊戲，此時 SPC 晶片處理輸出端本身會被核心邏輯直接忽略裁撤忽略，因此本調節滑塊也將全自動跟隨一併關閉功能、不產生任何實際上的連動與作用。</p></body></html>"
 
 #: qt/src/EmulationPanel.ui
 msgid "<html><head/><body><p>Skips rendering the specified amount of frames when using the fast-forward function. The higher this amount, the faster it goes.</p></body></html>"
-msgstr "<html><head/><body><p>Skips rendering the specified amount of frames when using the fast-forward function. The higher this amount, the faster it goes.</p></body></html>"
+msgstr "<html><head/><body><p>在玩家按住快捷功能鍵、使虛擬主機運算流速大幅度成倍數暴增的「高倍速快速快進快轉（Fast-forward）」加載運作期間，畫面圖像顯示的德羅幀影格 렌더링 繪製處理，每隔多少影格幀週期就統統直接省略、跳過、不進行繪製（Frame Skip）。此處配置的強制略過跳過格數上限人為設定得越大，顯示卡與處理器花在畫面幀一格一格繪製上的開銷（Overhead）就越能獲得大範圍、大面積、大週期的徹底徹底完全豁免省去，進而讓快進加速的極限流速突破瓶頸、再次成倍數地大幅度瘋狂暴增，讓快進快轉略過劇情的操作變得極其乾脆、神速、高效。</p></body></html>"
 
 #: qt/src/SoundPanel.ui
 msgid "<html><head/><body><p>The buffer size for the emulator side of sound playback. Ideally, it should be about two frames worth of audio, or about 32ms at 60Hz. Latency will be half this value.</p></body></html>"
-msgstr "<html><head/><body><p>The buffer size for the emulator side of sound playback. Ideally, it should be about two frames worth of audio, or about 32ms at 60Hz. Latency will be half this value.</p></body></html>"
+msgstr "<html><head/><body><p>模擬器虛擬 2D 混音器在向系統發聲管線推送前，於虛擬核心端預先建立臨時存儲音頻採樣的虛擬聲音緩衝區（Sound Buffer）快取容量 크기 大小。在超任標準 60Hz 的執行物理環境下，最完美最還原最不易破音的理想緩衝區大小大約是能塞下兩個畫面影格幀音頻採樣的時長容積——即「約 32ms（毫秒）」左右的容量。而玩家在手把操作上體感的實時實時按鍵動作對應與最終喇叭耳朵聽到聲音之間的物理音訊反應大期時間（延遲率/Latency），本質上就是全自動直接收斂落在此處快取緩衝區容量設定值的精準剛好一半（一半延遲比例速度）的週期內。</p></body></html>"
 
 #: qt/src/ControllerPanel.ui
 msgid "<html><head/><body><p>The enumerated controller as seen by the SNES. Controller 1 will always be quot;Player 1quot; and so on, no matter what device is assigned to the controller ports.</p></body></html>"
-msgstr "<html><head/><body><p>The enumerated controller as seen by the SNES. Controller 1 will always be quot;Player 1quot; and so on, no matter what device is assigned to the controller ports.</p></body></html>"
+msgstr "<html><head/><body><p>此處代表虛擬超級任天堂主機硬體 마더보드 層面所看到的邏輯上、序號固定的虛擬控制器插槽插孔埠號碼。不論您在電腦上實際上是將何種型號的實體外接 USB/藍牙手把、或者是鍵盤實體實體按鍵字판指派給這個插槽插孔，虛擬主機 마더보드 上的虛擬手把 1 號插槽插孔埠在系統上都將擁有雷打不動的專屬 &quot;玩家 1 號 (1P 擔當帳號)&quot; 核心操作操縱支配控制權，其後續的插槽埠序號邏輯亦完全同理對等完全同理完全同理同心向下完全同心綁定延伸控制。</p></body></html>"
 
 #: qt/src/EmulationPanel.ui
 msgid "<html><head/><body><p>The number of frames between each rewind snapshot. More frames mean rewind can go back further and will rewind faster. </p></body></html>"
-msgstr "<html><head/><body><p>The number of frames between each rewind snapshot. More frames mean rewind can go back further and will rewind faster. </p></body></html>"
+msgstr "<html><head/><body><p>設定在發動實時時間倒帶回溯便利功能時，兩次儲存歷史照片時光進度點數據之間的影格幀間隔寬度步進跨度（Granularity）。這條快照間隔跨度影格數人為調整得越大，在相同的快取容量內存限制分配環境下，數據浪費就越少，進而使得倒帶功能有能力將時光往過去倒流、回溯回退到更久更遠阿득한 漫長的前置歷史時間點位置，且按住倒帶功能鍵時，時光往回逆流倒退倒卷的實時回溯 역진 速度也將明顯前進得更加大步、神速、高效。</p></body></html>"
 
 #: qt/src/SoundPanel.ui
 msgid "<html><head/><body><p>The output playback rate on your computer. This is <span style=\" font-weight:700;\">not</span> the playback rate of the emulated system.</p><p>You should set this to match your operating system's sound server. It should almost always be 48000Hz.</p></body></html>"
-msgstr "<html><head/><body><p>The output playback rate on your computer. This is <span style=\" font-weight:700;\">not</span> the playback rate of the emulated system.</p><p>You should set this to match your operating system's sound server. It should almost always be 48000Hz.</p></body></html>"
+msgstr "<html><head/><body><p>當前您所使用的這台個人電腦主機、其 Windows 系統混音器與音效卡晶片真正將聲音推向外部音響喇叭線路單元的實體物理音訊採樣取樣播放率速度（Playback Rate）。本數值是主機硬體的音頻發送指標，<span style=\" font-weight:700;\">絕對不是</span> 模擬核心內存中老遊戲本身的固有音頻取樣速率。</p><p>為了免除音頻轉碼導致的刺耳爆音與雜音，您必須將此處的播放採樣取樣率數值調整配置到與您目前 Windows 系統制式控制台控制台「聲音屬性」中、系統核心音訊伺服器正在工作使用的主要「默認共用共享格式採樣率」數值達到完全 1對1 的精準匹配。在目前主流的 Windows 10 / 11 系統高畫質音效晶片驅動架構下，此系統共享預設採樣率最普遍且統一的共用基礎值均為「48000Hz」，因此這裡亦強烈全幅全幅建議保持鎖定在 48000Hz 大類頻率上，此時音效最為純淨、穩定。</p></body></html>"
 
 #: qt/src/ShortcutsPanel.ui
 msgid "<html><head/><body><p>This box lists application shortcuts. There are 4 slots, so you can assign 4 different keys or buttons to one function.</p><p>To set a binding, click a box or highlight it with the keyboard and press Enter/Return. The box will show three dots quot;...quot;. Press the desired key or gamepad button to assign it to that box. The Escape key will clear the box.</p></body></html>"
-msgstr "<html><head/><body><p>This box lists application shortcuts. There are 4 slots, so you can assign 4 different keys or buttons to one function.</p><p>To set a binding, click a box or highlight it with the keyboard and press Enter/Return. The box will show three dots quot;...quot;. Press the desired key or gamepad button to assign it to that box. The Escape key will clear the box.</p></body></html>"
+msgstr "<html><head/><body><p>本設定表格區塊清單是用於配置、映射模擬器主程式本體功能控制專用的全局系統級功能快捷鍵熱鍵對應。每一條功能指令線均慷慨提供高達 4 個獨立的對應配置格子槽位，這意味著玩家擁有極高的自由度，能將多達 4 個完全不同、各自獨立的鍵盤實體按鍵或外接手把控制鈕信號，同時映射指派給同一個唯一功能指令，進行交叉響應、多工操作。</p><p>若要為某項功能重新綁定指派快捷熱鍵，請用滑鼠滑鼠單擊選中其中一格空白框、或者利用鍵盤方向鍵移動到格子並按下 Enter 鍵使其進入高亮啟動狀態。成功進入後該格子內容文案將會實時變更為三個句點的 &quot;...&quot; 映射聆聽等待文案樣子。此時您只需在鍵盤或外接手把手把上，將您想要的該實體控制鍵位按下一次，該鍵位代碼信號即刻便會光速完成在該欄位的綁定與映射寫入。此外，如果您想將該格子的已有配置完全清空擦除、恢復空白，只需在 \"...\" 聆聽大期狀態下，按下鍵盤的 Escape (ESC) 鍵，該格子即刻會被乾乾淨淨地清空初期化抹除。</p></body></html>"
 
 #: qt/src/ControllerPanel.ui
 msgid "<html><head/><body><p>This box lists keyboard keys and gamepad buttons mapped to the SNES controller. There are 4 slots, so you can assign 4 different keys or buttons to one SNES button.</p><p>To set a binding, click a box or highlight it with the keyboard and press Enter/Return. The box will show three dots quot;...quot;. Press the desired key or gamepad button to assign it to that box. The Escape key will clear the box.</p></body></html>"
-msgstr "<html><head/><body><p>This box lists keyboard keys and gamepad buttons mapped to the SNES controller. There are 4 slots, so you can assign 4 different keys or buttons to one SNES button.</p><p>To set a binding, click a box or highlight it with the keyboard and press Enter/Return. The box will show three dots quot;...quot;. Press the desired key or gamepad button to assign it to that box. The Escape key will clear the box.</p></body></html>"
+msgstr "<html><head/><body><p>本對應設定清單控制面板是專門用於將您個人電腦本體的實體鍵盤鍵位開關信號、以及外部外接遊戲手把（Gamepad）按鈕信號，與虛擬超任手把的實體獨立功能按鍵單元進行一對一映射分配的控制核心中樞。每一個虛擬 SNES 功能手把按鈕單元下均並列配備了高達 4 個獨立的映射輸入配置槽位格子，允許玩家根據個人雙手操作操縱習慣，將多達 4 種完全不同的實體硬體鍵位信號或手把控制單鈕信號，同時多重映射指派給同一個虛擬超任手把功能按鍵，以實現完全靈活的多設備交叉操縱控制。</p><p>若要為某個虛擬按鈕分配新鍵位，請以滑鼠滑鼠單擊選中其中一格空白框、或是利用鍵盤切換移至該格並按下 Enter 鍵使其高亮。成功切換進入後，該格子內的顯示文案會即刻變更為三個句點的 &quot;...&quot; 映射聆聽等待狀態樣子。此時您只需將要關聯映射的實體電腦鍵盤按鍵或外接手把手把控制按鈕按下一次，該物理信號編碼即刻會光速在格子內完成映射記錄高固定。另外，如果您想將特定格子的已有配置完全擦除清空成空白狀態，只需在 \"...\" 聆聽大期狀態下，按一下鍵盤的 Escape (ESC) 鍵即可乾淨俐落地將該格完全初期化抹除。</p></body></html>"
 
 #: qt/src/EmulationPanel.ui
 msgid "<html><head/><body><p>This controls how the program runs the emulated content at the correct speed.</p><p><span style=\" font-style:italic;\">Timer</span>: This sets a literal timer and shows emulated frames at the exact frame rate specified, or automatically matches the emulated system. It may not match your display's frame rate, which can cause judders.</p><p><span style=\" font-style:italic;\">Timer with Frameskipping</span>: The same as timer, except if your display has a lower refresh rate than the emulated system it will skip frames to keep up.</p><p><span style=\" font-style:italic;\">Sound Synchronization: </span>Assume the sound engine is outputting the sound at the correct speed and match the video output rate with it. This assumes your refresh rate is fairly close to the emulated system and you have vsync turned on.</p><p><span style=\" font-style:italic;\">None:</span> Don't attempt to slow emulation down. If you turn off vsync, this will run as fast as possible. If your display matches the emulated system's refresh rate closely, this with vsync enabled is generally the smoothest option aside from variable refresh rates with a timer.</p></body></html>"
-msgstr "<html><head/><body><p>This controls how the program runs the emulated content at the correct speed.</p><p><span style=\" font-style:italic;\">Timer</span>: This sets a literal timer and shows emulated frames at the exact frame rate specified, or automatically matches the emulated system. It may not match your display's frame rate, which can cause judders.</p><p><span style=\" font-style:italic;\">Timer with Frameskipping</span>: The same as timer, except if your display has a lower refresh rate than the emulated system it will skip frames to keep up.</p><p><span style=\" font-style:italic;\">Sound Synchronization: </span>Assume the sound engine is outputting the sound at the correct speed and match the video output rate with it. This assumes your refresh rate is fairly close to the emulated system and you have vsync turned on.</p><p><span style=\" font-style:italic;\">None:</span> Don't attempt to slow emulation down. If you turn off vsync, this will run as fast as possible. If your display matches the emulated system's refresh rate closely, this with vsync enabled is generally the smoothest option aside from variable refresh rates with a timer.</p></body></html>"
+msgstr "<html><head/><body><p>本項主要核心選項用於控制和支配模擬器主程式核心、應該以何種底層機制去約束並約束限制虛擬遊戲的運行速率，使其完全符合當年老主機原廠規定的正速節奏速率，而不會因為 PC 硬體效能過剩而發生暴走飆速。</p><p><span style=\" font-style:italic;\">計時器 (Timer) 模式</span>：程式在內部代碼層面寫死一個固定週期的時間間隔計時器，並強行命令模擬畫面影格完全死死配合該指定影格率進行 정속 推進排解，或全自動去貼合卡帶 ROM 原產國家視訊格式的時鐘 진도。本單獨計時器模式極易與玩家目前 Windows 桌面的顯示器物理重新整理率發生微小的 소수점 級別週期不對齊，這種時鐘步進的微小不同步反動極易導致畫面影格在滾動時產生不規律的微小拉扯、左右微小抖動晃動（即微小畫面抖動 저더/Judders 現象），導致肉眼感知到微小的頓挫與不流暢。</p><p><span style=\" font-style:italic;\">計時器與自動跳格模式</span>：與上述基本計時器原理完全一致地以時鐘為本位進度正速運作，但若遭遇使用者主機效能硬體瓶頸、或者是當前使用的顯示器物理重新整理率（主사율） സ്펙 性能指標嚴重低於虛擬主機原廠初定每秒所需的影格更新率下限時，為確保系統計時器 진도 依舊勉強維持正速前進，會主動在渲染管線中強行省略跳過部分影像影格（Frame Skip）的繪製，以求時間線不落後。</p><p><span style=\" font-style:italic;\">音訊緩衝區同步化模式</span>：完全將模擬器音訊處理晶片在內部生成並向外推送音頻採樣的速度週期，視作最神聖無誤、絕對正速的「核心絕對基準時鐘系統」，進而強行命令視訊圖像畫面幀的 드로잉 繪製流速和進度去100%配合音頻緩衝區的消耗進度來進行完全被動的同心同步化。本音訊基準同步選項如果要展現出最完美、毫無微小低頻卡頓的極致絲滑流暢度，大前提是使用者的 Windows 螢幕重新整理率配置數值本身必須與老遊戲原廠規格極其接近，且影像設定中的垂直同步（vsync）複選框必須配套保持在開啟開啟狀態。</p><p><span style=\" font-style:italic;\">無限制 (None) 模式</span>：徹底將用於約束、勒緊模擬器核心正速執行的所有速度枷鎖限制與計時器時鐘系統完全拆除、全面不加任何限制地放行。在這種完全解開枷鎖的 None 模式下，如果您在圖形設定中同時將垂直同步（vsync）也一併解除勾選關閉，模擬器將擺脫一切束縛，全憑您電腦處理器和獨立顯卡的剩餘硬體極限性能發動瘋狂暴走飆速，影格率會瞬間飙到數百甚至數千影格的超高速瘋狂狂奔。相反，如果玩家選定此 None 選項，但使用者顯示器的物理重新整理率本身就刚好與老遊戲原始頻率高度一致（例如 60Hz 顯示器配美規 ROM），此時再將垂直同步（vsync）配套勾選開啟，由於跳過了模擬器內部計時器的多餘微調插值干擾，反而能實現最純正、完美、絲毫沒有任何微小拉扯 저더抖動感、絕對絲滑平順的高高證大作畫面滾動視覺體驗。</p></body></html>"
 
 #: qt/src/DisplayPanel.ui
 msgid "<html><head/><body><p>This option adapts <span style=\" font-style:italic;\">maintain aspect ratio</span> and scales the image in steps of integral scale, so game pixels are never spread across the borders of screen pixels.</p></body></html>"
-msgstr "<html><head/><body><p>This option adapts <span style=\" font-style:italic;\">maintain aspect ratio</span> and scales the image in steps of integral scale, so game pixels are never spread across the borders of screen pixels.</p></body></html>"
+msgstr "<html><head/><body><p>本功能基於上方的<span style=\" font-style:italic;\">維持原始長寬比（maintain aspect ratio）</span>規則來擴大畫面，但它限制影像在橫向與縱向的拉伸上，必須嚴格按照「整數倍率倍數（1倍、2倍、3倍、4倍、5倍等）」的單一階梯步伐進行格點擴大。由於整數倍率縮放可使擴大後的虛擬畫素解析度與您電腦螢幕的實體畫素顆粒達到嚴絲合縫的完美 1對1 或 1對多 整齊對齊對齊，完全杜絕了非整數小數點倍率縮放時因線條跨越半個畫素邊界而必然導致的像素邊緣 비대칭 嚴重扭曲、圖塊邊緣發虛糊化模糊、線條粗細不對稱變形等數位暇疵，讓老遊戲點陣畫素（Pixel Art）最原本、最銳利、邊角清晰如刀刻般的原生畫素線條顆粒感精準地高保真還原呈現在高畫質現代顯示器上。</p></body></html>"
 
 #: qt/src/DisplayPanel.ui
 msgid "<html><head/><body><p>This option affects how <span style=\" font-style:italic;\">maintain aspect ratio </span>works. </p><p><span style=\" font-style:italic;\">4:3 </span>will maintain a ratio where the screen is 1.333 times wider than high.</p><p>64:49 presents an idealized ratio where the display output is perfect, but is affected by NTSC compression.</p><p>1:1 Means pixels will be square. This will squeeze the image horizontally.</p></body></html>"
-msgstr "<html><head/><body><p>This option affects how <span style=\" font-style:italic;\">maintain aspect ratio </span>works. </p><p><span style=\" font-style:italic;\">4:3 </span>will maintain a ratio where the screen is 1.333 times wider than high.</p><p>64:49 presents an idealized ratio where the display output is perfect, but is affected by NTSC compression.</p><p>1:1 Means pixels will be square. This will squeeze the image horizontally.</p></body></html>"
+msgstr "<html><head/><body><p>本項主要細分圖形設定選項用以決定和微調當上方主要功能「<span style=\" font-style:italic;\">維持長寬比</span>」勾選生效時，模擬器所強制對齊拉伸的目標特定長寬比格式規格。 </p><p><span style=\" font-style:italic;\">4:3 比例</span>：將畫面鎖定在經典復古的傳統正方形大框家用電視機比例上，此時圖像橫向寬度剛好是縱向高度的 1.333 倍。這是符合絕大多數玩家童年 거실 記憶、最具老電視高證情懷的經典展示比例。</p><p>64:49 比例：呈現出超級任天堂微處理器圖形渲染單元內部運算理論上最為純粹、幾何完全正確的理想化數學比例，但它同時也微調模擬了當年 NTSC 類比電視信號高壓壓縮產生的細微拉伸感，不同遊戲本體下感受略有不同。</p><p>1:1 比例：強行命令畫面的每一個最小構成畫素點陣（Pixel）都以橫向與縱向長度完美相等的正方形點陣結構呈現在現代螢幕上。由於多數老遊戲在設計點陣美術圖時，本就是預期遊戲畫面會在 4:3 電視上被橫向拉寬顯示而故意把原圖多邊形或人物在內存裡畫得偏窄偏瘦，因此如果強行開啟這個 1:1 純方形像素模式，會導致最終在電腦上看到的畫面在水平橫向上被嚴重嚴重擠壓、變得非常窄小、瘦長而出現嚴重比例歪曲變形。</p></body></html>"
 
 #: qt/src/SoundPanel.ui
 msgid "<html><head/><body><p>This option causes the audio to be slightly stretched to keep the latency even and to prevent underruns and overruns, which will cause pops and cracks in the audio.</p></body></html>"
-msgstr "<html><head/><body><p>This option causes the audio to be slightly stretched to keep the latency even and to prevent underruns and overruns, which will cause pops and cracks in the audio.</p></body></html>"
+msgstr "<html><head/><body><p>本選項功能開啟後，模擬核心會在寫入音訊流的同時，根據實時影格微小波動，主動在底層將音頻波形進行幅度極其微小的柔和 esstretch 拉伸微調（Stretching 處理）。這種實時拉伸調節可以讓遊戲音訊輸出到作業系統的音訊解碼延遲大期時間（Latency）始終維持在完全均勻、恆定的步調內，進而有效防範並完美扼殺因解碼速度跟不上而產生的快取緩衝區徹底空底欠載（Underruns）事故、或是傳送過快导致的緩衝區爆滿溢出（Overruns）例外事故。它是根除模擬音頻信號在傳輸中因微小遺失而導致喇叭里突發性冒出啪啪、卡頓一聲一聲的脆裂割裂爆音雜音以及刺耳 지직지직 c c 雜音（Pops and Cracks）殘留噪聲的最佳技術防護手段，能確保音質發聲持久絲滑、穩定不破音。</p></body></html>"
 
 #: qt/src/DisplayPanel.ui
 msgid "<html><head/><body><p>This option determines whether messages show up in the game display:</p><p>Onscreen will show a high resolution overlay when using <span style=\" font-style:italic;\">Vulkan</span> or <span style=\" font-style:italic;\">OpenGL</span>.</p><p>Inscreen will draw in a pixel font to the ingame display.</p><p>Don't display messages will show nothing.</p></body></html>"
-msgstr "<html><head/><body><p>This option determines whether messages show up in the game display:</p><p>Onscreen will show a high resolution overlay when using <span style=\" font-style:italic;\">Vulkan</span> or <span style=\" font-style:italic;\">OpenGL</span>.</p><p>Inscreen will draw in a pixel font to the ingame display.</p><p>Don't display messages will show nothing.</p></body></html>"
+msgstr "<html><head/><body><p>用以配置和管理當玩家在執行即時快捷控制（例如快速進度存檔槽位變更、手動切換圖層、開關連發等）指令時，模擬主程式底層所彈出的用戶層實時通知 alrt 提示 alrt 訊息字串、應該以何種視覺風格圖形面板呈現在畫面上。</p><p>Onscreen (螢幕頂層通知面板)：在顯示核心驅動底層為 <span style=\" font-style:italic;\">Vulkan</span> 或 <span style=\" font-style:italic;\">OpenGL</span> 硬體加速模式的環境偏好下生效，會在渲染視窗的最上層、以完全獨立於遊戲解析度的極其精緻、高清晰度、具備現代感的高解析度向量 OSD 外觀圖層 자막 字體形式優雅地飄出提示通告。</p><p>Inscreen (圖像幀內粗糙像素點陣)：不調用任何外部獨立層，純粹將 alrt 提示文字以粗糙的復古風點陣字體（Pixel Font）形式，一格一格一格直接硬性繪製嵌入到遊戲本體的 2D 圖形緩衝幀內進行強行融合輸出。</p><p>不顯示訊息 (Don't display messages)：全自動封鎖一切因操作產生的實時提示通知 alrt 字串，不讓任何系統彈窗干擾遊戲視野。</p></body></html>"
 
 #: qt/src/EmulationPanel.ui
 msgid "<html><head/><body><p>This option is explicitly for old AddMusic hacks. If you know you have one of those, you can enable this. Otherwise, leave it unchecked.</p></body></html>"
-msgstr "<html><head/><body><p>This option is explicitly for old AddMusic hacks. If you know you have one of those, you can enable this. Otherwise, leave it unchecked.</p></body></html>"
+msgstr "<html><head/><body><p>本項非標硬體修正功能、是專門為了極其古老早期年代所開發的特製改版 ROM 專用特殊音效音樂注入腳本工具——舊版「AddMusic」之內置架構缺陷而專門特製預留的例外繞行相容修正開關。請僅在您非常確信目前加載加載運行的這款第三方非官方修改版遊戲其明細要求中、強制指明必須配套開啟此舊版 AddMusic 繞行處理時，才手動勾選開啟。如果是在加載普通正常官方正版遊戲、或是用現代新型工具製作的改版 ROM 時無厘頭地誤開此開關，會導致音效核心音頻線程線程演算節奏嚴重脫節錯亂、甚至引發聲音完全發不出來或者完全卡死啞巴的嚴重 오작동 故障反動。</p></body></html>"
 
 #: qt/src/DisplayPanel.ui
 msgid "<html><head/><body><p>This option keeps the proportions of the emulated display the same no matter how you change the size of the window.</p></body></html>"
-msgstr "<html><head/><body><p>This option keeps the proportions of the emulated display the same no matter how you change the size of the window.</p></body></html>"
+msgstr "<html><head/><body><p>不論遊戲玩家在個人電腦電腦桌面環境下如何用滑鼠滑鼠去任意拖曳、拉伸或縮小模擬器主程式的視窗邊框大小，本功能都會強制將核心最核心、最內部的中央渲染畫素幀長寬縱橫比例比例死死綁定鎖定在平衡狀態，使其永遠保持不拉伸、不變形、完美均衡的原生態展示外觀輸出偏好。</p></body></html>"
 
 #: qt/src/DisplayPanel.ui
 msgid "<html><head/><body><p>This option only affects the size of the font and the icons shown when display messages are set to the <span style=\" font-style:italic;\">Onscreen</span> option.</p></body></html>"
-msgstr "<html><head/><body><p>This option only affects the size of the font and the icons shown when display messages are set to the <span style=\" font-style:italic;\">Onscreen</span> option.</p></body></html>"
+msgstr "<html><head/><body><p>本項滑塊及數值微調設定，僅在上方主要提示模式配置為高級外置頂層 자막 模式——即 <span style=\" font-style:italic;\">螢幕頂層通知面板 (Onscreen)</span> 選項時才會連動生效，用以單獨控制和支配該彈出的提示 alrt 訊息字串字型大小以及其左側附帶的小通知圖示（Icon）在畫面上的實體物理 크기 大小總量比例。</p></body></html>"
 
 #: qt/src/DisplayPanel.ui
 msgid "<html><head/><body><p>This option only affects the SNES's high-resolution, 512 pixel wide mode. Few games use this. </p><p><span style=\" font-style:italic;\">Output directly</span> will use whatever is output directly, but when the game changes modes, the filtering will get sharper or blurrier and may be distracting.</p><p><span style=\" font-style:italic;\">Merge fields </span>will scale the image down and blend the extra pixels together. This is useful in games like Jurassic Park and Kirby's Dreamland 3, which use it for a transparency effect.</p><p><span style=\" font-style:italic;\">Scale low resolution </span>will double the width of low-resolution screens, so when the game switches between modes there isn't any distracting changes in filtering. This is useful when a game uses the high resolution mode often, like Seiken Densetsu 3.</p></body></html>"
-msgstr "<html><head/><body><p>This option only affects the SNES's high-resolution, 512 pixel wide mode. Few games use this. </p><p><span style=\" font-style:italic;\">Output directly</span> will use whatever is output directly, but when the game changes modes, the filtering will get sharper or blurrier and may be distracting.</p><p><span style=\" font-style:italic;\">Merge fields </span>will scale the image down and blend the extra pixels together. This is useful in games like Jurassic Park and Kirby's Dreamland 3, which use it for a transparency effect.</p><p><span style=\" font-style:italic;\">Scale low resolution </span>will double the width of low-resolution screens, so when the game switches between modes there isn't any distracting changes in filtering. This is useful when a game uses the high resolution mode often, like Seiken Densetsu 3.</p></body></html>"
+msgstr "<html><head/><body><p>本進階微調偏好控制用以指定當遭遇超級任天堂實機一項極為罕見、僅在少數特定場景才發動的「橫向 512 像素雙倍高解析度交錯渲染特殊模式」時，模擬器的虛擬視訊處理核心應該以何種高階混合手法去將畫面重新拼裝輸出。請注意，在龐大的超任原廠遊戲清單中，真正調用過這條 512 像素極限橫向解析度的特殊遊戲少之又少。 </p><p><span style=\" font-style:italic;\">直接輸出 (Output directly) 模式</span>：不對圖像進行任何中介降採樣或合成過濾處理，將加載生成的原始二進位畫素信號直接直通推送給您的顯示卡進行渲染。在此模式下，如果一個遊戲在執行中因場景切換或菜單彈出而使解析度在標準模式與 512 特殊高解析度模式之間频繁實時交替切換，畫面周邊的過濾邊緣紋理會突然一會兒變得極其銳利、一會兒又突然變得極其模糊發虛，這種質感和清晰度的高頻跳變極易對玩家造成不適和嚴重的視覺防礙干擾。</p><p><span style=\" font-style:italic;\">融合欄位 (Merge fields) 模式</span>：將 512 像素寬度的拉長欄位信號利用縮放演算法往下方強行壓縮體積，並將過剩的多餘畫素點陣完全柔和地進行 alpha 混合重疊合成在一起。這項功能在加載執行如「侏羅紀公園 (Jurassic Park)」大作視窗或是「星之卡比 3 (Kirby's Dreamland 3)」大作圖層時極其關鍵，因為這兩款經典正是巧妙利用了老電視機橫向掃描線抖動暈開的硬體物理限制，用這種 512 交錯點陣圖塊ト立克在內存裡偽造出「畫素半透明半透明可視特效」，而本融合欄位選項正好能在現代高清顯示器上完美高證修復並重現出這種當年天衣無縫的半透明效果。</p><p><span style=\" font-style:italic;\">低解析度預先整數倍率拉伸 (Scale low resolution) 模式</span>：在一般的標準低解析度畫面輸出狀態下，就預先硬性利用整數倍率縮放演算法將其橫向畫素水平線直接擴大 2 倍鎖定。預先將畫素體級拉到同等規格大後，當遊戲在運行中再次於一般模式與 512 特殊高解析度模式之間進行超高頻率的實時流換切換時，最終出現在玩家眼前的畫面過濾質地、細膩度與線條邊緣便能時刻保持在完全均一、毫無突兀跳變的完美水平線上。在加載如「聖劍傳說 3 (Seiken Densetsu 3)」這種在遊戲文字對話方塊跳出、彈出全局選單時會疯狂、高頻率高頻率實時交替呼叫 512 模式的經典作品時，本功能能完完全全、徹底消滅畫面質感忽忽銳利忽忽發虛的刺眼變更感，大幅度提升眼睛舒適度。</p></body></html>"
 
 #: qt/src/DisplayPanel.ui
 msgid "<html><head/><body><p>This option prevents tearing in the output.</p></body></html>"
-msgstr "<html><head/><body><p>This option prevents tearing in the output.</p></body></html>"
+msgstr "<html><head/><body><p>本核心偏好選項能徹底根除因虛擬模擬畫面影格推送流速與您主機顯示器物理重新整理率定時不匹配、所導致的畫面上下一分為二、產生水準割裂斷層線條的極其地破壞視覺的畫面撕裂（Tearing）瑕疵。</p></body></html>"
 
 #: qt/src/SoundPanel.ui
 msgid "<html><head/><body><p>This option stretches the emulated audio output to coincide exactly with your display's refresh rate. It automatically handles the <span style=\" font-style:italic;\">Input Rate</span> option.</p></body></html>"
-msgstr "<html><head/><body><p>This option stretches the emulated audio output to coincide exactly with your display's refresh rate. It automatically handles the <span style=\" font-style:italic;\">Input Rate</span> option.</p></body></html>"
+msgstr "<html><head/><body><p>本重要選項功能開啟後，模擬核心會強制將輸出的虛擬音訊採樣信號頻率進行極其精細的微調與拉伸延伸（Stretching），使其與您目前主機顯示器正在使用的物理畫面重新整理率（主사율/Refresh Rate）數值在 소수점 級別上達成完全的一比一完美同步化。當本功能保持勾選開啟時，下方的難解手動數值配置專區——<span style=\" font-style:italic;\">音訊輸入率微調控制 (Input Rate)</span> 滑塊調節權將全權交由模擬器核心大腦全自動託管、實時自動追蹤出最不破音的黃金比例值，免去了玩家手動配置配置微調的繁瑣。</p></body></html>"
 
 #: qt/src/ControllerPanel.ui
 msgid "<html><head/><body><p>This option will use the SDL library to auto-configure gamepads. It will take the XBox mappings for the left D-pad and analog stick, as well as the the face buttons and L/R shoulder buttons, and assign them to relative locations on the first SNES controller.</p><p><br/></p><p>All gamepads will be assigned to player 1. If you need more players, disable this option and set up the mappings manually.</p></body></html>"
-msgstr "<html><head/><body><p>This option will use the SDL library to auto-configure gamepads. It will take the XBox mappings for the left D-pad and analog stick, as well as the the face buttons and L/R shoulder buttons, and assign them to relative locations on the first SNES controller.</p><p><br/></p><p>All gamepads will be assigned to player 1. If you need more players, disable this option and set up the mappings manually.</p></body></html>"
+msgstr "<html><head/><body><p>本項智慧自動化輔助功能會直接借調 SDL 多媒體標準框架插件引擎，對您目前插入或藍牙連接到電腦主機本體上的外部實體遊戲手把硬體規格進行自動智能分析與解讀。系統會直接擷取完全符合微軟 Windows XInput 全局通用標準的 Xbox 手把實體物理按鈕佈局（左側十字 D-pad 配置、左右雙類比旋轉搖桿軸向信號、正面的 ABCD 4枚正面主臉部按鈕、上肩側的 L/R 側邊按鈕與雙前置立體扳機鍵），並第一時間全自動一鍵將其指派映射到虛擬主機第 1 號基本手把插槽埠上形狀最契合、最符合人體工學的相對應幾何按鈕位置位置上。</p><p><br/></p><p>安全提示：本一鍵全自動映射功能一旦勾選保持開啟，意味著即使您在電腦本體上主動同時插入連接了 2 個或更多個外部手把設備，所有被偵測到的外部控制手把其按鈕信號流、都將被強行強行判定並全面收攏歸入到同一個虛擬通道口——「玩家 1 號 (1P 專屬實例插槽埠)」內。因此，如果您目前正打算與朋友或孩子一起在同一台電腦前分割畫面、進行 2人或多人同屏協同合作的親友聯機多人對戰，請務必將本自動功能複選框解除勾選、徹底關閉，隨後進入手把手把手把鍵位編輯方塊主控台，手動為各玩家個體（1P - 8P 插槽埠）分門別類、各自獨立地劃分綁定手把設備信號，才能順利達成操作操作操作彼此分開、互不干擾的正常多人遊玩環境。</p></body></html>"
 
 #: qt/src/DisplayPanel.ui
 msgid "<html><head/><body><p>This prevents the GPU from queuing up additional frames in advance, reducing the time it takes for the display to react to your input.</p></body></html>"
-msgstr "<html><head/><body><p>This prevents the GPU from queuing up additional frames in advance, reducing the time it takes for the display to react to your input.</p></body></html>"
+msgstr "<html><head/><body><p>本核心優化項可以非常強硬地阻斷阻制顯示卡（GPU）在硬體影格緩衝處理線路中、向渲染佇列（Queue）中過度提前預先計算和堆積存放過多未渲染出來的後置畫面影格幀。全面清理掉這層佇列大期快取開銷（Overhead）後，能最大化壓縮並極大縮短從玩家手指在手把實體控制鈕上「發動按壓開關動作信號」的該一瞬間、到最終個人電腦電腦螢幕面板內部的畫素ドット發生真正光學物理改變（視覺反應回饋）之間所耗費的硬體視訊輸出延遲（인풋랙/Input Lag）大期時間，帶給您如同實機接老電視一般、快如閃電、刀刻般的即時極致操作操縱手感回饋。</p></body></html>"
 
 #: qt/src/DisplayPanel.ui
 msgid "<html><head/><body><p>Turns on a bilinear smoothing filter to smooth out the pixels. This option won't work with a hardware shader enabled.</p></body></html>"
-msgstr "<html><head/><body><p>Turns on a bilinear smoothing filter to smooth out the pixels. This option won't work with a hardware shader enabled.</p></body></html>"
+msgstr "<html><head/><body><p>啟用以純軟體演算為核心的雙線性（Bilinear Filter）平滑化像素濾鏡，用以將點陣畫素原本尖銳粗糙的鋸齒邊緣進行周邊畫素線性高低混色補間、使其呈現模糊、平滑的綿軟柔和質地。請注意：本過濾器屬於純軟體指令級處理，當您在下方的著色器設定中為模擬器加載加載了利用顯示卡 GPU 硬體加速的 .slangp 或者 .glslp 格式的「高畫質進階硬體著色器外掛前置預設檔」時，本選項功能為了防範硬體衝突會自動退位、被系統強制忽略無視並自動停用。</p></body></html>"
 
 #: qt/src/ControllerPanel.ui
 msgid "<html><head/><body><p>Use this to automatically assign the default keyboard mapping or a detected controller to a set of bindings.</p><p>This uses the XInput controller protocol and maps it as close as possible to a SNES controller.</p></body></html>"
-msgstr "<html><head/><body><p>Use this to automatically assign the default keyboard mapping or a detected controller to a set of bindings.</p><p>This uses the XInput controller protocol and maps it as close as possible to a SNES controller.</p></body></html>"
+msgstr "<html><head/><body><p>點擊本項功能，可用於將當前選定插槽埠的手把鍵位配置矩陣，一鍵全自動強行代入填滿為「模擬器主程式內置的工廠官方預設基本鍵盤字板鍵位對應」，或是將電腦目前感應捕捉到的外部標準遊戲手把按鈕信號流一鍵進行一鍵自動一鍵一鍵一鍵分配映射完成。</p><p><br/></p><p>該自動化配給引擎完全建構在微軟 Windows 系統官方最權威的主動手把外接通信協定——「XInput（微軟 Xbox 控制器標準）」之上，這使得 Xbox 陣營手把或各類相容控制器在連接時，能一鍵完美契合、並重現出極度接近原裝實機超任十字手把正品按鈕佈局的人體工學操作操作動線指法，帶給您最舒適的開箱即玩即玩體驗。</p></body></html>"
 
 #: qt/src/DisplayPanel.ui
 msgid "<html><head/><body><p>Uses a hardware shader with <span style=\" font-style:italic;\">Vulkan</span> or <span style=\" font-style:italic;\">OpenGL</span> drivers. These can be either .glslp or .slangp preset files.</p><p>GLSL shaders (.glslp) can be downloaded from:</p><p><a href=\"https://github.com/libretro/glsl-shaders\"><span style=\" text-decoration: underline; color:#2980b9;\">https://github.com/libretro/glsl-shaders</span></a></p><p>Slang shaders (.slangp) can be downloaded from:</p><p><a href=\"https://github.com/libretro/slang-shaders\"><span style=\" text-decoration: underline; color:#2980b9;\">https://github.com/libretro/slang-shaders</span></a></p></body></html>"
-msgstr "<html><head/><body><p>Uses a hardware shader with <span style=\" font-style:italic;\">Vulkan</span> or <span style=\" font-style:italic;\">OpenGL</span> drivers. These can be either .glslp or .slangp preset files.</p><p>GLSL shaders (.glslp) can be downloaded from:</p><p><a href=\"https://github.com/libretro/glsl-shaders\"><span style=\" text-decoration: underline; color:#2980b9;\">https://github.com/libretro/glsl-shaders</span></a></p><p>Slang shaders (.slangp) can be downloaded from:</p><p><a href=\"https://github.com/libretro/slang-shaders\"><span style=\" text-decoration: underline; color:#2980b9;\">https://github.com/libretro/slang-shaders</span></a></p></body></html>"
+msgstr "<html><head/><body><p>在最終畫面影格輸出驅動後端為硬體加速類的 <span style=\" font-style:italic;\">Vulkan(全新高效能 API) 或 OpenGL(相容性廣的標準 API)</span> 的前置硬體環境下生效，能多核心調用獨立顯示卡硬體（GPU）的專屬著色器外掛演算法管線資源，在畫面上強行貼合並渲染出完美的復古凸面電視球面彎曲效果、物理螢光粉ドット網格格子柵欄遮罩、高擬真電視機掃描線等大幅度震撼提升畫面質感的進階硬體著色器前置預設包檔案 (.glslp / .slangp 格式)。</p><p>全球最龐大、經過多方驗證和不斷優化改進的開源高畫質模擬器著色器外掛前置預設檔案公共官方下載儲存庫 Hub 公開官方連結：</p><p>專門搭配傳統 OpenGL 渲染驅動核心的標準 GLSL 格式著色器外掛外置檔案 (.glslp 預設包) 官方開源儲存庫下載路徑連結：</p><p><a href=\"https://github.com/libretro/glsl-shaders\"><span style=\" text-decoration: underline; color:#2980b9;\">https://github.com/libretro/glsl-shaders</span></a></p><p>專門搭配次世代超高速 Vulkan 以及現代優化版 OpenGL 渲染驅動核心的最新高效率 Slang 格式著色器外掛外置檔案 (.slangp 預設包) 官方開源儲存庫下載路徑連結：</p><p><a href=\"https://github.com/libretro/slang-shaders\"><span style=\" text-decoration: underline; color:#2980b9;\">https://github.com/libretro/slang-shaders</span></a></p></body></html>"
 
 #: qt/src/DisplayPanel.ui
 msgid "<html><head/><body><p>When entering fullscreen mode, this option temporarily sets a number of other options to values that make variable refresh rate monitors that use FreeSync or GSync smoother.</p><p>Enables vsync.</p><p>Sets synchronization mode to timer and the frame rate to exactly that of the SNES.</p><p>Sets input rate to 32040Hz.</p></body></html>"
-msgstr "<html><head/><body><p>When entering fullscreen mode, this option temporarily sets a number of other options to values that make variable refresh rate monitors that use FreeSync or GSync smoother.</p><p>Enables vsync.</p><p>Sets synchronization mode to timer and the frame rate to exactly that of the SNES.</p><p>Sets input rate to 32040Hz.</p></body></html>"
+msgstr "<html><head/><body><p>當玩家把模擬器主要輸出視窗從視窗模式「切換至全螢幕模式」的這一瞬間硬體切換硬體時點，模擬主程式核心會極具智慧地全自動將一系列與顯示、同步相關的進階子設定參數值、暫時性地一鍵強行全自動重設配置為特定的最佳化加權值，從而讓玩家目前正在使用的這台支援硬體層級可變刷新率重新整理率技術（VRR）——即具備 AMD FreeSync (自由同步) 或 Nvidia G-Sync 功能的現代電競螢幕，在全螢幕下與顯卡達成最完美、絲滑、無間隙的影格同步刷新。</p><p>本項電競 VRR 螢幕優化優化偏好激活時會自動引發執行的內部整合連動邏輯：</p><p>1. 影像垂直重新整理同步（vsync）功能選項將被核心在底層強行立即強行開啟切換至開啟運作狀態。</p><p>2. 強制把主程式時鐘步進控制權鎖定鎖定在「硬體計時器（Timer）單獨基準模式」下，並將每秒 타겟 影格更新率限制進度精準逼迫到與超任實機電路板規格完全 100% 一致的精確頻率上。</p><p>3. 音訊快取與外接控制信號同步的輸入採樣率（Input Rate）限制臨界值，也會被系統底層自動強制死鎖在對可變重新整理率同步最無暇、最有利的黃金基準頻率——「32040Hz」高固頻段上。</p></body></html>"
 
 #: qt/src/DisplayPanel.ui
 msgid "<html><head/><body><p>When using <span style=\" font-style:italic;\">Vulkan</span>, this chooses the GPU you wish to render with.</p></body></html>"
-msgstr "<html><head/><body><p>When using <span style=\" font-style:italic;\">Vulkan</span>, this chooses the GPU you wish to render with.</p></body></html>"
+msgstr "<html><head/><body><p>當最終畫面圖像德羅輸出驅動後端為低開銷、次世代高效能圖形 API 規範 <span style=\" font-style:italic;\">Vulkan</span> 模式時生效，用以在您個人主機主機板插槽上同時插有多張獨立顯示卡（GPU）或者同時 상주 有 CPU 內置核顯 GPU 的多設備交叉硬體環境下，手動精確指定和挑選具體要由哪一塊顯卡晶片硬體硬體處理器的物理算力、來負責承包全程式的虛擬主機畫面計算與特殊著色器濾鏡渲染加補間工作。</p></body></html>"
 
 #: qt/src/SoundPanel.ui
 msgid "Adjust input rate to display rate automatically"
@@ -4516,159 +4561,159 @@ msgstr "自動調整輸入率以配合顯示器更新率"
 
 #: qt/src/DisplayPanel.ui
 msgid "Adjust settings for VRR in fullscreen mode"
-msgstr "Adjust settings for VRR in fullscreen mode"
+msgstr "全螢幕模式下自動調整偏好以完美優化相容可變重新整理率 (VRR: G-Sync / FreeSync) 電競螢幕硬體規格"
 
 #: qt/src/EmuMainWindow.cpp
 msgid "All Files (*)"
-msgstr "All Files (*)"
+msgstr "所有檔案類型一鍵一鍵完全掃描 (*)"
 
 #: qt/src/EmulationPanel.ui
 msgid "Allow opposite D-pad directions simultaneously"
-msgstr "允許同時按下相反方向鍵"
+msgstr "手把方向鍵 (D-pad) 輸入緩衝區上允許相反方向鍵(左+右 / 上+下)的完全同時同壓輸入"
 
 #: qt/src/EmulationPanel.ui
 msgid "Alternate sound filter:"
-msgstr "Alternate sound filter:"
+msgstr "原廠低通高斯替代用：高保真清脆音質外置濾波器選擇："
 
 #: qt/src/ControllerPanel.ui
 msgid "Auto-Assign Gamepad Buttons Using SDL Controller Map"
-msgstr "Auto-Assign Gamepad Buttons Using SDL Controller Map"
+msgstr "透過內建 SDL 核心控制器映射庫資料數據自動一鍵全自動手把對應配置"
 
 #: qt/src/EmulationPanel.ui
 msgid "Auto-FastROM"
-msgstr "Auto-FastROM"
+msgstr "自動加載開啟高頻寬 FastROM 卡帶規格模擬"
 
 #: qt/src/ControllerPanel.ui
 msgid "Automatically assign a controller's buttons to a slot"
-msgstr "Automatically assign a controller's buttons to a slot"
+msgstr "自動將目前捕獲到的外部實體手把按鈕信號流一鍵分配分配映射到空白槽位格子中"
 
 #: qt/src/DisplayPanel.ui
 msgid "Bilinear filter"
-msgstr "雙線性濾鏡"
+msgstr "圖像雙線性過濾平滑化柔和濾鏡 (Bilinear)"
 
 #: qt/src/ControllerPanel.ui
 msgid "Binding #1"
-msgstr "Binding #1"
+msgstr "實體鍵位分配映射格子 1 號"
 
 #: qt/src/ControllerPanel.ui
 msgid "Binding #2"
-msgstr "Binding #2"
+msgstr "實體鍵位分配映射格子 2 號"
 
 #: qt/src/ControllerPanel.ui
 msgid "Binding #3"
-msgstr "Binding #3"
+msgstr "實體鍵位分配映射格子 3 號"
 
 #: qt/src/ControllerPanel.ui
 msgid "Binding #4"
-msgstr "Binding #4"
+msgstr "實體鍵位分配映射格子 4 號"
 
 #: qt/src/ControllerPanel.cpp
 msgid "Binding Set #%1"
-msgstr "Binding Set #%1"
+msgstr "控制器按鍵分配配置群組套裝 #%1"
 
 #: qt/src/ShortcutsPanel.ui
 msgid "Change Backdrop Color"
-msgstr "Change Backdrop Color"
+msgstr "變更虛擬畫素幀以外之周邊外圍余白填充區域的底色顏色"
 
 #: qt/src/EmuMainWindow.cpp
 msgid "Cheats"
-msgstr "作弊碼"
+msgstr "作弊金手指管理面版"
 
 #: qt/src/CheatsDialog.cpp
 msgid "cheats.bml was not found."
-msgstr "找不到 cheats.bml。"
+msgstr "找不到必備的金手指變數管理配置檔案 cheats.bml 原始碼資源。"
 
 #: qt/src/CheatsDialog.ui
 msgid "Check Database"
-msgstr "Check Database"
+msgstr "執行內置離線作弊碼資料庫數據之完整無缺性檢查"
 
 #: qt/src/DisplayPanel.ui
 msgid "Choose a device to render output. If you have no integrated graphics, there will be only one choice."
-msgstr "Choose a device to render output. If you have no integrated graphics, there will be only one choice."
+msgstr "請挑選用於承包最終畫素渲染與圖像輸出的實體顯卡晶片。若您當前的電腦 CPU 內置核顯核心未加載或是不存在，則該清單中將僅單獨顯示唯一的獨顯硬體單獨選擇肢選項。"
 
 #: qt/src/EmuMainWindow.cpp
 msgid "Choose a State File"
-msgstr "選擇狀態檔案"
+msgstr "選擇本機硬碟中的即時存檔進度快照檔案 (.sst 副檔名)"
 
 #: qt/src/ControllerPanel.cpp
 msgid "Clear All Controllers"
-msgstr "清除所有控制器"
+msgstr "一鍵清空完全抹除所有玩家插槽埠(1P - 8P 全局)的手把按鍵映射"
 
 #: qt/src/ControllerPanel.cpp
 msgid "Clear Current Controller"
-msgstr "清除目前控制器"
+msgstr "完全抹除清空目前選中標籤分頁內該玩家插槽埠的手把按鍵映射"
 
 #: qt/src/EmuMainWindow.cpp
 msgid "Clear Recent Files"
-msgstr "清除最近檔案"
+msgstr "一鍵清除所有最近玩過的歷史遊戲卡帶 ROM 開啟紀錄路徑"
 
 #: qt/src/EmuSettingsWindow.ui
 msgid "Click on a setting to find out more info."
-msgstr "Click on a setting to find out more info."
+msgstr "滑鼠滑鼠點擊特定的周邊設定欄位，下方幫助說明大期方塊內將自動印出詳細的運作原理與說明說明導引。"
 
 #: qt/src/FoldersPanel.ui
 msgid "Config Folder"
-msgstr "Config Folder"
+msgstr "核心設定資料夾"
 
 #: qt/src/FoldersPanel.cpp
 msgid "Config folder is %1"
-msgstr "Config folder is %1"
+msgstr "目前模擬器的全域偏好設定與 conf 組態檔案存放資料夾路徑為： %1 空間。"
 
 #: qt/src/ControllerPanel.cpp
 msgid "Controller %1"
-msgstr "Controller %1"
+msgstr "控制器手把插槽連接埠 %1 號"
 
 #: qt/src/ControllerPanel.ui
 msgid "Controller + Multitap"
-msgstr "Controller + Multitap"
+msgstr "虛擬主機插槽手把手把 + 多人分接器 어댑터 聯合套件插座"
 
 #: qt/src/ControllerPanel.ui
 msgid "Controller Ports:"
-msgstr "Controller Ports:"
+msgstr "主機手把物理對接連接埠埠模式規格："
 
 #: qt/src/EmuMainWindow.cpp
 msgid "Controllers"
-msgstr "控制器"
+msgstr "手把與鍵盤控制鍵位映射主控台"
 
 #: qt/src/FoldersPanel.ui
 msgid "Custom Folder"
-msgstr "Custom Folder"
+msgstr "玩家手動指定特定絕對路徑的資料夾基準"
 
 #: qt/src/FoldersPanel.ui
 msgid "Data Locations"
-msgstr "Data Locations"
+msgstr "運行過程所衍生產出的各類存檔檔案落地儲存硬碟路徑持久化管理"
 
 #: qt/src/ShortcutsPanel.ui
 msgid "Decrease Current Save Slot"
-msgstr "Decrease Current Save Slot"
+msgstr "將當前準備執行即時進度快照存取的槽位號碼向下切換一格減少"
 
 #: qt/src/ControllerPanel.cpp
 msgid "Default Keyboard"
-msgstr "預設鍵盤"
+msgstr "原廠出廠預設標準鍵盤字板對應鍵位配置"
 
 #: qt/src/DisplayPanel.ui
 msgid "Device:"
-msgstr "裝置："
+msgstr "擔當圖形運算加載的顯卡晶片硬體名稱："
 
 #: qt/src/GeneralPanel.ui
 msgid "Disable screensaver"
-msgstr "停用螢幕保護程式"
+msgstr "在遊戲運行播放期間全面停用、阻止作業系統進入螢幕保護程式 (screensaver) 狀態"
 
 #: qt/src/DisplayPanel.ui
 msgid "Display messages:"
-msgstr "顯示訊息："
+msgstr "系統實時通知 자막 通告字串顯示的可視外觀樣式："
 
 #: qt/src/DisplayPanel.ui
 msgid "Display Output"
-msgstr "Display Output"
+msgstr "最終德羅顯示影格畫面之面板硬體輸出規格"
 
 #: qt/src/DisplayPanel.ui
 msgid "Don't display messages"
-msgstr "不顯示訊息"
+msgstr "完全封鎖、不允許任何操作提示 alrt 通知訊息自頂層彈窗曝光"
 
 #: qt/src/DisplayPanel.ui
 msgid "Driver:"
-msgstr "驅動程式："
+msgstr "影像畫素德羅輸出的底層圖形驅動核心 API 種類："
 
 #: qt/src/ControllerPanel.ui
 msgid "Edit"
@@ -4680,135 +4725,135 @@ msgstr "模擬速度"
 
 #: qt/src/ShortcutsPanel.ui
 msgid "Enable Fast-Forward"
-msgstr "啟用 Fast-Forward"
+msgstr "全局快捷熱鍵：發動高倍速高速快進快轉功能映射"
 
 #: qt/src/DisplayPanel.ui
 msgid "Enable vsync"
-msgstr "啟用 vsync"
+msgstr "啟用 d d 垂直同步重新整理 (vsync)"
 
 #: qt/src/FoldersPanel.ui
 msgid "Exports"
-msgstr "Exports"
+msgstr "由金手指或特殊提取工具獨立抽離導出的數據持久化存放夾"
 
 #: qt/src/EmulationPanel.ui
 msgid "Fast-forward frame skip:"
-msgstr "快轉時跳過影格："
+msgstr "高倍速快進功能發動時、允許為了加速而強行省略不畫的固定跳影格數目："
 
 #: qt/src/SoundPanel.ui
 msgid "Fast-Forward:"
-msgstr "快轉："
+msgstr "高倍速快進運作時的主要音量大小總量比率："
 
 #: qt/src/ControllerPanel.ui
 msgid "Form"
-msgstr "表單"
+msgstr "輸入表單控制視窗面板"
 
 #: qt/src/EmulationPanel.ui
 msgid "fps"
-msgstr "fps"
+msgstr "影格率(fps)"
 
 #: qt/src/EmulationPanel.ui
 msgid "Frame rate:"
-msgstr "影格率："
+msgstr "長駐主模擬核心更新頻率影格速度速："
 
 #: qt/src/EmulationPanel.ui
 msgid "Frames between steps"
-msgstr "步驟間影格數"
+msgstr "時光逆流回溯便利系統中、相鄰兩次自動快照拍照的時間影格跨度間隔"
 
 #: qt/src/EmuMainWindow.cpp
 msgid "From File"
-msgstr "From File"
+msgstr "自您個人電腦中的實體檔案加載"
 
 #: qt/src/EmulationPanel.ui
 msgid "Gaussian"
-msgstr "Gaussian"
+msgstr "高斯過濾 (沉悶糊化、符合高證實機音頻聽感的高斯低通濾波基本值)"
 
 #: qt/src/SoundPanel.ui
 msgid "GB:"
-msgstr "GB："
+msgstr "SGB 虛擬模式下 Game Boy 原生通道音頻幅度的縮放加權比 (GB)："
 
 #: qt/src/ShortcutsPanel.ui
 msgid "Grab Mouse"
-msgstr "Grab Mouse"
+msgstr "將滑鼠游標完全強制禁錮在目前正在遊戲模擬的視窗畫框範圍內層"
 
 #: qt/src/EmuMainWindow.cpp
 msgid "Hard Reset"
-msgstr "硬重設"
+msgstr "物理重設虛擬主機開關 (等同直接切斷拔插頭重新開機) (Hard Reset)"
 
 #: qt/src/EmulationPanel.ui
 msgid "High"
-msgstr "High"
+msgstr "高解析度 / 高逼真度高階數位演算波形高保真"
 
 #: qt/src/DisplayPanel.ui
 msgid "High-resolution mode:"
-msgstr "高解析度模式："
+msgstr "當遭遇超任極其罕見的原生 512 像素寬幅高解析度畫幀時的影像融合加載手法："
 
 #: qt/src/ShortcutsPanel.ui
 msgid "Increase Current Save Slot"
-msgstr "Increase Current Save Slot"
+msgstr "將當前準備執行即時進度快照存取的槽位號碼向上切換一格增加"
 
 #: qt/src/DisplayPanel.ui
 msgid "Inside the screen - Low resolution"
-msgstr "畫面內 - 低解析度"
+msgstr "融入 2D 遊戲影格像素幀內部繪製 - 粗糙復古風點陣畫素字體自帶圖示"
 
 #: qt/src/CheatsDialog.cpp
 msgid "Invalid Cheat"
-msgstr "無效的作弊碼"
+msgstr "您剛才填寫的金手指變數修改碼數據字串格式或語法結構不對"
 
 #: qt/src/DisplayPanel.ui
 msgid "Keep the screen at the requested proportions for width and height."
-msgstr "Keep the screen at the requested proportions for width and height."
+msgstr "視窗邊框不論如何被拖曳任意任意任意形變拉伸，核心內部影像都必須全自動強制死鎖保持在完美不變形的平衡長寬比例比例內。"
 
 #: qt/src/EmuMainWindow.cpp
 msgid "Load State"
-msgstr "Load State"
+msgstr "加載讀取指定的即時進度快照狀態 (Load State)"
 
 #: qt/src/ShortcutsPanel.ui
 msgid "Load State from Current Slot"
-msgstr "Load State from Current Slot"
+msgstr "立即從當前鎖定上榜的該槽位號碼中全自動讀取還原即時存檔"
 
 #: qt/src/EmulationPanel.ui
 msgid "Low"
-msgstr "Low"
+msgstr "低解析度 / 犧牲細節且運算開銷微乎其微的超低負載極速模式"
 
 #: qt/src/EmulationPanel.ui
 msgid "MB"
-msgstr "MB"
+msgstr "MB 容量單位"
 
 #: qt/src/DisplayPanel.ui
 msgid "Merge the fields of the high-resolution lines"
-msgstr "Merge the fields of the high-resolution lines"
+msgstr "512 高解析度交錯訊號線路啟動時、透過降採樣與 alpha 混色將超額畫素點陣融為一體"
 
 #: qt/src/DisplayPanel.ui
 msgid "Messages"
-msgstr "Messages"
+msgstr "功能發動時的系統 alrt 提示 alrt 訊息字串管理"
 
 #: qt/src/ControllerPanel.ui
 msgid "Mouse + Controller"
-msgstr "Mouse + Controller"
+msgstr "虛擬滑鼠滑鼠 + 1號插槽基本標準手把 Joypad 複合同時接入"
 
 #: qt/src/SoundPanel.ui
 msgid "ms"
-msgstr "毫秒"
+msgstr "毫秒延遲 (ms)"
 
 #: qt/src/SoundPanel.ui
 msgid "Mute all sound"
-msgstr "靜音所有音效"
+msgstr "完全關閉並切斷模擬程式對外發送的全部原音訊信號流 (總體靜音)"
 
 #: qt/src/SoundPanel.ui
 msgid "Mute sound during turbo or rewind"
-msgstr "在 turbo 或倒帶時靜音"
+msgstr "僅在執行高速快進加速、或是按住按鍵發動時間軸倒帶時，才臨時發動強制無音靜音消音"
 
 #: qt/src/CheatsDialog.cpp
 msgid "No cheats for the current game were found in the database."
-msgstr "No cheats for the current game were found in the database."
+msgstr "在內置的離線金手指作弊碼大黃頁資料庫庫中翻查完畢，但遺憾未能匹配到任何與您當前加載的這款遊戲 ROM 卡帶特徵名相同的現成修改碼變數。"
 
 #: qt/src/CheatsDialog.cpp
 msgid "No Cheats Found"
-msgstr "找不到作弊碼"
+msgstr "在此範圍內找不到任何已完成編碼的金手指結果項目"
 
 #: qt/src/EmuMainWindow.cpp
 msgid "No recent files"
-msgstr "沒有最近檔案"
+msgstr "歷史緩衝內一片空白、缺乏任何最近開啟加載過的遊戲卡帶 ROM 路徑紀錄"
 
 #: qt/src/EmulationPanel.ui
 msgid "None - Run unthrottled, unless vsync is turned on"
@@ -4816,19 +4861,19 @@ msgstr "無限制（除非啟用 vsync）"
 
 #: qt/src/ControllerPanel.ui
 msgid "One Controller"
-msgstr "單一控制器"
+msgstr "虛擬主機該插孔埠僅單獨分配接入一個普通虛擬手把手把裝置"
 
 #: qt/src/DisplayPanel.ui
 msgid "Onscreen - High resolution"
-msgstr "螢幕上 - 高解析度"
+msgstr "獨立於圖層外之最頂層 OSD 面板呈現 - 邊緣高解析度清晰可讀向量自帶圖示"
 
 #: qt/src/DisplayPanel.ui
 msgid "Onscreen display size:"
-msgstr "Onscreen display size:"
+msgstr "高解析度頂層 OSD（Onscreen 模式）自帶圖示通知字串字體物理 크기 大小大小："
 
 #: qt/src/EmuMainWindow.cpp
 msgid "Open a ROM File"
-msgstr "開啟 ROM 檔案"
+msgstr "加載讀取電腦硬碟路徑中的遊戲卡帶 ROM 本體檔案"
 
 #: qt/src/EmuMainWindow.cpp
 msgid "Open File"
@@ -4836,528 +4881,112 @@ msgstr "開啟檔案"
 
 #: qt/src/FoldersPanel.cpp
 msgid "Open Folder"
-msgstr "Open Folder"
+msgstr "開啟指定的實體資料夾路徑"
 
 #: qt/src/EmuCanvasOpenGL.cpp
 msgid "OpenGL Driver"
-msgstr "OpenGL Driver"
+msgstr "OpenGL 傳統相容圖形加速驅動底層"
 
 #: qt/src/EmulationPanel.ui
 msgid "Overclock:"
-msgstr "超頻："
+msgstr "超頻主機核心虛擬中央處理單元時脈頻率："
 
 #: qt/src/GeneralPanel.ui
 msgid "Overlays"
-msgstr "Overlays"
+msgstr "畫面頂層圖像蓋層 (Overlays)"
 
 #: qt/src/FoldersPanel.ui
 msgid "Patches"
-msgstr "Patches"
+msgstr "外部修復/漢化/改檔補丁存放路徑 (.ips / .bps)"
 
 #: qt/src/GeneralPanel.ui
 msgid "Pause emulation when window is not focused"
-msgstr "視窗未聚焦時暫停模擬"
+msgstr "當前作業系統焦點離開遊戲視窗時，模擬核心全自動強制暫停遊戲運作"
 
 #: qt/src/ShortcutsPanel.ui
 msgid "Pause/Continue"
-msgstr "Pause/Continue"
+msgstr "暫停模擬執行 / 繼續模擬執行遊戲進度"
 
 #: qt/src/ShortcutsPanel.ui
 msgid "Power Cycle Console"
-msgstr "Power Cycle Console"
+msgstr "虛擬切斷拔插頭開關電源、強制重新開機還原"
 
 #: qt/src/ShaderParametersDialog.cpp
 msgid "Preset name:"
-msgstr "Preset name:"
+msgstr "著色器外掛預設參數組名稱 (Preset name)："
 
 #: qt/src/DisplayPanel.ui
 msgid "Prevent the display driver from getting too far ahead in order to reduce lag."
-msgstr "防止顯示驅動程式過度預先處理以減少延遲。"
+msgstr "嚴格約束並阻止圖形驅動核心與顯卡在佇列中預先堆積計算過多後置未渲染畫幀，進而大幅度擠壓降低操作控制輸入延遲 (인풋랙 lag)。"
 
 #: qt/src/DisplayPanel.ui
 msgid "pt"
-msgstr "pt"
+msgstr "點 (pt)"
 
 #: qt/src/ShortcutsPanel.ui
 msgid "Quick Load Slot 0"
-msgstr "Quick Load Slot 0"
+msgstr "快捷熱鍵：一鍵光速讀取載入第 0 號槽位即時進度"
 
 #: qt/src/ShortcutsPanel.ui
 msgid "Quick Load Slot 1"
-msgstr "Quick Load Slot 1"
+msgstr "快捷熱鍵：一鍵光速讀取載入第 1 號槽位即時進度"
 
 #: qt/src/ShortcutsPanel.ui
 msgid "Quick Load Slot 2"
-msgstr "Quick Load Slot 2"
+msgstr "快捷熱鍵：一鍵光速讀取載入第 2 號槽位即時進度"
 
 #: qt/src/ShortcutsPanel.ui
 msgid "Quick Load Slot 3"
-msgstr "Quick Load Slot 3"
+msgstr "快捷熱鍵：一鍵光速讀取載入第 3 號槽位即時進度"
 
 #: qt/src/ShortcutsPanel.ui
 msgid "Quick Load Slot 4"
-msgstr "Quick Load Slot 4"
+msgstr "快捷熱鍵：一鍵光速讀取載入第 4 號槽位即時進度"
 
 #: qt/src/ShortcutsPanel.ui
 msgid "Quick Load Slot 5"
-msgstr "Quick Load Slot 5"
+msgstr "快捷熱鍵：一鍵光速讀取載入第 5 號槽位即時進度"
 
 #: qt/src/ShortcutsPanel.ui
 msgid "Quick Load Slot 6"
-msgstr "Quick Load Slot 6"
+msgstr "快捷熱鍵：一鍵光速讀取載入第 6 號槽位即時進度"
 
 #: qt/src/ShortcutsPanel.ui
 msgid "Quick Load Slot 7"
-msgstr "Quick Load Slot 7"
+msgstr "快捷熱鍵：一鍵光速讀取載入第 7 號槽位即時進度"
 
 #: qt/src/ShortcutsPanel.ui
 msgid "Quick Load Slot 8"
-msgstr "Quick Load Slot 8"
+msgstr "快捷熱鍵：一鍵光速讀取載入第 8 號槽位即時進度"
 
 #: qt/src/ShortcutsPanel.ui
 msgid "Quick Load Slot 9"
-msgstr "Quick Load Slot 9"
+msgstr "快捷熱鍵：一鍵光速讀取載入第 9 號槽位即時進度"
 
 #: qt/src/ShortcutsPanel.ui
 msgid "Quick Save Slot 0"
-msgstr "Quick Save Slot 0"
+msgstr "快捷熱鍵：一鍵光速即時存檔至第 0 號槽位進度"
 
 #: qt/src/ShortcutsPanel.ui
 msgid "Quick Save Slot 1"
-msgstr "Quick Save Slot 1"
+msgstr "快捷熱鍵：一鍵光速即時存檔至第 1 號槽位進度"
 
 #: qt/src/ShortcutsPanel.ui
 msgid "Quick Save Slot 2"
-msgstr "Quick Save Slot 2"
+msgstr "快捷熱鍵：一鍵光速即時存檔至第 2 號槽位進度"
 
 #: qt/src/ShortcutsPanel.ui
 msgid "Quick Save Slot 3"
-msgstr "Quick Save Slot 3"
+msgstr "快捷熱鍵：一鍵光速即時存檔至第 3 號槽位進度"
 
 #: qt/src/ShortcutsPanel.ui
 msgid "Quick Save Slot 4"
-msgstr "Quick Save Slot 4"
+msgstr "快捷熱鍵：一鍵光速即時存檔至第 4 號槽位進度"
 
 #: qt/src/ShortcutsPanel.ui
 msgid "Quick Save Slot 5"
-msgstr "Quick Save Slot 5"
+msgstr "快捷熱鍵：一鍵光速即時存檔至第 5 號槽位進度"
 
 #: qt/src/ShortcutsPanel.ui
 msgid "Quick Save Slot 6"
-msgstr "Quick Save Slot 6"
-
-#: qt/src/ShortcutsPanel.ui
-msgid "Quick Save Slot 7"
-msgstr "Quick Save Slot 7"
-
-#: qt/src/ShortcutsPanel.ui
-msgid "Quick Save Slot 8"
-msgstr "Quick Save Slot 8"
-
-#: qt/src/ShortcutsPanel.ui
-msgid "Quick Save Slot 9"
-msgstr "Quick Save Slot 9"
-
-#: qt/src/ShortcutsPanel.ui
-msgid "Quit"
-msgstr "Quit"
-
-#: qt/src/SoundPanel.ui
-msgid "Regular:"
-msgstr "一般："
-
-#: qt/src/EmulationPanel.ui
-msgid "Remove the sprite limit"
-msgstr "移除精靈限制"
-
-#: qt/src/ShortcutsPanel.ui
-msgid "Reset to Default"
-msgstr "Reset to Default"
-
-#: qt/src/EmuSettingsWindow.ui
-msgid "Restore all settings on the current page to their default values."
-msgstr "Restore all settings on the current page to their default values."
-
-#: qt/src/EmuSettingsWindow.ui
-msgid "Restore Defaults"
-msgstr "Restore Defaults"
-
-#: qt/src/EmulationPanel.ui
-msgid "Rewind buffer size (0 to disable):"
-msgstr "倒帶緩衝區大小（0 為停用）："
-
-#: qt/src/EmuMainWindow.cpp
-msgid "ROM Files (*.sfc *.smc *.bin *.fig *.msu *.zip)"
-msgstr "ROM Files (*.sfc *.smc *.bin *.fig *.msu *.zip)"
-
-#: qt/src/FoldersPanel.ui
-msgid "ROM Folder"
-msgstr "ROM Folder"
-
-#: qt/src/EmuMainWindow.cpp
-msgid "Run"
-msgstr "執行"
-
-#: qt/src/ShaderParametersDialog.cpp
-msgid "Save"
-msgstr "儲存"
-
-#: qt/src/ShaderParametersDialog.cpp
-msgid "Save As"
-msgstr "Save As"
-
-#: qt/src/ShaderParametersDialog.cpp
-msgid "Save Shader Preset As"
-msgstr "Save Shader Preset As"
-
-#: qt/src/FoldersPanel.ui
-msgid "Save SRAM to disk every:"
-msgstr "Save SRAM to disk every:"
-
-#: qt/src/ShortcutsPanel.ui
-msgid "Save State to Current Slot"
-msgstr "Save State to Current Slot"
-
-#: qt/src/FoldersPanel.ui
-msgid "Save states"
-msgstr "Save states"
-
-#: qt/src/EmuMainWindow.cpp
-msgid "Save States (*.sst *.oops *.undo *.0?? *.1?? *.2?? *.3?? *.4?? *.5?? *.6?? *.7?? *.8?? *.9*)"
-msgstr "Save States (*.sst *.oops *.undo *.0?? *.1?? *.2?? *.3?? *.4?? *.5?? *.6?? *.7?? *.8?? *.9*)"
-
-#: qt/src/DisplayPanel.ui
-msgid "Scale normal resolution screens up"
-msgstr "Scale normal resolution screens up"
-
-#: qt/src/DisplayPanel.ui
-msgid "Scaling and Aspect Ratio"
-msgstr "縮放與長寬比"
-
-#: qt/src/FoldersPanel.ui
-msgid "seconds"
-msgstr "秒"
-
-#: qt/src/ShortcutsPanel.ui
-msgid "Seek to Frame"
-msgstr "Seek to Frame"
-
-#: qt/src/DisplayPanel.cpp
-msgid "Select a Folder"
-msgstr "Select a Folder"
-
-#: qt/src/DisplayPanel.ui
-msgid "Select the output driver."
-msgstr "Select the output driver."
-
-#: qt/src/ControllerPanel.ui
-msgid "Set"
-msgstr "設定"
-
-#: qt/src/EmulationPanel.ui
-msgid "Set frame rate to 0 to automatically change based on PAL/NTSC and with interlacing on and off."
-msgstr "Set frame rate to 0 to automatically change based on PAL/NTSC and with interlacing on and off."
-
-#: qt/src/EmuMainWindow.cpp
-msgid "Set Size"
-msgstr "Set Size"
-
-#: qt/src/DisplayPanel.cpp
-msgid "Shader Presets (*.slangp *.glslp)"
-msgstr "Shader Presets (*.slangp *.glslp)"
-
-#: qt/src/EmuMainWindow.cpp
-msgid "Shader Settings"
-msgstr "著色器設定"
-
-#: qt/src/GeneralPanel.ui
-msgid "Show fast-forward and pause icons"
-msgstr "顯示快轉與暫停圖示"
-
-#: qt/src/DisplayPanel.ui
-msgid "Show overscan area"
-msgstr "顯示過掃描區域"
-
-#: qt/src/DisplayPanel.ui
-msgid "Show the areas on the top and bottom of the screen that are normally black and hidden by the TV. Some games will draw in these areas."
-msgstr "顯示 the areas on the top and bottom of the screen that are normally black and hidden by the TV. Some games will draw in these areas."
-
-#: qt/src/GeneralPanel.ui
-msgid "Show the time"
-msgstr "顯示時間"
-
-#: qt/src/EmuMainWindow.cpp
-msgid "Slot %1"
-msgstr "槽位 %1"
-
-#: qt/src/DisplayPanel.ui
-msgid "Smooth screen output."
-msgstr "平滑畫面輸出。"
-
-#: qt/src/ControllerPanel.ui
-msgid "SNES Controller 1"
-msgstr "SNES Controller 1"
-
-#: qt/src/ControllerPanel.ui
-msgid "SNES Controller 2"
-msgstr "SNES Controller 2"
-
-#: qt/src/ControllerPanel.ui
-msgid "SNES Controller 3 (Multitap)"
-msgstr "SNES Controller 3 (Multitap)"
-
-#: qt/src/ControllerPanel.ui
-msgid "SNES Controller 4 (Multitap)"
-msgstr "SNES Controller 4 (Multitap)"
-
-#: qt/src/ControllerPanel.ui
-msgid "SNES Controller 5 (Multitap)"
-msgstr "SNES Controller 5 (Multitap)"
-
-#: qt/src/DisplayPanel.ui
-msgid "Software Filters"
-msgstr "Software Filters"
-
-#: qt/src/SoundPanel.ui
-msgid "Sound Output"
-msgstr "音效輸出"
-
-#: qt/src/SoundPanel.ui
-msgid "Sound Stretching"
-msgstr "音效拉伸"
-
-#: qt/src/EmulationPanel.ui
-msgid "Sound Synchronization - Wait on the sound buffer"
-msgstr "音效同步 - 等待音效緩衝區"
-
-#: qt/src/SoundPanel.ui
-msgid "SPC:"
-msgstr "SPC："
-
-#: qt/src/EmulationPanel.ui
-msgid "Speed control method:"
-msgstr "速度控制方式："
-
-#: qt/src/ShortcutsPanel.ui
-msgid "Start Recording"
-msgstr "Start Recording"
-
-#: qt/src/ShortcutsPanel.ui
-msgid "Stop Recording"
-msgstr "Stop Recording"
-
-#: qt/src/EmuMainWindow.cpp
-msgid "Super Game Boy (SGB1)"
-msgstr "Super Game Boy (SGB1)"
-
-#: qt/src/EmuMainWindow.cpp
-msgid "Super Game Boy 2 (SGB2)"
-msgstr "Super Game Boy 2 (SGB2)"
-
-#: qt/src/EmulationPanel.ui
-msgid "SuperFX clock speed:"
-msgstr "SuperFX 時脈速度："
-
-#: qt/src/ControllerPanel.ui
-msgid "SuperScope + Controller"
-msgstr "SuperScope + Controller"
-
-#: qt/src/ShortcutsPanel.ui
-msgid "Swap Controllers 1 and 2"
-msgstr "Swap Controllers 1 and 2"
-
-#: qt/src/ControllerPanel.ui
-msgid "Swap or clear groups of bindings"
-msgstr "Swap or clear groups of bindings"
-
-#: qt/src/ControllerPanel.cpp
-msgid "Swap With"
-msgstr "交換為"
-
-#: qt/src/GeneralPanel.ui
-msgid "Switch to fullscreen after opening a ROM"
-msgstr "開啟 ROM 後切換至全螢幕"
-
-#: qt/src/DisplayPanel.ui
-msgid "Sync the display to vertical retrace to eliminate tearing."
-msgstr "將顯示同步至垂直回掃以消除撕裂。"
-
-#: qt/src/CheatsDialog.cpp
-msgid "The cheat you entered was not valid."
-msgstr "The cheat you entered was not valid."
-
-#: qt/src/EmuCanvasOpenGL.cpp
-msgid "The driver isn't using a specialized shader preset right now."
-msgstr "The driver isn't using a specialized shader preset right now."
-
-#: qt/src/EmuMainWindow.cpp
-msgid "The language change will take effect after you restart SuperSnes9x."
-msgstr "The language change will take effect after you restart SuperSnes9x."
-
-#: qt/src/EmuCanvasVulkan.cpp
-msgid "The vulkan display driver hasn't properly loaded."
-msgstr "The vulkan display driver hasn't properly loaded."
-
-#: qt/src/DisplayPanel.ui
-msgid "This affects the rarely used 512-pixels-wide mode used by the SNES.\nFor games like Kirby 3 and Jurassic Park, choose the \"merge fields\" option.\nFor games like Seiken Densetsu 3 and Marvelous, choose the \"scale up\" option.\nOutput directly will cause the screen to change between the two modes and look weird."
-msgstr "This affects the rarely used 512-pixels-wide mode used by the SNES.\nFor games like Kirby 3 and Jurassic Park, choose the \"merge fields\" option.\nFor games like Seiken Densetsu 3 and Marvelous, choose the \"scale up\" option.\nOutput directly will cause the screen to change between the two modes and look weird."
-
-#: qt/src/EmuCanvasOpenGL.cpp
-msgid "This shader preset doesn't offer any configurable parameters."
-msgstr "This shader preset doesn't offer any configurable parameters."
-
-#: qt/src/EmulationPanel.ui
-msgid "Timer - Match the frame rate configured below"
-msgstr "計時器 - 配合下方設定的影格率"
-
-#: qt/src/EmulationPanel.ui
-msgid "Timer with Frame Skipping - Skip frames if needed"
-msgstr "計時器 + 跳過影格（必要時）"
-
-#: qt/src/EmuMainWindow.cpp
-msgid "To File"
-msgstr "To File"
-
-#: qt/src/ShortcutsPanel.ui
-msgid "Toggle All Sound Channels"
-msgstr "切換 All Sound Channels"
-
-#: qt/src/ShortcutsPanel.ui
-msgid "Toggle BG Layer 0"
-msgstr "切換 BG Layer 0"
-
-#: qt/src/ShortcutsPanel.ui
-msgid "Toggle BG Layer 1"
-msgstr "切換 BG Layer 1"
-
-#: qt/src/ShortcutsPanel.ui
-msgid "Toggle BG Layer 2"
-msgstr "切換 BG Layer 2"
-
-#: qt/src/ShortcutsPanel.ui
-msgid "Toggle BG Layer 3"
-msgstr "切換 BG Layer 3"
-
-#: qt/src/ShortcutsPanel.ui
-msgid "Toggle Fast-Forward"
-msgstr "切換 Fast-Forward"
-
-#: qt/src/ShortcutsPanel.ui
-msgid "Toggle Fullscreen"
-msgstr "切換 Fullscreen"
-
-#: qt/src/ShortcutsPanel.ui
-msgid "Toggle Sound Channel 1"
-msgstr "切換 Sound Channel 1"
-
-#: qt/src/ShortcutsPanel.ui
-msgid "Toggle Sound Channel 2"
-msgstr "切換 Sound Channel 2"
-
-#: qt/src/ShortcutsPanel.ui
-msgid "Toggle Sound Channel 3"
-msgstr "切換 Sound Channel 3"
-
-#: qt/src/ShortcutsPanel.ui
-msgid "Toggle Sound Channel 4"
-msgstr "切換 Sound Channel 4"
-
-#: qt/src/ShortcutsPanel.ui
-msgid "Toggle Sound Channel 5"
-msgstr "切換 Sound Channel 5"
-
-#: qt/src/ShortcutsPanel.ui
-msgid "Toggle Sound Channel 6"
-msgstr "切換 Sound Channel 6"
-
-#: qt/src/ShortcutsPanel.ui
-msgid "Toggle Sound Channel 7"
-msgstr "切換 Sound Channel 7"
-
-#: qt/src/ShortcutsPanel.ui
-msgid "Toggle Sound Channel 8"
-msgstr "切換 Sound Channel 8"
-
-#: qt/src/ShortcutsPanel.ui
-msgid "Toggle Sprites"
-msgstr "切換 Sprites"
-
-#: qt/src/ControllerPanel.ui
-msgid "Turbo A"
-msgstr "Turbo A"
-
-#: qt/src/ControllerPanel.ui
-msgid "Turbo B"
-msgstr "Turbo B"
-
-#: qt/src/ControllerPanel.ui
-msgid "Turbo L"
-msgstr "Turbo L"
-
-#: qt/src/ControllerPanel.ui
-msgid "Turbo R"
-msgstr "Turbo R"
-
-#: qt/src/ControllerPanel.ui
-msgid "Turbo X"
-msgstr "Turbo X"
-
-#: qt/src/ControllerPanel.ui
-msgid "Turbo Y"
-msgstr "Turbo Y"
-
-#: qt/src/ControllerPanel.ui
-msgid "Two Controllers"
-msgstr "兩個控制器"
-
-#: qt/src/EmuMainWindow.cpp
-msgid "Unable to create a %1 context. Attempting to use %2."
-msgstr "Unable to create a %1 context. Attempting to use %2."
-
-#: qt/src/CheatsDialog.cpp
-msgid "Unable to Open Cheats Database"
-msgstr "無法開啟作弊碼資料庫"
-
-#: qt/src/EmuMainWindow.cpp
-msgid "Unable to Start Display Driver"
-msgstr "無法啟動顯示驅動程式"
-
-#: qt/src/EmuMainWindow.cpp
-msgid "Undo Load State"
-msgstr "復原載入狀態"
-
-#: qt/src/DisplayPanel.ui
-msgid "Use a hardware shader:"
-msgstr "使用硬體著色器："
-
-#: qt/src/DisplayPanel.ui
-msgid "Use a selected .slangp or .glslp shader file. \n.slangp is supported by Vulkan and OpenGL. \n.glslp is supported by OpenGL."
-msgstr "使用 a selected .slangp or .glslp shader file. \n.slangp is supported by Vulkan and OpenGL. \n.glslp is supported by OpenGL."
-
-#: qt/src/EmulationPanel.ui
-msgid "Use a shadow echo buffer"
-msgstr "使用 a shadow echo buffer"
-
-#: qt/src/DisplayPanel.ui
-msgid "Use integer scaling"
-msgstr "使用整數縮放"
-
-#: qt/src/ControllerPanel.ui
-msgid "Use SDL to set up the D-pad, face buttons, and L/R. Other buttons may still be configured."
-msgstr "使用 SDL to set up the D-pad, face buttons, and L/R. Other buttons may still be configured."
-
-#: qt/src/EmuMainWindow.cpp
-msgid "View"
-msgstr "檢視"
-
-#: qt/src/EmuCanvasVulkan.cpp
-msgid "Vulkan Driver"
-msgstr "Vulkan Driver"
-
-#: qt/src/DisplayPanel.ui
-msgid "When entering fullscreen mode, temporarily change other settings to use VRR (G-Sync or FreeSync) correctly."
-msgstr "進入全螢幕模式時，暫時變更其他設定以正確使用 VRR（G-Sync 或 FreeSync）。"
-
-#: qt/src/DisplayPanel.ui
-msgid "When scaling up, only use integer multiples of the original height."
-msgstr "放大時，僅使用原始高度的整數倍。"
+msgstr "快捷熱鍵：一鍵光速即時存檔至第 I encountered an error doing what you asked. Could you try again?

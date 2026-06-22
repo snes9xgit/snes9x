@@ -1576,12 +1576,12 @@ msgstr "IU"
 
 #: src/snes9x.ui:9296
 msgid ""
-"  Snes9x - Portable Super Nintendo Entertainment System (TM) emulator.\n"
+"  SuperSnes9x - Portable Super Nintendo Entertainment System (TM) emulator.\n"
 "\n"
 "  Snes9x homepage: http://www.snes9x.com/\n"
-"  Snes9x source code: https://github.com/shanytc/snes9x/\n"
+"  SuperSnes9x source code: https://github.com/shanytc/snes9x/\n"
 "\n"
-"  Permission to use, copy, modify and/or distribute Snes9x in both binary\n"
+"  Permission to use, copy, modify and/or distribute SuperSnes9x in both binary\n"
 "  and source form, for non-commercial purposes, is hereby granted without\n"
 "  fee, providing that this license information and copyright notice appear\n"
 "  with all copies and any derived work.\n"
@@ -1590,12 +1590,12 @@ msgid ""
 "  warranty. In no event shall the authors be held liable for any damages\n"
 "  arising from the use of this software or it's derivatives.\n"
 "\n"
-"  Snes9x is freeware for PERSONAL USE only. Commercial users should\n"
+"  SuperSnes9x is freeware for PERSONAL USE only. Commercial users should\n"
 "  seek permission of the copyright holders first. Commercial use includes,\n"
-"  but is not limited to, charging money for Snes9x or software derived from\n"
-"  Snes9x, including Snes9x or derivatives in commercial game bundles, "
+"  but is not limited to, charging money for SuperSnes9x or software derived from\n"
+"  Snes9x, including SuperSnes9x or derivatives in commercial game bundles, "
 "and/or\n"
-"  using Snes9x as a promotion for your commercial product.\n"
+"  using SuperSnes9x as a promotion for your commercial product.\n"
 "\n"
 "  The copyright holders request that bug fixes and improvements to the code\n"
 "  should be forwarded to them so everyone can benefit from the "
@@ -1678,7 +1678,7 @@ msgstr ""
 #~ "configuration or cheats directory."
 #~ msgstr ""
 #~ "O arquivo do banco de dados <b>cheats.bml</b> não foi achado. Ele é "
-#~ "normalmente é instalado com o Snes9x mas você também pode colocar uma "
+#~ "normalmente é instalado com o SuperSnes9x mas você também pode colocar uma "
 #~ "cópia personalizada no seu diretório de configuração ou trapaças."
 
 #~ msgid ""
@@ -1950,8 +1950,8 @@ msgstr ""
 #~ msgid "bad option name: %s\n"
 #~ msgstr "nome de opção desconhecida %s\n"
 
-#~ msgid "failure to read snes9x node"
-#~ msgstr "A leitura do snes9x falhou!"
+#~ msgid "failure to read SuperSnes9x node"
+#~ msgstr "A leitura do SuperSnes9x falhou!"
 
 #~ msgid "Couldn't open config file: %s\n"
 #~ msgstr "Não foi possível abrir o arquivo de configuração %s\n"
@@ -2056,7 +2056,7 @@ msgstr ""
 #~ msgstr "Modificar diretório:"
 
 #~ msgid ""
-#~ "Detects frames that are not output by Snes9x in hires, and scales them"
+#~ "Detects frames that are not output by SuperSnes9x in hires, and scales them"
 #~ msgstr ""
 #~ "Detectar e escalonar os quadros que não são exibidos em alta resolução."
 
@@ -4785,8 +4785,8 @@ msgid "<html><head/><body><p>Determines where to look for optional BIOS / boot R
 msgstr "<html><head/><body><p>Determina onde procurar os arquivos opcionais de BIOS / boot ROM (boot ROM do Super Game Boy, BS-X.bin, etc).</p><p><span style=\" font-style:italic;\">Pasta da ROM</span> procura ao lado da ROM carregada.</p><p><span style=\" font-style:italic;\">Pasta de configuração</span> usa uma subpasta \"bios\" da pasta de configuração.</p><p><span style=\" font-style:italic;\">Personalizado</span> usa um caminho explícito (padrão: \"Bios\" relativo ao diretório de trabalho).</p></body></html>"
 
 #: qt/src/FoldersPanel.ui
-msgid "<html><head/><body><p>Determines where to save these files.</p><p><span style=\" font-style:italic;\">ROM Folder</span> will always save to the same folder as the ROM.</p><p><span style=\" font-style:italic;\">Config Folder</span> will save to a subfolder of the config folder that is shown. If there is a snes9x.conf file next to your executable, Snes9x will operate in portable mode and the config folder will be the folder the executable is in.</p><p><span style=\" font-style:italic;\">Custom</span> allows you to specify exactly where to save these files.</p></body></html>"
-msgstr "<html><head/><body><p>Determina onde salvar estes arquivos.</p><p><span style=\" font-style:italic;\">Pasta da ROM</span> sempre salvará na mesma pasta que a ROM.</p><p><span style=\" font-style:italic;\">Pasta de configuração</span> salvará numa subpasta da pasta de configuração que é mostrada. Se houver um arquivo snes9x.conf ao lado do seu executável, o Snes9x operará no modo portátil e a pasta de configuração será a pasta em que o executável está.</p><p><span style=\" font-style:italic;\">Personalizado</span> permite que você especifique exatamente onde salvar estes arquivos.</p></body></html>"
+msgid "<html><head/><body><p>Determines where to save these files.</p><p><span style=\" font-style:italic;\">ROM Folder</span> will always save to the same folder as the ROM.</p><p><span style=\" font-style:italic;\">Config Folder</span> will save to a subfolder of the config folder that is shown. If there is a snes9x.conf file next to your executable, SuperSnes9x will operate in portable mode and the config folder will be the folder the executable is in.</p><p><span style=\" font-style:italic;\">Custom</span> allows you to specify exactly where to save these files.</p></body></html>"
+msgstr "<html><head/><body><p>Determina onde salvar estes arquivos.</p><p><span style=\" font-style:italic;\">Pasta da ROM</span> sempre salvará na mesma pasta que a ROM.</p><p><span style=\" font-style:italic;\">Pasta de configuração</span> salvará numa subpasta da pasta de configuração que é mostrada. Se houver um arquivo snes9x.conf ao lado do seu executável, o SuperSnes9x operará no modo portátil e a pasta de configuração será a pasta em que o executável está.</p><p><span style=\" font-style:italic;\">Personalizado</span> permite que você especifique exatamente onde salvar estes arquivos.</p></body></html>"
 
 #: qt/src/SoundPanel.ui
 msgid "<html><head/><body><p>Erases all emulated sound output and just sends out silence.</p></body></html>"
@@ -4825,8 +4825,8 @@ msgid "<html><head/><body><p>Selects the driver to output sound with.</p><p><spa
 msgstr "<html><head/><body><p>Seleciona o driver com o qual emitir o som.</p><p><span style=\" font-style:italic;\">Cubeb: </span>A opção recomendada.</p><p><span style=\" font-style:italic;\">SDL</span>: Se o Cubeb não funcionar.</p><p><span style=\" font-style:italic;\">PulseAudio:</span> Apenas Unix. Pode ter menos latência.</p></body></html>"
 
 #: qt/src/FoldersPanel.ui
-msgid "<html><head/><body><p>Setting this to anything other than 0 will save the SRAM (internal game saves) file regularly. If it is set to to 0, it will only save when exiting Snes9x or changing games, and you will lose any progress since the last save if your device crashes.</p></body></html>"
-msgstr "<html><head/><body><p>Definir isto como qualquer valor diferente de 0 salvará o arquivo SRAM (saves internos do jogo) regularmente. Se for definido como 0, ele só salvará ao sair do Snes9x ou ao mudar de jogo, e você perderá qualquer progresso desde o último save se o seu dispositivo travar.</p></body></html>"
+msgid "<html><head/><body><p>Setting this to anything other than 0 will save the SRAM (internal game saves) file regularly. If it is set to to 0, it will only save when exiting SuperSnes9x or changing games, and you will lose any progress since the last save if your device crashes.</p></body></html>"
+msgstr "<html><head/><body><p>Definir isto como qualquer valor diferente de 0 salvará o arquivo SRAM (saves internos do jogo) regularmente. Se for definido como 0, ele só salvará ao sair do SuperSnes9x ou ao mudar de jogo, e você perderá qualquer progresso desde o último save se o seu dispositivo travar.</p></body></html>"
 
 #: qt/src/SoundPanel.ui
 msgid "<html><head/><body><p>SGB BIOS mix: GB channel volume. Active in SGB1/SGB2 BIOS mode; in BIOS-less mode this mirrors the Regular master, which is what actually scales GB output.</p></body></html>"
