@@ -216,6 +216,7 @@ bool EmuConfig::setDefaults(int section)
         show_indicators = true;
         show_pressed_keys = false;
         show_time = false;
+        language = "";
     }
 
     if (section == -1 || section == 1)
@@ -449,6 +450,7 @@ void EmuConfig::config(const std::string &filename, bool write)
     Bool("ShowIndicators", show_indicators);
     Bool("ShowPressedKeys", show_pressed_keys);
     Bool("ShowTime", show_time);
+    String("Language", language);
     EndSection();
 
     BeginSection("Display");

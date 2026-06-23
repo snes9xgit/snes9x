@@ -10,6 +10,7 @@
 #include "debug_viewer_common.h"
 #include "debug_viewer_export.h"
 #include "wsnes9x.h"
+#include "wlocale.h"
 #include "rsrc/resource.h"
 #include "../snes9x.h"
 #include "../memmap.h"
@@ -554,6 +555,7 @@ void ExportTilesToPng(HWND hDlg) {
 INT_PTR CALLBACK DlgVRAMViewer(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam) {
     switch (msg) {
     case WM_INITDIALOG: {
+    	LocalizeDialog(hDlg);
         VRAMState *st = new VRAMState();
         st->source = TILE_SRC_VRAM;
         st->bitDepth = BD_4BPP;
@@ -625,7 +627,7 @@ INT_PTR CALLBACK DlgVRAMViewer(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam
         }
 
         HMENU hMenu = CreatePopupMenu();
-        AppendMenu(hMenu, MF_STRING, 1, _T("Export to PNG..."));
+        AppendMenu(hMenu, MF_STRING, 1, _L(_T("Export to PNG...")));
         int cmd = TrackPopupMenu(hMenu,
                                  TPM_LEFTALIGN | TPM_RIGHTBUTTON | TPM_RETURNCMD,
                                  x, y, 0, hDlg, NULL);

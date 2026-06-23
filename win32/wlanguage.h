@@ -13,7 +13,7 @@
 #endif
 
 // the windows registry is no longer used
-//#define MY_REG_KEY   "Software\\Emulators\\Snes9x"
+//#define MY_REG_KEY   "Software\\Emulators\\SuperSnes9x"
 //#define REG_KEY_VER  "1.31"
 
 #define DISCLAIMER_TEXT        TEXT("SuperSnes9x v%s for Windows.\r\n\
@@ -32,7 +32,7 @@ SuperSnes9x is a Super Nintendo Entertainment System\r\n\
 emulator that allows you\r\n\
 to play most games designed for the SNES on your PC.\r\n\r\n\
 Please visit http://www.snes9x.com for\r\n\
-up-to-the-minute information and help on Snes9x.\r\n\r\n\
+up-to-the-minute information and help on SuperSnes9x.\r\n\r\n\
 Nintendo is a trademark.")
 
 
@@ -95,7 +95,7 @@ Nintendo is a trademark.")
 #define HOTKEYS_LABEL_1_9 TEXT("Skip frames -:")
 #define HOTKEYS_LABEL_1_10 TEXT("Toggle mute:")
 #define HOTKEYS_LABEL_1_11 TEXT("Toggle cheats:")
-#define HOTKEYS_LABEL_1_12 TEXT("Quit Snes9x:")
+#define HOTKEYS_LABEL_1_12 TEXT("Quit SuperSnes9x:")
 #define HOTKEYS_LABEL_1_13 TEXT("Hard reset:")
 #define HOTKEYS_LABEL_1_14 TEXT("Save screenshot")
 #define HOTKEYS_LABEL_1_15 TEXT("Frame advance:")
@@ -301,7 +301,7 @@ Nintendo is a trademark.")
 #define WINPROC_TURBO_UP_OFF "Turbo Up Deactivated"
 #define WINPROC_TURBO_DOWN_ON "Turbo Down Activated"
 #define WINPROC_TURBO_DOWN_OFF "Turbo Down Deactivated"
-#define WINPROC_FILTER_RESTART "You will need to restart Snes9x before the output image\nprocessing option change will take effect."
+#define WINPROC_FILTER_RESTART "You will need to restart SuperSnes9x before the output image\nprocessing option change will take effect."
 #define WINPROC_DISCONNECT "Disconnect from the NetPlay server first."
 #define WINPROC_NET_RESTART "Your game will be reset after the ROM has been sent due to\nyour 'Sync Using Reset Game' setting.\n\n"
 #define WINPROC_SYNC_SND "Sync sound"
@@ -347,7 +347,7 @@ Nintendo is a trademark.")
 
 //Movie Messages
 
-#define MOVIE_FILETYPE_DESCRIPTION TEXT("Snes9x Movie File")
+#define MOVIE_FILETYPE_DESCRIPTION TEXT("SuperSnes9x Movie File")
 #define MOVIE_LABEL_SYNC_DATA_FROM_MOVIE TEXT("LOADED FROM MOVIE:")
 #define MOVIE_LABEL_SYNC_DATA_NOT_FROM_MOVIE TEXT("SETTINGS NOT IN MOVIE; VERIFY:")
 #define MOVIE_ERR_COULD_NOT_OPEN TEXT("Could not open movie file.")
@@ -356,7 +356,7 @@ Nintendo is a trademark.")
 #define MOVIE_ERR_WRONG_FORMAT_SHORT TEXT("Unrecognized format.")
 #define MOVIE_ERR_WRONG_FORMAT TEXT("The movie file is corrupt or in the wrong format.")
 #define MOVIE_ERR_WRONG_VERSION_SHORT TEXT("Unsupported movie version.")
-#define MOVIE_ERR_WRONG_VERSION MOVIE_ERR_WRONG_VERSION_SHORT TEXT(" You need a different version of Snes9x to play this movie.")
+#define MOVIE_ERR_WRONG_VERSION MOVIE_ERR_WRONG_VERSION_SHORT TEXT(" You need a different version of SuperSnes9x to play this movie.")
 #define MOVIE_ERR_NOFRAMETOGGLE "No movie; can't toggle frame count"
 #define MOVIE_ERR_NOREADONLYTOGGLE "No movie; can't toggle read-only"
 #define MOVIE_LABEL_AUTHORINFO TEXT("Author Info:")
@@ -385,7 +385,7 @@ Nintendo is a trademark.")
 // Cheat or Cheat Search Messages
 
 #define SEARCH_TITLE_RANGEERROR TEXT("Range Error")
-#define SEARCH_TITLE_CHEATERROR TEXT("Snes9x Cheat Error")
+#define SEARCH_TITLE_CHEATERROR TEXT("SuperSnes9x Cheat Error")
 #define SEARCH_ERR_INVALIDNEWVALUE TEXT("You have entered an out of range or invalid value for the new value")
 #define SEARCH_ERR_INVALIDCURVALUE TEXT("You have entered an out of range or invalid value for\n\
                                    the current value. This value is used when a cheat is unapplied.\n\

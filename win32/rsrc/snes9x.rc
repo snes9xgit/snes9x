@@ -132,7 +132,7 @@ BEGIN
     LTEXT           "frames in Turbo mode",IDC_LABEL_STURBO_TEXT,156,85,143,14,SS_CENTERIMAGE
     RTEXT           "Config file:",IDC_STATIC,24,12,72,8
     EDITTEXT        IDC_CONFIG_NAME_BOX,102,9,49,14,ES_AUTOHSCROLL | ES_READONLY | ES_NUMBER
-    LTEXT           "all of Snes9x's settings are stored in this file",IDC_STATIC,158,11,160,11
+    LTEXT           "all of SuperSnes9x's settings are stored in this file",IDC_STATIC,158,11,160,11
     RTEXT           "Rewind buffer size:",IDC_LABEL_RBUFFER,12,102,84,14,SS_CENTERIMAGE
     LTEXT           "MB (set to 0 to disable rewind support)",IDC_LABEL_RBUFFER_TEXT,156,102,131,14,SS_CENTERIMAGE
     RTEXT           "Rewind granularity:",IDC_LABEL_RGRANU,12,120,84,14,SS_CENTERIMAGE
@@ -141,7 +141,7 @@ BEGIN
     LTEXT           "%",IDC_LABEL_SFXSPEED_2,156,138,131,14,SS_CENTERIMAGE
     CONTROL         "Ask for confirmation when saving/loading",IDC_CONFIRMSAVELOAD,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,102,192,145,8
-    CONTROL         "Add Snes9x to registry for supported file types",IDC_ADD_REGISTRY,
+    CONTROL         "Add SuperSnes9x to registry for supported file types",IDC_ADD_REGISTRY,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,102,204,180,8
 END
 
@@ -741,7 +741,7 @@ END
 
 IDD_DIALOG_XAUDIO2_INIT_ERROR DIALOGEX 0, 0, 277, 92
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "Snes9x - Unable to Initialize XAudio2"
+CAPTION "SuperSnes9x - Unable to Initialize XAudio2"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     DEFPUSHBUTTON   "OK",IDOK,223,72,48,14
@@ -1272,12 +1272,12 @@ BEGIN
         BLOCK "080904b0"
         BEGIN
             VALUE "CompanyName", "http://www.snes9x.com"
-            VALUE "FileDescription", "Snes9x"
+            VALUE "FileDescription", "SuperSnes9x"
             VALUE "FileVersion", "1.63"
-            VALUE "InternalName", "Snes9x"
+            VALUE "InternalName", "SuperSnes9x"
             VALUE "LegalCopyright", "Copyright  1996-2024"
-            VALUE "OriginalFilename", "Snes9x.exe"
-            VALUE "ProductName", "Snes9x SNES Emulator"
+            VALUE "OriginalFilename", "SuperSnes9x.exe"
+            VALUE "ProductName", "SuperSnes9x SNES Emulator"
             VALUE "ProductVersion", "1.63"
         END
     END

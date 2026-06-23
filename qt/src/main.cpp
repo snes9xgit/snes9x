@@ -1,6 +1,7 @@
 #include "EmuApplication.hpp"
 #include "EmuConfig.hpp"
 #include "EmuMainWindow.hpp"
+#include "EmuPoTranslator.hpp"
 #include "SDLInputManager.hpp"
 #include "display.h"
 
@@ -99,6 +100,10 @@ int main(int argc, char *argv[])
     emu.config = std::make_unique<EmuConfig>();
     emu.config->setDefaults();
     emu.config->loadFile(EmuConfig::findConfigFile());
+
+    EmuPoTranslator translator;
+    if (translator.loadLanguage(QString::fromStdString(emu.config->language)))
+        emu.qtapp->installTranslator(&translator);
 
     emu.input_manager = std::make_unique<SDLInputManager>();
     emu.window = std::make_unique<EmuMainWindow>(&emu);

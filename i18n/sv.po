@@ -1,0 +1,5470 @@
+# Swedish translations for Snes9x package.
+# Copyright © 2023 Brandon Wright and Snes9x contributors
+# This file is distributed under the same license as the Snes9x package.
+# Daniel Nylander <github@danielnylander.se>, 2025.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: SuperSnes9x\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-10-29 23:56+0100\n"
+"PO-Revision-Date: 2025-02-09 08:39+0100\n"
+"Last-Translator: Daniel Nylander <github@danielnylander.se>\n"
+"Language-Team: Swedish\n"
+"Language: sv\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 3.5\n"
+
+#: src/gtk_binding.cpp:248
+msgid "Unknown"
+msgstr "Okänt"
+
+#: src/gtk_binding.cpp:257
+msgid "Keyboard {}{}{}{}"
+msgstr "Tangentbord {}{}{}{}"
+
+#: src/gtk_binding.cpp:267
+msgid "Axis {} {} {}%"
+msgstr "Axel {} {} {}%"
+
+#: src/gtk_binding.cpp:272
+msgid "Button {}"
+msgstr "Knapp {}"
+
+#: src/gtk_binding.cpp:274
+msgid "Joystick {} {}"
+msgstr "Styrspak {} {}"
+
+#: src/gtk_binding.cpp:278
+msgid "Unset"
+msgstr "Inaktivera"
+
+#: src/gtk_cheat.cpp:24
+msgid "Error"
+msgstr "Fel"
+
+#: src/gtk_cheat.cpp:60
+msgid "Description"
+msgstr "Beskrivning"
+
+#: src/gtk_cheat.cpp:66
+msgid "Cheat"
+msgstr "Fusk"
+
+#: src/gtk_cheat.cpp:227 src/gtk_cheat.cpp:355
+msgid "No description"
+msgstr "Ingen beskrivning"
+
+#: src/gtk_cheat.cpp:231 src/gtk_cheat.cpp:360
+msgid "Couldn't find any cheat codes in input."
+msgstr "Kunde inte hitta några fuskkoder i inmatningen."
+
+#: src/gtk_cheat.cpp:306
+msgid "Couldn't Find Cheats Database"
+msgstr "Kunde inte hitta fuskdatabasen"
+
+#: src/gtk_cheat.cpp:306
+msgid "No Matching Game Found"
+msgstr "Inget matchande spel hittades"
+
+#: src/gtk_cheat.cpp:307
+msgid ""
+"The database file <b>cheats.bml</b> was not found. It is normally installed "
+"with Snes9x, but you may also place a custom copy in your configuration or "
+"cheats directory."
+msgstr ""
+"Databasfilen <b>cheats.bml</b> hittades inte. Den installeras normalt med "
+"SuperSnes9x, men du kan också placera en egen kopia i din konfigurations- eller "
+"cheats-katalog."
+
+#: src/gtk_cheat.cpp:309
+msgid ""
+"No matching game was found in the databases. If you are using a non-official "
+"translation or modified copy, you may be able to find and manually enter the "
+"codes."
+msgstr ""
+"Inget matchande spel hittades i databaserna. Om du använder en icke-"
+"officiell översättning eller en modifierad kopia kan du kanske hitta och "
+"ange koderna manuellt."
+
+#: src/gtk_config.cpp:407
+msgid "Couldn't create config directory: {}\n"
+msgstr "Kunde inte skapa konfigurationskatalog: {}\n"
+
+#: src/gtk_netplay.cpp:66
+msgid "Connection Error"
+msgstr "Anslutningsfel"
+
+#: src/gtk_netplay_dialog.cpp:31
+msgid "frame behind"
+msgid_plural "frames behind"
+msgstr[0] "bildruta bakom"
+msgstr[1] "bildrutor bakom"
+
+#: src/gtk_preferences.cpp:19
+msgid "Same location as current game"
+msgstr "Samma plats som aktuellt spel"
+
+#: src/gtk_preferences.cpp:110
+msgid "{0:Ld}×{1:Ld} @ {2:.3Lf} Hz"
+msgstr "{0:Ld}×{1:Ld} @ {2:.3Lf} Hz"
+
+#: src/gtk_preferences.cpp:143
+msgid "OpenGL – Use 3D graphics hardware"
+msgstr "OpenGL - Använd hårdvara för 3D-grafik"
+
+#: src/gtk_preferences.cpp:145
+msgid "XVideo – Use hardware video blitter"
+msgstr "XVideo - Använda videoblitter i hårdvara"
+
+#: src/gtk_preferences.cpp:147
+msgid "Vulkan"
+msgstr "Vulkan"
+
+#: src/gtk_preferences.cpp:149
+msgid "None – Use software scaler"
+msgstr "Ingen - Använd programvaruskalare"
+
+#: src/gtk_preferences.cpp:179 src/gtk_preferences.cpp:446
+msgid "thread for filtering and scaling"
+msgid_plural "threads for filtering and scaling"
+msgstr[0] "tråd för filtrering och skalning"
+msgstr[1] "trådar för filtrering och skalning"
+
+#: src/gtk_preferences.cpp:236 src/gtk_preferences.cpp:500
+msgid "millisecond"
+msgid_plural "milliseconds"
+msgstr[0] "millisekund"
+msgstr[1] "millisekunder"
+
+#: src/gtk_preferences.cpp:260 src/gtk_preferences.cpp:476
+msgid "second after change"
+msgid_plural "seconds after change"
+msgstr[0] "sekund efter förändring"
+msgstr[1] "sekunder efter ändring"
+
+#: src/gtk_preferences.cpp:271
+msgid "SuperSnes9x version: "
+msgstr "SuperSnes9x-version: "
+
+#: src/gtk_preferences.cpp:272
+msgid "GTK+ port version: "
+msgstr "Version av GTK+-port: "
+
+#: src/gtk_preferences.cpp:274
+msgid "English localization by Brandon Wright"
+msgstr "Engelsk lokalanpassning av Brandon Wright"
+
+#: src/gtk_preferences.cpp:298
+msgid "Select directory"
+msgstr "Välj katalog"
+
+#: src/gtk_preferences.cpp:323
+msgid "{0:.4Lf} Hz"
+msgstr "{0:.4Lf} Hz"
+
+#: src/gtk_preferences.cpp:328
+msgid "{0:Ld} Hz"
+msgstr "{0:Ld} Hz"
+
+#: src/gtk_preferences.cpp:379
+msgid "Select Shader File"
+msgstr "Välj shader-fil"
+
+#: src/gtk_preferences.cpp:720
+msgid ""
+"Changing the SRAM directory with a game loaded will replace the .srm file in "
+"the selected directory with the SRAM from the running game. If this is not "
+"what you want, click 'cancel'."
+msgstr ""
+"Om du ändrar SRAM-katalogen med ett spel inläst kommer .srm-filen i den "
+"valda katalogen att ersättas med SRAM från det körande spelet. Om detta inte "
+"är vad du vill, klicka på \"Avbryt\"."
+
+#: src/gtk_preferences.cpp:725
+msgid "Warning: Possible File Overwrite"
+msgstr "Varning: Möjlig överskrivning av filer"
+
+#: src/gtk_preferences.cpp:980
+msgid "Current joystick centers have been saved."
+msgstr "Aktuella kontrollercentrum har sparats."
+
+#: src/gtk_preferences.cpp:981
+msgid "Calibration Complete"
+msgstr "Kalibrering slutförd"
+
+#: src/gtk_s9x.cpp:206
+msgid "Using rewind buffer of {0}\n"
+msgstr "Använder tillbakaspolningsbuffert på {0}\n"
+
+#: src/gtk_s9x.cpp:598
+msgid ""
+"GTK port options:\n"
+"-filter [option]               Use a filter to scale the image.\n"
+"                               [option] is one of: none supereagle 2xsai\n"
+"                               super2xsai hq2x hq3x hq4x 2xbrz 3xbrz 4xbrz "
+"epx ntsc\n"
+"\n"
+"-mutesound                     Disables sound output.\n"
+msgstr ""
+"Alternativ för GTK-port:\n"
+"-filter [alternativ] Använd ett filter för att skala bilden.\n"
+"                               [alternativ] är ett av: none supereagle "
+"2xsai\n"
+"                               super2xsai hq2x hq3x hq4x 2xbrz 3xbrz 4xbrz "
+"epx ntsc\n"
+"\n"
+"-mutesound Inaktiverar ljudutmatning.\n"
+
+#: src/gtk_s9xwindow.cpp:48 src/snes9x.ui:8405
+msgid "Save States"
+msgstr "Spara tillstånd"
+
+#: src/gtk_s9xwindow.cpp:57
+msgid "All Files"
+msgstr "Alla filer"
+
+#: src/gtk_s9xwindow.cpp:616
+msgid "Couldn't load files."
+msgstr "Kunde inte att läsa in filer."
+
+#: src/gtk_s9xwindow.cpp:637
+msgid "Open SNES Movie"
+msgstr "Öppna SNES-film"
+
+#: src/gtk_s9xwindow.cpp:642
+msgid "New SNES Movie"
+msgstr "Ny SNES-film"
+
+#: src/gtk_s9xwindow.cpp:661
+msgid "SNES Movies"
+msgstr "SNES-filmer"
+
+#: src/gtk_s9xwindow.cpp:690
+msgid "Open SNES ROM Image"
+msgstr "Öppna SNES ROM-avbild"
+
+#: src/gtk_s9xwindow.cpp:695
+msgid "SNES ROM Images"
+msgstr "SNES ROM-avbilder"
+
+#: src/gtk_s9xwindow.cpp:740
+msgid "Couldn't load file: "
+msgstr "Kunde inte läsa in filen: "
+
+#: src/gtk_s9xwindow.cpp:767
+msgid "Load Saved State"
+msgstr "Läs in sparat tillstånd"
+
+#: src/gtk_s9xwindow.cpp:796
+msgid "The current frame in the movie is <b>{0:Ld}</b>."
+msgstr "Den aktuella bildrutan i filmen är <b>{0:Ld}</b>."
+
+#: src/gtk_s9xwindow.cpp:829
+msgid "Save State"
+msgstr "Spara tillstånd"
+
+#: src/gtk_s9xwindow.cpp:850
+msgid "Save SPC file..."
+msgstr "Spara SPC-fil..."
+
+#: src/gtk_s9xwindow.cpp:872
+msgid "Couldn't save SPC file:"
+msgstr "Kunde inte spara SPC-fil:"
+
+#: src/gtk_s9xwindow.cpp:888
+#, c-format
+msgid ""
+"<b>Information for %s</b>\n"
+"\n"
+"<i>Name:</i> %s\n"
+"<i>Speed:</i> %02X/%s\n"
+"<i>Map:</i> %s\n"
+"<i>Type:</i> %02x\n"
+"<i>Contents:</i> %s\n"
+"<i>ROM Size:</i> %s\n"
+"<i>Calculated Size:</i> %d\n"
+"<i>SRAM Size:</i> %s\n"
+"<i>Header Checksum:</i> %04X\n"
+"<i>Checksum Complement:</i> %04X\n"
+"<i>Actual Checksum:</i> %04X\n"
+"<i>Video:</i> %s\n"
+"<i>CRC32:</i> %08X\n"
+"<i>Revision:</i> %s\n"
+"<b><i>%s%s</i></b>"
+msgstr ""
+"<b>Information för %s \n"
+"\n"
+"</b><i>Namn</i>: %s\n"
+"<i>Hastighet:</i> %02X/%s\n"
+"<i>Karta</i>: /: %s\n"
+"<i>Typ:</i> %02x\n"
+"<i>Innehåll</i>: %s\n"
+"<i>ROM-storlek</i>: %s\n"
+"<i>Beräknad storlek</i>: %d\n"
+"<i>SRAM-storlek</i>: %s\n"
+"<i>Kontrollsumma för header</i>: %04X\n"
+"<i>Kontrollsumma komplement</i>: %04X\n"
+"<i>Faktisk kontrollsumma</i>: %04X\n"
+"<i>Video</i>: %s\n"
+"<i>CRC32</i>: %08X\n"
+"<i>Revision</i>: %s\n"
+"<b><i>%s%s</i></b>"
+
+#: src/gtk_s9xwindow.cpp:924
+msgid ""
+"\n"
+"\n"
+"This ROM has been auto-patched with "
+msgstr ""
+"\n"
+"\n"
+"Denna ROM har auto-patchats med "
+
+#: src/gtk_s9xwindow.cpp:924
+msgid ""
+"\n"
+"\n"
+"This ROM has been modified or damaged"
+msgstr ""
+"\n"
+"\n"
+"Denna ROM har ändrats eller skadats"
+
+#: src/gtk_s9xwindow.cpp:938
+msgid "File Information"
+msgstr "Filinformation"
+
+#: src/gtk_shader_parameters.cpp:67
+msgid "Export Shader Preset to:"
+msgstr "Exportera Shader-förval till:"
+
+#: src/gtk_shader_parameters.cpp:90
+msgid "Shader Preset"
+msgstr "Shader-förval"
+
+#: src/gtk_shader_parameters.cpp:131
+msgid "Shader Parameters"
+msgstr "Parametrar för shaders"
+
+#: src/snes9x.ui:10
+msgid "About SuperSnes9x"
+msgstr "Om SuperSnes9x"
+
+#: src/snes9x.ui:283
+msgid "SuperSnes9x Cheats"
+msgstr "SuperSnes9x-fusk"
+
+#: src/snes9x.ui:401
+msgid "Update Cheat"
+msgstr "Uppdatera fusk"
+
+#: src/snes9x.ui:416
+msgid "Disable All"
+msgstr "Inaktivera alla"
+
+#: src/snes9x.ui:432
+msgid "Delete All Cheats"
+msgstr "Ta bort alla fusk"
+
+#: src/snes9x.ui:447
+msgid "Search Cheat Database"
+msgstr "Sök i fuskdatabasen"
+
+#: src/snes9x.ui:489
+msgid "Code:"
+msgstr "Kod:"
+
+#: src/snes9x.ui:526
+msgid "Description:"
+msgstr "Beskrivning:"
+
+#: src/snes9x.ui:573
+msgid "Advance to Frame"
+msgstr "Gå vidare till bildruta"
+
+#: src/snes9x.ui:642
+msgid "The current frame in the movie is"
+msgstr "Den aktuella bildrutan i filmen är"
+
+#: src/snes9x.ui:663
+msgid "Fast‑forward to frame"
+msgstr "Snabbspola fram till bildruta"
+
+#: src/snes9x.ui:806
+msgid "Black"
+msgstr "Svart"
+
+#: src/snes9x.ui:809
+msgid "Color bars"
+msgstr "Färgrader"
+
+#: src/snes9x.ui:812
+msgid "Pixel art patterns"
+msgstr "Pixelkonstmönster"
+
+#: src/snes9x.ui:815
+msgid "Dithered gradient"
+msgstr "Ditherad gradient"
+
+#: src/snes9x.ui:818
+msgid "Color bars and patterns"
+msgstr "Färgrader och mönster"
+
+#: src/snes9x.ui:821
+msgid "Starfield"
+msgstr "Stjärnfält"
+
+#: src/snes9x.ui:824
+msgid "Snow"
+msgstr "Snö"
+
+#: src/snes9x.ui:852 src/snes9x.ui:875
+msgid "12.5%"
+msgstr "12.5%"
+
+#: src/snes9x.ui:855 src/snes9x.ui:878
+msgid "25%"
+msgstr "25 %"
+
+#: src/snes9x.ui:858 src/snes9x.ui:881
+msgid "50%"
+msgstr "50 %"
+
+#: src/snes9x.ui:861 src/snes9x.ui:884
+msgid "100%"
+msgstr "100%"
+
+#: src/snes9x.ui:872
+msgid "0%"
+msgstr "0 %"
+
+#: src/snes9x.ui:895
+msgctxt "filter list"
+msgid "None"
+msgstr "Ingen"
+
+#: src/snes9x.ui:936
+msgid "8:7 Square pixels"
+msgstr "8:7 kvadratiska bildpunkter"
+
+#: src/snes9x.ui:939
+msgid "8:7 Square pixels, integer multiples"
+msgstr "8:7 kvadratiska bildpunkter, heltalsmultiplar"
+
+#: src/snes9x.ui:942
+msgid "4:3 SNES correct aspect"
+msgstr "4:3 SNES korrekt bildförhållande"
+
+#: src/snes9x.ui:945
+msgid "4:3 SNES correct aspect, integer multiples"
+msgstr "4:3 SNES korrekt bildförhållande, heltalsmultiplar"
+
+#: src/snes9x.ui:948
+msgid "8*8:7*7 NTSC"
+msgstr "8*8:7*7 NTSC"
+
+#: src/snes9x.ui:951
+msgid "8*8:7*7 NTSC, integer multiples"
+msgstr "8*8:7*7 NTSC, heltalsmultiplar"
+
+#: src/snes9x.ui:968
+msgid "Merge adjacent pairs"
+msgstr "Sammanfoga intilliggande par"
+
+#: src/snes9x.ui:971
+msgid "Output directly"
+msgstr "Utmatning direkt"
+
+#: src/snes9x.ui:974
+msgid "Scale low‑resolution screens"
+msgstr "Skalning för lågupplösta skärmar"
+
+#: src/snes9x.ui:985 src/snes9x.ui:1023
+msgid "1"
+msgstr "1"
+
+#: src/snes9x.ui:988 src/snes9x.ui:1026
+msgid "2"
+msgstr "2"
+
+#: src/snes9x.ui:991 src/snes9x.ui:1029
+msgid "3"
+msgstr "3"
+
+#: src/snes9x.ui:994 src/snes9x.ui:1032
+msgid "4"
+msgstr "4"
+
+#: src/snes9x.ui:997 src/snes9x.ui:1035
+msgid "5"
+msgstr "5"
+
+#: src/snes9x.ui:1000 src/snes9x.ui:1038
+msgid "1+"
+msgstr "1+"
+
+#: src/snes9x.ui:1003 src/snes9x.ui:1041
+msgid "2+"
+msgstr "2+"
+
+#: src/snes9x.ui:1006 src/snes9x.ui:1044
+msgid "3+"
+msgstr "3+"
+
+#: src/snes9x.ui:1009 src/snes9x.ui:1047
+msgid "4+"
+msgstr "4+"
+
+#: src/snes9x.ui:1012 src/snes9x.ui:1050
+msgid "5+"
+msgstr "5+"
+
+#: src/snes9x.ui:1061
+msgid "Toggle the menu bar"
+msgstr "Växla menyraden"
+
+#: src/snes9x.ui:1064
+msgid "Exit fullscreen mode"
+msgstr "Avsluta helskärmsläge"
+
+#: src/snes9x.ui:1067 src/snes9x.ui:6932
+msgid "Quit SuperSnes9x"
+msgstr "Avsluta SuperSnes9x"
+
+#: src/snes9x.ui:1078
+msgid "Timer‑based"
+msgstr "Tidsbaserad"
+
+#: src/snes9x.ui:1081
+msgid "Timer‑based with automatic frame-skipping"
+msgstr "Tidsbaserad med automatisk överhoppning av bildrutor"
+
+#: src/snes9x.ui:1084
+msgid "Sound buffer synchronization"
+msgstr "Synkronisering av ljudbuffert"
+
+#: src/snes9x.ui:1087
+msgid "No throttling, use vsync to control speed"
+msgstr "Ingen strypning, använd vsync för att styra hastigheten"
+
+#: src/snes9x.ui:1098
+msgid "48,000 Hz"
+msgstr "48,000 Hz"
+
+#: src/snes9x.ui:1101
+msgid "44,100 Hz"
+msgstr "44,100 Hz"
+
+#: src/snes9x.ui:1104
+msgid "32,000 Hz"
+msgstr "32.000 Hz"
+
+#: src/snes9x.ui:1107
+msgid "22,050 Hz"
+msgstr "22,050 Hz"
+
+#: src/snes9x.ui:1110
+msgid "16,000 Hz"
+msgstr "16,000 Hz"
+
+#: src/snes9x.ui:1113
+msgid "11,025 Hz"
+msgstr "11,025 Hz"
+
+#: src/snes9x.ui:1116
+msgid "8,000 Hz"
+msgstr "8,000 Hz"
+
+#: src/snes9x.ui:1119
+msgid "0 Hz"
+msgstr "0 Hz"
+
+#: src/snes9x.ui:1136
+msgid "16‑bit (GL_RGB)"
+msgstr "16‑bit (GL_RGB)"
+
+#: src/snes9x.ui:1139
+msgid "32‑bit (GL_BGRA)"
+msgstr "32‑bitars (GL_BGRA)"
+
+#: src/snes9x.ui:1150
+msgid "Nearest"
+msgstr "Närmaste"
+
+#: src/snes9x.ui:1153
+msgid "Linear"
+msgstr "Linjär"
+
+#: src/snes9x.ui:1156
+msgid "Gaussian (correct)"
+msgstr "Gaussisk (korrekt)"
+
+#: src/snes9x.ui:1159
+msgid "Cubic"
+msgstr "Kubisk"
+
+#: src/snes9x.ui:1162
+msgid "Sinc"
+msgstr "Sinc"
+
+#: src/snes9x.ui:1175
+msgid "SuperSnes9x"
+msgstr "SuperSnes9x"
+
+#: src/snes9x.ui:1195
+msgid "_File"
+msgstr "_Arkiv"
+
+#: src/snes9x.ui:1202
+msgid "_Open ROM Image…"
+msgstr "_Öppna ROM-avbild…"
+
+#: src/snes9x.ui:1216
+msgid "Open Recent"
+msgstr "Öppna senaste"
+
+#: src/snes9x.ui:1225
+msgid "Clear Recent Items"
+msgstr "Töm senaste poster"
+
+#: src/snes9x.ui:1237
+msgid "Open with _NetPlay…"
+msgstr "Öppna med _NetPlay…"
+
+#: src/snes9x.ui:1240
+msgid "Open a ROM to use with NetPlay"
+msgstr "Öppna en ROM för att använda med NetPlay"
+
+#: src/snes9x.ui:1251
+msgid "Open _MultiCart…"
+msgstr "Öppna _MultiCart…"
+
+#: src/snes9x.ui:1266
+msgid "_Load State"
+msgstr "_Läs in tillstånd"
+
+#: src/snes9x.ui:1276 src/snes9x.ui:1410
+msgid "Slot _0"
+msgstr "Plats _0"
+
+#: src/snes9x.ui:1285 src/snes9x.ui:1419
+msgid "Slot _1"
+msgstr "Plats _1"
+
+#: src/snes9x.ui:1294 src/snes9x.ui:1428
+msgid "Slot _2"
+msgstr "Plats _2"
+
+#: src/snes9x.ui:1303 src/snes9x.ui:1437
+msgid "Slot _3"
+msgstr "Plats _3"
+
+#: src/snes9x.ui:1312 src/snes9x.ui:1446
+msgid "Slot _4"
+msgstr "Plats _4"
+
+#: src/snes9x.ui:1321 src/snes9x.ui:1455
+msgid "Slot _5"
+msgstr "Plats _5"
+
+#: src/snes9x.ui:1330 src/snes9x.ui:1464
+msgid "Slot _6"
+msgstr "Plats _6"
+
+#: src/snes9x.ui:1339 src/snes9x.ui:1473
+msgid "Slot _7"
+msgstr "Plats _7"
+
+#: src/snes9x.ui:1348 src/snes9x.ui:1482
+msgid "Slot _8"
+msgstr "Plats _8"
+
+#: src/snes9x.ui:1357 src/snes9x.ui:1491
+msgid "Slot _9"
+msgstr "Plats _9"
+
+#: src/snes9x.ui:1372
+msgid "From _File…"
+msgstr "Från _fil…"
+
+#: src/snes9x.ui:1387
+msgid "_Undo Load State"
+msgstr "Ån_gra inläst tillstånd"
+
+#: src/snes9x.ui:1400
+msgid "_Save State"
+msgstr "_Spara tillstånd"
+
+#: src/snes9x.ui:1506
+msgid "To _File…"
+msgstr "Till _fil…"
+
+#: src/snes9x.ui:1523
+msgid "Save SPC…"
+msgstr "Spara SPC…"
+
+#: src/snes9x.ui:1540
+msgid "Show ROM _Info…"
+msgstr "Visa ROM-_info…"
+
+#: src/snes9x.ui:1557
+msgid "gtk-quit"
+msgstr "Avsluta"
+
+#: src/snes9x.ui:1571
+msgid "_Emulation"
+msgstr "_Emulering"
+
+#: src/snes9x.ui:1578
+msgid "Run / _Continue"
+msgstr "Kör / _Fortsätt"
+
+#: src/snes9x.ui:1589
+msgid "_Pause"
+msgstr "_Paus"
+
+#: src/snes9x.ui:1607
+msgid "Load _Movie…"
+msgstr "Läs in _film…"
+
+#: src/snes9x.ui:1619
+msgid "R_ecord Movie…"
+msgstr "S_pela in film…"
+
+#: src/snes9x.ui:1631
+msgid "_Stop Recording"
+msgstr "_Stoppa inspelning"
+
+#: src/snes9x.ui:1643
+msgid "_Jump to Frame…"
+msgstr "_Hoppa till bildruta…"
+
+#: src/snes9x.ui:1661
+msgid "Sy_nc Clients"
+msgstr "S_ynkronisera klienter"
+
+#: src/snes9x.ui:1678
+msgid "Reset"
+msgstr "Starta om"
+
+#: src/snes9x.ui:1690
+msgid "Soft _Reset"
+msgstr "Mjuk o_mstart"
+
+#: src/snes9x.ui:1707
+msgid "_View"
+msgstr "_Visa"
+
+#: src/snes9x.ui:1715
+msgid "_Toggle Menubar"
+msgstr "_Växla menyraden"
+
+#: src/snes9x.ui:1732
+msgid "_Change Size"
+msgstr "Ä_ndra storlek"
+
+#: src/snes9x.ui:1746
+msgid "_1×"
+msgstr "_1×"
+
+#: src/snes9x.ui:1755
+msgid "_2×"
+msgstr "_2×"
+
+#: src/snes9x.ui:1764
+msgid "_3×"
+msgstr "_3×"
+
+#: src/snes9x.ui:1773
+msgid "_4×"
+msgstr "_4×"
+
+#: src/snes9x.ui:1782
+msgid "_5×"
+msgstr "_5×"
+
+#: src/snes9x.ui:1791
+msgid "_6×"
+msgstr "_6×"
+
+#: src/snes9x.ui:1800
+msgid "_7×"
+msgstr "_7×"
+
+#: src/snes9x.ui:1809
+msgid "_8×"
+msgstr "_8×"
+
+#: src/snes9x.ui:1818
+msgid "_9×"
+msgstr "_9×"
+
+#: src/snes9x.ui:1827
+msgid "1_0×"
+msgstr "1_0×"
+
+#: src/snes9x.ui:1844
+msgid "gtk-fullscreen"
+msgstr "Helskärm"
+
+#: src/snes9x.ui:1858
+msgid "_Options"
+msgstr "A_lternativ"
+
+#: src/snes9x.ui:1867
+msgid "Controller Ports"
+msgstr "Kontrollerportar"
+
+#: src/snes9x.ui:1876
+msgid "SNES Port 1"
+msgstr "SNES-port 1"
+
+#: src/snes9x.ui:1886 src/snes9x.ui:1930
+msgid "Joypad"
+msgstr "Joypad"
+
+#: src/snes9x.ui:1895 src/snes9x.ui:1939
+msgid "Mouse"
+msgstr "Mus"
+
+#: src/snes9x.ui:1905 src/snes9x.ui:1959
+msgid "Superscope"
+msgstr "Superscope"
+
+#: src/snes9x.ui:1920
+msgid "SNES Port 2"
+msgstr "SNES-port 2"
+
+#: src/snes9x.ui:1949
+msgid "Multitap"
+msgstr "Multitap"
+
+#: src/snes9x.ui:1970
+msgctxt "SNES port 2"
+msgid "None"
+msgstr "Ingen"
+
+#: src/snes9x.ui:1996
+msgid "_Cheats…"
+msgstr "_Fusk…"
+
+#: src/snes9x.ui:2010
+msgid "_Shader Parameters…"
+msgstr "_Shader-parametrar…"
+
+#: src/snes9x.ui:2026
+msgid "gtk-preferences"
+msgstr "Inställningar"
+
+#: src/snes9x.ui:2068
+msgid "Open Multiple ROM Images (MultiCart)"
+msgstr "Öppna flera ROM-avbilder (MultiCart)"
+
+#: src/snes9x.ui:2131
+msgid "Slot A:"
+msgstr "Plats A:"
+
+#: src/snes9x.ui:2143
+msgid "Select an Image for Slot A"
+msgstr "Välj en avbildning för plats A"
+
+#: src/snes9x.ui:2167
+msgid "Slot B:"
+msgstr "Plats B:"
+
+#: src/snes9x.ui:2179
+msgid "Select an Image for Slot B"
+msgstr "Välj en avbildning för plats B"
+
+#: src/snes9x.ui:2211
+msgid "SuperSnes9x NetPlay"
+msgstr "SuperSnes9x NetPlay"
+
+#: src/snes9x.ui:2288
+msgid ""
+"The game chosen will be loaded before connecting. This field can be blank if "
+"the server will send the ROM image"
+msgstr ""
+"Det valda spelet kommer att läsas in innan anslutning. Detta fält kan vara "
+"tomt om servern ska skicka ROM-avbildningen"
+
+#: src/snes9x.ui:2303 src/snes9x.ui:4001 src/snes9x.ui:5116 src/snes9x.ui:5131
+#: src/snes9x.ui:5148 src/snes9x.ui:5165 src/snes9x.ui:5182
+msgid "Browse…"
+msgstr "Bläddra…"
+
+#: src/snes9x.ui:2325
+msgid "Clear entry"
+msgstr "Töm post"
+
+#: src/snes9x.ui:2345
+msgid "<b>ROM Image</b>"
+msgstr "<b>ROM-avbild</b>"
+
+#: src/snes9x.ui:2374
+msgid "Connect to another computer"
+msgstr "Anslut till en annan dator"
+
+#: src/snes9x.ui:2378
+msgid "Connect to another computer that is running SuperSnes9x NetPlay as a server"
+msgstr "Anslut till en annan dator som kör SuperSnes9x NetPlay som en server"
+
+#: src/snes9x.ui:2398
+msgid "Name or IP address:"
+msgstr "Namn eller IP-adress:"
+
+#: src/snes9x.ui:2410
+msgid "Domain name or internet protocol address of a remote computer"
+msgstr "Domännamn eller internetprotokolladress för en fjärrdator"
+
+#: src/snes9x.ui:2426
+msgid "Port:"
+msgstr "Port:"
+
+#: src/snes9x.ui:2438
+msgid "Connect to specified TCP port on remote computer"
+msgstr "Anslut till angiven TCP-port på fjärrdatorn"
+
+#: src/snes9x.ui:2463
+msgid "Act as a server"
+msgstr "Fungera som en server"
+
+#: src/snes9x.ui:2467
+msgid ""
+"Host a game on this computer as Player 1, requiring extra throughput to "
+"support multitple users"
+msgstr ""
+"Stå värd för ett spel på den här datorn som spelare 1, vilket kräver extra "
+"genomströmning för att stödja flera användare"
+
+#: src/snes9x.ui:2487
+msgid "<b>Server</b>"
+msgstr "<b>Server</b>"
+
+#: src/snes9x.ui:2517
+msgid "Sync using reset"
+msgstr "Synkronisera med omstart"
+
+#: src/snes9x.ui:2521
+msgid ""
+"Reset the game when players join instead of transferring potentially "
+"unreliable freeze states"
+msgstr ""
+"Starta om spelet när spelare ansluter sig istället för att överföra "
+"potentiellt opålitliga frysningstillstånd"
+
+#: src/snes9x.ui:2532
+msgid "Send ROM image to clients"
+msgstr "Skicka ROM-avbilder till klienter"
+
+#: src/snes9x.ui:2536
+msgid ""
+"Send the running game image to players instead of requiring them to have "
+"their own copies"
+msgstr ""
+"Skicka avbildningen av körande spelet till spelarna istället för att kräva "
+"att de har egna kopior"
+
+#: src/snes9x.ui:2554
+msgid "Default port:"
+msgstr "Standardport:"
+
+#: src/snes9x.ui:2566
+msgid "TCP port used as a connection point for remote clients"
+msgstr "TCP-port som används som anslutningspunkt för fjärrklienter"
+
+#: src/snes9x.ui:2598
+msgid "Ask server to pause when"
+msgstr "Fråga servern att pausa när"
+
+#: src/snes9x.ui:2652
+msgid "<b>Settings</b>"
+msgstr "<b>Inställningar</b>"
+
+#: src/snes9x.ui:2680
+msgid "SuperSnes9x Preferences"
+msgstr "Inställningar för SuperSnes9x"
+
+#: src/snes9x.ui:2796
+msgid "Use fullscreen on ROM open"
+msgstr "Använd helskärm när ROM öppnas"
+
+#: src/snes9x.ui:2800
+msgid "Go to fullscreen mode immediately after opening a ROM"
+msgstr "Gå till helskärmsläge omedelbart efter att du öppnat en ROM"
+
+#: src/snes9x.ui:2812
+msgid "Show local time"
+msgstr "Visa lokal tid"
+
+#: src/snes9x.ui:2827
+msgid "Show frame rate"
+msgstr "Visa bildfrekvens"
+
+#: src/snes9x.ui:2842
+msgid "Show pressed keys"
+msgstr "Visa nedtryckta tangenter"
+
+#: src/snes9x.ui:2857
+msgid "Show fast‑forward and pause indicators"
+msgstr "Visa indikatorer för snabbspolning framåt och paus"
+
+#: src/snes9x.ui:2872
+msgid "Use overscanned height"
+msgstr "Använd överskannad höjd"
+
+#: src/snes9x.ui:2876
+msgid "Use SNES extended height. Will probably cause letterboxing"
+msgstr "Använd SNES utökade höjd. Kommer förmodligen att orsaka brevlådeformat"
+
+#: src/snes9x.ui:2898
+msgid "On‑screen display size:"
+msgstr "Storlek för On-Screen Display:"
+
+#: src/snes9x.ui:2909
+msgid "The size of on‑screen display messages in pixels"
+msgstr "Storleken för meddelanden på skärmen i bildpunkter"
+
+#: src/snes9x.ui:2940
+msgid "Change fullscreen resolution:"
+msgstr "Ändra helskärmsupplösning:"
+
+#: src/snes9x.ui:2944
+msgid "Changes the screen resolution when running SuperSnes9x in fullscreen mode"
+msgstr "Ändrar skärmupplösningen när du kör SuperSnes9x i helskärmsläge"
+
+#: src/snes9x.ui:2989
+msgid "Basic Settings"
+msgstr "Grundläggande inställningar"
+
+#: src/snes9x.ui:3030
+msgid "Scale image to fit window"
+msgstr "Skala bilden så att den passar i fönstret"
+
+#: src/snes9x.ui:3034
+msgid "Scales the image so no black bars are present"
+msgstr "Skalar bilden så att inga svarta fält visas"
+
+#: src/snes9x.ui:3054
+msgid "Aspect ratio:"
+msgstr "Bildförhållande:"
+
+#: src/snes9x.ui:3089
+msgid "Maintain aspect ratio"
+msgstr "Behåll bildförhållande"
+
+#: src/snes9x.ui:3093
+msgid "Scales the image as large as possible without distortion"
+msgstr "Skalar bilden så stor som möjligt utan förvrängning"
+
+#: src/snes9x.ui:3108
+msgid "Allows scaling and filtering to use multiple processors"
+msgstr "Tillåter skalning och filtrering för att använda flera processorer"
+
+#: src/snes9x.ui:3111
+msgid "Use"
+msgstr "Använd"
+
+#: src/snes9x.ui:3170
+msgid "High‑resolution effect:"
+msgstr "Högupplösande effekt:"
+
+#: src/snes9x.ui:3213
+msgid "Apply scaling filter:"
+msgstr "Tillämpa skalningsfilter:"
+
+#: src/snes9x.ui:3281
+msgid "Video preset:"
+msgstr "Videoförval:"
+
+#: src/snes9x.ui:3295
+msgid "Composite"
+msgstr "Komposit"
+
+#: src/snes9x.ui:3309
+msgid "S‑Video"
+msgstr "S‑Video"
+
+#: src/snes9x.ui:3323
+msgid "RGB"
+msgstr "RGB"
+
+#: src/snes9x.ui:3337
+msgid "Monochrome"
+msgstr "Monokrom"
+
+#: src/snes9x.ui:3378
+msgid "Artifacts:"
+msgstr "Artefakter:"
+
+#: src/snes9x.ui:3393
+msgid "Sharpness:"
+msgstr "Skarphet:"
+
+#: src/snes9x.ui:3408
+msgid "Brightness:"
+msgstr "Ljusstyrka:"
+
+#: src/snes9x.ui:3423
+msgid "Contrast:"
+msgstr "Kontrast:"
+
+#: src/snes9x.ui:3438
+msgid "Saturation:"
+msgstr "Färgmättnad:"
+
+#: src/snes9x.ui:3453
+msgid "Hue:"
+msgstr "Nyans:"
+
+#: src/snes9x.ui:3654
+msgid "Gamma:"
+msgstr "Gamma:"
+
+#: src/snes9x.ui:3669
+msgid "Fringing:"
+msgstr "Fringing:"
+
+#: src/snes9x.ui:3684
+msgid "Bleed:"
+msgstr "Blöd:"
+
+#: src/snes9x.ui:3699
+msgid "Resolution:"
+msgstr "Upplösning:"
+
+#: src/snes9x.ui:3729
+msgid "Merge odd and even fields"
+msgstr "Slå samman udda och jämna fält"
+
+#: src/snes9x.ui:3751 src/snes9x.ui:3810
+msgid "Scanline intensity:"
+msgstr "Scanline-intensitet:"
+
+#: src/snes9x.ui:3855
+msgid "Scaling"
+msgstr "Skalning"
+
+#: src/snes9x.ui:3897
+msgid "Bilinear‐filter output"
+msgstr "Bilinjär filterutgång"
+
+#: src/snes9x.ui:3912
+msgid "Use best settings for FreeSync/G‑Sync when in fullscreen"
+msgstr "Använd bästa inställningar för FreeSync/G-Sync i helskärmsläge"
+
+#: src/snes9x.ui:3933
+msgid "Sync to vertical blank"
+msgstr "Synkronisera till vertikal blank"
+
+#: src/snes9x.ui:3937
+msgid "Sync the image to the vertical retrace to stop tearing"
+msgstr "Synkronisera bilden med den vertikala retracen för att stoppa tearing"
+
+#: src/snes9x.ui:3949
+msgid "Reduce input lag"
+msgstr "Minska fördröjning i inmatningen"
+
+#: src/snes9x.ui:3953
+msgid ""
+"Sync the program with the video output after every displayed frame to reduce "
+"input latency"
+msgstr ""
+"Synkronisera programmet med videoutgången efter varje visad bildruta för att "
+"minska inmatningslatensen"
+
+#: src/snes9x.ui:3969
+msgid "Shader:"
+msgstr "Shader:"
+
+#: src/snes9x.ui:4033
+msgid "Force an inverted byte‑ordering"
+msgstr "Tvinga fram en inverterad byte-ordning"
+
+#: src/snes9x.ui:4037
+msgid ""
+"Forces a swapped byte‑ordering for cases where the system’s endian is used "
+"instead of the video card"
+msgstr ""
+"Tvingar fram en byte-ordning för fall där systemets endian används i stället "
+"för grafikkortets"
+
+#: src/snes9x.ui:4061
+msgid "Hardware Acceleration"
+msgstr "Hårdvaruacceleration"
+
+#: src/snes9x.ui:4090
+msgid "Display"
+msgstr "Skärm"
+
+#: src/snes9x.ui:4143
+msgid "Sound driver:"
+msgstr "Ljuddrivrutin:"
+
+#: src/snes9x.ui:4178
+msgid "Automatically adjust input rate to display"
+msgstr "Automatisk justering av ingångsfrekvens till skärmen"
+
+#: src/snes9x.ui:4182
+msgid "Sets the correct input rate based on the display’s refresh rate"
+msgstr ""
+"Ställer in rätt inmatningsfrekvens baserat på skärmens uppdateringsfrekvens"
+
+#: src/snes9x.ui:4194
+msgid "Dynamic rate control"
+msgstr "Dynamisk frekvenskontroll"
+
+#: src/snes9x.ui:4198
+msgid "Smooth out slight hiccups in sound input rate"
+msgstr "Jämna ut små hickor i ljudinmatningsfrekvensen"
+
+#: src/snes9x.ui:4209
+msgid "Mute sound output"
+msgstr "Stäng av ljudutgången"
+
+#: src/snes9x.ui:4213
+msgid "Disables output of sound"
+msgstr "Inaktiverar ljudutmatning"
+
+#: src/snes9x.ui:4225
+msgid "Mute sound when using turbo or rewind"
+msgstr "Stäng av ljudet när du använder turbo eller spola tillbaka"
+
+#: src/snes9x.ui:4229
+msgid "Disables output of sound when using turbo or rewind"
+msgstr "Inaktiverar ljudet när du använder turbo eller spola tillbaka"
+
+#: src/snes9x.ui:4252
+msgid "Playback rate:"
+msgstr "Uppspelningsfrekvens:"
+
+#: src/snes9x.ui:4310
+msgid "Buffer size:"
+msgstr "Buffertstorlek:"
+
+#: src/snes9x.ui:4324
+msgid "Dynamic rate limit:"
+msgstr "Dynamisk frekvensbegränsning:"
+
+#: src/snes9x.ui:4369
+msgid "Input rate:"
+msgstr "Inmatningshastighet:"
+
+#: src/snes9x.ui:4382
+msgid ""
+"Adjust to produce more or less data. Decrease the rate if experiencing "
+"crackling. Increase the rate if experiencing frame rate stuttering. Best "
+"used with the “Sound buffer synchronization” option."
+msgstr ""
+"Justera för att producera mer eller mindre data. Minska frekvensen om du "
+"upplever sprakande ljud. Öka frekvensen om du upplever att bildfrekvensen "
+"stammar. Används bäst med alternativet \"Synkronisering av ljudbuffert\"."
+
+#: src/snes9x.ui:4432
+msgid "Video rate:"
+msgstr "Videofrekvens:"
+
+#: src/snes9x.ui:4469
+msgid "<b>Sound Settings</b>"
+msgstr "<b>Ljudinställningar</b>"
+
+#: src/snes9x.ui:4503 src/snes9x.ui:8730
+msgid "Sound"
+msgstr "Ljud"
+
+#: src/snes9x.ui:4561
+msgid "Throttling method:"
+msgstr "Strypningsmetod:"
+
+#: src/snes9x.ui:4603
+msgid "<b>Speed Control</b>"
+msgstr "<b>Hastighetskontroll</b>"
+
+#: src/snes9x.ui:4641
+msgid "Rewind buffer size (MB):"
+msgstr "Buffertstorlek för tillbakaspolning (MB):"
+
+#: src/snes9x.ui:4683
+msgid "Number of frames between rewind snapshots:"
+msgstr "Antal bildrutor mellan ögonblicksbilder för tillbakaspolning:"
+
+#: src/snes9x.ui:4724
+msgid "<b>Rewind Settings</b>"
+msgstr "<b>Inställningar för tillbakaspolning</b>"
+
+#: src/snes9x.ui:4755
+msgid "Allow invalid VRAM access"
+msgstr "Tillåt ogiltig VRAM-åtkomst"
+
+#: src/snes9x.ui:4759
+msgid ""
+"Allows ROM hacks to write to screen at the wrong time. Only use if you know "
+"your ROM hack expects this"
+msgstr ""
+"Gör det möjligt för ROM-hack att skriva till skärmen vid fel tidpunkt. "
+"Använd endast om du vet att ditt ROM-hack förväntar sig detta"
+
+#: src/snes9x.ui:4769
+msgid "Allow opposing dpad directions"
+msgstr "Tillåt motsatta dpad-riktningar"
+
+#: src/snes9x.ui:4773
+msgid "Let left and right or up and down be pressed at the same time"
+msgstr "Låt vänster och höger eller upp och ner tryckas samtidigt"
+
+#: src/snes9x.ui:4784
+msgid "Overclock CPU"
+msgstr "Överklocka CPU"
+
+#: src/snes9x.ui:4788
+msgid "Reduces slowdown, but has potential to break games"
+msgstr "Minskar långsamheter, men har potential att förstöra spel"
+
+#: src/snes9x.ui:4799
+msgid "Remove sprite limit"
+msgstr "Ta bort sprite-gräns"
+
+#: src/snes9x.ui:4803
+msgid "Reduces flicker, but may cause graphical artifacts"
+msgstr "Minskar flimmer, men kan orsaka grafiska artefakter"
+
+#: src/snes9x.ui:4814
+msgid "Redirect echo buffer overflow"
+msgstr "Omdirigera ekobuffertöverflöde"
+
+#: src/snes9x.ui:4818
+msgid "Allows old addmusic hacks to work, but will likely hurt other games"
+msgstr ""
+"Tillåter gamla addmusic-hack att fungera, men kommer sannolikt att skada "
+"andra spel"
+
+#: src/snes9x.ui:4836
+msgid "SuperFX clock speed %:"
+msgstr "SuperFX klockfrekvens %:"
+
+#: src/snes9x.ui:4875
+msgid "Gaussian is the correct behavior for SNES hardware"
+msgstr "Gaussisk är det korrekta beteendet för SNES-hårdvara"
+
+#: src/snes9x.ui:4882
+msgid "Sound filter:"
+msgstr "Ljudfilter:"
+
+#: src/snes9x.ui:4919
+msgid "<b>Hacks</b>"
+msgstr "<b>Hacks</b>"
+
+#: src/snes9x.ui:4961 src/snes9x.ui:7147
+msgid "Emulation"
+msgstr "Emulering"
+
+#: src/snes9x.ui:5202
+msgid "SRAM:"
+msgstr "SRAM:"
+
+#: src/snes9x.ui:5214
+msgid "Save states:"
+msgstr "Sparade tillstånd:"
+
+#: src/snes9x.ui:5228
+msgid "Cheats:"
+msgstr "Fusk:"
+
+#: src/snes9x.ui:5242
+msgid "Patches:"
+msgstr "Patchar:"
+
+#: src/snes9x.ui:5256
+msgid "Exports:"
+msgstr "Exporter:"
+
+#: src/snes9x.ui:5280
+msgid "<b>Game Data Locations</b>"
+msgstr "<b>Platser för speldata</b>"
+
+#: src/snes9x.ui:5313
+msgid "Save SRAM:"
+msgstr "Spara SRAM:"
+
+#: src/snes9x.ui:5325
+msgid ""
+"Automatically save the game’s SRAM at this interval. Setting this to 0 will "
+"only save when quitting or changing ROMs"
+msgstr ""
+"Spara automatiskt spelets SRAM med detta intervall. Om du ställer in detta "
+"på 0 sparas det bara när du avslutar eller byter ROM"
+
+#: src/snes9x.ui:5355
+msgid "<b>Automatic Saving</b>"
+msgstr "<b>Automatisk sparing</b>"
+
+#: src/snes9x.ui:5392
+msgid "Files"
+msgstr "Filer"
+
+#: src/snes9x.ui:5423
+msgid "<b>Joypad:</b>"
+msgstr "<b>Joypad:</b>"
+
+#: src/snes9x.ui:5464
+msgid "_Reset"
+msgstr "_Omstart"
+
+#: src/snes9x.ui:5492
+msgid "Swap with:"
+msgstr "Växla med:"
+
+#: src/snes9x.ui:5520
+msgid "_Swap"
+msgstr "_Växla"
+
+#: src/snes9x.ui:5542
+msgid "Use _modifier keys (Ctrl, Shift, Alt) directly"
+msgstr "Använd _modifieringstangenter (Ctrl, Shift, Alt) direkt"
+
+#: src/snes9x.ui:5546
+msgid "Allow using modifier keys as independent keys instead of modifiers"
+msgstr ""
+"Tillåt användning av modifieringstangenter som oberoende tangenter istället "
+"för modifierare"
+
+#: src/snes9x.ui:5581
+msgid "Up"
+msgstr "Upp"
+
+#: src/snes9x.ui:5593
+msgid "Down"
+msgstr "Ner"
+
+#: src/snes9x.ui:5607
+msgid "Left"
+msgstr "Vänster"
+
+#: src/snes9x.ui:5621
+msgid "Right"
+msgstr "Höger"
+
+#: src/snes9x.ui:5635
+msgid "Start"
+msgstr "Start"
+
+#: src/snes9x.ui:5649
+msgid "Select"
+msgstr "Select"
+
+#: src/snes9x.ui:5790 src/snes9x.ui:6020 src/snes9x.ui:6232
+msgid "A"
+msgstr "A"
+
+#: src/snes9x.ui:5802 src/snes9x.ui:6032 src/snes9x.ui:6244
+msgid "B"
+msgstr "B"
+
+#: src/snes9x.ui:5816 src/snes9x.ui:6046 src/snes9x.ui:6258
+msgid "X"
+msgstr "X"
+
+#: src/snes9x.ui:5830 src/snes9x.ui:6060 src/snes9x.ui:6272
+msgid "Y"
+msgstr "Y"
+
+#: src/snes9x.ui:5844 src/snes9x.ui:6074 src/snes9x.ui:6286
+msgid "L"
+msgstr "L"
+
+#: src/snes9x.ui:5858 src/snes9x.ui:6088 src/snes9x.ui:6300
+msgid "R"
+msgstr "R"
+
+#: src/snes9x.ui:5992
+msgid "Buttons"
+msgstr "Knappar"
+
+#: src/snes9x.ui:6433
+msgid "<b>Sticky</b>"
+msgstr "<b>Klistrig</b>"
+
+#: src/snes9x.ui:6449
+msgid "<b>Turbo</b>"
+msgstr "<b>Turbo</b>"
+
+#: src/snes9x.ui:6468
+msgid "Turbo / Sticky Buttons"
+msgstr "Turbo / klistriga knappar"
+
+#: src/snes9x.ui:6505
+msgid "Set new axis bindings at:"
+msgstr "Ställ in nya axelbindningar till:"
+
+#: src/snes9x.ui:6517
+msgid ""
+"Changes the amount a joystick should be tilted to register a button press"
+msgstr ""
+"Ändrar hur mycket en styrspak ska lutas för att registrera en knapptryckning"
+
+#: src/snes9x.ui:6536
+msgid "percent"
+msgstr "procent"
+
+#: src/snes9x.ui:6553
+msgid "<b>Joystick Axis Threshold</b>"
+msgstr "<b>Tröskelvärde för styrspaksaxel</b>"
+
+#: src/snes9x.ui:6590
+msgid "Center all axes on all joysticks and press Calibrate."
+msgstr "Centrera alla axlar på alla kontroller och tryck på Kalibrera."
+
+#: src/snes9x.ui:6605
+msgid "Cali_brate"
+msgstr "Kali_brera"
+
+#: src/snes9x.ui:6638
+msgid "<b>Calibration</b>"
+msgstr "<b>Kalibrering</b>"
+
+#: src/snes9x.ui:6659
+msgid "Joystick Options"
+msgstr "Styrspaksalternativ"
+
+#: src/snes9x.ui:6677 src/snes9x.ui:9029
+msgid ""
+"<small>Click an entry and then press the desired keys or joystick button\n"
+"<tt>Escape</tt>: Move to next  <tt>Shift+Escape</tt>: Clear selected</small>"
+msgstr ""
+"<small>Klicka på en post och tryck sedan på önskad tangent eller "
+"kontrollerknapp\n"
+"<tt>Escape</tt>: Flytta till nästa <tt>Skift+Escape</tt>: Töm markerad</"
+"small>"
+
+#: src/snes9x.ui:6715
+msgid "Joypads"
+msgstr "Joypads"
+
+#: src/snes9x.ui:6742
+msgid "<b>SuperSnes9x Emulator Shortcut Keys</b>"
+msgstr "<b>Snabbtangenter för SuperSnes9x-emulator</b>"
+
+#: src/snes9x.ui:6793
+msgid "Soft reset"
+msgstr "Mjuk omstart"
+
+#: src/snes9x.ui:6807
+msgid "Hardware reset"
+msgstr "Omstart av hårdvara"
+
+#: src/snes9x.ui:6821
+msgid "Increase frame time"
+msgstr "Öka bildtid"
+
+#: src/snes9x.ui:6835
+msgid "Decrease frame time"
+msgstr "Minska bildtiden"
+
+#: src/snes9x.ui:6849
+msgid "Increase frame rate"
+msgstr "Öka bildfrekvens"
+
+#: src/snes9x.ui:6863
+msgid "Decrease frame rate"
+msgstr "Minska bildfrekvensen"
+
+#: src/snes9x.ui:6877
+msgid "Pause"
+msgstr "Paus"
+
+#: src/snes9x.ui:6891
+msgid "Toggle turbo"
+msgstr "Växla turbo"
+
+#: src/snes9x.ui:6905
+msgid "Enable turbo"
+msgstr "Aktivera turbo"
+
+#: src/snes9x.ui:6920
+msgid "Open ROM"
+msgstr "Öppna ROM"
+
+#: src/snes9x.ui:7179
+msgid "Toggle BG layer 0"
+msgstr "Växla BG-lager 0"
+
+#: src/snes9x.ui:7191
+msgid "Toggle BG layer 1"
+msgstr "Växla BG-lager 1"
+
+#: src/snes9x.ui:7205
+msgid "Toggle BG layer 2"
+msgstr "Växla BG-lager 2"
+
+#: src/snes9x.ui:7219
+msgid "Toggle BG layer 3"
+msgstr "Växla BG-lager 3"
+
+#: src/snes9x.ui:7233
+msgid "Toggle sprites"
+msgstr "Växla sprites"
+
+#: src/snes9x.ui:7247
+msgid "Toggle forced backdrop color"
+msgstr "Växla färg för tvingad bakgrund"
+
+#: src/snes9x.ui:7261
+msgid "Screenshot"
+msgstr "Skärmbild"
+
+#: src/snes9x.ui:7275
+msgid "Toggle fullscreen"
+msgstr "Växla helskärm"
+
+#: src/snes9x.ui:7439
+msgid "Graphics"
+msgstr "Grafik"
+
+#: src/snes9x.ui:7476
+msgid "Save current slot"
+msgstr "Spara aktuell plats"
+
+#: src/snes9x.ui:7509
+msgid "Load current slot"
+msgstr "Läs in aktuell plats"
+
+#: src/snes9x.ui:7542
+msgid "Increment and save"
+msgstr "Öka och spara"
+
+#: src/snes9x.ui:7575
+msgid "Decrement and load"
+msgstr "Minska och läs in"
+
+#: src/snes9x.ui:7608
+msgid "Increment slot"
+msgstr "Öka plats"
+
+#: src/snes9x.ui:7641
+msgid "Decrement slot"
+msgstr "Minska plats"
+
+#: src/snes9x.ui:7685
+msgid "<b>Quick save state</b>"
+msgstr "<b>Snabbspara tillstånd</b>"
+
+#: src/snes9x.ui:7700
+msgid "<b>Quick load state</b>"
+msgstr "<b>Snabbinläs tillstånd</b>"
+
+#: src/snes9x.ui:7715 src/snes9x.ui:7855
+msgid "Slot 0"
+msgstr "Plats 0"
+
+#: src/snes9x.ui:7729 src/snes9x.ui:7871
+msgid "Slot 1"
+msgstr "Plats 1"
+
+#: src/snes9x.ui:7743 src/snes9x.ui:7887
+msgid "Slot 2"
+msgstr "Plats 2"
+
+#: src/snes9x.ui:7757 src/snes9x.ui:7903
+msgid "Slot 3"
+msgstr "Plats 3"
+
+#: src/snes9x.ui:7771 src/snes9x.ui:7919
+msgid "Slot 4"
+msgstr "Plats 4"
+
+#: src/snes9x.ui:7785 src/snes9x.ui:7935
+msgid "Slot 5"
+msgstr "Plats 5"
+
+#: src/snes9x.ui:7799 src/snes9x.ui:7951
+msgid "Slot 6"
+msgstr "Plats 6"
+
+#: src/snes9x.ui:7813 src/snes9x.ui:7967
+msgid "Slot 7"
+msgstr "Plats 7"
+
+#: src/snes9x.ui:7827 src/snes9x.ui:7983
+msgid "Slot 8"
+msgstr "Plats 8"
+
+#: src/snes9x.ui:7841 src/snes9x.ui:7999
+msgid "Slot 9"
+msgstr "Plats 9"
+
+#: src/snes9x.ui:8438
+msgid "Toggle sound channel 0"
+msgstr "Växla ljudkanal 0"
+
+#: src/snes9x.ui:8450
+msgid "Toggle sound channel 1"
+msgstr "Växla ljudkanal 1"
+
+#: src/snes9x.ui:8464
+msgid "Toggle sound channel 2"
+msgstr "Växla ljudkanal 2"
+
+#: src/snes9x.ui:8478
+msgid "Toggle sound channel 3"
+msgstr "Växla ljudkanal 3"
+
+#: src/snes9x.ui:8492
+msgid "Toggle sound channel 4"
+msgstr "Växla ljudkanal 4"
+
+#: src/snes9x.ui:8506
+msgid "Toggle sound channel 5"
+msgstr "Växla ljudkanal 5"
+
+#: src/snes9x.ui:8520
+msgid "Toggle sound channel 6"
+msgstr "Växla ljudkanal 6"
+
+#: src/snes9x.ui:8534
+msgid "Toggle sound channel 7"
+msgstr "Växla ljudkanal 7"
+
+#: src/snes9x.ui:8548
+msgid "Toggle all sound channels"
+msgstr "Växla mellan alla ljudkanaler"
+
+#: src/snes9x.ui:8753
+msgid "Seek to frame"
+msgstr "Spola till bildruta"
+
+#: src/snes9x.ui:8768
+msgid "Load Movie"
+msgstr "Läs in film"
+
+#: src/snes9x.ui:8783
+msgid "Stop movie recording"
+msgstr "Stoppa filminspelning"
+
+#: src/snes9x.ui:8798
+msgid "Begin movie recording"
+msgstr "Påbörja filminspelning"
+
+#: src/snes9x.ui:8813
+msgid "Save SPC"
+msgstr "Spara SPC"
+
+#: src/snes9x.ui:8913
+msgid "Swap controllers 1 & 2"
+msgstr "Växla kontroller 1 & 2"
+
+#: src/snes9x.ui:8944
+msgid "Rewind"
+msgstr "Spola tillbaka"
+
+#: src/snes9x.ui:8975
+msgid "Capture/release mouse"
+msgstr "Fånga/släpp muspekaren"
+
+#: src/snes9x.ui:9011
+msgid "Misc"
+msgstr "Diverse"
+
+#: src/snes9x.ui:9067
+msgid "Shortcuts"
+msgstr "Genvägar"
+
+#: src/snes9x.ui:9106
+msgid "Pause emulation when switching away from SuperSnes9x"
+msgstr "Pausa emuleringen när du byter från SuperSnes9x"
+
+#: src/snes9x.ui:9120
+msgid "Force‑enable button and menu icons"
+msgstr "Tvinga fram aktivering av knapp- och menyikoner"
+
+#: src/snes9x.ui:9141
+msgid "The <tt>Esc</tt> key should:"
+msgstr "<tt>Esc-tangenten</tt> bör användas:"
+
+#: src/snes9x.ui:9185
+msgid "Initial background:"
+msgstr "Initial bakgrund:"
+
+#: src/snes9x.ui:9226
+msgid "<b>Window Behavior</b>"
+msgstr "<b>Fönsterbeteende</b>"
+
+#: src/snes9x.ui:9256
+msgid "Prevent the screensaver from activating"
+msgstr "Förhindra att skärmsläckaren aktiveras"
+
+#: src/snes9x.ui:9276
+msgid "<b>Screensaver</b>"
+msgstr "<b>Skärmsläckare</b>"
+
+#: src/snes9x.ui:9310
+msgid "UI"
+msgstr "Användargränssnitt"
+
+#: src/snes9x.ui:9344
+msgid ""
+"  SuperSnes9x – A Portable Super Nintendo Entertainment System™ Emulator\n"
+"\n"
+"  Snes9x homepage: http://www.snes9x.com/\n"
+"  SuperSnes9x source code: https://github.com/shanytc/snes9x/\n"
+"\n"
+"  Permission to use, copy, modify and/or distribute Snes9x in both binary\n"
+"  and source form, for non‑commercial purposes, is hereby granted without\n"
+"  fee, providing that this license information and copyright notice appear\n"
+"  with all copies and any derived work.\n"
+"\n"
+"  This software is provided ‘as‑is’, without any express or implied\n"
+"  warranty. In no event shall the authors be held liable for any damages\n"
+"  arising from the use of this software or it’s derivatives.\n"
+"\n"
+"  Snes9x is freeware for PERSONAL USE only. Commercial users should\n"
+"  seek permission of the copyright holders first. Commercial use includes,\n"
+"  but is not limited to, charging money for Snes9x or software derived from\n"
+"  Snes9x, including Snes9x or derivatives in commercial game bundles, and/"
+"or\n"
+"  using Snes9x as a promotion for your commercial product.\n"
+"\n"
+"  The copyright holders request that bug fixes and improvements to the code\n"
+"  should be forwarded to them so everyone can benefit from the "
+"modifications\n"
+"  in future versions.\n"
+"\n"
+"  .comSuper NES and Super Nintendo Entertainment System are trademarks of\n"
+"  Nintendo Co., Limited and its subsidiary companies."
+msgstr ""
+"  SuperSnes9x - En bärbar emulator för Super Nintendo Entertainment System™\n"
+"\n"
+"  Snes9x webbsida: http://www.snes9x.com/\n"
+"  SuperSnes9x källkod: https://github.com/shanytc/snes9x/\n"
+"\n"
+"  Tillstånd att använda, kopiera, modifiera och/eller distribuera SuperSnes9x i "
+"både binär\n"
+"  och källkod, för icke-kommersiella ändamål, beviljas härmed utan avgift\n"
+"  avgift, under förutsättning att denna licensinformation och "
+"upphovsrättsmeddelande visas\n"
+"  med alla kopior och alla härledda verk.\n"
+"\n"
+"  Denna programvara tillhandahålls \"i befintligt skick\", utan någon "
+"uttrycklig eller underförstådd\n"
+"  garanti. Under inga omständigheter ska författarna hållas ansvariga för "
+"eventuella skador\n"
+"  som uppstår till följd av användningen av denna programvara eller dess "
+"derivat.\n"
+"\n"
+"  SuperSnes9x är freeware och är endast avsett för personligt bruk. Kommersiella "
+"användare bör\n"
+"  först söka tillstånd från upphovsrättsinnehavarna. Kommersiell användning "
+"inkluderar,\n"
+"  men är inte begränsat till att ta betalt för SuperSnes9x eller programvara som "
+"härrör från SuperSnes9x\n"
+"  SuperSnes9x, inkludera SuperSnes9x eller derivat i kommersiella spelpaket, och/"
+"eller\n"
+"  använda SuperSnes9x som en marknadsföring för din kommersiella produkt.\n"
+"\n"
+"  Upphovsrättsinnehavarna begär att buggfixar och förbättringar av koden\n"
+"  koden ska vidarebefordras till dem så att alla kan dra nytta av "
+"ändringarna\n"
+"  i framtida versioner.\n"
+"\n"
+"  Super NES och Super Nintendo Entertainment System är varumärken som "
+"tillhör\n"
+"  Nintendo Co, Limited och dess dotterbolag."
+
+# === Win32 strings (added by i18n/extract_strings.py) ===
+
+#: win32/rsrc/snes9x.rc
+msgid "!= (Not Equal To)"
+msgstr "!= (Inte lika med)"
+
+#: win32/wlanguage.h
+msgid "(Not Available)"
+msgstr "(Inte tillgänglig)"
+
+#: win32/wlanguage.h
+msgid "(not stored in movie file)"
+msgstr "(lagras inte i filmfilen)"
+
+#: win32/rsrc/snes9x.rc
+msgid "(restart required)"
+msgstr "(omstart krävs)"
+
+#: win32/rsrc/snes9x.rc
+msgid "0 (off)"
+msgstr "0 (av)"
+
+#: win32/rsrc/snes9x.rc
+msgid "1 byte"
+msgstr "1 byte"
+
+#: win32/rsrc/snes9x.rc
+msgid "1 frame"
+msgstr "1 bildruta"
+
+#: win32/rsrc/snes9x.rc
+msgid "10x"
+msgstr "10x"
+
+#: win32/rsrc/snes9x.rc
+msgid "112ms"
+msgstr "112ms"
+
+#: win32/rsrc/snes9x.rc
+msgid "11KHz"
+msgstr "11KHz"
+
+#: win32/rsrc/snes9x.rc
+msgid "128ms"
+msgstr "128ms"
+
+#: win32/rsrc/snes9x.rc
+msgid "144ms"
+msgstr "144ms"
+
+#: win32/rsrc/snes9x.rc
+msgid "160ms"
+msgstr "160ms"
+
+#: win32/rsrc/snes9x.rc
+msgid "16KHz"
+msgstr "16KHz"
+
+#: win32/rsrc/snes9x.rc
+msgid "16ms"
+msgstr "16ms"
+
+#: win32/rsrc/snes9x.rc
+msgid "176ms"
+msgstr "176ms"
+
+#: win32/rsrc/snes9x.rc
+msgid "192ms"
+msgstr "192ms"
+
+#: win32/rsrc/snes9x.rc
+msgid "1x"
+msgstr "1x"
+
+#: win32/rsrc/snes9x.rc
+msgid "2 bytes"
+msgstr "2 byte"
+
+#: win32/rsrc/snes9x.rc
+msgid "2 frames"
+msgstr "2 bildrutor"
+
+#: win32/rsrc/snes9x.rc
+msgid "208ms"
+msgstr "208ms"
+
+#: win32/rsrc/snes9x.rc
+msgid "22KHz"
+msgstr "22KHz"
+
+#: win32/rsrc/snes9x.rc
+msgid "2x"
+msgstr "2x"
+
+#: win32/rsrc/snes9x.rc
+msgid "3 bytes"
+msgstr "3 byte"
+
+#: win32/rsrc/snes9x.rc
+msgid "3 frames"
+msgstr "3 bildrutor"
+
+#: win32/rsrc/snes9x.rc
+msgid "30KHz"
+msgstr "30KHz"
+
+#: win32/rsrc/snes9x.rc
+msgid "32KHz"
+msgstr "32KHz"
+
+#: win32/rsrc/snes9x.rc
+msgid "32ms"
+msgstr "32ms"
+
+#: win32/rsrc/snes9x.rc
+msgid "35KHz"
+msgstr "35KHz"
+
+#: win32/rsrc/snes9x.rc
+msgid "3x"
+msgstr "3x"
+
+#: win32/rsrc/snes9x.rc
+msgid "4 bytes"
+msgstr "4 byte"
+
+#: win32/rsrc/snes9x.rc
+msgid "4 frames"
+msgstr "4 bildrutor"
+
+#: win32/rsrc/snes9x.rc
+msgid "44KHz"
+msgstr "44KHz"
+
+#: win32/rsrc/snes9x.rc
+msgid "48KHz"
+msgstr "48KHz"
+
+#: win32/rsrc/snes9x.rc
+msgid "48ms"
+msgstr "48ms"
+
+#: win32/rsrc/snes9x.rc
+msgid "4x"
+msgstr "4x"
+
+#: win32/rsrc/snes9x.rc
+msgid "5x"
+msgstr "5x"
+
+#: win32/rsrc/snes9x.rc
+msgid "64ms"
+msgstr "64ms"
+
+#: win32/rsrc/snes9x.rc
+msgid "6x"
+msgstr "6x"
+
+#: win32/rsrc/snes9x.rc
+msgid "7x"
+msgstr "7x"
+
+#: win32/rsrc/snes9x.rc
+msgid "80ms"
+msgstr "80ms"
+
+#: win32/rsrc/snes9x.rc
+msgid "8KHz"
+msgstr "8KHz"
+
+#: win32/rsrc/snes9x.rc
+msgid "8x"
+msgstr "8x"
+
+#: win32/rsrc/snes9x.rc
+msgid "96ms"
+msgstr "96ms"
+
+#: win32/rsrc/snes9x.rc
+msgid "9x"
+msgstr "9x"
+
+#: win32/rsrc/snes9x.rc
+msgid "< (Less Than)"
+msgstr "< (Mindre än)"
+
+#: win32/wlanguage.h
+msgid "<-- MISMATCH !!!"
+msgstr "<-- MATCHAR INTE !!!"
+
+#: win32/rsrc/snes9x.rc
+msgid "<= (Less Than or Equal to)"
+msgstr "<= (Mindre än eller lika med)"
+
+#: win32/rsrc/snes9x.rc
+msgid "= (Equal To)"
+msgstr "= (Lika med)"
+
+#: win32/rsrc/snes9x.rc
+msgid "> (Greater Than)"
+msgstr "> (Större än)"
+
+#: win32/rsrc/snes9x.rc
+msgid ">= (Greater than or Equal To)"
+msgstr ">= (Större än eller lika med)"
+
+#: win32/rsrc/snes9x.rc
+msgid "About"
+msgstr "Om"
+
+#: win32/rsrc/snes9x.rc
+msgid "Achievement List"
+msgstr "Lista över prestationer"
+
+#: win32/rsrc/snes9x.rc
+msgid "Act as Server"
+msgstr "Fungera som server"
+
+#: win32/wlanguage.h
+msgid "Act As Server"
+msgstr "Fungera som server"
+
+#: win32/rsrc/snes9x.rc
+msgid "Add"
+msgstr "Lägg till"
+
+#: win32/rsrc/snes9x.rc
+msgid "Add Cheat"
+msgstr "Lägg till fusk"
+
+#: win32/rsrc/snes9x.rc
+msgid "Add SuperSnes9x to registry for supported file types"
+msgstr "Lägg till SuperSnes9x i registret för filtyper som stöds"
+
+#: win32/rsrc/snes9x.rc
+msgid "Address"
+msgstr "Adress"
+
+#: win32/rsrc/snes9x.rc
+msgid "Address:"
+msgstr "Adress:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Adjustments"
+msgstr "Justeringar"
+
+#: win32/wlanguage.h
+msgid "All files"
+msgstr "Alla filer"
+
+#: win32/rsrc/snes9x.rc
+msgid "all of SuperSnes9x's settings are stored in this file"
+msgstr "alla inställningar för SuperSnes9x lagras i denna fil"
+
+#: win32/rsrc/snes9x.rc
+msgid "Allow executable logo override"
+msgstr "Tillåt åsidosättning av logotyp i körbar fil"
+
+#: win32/rsrc/snes9x.rc
+msgid "Allow Invalid VRAM Access"
+msgstr "Tillåt ogiltig VRAM-åtkomst"
+
+#: win32/rsrc/snes9x.rc
+msgid "Allow Left+Rt/Up+Dn"
+msgstr "Tillåt Vänster+Höger/Upp+Ner"
+
+#: win32/rsrc/snes9x.rc
+msgid "APP - Emulator Settings"
+msgstr "APP - Emulatorinställningar"
+
+#: win32/rsrc/snes9x.rc
+msgid "Apply"
+msgstr "Tillämpa"
+
+#: win32/rsrc/snes9x.rc
+msgid "Apply Adjustments"
+msgstr "Tillämpa justeringar"
+
+#: win32/rsrc/snes9x.rc
+msgid "Apply Cheats"
+msgstr "Tillämpa fusk"
+
+#: win32/rsrc/snes9x.rc
+msgid "Ask for confirmation when saving/loading"
+msgstr "Be om bekräftelse vid sparande/inläsning"
+
+#: win32/rsrc/snes9x.rc
+msgid "Ask Server to Pause when"
+msgstr "Be servern pausa när"
+
+#: win32/rsrc/snes9x.rc
+msgid "Author Info:"
+msgstr "Författarinfo:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Auto Layer Transparency"
+msgstr "Automatisk lagertransparens"
+
+#: win32/rsrc/snes9x.rc
+msgid "Auto update"
+msgstr "Automatisk uppdatering"
+
+#: win32/rsrc/snes9x.rc
+msgid "Auto-Assign"
+msgstr "Tilldela automatiskt"
+
+#: win32/wlanguage.h
+msgid "Auto-Detect"
+msgstr "Identifiera automatiskt"
+
+#: win32/rsrc/snes9x.rc
+msgid "Auto-Save S-RAM"
+msgstr "Spara S-RAM automatiskt"
+
+#: win32/wlanguage.h
+msgid "Autofire"
+msgstr "Autoeld"
+
+#: win32/wlanguage.h
+msgid "Autohold"
+msgstr "Autohåll"
+
+#: win32/rsrc/snes9x.rc
+msgid "Automatic Input Rate"
+msgstr "Automatisk inmatningshastighet"
+
+#: win32/rsrc/snes9x.rc
+msgid "Automatic, skip at most:"
+msgstr "Automatisk, hoppa över högst:"
+
+#: win32/wlanguage.h
+msgid "AVI file"
+msgstr "AVI-fil"
+
+#: win32/rsrc/snes9x.rc
+msgid "AVI Recording"
+msgstr "AVI-inspelning"
+
+#: win32/rsrc/snes9x.rc
+msgid "Background Keyboard Hotkeys"
+msgstr "Snabbtangenter för bakgrundstangentbord"
+
+#: win32/rsrc/snes9x.rc
+msgid "Background:"
+msgstr "Bakgrund:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Bank +:"
+msgstr "Bank +:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Bank -:"
+msgstr "Bank -:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Bank:"
+msgstr "Bank:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Base Tile Addresses"
+msgstr "Bastilesadresser"
+
+#: win32/rsrc/snes9x.rc
+msgid "BG1:"
+msgstr "BG1:"
+
+#: win32/rsrc/snes9x.rc
+msgid "BG2:"
+msgstr "BG2:"
+
+#: win32/rsrc/snes9x.rc
+msgid "BG3:"
+msgstr "BG3:"
+
+#: win32/rsrc/snes9x.rc
+msgid "BG4:"
+msgstr "BG4:"
+
+#: win32/rsrc/snes9x.rc
+msgid "BG:"
+msgstr "BG:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Bilinear Filtering"
+msgstr "Bilinjär filtrering"
+
+#: win32/rsrc/snes9x.rc
+msgid "Binding"
+msgstr "Bindning"
+
+#: win32/rsrc/snes9x.rc
+msgid "BIOS"
+msgstr "BIOS"
+
+#: win32/wlanguage.h
+msgid "BIOS files"
+msgstr "BIOS-filer"
+
+#: win32/rsrc/snes9x.rc
+msgid "BIOS:"
+msgstr "BIOS:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Bit Depth:"
+msgstr "Bitdjup:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Blend Hi-Res Images"
+msgstr "Blanda högupplösta bilder"
+
+#: win32/rsrc/snes9x.rc
+msgid "Blue means already mapped. Pink conflicts with hotkey.\nRed is reserved by Windows. Escape clears bindings.\nPress multiple keys for multi-bind. Delete removes last."
+msgstr "Blått betyder redan mappad. Rosa står i konflikt med snabbtangent.\nRött är reserverat av Windows. Escape rensar bindningar.\nTryck på flera tangenter för flerbindning. Delete tar bort den sista."
+
+#: win32/wlanguage.h
+msgid "Blue means the hotkey is already mapped.\nPink means it conflicts with a game button.\nRed means it's reserved by Windows.\nA hotkey can be disabled using Escape."
+msgstr "Blått betyder att snabbtangenten redan är mappad.\nRosa betyder att den står i konflikt med en spelknapp.\nRött betyder att den är reserverad av Windows.\nEn snabbtangent kan inaktiveras med Escape."
+
+#: win32/rsrc/snes9x.rc
+msgid "Blue means the hotkey is already mapped. Pink means it conflicts with a game button. Red means it's reserved by Windows. Escape clears bindings.\nPress multiple keys for multi-bind. Delete removes last."
+msgstr "Blått betyder att snabbtangenten redan är mappad. Rosa betyder att den står i konflikt med en spelknapp. Rött betyder att den är reserverad av Windows. Escape rensar bindningar.\nTryck på flera tangenter för flerbindning. Delete tar bort den sista."
+
+#: win32/rsrc/snes9x.rc
+msgid "Browse"
+msgstr "Bläddra"
+
+#: win32/rsrc/snes9x.rc
+msgid "Buffer Length"
+msgstr "Buffertlängd"
+
+#: win32/rsrc/snes9x.rc
+msgid "Buffer Length:"
+msgstr "Buffertlängd:"
+
+#: win32/wlanguage.h
+msgid "Can't Open File"
+msgstr "Kan inte öppna filen"
+
+#: win32/rsrc/snes9x.rc
+msgid "Cancel"
+msgstr "Avbryt"
+
+#: win32/rsrc/snes9x.rc
+msgid "Channel 1"
+msgstr "Kanal 1"
+
+#: win32/rsrc/snes9x.rc
+msgid "Channel 2"
+msgstr "Kanal 2"
+
+#: win32/rsrc/snes9x.rc
+msgid "Channel 3"
+msgstr "Kanal 3"
+
+#: win32/rsrc/snes9x.rc
+msgid "Channel 4"
+msgstr "Kanal 4"
+
+#: win32/rsrc/snes9x.rc
+msgid "Channel 5"
+msgstr "Kanal 5"
+
+#: win32/rsrc/snes9x.rc
+msgid "Channel 6"
+msgstr "Kanal 6"
+
+#: win32/rsrc/snes9x.rc
+msgid "Channel 7"
+msgstr "Kanal 7"
+
+#: win32/rsrc/snes9x.rc
+msgid "Channel 8"
+msgstr "Kanal 8"
+
+#: win32/rsrc/snes9x.rc
+msgid "Channels"
+msgstr "Kanaler"
+
+#: win32/rsrc/snes9x.rc
+msgid "Chat"
+msgstr "Chatt"
+
+#: win32/rsrc/snes9x.rc
+msgid "Cheat Description:"
+msgstr "Fuskbeskrivning:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Cheat Details"
+msgstr "Fuskdetaljer"
+
+#: win32/rsrc/snes9x.rc
+msgid "Cheat Entry and Editor"
+msgstr "Fuskinmatning och redigerare"
+
+#: win32/rsrc/snes9x.rc
+msgid "Cheat Search"
+msgstr "Fusksökning"
+
+#: win32/wlanguage.h
+msgid "Cheats Editor Dialog:"
+msgstr "Dialogruta för fuskredigerare:"
+
+#: win32/wlanguage.h
+msgid "Cheats Search Dialog:"
+msgstr "Dialogruta för fusksökning:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Choose Logo"
+msgstr "Välj logotyp"
+
+#: win32/rsrc/snes9x.rc
+msgid "Clear"
+msgstr "Rensa"
+
+#: win32/rsrc/snes9x.rc
+msgid "Clear All"
+msgstr "Rensa alla"
+
+#: win32/rsrc/snes9x.rc
+msgid "Clear History"
+msgstr "Rensa historik"
+
+#: win32/rsrc/snes9x.rc
+msgid "Clear SRAM"
+msgstr "Rensa SRAM"
+
+#: win32/rsrc/snes9x.rc
+msgid "Clear Watches"
+msgstr "Rensa bevakningar"
+
+#: win32/rsrc/snes9x.rc
+msgid "Client Settings"
+msgstr "Klientinställningar"
+
+#: win32/wlanguage.h
+msgid "Clipping Windows:"
+msgstr "Klippfönster:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Close"
+msgstr "Stäng"
+
+#: win32/wlanguage.h
+msgid "Code"
+msgstr "Kod"
+
+#: win32/rsrc/snes9x.rc
+msgid "Color Correction"
+msgstr "Färgkorrigering"
+
+#: win32/rsrc/snes9x.rc
+msgid "Compare To"
+msgstr "Jämför med"
+
+#: win32/rsrc/snes9x.rc
+msgid "Comparison Type"
+msgstr "Jämförelsetyp"
+
+#: win32/rsrc/snes9x.rc
+msgid "Config file:"
+msgstr "Konfigurationsfil:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Connect"
+msgstr "Anslut"
+
+#: win32/rsrc/snes9x.rc
+msgid "Connect clients to: 127.0.0.1 (localhost) or your LAN IP"
+msgstr "Anslut klienter till: 127.0.0.1 (localhost) eller din LAN-IP"
+
+#: win32/rsrc/snes9x.rc
+msgid "Connect to Server"
+msgstr "Anslut till server"
+
+#: win32/rsrc/snes9x.rc
+msgid "Controller"
+msgstr "Kontroller"
+
+#: win32/wlanguage.h
+msgid "Could not open movie file."
+msgstr "Kunde inte öppna filmfilen."
+
+#: win32/rsrc/snes9x.rc
+msgid "CPU Overclock:"
+msgstr "CPU-överklockning:"
+
+#: win32/wlanguage.h
+msgid "crc32=%08X, name=%s"
+msgstr "crc32=%08X, namn=%s"
+
+#: win32/wlanguage.h
+msgid "Current ROM:"
+msgstr "Aktuell ROM:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Current ROM: CRC32=Unknown, Name=Unknown"
+msgstr "Aktuell ROM: CRC32=Okänt, Namn=Okänt"
+
+#: win32/rsrc/snes9x.rc
+msgid "Current Value"
+msgstr "Aktuellt värde"
+
+#: win32/rsrc/snes9x.rc
+msgid "Custom ROM Open Dialog"
+msgstr "Dialogruta för anpassad ROM-öppning"
+
+#: win32/rsrc/snes9x.rc
+msgid "Custom Screen Mode"
+msgstr "Anpassat skärmläge"
+
+#: win32/rsrc/snes9x.rc
+msgid "Customize Hotkeys"
+msgstr "Anpassa snabbtangenter"
+
+#: win32/rsrc/snes9x.rc
+msgid "Customize Special Keys"
+msgstr "Anpassa specialtangenter"
+
+#: win32/rsrc/snes9x.rc
+msgid "Data Size"
+msgstr "Datastorlek"
+
+#: win32/rsrc/snes9x.rc
+msgid "Data Type"
+msgstr "Datatyp"
+
+#: win32/rsrc/snes9x.rc
+msgid "DATE"
+msgstr "DATUM"
+
+#: win32/rsrc/snes9x.rc
+msgid "Defaults"
+msgstr "Standardvärden"
+
+#: win32/rsrc/snes9x.rc
+msgid "Delete"
+msgstr "Ta bort"
+
+#: win32/rsrc/snes9x.rc
+msgid "Detect gamepad changes"
+msgstr "Identifiera ändringar i handkontroll"
+
+#: win32/rsrc/snes9x.rc
+msgid "Dialog"
+msgstr "Dialogruta"
+
+#: win32/rsrc/snes9x.rc
+msgid "Direct3D Shader File"
+msgstr "Direct3D Shader-fil"
+
+#: win32/wlanguage.h
+msgid "Directory"
+msgstr "Katalog"
+
+#: win32/rsrc/snes9x.rc
+msgid "Directory:"
+msgstr "Katalog:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Disable Sprite Limit"
+msgstr "Inaktivera sprite-gräns"
+
+#: win32/rsrc/snes9x.rc
+msgid "Disconnect"
+msgstr "Koppla från"
+
+#: win32/rsrc/snes9x.rc
+msgid "Disconnect from Server"
+msgstr "Koppla från server"
+
+#: win32/rsrc/snes9x.rc
+msgid "Display Configuration"
+msgstr "Skärmkonfiguration"
+
+#: win32/rsrc/snes9x.rc
+msgid "Display messages inside SNES image"
+msgstr "Visa meddelanden inuti SNES-bild"
+
+#: win32/rsrc/snes9x.rc
+msgid "Display Settings"
+msgstr "Skärminställningar"
+
+#: win32/rsrc/snes9x.rc
+msgid "DN LEFT"
+msgstr "NER VÄNSTER"
+
+#: win32/wlanguage.h
+msgid "Dn Left"
+msgstr "Ner vänster"
+
+#: win32/rsrc/snes9x.rc
+msgid "DN RIGHT"
+msgstr "NER HÖGER"
+
+#: win32/wlanguage.h
+msgid "Dn Right"
+msgstr "Ner höger"
+
+#: win32/rsrc/snes9x.rc
+msgid "DOWN"
+msgstr "NER"
+
+#: win32/rsrc/snes9x.rc
+msgid "Dummy"
+msgstr "Dummy"
+
+#: win32/rsrc/snes9x.rc
+msgid "Dynamic Rate Control"
+msgstr "Dynamisk frekvenskontroll"
+
+#: win32/rsrc/snes9x.rc
+msgid "Edit Cheat Group"
+msgstr "Redigera fuskgrupp"
+
+#: win32/rsrc/snes9x.rc
+msgid "Emulate Fullscreen"
+msgstr "Emulera helskärm"
+
+#: win32/wlanguage.h
+msgid "Emulation Settings"
+msgstr "Emuleringsinställningar"
+
+#: win32/rsrc/snes9x.rc
+msgid "Emulator Hacks"
+msgstr "Emulator-hacks"
+
+#: win32/rsrc/snes9x.rc
+msgid "Enable"
+msgstr "Aktivera"
+
+#: win32/rsrc/snes9x.rc
+msgid "Enable All"
+msgstr "Aktivera alla"
+
+#: win32/rsrc/snes9x.rc
+msgid "Enable Background Input"
+msgstr "Aktivera bakgrundsinmatning"
+
+#: win32/rsrc/snes9x.rc
+msgid "Enable Color Correction (accurate SNES colors)"
+msgstr "Aktivera färgkorrigering (korrekta SNES-färger)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Enable Triple Buffering"
+msgstr "Aktivera trippelbuffring"
+
+#: win32/rsrc/snes9x.rc
+msgid "Enabled"
+msgstr "Aktiverad"
+
+#: win32/rsrc/snes9x.rc
+msgid "End Kaillera Game"
+msgstr "Avsluta Kaillera-spel"
+
+#: win32/rsrc/snes9x.rc
+msgid "Enter a Value:"
+msgstr "Ange ett värde:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Enter Cheat Code:"
+msgstr "Ange fuskkod:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Enter Cheat codes, one line at a time"
+msgstr "Ange fuskkoder, en rad i taget"
+
+#: win32/wlanguage.h
+msgid "enter host name"
+msgstr "ange värdnamn"
+
+#: win32/rsrc/snes9x.rc
+msgid "Entered Address"
+msgstr "Angiven adress"
+
+#: win32/rsrc/snes9x.rc
+msgid "Entered Value"
+msgstr "Angivet värde"
+
+#: win32/wlanguage.h
+msgid "Error Info:"
+msgstr "Felinfo:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Exit"
+msgstr "Avsluta"
+
+#: win32/rsrc/snes9x.rc
+msgid "Extend Height of SNES Image"
+msgstr "Utöka höjden på SNES-bilden"
+
+#: win32/wlanguage.h
+msgid "Fast forward:"
+msgstr "Snabbspolning framåt:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Fast-Forward"
+msgstr "Snabbspola framåt"
+
+#: win32/wlanguage.h
+msgid "Fast-forward toggle:"
+msgstr "Växla snabbspolning framåt:"
+
+#: win32/rsrc/snes9x.rc
+msgid "File"
+msgstr "Arkiv"
+
+#: win32/wlanguage.h
+msgid "File not found."
+msgstr "Filen hittades inte."
+
+#: win32/rsrc/snes9x.rc
+msgid "First Sprite:"
+msgstr "Första sprite:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Fixed, always skip:"
+msgstr "Fast, hoppa alltid över:"
+
+#: win32/wlanguage.h
+msgid "Force GD24"
+msgstr "Tvinga GD24"
+
+#: win32/wlanguage.h
+msgid "Force Header"
+msgstr "Tvinga header"
+
+#: win32/wlanguage.h
+msgid "Force HiROM"
+msgstr "Tvinga HiROM"
+
+#: win32/wlanguage.h
+msgid "Force LoROM"
+msgstr "Tvinga LoROM"
+
+#: win32/wlanguage.h
+msgid "Force mode 1"
+msgstr "Tvinga läge 1"
+
+#: win32/wlanguage.h
+msgid "Force mode 2"
+msgstr "Tvinga läge 2"
+
+#: win32/wlanguage.h
+msgid "Force No Header"
+msgstr "Tvinga ingen header"
+
+#: win32/wlanguage.h
+msgid "Force not interleaved"
+msgstr "Tvinga icke-interfolierad"
+
+#: win32/wlanguage.h
+msgid "Force NTSC"
+msgstr "Tvinga NTSC"
+
+#: win32/wlanguage.h
+msgid "Force PAL"
+msgstr "Tvinga PAL"
+
+#: win32/rsrc/snes9x.rc
+msgid "Frame Advance"
+msgstr "Stega bildruta"
+
+#: win32/rsrc/snes9x.rc
+msgid "Frame Advance mute"
+msgstr "Tysta vid bildrutestegning"
+
+#: win32/wlanguage.h
+msgid "Frame advance:"
+msgstr "Stega bildruta:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Frame Skipping:"
+msgstr "Överhoppning av bildrutor:"
+
+#: win32/rsrc/snes9x.rc
+msgid "frames"
+msgstr "bildrutor"
+
+#: win32/rsrc/snes9x.rc
+msgid "FRAMES"
+msgstr "BILDRUTOR"
+
+#: win32/rsrc/snes9x.rc
+msgid "frames behind"
+msgstr "bildrutor efter"
+
+#: win32/rsrc/snes9x.rc
+msgid "frames in auto-frame rate mode"
+msgstr "bildrutor i läge för automatisk bildfrekvens"
+
+#: win32/wlanguage.h
+msgid "frames in fast-forward mode"
+msgstr "bildrutor i snabbspolningsläge"
+
+#: win32/rsrc/snes9x.rc
+msgid "frames in Turbo mode"
+msgstr "bildrutor i turboläge"
+
+#: win32/rsrc/snes9x.rc
+msgid "Frames:"
+msgstr "Bildrutor:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Full Screen"
+msgstr "Helskärm"
+
+#: win32/rsrc/snes9x.rc
+msgid "Fullscreen"
+msgstr "Helskärm"
+
+#: win32/rsrc/snes9x.rc
+msgid "Fullscreen Display Settings"
+msgstr "Skärminställningar för helskärm"
+
+#: win32/rsrc/snes9x.rc
+msgid "Fullscreen on ROM Open"
+msgstr "Helskärm när ROM öppnas"
+
+#: win32/rsrc/snes9x.rc
+msgid "Game Boy Image"
+msgstr "Game Boy-bild"
+
+#: win32/rsrc/snes9x.rc
+msgid "Game Genie, Pro-Action Replay Codes"
+msgstr "Game Genie, Pro-Action Replay-koder"
+
+#: win32/rsrc/snes9x.rc
+msgid "GB"
+msgstr "GB"
+
+#: win32/rsrc/snes9x.rc
+msgid "GB Sprite Viewer"
+msgstr "GB Sprite-visare"
+
+#: win32/rsrc/snes9x.rc
+msgid "GB Tile Viewer"
+msgstr "GB Tile-visare"
+
+#: win32/rsrc/snes9x.rc
+msgid "GB Tilemap Viewer"
+msgstr "GB Tilemap-visare"
+
+#: win32/rsrc/snes9x.rc
+msgid "GB-PPU"
+msgstr "GB-PPU"
+
+#: win32/rsrc/snes9x.rc
+msgid "General"
+msgstr "Allmänt"
+
+#: win32/rsrc/snes9x.rc
+msgid "goto"
+msgstr "gå till"
+
+#: win32/wlanguage.h
+msgid "Graphics layer 1:"
+msgstr "Grafiklager 1:"
+
+#: win32/wlanguage.h
+msgid "Graphics layer 2:"
+msgstr "Grafiklager 2:"
+
+#: win32/wlanguage.h
+msgid "Graphics layer 3:"
+msgstr "Grafiklager 3:"
+
+#: win32/wlanguage.h
+msgid "Graphics layer 4:"
+msgstr "Grafiklager 4:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Group"
+msgstr "Grupp"
+
+#: win32/rsrc/snes9x.rc
+msgid "Hacks"
+msgstr "Hacks"
+
+#: win32/rsrc/snes9x.rc
+msgid "Hard Reset (Power Cycle)"
+msgstr "Hård omstart (strömcykel)"
+
+#: win32/wlanguage.h
+msgid "Hard reset:"
+msgstr "Hård omstart:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Hardcore Mode"
+msgstr "Hardcore-läge"
+
+#: win32/rsrc/snes9x.rc
+msgid "Header:"
+msgstr "Header:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Help"
+msgstr "Hjälp"
+
+#: win32/rsrc/snes9x.rc
+msgid "Hexadecimal"
+msgstr "Hexadecimal"
+
+#: win32/rsrc/snes9x.rc
+msgid "Hi Res:"
+msgstr "Högupplöst:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Hi-Res AVI Recording"
+msgstr "Högupplöst AVI-inspelning"
+
+#: win32/rsrc/snes9x.rc
+msgid "Hide Menubar"
+msgstr "Dölj menyrad"
+
+#: win32/rsrc/snes9x.rc
+msgid "Host Game"
+msgstr "Var värd för spel"
+
+#: win32/rsrc/snes9x.rc
+msgid "Host Kaillera Server"
+msgstr "Var värd för Kaillera-server"
+
+#: win32/wlanguage.h
+msgid "Hotkey Configuration"
+msgstr "Konfiguration av snabbtangenter"
+
+#: win32/rsrc/snes9x.rc
+msgid "Icon 1"
+msgstr "Ikon 1"
+
+#: win32/rsrc/snes9x.rc
+msgid "Icon 2"
+msgstr "Ikon 2"
+
+#: win32/rsrc/snes9x.rc
+msgid "Icon 3"
+msgstr "Ikon 3"
+
+#: win32/rsrc/snes9x.rc
+msgid "Icon 4"
+msgstr "Ikon 4"
+
+#: win32/rsrc/snes9x.rc
+msgid "Index:"
+msgstr "Index:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Input"
+msgstr "Inmatning"
+
+#: win32/rsrc/snes9x.rc
+msgid "Input Configuration"
+msgstr "Inmatningskonfiguration"
+
+#: win32/rsrc/snes9x.rc
+msgid "Input Rate:"
+msgstr "Inmatningshastighet:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Integer Scaling"
+msgstr "Heltalsskalning"
+
+#: win32/rsrc/snes9x.rc
+msgid "Interleave Mode:"
+msgstr "Interfolieringsläge:"
+
+#: win32/rsrc/snes9x.rc
+msgid "IP:"
+msgstr "IP:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Join"
+msgstr "Anslut"
+
+#: win32/wlanguage.h
+msgid "Joypad #%d"
+msgstr "Joypad #%d"
+
+#: win32/rsrc/snes9x.rc
+msgid "Joypad 1"
+msgstr "Joypad 1"
+
+#: win32/rsrc/snes9x.rc
+msgid "Joypad 2"
+msgstr "Joypad 2"
+
+#: win32/rsrc/snes9x.rc
+msgid "Joypad 3"
+msgstr "Joypad 3"
+
+#: win32/rsrc/snes9x.rc
+msgid "Joypad 4"
+msgstr "Joypad 4"
+
+#: win32/rsrc/snes9x.rc
+msgid "Joypad 5"
+msgstr "Joypad 5"
+
+#: win32/wlanguage.h
+msgid "Joypad swap:"
+msgstr "Växla joypad:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Kaillera Netplay"
+msgstr "Kaillera Netplay"
+
+#: win32/rsrc/snes9x.rc
+msgid "Kaillera Server"
+msgstr "Kaillera-server"
+
+#: win32/rsrc/snes9x.rc
+msgid "Layout:"
+msgstr "Layout:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Leave Game"
+msgstr "Lämna spel"
+
+#: win32/rsrc/snes9x.rc
+msgid "LEFT"
+msgstr "VÄNSTER"
+
+#: win32/rsrc/snes9x.rc
+msgid "LENGTH"
+msgstr "LÄNGD"
+
+#: win32/rsrc/snes9x.rc
+msgid "Length:"
+msgstr "Längd:"
+
+#: win32/rsrc/snes9x.rc
+msgid "List1"
+msgstr "Lista1"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load #:"
+msgstr "Läs in #:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load 0:"
+msgstr "Läs in 0:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load 1:"
+msgstr "Läs in 1:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load 2:"
+msgstr "Läs in 2:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load 3:"
+msgstr "Läs in 3:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load 4:"
+msgstr "Läs in 4:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load 5:"
+msgstr "Läs in 5:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load 6:"
+msgstr "Läs in 6:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load 7:"
+msgstr "Läs in 7:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load 8:"
+msgstr "Läs in 8:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load 9:"
+msgstr "Läs in 9:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load Dlg:"
+msgstr "Inläsningsdialog:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load File:"
+msgstr "Läs in fil:"
+
+#: win32/wlanguage.h
+msgid "Load from file:"
+msgstr "Läs in från fil:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load Game"
+msgstr "Läs in spel"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load Game Position"
+msgstr "Läs in spelposition"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load MultiCart"
+msgstr "Läs in MultiCart"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load Watches"
+msgstr "Läs in bevakningar"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load with Preview"
+msgstr "Läs in med förhandsvisning"
+
+#: win32/wlanguage.h
+msgid "LOADED FROM MOVIE:"
+msgstr "INLÄST FRÅN FILM:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Location:"
+msgstr "Plats:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Login"
+msgstr "Logga in"
+
+#: win32/rsrc/snes9x.rc
+msgid "Maintain Aspect Ratio"
+msgstr "Behåll bildförhållande"
+
+#: win32/rsrc/snes9x.rc
+msgid "Map"
+msgstr "Karta"
+
+#: win32/rsrc/snes9x.rc
+msgid "Map Addr:"
+msgstr "Kartadress:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Map Size:"
+msgstr "Kartstorlek:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Map:"
+msgstr "Karta:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Mask"
+msgstr "Mask"
+
+#: win32/rsrc/snes9x.rc
+msgid "Masked Addresses"
+msgstr "Maskerade adresser"
+
+#: win32/rsrc/snes9x.rc
+msgid "Master Hotkey"
+msgstr "Huvudsnabbtangent"
+
+#: win32/rsrc/snes9x.rc
+msgid "Max Clients:"
+msgstr "Max antal klienter:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Maximum Frame Rate Skip"
+msgstr "Maximal överhoppning av bildfrekvens"
+
+#: win32/rsrc/snes9x.rc
+msgid "MB (set to 0 to disable rewind support)"
+msgstr "MB (ställ in på 0 för att inaktivera stöd för tillbakaspolning)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Memory Type:"
+msgstr "Minnestyp:"
+
+#: win32/wlanguage.h
+msgid "Misc. Recording Settings"
+msgstr "Övriga inspelningsinställningar"
+
+#: win32/rsrc/snes9x.rc
+msgid "Mode:"
+msgstr "Läge:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Movie File"
+msgstr "Filmfil"
+
+#: win32/wlanguage.h
+msgid "Movie frame count:"
+msgstr "Antal bildrutor i film:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Movie Play"
+msgstr "Spela upp film"
+
+#: win32/wlanguage.h
+msgid "Movie read-only:"
+msgstr "Film skrivskyddad:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Movie Record"
+msgstr "Spela in film"
+
+#: win32/rsrc/snes9x.rc
+msgid "Movie Stop"
+msgstr "Stoppa film"
+
+#: win32/wlanguage.h
+msgid "Movie's ROM:"
+msgstr "Filmens ROM:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Movie's ROM: CRC32=Unknown, Name=Unknown"
+msgstr "Filmens ROM: CRC32=Okänt, Namn=Okänt"
+
+#: win32/wlanguage.h
+msgid "Movies"
+msgstr "Filmer"
+
+#: win32/rsrc/snes9x.rc
+msgid "Mute"
+msgstr "Tysta"
+
+#: win32/rsrc/snes9x.rc
+msgid "Mute Sound"
+msgstr "Tysta ljud"
+
+#: win32/rsrc/snes9x.rc
+msgid "Mute sound"
+msgstr "Tysta ljud"
+
+#: win32/rsrc/snes9x.rc
+msgid "Netplay"
+msgstr "Netplay"
+
+#: win32/rsrc/snes9x.rc
+msgid "Netplay Options"
+msgstr "Netplay-alternativ"
+
+#: win32/rsrc/snes9x.rc
+msgid "New Value"
+msgstr "Nytt värde"
+
+#: win32/rsrc/snes9x.rc
+msgid "No BIOS"
+msgstr "Inget BIOS"
+
+#: win32/wlanguage.h
+msgid "Not a ROM"
+msgstr "Inte en ROM"
+
+#: win32/rsrc/snes9x.rc
+msgid "Not connected."
+msgstr "Inte ansluten."
+
+#: win32/rsrc/snes9x.rc
+msgid "not found"
+msgstr "hittades inte"
+
+#: win32/wlanguage.h
+msgid "not found!"
+msgstr "hittades inte!"
+
+#: win32/rsrc/snes9x.rc
+msgid "NTSC Filter Scanlines"
+msgstr "NTSC-filter scanlines"
+
+#: win32/rsrc/snes9x.rc
+msgid "OAM1:"
+msgstr "OAM1:"
+
+#: win32/rsrc/snes9x.rc
+msgid "OAM2:"
+msgstr "OAM2:"
+
+#: win32/rsrc/snes9x.rc
+msgid "OK"
+msgstr "OK"
+
+#: win32/rsrc/snes9x.rc
+msgid "On-screen Display Size:"
+msgstr "Storlek för On-Screen Display:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Online Servers"
+msgstr "Servrar online"
+
+#: win32/rsrc/snes9x.rc
+msgid "Oops File"
+msgstr "Oops-fil"
+
+#: win32/rsrc/snes9x.rc
+msgid "Open MultiCart"
+msgstr "Öppna MultiCart"
+
+#: win32/rsrc/snes9x.rc
+msgid "Open Read-Only"
+msgstr "Öppna skrivskyddad"
+
+#: win32/rsrc/snes9x.rc
+msgid "OpenGL/Vulkan Shader File"
+msgstr "OpenGL/Vulkan Shader-fil"
+
+#: win32/rsrc/snes9x.rc
+msgid "Options"
+msgstr "Alternativ"
+
+#: win32/rsrc/snes9x.rc
+msgid "Output Device:"
+msgstr "Utmatningsenhet:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Output Image Processing"
+msgstr "Bildbehandling för utmatning"
+
+#: win32/rsrc/snes9x.rc
+msgid "Output Method"
+msgstr "Utmatningsmetod"
+
+#: win32/rsrc/snes9x.rc
+msgid "Override Tilemap"
+msgstr "Åsidosätt tilemap"
+
+#: win32/wlanguage.h
+msgid "Page %d"
+msgstr "Sida %d"
+
+#: win32/rsrc/snes9x.rc
+msgid "Palette (click to select offset)"
+msgstr "Palett (klicka för att välja offset)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Palette:"
+msgstr "Palett:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Parameters"
+msgstr "Parametrar"
+
+#: win32/rsrc/snes9x.rc
+msgid "Password:"
+msgstr "Lösenord:"
+
+#: win32/wlanguage.h
+msgid "Patch"
+msgstr "Patch"
+
+#: win32/wlanguage.h
+msgid "Path: %s"
+msgstr "Sökväg: %s"
+
+#: win32/rsrc/snes9x.rc
+msgid "Pause When Inactive"
+msgstr "Pausa när inaktiv"
+
+#: win32/wlanguage.h
+msgid "Pause:"
+msgstr "Paus:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Play Movie"
+msgstr "Spela upp film"
+
+#: win32/rsrc/snes9x.rc
+msgid "Playback Rate"
+msgstr "Uppspelningsfrekvens"
+
+#: win32/rsrc/snes9x.rc
+msgid "Playback Rate:"
+msgstr "Uppspelningsfrekvens:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Player Name:"
+msgstr "Spelarnamn:"
+
+#: win32/wlanguage.h
+msgid "Please enter a host name."
+msgstr "Ange ett värdnamn."
+
+#: win32/wlanguage.h
+msgid "Please enter a valid value for a search!"
+msgstr "Ange ett giltigt värde för en sökning!"
+
+#: win32/rsrc/snes9x.rc
+msgid "Port Number"
+msgstr "Portnummer"
+
+#: win32/rsrc/snes9x.rc
+msgid "Port Settings"
+msgstr "Portinställningar"
+
+#: win32/wlanguage.h
+msgid "Press OK to start playing the movie."
+msgstr "Tryck på OK för att börja spela upp filmen."
+
+#: win32/rsrc/snes9x.rc
+msgid "Preview"
+msgstr "Förhandsvisning"
+
+#: win32/rsrc/snes9x.rc
+msgid "Previous Value"
+msgstr "Föregående värde"
+
+#: win32/rsrc/snes9x.rc
+msgid "Progress1"
+msgstr "Förlopp1"
+
+#: win32/rsrc/snes9x.rc
+msgid "Publish Online"
+msgstr "Publicera online"
+
+#: win32/rsrc/snes9x.rc
+msgid "Publish to master server list"
+msgstr "Publicera till huvudserverlistan"
+
+#: win32/wlanguage.h
+msgid "Quit SuperSnes9x:"
+msgstr "Avsluta SuperSnes9x:"
+
+#: win32/wlanguage.h
+msgid "Range Error"
+msgstr "Intervallfel"
+
+#: win32/rsrc/snes9x.rc
+msgid "Rate:"
+msgstr "Frekvens:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Re-record Count:"
+msgstr "Antal ominspelningar:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Re-sync all Clients Using Freeze File Now"
+msgstr "Synkronisera om alla klienter med frysningsfil nu"
+
+#: win32/rsrc/snes9x.rc
+msgid "Recent Games"
+msgstr "Senaste spel"
+
+#: win32/rsrc/snes9x.rc
+msgid "Record Controllers"
+msgstr "Spela in kontroller"
+
+#: win32/rsrc/snes9x.rc
+msgid "Record from now"
+msgstr "Spela in från nu"
+
+#: win32/rsrc/snes9x.rc
+msgid "Record from reset"
+msgstr "Spela in från omstart"
+
+#: win32/rsrc/snes9x.rc
+msgid "Record Movie"
+msgstr "Spela in film"
+
+#: win32/rsrc/snes9x.rc
+msgid "Record Options"
+msgstr "Inspelningsalternativ"
+
+#: win32/rsrc/snes9x.rc
+msgid "Recording Date:"
+msgstr "Inspelningsdatum:"
+
+#: win32/wlanguage.h
+msgid "Recording Start"
+msgstr "Inspelningsstart"
+
+#: win32/rsrc/snes9x.rc
+msgid "Reduce Input Lag"
+msgstr "Minska fördröjning i inmatningen"
+
+#: win32/rsrc/snes9x.rc
+msgid "Refresh"
+msgstr "Uppdatera"
+
+#: win32/rsrc/snes9x.rc
+msgid "Refresh List"
+msgstr "Uppdatera lista"
+
+#: win32/rsrc/snes9x.rc
+msgid "Regular"
+msgstr "Vanlig"
+
+#: win32/rsrc/snes9x.rc
+msgid "Remove"
+msgstr "Ta bort"
+
+#: win32/rsrc/snes9x.rc
+msgid "Remove All"
+msgstr "Ta bort alla"
+
+#: win32/rsrc/snes9x.rc
+msgid "RERECORD"
+msgstr "OMINSPELNING"
+
+#: win32/wlanguage.h
+msgid "Reset speed:"
+msgstr "Omstartshastighet:"
+
+#: win32/rsrc/snes9x.rc
+msgid "RetroAchievements"
+msgstr "RetroAchievements"
+
+#: win32/rsrc/snes9x.rc
+msgid "RetroAchievements Login"
+msgstr "RetroAchievements-inloggning"
+
+#: win32/rsrc/snes9x.rc
+msgid "Rewind buffer size:"
+msgstr "Buffertstorlek för tillbakaspolning:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Rewind granularity:"
+msgstr "Granularitet för tillbakaspolning:"
+
+#: win32/wlanguage.h
+msgid "Rewind:"
+msgstr "Spola tillbaka:"
+
+#: win32/rsrc/snes9x.rc
+msgid "RIGHT"
+msgstr "HÖGER"
+
+#: win32/wlanguage.h
+msgid "ROM files or archives"
+msgstr "ROM-filer eller arkiv"
+
+#: win32/rsrc/snes9x.rc
+msgid "Rom Info"
+msgstr "ROM-info"
+
+#: win32/rsrc/snes9x.rc
+msgid "ROM Information"
+msgstr "ROM-information"
+
+#: win32/rsrc/snes9x.rc
+msgid "ROM:"
+msgstr "ROM:"
+
+#: win32/wlanguage.h
+msgid "Roms"
+msgstr "ROM"
+
+#: win32/rsrc/snes9x.rc
+msgid "Run Ahead"
+msgstr "Kör i förväg"
+
+#: win32/rsrc/snes9x.rc
+msgid "s"
+msgstr "s"
+
+#: win32/rsrc/snes9x.rc
+msgid "S-PPU"
+msgstr "S-PPU"
+
+#: win32/wlanguage.h
+msgid "Satellaview"
+msgstr "Satellaview"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save #:"
+msgstr "Spara #:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save 0:"
+msgstr "Spara 0:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save 1:"
+msgstr "Spara 1:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save 2:"
+msgstr "Spara 2:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save 3:"
+msgstr "Spara 3:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save 4:"
+msgstr "Spara 4:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save 5:"
+msgstr "Spara 5:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save 6:"
+msgstr "Spara 6:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save 7:"
+msgstr "Spara 7:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save 8:"
+msgstr "Spara 8:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save 9:"
+msgstr "Spara 9:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save Dlg:"
+msgstr "Spardialog:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save File:"
+msgstr "Spara fil:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save Game Position"
+msgstr "Spara spelposition"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save Memory Pack"
+msgstr "Spara minnespaket"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save Other"
+msgstr "Spara övrigt"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save S-RAM Data"
+msgstr "Spara S-RAM-data"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save Screenshot"
+msgstr "Spara skärmbild"
+
+#: win32/wlanguage.h
+msgid "Save screenshot"
+msgstr "Spara skärmbild"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save SPC Data"
+msgstr "Spara SPC-data"
+
+#: win32/wlanguage.h
+msgid "Save to file:"
+msgstr "Spara till fil:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save Watches"
+msgstr "Spara bevakningar"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save with Preview"
+msgstr "Spara med förhandsvisning"
+
+#: win32/wlanguage.h
+msgid "Saves"
+msgstr "Sparade"
+
+#: win32/rsrc/snes9x.rc
+msgid "Screen"
+msgstr "Skärm"
+
+#: win32/wlanguage.h
+msgid "Screenshots"
+msgstr "Skärmbilder"
+
+#: win32/rsrc/snes9x.rc
+msgid "Search"
+msgstr "Sök"
+
+#: win32/rsrc/snes9x.rc
+msgid "Search Database"
+msgstr "Sök i databas"
+
+#: win32/rsrc/snes9x.rc
+msgid "Search for New Cheats"
+msgstr "Sök efter nya fusk"
+
+#: win32/rsrc/snes9x.rc
+msgid "seconds after last change (0 disables auto-save)"
+msgstr "sekunder efter senaste ändring (0 inaktiverar automatisk sparning)"
+
+#: win32/rsrc/snes9x.rc
+msgid "SELECT"
+msgstr "SELECT"
+
+#: win32/rsrc/snes9x.rc
+msgid "Select 0:"
+msgstr "Välj 0:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Select 1:"
+msgstr "Välj 1:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Select 2:"
+msgstr "Välj 2:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Select 3:"
+msgstr "Välj 3:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Select 4:"
+msgstr "Välj 4:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Select 5:"
+msgstr "Välj 5:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Select 6:"
+msgstr "Välj 6:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Select 7:"
+msgstr "Välj 7:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Select 8:"
+msgstr "Välj 8:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Select 9:"
+msgstr "Välj 9:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Select File"
+msgstr "Välj fil"
+
+#: win32/wlanguage.h
+msgid "Select Folder"
+msgstr "Välj mapp"
+
+#: win32/wlanguage.h
+msgid "Select Slot 0:"
+msgstr "Välj plats 0:"
+
+#: win32/wlanguage.h
+msgid "Select Slot 1:"
+msgstr "Välj plats 1:"
+
+#: win32/wlanguage.h
+msgid "Select Slot 2:"
+msgstr "Välj plats 2:"
+
+#: win32/wlanguage.h
+msgid "Select Slot 3:"
+msgstr "Välj plats 3:"
+
+#: win32/wlanguage.h
+msgid "Select Slot 4:"
+msgstr "Välj plats 4:"
+
+#: win32/wlanguage.h
+msgid "Select Slot 5:"
+msgstr "Välj plats 5:"
+
+#: win32/wlanguage.h
+msgid "Select Slot 6:"
+msgstr "Välj plats 6:"
+
+#: win32/wlanguage.h
+msgid "Select Slot 7:"
+msgstr "Välj plats 7:"
+
+#: win32/wlanguage.h
+msgid "Select Slot 8:"
+msgstr "Välj plats 8:"
+
+#: win32/wlanguage.h
+msgid "Select Slot 9:"
+msgstr "Välj plats 9:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Send"
+msgstr "Skicka"
+
+#: win32/rsrc/snes9x.rc
+msgid "Send ROM Image to Client on Connect"
+msgstr "Skicka ROM-avbild till klient vid anslutning"
+
+#: win32/rsrc/snes9x.rc
+msgid "Send ROM Image to Clients"
+msgstr "Skicka ROM-avbild till klienter"
+
+#: win32/rsrc/snes9x.rc
+msgid "Send ROM Image to Clients Now"
+msgstr "Skicka ROM-avbild till klienter nu"
+
+#: win32/rsrc/snes9x.rc
+msgid "Separate Echo Buffer from RAM"
+msgstr "Separera ekobuffert från RAM"
+
+#: win32/rsrc/snes9x.rc
+msgid "Server Address"
+msgstr "Serveradress"
+
+#: win32/rsrc/snes9x.rc
+msgid "Server is stopped."
+msgstr "Servern är stoppad."
+
+#: win32/rsrc/snes9x.rc
+msgid "Server Lobby"
+msgstr "Serverlobby"
+
+#: win32/rsrc/snes9x.rc
+msgid "Server Name:"
+msgstr "Servernamn:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Server Settings"
+msgstr "Serverinställningar"
+
+#: win32/rsrc/snes9x.rc
+msgid "Set Defaults"
+msgstr "Ställ in standardvärden"
+
+#: win32/rsrc/snes9x.rc
+msgid "Set Value"
+msgstr "Ställ in värde"
+
+#: win32/rsrc/snes9x.rc
+msgid "Settings"
+msgstr "Inställningar"
+
+#: win32/wlanguage.h
+msgid "SETTINGS NOT IN MOVIE; VERIFY:"
+msgstr "INSTÄLLNINGAR INTE I FILM; VERIFIERA:"
+
+#: win32/rsrc/snes9x.rc
+msgid "SGB Mix"
+msgstr "SGB Mix"
+
+#: win32/rsrc/snes9x.rc
+msgid "SGB1"
+msgstr "SGB1"
+
+#: win32/rsrc/snes9x.rc
+msgid "SGB2"
+msgstr "SGB2"
+
+#: win32/rsrc/snes9x.rc
+msgid "Show Audio Waveform"
+msgstr "Visa ljudvågform"
+
+#: win32/rsrc/snes9x.rc
+msgid "Show Background"
+msgstr "Visa bakgrund"
+
+#: win32/rsrc/snes9x.rc
+msgid "Show Crosshair"
+msgstr "Visa hårkors"
+
+#: win32/rsrc/snes9x.rc
+msgid "Show Frame Number"
+msgstr "Visa bildrutenummer"
+
+#: win32/rsrc/snes9x.rc
+msgid "Show Frame Rate"
+msgstr "Visa bildfrekvens"
+
+#: win32/rsrc/snes9x.rc
+msgid "Show Grid"
+msgstr "Visa rutnät"
+
+#: win32/wlanguage.h
+msgid "Show pressed keys:"
+msgstr "Visa nedtryckta tangenter:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Show screen"
+msgstr "Visa skärm"
+
+#: win32/rsrc/snes9x.rc
+msgid "Show Screen Outline"
+msgstr "Visa skärmkontur"
+
+#: win32/rsrc/snes9x.rc
+msgid "Show Sprites"
+msgstr "Visa sprites"
+
+#: win32/rsrc/snes9x.rc
+msgid "Show viewport"
+msgstr "Visa vy"
+
+#: win32/rsrc/snes9x.rc
+msgid "Show Window"
+msgstr "Visa fönster"
+
+#: win32/rsrc/snes9x.rc
+msgid "Signed (+/-)"
+msgstr "Med tecken (+/-)"
+
+#: win32/wlanguage.h
+msgid "Size"
+msgstr "Storlek"
+
+#: win32/rsrc/snes9x.rc
+msgid "Skip at most"
+msgstr "Hoppa över högst"
+
+#: win32/wlanguage.h
+msgid "Skip frames +:"
+msgstr "Hoppa över bildrutor +:"
+
+#: win32/wlanguage.h
+msgid "Skip frames -:"
+msgstr "Hoppa över bildrutor -:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Skip rendering"
+msgstr "Hoppa över rendering"
+
+#: win32/wlanguage.h
+msgid "Skip Rendering"
+msgstr "Hoppa över rendering"
+
+#: win32/rsrc/snes9x.rc
+msgid "Slot +:"
+msgstr "Plats +:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Slot -:"
+msgstr "Plats -:"
+
+#: win32/rsrc/snes9x.rc
+msgid "SNES Image"
+msgstr "SNES-bild"
+
+#: win32/rsrc/snes9x.rc
+msgid "SuperSnes9x - Unable to Initialize XAudio2"
+msgstr "SuperSnes9x - Kunde inte initiera XAudio2"
+
+#: win32/wlanguage.h
+msgid "SuperSnes9x Cheat Error"
+msgstr "SuperSnes9x-fuskfel"
+
+#: win32/wlanguage.h
+msgid "SuperSnes9x Movie File"
+msgstr "SuperSnes9x-filmfil"
+
+#: win32/rsrc/snes9x.rc
+msgid "Socket Port Number"
+msgstr "Socket-portnummer"
+
+#: win32/rsrc/snes9x.rc
+msgid "Soft Reset"
+msgstr "Mjuk omstart"
+
+#: win32/wlanguage.h
+msgid "Soft reset:"
+msgstr "Mjuk omstart:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Sound Driver:"
+msgstr "Ljuddrivrutin:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Sound Interpolation Type:"
+msgstr "Typ av ljudinterpolering:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Sound Quality"
+msgstr "Ljudkvalitet"
+
+#: win32/rsrc/snes9x.rc
+msgid "Sound Settings"
+msgstr "Ljudinställningar"
+
+#: win32/rsrc/snes9x.rc
+msgid "Source:"
+msgstr "Källa:"
+
+#: win32/rsrc/snes9x.rc
+msgid "SPC"
+msgstr "SPC"
+
+#: win32/wlanguage.h
+msgid "SPCs"
+msgstr "SPC-filer"
+
+#: win32/wlanguage.h
+msgid "Speed +:"
+msgstr "Hastighet +:"
+
+#: win32/wlanguage.h
+msgid "Speed -:"
+msgstr "Hastighet -:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Spin1"
+msgstr "Spin1"
+
+#: win32/rsrc/snes9x.rc
+msgid "Spin2"
+msgstr "Spin2"
+
+#: win32/rsrc/snes9x.rc
+msgid "Spin3"
+msgstr "Spin3"
+
+#: win32/rsrc/snes9x.rc
+msgid "Spin4"
+msgstr "Spin4"
+
+#: win32/rsrc/snes9x.rc
+msgid "Sprite Viewer"
+msgstr "Sprite-visare"
+
+#: win32/rsrc/snes9x.rc
+msgid "Sprite:"
+msgstr "Sprite:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Sprites"
+msgstr "Sprites"
+
+#: win32/wlanguage.h
+msgid "Sprites layer:"
+msgstr "Sprite-lager:"
+
+#: win32/wlanguage.h
+msgid "SRAM"
+msgstr "SRAM"
+
+#: win32/rsrc/snes9x.rc
+msgid "START"
+msgstr "START"
+
+#: win32/rsrc/snes9x.rc
+msgid "Start Game"
+msgstr "Starta spel"
+
+#: win32/rsrc/snes9x.rc
+msgid "Start Server"
+msgstr "Starta server"
+
+#: win32/rsrc/snes9x.rc
+msgid "Static"
+msgstr "Statisk"
+
+#: win32/rsrc/snes9x.rc
+msgid "Status"
+msgstr "Status"
+
+#: win32/rsrc/snes9x.rc
+msgid "Stretch Image"
+msgstr "Sträck ut bild"
+
+#: win32/rsrc/snes9x.rc
+msgid "SuperFX Clock Speed %:"
+msgstr "SuperFX klockfrekvens %:"
+
+#: win32/rsrc/snes9x.rc
+msgid "SuperFX speed:"
+msgstr "SuperFX-hastighet:"
+
+#: win32/wlanguage.h
+msgid "SuperScope pause:"
+msgstr "SuperScope-paus:"
+
+#: win32/wlanguage.h
+msgid "SuperScope turbo:"
+msgstr "SuperScope-turbo:"
+
+#: win32/wlanguage.h
+msgid "SuperSnes9x (x64)"
+msgstr "SuperSnes9x (x64)"
+
+#: win32/rsrc/snes9x.rc
+msgid "SuperSnes9x - About"
+msgstr "SuperSnes9x - Om"
+
+#: win32/wlanguage.h
+msgid "SuperSnes9x: DirectSound"
+msgstr "SuperSnes9x: DirectSound"
+
+#: win32/wlanguage.h
+msgid "SuperSnes9x: Information"
+msgstr "SuperSnes9x: Information"
+
+#: win32/wlanguage.h
+msgid "SuperSnes9x: NetPlay Error"
+msgstr "SuperSnes9x: NetPlay-fel"
+
+#: win32/wlanguage.h
+msgid "SuperSnes9x: Sound CPU Question"
+msgstr "SuperSnes9x: Fråga om ljud-CPU"
+
+#: win32/wlanguage.h
+msgid "SuperSnes9x: WARNING!"
+msgstr "SuperSnes9x: VARNING!"
+
+#: win32/rsrc/snes9x.rc
+msgid "Swap A and B"
+msgstr "Växla A och B"
+
+#: win32/wlanguage.h
+msgid "Switch aspect Ratio:"
+msgstr "Växla bildförhållande:"
+
+#: win32/wlanguage.h
+msgid "Switch controllers:"
+msgstr "Växla kontroller:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Sync By Reset"
+msgstr "Synkronisera med omstart"
+
+#: win32/rsrc/snes9x.rc
+msgid "Sync Sound"
+msgstr "Synkronisera ljud"
+
+#: win32/rsrc/snes9x.rc
+msgid "Sync Using Reset Game"
+msgstr "Synkronisera med omstart av spel"
+
+#: win32/rsrc/snes9x.rc
+msgid "Synchronize with sound core"
+msgstr "Synkronisera med ljudkärna"
+
+#: win32/wlanguage.h
+msgid "TempTurbo"
+msgstr "TempTurbo"
+
+#: win32/wlanguage.h
+msgid "Text file"
+msgstr "Textfil"
+
+#: win32/wlanguage.h
+msgid "The movie file is corrupt or in the wrong format."
+msgstr "Filmfilen är skadad eller har fel format."
+
+#: win32/wlanguage.h
+msgid "The movie file was not found or could not be opened."
+msgstr "Filmfilen hittades inte eller kunde inte öppnas."
+
+#: win32/rsrc/snes9x.rc
+msgid "Tile Addr:"
+msgstr "Tilesadress:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Tile Data:"
+msgstr "Tilesdata:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Tile Size:"
+msgstr "Tilesstorlek:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Tile Viewer"
+msgstr "Tile-visare"
+
+#: win32/rsrc/snes9x.rc
+msgid "Tilemap"
+msgstr "Tilemap"
+
+#: win32/rsrc/snes9x.rc
+msgid "Tilemap Viewer"
+msgstr "Tilemap-visare"
+
+#: win32/rsrc/snes9x.rc
+msgid "Tiles"
+msgstr "Tiles"
+
+#: win32/rsrc/snes9x.rc
+msgid "Timeout:"
+msgstr "Tidsgräns:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Toggle Achievements Images"
+msgstr "Växla prestationsbilder"
+
+#: win32/wlanguage.h
+msgid "Toggle backdrop:"
+msgstr "Växla bakgrund:"
+
+#: win32/wlanguage.h
+msgid "Toggle cheats:"
+msgstr "Växla fusk:"
+
+#: win32/wlanguage.h
+msgid "Toggle mute:"
+msgstr "Växla tystnad:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Transparency Effects"
+msgstr "Transparenseffekter"
+
+#: win32/wlanguage.h
+msgid "Transparency:"
+msgstr "Transparens:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Tree1"
+msgstr "Träd1"
+
+#: win32/wlanguage.h
+msgid "Turbo"
+msgstr "Turbo"
+
+#: win32/wlanguage.h
+msgid "Turbo A mode:"
+msgstr "Turbo A-läge:"
+
+#: win32/wlanguage.h
+msgid "Turbo B mode:"
+msgstr "Turbo B-läge:"
+
+#: win32/wlanguage.h
+msgid "Turbo Down mode:"
+msgstr "Turbo Ner-läge:"
+
+#: win32/wlanguage.h
+msgid "Turbo L mode:"
+msgstr "Turbo L-läge:"
+
+#: win32/wlanguage.h
+msgid "Turbo Left mode:"
+msgstr "Turbo Vänster-läge:"
+
+#: win32/wlanguage.h
+msgid "Turbo R mode:"
+msgstr "Turbo R-läge:"
+
+#: win32/wlanguage.h
+msgid "Turbo Right mode:"
+msgstr "Turbo Höger-läge:"
+
+#: win32/wlanguage.h
+msgid "Turbo Select mode:"
+msgstr "Turbo Select-läge:"
+
+#: win32/wlanguage.h
+msgid "Turbo Start mode:"
+msgstr "Turbo Start-läge:"
+
+#: win32/wlanguage.h
+msgid "Turbo Up mode:"
+msgstr "Turbo Upp-läge:"
+
+#: win32/wlanguage.h
+msgid "Turbo X mode:"
+msgstr "Turbo X-läge:"
+
+#: win32/wlanguage.h
+msgid "Turbo Y mode:"
+msgstr "Turbo Y-läge:"
+
+#: win32/wlanguage.h
+msgid "Uncompressed ROM files"
+msgstr "Okomprimerade ROM-filer"
+
+#: win32/wlanguage.h
+msgid "Unrecognized format."
+msgstr "Okänt format."
+
+#: win32/rsrc/snes9x.rc
+msgid "Unsigned (>=0)"
+msgstr "Utan tecken (>=0)"
+
+#: win32/wlanguage.h
+msgid "Unsupported movie version."
+msgstr "Filmversionen stöds inte."
+
+#: win32/rsrc/snes9x.rc
+msgid "UP"
+msgstr "UPP"
+
+#: win32/rsrc/snes9x.rc
+msgid "UP LEFT"
+msgstr "UPP VÄNSTER"
+
+#: win32/wlanguage.h
+msgid "Up Left"
+msgstr "Upp vänster"
+
+#: win32/rsrc/snes9x.rc
+msgid "UP RIGHT"
+msgstr "UPP HÖGER"
+
+#: win32/wlanguage.h
+msgid "Up Right"
+msgstr "Upp höger"
+
+#: win32/rsrc/snes9x.rc
+msgid "Update"
+msgstr "Uppdatera"
+
+#: win32/rsrc/snes9x.rc
+msgid "Use CGRAM"
+msgstr "Använd CGRAM"
+
+#: win32/rsrc/snes9x.rc
+msgid "Use DirectInput"
+msgstr "Använd DirectInput"
+
+#: win32/rsrc/snes9x.rc
+msgid "Use Dual Justifiers"
+msgstr "Använd dubbla Justifiers"
+
+#: win32/rsrc/snes9x.rc
+msgid "Use Konami Justifier"
+msgstr "Använd Konami Justifier"
+
+#: win32/rsrc/snes9x.rc
+msgid "Use M.A.C.S. Rifle"
+msgstr "Använd M.A.C.S. Rifle"
+
+#: win32/rsrc/snes9x.rc
+msgid "Use Mouse in alternate port"
+msgstr "Använd mus i alternativ port"
+
+#: win32/rsrc/snes9x.rc
+msgid "Use Multitaps (8-player)"
+msgstr "Använd Multitaps (8 spelare)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Use Shader"
+msgstr "Använd shader"
+
+#: win32/rsrc/snes9x.rc
+msgid "Use SNES Joypad(s)"
+msgstr "Använd SNES-joypad(ar)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Use SNES Mouse"
+msgstr "Använd SNES-mus"
+
+#: win32/rsrc/snes9x.rc
+msgid "Use Super Multitap (5-player)"
+msgstr "Använd Super Multitap (5 spelare)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Use Super Scope"
+msgstr "Använd Super Scope"
+
+#: win32/rsrc/snes9x.rc
+msgid "User Agent: SuperSnes9x/1.63"
+msgstr "User Agent: SuperSnes9x/1.63"
+
+#: win32/rsrc/snes9x.rc
+msgid "Username:"
+msgstr "Användarnamn:"
+
+#: win32/wlanguage.h
+msgid "Value"
+msgstr "Värde"
+
+#: win32/rsrc/snes9x.rc
+msgid "Value (hex):"
+msgstr "Värde (hex):"
+
+#: win32/rsrc/snes9x.rc
+msgid "Video"
+msgstr "Video"
+
+#: win32/rsrc/snes9x.rc
+msgid "Video System:"
+msgstr "Videosystem:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Volume"
+msgstr "Volym"
+
+#: win32/rsrc/snes9x.rc
+msgid "VSync"
+msgstr "VSync"
+
+#: win32/wlanguage.h
+msgid "WARNING: You don't have the right ROM loaded!"
+msgstr "VARNING: Du har inte rätt ROM inläst!"
+
+#: win32/rsrc/snes9x.rc
+msgid "Watch"
+msgstr "Bevaka"
+
+#: win32/rsrc/snes9x.rc
+msgid "Welcome Message (MOTD)"
+msgstr "Välkomstmeddelande (MOTD)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Width:"
+msgstr "Bredd:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Window Size"
+msgstr "Fönsterstorlek"
+
+#: win32/rsrc/snes9x.rc
+msgid "WOG!"
+msgstr "WOG!"
+
+#: win32/wlanguage.h
+msgid "You have entered an out of range or invalid value for the new value"
+msgstr "Du har angett ett värde utanför intervallet eller ett ogiltigt värde för det nya värdet"
+
+#: win32/wlanguage.h
+msgid "You need a different version of SuperSnes9x to play this movie."
+msgstr "Du behöver en annan version av SuperSnes9x för att spela upp denna film."
+
+#: win32/rsrc/snes9x.rc
+msgid "Your password is only used to get an API token.\nIt is never stored."
+msgstr "Ditt lösenord används endast för att hämta en API-token.\nDet lagras aldrig."
+
+#: win32/rsrc/snes9x.rc
+msgid "Zoom:"
+msgstr "Zoom:"
+
+# === Win32 strings (added by i18n/extract_strings.py) ===
+
+#: win32/CSpriteViewerDlg.cpp
+msgid "Export Selected to PNG"
+msgstr "Exportera markerade till PNG"
+
+#: win32/CGBSpriteViewerDlg.cpp
+msgid "Export to PNG"
+msgstr "Exportera till PNG"
+
+#: win32/CSpriteViewerDlg.cpp
+msgid "Show All Objects"
+msgstr "Visa alla objekt"
+
+#: win32/CSpriteViewerDlg.cpp
+msgid "Show Only Selected Objects"
+msgstr "Visa endast markerade objekt"
+
+#: win32/CSpriteViewerDlg.cpp
+msgid "Toggle Visibility"
+msgstr "Växla synlighet"
+
+#: win32/wsnes9x.cpp
+msgid "Translations"
+msgstr "Översättningar"
+
+# === Win32 strings (added by i18n/extract_strings.py) ===
+
+#: win32/wsnes9x.cpp
+msgid "Language"
+msgstr "Språk"
+
+# === Win32 strings (added by i18n/extract_strings.py) ===
+
+#: qt/src/SoundPanel.ui
+msgid "44100 Hz"
+msgstr "44100 Hz"
+
+#: qt/src/SoundPanel.ui
+msgid "48000 Hz"
+msgstr "48000 Hz"
+
+#: qt/src/DisplayPanel.ui
+msgid "4:3 - Classic display aspect"
+msgstr "4:3 - Klassiskt bildförhållande"
+
+#: qt/src/DisplayPanel.ui
+msgid "64:49 - NTSC aspect"
+msgstr "64:49 - NTSC-bildförhållande"
+
+#: qt/src/DisplayPanel.ui
+msgid "8:7 - Square pixels"
+msgstr "8:7 - Kvadratiska bildpunkter"
+
+#: qt/src/EmulationPanel.ui
+msgid "<html><head/><body><p>A hack option. Only use this if you are running a third-party hack of a game that was designed for emulators and needs this.</p></body></html>"
+msgstr "<html><head/><body><p>Ett hack-alternativ. Använd endast detta om du kör ett tredjepartshack av ett spel som har utformats för emulatorer och kräver detta.</p></body></html>"
+
+#: qt/src/EmulationPanel.ui
+msgid "<html><head/><body><p>Allows more sprites to be displayed on the screen in an attempt to remove flickering.</p><p>Some games take advantage of this limit and use it to hide glitches, and removing the limit will make those visible.</p></body></html>"
+msgstr "<html><head/><body><p>Tillåter att fler sprites visas på skärmen i ett försök att ta bort flimmer.</p><p>Vissa spel utnyttjar denna gräns och använder den för att dölja glitchar, och om gränsen tas bort blir dessa synliga.</p></body></html>"
+
+#: qt/src/EmulationPanel.ui
+msgid "<html><head/><body><p>Alternate sound filters can make the audio more crisp than the authentic gaussian filter.</p><p>The Cubic and Sinc filters provide the best improvement, but they can reveal some noise that would normally be hidden by the hardware.</p></body></html>"
+msgstr "<html><head/><body><p>Alternativa ljudfilter kan göra ljudet skarpare än det autentiska gaussiska filtret.</p><p>Filtren Cubic och Sinc ger den bästa förbättringen, men de kan avslöja en del brus som normalt skulle döljas av hårdvaran.</p></body></html>"
+
+#: qt/src/EmulationPanel.ui
+msgid "<html><head/><body><p>Amount of memory to use to enable the rewind function. The amount of time each MB gets you varies based on the complexity of the game. Set to 0 to disable rewind altogether and use less processor time.</p></body></html>"
+msgstr "<html><head/><body><p>Mängden minne som ska användas för att aktivera tillbakaspolningsfunktionen. Hur mycket tid varje MB ger varierar beroende på spelets komplexitet. Ställ in på 0 för att inaktivera tillbakaspolning helt och använda mindre processortid.</p></body></html>"
+
+#: qt/src/EmulationPanel.ui
+msgid "<html><head/><body><p>Change the speed of the SuperFX chip. The SuperFX had some notoriously slow games, and this can be used to attempt to speed them up.</p></body></html>"
+msgstr "<html><head/><body><p>Ändra hastigheten på SuperFX-chippet. SuperFX hade några notoriskt långsamma spel, och detta kan användas för att försöka snabba upp dem.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>Choose one of <span style=\" font-style:italic;\">Qt Software, Vulkan, or OpenGL</span>.</p><p>Qt Software will use the CPU to draw the display. Vulkan or OpenGL will use that respective graphics interface to draw the display.</p></body></html>"
+msgstr "<html><head/><body><p>Välj ett av <span style=\" font-style:italic;\">Qt Software, Vulkan eller OpenGL</span>.</p><p>Qt Software använder CPU:n för att rita skärmen. Vulkan eller OpenGL använder respektive grafikgränssnitt för att rita skärmen.</p></body></html>"
+
+#: qt/src/ControllerPanel.ui
+msgid "<html><head/><body><p>Clear or swap sets of bindings between controllers.</p></body></html>"
+msgstr "<html><head/><body><p>Töm eller växla uppsättningar av bindningar mellan kontroller.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>Control how much the audio is stretched initially.</p><p><br/></p><p>Unless you know what you're doing, it's best to use the option above this to adjust it automatically.</p></body></html>"
+msgstr "<html><head/><body><p>Styr hur mycket ljudet sträcks ut inledningsvis.</p><p><br/></p><p>Om du inte vet vad du gör är det bäst att använda alternativet ovanför detta för att justera det automatiskt.</p></body></html>"
+
+#: qt/src/FoldersPanel.ui
+msgid "<html><head/><body><p>Determines where to look for optional BIOS / boot ROM files (Super Game Boy boot ROM, BS-X.bin, etc).</p><p><span style=\" font-style:italic;\">ROM Folder</span> looks next to the loaded ROM.</p><p><span style=\" font-style:italic;\">Config Folder</span> uses a \"bios\" subfolder of the config folder.</p><p><span style=\" font-style:italic;\">Custom</span> uses an explicit path (default: \"Bios\" relative to the working directory).</p></body></html>"
+msgstr "<html><head/><body><p>Bestämmer var valfria BIOS-/boot-ROM-filer ska sökas (Super Game Boy boot-ROM, BS-X.bin osv.).</p><p><span style=\" font-style:italic;\">ROM-mapp</span> söker bredvid den inlästa ROM:en.</p><p><span style=\" font-style:italic;\">Konfigurationsmapp</span> använder en undermapp \"bios\" i konfigurationsmappen.</p><p><span style=\" font-style:italic;\">Anpassad</span> använder en uttrycklig sökväg (standard: \"Bios\" relativt arbetskatalogen).</p></body></html>"
+
+#: qt/src/FoldersPanel.ui
+msgid "<html><head/><body><p>Determines where to save these files.</p><p><span style=\" font-style:italic;\">ROM Folder</span> will always save to the same folder as the ROM.</p><p><span style=\" font-style:italic;\">Config Folder</span> will save to a subfolder of the config folder that is shown. If there is a supersnes9x.conf file next to your executable, SuperSnes9x will operate in portable mode and the config folder will be the folder the executable is in.</p><p><span style=\" font-style:italic;\">Custom</span> allows you to specify exactly where to save these files.</p></body></html>"
+msgstr "<html><head/><body><p>Bestämmer var dessa filer ska sparas.</p><p><span style=\" font-style:italic;\">ROM-mapp</span> sparar alltid i samma mapp som ROM:en.</p><p><span style=\" font-style:italic;\">Konfigurationsmapp</span> sparar i en undermapp till konfigurationsmappen som visas. Om det finns en supersnes9x.conf-fil bredvid din körbara fil kommer SuperSnes9x att köras i portabelt läge och konfigurationsmappen blir den mapp som den körbara filen ligger i.</p><p><span style=\" font-style:italic;\">Anpassad</span> låter dig ange exakt var dessa filer ska sparas.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>Erases all emulated sound output and just sends out silence.</p></body></html>"
+msgstr "<html><head/><body><p>Raderar all emulerad ljudutmatning och skickar bara ut tystnad.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>If after everything, you're still getting pops and crackles in audio, you can increase this value. However, it may cause noticeable distortion.</p></body></html>"
+msgstr "<html><head/><body><p>Om du efter allt fortfarande får knäppar och sprakanden i ljudet kan du öka detta värde. Det kan dock orsaka märkbar förvrängning.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>Master output volume during normal play. Moving this also drags the per-source SGB sliders so they stay in step.</p></body></html>"
+msgstr "<html><head/><body><p>Huvudutmatningsvolym under normalt spel. Att flytta denna drar även med de SGB-skjutreglage per källa så att de hålls i takt.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>Master output volume during turbo and rewind.</p></body></html>"
+msgstr "<html><head/><body><p>Huvudutmatningsvolym under turbo och tillbakaspolning.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>Mutes sound when using the turbo and rewind functions, which might be annoying to some users.</p></body></html>"
+msgstr "<html><head/><body><p>Stänger av ljudet när turbo- och tillbakaspolningsfunktionerna används, vilket kan vara irriterande för vissa användare.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>On classic CRT televisions, some areas of the screen were covered by the bezel, so weren't used often in games. This option allows you to show that area, but it will usually be just black bars.</p></body></html>"
+msgstr "<html><head/><body><p>På klassiska CRT-tv-apparater täcktes vissa delar av skärmen av ramen och användes därför inte ofta i spel. Detta alternativ låter dig visa det området, men det blir oftast bara svarta fält.</p></body></html>"
+
+#: qt/src/EmulationPanel.ui
+msgid "<html><head/><body><p>Original controllers may have had a small pin in the dpad preventing left and right or up and down from being pressed at the same time. This will allow that behavior if you're using a keyboard or device that can press those buttons at the same time. Some games will glitch when this is done.</p></body></html>"
+msgstr "<html><head/><body><p>Originalkontroller kan ha haft en liten pinne i styrkorset som förhindrade att vänster och höger eller upp och ner trycktes samtidigt. Detta tillåter det beteendet om du använder ett tangentbord eller en enhet som kan trycka på dessa knappar samtidigt. Vissa spel kommer att glitcha när detta görs.</p></body></html>"
+
+#: qt/src/EmulationPanel.ui
+msgid "<html><head/><body><p>Override the frame rate of the emulated system. This can be used to run slightly faster or slower than usual, or to match the timer to your exact refresh rate.</p><p><br/></p><p>Set this to 0 to use whatever the emulated system uses.</p></body></html>"
+msgstr "<html><head/><body><p>Åsidosätt det emulerade systemets bildfrekvens. Detta kan användas för att köra något snabbare eller långsammare än vanligt, eller för att matcha timern till din exakta uppdateringsfrekvens.</p><p><br/></p><p>Ställ in detta på 0 för att använda det som det emulerade systemet använder.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>Selects the driver to output sound with.</p><p><span style=\" font-style:italic;\">Cubeb: </span>The recommended option.</p><p><span style=\" font-style:italic;\">SDL</span>: If Cubeb doesn't work.</p><p><span style=\" font-style:italic;\">PulseAudio:</span> Unix only. May have less latency.</p></body></html>"
+msgstr "<html><head/><body><p>Väljer drivrutinen som ljud ska matas ut med.</p><p><span style=\" font-style:italic;\">Cubeb: </span>Det rekommenderade alternativet.</p><p><span style=\" font-style:italic;\">SDL</span>: Om Cubeb inte fungerar.</p><p><span style=\" font-style:italic;\">PulseAudio:</span> Endast Unix. Kan ha lägre latens.</p></body></html>"
+
+#: qt/src/FoldersPanel.ui
+msgid "<html><head/><body><p>Setting this to anything other than 0 will save the SRAM (internal game saves) file regularly. If it is set to to 0, it will only save when exiting SuperSnes9x or changing games, and you will lose any progress since the last save if your device crashes.</p></body></html>"
+msgstr "<html><head/><body><p>Om detta ställs in på något annat än 0 sparas SRAM-filen (interna spelsparningar) regelbundet. Om det ställs in på 0 sparas det bara när du avslutar SuperSnes9x eller byter spel, och du förlorar alla framsteg sedan den senaste sparningen om din enhet kraschar.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>SGB BIOS mix: GB channel volume. Active in SGB1/SGB2 BIOS mode; in BIOS-less mode this mirrors the Regular master, which is what actually scales GB output.</p></body></html>"
+msgstr "<html><head/><body><p>SGB BIOS-mix: GB-kanalvolym. Aktiv i SGB1/SGB2 BIOS-läge; i BIOS-löst läge speglar denna huvudvolymen Vanlig, vilket är det som faktiskt skalar GB-utmatningen.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>SGB BIOS mix: SPC channel volume. Only active in SGB1/SGB2 BIOS mode — BIOS-less GB playback discards SPC output.</p></body></html>"
+msgstr "<html><head/><body><p>SGB BIOS-mix: SPC-kanalvolym. Endast aktiv i SGB1/SGB2 BIOS-läge — BIOS-lös GB-uppspelning kasserar SPC-utmatningen.</p></body></html>"
+
+#: qt/src/EmulationPanel.ui
+msgid "<html><head/><body><p>Skips rendering the specified amount of frames when using the fast-forward function. The higher this amount, the faster it goes.</p></body></html>"
+msgstr "<html><head/><body><p>Hoppar över rendering av det angivna antalet bildrutor när snabbspolningsfunktionen används. Ju högre detta antal är, desto snabbare går det.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>The buffer size for the emulator side of sound playback. Ideally, it should be about two frames worth of audio, or about 32ms at 60Hz. Latency will be half this value.</p></body></html>"
+msgstr "<html><head/><body><p>Buffertstorleken för emulatorsidan av ljuduppspelningen. Idealiskt bör den vara ungefär två bildrutor ljud, eller cirka 32ms vid 60Hz. Latensen blir hälften av detta värde.</p></body></html>"
+
+#: qt/src/ControllerPanel.ui
+msgid "<html><head/><body><p>The enumerated controller as seen by the SNES. Controller 1 will always be quot;Player 1quot; and so on, no matter what device is assigned to the controller ports.</p></body></html>"
+msgstr "<html><head/><body><p>Den uppräknade kontrollern som SNES ser den. Kontroller 1 kommer alltid att vara quot;Spelare 1quot; och så vidare, oavsett vilken enhet som tilldelats kontrollerportarna.</p></body></html>"
+
+#: qt/src/EmulationPanel.ui
+msgid "<html><head/><body><p>The number of frames between each rewind snapshot. More frames mean rewind can go back further and will rewind faster. </p></body></html>"
+msgstr "<html><head/><body><p>Antalet bildrutor mellan varje ögonblicksbild för tillbakaspolning. Fler bildrutor innebär att tillbakaspolningen kan gå längre tillbaka och spolar tillbaka snabbare. </p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>The output playback rate on your computer. This is <span style=\" font-weight:700;\">not</span> the playback rate of the emulated system.</p><p>You should set this to match your operating system's sound server. It should almost always be 48000Hz.</p></body></html>"
+msgstr "<html><head/><body><p>Utmatningens uppspelningsfrekvens på din dator. Detta är <span style=\" font-weight:700;\">inte</span> det emulerade systemets uppspelningsfrekvens.</p><p>Du bör ställa in detta så att det matchar operativsystemets ljudserver. Det bör nästan alltid vara 48000Hz.</p></body></html>"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "<html><head/><body><p>This box lists application shortcuts. There are 4 slots, so you can assign 4 different keys or buttons to one function.</p><p>To set a binding, click a box or highlight it with the keyboard and press Enter/Return. The box will show three dots quot;...quot;. Press the desired key or gamepad button to assign it to that box. The Escape key will clear the box.</p></body></html>"
+msgstr "<html><head/><body><p>Denna ruta listar programgenvägar. Det finns 4 platser, så du kan tilldela 4 olika tangenter eller knappar till en funktion.</p><p>För att ställa in en bindning, klicka på en ruta eller markera den med tangentbordet och tryck på Enter/Return. Rutan visar tre punkter quot;...quot;. Tryck på önskad tangent eller gamepad-knapp för att tilldela den till rutan. Escape-tangenten tömmer rutan.</p></body></html>"
+
+#: qt/src/ControllerPanel.ui
+msgid "<html><head/><body><p>This box lists keyboard keys and gamepad buttons mapped to the SNES controller. There are 4 slots, so you can assign 4 different keys or buttons to one SNES button.</p><p>To set a binding, click a box or highlight it with the keyboard and press Enter/Return. The box will show three dots quot;...quot;. Press the desired key or gamepad button to assign it to that box. The Escape key will clear the box.</p></body></html>"
+msgstr "<html><head/><body><p>Denna ruta listar tangentbordstangenter och gamepad-knappar mappade till SNES-kontrollern. Det finns 4 platser, så du kan tilldela 4 olika tangenter eller knappar till en SNES-knapp.</p><p>För att ställa in en bindning, klicka på en ruta eller markera den med tangentbordet och tryck på Enter/Return. Rutan visar tre punkter quot;...quot;. Tryck på önskad tangent eller gamepad-knapp för att tilldela den till rutan. Escape-tangenten tömmer rutan.</p></body></html>"
+
+#: qt/src/EmulationPanel.ui
+msgid "<html><head/><body><p>This controls how the program runs the emulated content at the correct speed.</p><p><span style=\" font-style:italic;\">Timer</span>: This sets a literal timer and shows emulated frames at the exact frame rate specified, or automatically matches the emulated system. It may not match your display's frame rate, which can cause judders.</p><p><span style=\" font-style:italic;\">Timer with Frameskipping</span>: The same as timer, except if your display has a lower refresh rate than the emulated system it will skip frames to keep up.</p><p><span style=\" font-style:italic;\">Sound Synchronization: </span>Assume the sound engine is outputting the sound at the correct speed and match the video output rate with it. This assumes your refresh rate is fairly close to the emulated system and you have vsync turned on.</p><p><span style=\" font-style:italic;\">None:</span> Don't attempt to slow emulation down. If you turn off vsync, this will run as fast as possible. If your display matches the emulated system's refresh rate closely, this with vsync enabled is generally the smoothest option aside from variable refresh rates with a timer.</p></body></html>"
+msgstr "<html><head/><body><p>Detta styr hur programmet kör det emulerade innehållet i rätt hastighet.</p><p><span style=\" font-style:italic;\">Timer</span>: Detta ställer in en bokstavlig timer och visar emulerade bildrutor med exakt den angivna bildfrekvensen, eller matchar automatiskt det emulerade systemet. Den kanske inte matchar din skärms bildfrekvens, vilket kan orsaka ryckningar.</p><p><span style=\" font-style:italic;\">Timer med överhoppning av bildrutor</span>: Samma som timer, förutom att om din skärm har en lägre uppdateringsfrekvens än det emulerade systemet hoppar den över bildrutor för att hänga med.</p><p><span style=\" font-style:italic;\">Ljudsynkronisering: </span>Anta att ljudmotorn matar ut ljudet i rätt hastighet och matcha videoutmatningens hastighet med det. Detta förutsätter att din uppdateringsfrekvens ligger ganska nära det emulerade systemet och att du har vsync påslaget.</p><p><span style=\" font-style:italic;\">Ingen:</span> Försök inte att sakta ner emuleringen. Om du stänger av vsync körs detta så snabbt som möjligt. Om din skärm matchar det emulerade systemets uppdateringsfrekvens väl är detta med vsync aktiverat i allmänhet det jämnaste alternativet, bortsett från variabla uppdateringsfrekvenser med en timer.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>This option adapts <span style=\" font-style:italic;\">maintain aspect ratio</span> and scales the image in steps of integral scale, so game pixels are never spread across the borders of screen pixels.</p></body></html>"
+msgstr "<html><head/><body><p>Detta alternativ anpassar <span style=\" font-style:italic;\">behåll bildförhållande</span> och skalar bilden i steg om heltalsskala, så att spelets bildpunkter aldrig sprids över gränserna för skärmens bildpunkter.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>This option affects how <span style=\" font-style:italic;\">maintain aspect ratio </span>works. </p><p><span style=\" font-style:italic;\">4:3 </span>will maintain a ratio where the screen is 1.333 times wider than high.</p><p>64:49 presents an idealized ratio where the display output is perfect, but is affected by NTSC compression.</p><p>1:1 Means pixels will be square. This will squeeze the image horizontally.</p></body></html>"
+msgstr "<html><head/><body><p>Detta alternativ påverkar hur <span style=\" font-style:italic;\">behåll bildförhållande </span>fungerar. </p><p><span style=\" font-style:italic;\">4:3 </span>behåller ett förhållande där skärmen är 1.333 gånger bredare än hög.</p><p>64:49 presenterar ett idealiserat förhållande där skärmutmatningen är perfekt, men påverkas av NTSC-komprimering.</p><p>1:1 betyder att bildpunkterna blir kvadratiska. Detta klämmer ihop bilden horisontellt.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>This option causes the audio to be slightly stretched to keep the latency even and to prevent underruns and overruns, which will cause pops and cracks in the audio.</p></body></html>"
+msgstr "<html><head/><body><p>Detta alternativ gör att ljudet sträcks ut något för att hålla latensen jämn och förhindra underflöden och överflöden, vilket orsakar knäppar och sprakanden i ljudet.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>This option determines whether messages show up in the game display:</p><p>Onscreen will show a high resolution overlay when using <span style=\" font-style:italic;\">Vulkan</span> or <span style=\" font-style:italic;\">OpenGL</span>.</p><p>Inscreen will draw in a pixel font to the ingame display.</p><p>Don't display messages will show nothing.</p></body></html>"
+msgstr "<html><head/><body><p>Detta alternativ avgör om meddelanden visas i spelskärmen:</p><p>På skärmen visar ett högupplöst överlägg när <span style=\" font-style:italic;\">Vulkan</span> eller <span style=\" font-style:italic;\">OpenGL</span> används.</p><p>Inne i skärmen ritar med ett pixeltypsnitt till skärmen under spel.</p><p>Visa inte meddelanden visar ingenting.</p></body></html>"
+
+#: qt/src/EmulationPanel.ui
+msgid "<html><head/><body><p>This option is explicitly for old AddMusic hacks. If you know you have one of those, you can enable this. Otherwise, leave it unchecked.</p></body></html>"
+msgstr "<html><head/><body><p>Detta alternativ är uttryckligen avsett för gamla AddMusic-hack. Om du vet att du har ett sådant kan du aktivera detta. I annat fall lämnar du det avmarkerat.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>This option keeps the proportions of the emulated display the same no matter how you change the size of the window.</p></body></html>"
+msgstr "<html><head/><body><p>Detta alternativ behåller proportionerna för den emulerade skärmen oavsett hur du ändrar fönstrets storlek.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>This option only affects the size of the font and the icons shown when display messages are set to the <span style=\" font-style:italic;\">Onscreen</span> option.</p></body></html>"
+msgstr "<html><head/><body><p>Detta alternativ påverkar endast storleken på typsnittet och ikonerna som visas när visa meddelanden är inställt på alternativet <span style=\" font-style:italic;\">På skärmen</span>.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>This option only affects the SNES's high-resolution, 512 pixel wide mode. Few games use this. </p><p><span style=\" font-style:italic;\">Output directly</span> will use whatever is output directly, but when the game changes modes, the filtering will get sharper or blurrier and may be distracting.</p><p><span style=\" font-style:italic;\">Merge fields </span>will scale the image down and blend the extra pixels together. This is useful in games like Jurassic Park and Kirby's Dreamland 3, which use it for a transparency effect.</p><p><span style=\" font-style:italic;\">Scale low resolution </span>will double the width of low-resolution screens, so when the game switches between modes there isn't any distracting changes in filtering. This is useful when a game uses the high resolution mode often, like Seiken Densetsu 3.</p></body></html>"
+msgstr "<html><head/><body><p>Detta alternativ påverkar endast SNES högupplösta läge med 512 bildpunkters bredd. Få spel använder detta. </p><p><span style=\" font-style:italic;\">Utmatning direkt</span> använder det som matas ut direkt, men när spelet byter läge blir filtreringen skarpare eller suddigare och kan vara störande.</p><p><span style=\" font-style:italic;\">Sammanfoga fält </span>skalar ner bilden och blandar samman de extra bildpunkterna. Detta är användbart i spel som Jurassic Park och Kirby's Dreamland 3, som använder det för en genomskinlighetseffekt.</p><p><span style=\" font-style:italic;\">Skala upp lågupplöst </span>fördubblar bredden på lågupplösta skärmar, så att det inte sker några störande ändringar i filtreringen när spelet växlar mellan lägen. Detta är användbart när ett spel ofta använder det högupplösta läget, som Seiken Densetsu 3.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>This option prevents tearing in the output.</p></body></html>"
+msgstr "<html><head/><body><p>Detta alternativ förhindrar tearing i utmatningen.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>This option stretches the emulated audio output to coincide exactly with your display's refresh rate. It automatically handles the <span style=\" font-style:italic;\">Input Rate</span> option.</p></body></html>"
+msgstr "<html><head/><body><p>Detta alternativ sträcker ut den emulerade ljudutmatningen så att den exakt sammanfaller med din skärms uppdateringsfrekvens. Det hanterar automatiskt alternativet <span style=\" font-style:italic;\">Inmatningshastighet</span>.</p></body></html>"
+
+#: qt/src/ControllerPanel.ui
+msgid "<html><head/><body><p>This option will use the SDL library to auto-configure gamepads. It will take the XBox mappings for the left D-pad and analog stick, as well as the the face buttons and L/R shoulder buttons, and assign them to relative locations on the first SNES controller.</p><p><br/></p><p>All gamepads will be assigned to player 1. If you need more players, disable this option and set up the mappings manually.</p></body></html>"
+msgstr "<html><head/><body><p>Detta alternativ använder SDL-biblioteket för att automatiskt konfigurera gamepads. Det tar XBox-mappningarna för det vänstra styrkorset och analoga spaken, samt knapparna på framsidan och L/R-axelknapparna, och tilldelar dem till relativa platser på den första SNES-kontrollern.</p><p><br/></p><p>Alla gamepads tilldelas spelare 1. Om du behöver fler spelare, inaktivera detta alternativ och ställ in mappningarna manuellt.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>This prevents the GPU from queuing up additional frames in advance, reducing the time it takes for the display to react to your input.</p></body></html>"
+msgstr "<html><head/><body><p>Detta förhindrar att GPU:n köar upp ytterligare bildrutor i förväg, vilket minskar tiden det tar för skärmen att reagera på din inmatning.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>Turns on a bilinear smoothing filter to smooth out the pixels. This option won't work with a hardware shader enabled.</p></body></html>"
+msgstr "<html><head/><body><p>Slår på ett bilinjärt utjämningsfilter för att jämna ut bildpunkterna. Detta alternativ fungerar inte med en hårdvaru-shader aktiverad.</p></body></html>"
+
+#: qt/src/ControllerPanel.ui
+msgid "<html><head/><body><p>Use this to automatically assign the default keyboard mapping or a detected controller to a set of bindings.</p><p>This uses the XInput controller protocol and maps it as close as possible to a SNES controller.</p></body></html>"
+msgstr "<html><head/><body><p>Använd detta för att automatiskt tilldela standardtangentbordsmappningen eller en upptäckt kontroller till en uppsättning bindningar.</p><p>Detta använder XInput-kontrollerprotokollet och mappar det så nära som möjligt till en SNES-kontroller.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>Uses a hardware shader with <span style=\" font-style:italic;\">Vulkan</span> or <span style=\" font-style:italic;\">OpenGL</span> drivers. These can be either .glslp or .slangp preset files.</p><p>GLSL shaders (.glslp) can be downloaded from:</p><p><a href=\"https://github.com/libretro/glsl-shaders\"><span style=\" text-decoration: underline; color:#2980b9;\">https://github.com/libretro/glsl-shaders</span></a></p><p>Slang shaders (.slangp) can be downloaded from:</p><p><a href=\"https://github.com/libretro/slang-shaders\"><span style=\" text-decoration: underline; color:#2980b9;\">https://github.com/libretro/slang-shaders</span></a></p></body></html>"
+msgstr "<html><head/><body><p>Använder en hårdvaru-shader med <span style=\" font-style:italic;\">Vulkan</span>- eller <span style=\" font-style:italic;\">OpenGL</span>-drivrutiner. Dessa kan vara antingen .glslp- eller .slangp-förvalsfiler.</p><p>GLSL-shaders (.glslp) kan laddas ner från:</p><p><a href=\"https://github.com/libretro/glsl-shaders\"><span style=\" text-decoration: underline; color:#2980b9;\">https://github.com/libretro/glsl-shaders</span></a></p><p>Slang-shaders (.slangp) kan laddas ner från:</p><p><a href=\"https://github.com/libretro/slang-shaders\"><span style=\" text-decoration: underline; color:#2980b9;\">https://github.com/libretro/slang-shaders</span></a></p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>When entering fullscreen mode, this option temporarily sets a number of other options to values that make variable refresh rate monitors that use FreeSync or GSync smoother.</p><p>Enables vsync.</p><p>Sets synchronization mode to timer and the frame rate to exactly that of the SNES.</p><p>Sets input rate to 32040Hz.</p></body></html>"
+msgstr "<html><head/><body><p>När du går in i helskärmsläge ställer detta alternativ tillfälligt in ett antal andra alternativ på värden som gör skärmar med variabel uppdateringsfrekvens som använder FreeSync eller GSync jämnare.</p><p>Aktiverar vsync.</p><p>Ställer in synkroniseringsläget på timer och bildfrekvensen på exakt SNES bildfrekvens.</p><p>Ställer in inmatningshastigheten på 32040Hz.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>When using <span style=\" font-style:italic;\">Vulkan</span>, this chooses the GPU you wish to render with.</p></body></html>"
+msgstr "<html><head/><body><p>När <span style=\" font-style:italic;\">Vulkan</span> används väljer detta vilken GPU du vill rendera med.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "Adjust input rate to display rate automatically"
+msgstr "Justera inmatningshastighet till skärmens frekvens automatiskt"
+
+#: qt/src/DisplayPanel.ui
+msgid "Adjust settings for VRR in fullscreen mode"
+msgstr "Justera inställningar för VRR i helskärmsläge"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "All Files (*)"
+msgstr "Alla filer (*)"
+
+#: qt/src/EmulationPanel.ui
+msgid "Allow opposite D-pad directions simultaneously"
+msgstr "Tillåt motsatta riktningar på styrkorset samtidigt"
+
+#: qt/src/EmulationPanel.ui
+msgid "Alternate sound filter:"
+msgstr "Alternativt ljudfilter:"
+
+#: qt/src/ControllerPanel.ui
+msgid "Auto-Assign Gamepad Buttons Using SDL Controller Map"
+msgstr "Tilldela gamepad-knappar automatiskt med SDL-kontrollermappning"
+
+#: qt/src/EmulationPanel.ui
+msgid "Auto-FastROM"
+msgstr "Auto-FastROM"
+
+#: qt/src/ControllerPanel.ui
+msgid "Automatically assign a controller's buttons to a slot"
+msgstr "Tilldela automatiskt en kontrollers knappar till en plats"
+
+#: qt/src/DisplayPanel.ui
+msgid "Bilinear filter"
+msgstr "Bilinjärt filter"
+
+#: qt/src/ControllerPanel.ui
+msgid "Binding #1"
+msgstr "Bindning #1"
+
+#: qt/src/ControllerPanel.ui
+msgid "Binding #2"
+msgstr "Bindning #2"
+
+#: qt/src/ControllerPanel.ui
+msgid "Binding #3"
+msgstr "Bindning #3"
+
+#: qt/src/ControllerPanel.ui
+msgid "Binding #4"
+msgstr "Bindning #4"
+
+#: qt/src/ControllerPanel.cpp
+msgid "Binding Set #%1"
+msgstr "Bindningsuppsättning #%1"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Change Backdrop Color"
+msgstr "Ändra bakgrundsfärg"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Cheats"
+msgstr "Fusk"
+
+#: qt/src/CheatsDialog.cpp
+msgid "cheats.bml was not found."
+msgstr "cheats.bml hittades inte."
+
+#: qt/src/CheatsDialog.ui
+msgid "Check Database"
+msgstr "Kontrollera databasen"
+
+#: qt/src/DisplayPanel.ui
+msgid "Choose a device to render output. If you have no integrated graphics, there will be only one choice."
+msgstr "Välj en enhet att rendera utmatning med. Om du inte har integrerad grafik finns det bara ett val."
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Choose a State File"
+msgstr "Välj en tillståndsfil"
+
+#: qt/src/ControllerPanel.cpp
+msgid "Clear All Controllers"
+msgstr "Töm alla kontroller"
+
+#: qt/src/ControllerPanel.cpp
+msgid "Clear Current Controller"
+msgstr "Töm aktuell kontroller"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Clear Recent Files"
+msgstr "Töm senaste filer"
+
+#: qt/src/EmuSettingsWindow.ui
+msgid "Click on a setting to find out more info."
+msgstr "Klicka på en inställning för att få mer information."
+
+#: qt/src/FoldersPanel.ui
+msgid "Config Folder"
+msgstr "Konfigurationsmapp"
+
+#: qt/src/FoldersPanel.cpp
+msgid "Config folder is %1"
+msgstr "Konfigurationsmappen är %1"
+
+#: qt/src/ControllerPanel.cpp
+msgid "Controller %1"
+msgstr "Kontroller %1"
+
+#: qt/src/ControllerPanel.ui
+msgid "Controller + Multitap"
+msgstr "Kontroller + Multitap"
+
+#: qt/src/ControllerPanel.ui
+msgid "Controller Ports:"
+msgstr "Kontrollerportar:"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Controllers"
+msgstr "Kontroller"
+
+#: qt/src/FoldersPanel.ui
+msgid "Custom Folder"
+msgstr "Anpassad mapp"
+
+#: qt/src/FoldersPanel.ui
+msgid "Data Locations"
+msgstr "Dataplatser"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Decrease Current Save Slot"
+msgstr "Minska aktuell sparplats"
+
+#: qt/src/ControllerPanel.cpp
+msgid "Default Keyboard"
+msgstr "Standardtangentbord"
+
+#: qt/src/DisplayPanel.ui
+msgid "Device:"
+msgstr "Enhet:"
+
+#: qt/src/GeneralPanel.ui
+msgid "Disable screensaver"
+msgstr "Inaktivera skärmsläckare"
+
+#: qt/src/DisplayPanel.ui
+msgid "Display messages:"
+msgstr "Visa meddelanden:"
+
+#: qt/src/DisplayPanel.ui
+msgid "Display Output"
+msgstr "Skärmutmatning"
+
+#: qt/src/DisplayPanel.ui
+msgid "Don't display messages"
+msgstr "Visa inte meddelanden"
+
+#: qt/src/DisplayPanel.ui
+msgid "Driver:"
+msgstr "Drivrutin:"
+
+#: qt/src/ControllerPanel.ui
+msgid "Edit"
+msgstr "Redigera"
+
+#: qt/src/EmulationPanel.ui
+msgid "Emulation Speed"
+msgstr "Emuleringshastighet"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Enable Fast-Forward"
+msgstr "Aktivera snabbspolning framåt"
+
+#: qt/src/DisplayPanel.ui
+msgid "Enable vsync"
+msgstr "Aktivera vsync"
+
+#: qt/src/FoldersPanel.ui
+msgid "Exports"
+msgstr "Exporter"
+
+#: qt/src/EmulationPanel.ui
+msgid "Fast-forward frame skip:"
+msgstr "Överhoppning av bildrutor vid snabbspolning:"
+
+#: qt/src/SoundPanel.ui
+msgid "Fast-Forward:"
+msgstr "Snabbspolning framåt:"
+
+#: qt/src/ControllerPanel.ui
+msgid "Form"
+msgstr "Formulär"
+
+#: qt/src/EmulationPanel.ui
+msgid "fps"
+msgstr "fps"
+
+#: qt/src/EmulationPanel.ui
+msgid "Frame rate:"
+msgstr "Bildfrekvens:"
+
+#: qt/src/EmulationPanel.ui
+msgid "Frames between steps"
+msgstr "Bildrutor mellan steg"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "From File"
+msgstr "Från fil"
+
+#: qt/src/EmulationPanel.ui
+msgid "Gaussian"
+msgstr "Gaussisk"
+
+#: qt/src/SoundPanel.ui
+msgid "GB:"
+msgstr "GB:"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Grab Mouse"
+msgstr "Fånga muspekaren"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Hard Reset"
+msgstr "Hård omstart"
+
+#: qt/src/EmulationPanel.ui
+msgid "High"
+msgstr "Hög"
+
+#: qt/src/DisplayPanel.ui
+msgid "High-resolution mode:"
+msgstr "Högupplöst läge:"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Increase Current Save Slot"
+msgstr "Öka aktuell sparplats"
+
+#: qt/src/DisplayPanel.ui
+msgid "Inside the screen - Low resolution"
+msgstr "Inne i skärmen - Låg upplösning"
+
+#: qt/src/CheatsDialog.cpp
+msgid "Invalid Cheat"
+msgstr "Ogiltigt fusk"
+
+#: qt/src/DisplayPanel.ui
+msgid "Keep the screen at the requested proportions for width and height."
+msgstr "Behåll skärmen i de begärda proportionerna för bredd och höjd."
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Load State"
+msgstr "Läs in tillstånd"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Load State from Current Slot"
+msgstr "Läs in tillstånd från aktuell plats"
+
+#: qt/src/EmulationPanel.ui
+msgid "Low"
+msgstr "Låg"
+
+#: qt/src/EmulationPanel.ui
+msgid "MB"
+msgstr "MB"
+
+#: qt/src/DisplayPanel.ui
+msgid "Merge the fields of the high-resolution lines"
+msgstr "Sammanfoga fälten i de högupplösta linjerna"
+
+#: qt/src/DisplayPanel.ui
+msgid "Messages"
+msgstr "Meddelanden"
+
+#: qt/src/ControllerPanel.ui
+msgid "Mouse + Controller"
+msgstr "Mus + Kontroller"
+
+#: qt/src/SoundPanel.ui
+msgid "ms"
+msgstr "ms"
+
+#: qt/src/SoundPanel.ui
+msgid "Mute all sound"
+msgstr "Stäng av allt ljud"
+
+#: qt/src/SoundPanel.ui
+msgid "Mute sound during turbo or rewind"
+msgstr "Stäng av ljudet under turbo eller tillbakaspolning"
+
+#: qt/src/CheatsDialog.cpp
+msgid "No cheats for the current game were found in the database."
+msgstr "Inga fusk för det aktuella spelet hittades i databasen."
+
+#: qt/src/CheatsDialog.cpp
+msgid "No Cheats Found"
+msgstr "Inga fusk hittades"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "No recent files"
+msgstr "Inga senaste filer"
+
+#: qt/src/EmulationPanel.ui
+msgid "None - Run unthrottled, unless vsync is turned on"
+msgstr "Ingen - Kör utan strypning, om inte vsync är påslaget"
+
+#: qt/src/ControllerPanel.ui
+msgid "One Controller"
+msgstr "En kontroller"
+
+#: qt/src/DisplayPanel.ui
+msgid "Onscreen - High resolution"
+msgstr "På skärmen - Hög upplösning"
+
+#: qt/src/DisplayPanel.ui
+msgid "Onscreen display size:"
+msgstr "Storlek för visning på skärmen:"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Open a ROM File"
+msgstr "Öppna en ROM-fil"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Open File"
+msgstr "Öppna fil"
+
+#: qt/src/FoldersPanel.cpp
+msgid "Open Folder"
+msgstr "Öppna mapp"
+
+#: qt/src/EmuCanvasOpenGL.cpp
+msgid "OpenGL Driver"
+msgstr "OpenGL-drivrutin"
+
+#: qt/src/EmulationPanel.ui
+msgid "Overclock:"
+msgstr "Överklockning:"
+
+#: qt/src/GeneralPanel.ui
+msgid "Overlays"
+msgstr "Överlägg"
+
+#: qt/src/FoldersPanel.ui
+msgid "Patches"
+msgstr "Patchar"
+
+#: qt/src/GeneralPanel.ui
+msgid "Pause emulation when window is not focused"
+msgstr "Pausa emuleringen när fönstret inte är i fokus"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Pause/Continue"
+msgstr "Paus/Fortsätt"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Power Cycle Console"
+msgstr "Strömcykla konsolen"
+
+#: qt/src/ShaderParametersDialog.cpp
+msgid "Preset name:"
+msgstr "Förvalsnamn:"
+
+#: qt/src/DisplayPanel.ui
+msgid "Prevent the display driver from getting too far ahead in order to reduce lag."
+msgstr "Förhindra att skärmdrivrutinen kommer för långt före för att minska fördröjning."
+
+#: qt/src/DisplayPanel.ui
+msgid "pt"
+msgstr "pt"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Load Slot 0"
+msgstr "Snabbinläs plats 0"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Load Slot 1"
+msgstr "Snabbinläs plats 1"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Load Slot 2"
+msgstr "Snabbinläs plats 2"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Load Slot 3"
+msgstr "Snabbinläs plats 3"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Load Slot 4"
+msgstr "Snabbinläs plats 4"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Load Slot 5"
+msgstr "Snabbinläs plats 5"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Load Slot 6"
+msgstr "Snabbinläs plats 6"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Load Slot 7"
+msgstr "Snabbinläs plats 7"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Load Slot 8"
+msgstr "Snabbinläs plats 8"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Load Slot 9"
+msgstr "Snabbinläs plats 9"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Save Slot 0"
+msgstr "Snabbspara plats 0"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Save Slot 1"
+msgstr "Snabbspara plats 1"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Save Slot 2"
+msgstr "Snabbspara plats 2"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Save Slot 3"
+msgstr "Snabbspara plats 3"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Save Slot 4"
+msgstr "Snabbspara plats 4"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Save Slot 5"
+msgstr "Snabbspara plats 5"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Save Slot 6"
+msgstr "Snabbspara plats 6"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Save Slot 7"
+msgstr "Snabbspara plats 7"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Save Slot 8"
+msgstr "Snabbspara plats 8"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Save Slot 9"
+msgstr "Snabbspara plats 9"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quit"
+msgstr "Avsluta"
+
+#: qt/src/SoundPanel.ui
+msgid "Regular:"
+msgstr "Vanlig:"
+
+#: qt/src/EmulationPanel.ui
+msgid "Remove the sprite limit"
+msgstr "Ta bort sprite-gränsen"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Reset to Default"
+msgstr "Återställ till standard"
+
+#: qt/src/EmuSettingsWindow.ui
+msgid "Restore all settings on the current page to their default values."
+msgstr "Återställ alla inställningar på den aktuella sidan till deras standardvärden."
+
+#: qt/src/EmuSettingsWindow.ui
+msgid "Restore Defaults"
+msgstr "Återställ standardvärden"
+
+#: qt/src/EmulationPanel.ui
+msgid "Rewind buffer size (0 to disable):"
+msgstr "Buffertstorlek för tillbakaspolning (0 för att inaktivera):"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "ROM Files (*.sfc *.smc *.bin *.fig *.msu *.zip)"
+msgstr "ROM-filer (*.sfc *.smc *.bin *.fig *.msu *.zip)"
+
+#: qt/src/FoldersPanel.ui
+msgid "ROM Folder"
+msgstr "ROM-mapp"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Run"
+msgstr "Kör"
+
+#: qt/src/ShaderParametersDialog.cpp
+msgid "Save"
+msgstr "Spara"
+
+#: qt/src/ShaderParametersDialog.cpp
+msgid "Save As"
+msgstr "Spara som"
+
+#: qt/src/ShaderParametersDialog.cpp
+msgid "Save Shader Preset As"
+msgstr "Spara Shader-förval som"
+
+#: qt/src/FoldersPanel.ui
+msgid "Save SRAM to disk every:"
+msgstr "Spara SRAM till disk var:"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Save State to Current Slot"
+msgstr "Spara tillstånd till aktuell plats"
+
+#: qt/src/FoldersPanel.ui
+msgid "Save states"
+msgstr "Sparade tillstånd"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Save States (*.sst *.oops *.undo *.0?? *.1?? *.2?? *.3?? *.4?? *.5?? *.6?? *.7?? *.8?? *.9*)"
+msgstr "Sparade tillstånd (*.sst *.oops *.undo *.0?? *.1?? *.2?? *.3?? *.4?? *.5?? *.6?? *.7?? *.8?? *.9*)"
+
+#: qt/src/DisplayPanel.ui
+msgid "Scale normal resolution screens up"
+msgstr "Skala upp skärmar med normal upplösning"
+
+#: qt/src/DisplayPanel.ui
+msgid "Scaling and Aspect Ratio"
+msgstr "Skalning och bildförhållande"
+
+#: qt/src/FoldersPanel.ui
+msgid "seconds"
+msgstr "sekunder"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Seek to Frame"
+msgstr "Spola till bildruta"
+
+#: qt/src/DisplayPanel.cpp
+msgid "Select a Folder"
+msgstr "Välj en mapp"
+
+#: qt/src/DisplayPanel.ui
+msgid "Select the output driver."
+msgstr "Välj utmatningsdrivrutinen."
+
+#: qt/src/ControllerPanel.ui
+msgid "Set"
+msgstr "Ställ in"
+
+#: qt/src/EmulationPanel.ui
+msgid "Set frame rate to 0 to automatically change based on PAL/NTSC and with interlacing on and off."
+msgstr "Ställ in bildfrekvensen på 0 för att automatiskt ändras baserat på PAL/NTSC och med radsprång på och av."
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Set Size"
+msgstr "Ställ in storlek"
+
+#: qt/src/DisplayPanel.cpp
+msgid "Shader Presets (*.slangp *.glslp)"
+msgstr "Shader-förval (*.slangp *.glslp)"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Shader Settings"
+msgstr "Shader-inställningar"
+
+#: qt/src/GeneralPanel.ui
+msgid "Show fast-forward and pause icons"
+msgstr "Visa ikoner för snabbspolning framåt och paus"
+
+#: qt/src/DisplayPanel.ui
+msgid "Show overscan area"
+msgstr "Visa överskanningsområde"
+
+#: qt/src/DisplayPanel.ui
+msgid "Show the areas on the top and bottom of the screen that are normally black and hidden by the TV. Some games will draw in these areas."
+msgstr "Visa områdena längst upp och längst ner på skärmen som normalt är svarta och dolda av tv:n. Vissa spel ritar i dessa områden."
+
+#: qt/src/GeneralPanel.ui
+msgid "Show the time"
+msgstr "Visa tiden"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Slot %1"
+msgstr "Plats %1"
+
+#: qt/src/DisplayPanel.ui
+msgid "Smooth screen output."
+msgstr "Jämna ut skärmutmatningen."
+
+#: qt/src/ControllerPanel.ui
+msgid "SNES Controller 1"
+msgstr "SNES-kontroller 1"
+
+#: qt/src/ControllerPanel.ui
+msgid "SNES Controller 2"
+msgstr "SNES-kontroller 2"
+
+#: qt/src/ControllerPanel.ui
+msgid "SNES Controller 3 (Multitap)"
+msgstr "SNES-kontroller 3 (Multitap)"
+
+#: qt/src/ControllerPanel.ui
+msgid "SNES Controller 4 (Multitap)"
+msgstr "SNES-kontroller 4 (Multitap)"
+
+#: qt/src/ControllerPanel.ui
+msgid "SNES Controller 5 (Multitap)"
+msgstr "SNES-kontroller 5 (Multitap)"
+
+#: qt/src/DisplayPanel.ui
+msgid "Software Filters"
+msgstr "Programvarufilter"
+
+#: qt/src/SoundPanel.ui
+msgid "Sound Output"
+msgstr "Ljudutmatning"
+
+#: qt/src/SoundPanel.ui
+msgid "Sound Stretching"
+msgstr "Ljudutsträckning"
+
+#: qt/src/EmulationPanel.ui
+msgid "Sound Synchronization - Wait on the sound buffer"
+msgstr "Ljudsynkronisering - Vänta på ljudbufferten"
+
+#: qt/src/SoundPanel.ui
+msgid "SPC:"
+msgstr "SPC:"
+
+#: qt/src/EmulationPanel.ui
+msgid "Speed control method:"
+msgstr "Hastighetskontrollmetod:"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Start Recording"
+msgstr "Starta inspelning"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Stop Recording"
+msgstr "Stoppa inspelning"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Super Game Boy (SGB1)"
+msgstr "Super Game Boy (SGB1)"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Super Game Boy 2 (SGB2)"
+msgstr "Super Game Boy 2 (SGB2)"
+
+#: qt/src/EmulationPanel.ui
+msgid "SuperFX clock speed:"
+msgstr "SuperFX klockfrekvens:"
+
+#: qt/src/ControllerPanel.ui
+msgid "SuperScope + Controller"
+msgstr "SuperScope + Kontroller"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Swap Controllers 1 and 2"
+msgstr "Växla kontroller 1 och 2"
+
+#: qt/src/ControllerPanel.ui
+msgid "Swap or clear groups of bindings"
+msgstr "Växla eller töm grupper av bindningar"
+
+#: qt/src/ControllerPanel.cpp
+msgid "Swap With"
+msgstr "Växla med"
+
+#: qt/src/GeneralPanel.ui
+msgid "Switch to fullscreen after opening a ROM"
+msgstr "Växla till helskärm efter att en ROM öppnats"
+
+#: qt/src/DisplayPanel.ui
+msgid "Sync the display to vertical retrace to eliminate tearing."
+msgstr "Synkronisera skärmen till vertikal retrace för att eliminera tearing."
+
+#: qt/src/CheatsDialog.cpp
+msgid "The cheat you entered was not valid."
+msgstr "Fusket du angav var inte giltigt."
+
+#: qt/src/EmuCanvasOpenGL.cpp
+msgid "The driver isn't using a specialized shader preset right now."
+msgstr "Drivrutinen använder inte ett specialiserat shader-förval just nu."
+
+#: qt/src/EmuMainWindow.cpp
+msgid "The language change will take effect after you restart SuperSnes9x."
+msgstr "Språkändringen träder i kraft efter att du startat om SuperSnes9x."
+
+#: qt/src/EmuCanvasVulkan.cpp
+msgid "The vulkan display driver hasn't properly loaded."
+msgstr "Vulkan-skärmdrivrutinen har inte lästs in korrekt."
+
+#: qt/src/DisplayPanel.ui
+msgid "This affects the rarely used 512-pixels-wide mode used by the SNES.\nFor games like Kirby 3 and Jurassic Park, choose the \"merge fields\" option.\nFor games like Seiken Densetsu 3 and Marvelous, choose the \"scale up\" option.\nOutput directly will cause the screen to change between the two modes and look weird."
+msgstr "Detta påverkar det sällan använda 512-bildpunkter-breda läget som SNES använder.\nFör spel som Kirby 3 och Jurassic Park, välj alternativet \"sammanfoga fält\".\nFör spel som Seiken Densetsu 3 och Marvelous, välj alternativet \"skala upp\".\nUtmatning direkt gör att skärmen växlar mellan de två lägena och ser konstig ut."
+
+#: qt/src/EmuCanvasOpenGL.cpp
+msgid "This shader preset doesn't offer any configurable parameters."
+msgstr "Detta shader-förval erbjuder inga konfigurerbara parametrar."
+
+#: qt/src/EmulationPanel.ui
+msgid "Timer - Match the frame rate configured below"
+msgstr "Timer - Matcha bildfrekvensen som konfigurerats nedan"
+
+#: qt/src/EmulationPanel.ui
+msgid "Timer with Frame Skipping - Skip frames if needed"
+msgstr "Timer med överhoppning av bildrutor - Hoppa över bildrutor vid behov"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "To File"
+msgstr "Till fil"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle All Sound Channels"
+msgstr "Växla alla ljudkanaler"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle BG Layer 0"
+msgstr "Växla BG-lager 0"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle BG Layer 1"
+msgstr "Växla BG-lager 1"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle BG Layer 2"
+msgstr "Växla BG-lager 2"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle BG Layer 3"
+msgstr "Växla BG-lager 3"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle Fast-Forward"
+msgstr "Växla snabbspolning framåt"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle Fullscreen"
+msgstr "Växla helskärm"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle Sound Channel 1"
+msgstr "Växla ljudkanal 1"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle Sound Channel 2"
+msgstr "Växla ljudkanal 2"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle Sound Channel 3"
+msgstr "Växla ljudkanal 3"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle Sound Channel 4"
+msgstr "Växla ljudkanal 4"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle Sound Channel 5"
+msgstr "Växla ljudkanal 5"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle Sound Channel 6"
+msgstr "Växla ljudkanal 6"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle Sound Channel 7"
+msgstr "Växla ljudkanal 7"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle Sound Channel 8"
+msgstr "Växla ljudkanal 8"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle Sprites"
+msgstr "Växla sprites"
+
+#: qt/src/ControllerPanel.ui
+msgid "Turbo A"
+msgstr "Turbo A"
+
+#: qt/src/ControllerPanel.ui
+msgid "Turbo B"
+msgstr "Turbo B"
+
+#: qt/src/ControllerPanel.ui
+msgid "Turbo L"
+msgstr "Turbo L"
+
+#: qt/src/ControllerPanel.ui
+msgid "Turbo R"
+msgstr "Turbo R"
+
+#: qt/src/ControllerPanel.ui
+msgid "Turbo X"
+msgstr "Turbo X"
+
+#: qt/src/ControllerPanel.ui
+msgid "Turbo Y"
+msgstr "Turbo Y"
+
+#: qt/src/ControllerPanel.ui
+msgid "Two Controllers"
+msgstr "Två kontroller"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Unable to create a %1 context. Attempting to use %2."
+msgstr "Det gick inte att skapa en %1-kontext. Försöker använda %2."
+
+#: qt/src/CheatsDialog.cpp
+msgid "Unable to Open Cheats Database"
+msgstr "Det gick inte att öppna fuskdatabasen"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Unable to Start Display Driver"
+msgstr "Det gick inte att starta skärmdrivrutinen"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Undo Load State"
+msgstr "Ångra inläst tillstånd"
+
+#: qt/src/DisplayPanel.ui
+msgid "Use a hardware shader:"
+msgstr "Använd en hårdvaru-shader:"
+
+#: qt/src/DisplayPanel.ui
+msgid "Use a selected .slangp or .glslp shader file. \n.slangp is supported by Vulkan and OpenGL. \n.glslp is supported by OpenGL."
+msgstr "Använd en vald .slangp- eller .glslp-shader-fil. \n.slangp stöds av Vulkan och OpenGL. \n.glslp stöds av OpenGL."
+
+#: qt/src/EmulationPanel.ui
+msgid "Use a shadow echo buffer"
+msgstr "Använd en skugg-ekobuffert"
+
+#: qt/src/DisplayPanel.ui
+msgid "Use integer scaling"
+msgstr "Använd heltalsskalning"
+
+#: qt/src/ControllerPanel.ui
+msgid "Use SDL to set up the D-pad, face buttons, and L/R. Other buttons may still be configured."
+msgstr "Använd SDL för att ställa in styrkorset, knapparna på framsidan och L/R. Andra knappar kan fortfarande konfigureras."
+
+#: qt/src/EmuMainWindow.cpp
+msgid "View"
+msgstr "Visa"
+
+#: qt/src/EmuCanvasVulkan.cpp
+msgid "Vulkan Driver"
+msgstr "Vulkan-drivrutin"
+
+#: qt/src/DisplayPanel.ui
+msgid "When entering fullscreen mode, temporarily change other settings to use VRR (G-Sync or FreeSync) correctly."
+msgstr "När du går in i helskärmsläge, ändra tillfälligt andra inställningar för att använda VRR (G-Sync eller FreeSync) korrekt."
+
+#: qt/src/DisplayPanel.ui
+msgid "When scaling up, only use integer multiples of the original height."
+msgstr "Använd endast heltalsmultiplar av den ursprungliga höjden vid uppskalning."

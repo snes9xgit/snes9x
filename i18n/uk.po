@@ -1,0 +1,5424 @@
+# Super Nintendo Entertainment System 9X: Ukrainian translation
+# Stanley Kid <stanley.udr.kid@gmail.com>, 2024.
+msgid ""
+msgstr ""
+"Project-Id-Version: 1.63\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-10-29 23:56+0100\n"
+"PO-Revision-Date: 2024-02-14 15:43+0200\n"
+"Last-Translator: Stanley Kid <stanley.udr.kid@gmail.com>\n"
+"Language-Team: \n"
+"Language: uk\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<12 || "
+"n%100>14) ? 1 : 2);\n"
+"X-Generator: Poedit 3.4.2\n"
+
+#: src/gtk_binding.cpp:248
+msgid "Unknown"
+msgstr "Невідомо"
+
+#: src/gtk_binding.cpp:257
+msgid "Keyboard {}{}{}{}"
+msgstr "Клавіатура {}{}{}{}"
+
+#: src/gtk_binding.cpp:267
+msgid "Axis {} {} {}%"
+msgstr "Вісь {} {} {} %"
+
+#: src/gtk_binding.cpp:272
+msgid "Button {}"
+msgstr "Кнопка {}"
+
+#: src/gtk_binding.cpp:274
+msgid "Joystick {} {}"
+msgstr "Джойстик {} {}"
+
+#: src/gtk_binding.cpp:278
+msgid "Unset"
+msgstr "Не встановлено"
+
+#: src/gtk_cheat.cpp:24
+msgid "Error"
+msgstr "Помилка"
+
+#: src/gtk_cheat.cpp:60
+msgid "Description"
+msgstr "Опис"
+
+#: src/gtk_cheat.cpp:66
+msgid "Cheat"
+msgstr "Чіт"
+
+#: src/gtk_cheat.cpp:227 src/gtk_cheat.cpp:355
+msgid "No description"
+msgstr "Без опису"
+
+#: src/gtk_cheat.cpp:231 src/gtk_cheat.cpp:360
+msgid "Couldn't find any cheat codes in input."
+msgstr "Неможливо знайти будь-які чіт-коди."
+
+#: src/gtk_cheat.cpp:306
+msgid "Couldn't Find Cheats Database"
+msgstr "Неможливо знайти базу даних чітів."
+
+#: src/gtk_cheat.cpp:306
+msgid "No Matching Game Found"
+msgstr "Не знайдено збіжних ігор."
+
+#: src/gtk_cheat.cpp:307
+msgid ""
+"The database file <b>cheats.bml</b> was not found. It is normally installed with Snes9x, but you may "
+"also place a custom copy in your configuration or cheats directory."
+msgstr ""
+"Файл бази даних <b>cheats.bml</b> не знайдено. Зазвичай його встановлено із Super Nintendo "
+"Entertainment System 9X, але можливе розміщення іншої копії в конфігурації чи каталозі чітів."
+
+#: src/gtk_cheat.cpp:309
+msgid ""
+"No matching game was found in the databases. If you are using a non-official translation or modified "
+"copy, you may be able to find and manually enter the codes."
+msgstr ""
+"Не знайдено збіжної гри в базах даних. При використанні неофіційного перекладу чи зміненої копії "
+"можливе знаходження та ручне вказання кодів."
+
+#: src/gtk_config.cpp:407
+msgid "Couldn't create config directory: {}\n"
+msgstr "Неможливо створити каталог конфігурації: {}.\n"
+
+#: src/gtk_netplay.cpp:66
+msgid "Connection Error"
+msgstr "Помилка з'єднання"
+
+#: src/gtk_netplay_dialog.cpp:31
+msgid "frame behind"
+msgid_plural "frames behind"
+msgstr[0] "кадр затримки"
+msgstr[1] "кадри затримки"
+msgstr[2] "кадрів затримки"
+
+#: src/gtk_preferences.cpp:19
+msgid "Same location as current game"
+msgstr "Розташування поточної гри"
+
+#: src/gtk_preferences.cpp:110
+msgid "{0:Ld}×{1:Ld} @ {2:.3Lf} Hz"
+msgstr "{0:Ld} * {1:Ld} @ {2:.3Lf} Гц"
+
+#: src/gtk_preferences.cpp:143
+msgid "OpenGL – Use 3D graphics hardware"
+msgstr "OpenGL - використовувати 3D-графіку обладнання"
+
+#: src/gtk_preferences.cpp:145
+msgid "XVideo – Use hardware video blitter"
+msgstr "XVideo - використовувати апаратний відеоблітер"
+
+#: src/gtk_preferences.cpp:147
+msgid "Vulkan"
+msgstr "Vulkan"
+
+#: src/gtk_preferences.cpp:149
+msgid "None – Use software scaler"
+msgstr "Не вказано - використовувати програмний скалер"
+
+#: src/gtk_preferences.cpp:179 src/gtk_preferences.cpp:446
+msgid "thread for filtering and scaling"
+msgid_plural "threads for filtering and scaling"
+msgstr[0] "потік для фільтрування та масштабування"
+msgstr[1] "потоки для фільтрування та масштабування"
+msgstr[2] "потоків для фільтрування та масштабування"
+
+#: src/gtk_preferences.cpp:236 src/gtk_preferences.cpp:500
+msgid "millisecond"
+msgid_plural "milliseconds"
+msgstr[0] "мсек"
+msgstr[1] "мсек"
+msgstr[2] "мсек"
+
+#: src/gtk_preferences.cpp:260 src/gtk_preferences.cpp:476
+msgid "second after change"
+msgid_plural "seconds after change"
+msgstr[0] "сек після зміни"
+msgstr[1] "сек після зміни"
+msgstr[2] "сек після зміни"
+
+#: src/gtk_preferences.cpp:271
+msgid "SuperSnes9x version: "
+msgstr "Версія: "
+
+#: src/gtk_preferences.cpp:272
+msgid "GTK+ port version: "
+msgstr "Версія GTK+-порту: "
+
+#: src/gtk_preferences.cpp:274
+msgid "English localization by Brandon Wright"
+msgstr "Переклад: Stanley Kid"
+
+#: src/gtk_preferences.cpp:298
+msgid "Select directory"
+msgstr "Вибір каталогу"
+
+#: src/gtk_preferences.cpp:323
+msgid "{0:.4Lf} Hz"
+msgstr "{0:.4Lf} Гц"
+
+#: src/gtk_preferences.cpp:328
+msgid "{0:Ld} Hz"
+msgstr "{0:Ld} Гц"
+
+#: src/gtk_preferences.cpp:379
+msgid "Select Shader File"
+msgstr "Вибір шейдера"
+
+#: src/gtk_preferences.cpp:720
+msgid ""
+"Changing the SRAM directory with a game loaded will replace the .srm file in the selected directory "
+"with the SRAM from the running game. If this is not what you want, click 'cancel'."
+msgstr ""
+"При зміні SRAM-каталогу з завантаженою грою .srm-файл у вибраному каталозі буде замінено на SRAM із "
+"запущеної гри. Якщо не потрібно, натисни \"Скасувати\"."
+
+#: src/gtk_preferences.cpp:725
+msgid "Warning: Possible File Overwrite"
+msgstr "Увага: можливий перезапис файлу."
+
+#: src/gtk_preferences.cpp:980
+msgid "Current joystick centers have been saved."
+msgstr "Поточні центри джойстиків збережено."
+
+#: src/gtk_preferences.cpp:981
+msgid "Calibration Complete"
+msgstr "Калібрування завершено"
+
+#: src/gtk_s9x.cpp:206
+msgid "Using rewind buffer of {0}\n"
+msgstr "Використання буфера звороту {0}.\n"
+
+#: src/gtk_s9x.cpp:598
+msgid ""
+"GTK port options:\n"
+"-filter [option]               Use a filter to scale the image.\n"
+"                               [option] is one of: none supereagle 2xsai\n"
+"                               super2xsai hq2x hq3x hq4x 2xbrz 3xbrz 4xbrz epx ntsc\n"
+"\n"
+"-mutesound                     Disables sound output.\n"
+msgstr ""
+"Опції GTK-порту:\n"
+"-filter [option] - використання фільтра для масштабування зображення.\n"
+"Перелік опцій [option]: none supereagle 2xsai super2xsai hq2x hq3x hq4x\n"
+"2xbrz 3xbrz 4xbrz epx ntsc\n"
+"\n"
+"-mutesound - вимкнення виведення звуку.\n"
+
+#: src/gtk_s9xwindow.cpp:48 src/snes9x.ui:8405
+msgid "Save States"
+msgstr "Зберегти стани"
+
+#: src/gtk_s9xwindow.cpp:57
+msgid "All Files"
+msgstr "Усі файли"
+
+#: src/gtk_s9xwindow.cpp:616
+msgid "Couldn't load files."
+msgstr "Неможливо завантажити файли."
+
+#: src/gtk_s9xwindow.cpp:637
+msgid "Open SNES Movie"
+msgstr "Відкрити SNES-відео"
+
+#: src/gtk_s9xwindow.cpp:642
+msgid "New SNES Movie"
+msgstr "Нове SNES-відео"
+
+#: src/gtk_s9xwindow.cpp:661
+msgid "SNES Movies"
+msgstr "SNES-відео"
+
+#: src/gtk_s9xwindow.cpp:690
+msgid "Open SNES ROM Image"
+msgstr "Відкрити ROM-образ"
+
+#: src/gtk_s9xwindow.cpp:695
+msgid "SNES ROM Images"
+msgstr "ROM-образи"
+
+#: src/gtk_s9xwindow.cpp:740
+msgid "Couldn't load file: "
+msgstr "Неможливо завантажити файл: "
+
+#: src/gtk_s9xwindow.cpp:767
+msgid "Load Saved State"
+msgstr "Завантажити збережений стан"
+
+#: src/gtk_s9xwindow.cpp:796
+msgid "The current frame in the movie is <b>{0:Ld}</b>."
+msgstr "Поточний кадр відео <b>{0:Ld}</b>."
+
+#: src/gtk_s9xwindow.cpp:829
+msgid "Save State"
+msgstr "Зберегти стан"
+
+#: src/gtk_s9xwindow.cpp:850
+msgid "Save SPC file..."
+msgstr "Зберегти SPC..."
+
+#: src/gtk_s9xwindow.cpp:872
+msgid "Couldn't save SPC file:"
+msgstr "Неможливо зберегти SPC:"
+
+#: src/gtk_s9xwindow.cpp:888
+#, c-format
+msgid ""
+"<b>Information for %s</b>\n"
+"\n"
+"<i>Name:</i> %s\n"
+"<i>Speed:</i> %02X/%s\n"
+"<i>Map:</i> %s\n"
+"<i>Type:</i> %02x\n"
+"<i>Contents:</i> %s\n"
+"<i>ROM Size:</i> %s\n"
+"<i>Calculated Size:</i> %d\n"
+"<i>SRAM Size:</i> %s\n"
+"<i>Header Checksum:</i> %04X\n"
+"<i>Checksum Complement:</i> %04X\n"
+"<i>Actual Checksum:</i> %04X\n"
+"<i>Video:</i> %s\n"
+"<i>CRC32:</i> %08X\n"
+"<i>Revision:</i> %s\n"
+"<b><i>%s%s</i></b>"
+msgstr ""
+"<b>Відомості %s</b>\n"
+"\n"
+"<i>Ім'я:</i> %s\n"
+"<i>Швидкість:</i> %02X/%s\n"
+"<i>Мапа:</i> %s\n"
+"<i>Тип:</i> %02x\n"
+"<i>Уміст:</i> %s\n"
+"<i>Розмір ROM:</i> %s\n"
+"<i>Визначений розмір:</i> %d\n"
+"<i>Розмір SRAM:</i> %s\n"
+"<i>Контрольна сума заголовка:</i> %04X\n"
+"<i>Контрольна сума доповнення:</i> %04X\n"
+"<i>Дійсна контрольна сума:</i> %04X\n"
+"<i>Відео:</i> %s\n"
+"<i>CRC32:</i> %08X\n"
+"<i>Огляд:</i> %s\n"
+"<b><i>%s%s</i></b>"
+
+#: src/gtk_s9xwindow.cpp:924
+msgid ""
+"\n"
+"\n"
+"This ROM has been auto-patched with "
+msgstr ""
+"\n"
+"\n"
+"ROM автоматично залатано "
+
+#: src/gtk_s9xwindow.cpp:924
+msgid ""
+"\n"
+"\n"
+"This ROM has been modified or damaged"
+msgstr ""
+"\n"
+"\n"
+"ROM змінено чи пошкоджено."
+
+#: src/gtk_s9xwindow.cpp:938
+msgid "File Information"
+msgstr "Відомості файлу"
+
+#: src/gtk_shader_parameters.cpp:67
+msgid "Export Shader Preset to:"
+msgstr "Експортувати шаблон шейдера до:"
+
+#: src/gtk_shader_parameters.cpp:90
+msgid "Shader Preset"
+msgstr "Шаблон шейдера"
+
+#: src/gtk_shader_parameters.cpp:131
+msgid "Shader Parameters"
+msgstr "Параметри шейдерів"
+
+#: src/snes9x.ui:10
+msgid "About SuperSnes9x"
+msgstr "Про додаток"
+
+#: src/snes9x.ui:283
+msgid "SuperSnes9x Cheats"
+msgstr "Чіти"
+
+#: src/snes9x.ui:401
+msgid "Update Cheat"
+msgstr "Оновити чіт"
+
+#: src/snes9x.ui:416
+msgid "Disable All"
+msgstr "Вимкнути всі"
+
+#: src/snes9x.ui:432
+msgid "Delete All Cheats"
+msgstr "Видалити всі чіти"
+
+#: src/snes9x.ui:447
+msgid "Search Cheat Database"
+msgstr "Шукати базу даних чітів"
+
+#: src/snes9x.ui:489
+msgid "Code:"
+msgstr "Код:"
+
+#: src/snes9x.ui:526
+msgid "Description:"
+msgstr "Опис:"
+
+#: src/snes9x.ui:573
+msgid "Advance to Frame"
+msgstr "Перейти до кадру"
+
+#: src/snes9x.ui:642
+msgid "The current frame in the movie is"
+msgstr "Поточний кадр відео"
+
+#: src/snes9x.ui:663
+msgid "Fast-forward to frame"
+msgstr "Перемотати вперед до кадру"
+
+#: src/snes9x.ui:806
+msgid "Black"
+msgstr "Чорний"
+
+#: src/snes9x.ui:809
+msgid "Color bars"
+msgstr "Кольорові панелі"
+
+#: src/snes9x.ui:812
+msgid "Pixel art patterns"
+msgstr "Піксельні арт-візерунки"
+
+#: src/snes9x.ui:815
+msgid "Dithered gradient"
+msgstr "Згладжений градієнт"
+
+#: src/snes9x.ui:818
+msgid "Color bars and patterns"
+msgstr "Кольорові панелі та візерунки"
+
+#: src/snes9x.ui:821
+msgid "Starfield"
+msgstr "Зоряне поле"
+
+#: src/snes9x.ui:824
+msgid "Snow"
+msgstr "Сніг"
+
+#: src/snes9x.ui:852 src/snes9x.ui:875
+msgid "12.5%"
+msgstr "12,5 %"
+
+#: src/snes9x.ui:855 src/snes9x.ui:878
+msgid "25%"
+msgstr "25 %"
+
+#: src/snes9x.ui:858 src/snes9x.ui:881
+msgid "50%"
+msgstr "50 %"
+
+#: src/snes9x.ui:861 src/snes9x.ui:884
+msgid "100%"
+msgstr "100 %"
+
+#: src/snes9x.ui:872
+msgid "0%"
+msgstr "0 %"
+
+#: src/snes9x.ui:895
+msgctxt "filter list"
+msgid "None"
+msgstr "Не вказано"
+
+#: src/snes9x.ui:936
+msgid "8:7 Square pixels"
+msgstr "8:7 Квадратні пікселі"
+
+#: src/snes9x.ui:939
+msgid "8:7 Square pixels, integer multiples"
+msgstr "8:7 Квадратні пікселі, цілі кратні"
+
+#: src/snes9x.ui:942
+msgid "4:3 SNES correct aspect"
+msgstr "4:3 SNES правильні сторони"
+
+#: src/snes9x.ui:945
+msgid "4:3 SNES correct aspect, integer multiples"
+msgstr "4:3 SNES правильні сторони, цілі кратні"
+
+#: src/snes9x.ui:948
+msgid "8*8:7*7 NTSC"
+msgstr "8 * 8:7 * 7 NTSC"
+
+#: src/snes9x.ui:951
+msgid "8*8:7*7 NTSC, integer multiples"
+msgstr "8 * 8:7 * 7 NTSC, цілі кратні"
+
+#: src/snes9x.ui:968
+msgid "Merge adjacent pairs"
+msgstr "Об'єднати суміжні пари"
+
+#: src/snes9x.ui:971
+msgid "Output directly"
+msgstr "Показати безпосередньо"
+
+#: src/snes9x.ui:974
+msgid "Scale low-resolution screens"
+msgstr "Масштабувати екрани низького розміру"
+
+#: src/snes9x.ui:985 src/snes9x.ui:1023
+msgid "1"
+msgstr "1"
+
+#: src/snes9x.ui:988 src/snes9x.ui:1026
+msgid "2"
+msgstr "2"
+
+#: src/snes9x.ui:991 src/snes9x.ui:1029
+msgid "3"
+msgstr "3"
+
+#: src/snes9x.ui:994 src/snes9x.ui:1032
+msgid "4"
+msgstr "4"
+
+#: src/snes9x.ui:997 src/snes9x.ui:1035
+msgid "5"
+msgstr "5"
+
+#: src/snes9x.ui:1000 src/snes9x.ui:1038
+msgid "1+"
+msgstr "1+"
+
+#: src/snes9x.ui:1003 src/snes9x.ui:1041
+msgid "2+"
+msgstr "2+"
+
+#: src/snes9x.ui:1006 src/snes9x.ui:1044
+msgid "3+"
+msgstr "3+"
+
+#: src/snes9x.ui:1009 src/snes9x.ui:1047
+msgid "4+"
+msgstr "4+"
+
+#: src/snes9x.ui:1012 src/snes9x.ui:1050
+msgid "5+"
+msgstr "5+"
+
+#: src/snes9x.ui:1061
+msgid "Toggle the menu bar"
+msgstr "Перемкнути панель меню"
+
+#: src/snes9x.ui:1064
+msgid "Exit fullscreen mode"
+msgstr "Вийти з повного екрана"
+
+#: src/snes9x.ui:1067 src/snes9x.ui:6932
+msgid "Quit SuperSnes9x"
+msgstr "Вихід"
+
+#: src/snes9x.ui:1078
+msgid "Timer-based"
+msgstr "На основі таймера"
+
+#: src/snes9x.ui:1081
+msgid "Timer-based with automatic frame-skipping"
+msgstr "На основі таймера з автоматичним пропуском кадрів"
+
+#: src/snes9x.ui:1084
+msgid "Sound buffer synchronization"
+msgstr "Синхронізація звукового буфера"
+
+#: src/snes9x.ui:1087
+msgid "No throttling, use vsync to control speed"
+msgstr "Використовувати вертикальну синхронізацію для керування швидкістю без прискорення"
+
+#: src/snes9x.ui:1098
+msgid "48,000 Hz"
+msgstr "48000 Гц"
+
+#: src/snes9x.ui:1101
+msgid "44,100 Hz"
+msgstr "44100 Гц"
+
+#: src/snes9x.ui:1104
+msgid "32,000 Hz"
+msgstr "32000 Гц"
+
+#: src/snes9x.ui:1107
+msgid "22,050 Hz"
+msgstr "22050 Гц"
+
+#: src/snes9x.ui:1110
+msgid "16,000 Hz"
+msgstr "16000 Гц"
+
+#: src/snes9x.ui:1113
+msgid "11,025 Hz"
+msgstr "11025 Гц"
+
+#: src/snes9x.ui:1116
+msgid "8,000 Hz"
+msgstr "8000 Гц"
+
+#: src/snes9x.ui:1119
+msgid "0 Hz"
+msgstr "0 Гц"
+
+#: src/snes9x.ui:1136
+msgid "16-bit (GL_RGB)"
+msgstr "16 біт (GL_RGB)"
+
+#: src/snes9x.ui:1139
+msgid "32-bit (GL_BGRA)"
+msgstr "32 біт (GL_BGRA)"
+
+#: src/snes9x.ui:1150
+msgid "Nearest"
+msgstr "Точкова"
+
+#: src/snes9x.ui:1153
+msgid "Linear"
+msgstr "Лінійна"
+
+#: src/snes9x.ui:1156
+msgid "Gaussian (correct)"
+msgstr "Гаусівська правильна"
+
+#: src/snes9x.ui:1159
+msgid "Cubic"
+msgstr "Кубічна"
+
+#: src/snes9x.ui:1162
+msgid "Sinc"
+msgstr "Синусоїдальна кардинальна"
+
+#: src/snes9x.ui:1175
+msgid "SuperSnes9x"
+msgstr "Super Nintendo Entertainment System 9X"
+
+#: src/snes9x.ui:1195
+msgid "_File"
+msgstr "_Файл"
+
+#: src/snes9x.ui:1202
+msgid "_Open ROM Image…"
+msgstr "_Відкрити ROM-образ..."
+
+#: src/snes9x.ui:1216
+msgid "Open Recent"
+msgstr "Відкрити останні"
+
+#: src/snes9x.ui:1225
+msgid "Clear Recent Items"
+msgstr "Очистити останні пункти"
+
+#: src/snes9x.ui:1237
+msgid "Open with _NetPlay…"
+msgstr "Відкрити в _мережевій грі..."
+
+#: src/snes9x.ui:1240
+msgid "Open a ROM to use with NetPlay"
+msgstr "Відкрити ROM у мережевій грі"
+
+#: src/snes9x.ui:1251
+msgid "Open _MultiCart…"
+msgstr "Відкрити _мультикарту..."
+
+#: src/snes9x.ui:1266
+msgid "_Load State"
+msgstr "За_вантажити стан"
+
+#: src/snes9x.ui:1276 src/snes9x.ui:1410
+msgid "Slot _0"
+msgstr "Слот _0"
+
+#: src/snes9x.ui:1285 src/snes9x.ui:1419
+msgid "Slot _1"
+msgstr "Слот _1"
+
+#: src/snes9x.ui:1294 src/snes9x.ui:1428
+msgid "Slot _2"
+msgstr "Слот _2"
+
+#: src/snes9x.ui:1303 src/snes9x.ui:1437
+msgid "Slot _3"
+msgstr "Слот _3"
+
+#: src/snes9x.ui:1312 src/snes9x.ui:1446
+msgid "Slot _4"
+msgstr "Слот _4"
+
+#: src/snes9x.ui:1321 src/snes9x.ui:1455
+msgid "Slot _5"
+msgstr "Слот _5"
+
+#: src/snes9x.ui:1330 src/snes9x.ui:1464
+msgid "Slot _6"
+msgstr "Слот _6"
+
+#: src/snes9x.ui:1339 src/snes9x.ui:1473
+msgid "Slot _7"
+msgstr "Слот _7"
+
+#: src/snes9x.ui:1348 src/snes9x.ui:1482
+msgid "Slot _8"
+msgstr "Слот _8"
+
+#: src/snes9x.ui:1357 src/snes9x.ui:1491
+msgid "Slot _9"
+msgstr "Слот _9"
+
+#: src/snes9x.ui:1372
+msgid "From _File…"
+msgstr "Із _файлу..."
+
+#: src/snes9x.ui:1387
+msgid "_Undo Load State"
+msgstr "_Скасувати завантаження стану"
+
+#: src/snes9x.ui:1400
+msgid "_Save State"
+msgstr "_Зберегти стан"
+
+#: src/snes9x.ui:1506
+msgid "To _File…"
+msgstr "До _файлу..."
+
+#: src/snes9x.ui:1523
+msgid "Save SPC…"
+msgstr "Зберегти SPC..."
+
+#: src/snes9x.ui:1540
+msgid "Show ROM _Info…"
+msgstr "Показати ROM-_відомості..."
+
+#: src/snes9x.ui:1557
+msgid "gtk-quit"
+msgstr "gtk-quit"
+
+#: src/snes9x.ui:1571
+msgid "_Emulation"
+msgstr "_Емуляція"
+
+#: src/snes9x.ui:1578
+msgid "Run / _Continue"
+msgstr "Запустити / _Продовжити"
+
+#: src/snes9x.ui:1589
+msgid "_Pause"
+msgstr "_Призупинити"
+
+#: src/snes9x.ui:1607
+msgid "Load _Movie…"
+msgstr "Завантажити відео..."
+
+#: src/snes9x.ui:1619
+msgid "R_ecord Movie…"
+msgstr "За_писати відео..."
+
+#: src/snes9x.ui:1631
+msgid "_Stop Recording"
+msgstr "З_упинити запис"
+
+#: src/snes9x.ui:1643
+msgid "_Jump to Frame…"
+msgstr "_Перейти до кадру..."
+
+#: src/snes9x.ui:1661
+msgid "Sy_nc Clients"
+msgstr "_Синхронізувати клієнтів"
+
+#: src/snes9x.ui:1678
+msgid "Reset"
+msgstr "Перезавантажити"
+
+#: src/snes9x.ui:1690
+msgid "Soft _Reset"
+msgstr "Програмне _перезавантаження"
+
+#: src/snes9x.ui:1707
+msgid "_View"
+msgstr "Пере_гляд"
+
+#: src/snes9x.ui:1715
+msgid "_Toggle Menubar"
+msgstr "Перемкнути _панель меню"
+
+#: src/snes9x.ui:1732
+msgid "_Change Size"
+msgstr "_Змінити розмір"
+
+#: src/snes9x.ui:1746
+msgid "_1×"
+msgstr "_1×"
+
+#: src/snes9x.ui:1755
+msgid "_2×"
+msgstr "_2×"
+
+#: src/snes9x.ui:1764
+msgid "_3×"
+msgstr "_3×"
+
+#: src/snes9x.ui:1773
+msgid "_4×"
+msgstr "_4×"
+
+#: src/snes9x.ui:1782
+msgid "_5×"
+msgstr "_5×"
+
+#: src/snes9x.ui:1791
+msgid "_6×"
+msgstr "_6×"
+
+#: src/snes9x.ui:1800
+msgid "_7×"
+msgstr "_7×"
+
+#: src/snes9x.ui:1809
+msgid "_8×"
+msgstr "_8×"
+
+#: src/snes9x.ui:1818
+msgid "_9×"
+msgstr "_9×"
+
+#: src/snes9x.ui:1827
+msgid "1_0×"
+msgstr "1_0×"
+
+#: src/snes9x.ui:1844
+msgid "gtk-fullscreen"
+msgstr "gtk-fullscreen"
+
+#: src/snes9x.ui:1858
+msgid "_Options"
+msgstr "_Опції"
+
+#: src/snes9x.ui:1867
+msgid "Controller Ports"
+msgstr "Порти контролера"
+
+#: src/snes9x.ui:1876
+msgid "SNES Port 1"
+msgstr "SNES-порт 1"
+
+#: src/snes9x.ui:1886 src/snes9x.ui:1930
+msgid "Joypad"
+msgstr "Джойстик"
+
+#: src/snes9x.ui:1895 src/snes9x.ui:1939
+msgid "Mouse"
+msgstr "Миша"
+
+#: src/snes9x.ui:1905 src/snes9x.ui:1959
+msgid "Superscope"
+msgstr "Super Scope"
+
+#: src/snes9x.ui:1920
+msgid "SNES Port 2"
+msgstr "SNES-порт 2"
+
+#: src/snes9x.ui:1949
+msgid "Multitap"
+msgstr "Мультитап"
+
+#: src/snes9x.ui:1970
+msgctxt "SNES port 2"
+msgid "None"
+msgstr "Не вказано"
+
+#: src/snes9x.ui:1996
+msgid "_Cheats…"
+msgstr "_Чіти..."
+
+#: src/snes9x.ui:2010
+msgid "_Shader Parameters…"
+msgstr "Параметри _шейдерів..."
+
+#: src/snes9x.ui:2026
+msgid "gtk-preferences"
+msgstr "gtk-preferences"
+
+#: src/snes9x.ui:2068
+msgid "Open Multiple ROM Images (MultiCart)"
+msgstr "Відкрити декілька ROM-образів (мультикарта)"
+
+#: src/snes9x.ui:2131
+msgid "Slot A:"
+msgstr "Слот A:"
+
+#: src/snes9x.ui:2143
+msgid "Select an Image for Slot A"
+msgstr "Вибір образу для слота A"
+
+#: src/snes9x.ui:2167
+msgid "Slot B:"
+msgstr "Слот B:"
+
+#: src/snes9x.ui:2179
+msgid "Select an Image for Slot B"
+msgstr "Вибір образу для слота B"
+
+#: src/snes9x.ui:2211
+msgid "SuperSnes9x NetPlay"
+msgstr "Мережева гра"
+
+#: src/snes9x.ui:2288
+msgid ""
+"The game chosen will be loaded before connecting. This field can be blank if the server will send the "
+"ROM image"
+msgstr "Вибрану гру буде завантажено до з'єднання. Поле може бути порожнім при надсиланні ROM'у сервером."
+
+#: src/snes9x.ui:2303 src/snes9x.ui:4001 src/snes9x.ui:5116 src/snes9x.ui:5131 src/snes9x.ui:5148
+#: src/snes9x.ui:5165 src/snes9x.ui:5182
+msgid "Browse…"
+msgstr "Огляд..."
+
+#: src/snes9x.ui:2325
+msgid "Clear entry"
+msgstr "Очистити запис"
+
+#: src/snes9x.ui:2345
+msgid "<b>ROM Image</b>"
+msgstr "<b>ROM-образ</b>"
+
+#: src/snes9x.ui:2374
+msgid "Connect to another computer"
+msgstr "З'єднати з іншим комп'ютером"
+
+#: src/snes9x.ui:2378
+msgid "Connect to another computer that is running SuperSnes9x NetPlay as a server"
+msgstr "З'єднання з іншим комп'ютером, де мережеву гру запущено як сервер."
+
+#: src/snes9x.ui:2398
+msgid "Name or IP address:"
+msgstr "Ім'я чи IP-адреса:"
+
+#: src/snes9x.ui:2410
+msgid "Domain name or internet protocol address of a remote computer"
+msgstr "Доменне ім'я чи адреса Інтернет-протоколу віддаленого комп'ютера."
+
+#: src/snes9x.ui:2426
+msgid "Port:"
+msgstr "Порт:"
+
+#: src/snes9x.ui:2438
+msgid "Connect to specified TCP port on remote computer"
+msgstr "З'єднання з указаним TCP-портом на віддаленому комп'ютері."
+
+#: src/snes9x.ui:2463
+msgid "Act as a server"
+msgstr "Діяти як сервер"
+
+#: src/snes9x.ui:2467
+msgid "Host a game on this computer as Player 1, requiring extra throughput to support multitple users"
+msgstr ""
+"Початок гри на комп'ютері як Гравець 1, необхідна додаткова пропускна здатність для підтримки кількох "
+"користувачів."
+
+#: src/snes9x.ui:2487
+msgid "<b>Server</b>"
+msgstr "<b>Сервер</b>"
+
+#: src/snes9x.ui:2517
+msgid "Sync using reset"
+msgstr "Синхронізувати перезавантаженям"
+
+#: src/snes9x.ui:2521
+msgid "Reset the game when players join instead of transferring potentially unreliable freeze states"
+msgstr ""
+"Перезавантаження гри при приєднанні гравців замість передачі потенційно ненадійних зупинених станів."
+
+#: src/snes9x.ui:2532
+msgid "Send ROM image to clients"
+msgstr "Надсилати ROM-образ клієнтам"
+
+#: src/snes9x.ui:2536
+msgid "Send the running game image to players instead of requiring them to have their own copies"
+msgstr "Надсилання гравцям образу запущеної гри замість необхідності власних копій."
+
+#: src/snes9x.ui:2554
+msgid "Default port:"
+msgstr "Типовий порт:"
+
+#: src/snes9x.ui:2566
+msgid "TCP port used as a connection point for remote clients"
+msgstr "TCP-порт, використовуваний як точка з'єднання для віддалених клієнтів."
+
+#: src/snes9x.ui:2598
+msgid "Ask server to pause when"
+msgstr "Запитати паузу сервера при"
+
+#: src/snes9x.ui:2652
+msgid "<b>Settings</b>"
+msgstr "<b>Налаштування</b>"
+
+#: src/snes9x.ui:2680
+msgid "SuperSnes9x Preferences"
+msgstr "Налаштування"
+
+#: src/snes9x.ui:2796
+msgid "Use fullscreen on ROM open"
+msgstr "Використовувати повний екран при відкритому ROM'і"
+
+#: src/snes9x.ui:2800
+msgid "Go to fullscreen mode immediately after opening a ROM"
+msgstr "Негайний повний екран після відкриття ROM'у."
+
+#: src/snes9x.ui:2812
+msgid "Show local time"
+msgstr "Показати місцевий час"
+
+#: src/snes9x.ui:2827
+msgid "Show frame rate"
+msgstr "Показати частоту кадрів"
+
+#: src/snes9x.ui:2842
+msgid "Show pressed keys"
+msgstr "Показати натиснені кнопки"
+
+#: src/snes9x.ui:2857
+msgid "Show fast-forward and pause indicators"
+msgstr "Показати вказівники прискорення та призупинення"
+
+#: src/snes9x.ui:2872
+msgid "Use overscanned height"
+msgstr "Використовувати розгорнуту висоту"
+
+#: src/snes9x.ui:2876
+msgid "Use SNES extended height. Will probably cause letterboxing"
+msgstr "Використання розширеної висоти SNES. Можливі чорні межі."
+
+#: src/snes9x.ui:2898
+msgid "On-screen display size:"
+msgstr "Відображений розмір на екрані:"
+
+#: src/snes9x.ui:2909
+msgid "The size of on-screen display messages in pixels"
+msgstr "Розмір відображених повідомлень на екрані в пікселях."
+
+#: src/snes9x.ui:2940
+msgid "Change fullscreen resolution:"
+msgstr "Змінити розмір повного екрана:"
+
+#: src/snes9x.ui:2944
+msgid "Changes the screen resolution when running SuperSnes9x in fullscreen mode"
+msgstr "Зміна розміру екрана при запуску в повному екрані."
+
+#: src/snes9x.ui:2989
+msgid "Basic Settings"
+msgstr "Основні налаштування"
+
+#: src/snes9x.ui:3030
+msgid "Scale image to fit window"
+msgstr "Масштабувати зображення за розміром вікна"
+
+#: src/snes9x.ui:3034
+msgid "Scales the image so no black bars are present"
+msgstr "Масштабування зображення для уникнення чорних меж."
+
+#: src/snes9x.ui:3054
+msgid "Aspect ratio:"
+msgstr "Співвідношення сторін:"
+
+#: src/snes9x.ui:3089
+msgid "Maintain aspect ratio"
+msgstr "Зберегти співвідношення сторін"
+
+#: src/snes9x.ui:3093
+msgid "Scales the image as large as possible without distortion"
+msgstr "Масштабування великого зображення без спотворень."
+
+#: src/snes9x.ui:3108
+msgid "Allows scaling and filtering to use multiple processors"
+msgstr "Масштабування та фільтрування для використання декількох процесорів."
+
+#: src/snes9x.ui:3111
+msgid "Use"
+msgstr "Використовувати"
+
+#: src/snes9x.ui:3170
+msgid "High-resolution effect:"
+msgstr "Ефект високого розміру:"
+
+#: src/snes9x.ui:3213
+msgid "Apply scaling filter:"
+msgstr "Застосувати масштабний фільтр:"
+
+#: src/snes9x.ui:3281
+msgid "Video preset:"
+msgstr "Відеошаблон:"
+
+#: src/snes9x.ui:3295
+msgid "Composite"
+msgstr "Композитний"
+
+#: src/snes9x.ui:3309
+msgid "S-Video"
+msgstr "S-Video"
+
+#: src/snes9x.ui:3323
+msgid "RGB"
+msgstr "RGB"
+
+#: src/snes9x.ui:3337
+msgid "Monochrome"
+msgstr "Монохромний"
+
+#: src/snes9x.ui:3378
+msgid "Artifacts:"
+msgstr "Артефакти:"
+
+#: src/snes9x.ui:3393
+msgid "Sharpness:"
+msgstr "Різкість:"
+
+#: src/snes9x.ui:3408
+msgid "Brightness:"
+msgstr "Яскравість:"
+
+#: src/snes9x.ui:3423
+msgid "Contrast:"
+msgstr "Контраст:"
+
+#: src/snes9x.ui:3438
+msgid "Saturation:"
+msgstr "Насиченість:"
+
+#: src/snes9x.ui:3453
+msgid "Hue:"
+msgstr "Відтінок:"
+
+#: src/snes9x.ui:3654
+msgid "Gamma:"
+msgstr "Гама:"
+
+#: src/snes9x.ui:3669
+msgid "Fringing:"
+msgstr "Окантовка:"
+
+#: src/snes9x.ui:3684
+msgid "Bleed:"
+msgstr "Краї:"
+
+#: src/snes9x.ui:3699
+msgid "Resolution:"
+msgstr "Розмір:"
+
+#: src/snes9x.ui:3729
+msgid "Merge odd and even fields"
+msgstr "Об'єднати непарні та парні поля"
+
+#: src/snes9x.ui:3751 src/snes9x.ui:3810
+msgid "Scanline intensity:"
+msgstr "Інтенсивність рядка сканування:"
+
+#: src/snes9x.ui:3855
+msgid "Scaling"
+msgstr "Масштабування"
+
+#: src/snes9x.ui:3897
+msgid "Bilinear‐filter output"
+msgstr "Показ білінійного фільтра"
+
+#: src/snes9x.ui:3912
+msgid "Use best settings for FreeSync/G-Sync when in fullscreen"
+msgstr "Використовувати найкращі налаштування Free Sync / G-Sync у повному екрані"
+
+#: src/snes9x.ui:3933
+msgid "Sync to vertical blank"
+msgstr "Синхронізувати з вертикальним гасінням"
+
+#: src/snes9x.ui:3937
+msgid "Sync the image to the vertical retrace to stop tearing"
+msgstr "Синхронізація зображення з вертикальним зворотом кадрової розгортки для уникнення поривів."
+
+#: src/snes9x.ui:3949
+msgid "Reduce input lag"
+msgstr "Зменшити початкову затримку"
+
+#: src/snes9x.ui:3953
+msgid "Sync the program with the video output after every displayed frame to reduce input latency"
+msgstr ""
+"Синхронізація програми з відеовиходом після кожного відображеного кадру для зменшення початкової "
+"затримки."
+
+#: src/snes9x.ui:3969
+msgid "Shader:"
+msgstr "Шейдер:"
+
+#: src/snes9x.ui:4033
+msgid "Force an inverted byte-ordering"
+msgstr "Примусовий зворотний порядок байтів"
+
+#: src/snes9x.ui:4037
+msgid ""
+"Forces a swapped byte-ordering for cases where the system’s endian is used instead of the video card"
+msgstr "Примусово змінений порядок байтів при використанні порядку системи замість відеокарти."
+
+#: src/snes9x.ui:4061
+msgid "Hardware Acceleration"
+msgstr "Апаратне прискорення"
+
+#: src/snes9x.ui:4090
+msgid "Display"
+msgstr "Дисплей"
+
+#: src/snes9x.ui:4143
+msgid "Sound driver:"
+msgstr "Звуковий драйвер:"
+
+#: src/snes9x.ui:4178
+msgid "Automatically adjust input rate to display"
+msgstr "Автоматично регулювати початкову частоту для відображення"
+
+#: src/snes9x.ui:4182
+msgid "Sets the correct input rate based on the display’s refresh rate"
+msgstr "Встановлення правильної початкової частоти на основі частоти оновлення дисплея."
+
+#: src/snes9x.ui:4194
+msgid "Dynamic rate control"
+msgstr "Динамічне керування частотою"
+
+#: src/snes9x.ui:4198
+msgid "Smooth out slight hiccups in sound input rate"
+msgstr "Згладжування невеликих поривів початкової частоти звуку."
+
+#: src/snes9x.ui:4209
+msgid "Mute sound output"
+msgstr "Притлумити звук"
+
+#: src/snes9x.ui:4213
+msgid "Disables output of sound"
+msgstr "Вимкнення звуку."
+
+#: src/snes9x.ui:4225
+msgid "Mute sound when using turbo or rewind"
+msgstr "Притлумити звук при використанні турбо чи звороту"
+
+#: src/snes9x.ui:4229
+msgid "Disables output of sound when using turbo or rewind"
+msgstr "Вимкнення звуку при використанні турбо чи звороту."
+
+#: src/snes9x.ui:4252
+msgid "Playback rate:"
+msgstr "Частота відтворення:"
+
+#: src/snes9x.ui:4310
+msgid "Buffer size:"
+msgstr "Розмір буфера:"
+
+#: src/snes9x.ui:4324
+msgid "Dynamic rate limit:"
+msgstr "Обмеження динамічної частоти:"
+
+#: src/snes9x.ui:4369
+msgid "Input rate:"
+msgstr "Початкова частота:"
+
+#: src/snes9x.ui:4382
+msgid ""
+"Adjust to produce more or less data. Decrease the rate if experiencing crackling. Increase the rate if "
+"experiencing frame rate stuttering. Best used with the “Sound buffer synchronization” option."
+msgstr ""
+"Регулювання для збільшення чи зменшення даних. Зменш частоту при відчутті тріску, збільш при поривах "
+"частоти кадрів. Найкраще використовувати з опцією \"Синхронізація буфера звуку\"."
+
+#: src/snes9x.ui:4432
+msgid "Video rate:"
+msgstr "Відеочастота:"
+
+#: src/snes9x.ui:4469
+msgid "<b>Sound Settings</b>"
+msgstr "<b>Аудіоналаштування</b>"
+
+#: src/snes9x.ui:4503 src/snes9x.ui:8730
+msgid "Sound"
+msgstr "Звук"
+
+#: src/snes9x.ui:4561
+msgid "Throttling method:"
+msgstr "Прискорений спосіб:"
+
+#: src/snes9x.ui:4603
+msgid "<b>Speed Control</b>"
+msgstr "<b>Керування швидкістю</b>"
+
+#: src/snes9x.ui:4641
+msgid "Rewind buffer size (MB):"
+msgstr "Розмір буфера звороту (Мбайт):"
+
+#: src/snes9x.ui:4683
+msgid "Number of frames between rewind snapshots:"
+msgstr "Кільксть кадрів між кадрами звороту:"
+
+#: src/snes9x.ui:4724
+msgid "<b>Rewind Settings</b>"
+msgstr "<b>Налаштування звороту</b>"
+
+#: src/snes9x.ui:4755
+msgid "Allow invalid VRAM access"
+msgstr "Дозволити хибний VRAM-доступ"
+
+#: src/snes9x.ui:4759
+msgid ""
+"Allows ROM hacks to write to screen at the wrong time. Only use if you know your ROM hack expects this"
+msgstr "Дозвіл хакам образів записувати екран у неправильний час. Використовуй лише за необхідності."
+
+#: src/snes9x.ui:4769
+msgid "Allow opposing dpad directions"
+msgstr "Дозволити протилежні D-Pad-напрями"
+
+#: src/snes9x.ui:4773
+msgid "Let left and right or up and down be pressed at the same time"
+msgstr "Одночасне натискання ← / → чи ↑ / ↓."
+
+#: src/snes9x.ui:4784
+msgid "Overclock CPU"
+msgstr "Розігнати CPU"
+
+#: src/snes9x.ui:4788
+msgid "Reduces slowdown, but has potential to break games"
+msgstr "Зменшення затримки з можливим порушенням ігор."
+
+#: src/snes9x.ui:4799
+msgid "Remove sprite limit"
+msgstr "Вилучити обмеження спрайтів"
+
+#: src/snes9x.ui:4803
+msgid "Reduces flicker, but may cause graphical artifacts"
+msgstr "Зменшення мерехтіння з можливими графічними артефактами."
+
+#: src/snes9x.ui:4814
+msgid "Redirect echo buffer overflow"
+msgstr "Перенаправити виведення переповнення буфера"
+
+#: src/snes9x.ui:4818
+msgid "Allows old addmusic hacks to work, but will likely hurt other games"
+msgstr "Дозвіл роботи старим addmusic-хакам із імовірним пошкодженням інших ігор."
+
+#: src/snes9x.ui:4836
+msgid "SuperFX clock speed %:"
+msgstr "Тактова швидкість Super FX %:"
+
+#: src/snes9x.ui:4875
+msgid "Gaussian is the correct behavior for SNES hardware"
+msgstr "Гаусівська - правильна поведінка SNES-обладнання."
+
+#: src/snes9x.ui:4882
+msgid "Sound filter:"
+msgstr "Звуковий фільтр:"
+
+#: src/snes9x.ui:4919
+msgid "<b>Hacks</b>"
+msgstr "<b>Хаки</b>"
+
+#: src/snes9x.ui:4961 src/snes9x.ui:7147
+msgid "Emulation"
+msgstr "Емуляція"
+
+#: src/snes9x.ui:5202
+msgid "SRAM:"
+msgstr "SRAM:"
+
+#: src/snes9x.ui:5214
+msgid "Save states:"
+msgstr "Стани збереження:"
+
+#: src/snes9x.ui:5228
+msgid "Cheats:"
+msgstr "Чіти:"
+
+#: src/snes9x.ui:5242
+msgid "Patches:"
+msgstr "Латки:"
+
+#: src/snes9x.ui:5256
+msgid "Exports:"
+msgstr "Експорти:"
+
+#: src/snes9x.ui:5280
+msgid "<b>Game Data Locations</b>"
+msgstr "<b>Розташування ігрових даних</b>"
+
+#: src/snes9x.ui:5313
+msgid "Save SRAM:"
+msgstr "Зберігати SRAM:"
+
+#: src/snes9x.ui:5325
+msgid ""
+"Automatically save the game’s SRAM at this interval. Setting this to 0 will only save when quitting or "
+"changing ROMs"
+msgstr ""
+"Автоматичне збереження SRAM гри впродовж указаного інтервалу (0: збереження лише при виході чи зміні "
+"ROM'у)."
+
+#: src/snes9x.ui:5355
+msgid "<b>Automatic Saving</b>"
+msgstr "<b>Автоматичне збереження</b>"
+
+#: src/snes9x.ui:5392
+msgid "Files"
+msgstr "Файли"
+
+#: src/snes9x.ui:5423
+msgid "<b>Joypad:</b>"
+msgstr "<b>Джойстик:</b>"
+
+#: src/snes9x.ui:5464
+msgid "_Reset"
+msgstr "_Відновити"
+
+#: src/snes9x.ui:5492
+msgid "Swap with:"
+msgstr "Обміняти на:"
+
+#: src/snes9x.ui:5520
+msgid "_Swap"
+msgstr "_Обміняти"
+
+#: src/snes9x.ui:5542
+msgid "Use _modifier keys (Ctrl, Shift, Alt) directly"
+msgstr "Використовувати кнопки-_модифікатори (Ctrl, Shift, Alt) безпосередньо"
+
+#: src/snes9x.ui:5546
+msgid "Allow using modifier keys as independent keys instead of modifiers"
+msgstr "Дозвіл використання кнопок-модифікаторів незалежними замість модифікаторів."
+
+#: src/snes9x.ui:5581
+msgid "Up"
+msgstr "↑"
+
+#: src/snes9x.ui:5593
+msgid "Down"
+msgstr "↓"
+
+#: src/snes9x.ui:5607
+msgid "Left"
+msgstr "←"
+
+#: src/snes9x.ui:5621
+msgid "Right"
+msgstr "→"
+
+#: src/snes9x.ui:5635
+msgid "Start"
+msgstr "Start"
+
+#: src/snes9x.ui:5649
+msgid "Select"
+msgstr "Select"
+
+#: src/snes9x.ui:5790 src/snes9x.ui:6020 src/snes9x.ui:6232
+msgid "A"
+msgstr "A"
+
+#: src/snes9x.ui:5802 src/snes9x.ui:6032 src/snes9x.ui:6244
+msgid "B"
+msgstr "B"
+
+#: src/snes9x.ui:5816 src/snes9x.ui:6046 src/snes9x.ui:6258
+msgid "X"
+msgstr "X"
+
+#: src/snes9x.ui:5830 src/snes9x.ui:6060 src/snes9x.ui:6272
+msgid "Y"
+msgstr "Y"
+
+#: src/snes9x.ui:5844 src/snes9x.ui:6074 src/snes9x.ui:6286
+msgid "L"
+msgstr "L"
+
+#: src/snes9x.ui:5858 src/snes9x.ui:6088 src/snes9x.ui:6300
+msgid "R"
+msgstr "R"
+
+#: src/snes9x.ui:5992
+msgid "Buttons"
+msgstr "Кнопки"
+
+#: src/snes9x.ui:6433
+msgid "<b>Sticky</b>"
+msgstr "<b>Залипні</b>"
+
+#: src/snes9x.ui:6449
+msgid "<b>Turbo</b>"
+msgstr "<b>Турбо</b>"
+
+#: src/snes9x.ui:6468
+msgid "Turbo / Sticky Buttons"
+msgstr "Турбо / залипні кнопки"
+
+#: src/snes9x.ui:6505
+msgid "Set new axis bindings at:"
+msgstr "Встановити нові прив'язки осі на:"
+
+#: src/snes9x.ui:6517
+msgid "Changes the amount a joystick should be tilted to register a button press"
+msgstr "Зміна нахилу джойстика для реєстрації натискання кнопки."
+
+#: src/snes9x.ui:6536
+msgid "percent"
+msgstr "%"
+
+#: src/snes9x.ui:6553
+msgid "<b>Joystick Axis Threshold</b>"
+msgstr "<b>Межа осі джойстика</b>"
+
+#: src/snes9x.ui:6590
+msgid "Center all axes on all joysticks and press Calibrate."
+msgstr "Відцентруй усі осі на всіх джойстиках і натисни \"Калібрувати\"."
+
+#: src/snes9x.ui:6605
+msgid "Cali_brate"
+msgstr "Калі_брувати"
+
+#: src/snes9x.ui:6638
+msgid "<b>Calibration</b>"
+msgstr "<b>Калібрування</b>"
+
+#: src/snes9x.ui:6659
+msgid "Joystick Options"
+msgstr "Опції джойстика"
+
+#: src/snes9x.ui:6677 src/snes9x.ui:9029
+msgid ""
+"<small>Click an entry and then press the desired keys or joystick button\n"
+"<tt>Escape</tt>: Move to next  <tt>Shift+Escape</tt>: Clear selected</small>"
+msgstr ""
+"<small>Натисни запис, а потім - бажані кнопки чи кнопку джойстика.\n"
+"<tt>Escape</tt>: перехід до наступного<tt> Shift + Escape</tt>: очистити вибране.</small>"
+
+#: src/snes9x.ui:6715
+msgid "Joypads"
+msgstr "Джойстики"
+
+#: src/snes9x.ui:6742
+msgid "<b>SuperSnes9x Emulator Shortcut Keys</b>"
+msgstr "<b>Гарячі кнопки</b>"
+
+#: src/snes9x.ui:6793
+msgid "Soft reset"
+msgstr "Перезавантажити програмно"
+
+#: src/snes9x.ui:6807
+msgid "Hardware reset"
+msgstr "Перезавантажити апаратно"
+
+#: src/snes9x.ui:6821
+msgid "Increase frame time"
+msgstr "Збільшити час кадру"
+
+#: src/snes9x.ui:6835
+msgid "Decrease frame time"
+msgstr "Зменшити час кадру"
+
+#: src/snes9x.ui:6849
+msgid "Increase frame rate"
+msgstr "Збільшити частоту кадрів"
+
+#: src/snes9x.ui:6863
+msgid "Decrease frame rate"
+msgstr "Зменшити частоту кадрів"
+
+#: src/snes9x.ui:6877
+msgid "Pause"
+msgstr "Призупинити"
+
+#: src/snes9x.ui:6891
+msgid "Toggle turbo"
+msgstr "Перемкнути турбо"
+
+#: src/snes9x.ui:6905
+msgid "Enable turbo"
+msgstr "Увімкнути турбо"
+
+#: src/snes9x.ui:6920
+msgid "Open ROM"
+msgstr "Відкрити образ"
+
+#: src/snes9x.ui:7179
+msgid "Toggle BG layer 0"
+msgstr "Перемкнути шар тла 0"
+
+#: src/snes9x.ui:7191
+msgid "Toggle BG layer 1"
+msgstr "Перемкнути шар тла 1"
+
+#: src/snes9x.ui:7205
+msgid "Toggle BG layer 2"
+msgstr "Перемкнути шар тла 2"
+
+#: src/snes9x.ui:7219
+msgid "Toggle BG layer 3"
+msgstr "Перемкнути шар тла 3"
+
+#: src/snes9x.ui:7233
+msgid "Toggle sprites"
+msgstr "Перемкнути спрайти"
+
+#: src/snes9x.ui:7247
+msgid "Toggle forced backdrop color"
+msgstr "Перемкнути примусовий колір тла"
+
+#: src/snes9x.ui:7261
+msgid "Screenshot"
+msgstr "Екранний кадр"
+
+#: src/snes9x.ui:7275
+msgid "Toggle fullscreen"
+msgstr "Перемкнути повний екран"
+
+#: src/snes9x.ui:7439
+msgid "Graphics"
+msgstr "Графіка"
+
+#: src/snes9x.ui:7476
+msgid "Save current slot"
+msgstr "Зберегти поточний слот"
+
+#: src/snes9x.ui:7509
+msgid "Load current slot"
+msgstr "Завантажити поточний слот"
+
+#: src/snes9x.ui:7542
+msgid "Increment and save"
+msgstr "Збільшити та зберегти"
+
+#: src/snes9x.ui:7575
+msgid "Decrement and load"
+msgstr "Зменшити та завантажити"
+
+#: src/snes9x.ui:7608
+msgid "Increment slot"
+msgstr "Збільшити слот"
+
+#: src/snes9x.ui:7641
+msgid "Decrement slot"
+msgstr "Зменшити слот"
+
+#: src/snes9x.ui:7685
+msgid "<b>Quick save state</b>"
+msgstr "<b>Швидке збереження стану</b>"
+
+#: src/snes9x.ui:7700
+msgid "<b>Quick load state</b>"
+msgstr "<b>Швидке завантаження стану</b>"
+
+#: src/snes9x.ui:7715 src/snes9x.ui:7855
+msgid "Slot 0"
+msgstr "Слот 0"
+
+#: src/snes9x.ui:7729 src/snes9x.ui:7871
+msgid "Slot 1"
+msgstr "Слот 1"
+
+#: src/snes9x.ui:7743 src/snes9x.ui:7887
+msgid "Slot 2"
+msgstr "Слот 2"
+
+#: src/snes9x.ui:7757 src/snes9x.ui:7903
+msgid "Slot 3"
+msgstr "Слот 3"
+
+#: src/snes9x.ui:7771 src/snes9x.ui:7919
+msgid "Slot 4"
+msgstr "Слот 4"
+
+#: src/snes9x.ui:7785 src/snes9x.ui:7935
+msgid "Slot 5"
+msgstr "Слот 5"
+
+#: src/snes9x.ui:7799 src/snes9x.ui:7951
+msgid "Slot 6"
+msgstr "Слот 6"
+
+#: src/snes9x.ui:7813 src/snes9x.ui:7967
+msgid "Slot 7"
+msgstr "Слот 7"
+
+#: src/snes9x.ui:7827 src/snes9x.ui:7983
+msgid "Slot 8"
+msgstr "Слот 8"
+
+#: src/snes9x.ui:7841 src/snes9x.ui:7999
+msgid "Slot 9"
+msgstr "Слот 9"
+
+#: src/snes9x.ui:8438
+msgid "Toggle sound channel 0"
+msgstr "Перемкнути канал звуку 0"
+
+#: src/snes9x.ui:8450
+msgid "Toggle sound channel 1"
+msgstr "Перемкнути канал звуку 1"
+
+#: src/snes9x.ui:8464
+msgid "Toggle sound channel 2"
+msgstr "Перемкнути канал звуку 2"
+
+#: src/snes9x.ui:8478
+msgid "Toggle sound channel 3"
+msgstr "Перемкнути канал звуку 3"
+
+#: src/snes9x.ui:8492
+msgid "Toggle sound channel 4"
+msgstr "Перемкнути канал звуку 4"
+
+#: src/snes9x.ui:8506
+msgid "Toggle sound channel 5"
+msgstr "Перемкнути канал звуку 5"
+
+#: src/snes9x.ui:8520
+msgid "Toggle sound channel 6"
+msgstr "Перемкнути канал звуку 6"
+
+#: src/snes9x.ui:8534
+msgid "Toggle sound channel 7"
+msgstr "Перемкнути канал звуку 7"
+
+#: src/snes9x.ui:8548
+msgid "Toggle all sound channels"
+msgstr "Перемкнути всі канали звуку"
+
+#: src/snes9x.ui:8753
+msgid "Seek to frame"
+msgstr "Перейти до кадру"
+
+#: src/snes9x.ui:8768
+msgid "Load Movie"
+msgstr "Завантажити відео"
+
+#: src/snes9x.ui:8783
+msgid "Stop movie recording"
+msgstr "Зупинити відеозапис"
+
+#: src/snes9x.ui:8798
+msgid "Begin movie recording"
+msgstr "Розпочати відеозапис"
+
+#: src/snes9x.ui:8813
+msgid "Save SPC"
+msgstr "Зберегти SPC"
+
+#: src/snes9x.ui:8913
+msgid "Swap controllers 1 & 2"
+msgstr "Обміняти контролери 1 і 2"
+
+#: src/snes9x.ui:8944
+msgid "Rewind"
+msgstr "Зворот"
+
+#: src/snes9x.ui:8975
+msgid "Capture/release mouse"
+msgstr "Захопити / відпустити мишу"
+
+#: src/snes9x.ui:9011
+msgid "Misc"
+msgstr "Інше"
+
+#: src/snes9x.ui:9067
+msgid "Shortcuts"
+msgstr "Гарячі кнопки"
+
+#: src/snes9x.ui:9106
+msgid "Pause emulation when switching away from SuperSnes9x"
+msgstr "Призупиняти емуляцію при перемиканні поза емулятором"
+
+#: src/snes9x.ui:9120
+msgid "Force-enable button and menu icons"
+msgstr "Примусово вмикати піктограми кнопок і меню"
+
+#: src/snes9x.ui:9141
+msgid "The <tt>Esc</tt> key should:"
+msgstr "Кнопка <tt>Escape</tt>:"
+
+#: src/snes9x.ui:9185
+msgid "Initial background:"
+msgstr "Початкове тло:"
+
+#: src/snes9x.ui:9226
+msgid "<b>Window Behavior</b>"
+msgstr "<b>Поведінка вікна</b>"
+
+#: src/snes9x.ui:9256
+msgid "Prevent the screensaver from activating"
+msgstr "Запобігати активації заставки"
+
+#: src/snes9x.ui:9276
+msgid "<b>Screensaver</b>"
+msgstr "<b>Заставка</b>"
+
+#: src/snes9x.ui:9310
+msgid "UI"
+msgstr "Інтерфейс"
+
+#: src/snes9x.ui:9344
+msgid ""
+"  SuperSnes9x – A Portable Super Nintendo Entertainment System™ Emulator\n"
+"\n"
+"  Snes9x homepage: http://www.snes9x.com/\n"
+"  SuperSnes9x source code: https://github.com/shanytc/snes9x/\n"
+"\n"
+"  Permission to use, copy, modify and/or distribute SuperSnes9x in both binary\n"
+"  and source form, for non-commercial purposes, is hereby granted without\n"
+"  fee, providing that this license information and copyright notice appear\n"
+"  with all copies and any derived work.\n"
+"\n"
+"  This software is provided ‘as-is’, without any express or implied\n"
+"  warranty. In no event shall the authors be held liable for any damages\n"
+"  arising from the use of this software or it’s derivatives.\n"
+"\n"
+"  SuperSnes9x is freeware for PERSONAL USE only. Commercial users should\n"
+"  seek permission of the copyright holders first. Commercial use includes,\n"
+"  but is not limited to, charging money for SuperSnes9x or software derived from\n"
+"  Snes9x, including SuperSnes9x or derivatives in commercial game bundles, and/or\n"
+"  using SuperSnes9x as a promotion for your commercial product.\n"
+"\n"
+"  The copyright holders request that bug fixes and improvements to the code\n"
+"  should be forwarded to them so everyone can benefit from the modifications\n"
+"  in future versions.\n"
+"\n"
+"  Super NES and Super Nintendo Entertainment System are trademarks of\n"
+"  Nintendo Co., Limited and its subsidiary companies."
+msgstr ""
+"Super Nintendo Entertainment System 9X - портативний емулятор\n"
+"Super Nintendo Entertainment System™.\n"
+"\n"
+"Домашня сторінка: http://snes9x.com\n"
+"Код-джерело: https://github.com/shanytc/snes9x\n"
+"\n"
+"Дозвіл використання, копіювання, зміни та / або розповсюдження\n"
+"як у двійковій формі, так і формі-джерелі з некомерційною метою\n"
+"буде надано безкоштовно за умови надання ліцензійних відомостей\n"
+"і сповіщень авторських прав із усіма копіями та похідною роботою.\n"
+"\n"
+"Програмне забезпечення надано \"як є\", без явних або неявних гарантій.\n"
+"У жодному разі автори не несуть відповідальності за збитки\n"
+"при використанні програмного забезпечення чи його похідних.\n"
+"\n"
+"Super Nintendo Entertainment System 9X безкоштовний лише для\n"
+"ОСОБИСТОГО КОРИСТУВАННЯ. Комерційні користувачі мають\n"
+"спочатку отримати дозвіл власників авторських прав.\n"
+"До комерційного використання входить стягнення грошей\n"
+"за Super Nintendo Entertainment System 9X, або програмне\n"
+"забезпечення, отримане від Super Nintendo Entertainment System 9X\n"
+"із урахуванням похідних засобів у пакетах комерційних ігор,\n"
+"та / або використання Super Nintendo Entertainment System 9X\n"
+"як реклами твого комерційного продукту тощо.\n"
+"\n"
+"Власники авторських прав просять надсилати їм виправлення помилок\n"
+"і покращення коду для використання змін у майбутніх версіях.\n"
+"\n"
+"Super NES і Super Nintendo Entertainment System - торгові марки\n"
+"Nintendo Corporation Limited і її підлеглих компаній."
+
+# === Win32 strings (added by i18n/extract_strings.py) ===
+
+#: win32/rsrc/snes9x.rc
+msgid "!= (Not Equal To)"
+msgstr "!= (не дорівнює)"
+
+#: win32/wlanguage.h
+msgid "(Not Available)"
+msgstr "(недоступно)"
+
+#: win32/wlanguage.h
+msgid "(not stored in movie file)"
+msgstr "(не зберігається у файлі відео)"
+
+#: win32/rsrc/snes9x.rc
+msgid "(restart required)"
+msgstr "(потрібен перезапуск)"
+
+#: win32/rsrc/snes9x.rc
+msgid "0 (off)"
+msgstr "0 (вимкнено)"
+
+#: win32/rsrc/snes9x.rc
+msgid "1 byte"
+msgstr "1 байт"
+
+#: win32/rsrc/snes9x.rc
+msgid "1 frame"
+msgstr "1 кадр"
+
+#: win32/rsrc/snes9x.rc
+msgid "10x"
+msgstr "10x"
+
+#: win32/rsrc/snes9x.rc
+msgid "112ms"
+msgstr "112ms"
+
+#: win32/rsrc/snes9x.rc
+msgid "11KHz"
+msgstr "11KHz"
+
+#: win32/rsrc/snes9x.rc
+msgid "128ms"
+msgstr "128ms"
+
+#: win32/rsrc/snes9x.rc
+msgid "144ms"
+msgstr "144ms"
+
+#: win32/rsrc/snes9x.rc
+msgid "160ms"
+msgstr "160ms"
+
+#: win32/rsrc/snes9x.rc
+msgid "16KHz"
+msgstr "16KHz"
+
+#: win32/rsrc/snes9x.rc
+msgid "16ms"
+msgstr "16ms"
+
+#: win32/rsrc/snes9x.rc
+msgid "176ms"
+msgstr "176ms"
+
+#: win32/rsrc/snes9x.rc
+msgid "192ms"
+msgstr "192ms"
+
+#: win32/rsrc/snes9x.rc
+msgid "1x"
+msgstr "1x"
+
+#: win32/rsrc/snes9x.rc
+msgid "2 bytes"
+msgstr "2 байти"
+
+#: win32/rsrc/snes9x.rc
+msgid "2 frames"
+msgstr "2 кадри"
+
+#: win32/rsrc/snes9x.rc
+msgid "208ms"
+msgstr "208ms"
+
+#: win32/rsrc/snes9x.rc
+msgid "22KHz"
+msgstr "22KHz"
+
+#: win32/rsrc/snes9x.rc
+msgid "2x"
+msgstr "2x"
+
+#: win32/rsrc/snes9x.rc
+msgid "3 bytes"
+msgstr "3 байти"
+
+#: win32/rsrc/snes9x.rc
+msgid "3 frames"
+msgstr "3 кадри"
+
+#: win32/rsrc/snes9x.rc
+msgid "30KHz"
+msgstr "30KHz"
+
+#: win32/rsrc/snes9x.rc
+msgid "32KHz"
+msgstr "32KHz"
+
+#: win32/rsrc/snes9x.rc
+msgid "32ms"
+msgstr "32ms"
+
+#: win32/rsrc/snes9x.rc
+msgid "35KHz"
+msgstr "35KHz"
+
+#: win32/rsrc/snes9x.rc
+msgid "3x"
+msgstr "3x"
+
+#: win32/rsrc/snes9x.rc
+msgid "4 bytes"
+msgstr "4 байти"
+
+#: win32/rsrc/snes9x.rc
+msgid "4 frames"
+msgstr "4 кадри"
+
+#: win32/rsrc/snes9x.rc
+msgid "44KHz"
+msgstr "44KHz"
+
+#: win32/rsrc/snes9x.rc
+msgid "48KHz"
+msgstr "48KHz"
+
+#: win32/rsrc/snes9x.rc
+msgid "48ms"
+msgstr "48ms"
+
+#: win32/rsrc/snes9x.rc
+msgid "4x"
+msgstr "4x"
+
+#: win32/rsrc/snes9x.rc
+msgid "5x"
+msgstr "5x"
+
+#: win32/rsrc/snes9x.rc
+msgid "64ms"
+msgstr "64ms"
+
+#: win32/rsrc/snes9x.rc
+msgid "6x"
+msgstr "6x"
+
+#: win32/rsrc/snes9x.rc
+msgid "7x"
+msgstr "7x"
+
+#: win32/rsrc/snes9x.rc
+msgid "80ms"
+msgstr "80ms"
+
+#: win32/rsrc/snes9x.rc
+msgid "8KHz"
+msgstr "8KHz"
+
+#: win32/rsrc/snes9x.rc
+msgid "8x"
+msgstr "8x"
+
+#: win32/rsrc/snes9x.rc
+msgid "96ms"
+msgstr "96ms"
+
+#: win32/rsrc/snes9x.rc
+msgid "9x"
+msgstr "9x"
+
+#: win32/rsrc/snes9x.rc
+msgid "< (Less Than)"
+msgstr "< (менше)"
+
+#: win32/wlanguage.h
+msgid "<-- MISMATCH !!!"
+msgstr "<-- НЕВІДПОВІДНІСТЬ !!!"
+
+#: win32/rsrc/snes9x.rc
+msgid "<= (Less Than or Equal to)"
+msgstr "<= (менше або дорівнює)"
+
+#: win32/rsrc/snes9x.rc
+msgid "= (Equal To)"
+msgstr "= (дорівнює)"
+
+#: win32/rsrc/snes9x.rc
+msgid "> (Greater Than)"
+msgstr "> (більше)"
+
+#: win32/rsrc/snes9x.rc
+msgid ">= (Greater than or Equal To)"
+msgstr ">= (більше або дорівнює)"
+
+#: win32/rsrc/snes9x.rc
+msgid "About"
+msgstr "Про додаток"
+
+#: win32/rsrc/snes9x.rc
+msgid "Achievement List"
+msgstr "Список досягнень"
+
+#: win32/rsrc/snes9x.rc
+msgid "Act as Server"
+msgstr "Діяти як сервер"
+
+#: win32/wlanguage.h
+msgid "Act As Server"
+msgstr "Діяти як сервер"
+
+#: win32/rsrc/snes9x.rc
+msgid "Add"
+msgstr "Додати"
+
+#: win32/rsrc/snes9x.rc
+msgid "Add Cheat"
+msgstr "Додати чіт"
+
+#: win32/rsrc/snes9x.rc
+msgid "Add SuperSnes9x to registry for supported file types"
+msgstr "Додати SuperSnes9x до реєстру для підтримуваних типів файлів"
+
+#: win32/rsrc/snes9x.rc
+msgid "Address"
+msgstr "Адреса"
+
+#: win32/rsrc/snes9x.rc
+msgid "Address:"
+msgstr "Адреса:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Adjustments"
+msgstr "Налаштування"
+
+#: win32/wlanguage.h
+msgid "All files"
+msgstr "Усі файли"
+
+#: win32/rsrc/snes9x.rc
+msgid "all of SuperSnes9x's settings are stored in this file"
+msgstr "усі налаштування SuperSnes9x зберігаються в цьому файлі"
+
+#: win32/rsrc/snes9x.rc
+msgid "Allow executable logo override"
+msgstr "Дозволити заміну логотипа виконуваного файлу"
+
+#: win32/rsrc/snes9x.rc
+msgid "Allow Invalid VRAM Access"
+msgstr "Дозволити хибний VRAM-доступ"
+
+#: win32/rsrc/snes9x.rc
+msgid "Allow Left+Rt/Up+Dn"
+msgstr "Дозволити ←+→ / ↑+↓"
+
+#: win32/rsrc/snes9x.rc
+msgid "APP - Emulator Settings"
+msgstr "ДОДАТОК - налаштування емулятора"
+
+#: win32/rsrc/snes9x.rc
+msgid "Apply"
+msgstr "Застосувати"
+
+#: win32/rsrc/snes9x.rc
+msgid "Apply Adjustments"
+msgstr "Застосувати налаштування"
+
+#: win32/rsrc/snes9x.rc
+msgid "Apply Cheats"
+msgstr "Застосувати чіти"
+
+#: win32/rsrc/snes9x.rc
+msgid "Ask for confirmation when saving/loading"
+msgstr "Запитувати підтвердження при збереженні / завантаженні"
+
+#: win32/rsrc/snes9x.rc
+msgid "Ask Server to Pause when"
+msgstr "Запитати паузу сервера при"
+
+#: win32/rsrc/snes9x.rc
+msgid "Author Info:"
+msgstr "Відомості автора:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Auto Layer Transparency"
+msgstr "Автопрозорість шарів"
+
+#: win32/rsrc/snes9x.rc
+msgid "Auto update"
+msgstr "Автооновлення"
+
+#: win32/rsrc/snes9x.rc
+msgid "Auto-Assign"
+msgstr "Автопризначення"
+
+#: win32/wlanguage.h
+msgid "Auto-Detect"
+msgstr "Автовизначення"
+
+#: win32/rsrc/snes9x.rc
+msgid "Auto-Save S-RAM"
+msgstr "Автозбереження S-RAM"
+
+#: win32/wlanguage.h
+msgid "Autofire"
+msgstr "Автовогонь"
+
+#: win32/wlanguage.h
+msgid "Autohold"
+msgstr "Автоутримання"
+
+#: win32/rsrc/snes9x.rc
+msgid "Automatic Input Rate"
+msgstr "Автоматична початкова частота"
+
+#: win32/rsrc/snes9x.rc
+msgid "Automatic, skip at most:"
+msgstr "Автоматично, пропускати щонайбільше:"
+
+#: win32/wlanguage.h
+msgid "AVI file"
+msgstr "AVI-файл"
+
+#: win32/rsrc/snes9x.rc
+msgid "AVI Recording"
+msgstr "Запис AVI"
+
+#: win32/rsrc/snes9x.rc
+msgid "Background Keyboard Hotkeys"
+msgstr "Фонові гарячі кнопки клавіатури"
+
+#: win32/rsrc/snes9x.rc
+msgid "Background:"
+msgstr "Тло:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Bank +:"
+msgstr "Банк +:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Bank -:"
+msgstr "Банк -:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Bank:"
+msgstr "Банк:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Base Tile Addresses"
+msgstr "Базові адреси тайлів"
+
+#: win32/rsrc/snes9x.rc
+msgid "BG1:"
+msgstr "BG1:"
+
+#: win32/rsrc/snes9x.rc
+msgid "BG2:"
+msgstr "BG2:"
+
+#: win32/rsrc/snes9x.rc
+msgid "BG3:"
+msgstr "BG3:"
+
+#: win32/rsrc/snes9x.rc
+msgid "BG4:"
+msgstr "BG4:"
+
+#: win32/rsrc/snes9x.rc
+msgid "BG:"
+msgstr "BG:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Bilinear Filtering"
+msgstr "Білінійне фільтрування"
+
+#: win32/rsrc/snes9x.rc
+msgid "Binding"
+msgstr "Прив'язка"
+
+#: win32/rsrc/snes9x.rc
+msgid "BIOS"
+msgstr "BIOS"
+
+#: win32/wlanguage.h
+msgid "BIOS files"
+msgstr "Файли BIOS"
+
+#: win32/rsrc/snes9x.rc
+msgid "BIOS:"
+msgstr "BIOS:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Bit Depth:"
+msgstr "Глибина бітів:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Blend Hi-Res Images"
+msgstr "Змішувати зображення високого розміру"
+
+#: win32/rsrc/snes9x.rc
+msgid "Blue means already mapped. Pink conflicts with hotkey.\nRed is reserved by Windows. Escape clears bindings.\nPress multiple keys for multi-bind. Delete removes last."
+msgstr "Синій означає вже призначено. Рожевий конфліктує з гарячою кнопкою.\nЧервоний зарезервовано Windows. Escape очищує прив'язки.\nНатисни кілька кнопок для мультиприв'язки. Delete вилучає останню."
+
+#: win32/wlanguage.h
+msgid "Blue means the hotkey is already mapped.\nPink means it conflicts with a game button.\nRed means it's reserved by Windows.\nA hotkey can be disabled using Escape."
+msgstr "Синій означає, що гарячу кнопку вже призначено.\nРожевий означає конфлікт із ігровою кнопкою.\nЧервоний означає, що її зарезервовано Windows.\nГарячу кнопку можна вимкнути за допомогою Escape."
+
+#: win32/rsrc/snes9x.rc
+msgid "Blue means the hotkey is already mapped. Pink means it conflicts with a game button. Red means it's reserved by Windows. Escape clears bindings.\nPress multiple keys for multi-bind. Delete removes last."
+msgstr "Синій означає, що гарячу кнопку вже призначено. Рожевий означає конфлікт із ігровою кнопкою. Червоний означає, що її зарезервовано Windows. Escape очищує прив'язки.\nНатисни кілька кнопок для мультиприв'язки. Delete вилучає останню."
+
+#: win32/rsrc/snes9x.rc
+msgid "Browse"
+msgstr "Огляд"
+
+#: win32/rsrc/snes9x.rc
+msgid "Buffer Length"
+msgstr "Довжина буфера"
+
+#: win32/rsrc/snes9x.rc
+msgid "Buffer Length:"
+msgstr "Довжина буфера:"
+
+#: win32/wlanguage.h
+msgid "Can't Open File"
+msgstr "Неможливо відкрити файл"
+
+#: win32/rsrc/snes9x.rc
+msgid "Cancel"
+msgstr "Скасувати"
+
+#: win32/rsrc/snes9x.rc
+msgid "Channel 1"
+msgstr "Канал 1"
+
+#: win32/rsrc/snes9x.rc
+msgid "Channel 2"
+msgstr "Канал 2"
+
+#: win32/rsrc/snes9x.rc
+msgid "Channel 3"
+msgstr "Канал 3"
+
+#: win32/rsrc/snes9x.rc
+msgid "Channel 4"
+msgstr "Канал 4"
+
+#: win32/rsrc/snes9x.rc
+msgid "Channel 5"
+msgstr "Канал 5"
+
+#: win32/rsrc/snes9x.rc
+msgid "Channel 6"
+msgstr "Канал 6"
+
+#: win32/rsrc/snes9x.rc
+msgid "Channel 7"
+msgstr "Канал 7"
+
+#: win32/rsrc/snes9x.rc
+msgid "Channel 8"
+msgstr "Канал 8"
+
+#: win32/rsrc/snes9x.rc
+msgid "Channels"
+msgstr "Канали"
+
+#: win32/rsrc/snes9x.rc
+msgid "Chat"
+msgstr "Чат"
+
+#: win32/rsrc/snes9x.rc
+msgid "Cheat Description:"
+msgstr "Опис чіта:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Cheat Details"
+msgstr "Подробиці чіта"
+
+#: win32/rsrc/snes9x.rc
+msgid "Cheat Entry and Editor"
+msgstr "Введення та редактор чітів"
+
+#: win32/rsrc/snes9x.rc
+msgid "Cheat Search"
+msgstr "Пошук чітів"
+
+#: win32/wlanguage.h
+msgid "Cheats Editor Dialog:"
+msgstr "Діалог редактора чітів:"
+
+#: win32/wlanguage.h
+msgid "Cheats Search Dialog:"
+msgstr "Діалог пошуку чітів:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Choose Logo"
+msgstr "Вибрати логотип"
+
+#: win32/rsrc/snes9x.rc
+msgid "Clear"
+msgstr "Очистити"
+
+#: win32/rsrc/snes9x.rc
+msgid "Clear All"
+msgstr "Очистити все"
+
+#: win32/rsrc/snes9x.rc
+msgid "Clear History"
+msgstr "Очистити історію"
+
+#: win32/rsrc/snes9x.rc
+msgid "Clear SRAM"
+msgstr "Очистити SRAM"
+
+#: win32/rsrc/snes9x.rc
+msgid "Clear Watches"
+msgstr "Очистити спостереження"
+
+#: win32/rsrc/snes9x.rc
+msgid "Client Settings"
+msgstr "Налаштування клієнта"
+
+#: win32/wlanguage.h
+msgid "Clipping Windows:"
+msgstr "Вікна обтинання:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Close"
+msgstr "Закрити"
+
+#: win32/wlanguage.h
+msgid "Code"
+msgstr "Код"
+
+#: win32/rsrc/snes9x.rc
+msgid "Color Correction"
+msgstr "Корекція кольору"
+
+#: win32/rsrc/snes9x.rc
+msgid "Compare To"
+msgstr "Порівняти з"
+
+#: win32/rsrc/snes9x.rc
+msgid "Comparison Type"
+msgstr "Тип порівняння"
+
+#: win32/rsrc/snes9x.rc
+msgid "Config file:"
+msgstr "Файл конфігурації:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Connect"
+msgstr "З'єднати"
+
+#: win32/rsrc/snes9x.rc
+msgid "Connect clients to: 127.0.0.1 (localhost) or your LAN IP"
+msgstr "З'єднати клієнтів із: 127.0.0.1 (localhost) чи твоєю LAN IP-адресою"
+
+#: win32/rsrc/snes9x.rc
+msgid "Connect to Server"
+msgstr "З'єднати з сервером"
+
+#: win32/rsrc/snes9x.rc
+msgid "Controller"
+msgstr "Контролер"
+
+#: win32/wlanguage.h
+msgid "Could not open movie file."
+msgstr "Неможливо відкрити файл відео."
+
+#: win32/rsrc/snes9x.rc
+msgid "CPU Overclock:"
+msgstr "Розгін CPU:"
+
+#: win32/wlanguage.h
+msgid "crc32=%08X, name=%s"
+msgstr "crc32=%08X, ім'я=%s"
+
+#: win32/wlanguage.h
+msgid "Current ROM:"
+msgstr "Поточний ROM:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Current ROM: CRC32=Unknown, Name=Unknown"
+msgstr "Поточний ROM: CRC32=Невідомо, Ім'я=Невідомо"
+
+#: win32/rsrc/snes9x.rc
+msgid "Current Value"
+msgstr "Поточне значення"
+
+#: win32/rsrc/snes9x.rc
+msgid "Custom ROM Open Dialog"
+msgstr "Діалог відкриття власного ROM'у"
+
+#: win32/rsrc/snes9x.rc
+msgid "Custom Screen Mode"
+msgstr "Власний режим екрана"
+
+#: win32/rsrc/snes9x.rc
+msgid "Customize Hotkeys"
+msgstr "Налаштувати гарячі кнопки"
+
+#: win32/rsrc/snes9x.rc
+msgid "Customize Special Keys"
+msgstr "Налаштувати спеціальні кнопки"
+
+#: win32/rsrc/snes9x.rc
+msgid "Data Size"
+msgstr "Розмір даних"
+
+#: win32/rsrc/snes9x.rc
+msgid "Data Type"
+msgstr "Тип даних"
+
+#: win32/rsrc/snes9x.rc
+msgid "DATE"
+msgstr "ДАТА"
+
+#: win32/rsrc/snes9x.rc
+msgid "Defaults"
+msgstr "Типові"
+
+#: win32/rsrc/snes9x.rc
+msgid "Delete"
+msgstr "Видалити"
+
+#: win32/rsrc/snes9x.rc
+msgid "Detect gamepad changes"
+msgstr "Виявляти зміни геймпада"
+
+#: win32/rsrc/snes9x.rc
+msgid "Dialog"
+msgstr "Діалог"
+
+#: win32/rsrc/snes9x.rc
+msgid "Direct3D Shader File"
+msgstr "Файл шейдера Direct3D"
+
+#: win32/wlanguage.h
+msgid "Directory"
+msgstr "Каталог"
+
+#: win32/rsrc/snes9x.rc
+msgid "Directory:"
+msgstr "Каталог:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Disable Sprite Limit"
+msgstr "Вимкнути обмеження спрайтів"
+
+#: win32/rsrc/snes9x.rc
+msgid "Disconnect"
+msgstr "Роз'єднати"
+
+#: win32/rsrc/snes9x.rc
+msgid "Disconnect from Server"
+msgstr "Роз'єднати з сервером"
+
+#: win32/rsrc/snes9x.rc
+msgid "Display Configuration"
+msgstr "Конфігурація дисплея"
+
+#: win32/rsrc/snes9x.rc
+msgid "Display messages inside SNES image"
+msgstr "Показувати повідомлення всередині SNES-зображення"
+
+#: win32/rsrc/snes9x.rc
+msgid "Display Settings"
+msgstr "Налаштування дисплея"
+
+#: win32/rsrc/snes9x.rc
+msgid "DN LEFT"
+msgstr "↓ ←"
+
+#: win32/wlanguage.h
+msgid "Dn Left"
+msgstr "↓ ←"
+
+#: win32/rsrc/snes9x.rc
+msgid "DN RIGHT"
+msgstr "↓ →"
+
+#: win32/wlanguage.h
+msgid "Dn Right"
+msgstr "↓ →"
+
+#: win32/rsrc/snes9x.rc
+msgid "DOWN"
+msgstr "↓"
+
+#: win32/rsrc/snes9x.rc
+msgid "Dummy"
+msgstr "Заглушка"
+
+#: win32/rsrc/snes9x.rc
+msgid "Dynamic Rate Control"
+msgstr "Динамічне керування частотою"
+
+#: win32/rsrc/snes9x.rc
+msgid "Edit Cheat Group"
+msgstr "Редагувати групу чітів"
+
+#: win32/rsrc/snes9x.rc
+msgid "Emulate Fullscreen"
+msgstr "Емулювати повний екран"
+
+#: win32/wlanguage.h
+msgid "Emulation Settings"
+msgstr "Налаштування емуляції"
+
+#: win32/rsrc/snes9x.rc
+msgid "Emulator Hacks"
+msgstr "Хаки емулятора"
+
+#: win32/rsrc/snes9x.rc
+msgid "Enable"
+msgstr "Увімкнути"
+
+#: win32/rsrc/snes9x.rc
+msgid "Enable All"
+msgstr "Увімкнути все"
+
+#: win32/rsrc/snes9x.rc
+msgid "Enable Background Input"
+msgstr "Увімкнути фоновий ввід"
+
+#: win32/rsrc/snes9x.rc
+msgid "Enable Color Correction (accurate SNES colors)"
+msgstr "Увімкнути корекцію кольору (точні SNES-кольори)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Enable Triple Buffering"
+msgstr "Увімкнути потрійну буферизацію"
+
+#: win32/rsrc/snes9x.rc
+msgid "Enabled"
+msgstr "Увімкнено"
+
+#: win32/rsrc/snes9x.rc
+msgid "End Kaillera Game"
+msgstr "Завершити гру Kaillera"
+
+#: win32/rsrc/snes9x.rc
+msgid "Enter a Value:"
+msgstr "Введи значення:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Enter Cheat Code:"
+msgstr "Введи чіт-код:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Enter Cheat codes, one line at a time"
+msgstr "Введи чіт-коди, по одному рядку за раз"
+
+#: win32/wlanguage.h
+msgid "enter host name"
+msgstr "введи ім'я хоста"
+
+#: win32/rsrc/snes9x.rc
+msgid "Entered Address"
+msgstr "Введена адреса"
+
+#: win32/rsrc/snes9x.rc
+msgid "Entered Value"
+msgstr "Введене значення"
+
+#: win32/wlanguage.h
+msgid "Error Info:"
+msgstr "Відомості про помилку:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Exit"
+msgstr "Вихід"
+
+#: win32/rsrc/snes9x.rc
+msgid "Extend Height of SNES Image"
+msgstr "Розширити висоту SNES-зображення"
+
+#: win32/wlanguage.h
+msgid "Fast forward:"
+msgstr "Прискорення:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Fast-Forward"
+msgstr "Прискорення"
+
+#: win32/wlanguage.h
+msgid "Fast-forward toggle:"
+msgstr "Перемикання прискорення:"
+
+#: win32/rsrc/snes9x.rc
+msgid "File"
+msgstr "Файл"
+
+#: win32/wlanguage.h
+msgid "File not found."
+msgstr "Файл не знайдено."
+
+#: win32/rsrc/snes9x.rc
+msgid "First Sprite:"
+msgstr "Перший спрайт:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Fixed, always skip:"
+msgstr "Фіксовано, завжди пропускати:"
+
+#: win32/wlanguage.h
+msgid "Force GD24"
+msgstr "Примусово GD24"
+
+#: win32/wlanguage.h
+msgid "Force Header"
+msgstr "Примусовий заголовок"
+
+#: win32/wlanguage.h
+msgid "Force HiROM"
+msgstr "Примусово HiROM"
+
+#: win32/wlanguage.h
+msgid "Force LoROM"
+msgstr "Примусово LoROM"
+
+#: win32/wlanguage.h
+msgid "Force mode 1"
+msgstr "Примусово режим 1"
+
+#: win32/wlanguage.h
+msgid "Force mode 2"
+msgstr "Примусово режим 2"
+
+#: win32/wlanguage.h
+msgid "Force No Header"
+msgstr "Примусово без заголовка"
+
+#: win32/wlanguage.h
+msgid "Force not interleaved"
+msgstr "Примусово без чергування"
+
+#: win32/wlanguage.h
+msgid "Force NTSC"
+msgstr "Примусово NTSC"
+
+#: win32/wlanguage.h
+msgid "Force PAL"
+msgstr "Примусово PAL"
+
+#: win32/rsrc/snes9x.rc
+msgid "Frame Advance"
+msgstr "Покадровий перехід"
+
+#: win32/rsrc/snes9x.rc
+msgid "Frame Advance mute"
+msgstr "Притлумлення при покадровому переході"
+
+#: win32/wlanguage.h
+msgid "Frame advance:"
+msgstr "Покадровий перехід:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Frame Skipping:"
+msgstr "Пропуск кадрів:"
+
+#: win32/rsrc/snes9x.rc
+msgid "frames"
+msgstr "кадрів"
+
+#: win32/rsrc/snes9x.rc
+msgid "FRAMES"
+msgstr "КАДРИ"
+
+#: win32/rsrc/snes9x.rc
+msgid "frames behind"
+msgstr "кадрів позаду"
+
+#: win32/rsrc/snes9x.rc
+msgid "frames in auto-frame rate mode"
+msgstr "кадрів у режимі автоматичної частоти кадрів"
+
+#: win32/wlanguage.h
+msgid "frames in fast-forward mode"
+msgstr "кадрів у режимі прискорення"
+
+#: win32/rsrc/snes9x.rc
+msgid "frames in Turbo mode"
+msgstr "кадрів у режимі турбо"
+
+#: win32/rsrc/snes9x.rc
+msgid "Frames:"
+msgstr "Кадри:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Full Screen"
+msgstr "Повний екран"
+
+#: win32/rsrc/snes9x.rc
+msgid "Fullscreen"
+msgstr "Повний екран"
+
+#: win32/rsrc/snes9x.rc
+msgid "Fullscreen Display Settings"
+msgstr "Налаштування дисплея повного екрана"
+
+#: win32/rsrc/snes9x.rc
+msgid "Fullscreen on ROM Open"
+msgstr "Повний екран при відкритті ROM'у"
+
+#: win32/rsrc/snes9x.rc
+msgid "Game Boy Image"
+msgstr "Game Boy-зображення"
+
+#: win32/rsrc/snes9x.rc
+msgid "Game Genie, Pro-Action Replay Codes"
+msgstr "Коди Game Genie, Pro-Action Replay"
+
+#: win32/rsrc/snes9x.rc
+msgid "GB"
+msgstr "GB"
+
+#: win32/rsrc/snes9x.rc
+msgid "GB Sprite Viewer"
+msgstr "Переглядач спрайтів GB"
+
+#: win32/rsrc/snes9x.rc
+msgid "GB Tile Viewer"
+msgstr "Переглядач тайлів GB"
+
+#: win32/rsrc/snes9x.rc
+msgid "GB Tilemap Viewer"
+msgstr "Переглядач тайлмапи GB"
+
+#: win32/rsrc/snes9x.rc
+msgid "GB-PPU"
+msgstr "GB-PPU"
+
+#: win32/rsrc/snes9x.rc
+msgid "General"
+msgstr "Загальне"
+
+#: win32/rsrc/snes9x.rc
+msgid "goto"
+msgstr "перейти"
+
+#: win32/wlanguage.h
+msgid "Graphics layer 1:"
+msgstr "Графічний шар 1:"
+
+#: win32/wlanguage.h
+msgid "Graphics layer 2:"
+msgstr "Графічний шар 2:"
+
+#: win32/wlanguage.h
+msgid "Graphics layer 3:"
+msgstr "Графічний шар 3:"
+
+#: win32/wlanguage.h
+msgid "Graphics layer 4:"
+msgstr "Графічний шар 4:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Group"
+msgstr "Група"
+
+#: win32/rsrc/snes9x.rc
+msgid "Hacks"
+msgstr "Хаки"
+
+#: win32/rsrc/snes9x.rc
+msgid "Hard Reset (Power Cycle)"
+msgstr "Апаратне перезавантаження (вимикання живлення)"
+
+#: win32/wlanguage.h
+msgid "Hard reset:"
+msgstr "Апаратне перезавантаження:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Hardcore Mode"
+msgstr "Хардкорний режим"
+
+#: win32/rsrc/snes9x.rc
+msgid "Header:"
+msgstr "Заголовок:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Help"
+msgstr "Довідка"
+
+#: win32/rsrc/snes9x.rc
+msgid "Hexadecimal"
+msgstr "Шістнадцятковий"
+
+#: win32/rsrc/snes9x.rc
+msgid "Hi Res:"
+msgstr "Високий розмір:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Hi-Res AVI Recording"
+msgstr "Запис AVI високого розміру"
+
+#: win32/rsrc/snes9x.rc
+msgid "Hide Menubar"
+msgstr "Сховати панель меню"
+
+#: win32/rsrc/snes9x.rc
+msgid "Host Game"
+msgstr "Розмістити гру"
+
+#: win32/rsrc/snes9x.rc
+msgid "Host Kaillera Server"
+msgstr "Розмістити сервер Kaillera"
+
+#: win32/wlanguage.h
+msgid "Hotkey Configuration"
+msgstr "Конфігурація гарячих кнопок"
+
+#: win32/rsrc/snes9x.rc
+msgid "Icon 1"
+msgstr "Піктограма 1"
+
+#: win32/rsrc/snes9x.rc
+msgid "Icon 2"
+msgstr "Піктограма 2"
+
+#: win32/rsrc/snes9x.rc
+msgid "Icon 3"
+msgstr "Піктограма 3"
+
+#: win32/rsrc/snes9x.rc
+msgid "Icon 4"
+msgstr "Піктограма 4"
+
+#: win32/rsrc/snes9x.rc
+msgid "Index:"
+msgstr "Індекс:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Input"
+msgstr "Ввід"
+
+#: win32/rsrc/snes9x.rc
+msgid "Input Configuration"
+msgstr "Конфігурація вводу"
+
+#: win32/rsrc/snes9x.rc
+msgid "Input Rate:"
+msgstr "Початкова частота:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Integer Scaling"
+msgstr "Ціле масштабування"
+
+#: win32/rsrc/snes9x.rc
+msgid "Interleave Mode:"
+msgstr "Режим чергування:"
+
+#: win32/rsrc/snes9x.rc
+msgid "IP:"
+msgstr "IP:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Join"
+msgstr "Приєднатися"
+
+#: win32/wlanguage.h
+msgid "Joypad #%d"
+msgstr "Джойстик #%d"
+
+#: win32/rsrc/snes9x.rc
+msgid "Joypad 1"
+msgstr "Джойстик 1"
+
+#: win32/rsrc/snes9x.rc
+msgid "Joypad 2"
+msgstr "Джойстик 2"
+
+#: win32/rsrc/snes9x.rc
+msgid "Joypad 3"
+msgstr "Джойстик 3"
+
+#: win32/rsrc/snes9x.rc
+msgid "Joypad 4"
+msgstr "Джойстик 4"
+
+#: win32/rsrc/snes9x.rc
+msgid "Joypad 5"
+msgstr "Джойстик 5"
+
+#: win32/wlanguage.h
+msgid "Joypad swap:"
+msgstr "Обмін джойстиків:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Kaillera Netplay"
+msgstr "Мережева гра Kaillera"
+
+#: win32/rsrc/snes9x.rc
+msgid "Kaillera Server"
+msgstr "Сервер Kaillera"
+
+#: win32/rsrc/snes9x.rc
+msgid "Layout:"
+msgstr "Розкладка:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Leave Game"
+msgstr "Покинути гру"
+
+#: win32/rsrc/snes9x.rc
+msgid "LEFT"
+msgstr "←"
+
+#: win32/rsrc/snes9x.rc
+msgid "LENGTH"
+msgstr "ДОВЖИНА"
+
+#: win32/rsrc/snes9x.rc
+msgid "Length:"
+msgstr "Довжина:"
+
+#: win32/rsrc/snes9x.rc
+msgid "List1"
+msgstr "Список1"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load #:"
+msgstr "Завантажити #:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load 0:"
+msgstr "Завантажити 0:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load 1:"
+msgstr "Завантажити 1:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load 2:"
+msgstr "Завантажити 2:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load 3:"
+msgstr "Завантажити 3:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load 4:"
+msgstr "Завантажити 4:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load 5:"
+msgstr "Завантажити 5:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load 6:"
+msgstr "Завантажити 6:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load 7:"
+msgstr "Завантажити 7:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load 8:"
+msgstr "Завантажити 8:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load 9:"
+msgstr "Завантажити 9:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load Dlg:"
+msgstr "Завантажити діалог:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load File:"
+msgstr "Завантажити файл:"
+
+#: win32/wlanguage.h
+msgid "Load from file:"
+msgstr "Завантажити з файлу:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load Game"
+msgstr "Завантажити гру"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load Game Position"
+msgstr "Завантажити позицію гри"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load MultiCart"
+msgstr "Завантажити мультикарту"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load Watches"
+msgstr "Завантажити спостереження"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load with Preview"
+msgstr "Завантажити з попереднім переглядом"
+
+#: win32/wlanguage.h
+msgid "LOADED FROM MOVIE:"
+msgstr "ЗАВАНТАЖЕНО З ВІДЕО:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Location:"
+msgstr "Розташування:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Login"
+msgstr "Вхід"
+
+#: win32/rsrc/snes9x.rc
+msgid "Maintain Aspect Ratio"
+msgstr "Зберегти співвідношення сторін"
+
+#: win32/rsrc/snes9x.rc
+msgid "Map"
+msgstr "Мапа"
+
+#: win32/rsrc/snes9x.rc
+msgid "Map Addr:"
+msgstr "Адреса мапи:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Map Size:"
+msgstr "Розмір мапи:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Map:"
+msgstr "Мапа:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Mask"
+msgstr "Маска"
+
+#: win32/rsrc/snes9x.rc
+msgid "Masked Addresses"
+msgstr "Замасковані адреси"
+
+#: win32/rsrc/snes9x.rc
+msgid "Master Hotkey"
+msgstr "Головна гаряча кнопка"
+
+#: win32/rsrc/snes9x.rc
+msgid "Max Clients:"
+msgstr "Максимум клієнтів:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Maximum Frame Rate Skip"
+msgstr "Максимальний пропуск частоти кадрів"
+
+#: win32/rsrc/snes9x.rc
+msgid "MB (set to 0 to disable rewind support)"
+msgstr "Мбайт (встанови 0 для вимкнення підтримки звороту)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Memory Type:"
+msgstr "Тип пам'яті:"
+
+#: win32/wlanguage.h
+msgid "Misc. Recording Settings"
+msgstr "Інші налаштування запису"
+
+#: win32/rsrc/snes9x.rc
+msgid "Mode:"
+msgstr "Режим:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Movie File"
+msgstr "Файл відео"
+
+#: win32/wlanguage.h
+msgid "Movie frame count:"
+msgstr "Кількість кадрів відео:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Movie Play"
+msgstr "Відтворення відео"
+
+#: win32/wlanguage.h
+msgid "Movie read-only:"
+msgstr "Відео лише для читання:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Movie Record"
+msgstr "Запис відео"
+
+#: win32/rsrc/snes9x.rc
+msgid "Movie Stop"
+msgstr "Зупинка відео"
+
+#: win32/wlanguage.h
+msgid "Movie's ROM:"
+msgstr "ROM відео:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Movie's ROM: CRC32=Unknown, Name=Unknown"
+msgstr "ROM відео: CRC32=Невідомо, Ім'я=Невідомо"
+
+#: win32/wlanguage.h
+msgid "Movies"
+msgstr "Відео"
+
+#: win32/rsrc/snes9x.rc
+msgid "Mute"
+msgstr "Притлумити"
+
+#: win32/rsrc/snes9x.rc
+msgid "Mute Sound"
+msgstr "Притлумити звук"
+
+#: win32/rsrc/snes9x.rc
+msgid "Mute sound"
+msgstr "Притлумити звук"
+
+#: win32/rsrc/snes9x.rc
+msgid "Netplay"
+msgstr "Мережева гра"
+
+#: win32/rsrc/snes9x.rc
+msgid "Netplay Options"
+msgstr "Опції мережевої гри"
+
+#: win32/rsrc/snes9x.rc
+msgid "New Value"
+msgstr "Нове значення"
+
+#: win32/rsrc/snes9x.rc
+msgid "No BIOS"
+msgstr "Без BIOS"
+
+#: win32/wlanguage.h
+msgid "Not a ROM"
+msgstr "Не ROM"
+
+#: win32/rsrc/snes9x.rc
+msgid "Not connected."
+msgstr "Не з'єднано."
+
+#: win32/rsrc/snes9x.rc
+msgid "not found"
+msgstr "не знайдено"
+
+#: win32/wlanguage.h
+msgid "not found!"
+msgstr "не знайдено!"
+
+#: win32/rsrc/snes9x.rc
+msgid "NTSC Filter Scanlines"
+msgstr "Рядки сканування фільтра NTSC"
+
+#: win32/rsrc/snes9x.rc
+msgid "OAM1:"
+msgstr "OAM1:"
+
+#: win32/rsrc/snes9x.rc
+msgid "OAM2:"
+msgstr "OAM2:"
+
+#: win32/rsrc/snes9x.rc
+msgid "OK"
+msgstr "OK"
+
+#: win32/rsrc/snes9x.rc
+msgid "On-screen Display Size:"
+msgstr "Відображений розмір на екрані:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Online Servers"
+msgstr "Онлайн-сервери"
+
+#: win32/rsrc/snes9x.rc
+msgid "Oops File"
+msgstr "Файл збою"
+
+#: win32/rsrc/snes9x.rc
+msgid "Open MultiCart"
+msgstr "Відкрити мультикарту"
+
+#: win32/rsrc/snes9x.rc
+msgid "Open Read-Only"
+msgstr "Відкрити лише для читання"
+
+#: win32/rsrc/snes9x.rc
+msgid "OpenGL/Vulkan Shader File"
+msgstr "Файл шейдера OpenGL/Vulkan"
+
+#: win32/rsrc/snes9x.rc
+msgid "Options"
+msgstr "Опції"
+
+#: win32/rsrc/snes9x.rc
+msgid "Output Device:"
+msgstr "Пристрій виводу:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Output Image Processing"
+msgstr "Обробка зображення виводу"
+
+#: win32/rsrc/snes9x.rc
+msgid "Output Method"
+msgstr "Спосіб виводу"
+
+#: win32/rsrc/snes9x.rc
+msgid "Override Tilemap"
+msgstr "Замінити тайлмапу"
+
+#: win32/wlanguage.h
+msgid "Page %d"
+msgstr "Сторінка %d"
+
+#: win32/rsrc/snes9x.rc
+msgid "Palette (click to select offset)"
+msgstr "Палітра (натисни для вибору зсуву)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Palette:"
+msgstr "Палітра:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Parameters"
+msgstr "Параметри"
+
+#: win32/rsrc/snes9x.rc
+msgid "Password:"
+msgstr "Пароль:"
+
+#: win32/wlanguage.h
+msgid "Patch"
+msgstr "Латка"
+
+#: win32/wlanguage.h
+msgid "Path: %s"
+msgstr "Шлях: %s"
+
+#: win32/rsrc/snes9x.rc
+msgid "Pause When Inactive"
+msgstr "Призупиняти при неактивності"
+
+#: win32/wlanguage.h
+msgid "Pause:"
+msgstr "Призупинення:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Play Movie"
+msgstr "Відтворити відео"
+
+#: win32/rsrc/snes9x.rc
+msgid "Playback Rate"
+msgstr "Частота відтворення"
+
+#: win32/rsrc/snes9x.rc
+msgid "Playback Rate:"
+msgstr "Частота відтворення:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Player Name:"
+msgstr "Ім'я гравця:"
+
+#: win32/wlanguage.h
+msgid "Please enter a host name."
+msgstr "Введи ім'я хоста."
+
+#: win32/wlanguage.h
+msgid "Please enter a valid value for a search!"
+msgstr "Введи дійсне значення для пошуку!"
+
+#: win32/rsrc/snes9x.rc
+msgid "Port Number"
+msgstr "Номер порту"
+
+#: win32/rsrc/snes9x.rc
+msgid "Port Settings"
+msgstr "Налаштування порту"
+
+#: win32/wlanguage.h
+msgid "Press OK to start playing the movie."
+msgstr "Натисни OK для початку відтворення відео."
+
+#: win32/rsrc/snes9x.rc
+msgid "Preview"
+msgstr "Попередній перегляд"
+
+#: win32/rsrc/snes9x.rc
+msgid "Previous Value"
+msgstr "Попереднє значення"
+
+#: win32/rsrc/snes9x.rc
+msgid "Progress1"
+msgstr "Поступ1"
+
+#: win32/rsrc/snes9x.rc
+msgid "Publish Online"
+msgstr "Опублікувати онлайн"
+
+#: win32/rsrc/snes9x.rc
+msgid "Publish to master server list"
+msgstr "Опублікувати в списку головних серверів"
+
+#: win32/wlanguage.h
+msgid "Quit SuperSnes9x:"
+msgstr "Вихід зі SuperSnes9x:"
+
+#: win32/wlanguage.h
+msgid "Range Error"
+msgstr "Помилка діапазону"
+
+#: win32/rsrc/snes9x.rc
+msgid "Rate:"
+msgstr "Частота:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Re-record Count:"
+msgstr "Кількість перезаписів:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Re-sync all Clients Using Freeze File Now"
+msgstr "Пересинхронізувати всіх клієнтів за допомогою файлу зупинки зараз"
+
+#: win32/rsrc/snes9x.rc
+msgid "Recent Games"
+msgstr "Останні ігри"
+
+#: win32/rsrc/snes9x.rc
+msgid "Record Controllers"
+msgstr "Записувати контролери"
+
+#: win32/rsrc/snes9x.rc
+msgid "Record from now"
+msgstr "Записувати від зараз"
+
+#: win32/rsrc/snes9x.rc
+msgid "Record from reset"
+msgstr "Записувати від перезавантаження"
+
+#: win32/rsrc/snes9x.rc
+msgid "Record Movie"
+msgstr "Записати відео"
+
+#: win32/rsrc/snes9x.rc
+msgid "Record Options"
+msgstr "Опції запису"
+
+#: win32/rsrc/snes9x.rc
+msgid "Recording Date:"
+msgstr "Дата запису:"
+
+#: win32/wlanguage.h
+msgid "Recording Start"
+msgstr "Початок запису"
+
+#: win32/rsrc/snes9x.rc
+msgid "Reduce Input Lag"
+msgstr "Зменшити початкову затримку"
+
+#: win32/rsrc/snes9x.rc
+msgid "Refresh"
+msgstr "Оновити"
+
+#: win32/rsrc/snes9x.rc
+msgid "Refresh List"
+msgstr "Оновити список"
+
+#: win32/rsrc/snes9x.rc
+msgid "Regular"
+msgstr "Звичайний"
+
+#: win32/rsrc/snes9x.rc
+msgid "Remove"
+msgstr "Вилучити"
+
+#: win32/rsrc/snes9x.rc
+msgid "Remove All"
+msgstr "Вилучити все"
+
+#: win32/rsrc/snes9x.rc
+msgid "RERECORD"
+msgstr "ПЕРЕЗАПИС"
+
+#: win32/wlanguage.h
+msgid "Reset speed:"
+msgstr "Швидкість перезавантаження:"
+
+#: win32/rsrc/snes9x.rc
+msgid "RetroAchievements"
+msgstr "RetroAchievements"
+
+#: win32/rsrc/snes9x.rc
+msgid "RetroAchievements Login"
+msgstr "Вхід RetroAchievements"
+
+#: win32/rsrc/snes9x.rc
+msgid "Rewind buffer size:"
+msgstr "Розмір буфера звороту:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Rewind granularity:"
+msgstr "Деталізація звороту:"
+
+#: win32/wlanguage.h
+msgid "Rewind:"
+msgstr "Зворот:"
+
+#: win32/rsrc/snes9x.rc
+msgid "RIGHT"
+msgstr "→"
+
+#: win32/wlanguage.h
+msgid "ROM files or archives"
+msgstr "Файли ROM чи архіви"
+
+#: win32/rsrc/snes9x.rc
+msgid "Rom Info"
+msgstr "Відомості ROM"
+
+#: win32/rsrc/snes9x.rc
+msgid "ROM Information"
+msgstr "Відомості ROM"
+
+#: win32/rsrc/snes9x.rc
+msgid "ROM:"
+msgstr "ROM:"
+
+#: win32/wlanguage.h
+msgid "Roms"
+msgstr "ROM'и"
+
+#: win32/rsrc/snes9x.rc
+msgid "Run Ahead"
+msgstr "Біг наперед"
+
+#: win32/rsrc/snes9x.rc
+msgid "s"
+msgstr "с"
+
+#: win32/rsrc/snes9x.rc
+msgid "S-PPU"
+msgstr "S-PPU"
+
+#: win32/wlanguage.h
+msgid "Satellaview"
+msgstr "Satellaview"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save #:"
+msgstr "Зберегти #:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save 0:"
+msgstr "Зберегти 0:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save 1:"
+msgstr "Зберегти 1:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save 2:"
+msgstr "Зберегти 2:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save 3:"
+msgstr "Зберегти 3:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save 4:"
+msgstr "Зберегти 4:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save 5:"
+msgstr "Зберегти 5:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save 6:"
+msgstr "Зберегти 6:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save 7:"
+msgstr "Зберегти 7:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save 8:"
+msgstr "Зберегти 8:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save 9:"
+msgstr "Зберегти 9:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save Dlg:"
+msgstr "Зберегти діалог:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save File:"
+msgstr "Зберегти файл:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save Game Position"
+msgstr "Зберегти позицію гри"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save Memory Pack"
+msgstr "Зберегти пакет пам'яті"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save Other"
+msgstr "Зберегти інше"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save S-RAM Data"
+msgstr "Зберегти дані S-RAM"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save Screenshot"
+msgstr "Зберегти екранний кадр"
+
+#: win32/wlanguage.h
+msgid "Save screenshot"
+msgstr "Зберегти екранний кадр"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save SPC Data"
+msgstr "Зберегти дані SPC"
+
+#: win32/wlanguage.h
+msgid "Save to file:"
+msgstr "Зберегти у файл:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save Watches"
+msgstr "Зберегти спостереження"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save with Preview"
+msgstr "Зберегти з попереднім переглядом"
+
+#: win32/wlanguage.h
+msgid "Saves"
+msgstr "Збереження"
+
+#: win32/rsrc/snes9x.rc
+msgid "Screen"
+msgstr "Екран"
+
+#: win32/wlanguage.h
+msgid "Screenshots"
+msgstr "Екранні кадри"
+
+#: win32/rsrc/snes9x.rc
+msgid "Search"
+msgstr "Пошук"
+
+#: win32/rsrc/snes9x.rc
+msgid "Search Database"
+msgstr "Шукати базу даних"
+
+#: win32/rsrc/snes9x.rc
+msgid "Search for New Cheats"
+msgstr "Шукати нові чіти"
+
+#: win32/rsrc/snes9x.rc
+msgid "seconds after last change (0 disables auto-save)"
+msgstr "секунд після останньої зміни (0 вимикає автозбереження)"
+
+#: win32/rsrc/snes9x.rc
+msgid "SELECT"
+msgstr "SELECT"
+
+#: win32/rsrc/snes9x.rc
+msgid "Select 0:"
+msgstr "Вибрати 0:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Select 1:"
+msgstr "Вибрати 1:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Select 2:"
+msgstr "Вибрати 2:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Select 3:"
+msgstr "Вибрати 3:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Select 4:"
+msgstr "Вибрати 4:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Select 5:"
+msgstr "Вибрати 5:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Select 6:"
+msgstr "Вибрати 6:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Select 7:"
+msgstr "Вибрати 7:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Select 8:"
+msgstr "Вибрати 8:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Select 9:"
+msgstr "Вибрати 9:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Select File"
+msgstr "Вибрати файл"
+
+#: win32/wlanguage.h
+msgid "Select Folder"
+msgstr "Вибрати папку"
+
+#: win32/wlanguage.h
+msgid "Select Slot 0:"
+msgstr "Вибрати слот 0:"
+
+#: win32/wlanguage.h
+msgid "Select Slot 1:"
+msgstr "Вибрати слот 1:"
+
+#: win32/wlanguage.h
+msgid "Select Slot 2:"
+msgstr "Вибрати слот 2:"
+
+#: win32/wlanguage.h
+msgid "Select Slot 3:"
+msgstr "Вибрати слот 3:"
+
+#: win32/wlanguage.h
+msgid "Select Slot 4:"
+msgstr "Вибрати слот 4:"
+
+#: win32/wlanguage.h
+msgid "Select Slot 5:"
+msgstr "Вибрати слот 5:"
+
+#: win32/wlanguage.h
+msgid "Select Slot 6:"
+msgstr "Вибрати слот 6:"
+
+#: win32/wlanguage.h
+msgid "Select Slot 7:"
+msgstr "Вибрати слот 7:"
+
+#: win32/wlanguage.h
+msgid "Select Slot 8:"
+msgstr "Вибрати слот 8:"
+
+#: win32/wlanguage.h
+msgid "Select Slot 9:"
+msgstr "Вибрати слот 9:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Send"
+msgstr "Надіслати"
+
+#: win32/rsrc/snes9x.rc
+msgid "Send ROM Image to Client on Connect"
+msgstr "Надсилати ROM-образ клієнту при з'єднанні"
+
+#: win32/rsrc/snes9x.rc
+msgid "Send ROM Image to Clients"
+msgstr "Надсилати ROM-образ клієнтам"
+
+#: win32/rsrc/snes9x.rc
+msgid "Send ROM Image to Clients Now"
+msgstr "Надіслати ROM-образ клієнтам зараз"
+
+#: win32/rsrc/snes9x.rc
+msgid "Separate Echo Buffer from RAM"
+msgstr "Відокремити буфер відлуння від RAM"
+
+#: win32/rsrc/snes9x.rc
+msgid "Server Address"
+msgstr "Адреса сервера"
+
+#: win32/rsrc/snes9x.rc
+msgid "Server is stopped."
+msgstr "Сервер зупинено."
+
+#: win32/rsrc/snes9x.rc
+msgid "Server Lobby"
+msgstr "Лобі сервера"
+
+#: win32/rsrc/snes9x.rc
+msgid "Server Name:"
+msgstr "Ім'я сервера:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Server Settings"
+msgstr "Налаштування сервера"
+
+#: win32/rsrc/snes9x.rc
+msgid "Set Defaults"
+msgstr "Встановити типові"
+
+#: win32/rsrc/snes9x.rc
+msgid "Set Value"
+msgstr "Встановити значення"
+
+#: win32/rsrc/snes9x.rc
+msgid "Settings"
+msgstr "Налаштування"
+
+#: win32/wlanguage.h
+msgid "SETTINGS NOT IN MOVIE; VERIFY:"
+msgstr "НАЛАШТУВАННЯ ВІДСУТНІ У ВІДЕО; ПЕРЕВІР:"
+
+#: win32/rsrc/snes9x.rc
+msgid "SGB Mix"
+msgstr "Суміш SGB"
+
+#: win32/rsrc/snes9x.rc
+msgid "SGB1"
+msgstr "SGB1"
+
+#: win32/rsrc/snes9x.rc
+msgid "SGB2"
+msgstr "SGB2"
+
+#: win32/rsrc/snes9x.rc
+msgid "Show Audio Waveform"
+msgstr "Показати звукову хвилю"
+
+#: win32/rsrc/snes9x.rc
+msgid "Show Background"
+msgstr "Показати тло"
+
+#: win32/rsrc/snes9x.rc
+msgid "Show Crosshair"
+msgstr "Показати приціл"
+
+#: win32/rsrc/snes9x.rc
+msgid "Show Frame Number"
+msgstr "Показати номер кадру"
+
+#: win32/rsrc/snes9x.rc
+msgid "Show Frame Rate"
+msgstr "Показати частоту кадрів"
+
+#: win32/rsrc/snes9x.rc
+msgid "Show Grid"
+msgstr "Показати сітку"
+
+#: win32/wlanguage.h
+msgid "Show pressed keys:"
+msgstr "Показати натиснені кнопки:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Show screen"
+msgstr "Показати екран"
+
+#: win32/rsrc/snes9x.rc
+msgid "Show Screen Outline"
+msgstr "Показати контур екрана"
+
+#: win32/rsrc/snes9x.rc
+msgid "Show Sprites"
+msgstr "Показати спрайти"
+
+#: win32/rsrc/snes9x.rc
+msgid "Show viewport"
+msgstr "Показати область перегляду"
+
+#: win32/rsrc/snes9x.rc
+msgid "Show Window"
+msgstr "Показати вікно"
+
+#: win32/rsrc/snes9x.rc
+msgid "Signed (+/-)"
+msgstr "Знаковий (+/-)"
+
+#: win32/wlanguage.h
+msgid "Size"
+msgstr "Розмір"
+
+#: win32/rsrc/snes9x.rc
+msgid "Skip at most"
+msgstr "Пропускати щонайбільше"
+
+#: win32/wlanguage.h
+msgid "Skip frames +:"
+msgstr "Пропуск кадрів +:"
+
+#: win32/wlanguage.h
+msgid "Skip frames -:"
+msgstr "Пропуск кадрів -:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Skip rendering"
+msgstr "Пропустити рендеринг"
+
+#: win32/wlanguage.h
+msgid "Skip Rendering"
+msgstr "Пропустити рендеринг"
+
+#: win32/rsrc/snes9x.rc
+msgid "Slot +:"
+msgstr "Слот +:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Slot -:"
+msgstr "Слот -:"
+
+#: win32/rsrc/snes9x.rc
+msgid "SNES Image"
+msgstr "SNES-зображення"
+
+#: win32/rsrc/snes9x.rc
+msgid "SuperSnes9x - Unable to Initialize XAudio2"
+msgstr "SuperSnes9x - неможливо ініціалізувати XAudio2"
+
+#: win32/wlanguage.h
+msgid "SuperSnes9x Cheat Error"
+msgstr "Помилка чіта SuperSnes9x"
+
+#: win32/wlanguage.h
+msgid "SuperSnes9x Movie File"
+msgstr "Файл відео SuperSnes9x"
+
+#: win32/rsrc/snes9x.rc
+msgid "Socket Port Number"
+msgstr "Номер порту сокета"
+
+#: win32/rsrc/snes9x.rc
+msgid "Soft Reset"
+msgstr "Програмне перезавантаження"
+
+#: win32/wlanguage.h
+msgid "Soft reset:"
+msgstr "Програмне перезавантаження:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Sound Driver:"
+msgstr "Звуковий драйвер:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Sound Interpolation Type:"
+msgstr "Тип звукової інтерполяції:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Sound Quality"
+msgstr "Якість звуку"
+
+#: win32/rsrc/snes9x.rc
+msgid "Sound Settings"
+msgstr "Налаштування звуку"
+
+#: win32/rsrc/snes9x.rc
+msgid "Source:"
+msgstr "Джерело:"
+
+#: win32/rsrc/snes9x.rc
+msgid "SPC"
+msgstr "SPC"
+
+#: win32/wlanguage.h
+msgid "SPCs"
+msgstr "SPC-файли"
+
+#: win32/wlanguage.h
+msgid "Speed +:"
+msgstr "Швидкість +:"
+
+#: win32/wlanguage.h
+msgid "Speed -:"
+msgstr "Швидкість -:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Spin1"
+msgstr "Обертання1"
+
+#: win32/rsrc/snes9x.rc
+msgid "Spin2"
+msgstr "Обертання2"
+
+#: win32/rsrc/snes9x.rc
+msgid "Spin3"
+msgstr "Обертання3"
+
+#: win32/rsrc/snes9x.rc
+msgid "Spin4"
+msgstr "Обертання4"
+
+#: win32/rsrc/snes9x.rc
+msgid "Sprite Viewer"
+msgstr "Переглядач спрайтів"
+
+#: win32/rsrc/snes9x.rc
+msgid "Sprite:"
+msgstr "Спрайт:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Sprites"
+msgstr "Спрайти"
+
+#: win32/wlanguage.h
+msgid "Sprites layer:"
+msgstr "Шар спрайтів:"
+
+#: win32/wlanguage.h
+msgid "SRAM"
+msgstr "SRAM"
+
+#: win32/rsrc/snes9x.rc
+msgid "START"
+msgstr "START"
+
+#: win32/rsrc/snes9x.rc
+msgid "Start Game"
+msgstr "Розпочати гру"
+
+#: win32/rsrc/snes9x.rc
+msgid "Start Server"
+msgstr "Запустити сервер"
+
+#: win32/rsrc/snes9x.rc
+msgid "Static"
+msgstr "Статичний"
+
+#: win32/rsrc/snes9x.rc
+msgid "Status"
+msgstr "Стан"
+
+#: win32/rsrc/snes9x.rc
+msgid "Stretch Image"
+msgstr "Розтягнути зображення"
+
+#: win32/rsrc/snes9x.rc
+msgid "SuperFX Clock Speed %:"
+msgstr "Тактова швидкість SuperFX %:"
+
+#: win32/rsrc/snes9x.rc
+msgid "SuperFX speed:"
+msgstr "Швидкість SuperFX:"
+
+#: win32/wlanguage.h
+msgid "SuperScope pause:"
+msgstr "Призупинення Super Scope:"
+
+#: win32/wlanguage.h
+msgid "SuperScope turbo:"
+msgstr "Турбо Super Scope:"
+
+#: win32/wlanguage.h
+msgid "SuperSnes9x (x64)"
+msgstr "SuperSnes9x (x64)"
+
+#: win32/rsrc/snes9x.rc
+msgid "SuperSnes9x - About"
+msgstr "SuperSnes9x - про додаток"
+
+#: win32/wlanguage.h
+msgid "SuperSnes9x: DirectSound"
+msgstr "SuperSnes9x: DirectSound"
+
+#: win32/wlanguage.h
+msgid "SuperSnes9x: Information"
+msgstr "SuperSnes9x: відомості"
+
+#: win32/wlanguage.h
+msgid "SuperSnes9x: NetPlay Error"
+msgstr "SuperSnes9x: помилка мережевої гри"
+
+#: win32/wlanguage.h
+msgid "SuperSnes9x: Sound CPU Question"
+msgstr "SuperSnes9x: питання звукового CPU"
+
+#: win32/wlanguage.h
+msgid "SuperSnes9x: WARNING!"
+msgstr "SuperSnes9x: УВАГА!"
+
+#: win32/rsrc/snes9x.rc
+msgid "Swap A and B"
+msgstr "Обміняти A і B"
+
+#: win32/wlanguage.h
+msgid "Switch aspect Ratio:"
+msgstr "Перемкнути співвідношення сторін:"
+
+#: win32/wlanguage.h
+msgid "Switch controllers:"
+msgstr "Перемкнути контролери:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Sync By Reset"
+msgstr "Синхронізувати перезавантаженням"
+
+#: win32/rsrc/snes9x.rc
+msgid "Sync Sound"
+msgstr "Синхронізувати звук"
+
+#: win32/rsrc/snes9x.rc
+msgid "Sync Using Reset Game"
+msgstr "Синхронізувати перезавантаженням гри"
+
+#: win32/rsrc/snes9x.rc
+msgid "Synchronize with sound core"
+msgstr "Синхронізувати зі звуковим ядром"
+
+#: win32/wlanguage.h
+msgid "TempTurbo"
+msgstr "ТимчасовеТурбо"
+
+#: win32/wlanguage.h
+msgid "Text file"
+msgstr "Текстовий файл"
+
+#: win32/wlanguage.h
+msgid "The movie file is corrupt or in the wrong format."
+msgstr "Файл відео пошкоджено або в неправильному форматі."
+
+#: win32/wlanguage.h
+msgid "The movie file was not found or could not be opened."
+msgstr "Файл відео не знайдено або неможливо відкрити."
+
+#: win32/rsrc/snes9x.rc
+msgid "Tile Addr:"
+msgstr "Адреса тайла:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Tile Data:"
+msgstr "Дані тайла:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Tile Size:"
+msgstr "Розмір тайла:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Tile Viewer"
+msgstr "Переглядач тайлів"
+
+#: win32/rsrc/snes9x.rc
+msgid "Tilemap"
+msgstr "Тайлмапа"
+
+#: win32/rsrc/snes9x.rc
+msgid "Tilemap Viewer"
+msgstr "Переглядач тайлмапи"
+
+#: win32/rsrc/snes9x.rc
+msgid "Tiles"
+msgstr "Тайли"
+
+#: win32/rsrc/snes9x.rc
+msgid "Timeout:"
+msgstr "Час очікування:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Toggle Achievements Images"
+msgstr "Перемкнути зображення досягнень"
+
+#: win32/wlanguage.h
+msgid "Toggle backdrop:"
+msgstr "Перемкнути тло:"
+
+#: win32/wlanguage.h
+msgid "Toggle cheats:"
+msgstr "Перемкнути чіти:"
+
+#: win32/wlanguage.h
+msgid "Toggle mute:"
+msgstr "Перемкнути притлумлення:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Transparency Effects"
+msgstr "Ефекти прозорості"
+
+#: win32/wlanguage.h
+msgid "Transparency:"
+msgstr "Прозорість:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Tree1"
+msgstr "Дерево1"
+
+#: win32/wlanguage.h
+msgid "Turbo"
+msgstr "Турбо"
+
+#: win32/wlanguage.h
+msgid "Turbo A mode:"
+msgstr "Режим турбо A:"
+
+#: win32/wlanguage.h
+msgid "Turbo B mode:"
+msgstr "Режим турбо B:"
+
+#: win32/wlanguage.h
+msgid "Turbo Down mode:"
+msgstr "Режим турбо ↓:"
+
+#: win32/wlanguage.h
+msgid "Turbo L mode:"
+msgstr "Режим турбо L:"
+
+#: win32/wlanguage.h
+msgid "Turbo Left mode:"
+msgstr "Режим турбо ←:"
+
+#: win32/wlanguage.h
+msgid "Turbo R mode:"
+msgstr "Режим турбо R:"
+
+#: win32/wlanguage.h
+msgid "Turbo Right mode:"
+msgstr "Режим турбо →:"
+
+#: win32/wlanguage.h
+msgid "Turbo Select mode:"
+msgstr "Режим турбо Select:"
+
+#: win32/wlanguage.h
+msgid "Turbo Start mode:"
+msgstr "Режим турбо Start:"
+
+#: win32/wlanguage.h
+msgid "Turbo Up mode:"
+msgstr "Режим турбо ↑:"
+
+#: win32/wlanguage.h
+msgid "Turbo X mode:"
+msgstr "Режим турбо X:"
+
+#: win32/wlanguage.h
+msgid "Turbo Y mode:"
+msgstr "Режим турбо Y:"
+
+#: win32/wlanguage.h
+msgid "Uncompressed ROM files"
+msgstr "Нестиснені файли ROM"
+
+#: win32/wlanguage.h
+msgid "Unrecognized format."
+msgstr "Нерозпізнаний формат."
+
+#: win32/rsrc/snes9x.rc
+msgid "Unsigned (>=0)"
+msgstr "Беззнаковий (>=0)"
+
+#: win32/wlanguage.h
+msgid "Unsupported movie version."
+msgstr "Непідтримувана версія відео."
+
+#: win32/rsrc/snes9x.rc
+msgid "UP"
+msgstr "↑"
+
+#: win32/rsrc/snes9x.rc
+msgid "UP LEFT"
+msgstr "↑ ←"
+
+#: win32/wlanguage.h
+msgid "Up Left"
+msgstr "↑ ←"
+
+#: win32/rsrc/snes9x.rc
+msgid "UP RIGHT"
+msgstr "↑ →"
+
+#: win32/wlanguage.h
+msgid "Up Right"
+msgstr "↑ →"
+
+#: win32/rsrc/snes9x.rc
+msgid "Update"
+msgstr "Оновити"
+
+#: win32/rsrc/snes9x.rc
+msgid "Use CGRAM"
+msgstr "Використовувати CGRAM"
+
+#: win32/rsrc/snes9x.rc
+msgid "Use DirectInput"
+msgstr "Використовувати DirectInput"
+
+#: win32/rsrc/snes9x.rc
+msgid "Use Dual Justifiers"
+msgstr "Використовувати подвійні Justifier"
+
+#: win32/rsrc/snes9x.rc
+msgid "Use Konami Justifier"
+msgstr "Використовувати Konami Justifier"
+
+#: win32/rsrc/snes9x.rc
+msgid "Use M.A.C.S. Rifle"
+msgstr "Використовувати рушницю M.A.C.S."
+
+#: win32/rsrc/snes9x.rc
+msgid "Use Mouse in alternate port"
+msgstr "Використовувати мишу в альтернативному порту"
+
+#: win32/rsrc/snes9x.rc
+msgid "Use Multitaps (8-player)"
+msgstr "Використовувати мультитапи (8 гравців)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Use Shader"
+msgstr "Використовувати шейдер"
+
+#: win32/rsrc/snes9x.rc
+msgid "Use SNES Joypad(s)"
+msgstr "Використовувати SNES-джойстик(и)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Use SNES Mouse"
+msgstr "Використовувати SNES-мишу"
+
+#: win32/rsrc/snes9x.rc
+msgid "Use Super Multitap (5-player)"
+msgstr "Використовувати Super Multitap (5 гравців)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Use Super Scope"
+msgstr "Використовувати Super Scope"
+
+#: win32/rsrc/snes9x.rc
+msgid "User Agent: SuperSnes9x/1.63"
+msgstr "User Agent: SuperSnes9x/1.63"
+
+#: win32/rsrc/snes9x.rc
+msgid "Username:"
+msgstr "Ім'я користувача:"
+
+#: win32/wlanguage.h
+msgid "Value"
+msgstr "Значення"
+
+#: win32/rsrc/snes9x.rc
+msgid "Value (hex):"
+msgstr "Значення (hex):"
+
+#: win32/rsrc/snes9x.rc
+msgid "Video"
+msgstr "Відео"
+
+#: win32/rsrc/snes9x.rc
+msgid "Video System:"
+msgstr "Відеосистема:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Volume"
+msgstr "Гучність"
+
+#: win32/rsrc/snes9x.rc
+msgid "VSync"
+msgstr "VSync"
+
+#: win32/wlanguage.h
+msgid "WARNING: You don't have the right ROM loaded!"
+msgstr "УВАГА: завантажено неправильний ROM!"
+
+#: win32/rsrc/snes9x.rc
+msgid "Watch"
+msgstr "Спостереження"
+
+#: win32/rsrc/snes9x.rc
+msgid "Welcome Message (MOTD)"
+msgstr "Вітальне повідомлення (MOTD)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Width:"
+msgstr "Ширина:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Window Size"
+msgstr "Розмір вікна"
+
+#: win32/rsrc/snes9x.rc
+msgid "WOG!"
+msgstr "WOG!"
+
+#: win32/wlanguage.h
+msgid "You have entered an out of range or invalid value for the new value"
+msgstr "Введено значення поза діапазоном або хибне значення для нового значення"
+
+#: win32/wlanguage.h
+msgid "You need a different version of SuperSnes9x to play this movie."
+msgstr "Для відтворення цього відео потрібна інша версія SuperSnes9x."
+
+#: win32/rsrc/snes9x.rc
+msgid "Your password is only used to get an API token.\nIt is never stored."
+msgstr "Твій пароль використовується лише для отримання API-токена.\nВін ніколи не зберігається."
+
+#: win32/rsrc/snes9x.rc
+msgid "Zoom:"
+msgstr "Масштаб:"
+
+# === Win32 strings (added by i18n/extract_strings.py) ===
+
+#: win32/CSpriteViewerDlg.cpp
+msgid "Export Selected to PNG"
+msgstr "Експортувати вибране до PNG"
+
+#: win32/CGBSpriteViewerDlg.cpp
+msgid "Export to PNG"
+msgstr "Експортувати до PNG"
+
+#: win32/CSpriteViewerDlg.cpp
+msgid "Show All Objects"
+msgstr "Показати всі об'єкти"
+
+#: win32/CSpriteViewerDlg.cpp
+msgid "Show Only Selected Objects"
+msgstr "Показати лише вибрані об'єкти"
+
+#: win32/CSpriteViewerDlg.cpp
+msgid "Toggle Visibility"
+msgstr "Перемкнути видимість"
+
+#: win32/wsnes9x.cpp
+msgid "Translations"
+msgstr "Переклади"
+
+# === Win32 strings (added by i18n/extract_strings.py) ===
+
+#: win32/wsnes9x.cpp
+msgid "Language"
+msgstr "Мова"
+
+# === Win32 strings (added by i18n/extract_strings.py) ===
+
+#: qt/src/SoundPanel.ui
+msgid "44100 Hz"
+msgstr "44100 Гц"
+
+#: qt/src/SoundPanel.ui
+msgid "48000 Hz"
+msgstr "48000 Гц"
+
+#: qt/src/DisplayPanel.ui
+msgid "4:3 - Classic display aspect"
+msgstr "4:3 - класичне співвідношення сторін"
+
+#: qt/src/DisplayPanel.ui
+msgid "64:49 - NTSC aspect"
+msgstr "64:49 - співвідношення сторін NTSC"
+
+#: qt/src/DisplayPanel.ui
+msgid "8:7 - Square pixels"
+msgstr "8:7 - квадратні пікселі"
+
+#: qt/src/EmulationPanel.ui
+msgid "<html><head/><body><p>A hack option. Only use this if you are running a third-party hack of a game that was designed for emulators and needs this.</p></body></html>"
+msgstr "<html><head/><body><p>Опція для хаків. Використовуй лише при запуску стороннього хака гри, розробленого для емуляторів, який цього потребує.</p></body></html>"
+
+#: qt/src/EmulationPanel.ui
+msgid "<html><head/><body><p>Allows more sprites to be displayed on the screen in an attempt to remove flickering.</p><p>Some games take advantage of this limit and use it to hide glitches, and removing the limit will make those visible.</p></body></html>"
+msgstr "<html><head/><body><p>Дозволяє показувати на екрані більше спрайтів, аби прибрати мерехтіння.</p><p>Деякі ігри використовують це обмеження для приховування збоїв, тож після його вилучення вони стануть видимими.</p></body></html>"
+
+#: qt/src/EmulationPanel.ui
+msgid "<html><head/><body><p>Alternate sound filters can make the audio more crisp than the authentic gaussian filter.</p><p>The Cubic and Sinc filters provide the best improvement, but they can reveal some noise that would normally be hidden by the hardware.</p></body></html>"
+msgstr "<html><head/><body><p>Альтернативні звукові фільтри можуть зробити звук чіткішим, ніж справжній гаусівський фільтр.</p><p>Кубічний і синусоїдальний кардинальний фільтри дають найкраще покращення, але можуть виявити певний шум, зазвичай прихований обладнанням.</p></body></html>"
+
+#: qt/src/EmulationPanel.ui
+msgid "<html><head/><body><p>Amount of memory to use to enable the rewind function. The amount of time each MB gets you varies based on the complexity of the game. Set to 0 to disable rewind altogether and use less processor time.</p></body></html>"
+msgstr "<html><head/><body><p>Обсяг пам'яті для увімкнення функції звороту. Тривалість, яку дає кожен MB, залежить від складності гри. Установи 0, аби цілком вимкнути зворот і витрачати менше процесорного часу.</p></body></html>"
+
+#: qt/src/EmulationPanel.ui
+msgid "<html><head/><body><p>Change the speed of the SuperFX chip. The SuperFX had some notoriously slow games, and this can be used to attempt to speed them up.</p></body></html>"
+msgstr "<html><head/><body><p>Змінює швидкість чипа SuperFX. Серед ігор на SuperFX були сумнозвісно повільні, тож цим можна спробувати їх пришвидшити.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>Choose one of <span style=\" font-style:italic;\">Qt Software, Vulkan, or OpenGL</span>.</p><p>Qt Software will use the CPU to draw the display. Vulkan or OpenGL will use that respective graphics interface to draw the display.</p></body></html>"
+msgstr "<html><head/><body><p>Вибери один із <span style=\" font-style:italic;\">Qt Software, Vulkan чи OpenGL</span>.</p><p>Qt Software використовує для відображення CPU. Vulkan чи OpenGL використовують для відображення відповідний графічний інтерфейс.</p></body></html>"
+
+#: qt/src/ControllerPanel.ui
+msgid "<html><head/><body><p>Clear or swap sets of bindings between controllers.</p></body></html>"
+msgstr "<html><head/><body><p>Очисти чи обміняй набори прив'язок між контролерами.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>Control how much the audio is stretched initially.</p><p><br/></p><p>Unless you know what you're doing, it's best to use the option above this to adjust it automatically.</p></body></html>"
+msgstr "<html><head/><body><p>Керує тим, наскільки спочатку розтягується звук.</p><p><br/></p><p>Якщо ти не впевнений у своїх діях, найкраще скористатися опцією вище, аби регулювати це автоматично.</p></body></html>"
+
+#: qt/src/FoldersPanel.ui
+msgid "<html><head/><body><p>Determines where to look for optional BIOS / boot ROM files (Super Game Boy boot ROM, BS-X.bin, etc).</p><p><span style=\" font-style:italic;\">ROM Folder</span> looks next to the loaded ROM.</p><p><span style=\" font-style:italic;\">Config Folder</span> uses a \"bios\" subfolder of the config folder.</p><p><span style=\" font-style:italic;\">Custom</span> uses an explicit path (default: \"Bios\" relative to the working directory).</p></body></html>"
+msgstr "<html><head/><body><p>Визначає, де шукати необов'язкові файли BIOS / завантажувальних ROM (завантажувальний ROM Super Game Boy, BS-X.bin тощо).</p><p><span style=\" font-style:italic;\">Каталог ROM</span> шукає поряд із завантаженим ROM'ом.</p><p><span style=\" font-style:italic;\">Каталог конфігурації</span> використовує підкаталог \"bios\" каталогу конфігурації.</p><p><span style=\" font-style:italic;\">Інший</span> використовує явний шлях (типово: \"Bios\" відносно робочого каталогу).</p></body></html>"
+
+#: qt/src/FoldersPanel.ui
+msgid "<html><head/><body><p>Determines where to save these files.</p><p><span style=\" font-style:italic;\">ROM Folder</span> will always save to the same folder as the ROM.</p><p><span style=\" font-style:italic;\">Config Folder</span> will save to a subfolder of the config folder that is shown. If there is a snes9x.conf file next to your executable, SuperSnes9x will operate in portable mode and the config folder will be the folder the executable is in.</p><p><span style=\" font-style:italic;\">Custom</span> allows you to specify exactly where to save these files.</p></body></html>"
+msgstr "<html><head/><body><p>Визначає, де зберігати ці файли.</p><p><span style=\" font-style:italic;\">Каталог ROM</span> завжди зберігає в тому самому каталозі, що й ROM.</p><p><span style=\" font-style:italic;\">Каталог конфігурації</span> зберігає в показаному підкаталозі каталогу конфігурації. Якщо поряд із виконуваним файлом є файл snes9x.conf, SuperSnes9x працюватиме в портативному режимі, і каталогом конфігурації буде каталог із виконуваним файлом.</p><p><span style=\" font-style:italic;\">Інший</span> дозволяє точно вказати, де зберігати ці файли.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>Erases all emulated sound output and just sends out silence.</p></body></html>"
+msgstr "<html><head/><body><p>Стирає весь емульований звук і виводить лише тишу.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>If after everything, you're still getting pops and crackles in audio, you can increase this value. However, it may cause noticeable distortion.</p></body></html>"
+msgstr "<html><head/><body><p>Якщо після всього ти й далі чуєш у звуці тріск і клацання, можеш збільшити це значення. Однак це може спричинити помітне спотворення.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>Master output volume during normal play. Moving this also drags the per-source SGB sliders so they stay in step.</p></body></html>"
+msgstr "<html><head/><body><p>Загальна гучність виведення під час звичайної гри. Його зміна також тягне за собою повзунки SGB для кожного джерела, аби вони лишалися узгодженими.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>Master output volume during turbo and rewind.</p></body></html>"
+msgstr "<html><head/><body><p>Загальна гучність виведення під час турбо та звороту.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>Mutes sound when using the turbo and rewind functions, which might be annoying to some users.</p></body></html>"
+msgstr "<html><head/><body><p>Притлумлює звук під час використання функцій турбо та звороту, що може дратувати деяких користувачів.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>On classic CRT televisions, some areas of the screen were covered by the bezel, so weren't used often in games. This option allows you to show that area, but it will usually be just black bars.</p></body></html>"
+msgstr "<html><head/><body><p>На класичних CRT-телевізорах деякі ділянки екрана закривала рамка, тож в іграх вони рідко використовувалися. Ця опція дозволяє показати цю ділянку, але зазвичай це будуть лише чорні смуги.</p></body></html>"
+
+#: qt/src/EmulationPanel.ui
+msgid "<html><head/><body><p>Original controllers may have had a small pin in the dpad preventing left and right or up and down from being pressed at the same time. This will allow that behavior if you're using a keyboard or device that can press those buttons at the same time. Some games will glitch when this is done.</p></body></html>"
+msgstr "<html><head/><body><p>Оригінальні контролери могли мати в D-pad невеликий штифт, що завадив одночасному натисканню ліворуч і праворуч чи вгору й униз. Це дозволить таку поведінку при використанні клавіатури чи пристрою, здатного натискати ці кнопки одночасно. Деякі ігри при цьому даватимуть збій.</p></body></html>"
+
+#: qt/src/EmulationPanel.ui
+msgid "<html><head/><body><p>Override the frame rate of the emulated system. This can be used to run slightly faster or slower than usual, or to match the timer to your exact refresh rate.</p><p><br/></p><p>Set this to 0 to use whatever the emulated system uses.</p></body></html>"
+msgstr "<html><head/><body><p>Перевизначає частоту кадрів емульованої системи. Цим можна запускати трохи швидше чи повільніше за звичайне або узгодити таймер із твоєю точною частотою оновлення.</p><p><br/></p><p>Установи 0, аби використовувати ту, яку використовує емульована система.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>Selects the driver to output sound with.</p><p><span style=\" font-style:italic;\">Cubeb: </span>The recommended option.</p><p><span style=\" font-style:italic;\">SDL</span>: If Cubeb doesn't work.</p><p><span style=\" font-style:italic;\">PulseAudio:</span> Unix only. May have less latency.</p></body></html>"
+msgstr "<html><head/><body><p>Вибирає драйвер для виведення звуку.</p><p><span style=\" font-style:italic;\">Cubeb: </span>Рекомендована опція.</p><p><span style=\" font-style:italic;\">SDL</span>: якщо Cubeb не працює.</p><p><span style=\" font-style:italic;\">PulseAudio:</span> лише Unix. Може мати меншу затримку.</p></body></html>"
+
+#: qt/src/FoldersPanel.ui
+msgid "<html><head/><body><p>Setting this to anything other than 0 will save the SRAM (internal game saves) file regularly. If it is set to to 0, it will only save when exiting SuperSnes9x or changing games, and you will lose any progress since the last save if your device crashes.</p></body></html>"
+msgstr "<html><head/><body><p>Якщо встановити будь-що, крім 0, файл SRAM (внутрішні збереження гри) зберігатиметься регулярно. Якщо встановити 0, він зберігатиметься лише при виході зі SuperSnes9x чи зміні ігор, і ти втратиш весь поступ від останнього збереження, якщо твій пристрій зазнає збою.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>SGB BIOS mix: GB channel volume. Active in SGB1/SGB2 BIOS mode; in BIOS-less mode this mirrors the Regular master, which is what actually scales GB output.</p></body></html>"
+msgstr "<html><head/><body><p>Мікс BIOS SGB: гучність каналу GB. Активна в режимі BIOS SGB1/SGB2; у режимі без BIOS це дублює загальну Звичайну, яка насправді масштабує виведення GB.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>SGB BIOS mix: SPC channel volume. Only active in SGB1/SGB2 BIOS mode — BIOS-less GB playback discards SPC output.</p></body></html>"
+msgstr "<html><head/><body><p>Мікс BIOS SGB: гучність каналу SPC. Активна лише в режимі BIOS SGB1/SGB2 — відтворення GB без BIOS відкидає виведення SPC.</p></body></html>"
+
+#: qt/src/EmulationPanel.ui
+msgid "<html><head/><body><p>Skips rendering the specified amount of frames when using the fast-forward function. The higher this amount, the faster it goes.</p></body></html>"
+msgstr "<html><head/><body><p>Пропускає відтворення вказаної кількості кадрів під час використання функції прискорення. Що більша ця кількість, то швидше воно йде.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>The buffer size for the emulator side of sound playback. Ideally, it should be about two frames worth of audio, or about 32ms at 60Hz. Latency will be half this value.</p></body></html>"
+msgstr "<html><head/><body><p>Розмір буфера на боці емулятора для відтворення звуку. В ідеалі він має дорівнювати приблизно двом кадрам звуку, або близько 32ms при 60Hz. Затримка дорівнюватиме половині цього значення.</p></body></html>"
+
+#: qt/src/ControllerPanel.ui
+msgid "<html><head/><body><p>The enumerated controller as seen by the SNES. Controller 1 will always be quot;Player 1quot; and so on, no matter what device is assigned to the controller ports.</p></body></html>"
+msgstr "<html><head/><body><p>Пронумерований контролер, яким його бачить SNES. Контролер 1 завжди буде quot;Гравцем 1quot; і так далі, незалежно від того, який пристрій призначено портам контролерів.</p></body></html>"
+
+#: qt/src/EmulationPanel.ui
+msgid "<html><head/><body><p>The number of frames between each rewind snapshot. More frames mean rewind can go back further and will rewind faster. </p></body></html>"
+msgstr "<html><head/><body><p>Кількість кадрів між кожним знімком звороту. Більше кадрів означає, що зворот може сягати далі та йтиме швидше. </p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>The output playback rate on your computer. This is <span style=\" font-weight:700;\">not</span> the playback rate of the emulated system.</p><p>You should set this to match your operating system's sound server. It should almost always be 48000Hz.</p></body></html>"
+msgstr "<html><head/><body><p>Частота відтворення виведення на твоєму комп'ютері. Це <span style=\" font-weight:700;\">не</span> частота відтворення емульованої системи.</p><p>Її слід установити так, аби вона збігалася зі звуковим сервером твоєї операційної системи. Майже завжди це має бути 48000Hz.</p></body></html>"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "<html><head/><body><p>This box lists application shortcuts. There are 4 slots, so you can assign 4 different keys or buttons to one function.</p><p>To set a binding, click a box or highlight it with the keyboard and press Enter/Return. The box will show three dots quot;...quot;. Press the desired key or gamepad button to assign it to that box. The Escape key will clear the box.</p></body></html>"
+msgstr "<html><head/><body><p>Це поле перелічує комбінації клавіш додатка. Доступно 4 слоти, тож одній функції можна призначити 4 різні клавіші чи кнопки.</p><p>Аби встановити прив'язку, натисни поле чи виділи його клавіатурою та натисни Enter/Return. Поле покаже три крапки quot;...quot;. Натисни бажану клавішу чи кнопку геймпада, аби призначити її цьому полю. Клавіша Escape очистить поле.</p></body></html>"
+
+#: qt/src/ControllerPanel.ui
+msgid "<html><head/><body><p>This box lists keyboard keys and gamepad buttons mapped to the SNES controller. There are 4 slots, so you can assign 4 different keys or buttons to one SNES button.</p><p>To set a binding, click a box or highlight it with the keyboard and press Enter/Return. The box will show three dots quot;...quot;. Press the desired key or gamepad button to assign it to that box. The Escape key will clear the box.</p></body></html>"
+msgstr "<html><head/><body><p>Це поле перелічує клавіші клавіатури та кнопки геймпада, прив'язані до контролера SNES. Доступно 4 слоти, тож одній кнопці SNES можна призначити 4 різні клавіші чи кнопки.</p><p>Аби встановити прив'язку, натисни поле чи виділи його клавіатурою та натисни Enter/Return. Поле покаже три крапки quot;...quot;. Натисни бажану клавішу чи кнопку геймпада, аби призначити її цьому полю. Клавіша Escape очистить поле.</p></body></html>"
+
+#: qt/src/EmulationPanel.ui
+msgid "<html><head/><body><p>This controls how the program runs the emulated content at the correct speed.</p><p><span style=\" font-style:italic;\">Timer</span>: This sets a literal timer and shows emulated frames at the exact frame rate specified, or automatically matches the emulated system. It may not match your display's frame rate, which can cause judders.</p><p><span style=\" font-style:italic;\">Timer with Frameskipping</span>: The same as timer, except if your display has a lower refresh rate than the emulated system it will skip frames to keep up.</p><p><span style=\" font-style:italic;\">Sound Synchronization: </span>Assume the sound engine is outputting the sound at the correct speed and match the video output rate with it. This assumes your refresh rate is fairly close to the emulated system and you have vsync turned on.</p><p><span style=\" font-style:italic;\">None:</span> Don't attempt to slow emulation down. If you turn off vsync, this will run as fast as possible. If your display matches the emulated system's refresh rate closely, this with vsync enabled is generally the smoothest option aside from variable refresh rates with a timer.</p></body></html>"
+msgstr "<html><head/><body><p>Це керує тим, як програма запускає емульований вміст із правильною швидкістю.</p><p><span style=\" font-style:italic;\">Таймер</span>: установлює буквальний таймер і показує емульовані кадри з точно вказаною частотою кадрів або автоматично узгоджує її з емульованою системою. Вона може не збігатися з частотою кадрів твого дисплея, що може спричинити посмикування.</p><p><span style=\" font-style:italic;\">Таймер із пропуском кадрів</span>: те саме, що й таймер, але якщо твій дисплей має нижчу частоту оновлення, ніж емульована система, він пропускатиме кадри, аби встигати.</p><p><span style=\" font-style:italic;\">Синхронізація звуку: </span>передбачає, що звуковий рушій виводить звук із правильною швидкістю, і узгоджує з нею частоту виведення відео. Це передбачає, що твоя частота оновлення доволі близька до емульованої системи й увімкнено вертикальну синхронізацію.</p><p><span style=\" font-style:italic;\">Не вказано:</span> не намагатися сповільнити емуляцію. Якщо вимкнути вертикальну синхронізацію, воно йтиме якнайшвидше. Якщо твій дисплей доволі точно збігається з частотою оновлення емульованої системи, це з увімкненою вертикальною синхронізацією зазвичай найплавніша опція, окрім змінної частоти оновлення з таймером.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>This option adapts <span style=\" font-style:italic;\">maintain aspect ratio</span> and scales the image in steps of integral scale, so game pixels are never spread across the borders of screen pixels.</p></body></html>"
+msgstr "<html><head/><body><p>Ця опція пристосовує <span style=\" font-style:italic;\">зберегти співвідношення сторін</span> і масштабує зображення кроками цілого масштабу, тож пікселі гри ніколи не розтягуються через межі пікселів екрана.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>This option affects how <span style=\" font-style:italic;\">maintain aspect ratio </span>works. </p><p><span style=\" font-style:italic;\">4:3 </span>will maintain a ratio where the screen is 1.333 times wider than high.</p><p>64:49 presents an idealized ratio where the display output is perfect, but is affected by NTSC compression.</p><p>1:1 Means pixels will be square. This will squeeze the image horizontally.</p></body></html>"
+msgstr "<html><head/><body><p>Ця опція впливає на те, як працює <span style=\" font-style:italic;\">зберегти співвідношення сторін</span>. </p><p><span style=\" font-style:italic;\">4:3 </span>збереже співвідношення, де екран у 1.333 раза ширший за висоту.</p><p>64:49 подає ідеалізоване співвідношення, де виведення на дисплей досконале, але зазнає впливу стиснення NTSC.</p><p>1:1 означає, що пікселі будуть квадратні. Це стисне зображення горизонтально.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>This option causes the audio to be slightly stretched to keep the latency even and to prevent underruns and overruns, which will cause pops and cracks in the audio.</p></body></html>"
+msgstr "<html><head/><body><p>Ця опція спричиняє невелике розтягування звуку, аби тримати затримку рівною та запобігати недостачам і переповненням, що спричиняють тріск і клацання у звуці.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>This option determines whether messages show up in the game display:</p><p>Onscreen will show a high resolution overlay when using <span style=\" font-style:italic;\">Vulkan</span> or <span style=\" font-style:italic;\">OpenGL</span>.</p><p>Inscreen will draw in a pixel font to the ingame display.</p><p>Don't display messages will show nothing.</p></body></html>"
+msgstr "<html><head/><body><p>Ця опція визначає, чи з'являються повідомлення на ігровому дисплеї:</p><p>На екрані покаже накладку високого розміру при використанні <span style=\" font-style:italic;\">Vulkan</span> чи <span style=\" font-style:italic;\">OpenGL</span>.</p><p>Усередині екрана малюватиме піксельним шрифтом на ігровому дисплеї.</p><p>Не показувати повідомлення не покаже нічого.</p></body></html>"
+
+#: qt/src/EmulationPanel.ui
+msgid "<html><head/><body><p>This option is explicitly for old AddMusic hacks. If you know you have one of those, you can enable this. Otherwise, leave it unchecked.</p></body></html>"
+msgstr "<html><head/><body><p>Ця опція призначена явно для старих хаків AddMusic. Якщо ти знаєш, що маєш один із них, можеш її увімкнути. Інакше залиш її невибраною.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>This option keeps the proportions of the emulated display the same no matter how you change the size of the window.</p></body></html>"
+msgstr "<html><head/><body><p>Ця опція зберігає пропорції емульованого дисплея незмінними, хоч би як ти змінював розмір вікна.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>This option only affects the size of the font and the icons shown when display messages are set to the <span style=\" font-style:italic;\">Onscreen</span> option.</p></body></html>"
+msgstr "<html><head/><body><p>Ця опція впливає лише на розмір шрифту та піктограм, що показуються, коли показ повідомлень установлено на опцію <span style=\" font-style:italic;\">На екрані</span>.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>This option only affects the SNES's high-resolution, 512 pixel wide mode. Few games use this. </p><p><span style=\" font-style:italic;\">Output directly</span> will use whatever is output directly, but when the game changes modes, the filtering will get sharper or blurrier and may be distracting.</p><p><span style=\" font-style:italic;\">Merge fields </span>will scale the image down and blend the extra pixels together. This is useful in games like Jurassic Park and Kirby's Dreamland 3, which use it for a transparency effect.</p><p><span style=\" font-style:italic;\">Scale low resolution </span>will double the width of low-resolution screens, so when the game switches between modes there isn't any distracting changes in filtering. This is useful when a game uses the high resolution mode often, like Seiken Densetsu 3.</p></body></html>"
+msgstr "<html><head/><body><p>Ця опція впливає лише на режим SNES високого розміру шириною 512 пікселів. Мало ігор його використовують. </p><p><span style=\" font-style:italic;\">Показати безпосередньо</span> використовуватиме те, що виводиться безпосередньо, але коли гра змінює режими, фільтрування ставатиме різкішим чи розмитішим і може відволікати.</p><p><span style=\" font-style:italic;\">Об'єднати поля </span>зменшить зображення та змішає зайві пікселі. Це корисно в іграх на кшталт Jurassic Park і Kirby's Dreamland 3, які використовують це для ефекту прозорості.</p><p><span style=\" font-style:italic;\">Масштабувати низький розмір </span>подвоїть ширину екранів низького розміру, тож коли гра перемикається між режимами, не буде жодних відволікаючих змін у фільтруванні. Це корисно, коли гра часто використовує режим високого розміру, як-от Seiken Densetsu 3.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>This option prevents tearing in the output.</p></body></html>"
+msgstr "<html><head/><body><p>Ця опція запобігає розривам у виведенні.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>This option stretches the emulated audio output to coincide exactly with your display's refresh rate. It automatically handles the <span style=\" font-style:italic;\">Input Rate</span> option.</p></body></html>"
+msgstr "<html><head/><body><p>Ця опція розтягує емульоване виведення звуку, аби точно збігтися з частотою оновлення твого дисплея. Вона автоматично опрацьовує опцію <span style=\" font-style:italic;\">Початкова частота</span>.</p></body></html>"
+
+#: qt/src/ControllerPanel.ui
+msgid "<html><head/><body><p>This option will use the SDL library to auto-configure gamepads. It will take the XBox mappings for the left D-pad and analog stick, as well as the the face buttons and L/R shoulder buttons, and assign them to relative locations on the first SNES controller.</p><p><br/></p><p>All gamepads will be assigned to player 1. If you need more players, disable this option and set up the mappings manually.</p></body></html>"
+msgstr "<html><head/><body><p>Ця опція використовуватиме бібліотеку SDL для автоматичного налаштування геймпадів. Вона візьме прив'язки XBox для лівого D-pad і аналогового стика, а також лицьові кнопки та кнопки плечей L/R і призначить їх відповідним розташуванням на першому контролері SNES.</p><p><br/></p><p>Усі геймпади буде призначено гравцеві 1. Якщо потрібно більше гравців, вимкни цю опцію та налаштуй прив'язки вручну.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>This prevents the GPU from queuing up additional frames in advance, reducing the time it takes for the display to react to your input.</p></body></html>"
+msgstr "<html><head/><body><p>Це завадить GPU ставити в чергу додаткові кадри заздалегідь, скорочуючи час, потрібний дисплею, аби зреагувати на твоє введення.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>Turns on a bilinear smoothing filter to smooth out the pixels. This option won't work with a hardware shader enabled.</p></body></html>"
+msgstr "<html><head/><body><p>Вмикає білінійний згладжувальний фільтр, аби згладити пікселі. Ця опція не працюватиме з увімкненим апаратним шейдером.</p></body></html>"
+
+#: qt/src/ControllerPanel.ui
+msgid "<html><head/><body><p>Use this to automatically assign the default keyboard mapping or a detected controller to a set of bindings.</p><p>This uses the XInput controller protocol and maps it as close as possible to a SNES controller.</p></body></html>"
+msgstr "<html><head/><body><p>Використовуй це, аби автоматично призначити типову прив'язку клавіатури чи виявлений контролер набору прив'язок.</p><p>Це використовує протокол контролера XInput і прив'язує його якомога ближче до контролера SNES.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>Uses a hardware shader with <span style=\" font-style:italic;\">Vulkan</span> or <span style=\" font-style:italic;\">OpenGL</span> drivers. These can be either .glslp or .slangp preset files.</p><p>GLSL shaders (.glslp) can be downloaded from:</p><p><a href=\"https://github.com/libretro/glsl-shaders\"><span style=\" text-decoration: underline; color:#2980b9;\">https://github.com/libretro/glsl-shaders</span></a></p><p>Slang shaders (.slangp) can be downloaded from:</p><p><a href=\"https://github.com/libretro/slang-shaders\"><span style=\" text-decoration: underline; color:#2980b9;\">https://github.com/libretro/slang-shaders</span></a></p></body></html>"
+msgstr "<html><head/><body><p>Використовує апаратний шейдер із драйверами <span style=\" font-style:italic;\">Vulkan</span> чи <span style=\" font-style:italic;\">OpenGL</span>. Це можуть бути файли шаблонів .glslp чи .slangp.</p><p>Шейдери GLSL (.glslp) можна завантажити з:</p><p><a href=\"https://github.com/libretro/glsl-shaders\"><span style=\" text-decoration: underline; color:#2980b9;\">https://github.com/libretro/glsl-shaders</span></a></p><p>Шейдери Slang (.slangp) можна завантажити з:</p><p><a href=\"https://github.com/libretro/slang-shaders\"><span style=\" text-decoration: underline; color:#2980b9;\">https://github.com/libretro/slang-shaders</span></a></p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>When entering fullscreen mode, this option temporarily sets a number of other options to values that make variable refresh rate monitors that use FreeSync or GSync smoother.</p><p>Enables vsync.</p><p>Sets synchronization mode to timer and the frame rate to exactly that of the SNES.</p><p>Sets input rate to 32040Hz.</p></body></html>"
+msgstr "<html><head/><body><p>При вході в повноекранний режим ця опція тимчасово встановлює низку інших опцій на значення, що роблять плавнішими монітори зі змінною частотою оновлення, які використовують FreeSync чи GSync.</p><p>Вмикає вертикальну синхронізацію.</p><p>Установлює режим синхронізації на таймер, а частоту кадрів - точно на частоту SNES.</p><p>Установлює початкову частоту на 32040Hz.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>When using <span style=\" font-style:italic;\">Vulkan</span>, this chooses the GPU you wish to render with.</p></body></html>"
+msgstr "<html><head/><body><p>При використанні <span style=\" font-style:italic;\">Vulkan</span> це вибирає GPU, з яким ти бажаєш відтворювати.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "Adjust input rate to display rate automatically"
+msgstr "Автоматично регулювати початкову частоту до частоти дисплея"
+
+#: qt/src/DisplayPanel.ui
+msgid "Adjust settings for VRR in fullscreen mode"
+msgstr "Регулювати налаштування для VRR у повноекранному режимі"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "All Files (*)"
+msgstr "Усі файли (*)"
+
+#: qt/src/EmulationPanel.ui
+msgid "Allow opposite D-pad directions simultaneously"
+msgstr "Дозволити протилежні напрями D-pad одночасно"
+
+#: qt/src/EmulationPanel.ui
+msgid "Alternate sound filter:"
+msgstr "Альтернативний звуковий фільтр:"
+
+#: qt/src/ControllerPanel.ui
+msgid "Auto-Assign Gamepad Buttons Using SDL Controller Map"
+msgstr "Автопризначення кнопок геймпада за прив'язкою контролера SDL"
+
+#: qt/src/EmulationPanel.ui
+msgid "Auto-FastROM"
+msgstr "Auto-FastROM"
+
+#: qt/src/ControllerPanel.ui
+msgid "Automatically assign a controller's buttons to a slot"
+msgstr "Автоматично призначити кнопки контролера слоту"
+
+#: qt/src/DisplayPanel.ui
+msgid "Bilinear filter"
+msgstr "Білінійний фільтр"
+
+#: qt/src/ControllerPanel.ui
+msgid "Binding #1"
+msgstr "Прив'язка №1"
+
+#: qt/src/ControllerPanel.ui
+msgid "Binding #2"
+msgstr "Прив'язка №2"
+
+#: qt/src/ControllerPanel.ui
+msgid "Binding #3"
+msgstr "Прив'язка №3"
+
+#: qt/src/ControllerPanel.ui
+msgid "Binding #4"
+msgstr "Прив'язка №4"
+
+#: qt/src/ControllerPanel.cpp
+msgid "Binding Set #%1"
+msgstr "Набір прив'язок №%1"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Change Backdrop Color"
+msgstr "Змінити колір тла"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Cheats"
+msgstr "Чіти"
+
+#: qt/src/CheatsDialog.cpp
+msgid "cheats.bml was not found."
+msgstr "cheats.bml не знайдено."
+
+#: qt/src/CheatsDialog.ui
+msgid "Check Database"
+msgstr "Перевірити базу даних"
+
+#: qt/src/DisplayPanel.ui
+msgid "Choose a device to render output. If you have no integrated graphics, there will be only one choice."
+msgstr "Вибери пристрій для відтворення виведення. Якщо немає інтегрованої графіки, буде лише один вибір."
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Choose a State File"
+msgstr "Вибери файл стану"
+
+#: qt/src/ControllerPanel.cpp
+msgid "Clear All Controllers"
+msgstr "Очистити всі контролери"
+
+#: qt/src/ControllerPanel.cpp
+msgid "Clear Current Controller"
+msgstr "Очистити поточний контролер"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Clear Recent Files"
+msgstr "Очистити останні файли"
+
+#: qt/src/EmuSettingsWindow.ui
+msgid "Click on a setting to find out more info."
+msgstr "Натисни налаштування, аби дізнатися більше."
+
+#: qt/src/FoldersPanel.ui
+msgid "Config Folder"
+msgstr "Каталог конфігурації"
+
+#: qt/src/FoldersPanel.cpp
+msgid "Config folder is %1"
+msgstr "Каталог конфігурації - %1"
+
+#: qt/src/ControllerPanel.cpp
+msgid "Controller %1"
+msgstr "Контролер %1"
+
+#: qt/src/ControllerPanel.ui
+msgid "Controller + Multitap"
+msgstr "Контролер + мультитап"
+
+#: qt/src/ControllerPanel.ui
+msgid "Controller Ports:"
+msgstr "Порти контролера:"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Controllers"
+msgstr "Контролери"
+
+#: qt/src/FoldersPanel.ui
+msgid "Custom Folder"
+msgstr "Інший каталог"
+
+#: qt/src/FoldersPanel.ui
+msgid "Data Locations"
+msgstr "Розташування даних"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Decrease Current Save Slot"
+msgstr "Зменшити поточний слот збереження"
+
+#: qt/src/ControllerPanel.cpp
+msgid "Default Keyboard"
+msgstr "Типова клавіатура"
+
+#: qt/src/DisplayPanel.ui
+msgid "Device:"
+msgstr "Пристрій:"
+
+#: qt/src/GeneralPanel.ui
+msgid "Disable screensaver"
+msgstr "Вимкнути заставку"
+
+#: qt/src/DisplayPanel.ui
+msgid "Display messages:"
+msgstr "Показ повідомлень:"
+
+#: qt/src/DisplayPanel.ui
+msgid "Display Output"
+msgstr "Виведення на дисплей"
+
+#: qt/src/DisplayPanel.ui
+msgid "Don't display messages"
+msgstr "Не показувати повідомлення"
+
+#: qt/src/DisplayPanel.ui
+msgid "Driver:"
+msgstr "Драйвер:"
+
+#: qt/src/ControllerPanel.ui
+msgid "Edit"
+msgstr "Редагувати"
+
+#: qt/src/EmulationPanel.ui
+msgid "Emulation Speed"
+msgstr "Швидкість емуляції"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Enable Fast-Forward"
+msgstr "Увімкнути прискорення"
+
+#: qt/src/DisplayPanel.ui
+msgid "Enable vsync"
+msgstr "Увімкнути вертикальну синхронізацію"
+
+#: qt/src/FoldersPanel.ui
+msgid "Exports"
+msgstr "Експорти"
+
+#: qt/src/EmulationPanel.ui
+msgid "Fast-forward frame skip:"
+msgstr "Пропуск кадрів прискорення:"
+
+#: qt/src/SoundPanel.ui
+msgid "Fast-Forward:"
+msgstr "Прискорення:"
+
+#: qt/src/ControllerPanel.ui
+msgid "Form"
+msgstr "Форма"
+
+#: qt/src/EmulationPanel.ui
+msgid "fps"
+msgstr "fps"
+
+#: qt/src/EmulationPanel.ui
+msgid "Frame rate:"
+msgstr "Частота кадрів:"
+
+#: qt/src/EmulationPanel.ui
+msgid "Frames between steps"
+msgstr "Кадри між кроками"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "From File"
+msgstr "Із файлу"
+
+#: qt/src/EmulationPanel.ui
+msgid "Gaussian"
+msgstr "Гаусівська"
+
+#: qt/src/SoundPanel.ui
+msgid "GB:"
+msgstr "GB:"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Grab Mouse"
+msgstr "Захопити мишу"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Hard Reset"
+msgstr "Апаратне перезавантаження"
+
+#: qt/src/EmulationPanel.ui
+msgid "High"
+msgstr "Високий"
+
+#: qt/src/DisplayPanel.ui
+msgid "High-resolution mode:"
+msgstr "Режим високого розміру:"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Increase Current Save Slot"
+msgstr "Збільшити поточний слот збереження"
+
+#: qt/src/DisplayPanel.ui
+msgid "Inside the screen - Low resolution"
+msgstr "Усередині екрана - низький розмір"
+
+#: qt/src/CheatsDialog.cpp
+msgid "Invalid Cheat"
+msgstr "Хибний чіт"
+
+#: qt/src/DisplayPanel.ui
+msgid "Keep the screen at the requested proportions for width and height."
+msgstr "Тримати екран у потрібних пропорціях ширини та висоти."
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Load State"
+msgstr "Завантажити стан"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Load State from Current Slot"
+msgstr "Завантажити стан із поточного слота"
+
+#: qt/src/EmulationPanel.ui
+msgid "Low"
+msgstr "Низький"
+
+#: qt/src/EmulationPanel.ui
+msgid "MB"
+msgstr "MB"
+
+#: qt/src/DisplayPanel.ui
+msgid "Merge the fields of the high-resolution lines"
+msgstr "Об'єднати поля рядків високого розміру"
+
+#: qt/src/DisplayPanel.ui
+msgid "Messages"
+msgstr "Повідомлення"
+
+#: qt/src/ControllerPanel.ui
+msgid "Mouse + Controller"
+msgstr "Миша + контролер"
+
+#: qt/src/SoundPanel.ui
+msgid "ms"
+msgstr "ms"
+
+#: qt/src/SoundPanel.ui
+msgid "Mute all sound"
+msgstr "Притлумити весь звук"
+
+#: qt/src/SoundPanel.ui
+msgid "Mute sound during turbo or rewind"
+msgstr "Притлумити звук під час турбо чи звороту"
+
+#: qt/src/CheatsDialog.cpp
+msgid "No cheats for the current game were found in the database."
+msgstr "У базі даних не знайдено чітів для поточної гри."
+
+#: qt/src/CheatsDialog.cpp
+msgid "No Cheats Found"
+msgstr "Чітів не знайдено"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "No recent files"
+msgstr "Немає останніх файлів"
+
+#: qt/src/EmulationPanel.ui
+msgid "None - Run unthrottled, unless vsync is turned on"
+msgstr "Не вказано - запускати без прискорення, якщо не ввімкнено вертикальну синхронізацію"
+
+#: qt/src/ControllerPanel.ui
+msgid "One Controller"
+msgstr "Один контролер"
+
+#: qt/src/DisplayPanel.ui
+msgid "Onscreen - High resolution"
+msgstr "На екрані - високий розмір"
+
+#: qt/src/DisplayPanel.ui
+msgid "Onscreen display size:"
+msgstr "Розмір показу на екрані:"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Open a ROM File"
+msgstr "Відкрити файл ROM"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Open File"
+msgstr "Відкрити файл"
+
+#: qt/src/FoldersPanel.cpp
+msgid "Open Folder"
+msgstr "Відкрити каталог"
+
+#: qt/src/EmuCanvasOpenGL.cpp
+msgid "OpenGL Driver"
+msgstr "Драйвер OpenGL"
+
+#: qt/src/EmulationPanel.ui
+msgid "Overclock:"
+msgstr "Розгін:"
+
+#: qt/src/GeneralPanel.ui
+msgid "Overlays"
+msgstr "Накладки"
+
+#: qt/src/FoldersPanel.ui
+msgid "Patches"
+msgstr "Латки"
+
+#: qt/src/GeneralPanel.ui
+msgid "Pause emulation when window is not focused"
+msgstr "Призупиняти емуляцію, коли вікно не у фокусі"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Pause/Continue"
+msgstr "Призупинити / продовжити"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Power Cycle Console"
+msgstr "Перезапустити консоль живленням"
+
+#: qt/src/ShaderParametersDialog.cpp
+msgid "Preset name:"
+msgstr "Ім'я шаблону:"
+
+#: qt/src/DisplayPanel.ui
+msgid "Prevent the display driver from getting too far ahead in order to reduce lag."
+msgstr "Завадити драйверу дисплея забігати надто далеко вперед, аби зменшити затримку."
+
+#: qt/src/DisplayPanel.ui
+msgid "pt"
+msgstr "pt"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Load Slot 0"
+msgstr "Швидке завантаження зі слота 0"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Load Slot 1"
+msgstr "Швидке завантаження зі слота 1"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Load Slot 2"
+msgstr "Швидке завантаження зі слота 2"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Load Slot 3"
+msgstr "Швидке завантаження зі слота 3"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Load Slot 4"
+msgstr "Швидке завантаження зі слота 4"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Load Slot 5"
+msgstr "Швидке завантаження зі слота 5"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Load Slot 6"
+msgstr "Швидке завантаження зі слота 6"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Load Slot 7"
+msgstr "Швидке завантаження зі слота 7"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Load Slot 8"
+msgstr "Швидке завантаження зі слота 8"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Load Slot 9"
+msgstr "Швидке завантаження зі слота 9"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Save Slot 0"
+msgstr "Швидке збереження у слот 0"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Save Slot 1"
+msgstr "Швидке збереження у слот 1"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Save Slot 2"
+msgstr "Швидке збереження у слот 2"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Save Slot 3"
+msgstr "Швидке збереження у слот 3"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Save Slot 4"
+msgstr "Швидке збереження у слот 4"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Save Slot 5"
+msgstr "Швидке збереження у слот 5"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Save Slot 6"
+msgstr "Швидке збереження у слот 6"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Save Slot 7"
+msgstr "Швидке збереження у слот 7"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Save Slot 8"
+msgstr "Швидке збереження у слот 8"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Save Slot 9"
+msgstr "Швидке збереження у слот 9"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quit"
+msgstr "Вийти"
+
+#: qt/src/SoundPanel.ui
+msgid "Regular:"
+msgstr "Звичайна:"
+
+#: qt/src/EmulationPanel.ui
+msgid "Remove the sprite limit"
+msgstr "Вилучити обмеження спрайтів"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Reset to Default"
+msgstr "Відновити типове"
+
+#: qt/src/EmuSettingsWindow.ui
+msgid "Restore all settings on the current page to their default values."
+msgstr "Відновити всі налаштування поточної сторінки до типових значень."
+
+#: qt/src/EmuSettingsWindow.ui
+msgid "Restore Defaults"
+msgstr "Відновити типове"
+
+#: qt/src/EmulationPanel.ui
+msgid "Rewind buffer size (0 to disable):"
+msgstr "Розмір буфера звороту (0 - вимкнути):"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "ROM Files (*.sfc *.smc *.bin *.fig *.msu *.zip)"
+msgstr "Файли ROM (*.sfc *.smc *.bin *.fig *.msu *.zip)"
+
+#: qt/src/FoldersPanel.ui
+msgid "ROM Folder"
+msgstr "Каталог ROM"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Run"
+msgstr "Запустити"
+
+#: qt/src/ShaderParametersDialog.cpp
+msgid "Save"
+msgstr "Зберегти"
+
+#: qt/src/ShaderParametersDialog.cpp
+msgid "Save As"
+msgstr "Зберегти як"
+
+#: qt/src/ShaderParametersDialog.cpp
+msgid "Save Shader Preset As"
+msgstr "Зберегти шаблон шейдера як"
+
+#: qt/src/FoldersPanel.ui
+msgid "Save SRAM to disk every:"
+msgstr "Зберігати SRAM на диск кожні:"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Save State to Current Slot"
+msgstr "Зберегти стан у поточний слот"
+
+#: qt/src/FoldersPanel.ui
+msgid "Save states"
+msgstr "Стани збереження"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Save States (*.sst *.oops *.undo *.0?? *.1?? *.2?? *.3?? *.4?? *.5?? *.6?? *.7?? *.8?? *.9*)"
+msgstr "Стани збереження (*.sst *.oops *.undo *.0?? *.1?? *.2?? *.3?? *.4?? *.5?? *.6?? *.7?? *.8?? *.9*)"
+
+#: qt/src/DisplayPanel.ui
+msgid "Scale normal resolution screens up"
+msgstr "Збільшити екрани звичайного розміру"
+
+#: qt/src/DisplayPanel.ui
+msgid "Scaling and Aspect Ratio"
+msgstr "Масштабування та співвідношення сторін"
+
+#: qt/src/FoldersPanel.ui
+msgid "seconds"
+msgstr "секунд"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Seek to Frame"
+msgstr "Перейти до кадру"
+
+#: qt/src/DisplayPanel.cpp
+msgid "Select a Folder"
+msgstr "Вибери каталог"
+
+#: qt/src/DisplayPanel.ui
+msgid "Select the output driver."
+msgstr "Вибери драйвер виведення."
+
+#: qt/src/ControllerPanel.ui
+msgid "Set"
+msgstr "Установити"
+
+#: qt/src/EmulationPanel.ui
+msgid "Set frame rate to 0 to automatically change based on PAL/NTSC and with interlacing on and off."
+msgstr "Установи частоту кадрів на 0, аби автоматично змінювати її залежно від PAL/NTSC та з увімкненим і вимкненим черезрядковим розгортанням."
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Set Size"
+msgstr "Установити розмір"
+
+#: qt/src/DisplayPanel.cpp
+msgid "Shader Presets (*.slangp *.glslp)"
+msgstr "Шаблони шейдерів (*.slangp *.glslp)"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Shader Settings"
+msgstr "Налаштування шейдера"
+
+#: qt/src/GeneralPanel.ui
+msgid "Show fast-forward and pause icons"
+msgstr "Показувати піктограми прискорення та призупинення"
+
+#: qt/src/DisplayPanel.ui
+msgid "Show overscan area"
+msgstr "Показати ділянку розгортки"
+
+#: qt/src/DisplayPanel.ui
+msgid "Show the areas on the top and bottom of the screen that are normally black and hidden by the TV. Some games will draw in these areas."
+msgstr "Показати ділянки вгорі та внизу екрана, які зазвичай чорні та приховані телевізором. Деякі ігри малюють у цих ділянках."
+
+#: qt/src/GeneralPanel.ui
+msgid "Show the time"
+msgstr "Показувати час"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Slot %1"
+msgstr "Слот %1"
+
+#: qt/src/DisplayPanel.ui
+msgid "Smooth screen output."
+msgstr "Згладити виведення на екран."
+
+#: qt/src/ControllerPanel.ui
+msgid "SNES Controller 1"
+msgstr "Контролер SNES 1"
+
+#: qt/src/ControllerPanel.ui
+msgid "SNES Controller 2"
+msgstr "Контролер SNES 2"
+
+#: qt/src/ControllerPanel.ui
+msgid "SNES Controller 3 (Multitap)"
+msgstr "Контролер SNES 3 (мультитап)"
+
+#: qt/src/ControllerPanel.ui
+msgid "SNES Controller 4 (Multitap)"
+msgstr "Контролер SNES 4 (мультитап)"
+
+#: qt/src/ControllerPanel.ui
+msgid "SNES Controller 5 (Multitap)"
+msgstr "Контролер SNES 5 (мультитап)"
+
+#: qt/src/DisplayPanel.ui
+msgid "Software Filters"
+msgstr "Програмні фільтри"
+
+#: qt/src/SoundPanel.ui
+msgid "Sound Output"
+msgstr "Виведення звуку"
+
+#: qt/src/SoundPanel.ui
+msgid "Sound Stretching"
+msgstr "Розтягування звуку"
+
+#: qt/src/EmulationPanel.ui
+msgid "Sound Synchronization - Wait on the sound buffer"
+msgstr "Синхронізація звуку - чекати на звуковий буфер"
+
+#: qt/src/SoundPanel.ui
+msgid "SPC:"
+msgstr "SPC:"
+
+#: qt/src/EmulationPanel.ui
+msgid "Speed control method:"
+msgstr "Спосіб керування швидкістю:"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Start Recording"
+msgstr "Розпочати запис"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Stop Recording"
+msgstr "Зупинити запис"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Super Game Boy (SGB1)"
+msgstr "Super Game Boy (SGB1)"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Super Game Boy 2 (SGB2)"
+msgstr "Super Game Boy 2 (SGB2)"
+
+#: qt/src/EmulationPanel.ui
+msgid "SuperFX clock speed:"
+msgstr "Тактова швидкість SuperFX:"
+
+#: qt/src/ControllerPanel.ui
+msgid "SuperScope + Controller"
+msgstr "SuperScope + контролер"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Swap Controllers 1 and 2"
+msgstr "Обміняти контролери 1 і 2"
+
+#: qt/src/ControllerPanel.ui
+msgid "Swap or clear groups of bindings"
+msgstr "Обміняти чи очистити групи прив'язок"
+
+#: qt/src/ControllerPanel.cpp
+msgid "Swap With"
+msgstr "Обміняти на"
+
+#: qt/src/GeneralPanel.ui
+msgid "Switch to fullscreen after opening a ROM"
+msgstr "Перемикатися на повний екран після відкриття ROM'у"
+
+#: qt/src/DisplayPanel.ui
+msgid "Sync the display to vertical retrace to eliminate tearing."
+msgstr "Синхронізувати дисплей зі зворотом кадрової розгортки для усунення розривів."
+
+#: qt/src/CheatsDialog.cpp
+msgid "The cheat you entered was not valid."
+msgstr "Уведений тобою чіт був хибний."
+
+#: qt/src/EmuCanvasOpenGL.cpp
+msgid "The driver isn't using a specialized shader preset right now."
+msgstr "Зараз драйвер не використовує спеціалізований шаблон шейдера."
+
+#: qt/src/EmuMainWindow.cpp
+msgid "The language change will take effect after you restart SuperSnes9x."
+msgstr "Зміна мови набуде чинності після перезапуску Super Nintendo Entertainment System 9X."
+
+#: qt/src/EmuCanvasVulkan.cpp
+msgid "The vulkan display driver hasn't properly loaded."
+msgstr "Драйвер дисплея vulkan не завантажився належно."
+
+#: qt/src/DisplayPanel.ui
+msgid "This affects the rarely used 512-pixels-wide mode used by the SNES.\nFor games like Kirby 3 and Jurassic Park, choose the \"merge fields\" option.\nFor games like Seiken Densetsu 3 and Marvelous, choose the \"scale up\" option.\nOutput directly will cause the screen to change between the two modes and look weird."
+msgstr "Це впливає на рідко використовуваний режим SNES шириною 512 пікселів.\nДля ігор на кшталт Kirby 3 і Jurassic Park вибери опцію \"об'єднати поля\".\nДля ігор на кшталт Seiken Densetsu 3 і Marvelous вибери опцію \"збільшити\".\nПоказ безпосередньо спричинить перемикання екрана між двома режимами та дивний вигляд."
+
+#: qt/src/EmuCanvasOpenGL.cpp
+msgid "This shader preset doesn't offer any configurable parameters."
+msgstr "Цей шаблон шейдера не пропонує жодних налаштовуваних параметрів."
+
+#: qt/src/EmulationPanel.ui
+msgid "Timer - Match the frame rate configured below"
+msgstr "Таймер - узгодити з частотою кадрів, налаштованою нижче"
+
+#: qt/src/EmulationPanel.ui
+msgid "Timer with Frame Skipping - Skip frames if needed"
+msgstr "Таймер із пропуском кадрів - пропускати кадри за потреби"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "To File"
+msgstr "До файлу"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle All Sound Channels"
+msgstr "Перемкнути всі канали звуку"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle BG Layer 0"
+msgstr "Перемкнути шар тла 0"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle BG Layer 1"
+msgstr "Перемкнути шар тла 1"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle BG Layer 2"
+msgstr "Перемкнути шар тла 2"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle BG Layer 3"
+msgstr "Перемкнути шар тла 3"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle Fast-Forward"
+msgstr "Перемкнути прискорення"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle Fullscreen"
+msgstr "Перемкнути повний екран"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle Sound Channel 1"
+msgstr "Перемкнути канал звуку 1"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle Sound Channel 2"
+msgstr "Перемкнути канал звуку 2"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle Sound Channel 3"
+msgstr "Перемкнути канал звуку 3"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle Sound Channel 4"
+msgstr "Перемкнути канал звуку 4"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle Sound Channel 5"
+msgstr "Перемкнути канал звуку 5"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle Sound Channel 6"
+msgstr "Перемкнути канал звуку 6"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle Sound Channel 7"
+msgstr "Перемкнути канал звуку 7"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle Sound Channel 8"
+msgstr "Перемкнути канал звуку 8"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle Sprites"
+msgstr "Перемкнути спрайти"
+
+#: qt/src/ControllerPanel.ui
+msgid "Turbo A"
+msgstr "Турбо A"
+
+#: qt/src/ControllerPanel.ui
+msgid "Turbo B"
+msgstr "Турбо B"
+
+#: qt/src/ControllerPanel.ui
+msgid "Turbo L"
+msgstr "Турбо L"
+
+#: qt/src/ControllerPanel.ui
+msgid "Turbo R"
+msgstr "Турбо R"
+
+#: qt/src/ControllerPanel.ui
+msgid "Turbo X"
+msgstr "Турбо X"
+
+#: qt/src/ControllerPanel.ui
+msgid "Turbo Y"
+msgstr "Турбо Y"
+
+#: qt/src/ControllerPanel.ui
+msgid "Two Controllers"
+msgstr "Два контролери"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Unable to create a %1 context. Attempting to use %2."
+msgstr "Не вдалося створити контекст %1. Спроба використати %2."
+
+#: qt/src/CheatsDialog.cpp
+msgid "Unable to Open Cheats Database"
+msgstr "Не вдалося відкрити базу даних чітів"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Unable to Start Display Driver"
+msgstr "Не вдалося запустити драйвер дисплея"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Undo Load State"
+msgstr "Скасувати завантаження стану"
+
+#: qt/src/DisplayPanel.ui
+msgid "Use a hardware shader:"
+msgstr "Використовувати апаратний шейдер:"
+
+#: qt/src/DisplayPanel.ui
+msgid "Use a selected .slangp or .glslp shader file. \n.slangp is supported by Vulkan and OpenGL. \n.glslp is supported by OpenGL."
+msgstr "Використовувати вибраний файл шейдера .slangp чи .glslp. \n.slangp підтримується Vulkan і OpenGL. \n.glslp підтримується OpenGL."
+
+#: qt/src/EmulationPanel.ui
+msgid "Use a shadow echo buffer"
+msgstr "Використовувати тіньовий буфер відлуння"
+
+#: qt/src/DisplayPanel.ui
+msgid "Use integer scaling"
+msgstr "Використовувати ціле масштабування"
+
+#: qt/src/ControllerPanel.ui
+msgid "Use SDL to set up the D-pad, face buttons, and L/R. Other buttons may still be configured."
+msgstr "Використовувати SDL для налаштування D-pad, лицьових кнопок і L/R. Інші кнопки все одно можна налаштувати."
+
+#: qt/src/EmuMainWindow.cpp
+msgid "View"
+msgstr "Перегляд"
+
+#: qt/src/EmuCanvasVulkan.cpp
+msgid "Vulkan Driver"
+msgstr "Драйвер Vulkan"
+
+#: qt/src/DisplayPanel.ui
+msgid "When entering fullscreen mode, temporarily change other settings to use VRR (G-Sync or FreeSync) correctly."
+msgstr "При вході в повноекранний режим тимчасово змінювати інші налаштування для правильного використання VRR (G-Sync чи FreeSync)."
+
+#: qt/src/DisplayPanel.ui
+msgid "When scaling up, only use integer multiples of the original height."
+msgstr "Під час збільшення використовувати лише цілі кратні початкової висоти."

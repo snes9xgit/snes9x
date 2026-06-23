@@ -6,6 +6,7 @@
 
 #include "CShaderParamDlg.h"
 #include "wsnes9x.h"
+#include "wlocale.h"
 #include "display.h"
 #include "win32_display.h"
 #include <CommCtrl.h>
@@ -21,6 +22,7 @@ INT_PTR CALLBACK CShaderParamDlg::DlgShaderParams(HWND hDlg, UINT msg, WPARAM wP
     switch(msg)
     {
         case WM_INITDIALOG:
+        	LocalizeDialog(hDlg);
             SetWindowLongPtr(hDlg, GWLP_USERDATA, lParam);
             dlg = (CShaderParamDlg*)lParam;
             dlg->createContent(hDlg);

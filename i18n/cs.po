@@ -1,0 +1,5452 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: SuperSnes9x\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-10-29 23:56+0100\n"
+"PO-Revision-Date: 2026-06-20 20:35+0200\n"
+"Last-Translator: Gemini AI\n"
+"Language-Team: Czech <cs@li.org>\n"
+"Language: cs\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
+
+#: src/gtk_binding.cpp:248
+msgid "Unknown"
+msgstr "Neznámé"
+
+#: src/gtk_binding.cpp:257
+msgid "Keyboard {}{}{}{}"
+msgstr "Klávesnice {}{}{}{}"
+
+#: src/gtk_binding.cpp:267
+msgid "Axis {} {} {}%"
+msgstr "Osa {} {} {}%"
+
+#: src/gtk_binding.cpp:272
+msgid "Button {}"
+msgstr "Tlačítko {}"
+
+#: src/gtk_binding.cpp:274
+msgid "Joystick {} {}"
+msgstr "Joystick {} {}"
+
+#: src/gtk_binding.cpp:278
+msgid "Unset"
+msgstr "Nenastaveno"
+
+#: src/gtk_cheat.cpp:24
+msgid "Error"
+msgstr "Chyba"
+
+#: src/gtk_cheat.cpp:60
+msgid "Description"
+msgstr "Popis"
+
+#: src/gtk_cheat.cpp:66
+msgid "Cheat"
+msgstr "Cheat"
+
+#: src/gtk_cheat.cpp:227 src/gtk_cheat.cpp:355
+msgid "No description"
+msgstr "Bez popisu"
+
+#: src/gtk_cheat.cpp:231 src/gtk_cheat.cpp:360
+msgid "Couldn't find any cheat codes in input."
+msgstr "Ve vstupu se nepodařilo najít žádné cheat kódy."
+
+#: src/gtk_cheat.cpp:306
+msgid "Couldn't Find Cheats Database"
+msgstr "Nepodařilo se najít databázi cheatů"
+
+#: src/gtk_cheat.cpp:306
+msgid "No Matching Game Found"
+msgstr "Nenalezena žádná odpovídající hra"
+
+#: src/gtk_cheat.cpp:307
+msgid ""
+"The database file <b>cheats.bml</b> was not found. It is normally installed "
+"with Snes9x, but you may also place a custom copy in your configuration or "
+"cheats directory."
+msgstr ""
+"Soubor databáze <b>cheats.bml</b> nebyl nalezen. Obvykle se instaluje "
+"společně se Snes9x, ale můžete také umístit vlastní kopii do konfiguračního "
+"adresáře nebo adresáře pro cheaty."
+
+#: src/gtk_cheat.cpp:309
+msgid ""
+"No matching game was found in the databases. If you are using a non-official "
+"translation or modified copy, you may be able to find and manually enter the "
+"codes."
+msgstr ""
+"V databázích nebyla nalezena žádná odpovídající hra. Pokud používáte neoficiální "
+"překlad nebo upravenou kopii, možná budete muset kódy vyhledat a zadat ručně."
+
+#: src/gtk_config.cpp:407
+msgid "Couldn't create config directory: {}\n"
+msgstr "Nepodařilo se vytvořit konfigurační adresář: {}\n"
+
+#: src/gtk_netplay.cpp:66
+msgid "Connection Error"
+msgstr "Chyba připojení"
+
+#: src/gtk_netplay_dialog.cpp:31
+msgid "frame behind"
+msgid_plural "frames behind"
+msgstr[0] "snímek pozadu"
+msgstr[1] "snímky pozadu"
+msgstr[2] "snímků pozadu"
+
+#: src/gtk_preferences.cpp:19
+msgid "Same location as current game"
+msgstr "Stejné umístění jako aktuální hra"
+
+#: src/gtk_preferences.cpp:110
+msgid "{0:Ld}×{1:Ld} @ {2:.3Lf} Hz"
+msgstr "{0:Ld}×{1:Ld} @ {2:.3Lf} Hz"
+
+#: src/gtk_preferences.cpp:143
+msgid "OpenGL – Use 3D graphics hardware"
+msgstr "OpenGL – Použít hardware pro 3D grafiku"
+
+#: src/gtk_preferences.cpp:145
+msgid "XVideo – Use hardware video blitter"
+msgstr "XVideo – Použít hardwarový video blitter"
+
+#: src/gtk_preferences.cpp:147
+msgid "Vulkan"
+msgstr "Vulkan"
+
+#: src/gtk_preferences.cpp:149
+msgid "None – Use software scaler"
+msgstr "Žádný – Použít softwarové škálování"
+
+#: src/gtk_preferences.cpp:179 src/gtk_preferences.cpp:446
+msgid "thread for filtering and scaling"
+msgid_plural "threads for filtering and scaling"
+msgstr[0] "vlákno pro filtrování a škálování"
+msgstr[1] "vlákna pro filtrování a škálování"
+msgstr[2] "vláken pro filtrování a škálování"
+
+#: src/gtk_preferences.cpp:236 src/gtk_preferences.cpp:500
+msgid "millisecond"
+msgid_plural "milliseconds"
+msgstr[0] "milisekunda"
+msgstr[1] "milisekundy"
+msgstr[2] "milisekund"
+
+#: src/gtk_preferences.cpp:260 src/gtk_preferences.cpp:476
+msgid "second after change"
+msgid_plural "seconds after change"
+msgstr[0] "sekunda po změně"
+msgstr[1] "sekundy po změně"
+msgstr[2] "sekund po změně"
+
+#: src/gtk_preferences.cpp:271
+msgid "SuperSnes9x version: "
+msgstr "Verze SuperSnes9x: "
+
+#: src/gtk_preferences.cpp:272
+msgid "GTK+ port version: "
+msgstr "Verze GTK+ portu: "
+
+#: src/gtk_preferences.cpp:274
+msgid "English localization by Brandon Wright"
+msgstr "Anglická lokalizace: Brandon Wright"
+
+#: src/gtk_preferences.cpp:298
+msgid "Select directory"
+msgstr "Vybrat adresář"
+
+#: src/gtk_preferences.cpp:323
+msgid "{0:.4Lf} Hz"
+msgstr "{0:.4Lf} Hz"
+
+#: src/gtk_preferences.cpp:328
+msgid "{0:Ld} Hz"
+msgstr "{0:Ld} Hz"
+
+#: src/gtk_preferences.cpp:379
+msgid "Select Shader File"
+msgstr "Vybrat soubor shaderu"
+
+#: src/gtk_preferences.cpp:720
+msgid ""
+"Changing the SRAM directory with a game loaded will replace the .srm file in "
+"the selected directory with the SRAM from the running game. If this is not "
+"what you want, click 'cancel'."
+msgstr ""
+"Změna adresáře SRAM při načtené hře nahradí soubor .srm ve zvoleném adresáři "
+"daty SRAM ze spuštěné hry. Pokud si to nepřejete, klikněte na 'Zrušit'."
+
+#: src/gtk_preferences.cpp:725
+msgid "Warning: Possible File Overwrite"
+msgstr "Varování: Možné přepsání souboru"
+
+#: src/gtk_preferences.cpp:980
+msgid "Current joystick centers have been saved."
+msgstr "Aktuální středy joysticku byly uloženy."
+
+#: src/gtk_preferences.cpp:981
+msgid "Calibration Complete"
+msgstr "Kalibrace dokončena"
+
+#: src/gtk_s9x.cpp:206
+msgid "Using rewind buffer of {0}\n"
+msgstr "Používá se vyrovnávací paměť přetáčení o velikosti {0}\n"
+
+#: src/gtk_s9x.cpp:598
+msgid ""
+"GTK port options:\n"
+"-filter [option]               Use a filter to scale the image.\n"
+"                               [option] is one of: none supereagle 2xsai\n"
+"                               super2xsai hq2x hq3x hq4x 2xbrz 3xbrz 4xbrz "
+"epx ntsc\n"
+"\n"
+"-mutesound                     Disables sound output.\n"
+msgstr ""
+"Možnosti portu GTK:\n"
+"-filter [možnost]              Použije filtr pro změnu velikosti obrazu.\n"
+"                               [možnost] je jedna z: none supereagle 2xsai\n"
+"                               super2xsai hq2x hq3x hq4x 2xbrz 3xbrz 4xbrz epx ntsc\n"
+"\n"
+"-mutesound                     Vypne výstup zvuku.\n"
+
+#: src/gtk_s9xwindow.cpp:48 src/snes9x.ui:8405
+msgid "Save States"
+msgstr "Uložené pozice"
+
+#: src/gtk_s9xwindow.cpp:57
+msgid "All Files"
+msgstr "Všechny soubory"
+
+#: src/gtk_s9xwindow.cpp:616
+msgid "Couldn't load files."
+msgstr "Nepodařilo se načíst soubory."
+
+#: src/gtk_s9xwindow.cpp:637
+msgid "Open SNES Movie"
+msgstr "Otevřít SNES video"
+
+#: src/gtk_s9xwindow.cpp:642
+msgid "New SNES Movie"
+msgstr "Nové SNES video"
+
+#: src/gtk_s9xwindow.cpp:661
+msgid "SNES Movies"
+msgstr "SNES videa"
+
+#: src/gtk_s9xwindow.cpp:690
+msgid "Open SNES ROM Image"
+msgstr "Otevřít obraz SNES ROM"
+
+#: src/gtk_s9xwindow.cpp:695
+msgid "SNES ROM Images"
+msgstr "Obrazy SNES ROM"
+
+#: src/gtk_s9xwindow.cpp:740
+msgid "Couldn't load file: "
+msgstr "Nepodařilo se načíst soubor: "
+
+#: src/gtk_s9xwindow.cpp:767
+msgid "Load Saved State"
+msgstr "Načíst uloženou pozici"
+
+#: src/gtk_s9xwindow.cpp:796
+msgid "The current frame in the movie is <b>{0:Ld}</b>."
+msgstr "Aktuální snímek ve videu je <b>{0:Ld}</b>."
+
+#: src/gtk_s9xwindow.cpp:829
+msgid "Save State"
+msgstr "Uložit pozici"
+
+#: src/gtk_s9xwindow.cpp:850
+msgid "Save SPC file..."
+msgstr "Uložit SPC soubor..."
+
+#: src/gtk_s9xwindow.cpp:872
+msgid "Couldn't save SPC file:"
+msgstr "Nepodařilo se uložit SPC soubor:"
+
+#: src/gtk_s9xwindow.cpp:888
+#, c-format
+msgid ""
+"<b>Information for %s</b>\n"
+"\n"
+"<i>Name:</i> %s\n"
+"<i>Speed:</i> %02X/%s\n"
+"<i>Map:</i> %s\n"
+"<i>Type:</i> %02x\n"
+"<i>Contents:</i> %s\n"
+"<i>ROM Size:</i> %s\n"
+"<i>Calculated Size:</i> %d\n"
+"<i>SRAM Size:</i> %s\n"
+"<i>Header Checksum:</i> %04X\n"
+"<i>Checksum Complement:</i> %04X\n"
+"<i>Actual Checksum:</i> %04X\n"
+"<i>Video:</i> %s\n"
+"<i>CRC32:</i> %08X\n"
+"<i>Revision:</i> %s\n"
+"<b><i>%s%s</i></b>"
+msgstr ""
+"<b>Informace o %s</b>\n"
+"\n"
+"<i>Název:</i> %s\n"
+"<i>Rychlost:</i> %02X/%s\n"
+"<i>Mapa:</i> %s\n"
+"<i>Typ:</i> %02x\n"
+"<i>Obsah:</i> %s\n"
+"<i>Velikost ROM:</i> %s\n"
+"<i>Vypočtená velikost:</i> %d\n"
+"<i>Velikost SRAM:</i> %s\n"
+"<i>Kontrolní součet hlavičky:</i> %04X\n"
+"<i>Doplněk kontrolního součtu:</i> %04X\n"
+"<i>Skutečný kontrolní součet:</i> %04X\n"
+"<i>Video:</i> %s\n"
+"<i>CRC32:</i> %08X\n"
+"<i>Revize:</i> %s\n"
+"<b><i>%s%s</i></b>"
+
+#: src/gtk_s9xwindow.cpp:924
+msgid ""
+"\n"
+"\n"
+"This ROM has been auto-patched with "
+msgstr ""
+"\n"
+"\n"
+"Tato ROM byla automaticky opravena pomocí "
+
+#: src/gtk_s9xwindow.cpp:924
+msgid ""
+"\n"
+"\n"
+"This ROM has been modified or damaged"
+msgstr ""
+"\n"
+"\n"
+"Tato ROM byla upravena nebo je poškozena"
+
+#: src/gtk_s9xwindow.cpp:938
+msgid "File Information"
+msgstr "Informace o souboru"
+
+#: src/gtk_shader_parameters.cpp:67
+msgid "Export Shader Preset to:"
+msgstr "Exportovat předvolbu shaderu do:"
+
+#: src/gtk_shader_parameters.cpp:90
+msgid "Shader Preset"
+msgstr "Předvolba shaderu"
+
+#: src/gtk_shader_parameters.cpp:131
+msgid "Shader Parameters"
+msgstr "Parametry shaderu"
+
+#: src/snes9x.ui:10
+msgid "About SuperSnes9x"
+msgstr "O aplikaci SuperSnes9x"
+
+#: src/snes9x.ui:283
+msgid "SuperSnes9x Cheats"
+msgstr "SuperSnes9x Cheaty"
+
+#: src/snes9x.ui:401
+msgid "Update Cheat"
+msgstr "Aktualizovat cheat"
+
+#: src/snes9x.ui:416
+msgid "Disable All"
+msgstr "Zakázat vše"
+
+#: src/snes9x.ui:432
+msgid "Delete All Cheats"
+msgstr "Smazat všechny cheaty"
+
+#: src/snes9x.ui:447
+msgid "Search Cheat Database"
+msgstr "Hledat v databázi cheatů"
+
+#: src/snes9x.ui:489
+msgid "Code:"
+msgstr "Kód:"
+
+#: src/snes9x.ui:526
+msgid "Description:"
+msgstr "Popis:"
+
+#: src/snes9x.ui:573
+msgid "Advance to Frame"
+msgstr "Přejít na snímek"
+
+#: src/snes9x.ui:642
+msgid "The current frame in the movie is"
+msgstr "Aktuální snímek ve videu je"
+
+#: src/snes9x.ui:663
+msgid "Fast‑forward to frame"
+msgstr "Přetočit dopředu na snímek"
+
+#: src/snes9x.ui:806
+msgid "Black"
+msgstr "Černá"
+
+#: src/snes9x.ui:809
+msgid "Color bars"
+msgstr "Barevné pruhy"
+
+#: src/snes9x.ui:812
+msgid "Pixel art patterns"
+msgstr "Pixel art vzory"
+
+#: src/snes9x.ui:815
+msgid "Dithered gradient"
+msgstr "Rozptylovaný přechod"
+
+#: src/snes9x.ui:818
+msgid "Color bars and patterns"
+msgstr "Barevné pruhy a vzory"
+
+#: src/snes9x.ui:821
+msgid "Starfield"
+msgstr "Hvězdné pole"
+
+#: src/snes9x.ui:824
+msgid "Snow"
+msgstr "Zrnění (Sníh)"
+
+#: src/snes9x.ui:852 src/snes9x.ui:875
+msgid "12.5%"
+msgstr "12.5%"
+
+#: src/snes9x.ui:855 src/snes9x.ui:878
+msgid "25%"
+msgstr "25%"
+
+#: src/snes9x.ui:858 src/snes9x.ui:881
+msgid "50%"
+msgstr "50%"
+
+#: src/snes9x.ui:861 src/snes9x.ui:884
+msgid "100%"
+msgstr "100%"
+
+#: src/snes9x.ui:872
+msgid "0%"
+msgstr "0%"
+
+#: src/snes9x.ui:895
+msgctxt "filter list"
+msgid "None"
+msgstr "Žádný"
+
+#: src/snes9x.ui:936
+msgid "8:7 Square pixels"
+msgstr "8:7 Čtvercové pixely"
+
+#: src/snes9x.ui:939
+msgid "8:7 Square pixels, integer multiples"
+msgstr "8:7 Čtvercové pixely, celočíselné násobky"
+
+#: src/snes9x.ui:942
+msgid "4:3 SNES correct aspect"
+msgstr "4:3 Správný poměr stran SNES"
+
+#: src/snes9x.ui:945
+msgid "4:3 SNES correct aspect, integer multiples"
+msgstr "4:3 Správný poměr stran SNES, celočíselné násobky"
+
+#: src/snes9x.ui:948
+msgid "8*8:7*7 NTSC"
+msgstr "8*8:7*7 NTSC"
+
+#: src/snes9x.ui:951
+msgid "8*8:7*7 NTSC, integer multiples"
+msgstr "8*8:7*7 NTSC, celočíselné násobky"
+
+#: src/snes9x.ui:968
+msgid "Merge adjacent pairs"
+msgstr "Sloučit sousední dvojice"
+
+#: src/snes9x.ui:971
+msgid "Output directly"
+msgstr "Přímý výstup"
+
+#: src/snes9x.ui:974
+msgid "Scale low‑resolution screens"
+msgstr "Škálovat obrazovky s nízkým rozlišením"
+
+#: src/snes9x.ui:985 src/snes9x.ui:1023
+msgid "1"
+msgstr "1"
+
+#: src/snes9x.ui:988 src/snes9x.ui:1026
+msgid "2"
+msgstr "2"
+
+#: src/snes9x.ui:991 src/snes9x.ui:1029
+msgid "3"
+msgstr "3"
+
+#: src/snes9x.ui:994 src/snes9x.ui:1032
+msgid "4"
+msgstr "4"
+
+#: src/snes9x.ui:997 src/snes9x.ui:1035
+msgid "5"
+msgstr "5"
+
+#: src/snes9x.ui:1000 src/snes9x.ui:1038
+msgid "1+"
+msgstr "1+"
+
+#: src/snes9x.ui:1003 src/snes9x.ui:1041
+msgid "2+"
+msgstr "2+"
+
+#: src/snes9x.ui:1006 src/snes9x.ui:1044
+msgid "3+"
+msgstr "3+"
+
+#: src/snes9x.ui:1009 src/snes9x.ui:1047
+msgid "4+"
+msgstr "4+"
+
+#: src/snes9x.ui:1012 src/snes9x.ui:1050
+msgid "5+"
+msgstr "5+"
+
+#: src/snes9x.ui:1061
+msgid "Toggle the menu bar"
+msgstr "Přepnout panel nabídek"
+
+#: src/snes9x.ui:1064
+msgid "Exit fullscreen mode"
+msgstr "Ukončit režim celé obrazovky"
+
+#: src/snes9x.ui:1067 src/snes9x.ui:6932
+msgid "Quit SuperSnes9x"
+msgstr "Ukončit SuperSnes9x"
+
+#: src/snes9x.ui:1078
+msgid "Timer‑based"
+msgstr "Založeno na časovači"
+
+#: src/snes9x.ui:1081
+msgid "Timer‑based with automatic frame-skipping"
+msgstr "Založeno na časovači s automatickým vynecháváním snímků"
+
+#: src/snes9x.ui:1084
+msgid "Sound buffer synchronization"
+msgstr "Synchronizace zvukové vyrovnávací paměti"
+
+#: src/snes9x.ui:1087
+msgid "No throttling, use vsync to control speed"
+msgstr "Žádné omezování, použít vsync k řízení rychlosti"
+
+#: src/snes9x.ui:1098
+msgid "48,000 Hz"
+msgstr "48 000 Hz"
+
+#: src/snes9x.ui:1101
+msgid "44,100 Hz"
+msgstr "44 100 Hz"
+
+#: src/snes9x.ui:1104
+msgid "32,000 Hz"
+msgstr "32 000 Hz"
+
+#: src/snes9x.ui:1107
+msgid "22,050 Hz"
+msgstr "22 050 Hz"
+
+#: src/snes9x.ui:1110
+msgid "16,000 Hz"
+msgstr "16 000 Hz"
+
+#: src/snes9x.ui:1113
+msgid "11,025 Hz"
+msgstr "11 025 Hz"
+
+#: src/snes9x.ui:1116
+msgid "8,000 Hz"
+msgstr "8 000 Hz"
+
+#: src/snes9x.ui:1119
+msgid "0 Hz"
+msgstr "0 Hz"
+
+#: src/snes9x.ui:1136
+msgid "16‑bit (GL_RGB)"
+msgstr "16-bit (GL_RGB)"
+
+#: src/snes9x.ui:1139
+msgid "32‑bit (GL_BGRA)"
+msgstr "32-bit (GL_BGRA)"
+
+#: src/snes9x.ui:1150
+msgid "Nearest"
+msgstr "Nejbližší"
+
+#: src/snes9x.ui:1153
+msgid "Linear"
+msgstr "Lineární"
+
+#: src/snes9x.ui:1156
+msgid "Gaussian (correct)"
+msgstr "Gaussovské (správné)"
+
+#: src/snes9x.ui:1159
+msgid "Cubic"
+msgstr "Kubické"
+
+#: src/snes9x.ui:1162
+msgid "Sinc"
+msgstr "Sinc"
+
+#: src/snes9x.ui:1175
+msgid "SuperSnes9x"
+msgstr "SuperSnes9x"
+
+#: src/snes9x.ui:1195
+msgid "_File"
+msgstr "_Soubor"
+
+#: src/snes9x.ui:1202
+msgid "_Open ROM Image…"
+msgstr "_Otevřít obraz ROM…"
+
+#: src/snes9x.ui:1216
+msgid "Open Recent"
+msgstr "Otevřít nedávné"
+
+#: src/snes9x.ui:1225
+msgid "Clear Recent Items"
+msgstr "Vymazat nedávné položky"
+
+#: src/snes9x.ui:1237
+msgid "Open with _NetPlay…"
+msgstr "Otevřít přes _NetPlay…"
+
+#: src/snes9x.ui:1240
+msgid "Open a ROM to use with NetPlay"
+msgstr "Otevřít ROM pro použití s NetPlay"
+
+#: src/snes9x.ui:1251
+msgid "Open _MultiCart…"
+msgstr "Otevřít _MultiCart…"
+
+#: src/snes9x.ui:1266
+msgid "_Load State"
+msgstr "_Načíst pozici"
+
+#: src/snes9x.ui:1276 src/snes9x.ui:1410
+msgid "Slot _0"
+msgstr "Slot _0"
+
+#: src/snes9x.ui:1285 src/snes9x.ui:1419
+msgid "Slot _1"
+msgstr "Slot _1"
+
+#: src/snes9x.ui:1294 src/snes9x.ui:1428
+msgid "Slot _2"
+msgstr "Slot _2"
+
+#: src/snes9x.ui:1303 src/snes9x.ui:1437
+msgid "Slot _3"
+msgstr "Slot _3"
+
+#: src/snes9x.ui:1312 src/snes9x.ui:1446
+msgid "Slot _4"
+msgstr "Slot _4"
+
+#: src/snes9x.ui:1321 src/snes9x.ui:1455
+msgid "Slot _5"
+msgstr "Slot _5"
+
+#: src/snes9x.ui:1330 src/snes9x.ui:1464
+msgid "Slot _6"
+msgstr "Slot _6"
+
+#: src/snes9x.ui:1339 src/snes9x.ui:1473
+msgid "Slot _7"
+msgstr "Slot _7"
+
+#: src/snes9x.ui:1348 src/snes9x.ui:1482
+msgid "Slot _8"
+msgstr "Slot _8"
+
+#: src/snes9x.ui:1357 src/snes9x.ui:1491
+msgid "Slot _9"
+msgstr "Slot _9"
+
+#: src/snes9x.ui:1372
+msgid "From _File…"
+msgstr "Ze _souboru…"
+
+#: src/snes9x.ui:1387
+msgid "_Undo Load State"
+msgstr "_Vrátit zpět načtení pozice"
+
+#: src/snes9x.ui:1400
+msgid "_Save State"
+msgstr "_Uložit pozici"
+
+#: src/snes9x.ui:1506
+msgid "To _File…"
+msgstr "Do _souboru…"
+
+#: src/snes9x.ui:1523
+msgid "Save SPC…"
+msgstr "Uložit SPC…"
+
+#: src/snes9x.ui:1540
+msgid "Show ROM _Info…"
+msgstr "Zobrazit _informace o ROM…"
+
+#: src/snes9x.ui:1557
+msgid "gtk-quit"
+msgstr "Konec"
+
+#: src/snes9x.ui:1571
+msgid "_Emulation"
+msgstr "_Emulace"
+
+#: src/snes9x.ui:1578
+msgid "Run / _Continue"
+msgstr "Spustit / _Pokračovat"
+
+#: src/snes9x.ui:1589
+msgid "_Pause"
+msgstr "_Pauza"
+
+#: src/snes9x.ui:1607
+msgid "Load _Movie…"
+msgstr "Načíst _video…"
+
+#: src/snes9x.ui:1619
+msgid "R_ecord Movie…"
+msgstr "Zaznam_enat video…"
+
+#: src/snes9x.ui:1631
+msgid "_Stop Recording"
+msgstr "Za_stavit záznam"
+
+#: src/snes9x.ui:1643
+msgid "_Jump to Frame…"
+msgstr "_Skočit na snímek…"
+
+#: src/snes9x.ui:1661
+msgid "Sy_nc Clients"
+msgstr "Sy_nchronizovat klienty"
+
+#: src/snes9x.ui:1678
+msgid "Reset"
+msgstr "Resetovat"
+
+#: src/snes9x.ui:1690
+msgid "Soft _Reset"
+msgstr "Měkký _reset"
+
+#: src/snes9x.ui:1707
+msgid "_View"
+msgstr "_Zobrazení"
+
+#: src/snes9x.ui:1715
+msgid "_Toggle Menubar"
+msgstr "_Přepnout panel nabídek"
+
+#: src/snes9x.ui:1732
+msgid "_Change Size"
+msgstr "_Změnit velikost"
+
+#: src/snes9x.ui:1746
+msgid "_1×"
+msgstr "_1×"
+
+#: src/snes9x.ui:1755
+msgid "_2×"
+msgstr "_2×"
+
+#: src/snes9x.ui:1764
+msgid "_3×"
+msgstr "_3×"
+
+#: src/snes9x.ui:1773
+msgid "_4×"
+msgstr "_4×"
+
+#: src/snes9x.ui:1782
+msgid "_5×"
+msgstr "_5×"
+
+#: src/snes9x.ui:1791
+msgid "_6×"
+msgstr "_6×"
+
+#: src/snes9x.ui:1800
+msgid "_7×"
+msgstr "_7×"
+
+#: src/snes9x.ui:1809
+msgid "_8×"
+msgstr "_8×"
+
+#: src/snes9x.ui:1818
+msgid "_9×"
+msgstr "_9×"
+
+#: src/snes9x.ui:1827
+msgid "1_0×"
+msgstr "1_0×"
+
+#: src/snes9x.ui:1844
+msgid "gtk-fullscreen"
+msgstr "Celá obrazovka"
+
+#: src/snes9x.ui:1858
+msgid "_Options"
+msgstr "_Možnosti"
+
+#: src/snes9x.ui:1867
+msgid "Controller Ports"
+msgstr "Porty ovladačů"
+
+#: src/snes9x.ui:1876
+msgid "SNES Port 1"
+msgstr "SNES Port 1"
+
+#: src/snes9x.ui:1886 src/snes9x.ui:1930
+msgid "Joypad"
+msgstr "Joypad"
+
+#: src/snes9x.ui:1895 src/snes9x.ui:1939
+msgid "Mouse"
+msgstr "Myš"
+
+#: src/snes9x.ui:1905 src/snes9x.ui:1959
+msgid "Superscope"
+msgstr "Superscope"
+
+#: src/snes9x.ui:1920
+msgid "SNES Port 2"
+msgstr "SNES Port 2"
+
+#: src/snes9x.ui:1949
+msgid "Multitap"
+msgstr "Multitap"
+
+#: src/snes9x.ui:1970
+msgctxt "SNES port 2"
+msgid "None"
+msgstr "Žádný"
+
+#: src/snes9x.ui:1996
+msgid "_Cheats…"
+msgstr "_Cheaty…"
+
+#: src/snes9x.ui:2010
+msgid "_Shader Parameters…"
+msgstr "Parametry _shaderu…"
+
+#: src/snes9x.ui:2026
+msgid "gtk-preferences"
+msgstr "Předvolby"
+
+#: src/snes9x.ui:2068
+msgid "Open Multiple ROM Images (MultiCart)"
+msgstr "Otevřít více obrazů ROM (MultiCart)"
+
+#: src/snes9x.ui:2131
+msgid "Slot A:"
+msgstr "Slot A:"
+
+#: src/snes9x.ui:2143
+msgid "Select an Image for Slot A"
+msgstr "Vyberte obraz pro slot A"
+
+#: src/snes9x.ui:2167
+msgid "Slot B:"
+msgstr "Slot B:"
+
+#: src/snes9x.ui:2179
+msgid "Select an Image for Slot B"
+msgstr "Vyberte obraz pro slot B"
+
+#: src/snes9x.ui:2211
+msgid "SuperSnes9x NetPlay"
+msgstr "SuperSnes9x NetPlay"
+
+#: src/snes9x.ui:2288
+msgid ""
+"The game chosen will be loaded before connecting. This field can be blank if "
+"the server will send the ROM image"
+msgstr ""
+"Zvolená hra bude načtena před připojením. Toto pole může zůstat prázdné, "
+"pokud obraz ROM odešle server"
+
+#: src/snes9x.ui:2303 src/snes9x.ui:4001 src/snes9x.ui:5116 src/snes9x.ui:5131
+#: src/snes9x.ui:5148 src/snes9x.ui:5165 src/snes9x.ui:5182
+msgid "Browse…"
+msgstr "Prohlížet…"
+
+#: src/snes9x.ui:2325
+msgid "Clear entry"
+msgstr "Vymazat záznam"
+
+#: src/snes9x.ui:2345
+msgid "<b>ROM Image</b>"
+msgstr "<b>Obraz ROM</b>"
+
+#: src/snes9x.ui:2374
+msgid "Connect to another computer"
+msgstr "Připojit se k jinému počítači"
+
+#: src/snes9x.ui:2378
+msgid "Connect to another computer that is running SuperSnes9x NetPlay as a server"
+msgstr "Připojit se k jinému počítači, na kterém běží SuperSnes9x NetPlay jako server"
+
+#: src/snes9x.ui:2398
+msgid "Name or IP address:"
+msgstr "Název nebo IP adresa:"
+
+#: src/snes9x.ui:2410
+msgid "Domain name or internet protocol address of a remote computer"
+msgstr "Doménové jméno nebo IP adresa vzdáleného počítače"
+
+#: src/snes9x.ui:2426
+msgid "Port:"
+msgstr "Port:"
+
+#: src/snes9x.ui:2438
+msgid "Connect to specified TCP port on remote computer"
+msgstr "Připojit se k určenému TCP portu na vzdáleném počítači"
+
+#: src/snes9x.ui:2463
+msgid "Act as a server"
+msgstr "Spustit jako server"
+
+#: src/snes9x.ui:2467
+msgid ""
+"Host a game on this computer as Player 1, requiring extra throughput to "
+"support multitple users"
+msgstr ""
+"Hostovat hru na tomto počítači jako Hráč 1, což vyžaduje vyšší propustnost "
+"pro podporu více uživatelů"
+
+#: src/snes9x.ui:2487
+msgid "<b>Server</b>"
+msgstr "<b>Server</b>"
+
+#: src/snes9x.ui:2517
+msgid "Sync using reset"
+msgstr "Synchronizace pomocí resetu"
+
+#: src/snes9x.ui:2521
+msgid ""
+"Reset the game when players join instead of transferring potentially "
+"unreliable freeze states"
+msgstr ""
+"Resetovat hru, když se připojí hráči, namísto přenášení potenciálně "
+"nespolehlivých uložených stavů (freeze states)"
+
+#: src/snes9x.ui:2532
+msgid "Send ROM image to clients"
+msgstr "Odeslat obraz ROM klientům"
+
+#: src/snes9x.ui:2536
+msgid ""
+"Send the running game image to players instead of requiring them to have "
+"their own copies"
+msgstr ""
+"Odeslat obraz běžící hry hráčům, namísto toho, aby museli mít vlastní kopie"
+
+#: src/snes9x.ui:2554
+msgid "Default port:"
+msgstr "Výchozí port:"
+
+#: src/snes9x.ui:2566
+msgid "TCP port used as a connection point for remote clients"
+msgstr "TCP port použitý jako bod připojení pro vzdálené klienty"
+
+#: src/snes9x.ui:2598
+msgid "Ask server to pause when"
+msgstr "Požádat server o pauzu, když"
+
+#: src/snes9x.ui:2652
+msgid "<b>Settings</b>"
+msgstr "<b>Nastavení</b>"
+
+#: src/snes9x.ui:2680
+msgid "SuperSnes9x Preferences"
+msgstr "Předvolby SuperSnes9x"
+
+#: src/snes9x.ui:2796
+msgid "Use fullscreen on ROM open"
+msgstr "Při otevření ROM spustit na celou obrazovku"
+
+#: src/snes9x.ui:2800
+msgid "Go to fullscreen mode immediately after opening a ROM"
+msgstr "Přejít do režimu celé obrazovky ihned po otevření ROM"
+
+#: src/snes9x.ui:2812
+msgid "Show local time"
+msgstr "Zobrazovat místní čas"
+
+#: src/snes9x.ui:2827
+msgid "Show frame rate"
+msgstr "Zobrazovat snímkovou frekvenci"
+
+#: src/snes9x.ui:2842
+msgid "Show pressed keys"
+msgstr "Zobrazovat stisknuté klávesy"
+
+#: src/snes9x.ui:2857
+msgid "Show fast‑forward and pause indicators"
+msgstr "Zobrazovat indikátory rychlého přetáčení a pauzy"
+
+#: src/snes9x.ui:2872
+msgid "Use overscanned height"
+msgstr "Použít overscan výšku"
+
+#: src/snes9x.ui:2876
+msgid "Use SNES extended height. Will probably cause letterboxing"
+msgstr "Použít rozšířenou výšku SNES. Pravděpodobně způsobí černé pruhy (letterboxing)"
+
+#: src/snes9x.ui:2898
+msgid "On‑screen display size:"
+msgstr "Velikost textu na obrazovce:"
+
+#: src/snes9x.ui:2909
+msgid "The size of on‑screen display messages in pixels"
+msgstr "Velikost zpráv na obrazovce v pixelech"
+
+#: src/snes9x.ui:2940
+msgid "Change fullscreen resolution:"
+msgstr "Změnit rozlišení celé obrazovky:"
+
+#: src/snes9x.ui:2944
+msgid "Changes the screen resolution when running SuperSnes9x in fullscreen mode"
+msgstr "Změní rozlišení obrazovky při spuštění SuperSnes9x v režimu celé obrazovky"
+
+#: src/snes9x.ui:2989
+msgid "Basic Settings"
+msgstr "Základní nastavení"
+
+#: src/snes9x.ui:3030
+msgid "Scale image to fit window"
+msgstr "Přizpůsobit obraz velikosti okna"
+
+#: src/snes9x.ui:3034
+msgid "Scales the image so no black bars are present"
+msgstr "Rozvádí obraz tak, aby nebyly přítomny žádné černé pruhy"
+
+#: src/snes9x.ui:3054
+msgid "Aspect ratio:"
+msgstr "Poměr stran:"
+
+#: src/snes9x.ui:3089
+msgid "Maintain aspect ratio"
+msgstr "Zachovat poměr stran"
+
+#: src/snes9x.ui:3093
+msgid "Scales the image as large as possible without distortion"
+msgstr "Zvětší obraz na maximální možnou velikost bez zkreslení"
+
+#: src/snes9x.ui:3108
+msgid "Allows scaling and filtering to use multiple processors"
+msgstr "Umožňuje škálování a filtrování pomocí více procesorů"
+
+#: src/snes9x.ui:3111
+msgid "Use"
+msgstr "Použít"
+
+#: src/snes9x.ui:3170
+msgid "High‑resolution effect:"
+msgstr "Efekt vysokého rozlišení:"
+
+#: src/snes9x.ui:3213
+msgid "Apply scaling filter:"
+msgstr "Použít filtr škálování:"
+
+#: src/snes9x.ui:3281
+msgid "Video preset:"
+msgstr "Předvolba videa:"
+
+#: src/snes9x.ui:3295
+msgid "Composite"
+msgstr "Kompozitní"
+
+#: src/snes9x.ui:3309
+msgid "S‑Video"
+msgstr "S-Video"
+
+#: src/snes9x.ui:3323
+msgid "RGB"
+msgstr "RGB"
+
+#: src/snes9x.ui:3337
+msgid "Monochrome"
+msgstr "Černobílý"
+
+#: src/snes9x.ui:3378
+msgid "Artifacts:"
+msgstr "Artefakty:"
+
+#: src/snes9x.ui:3393
+msgid "Sharpness:"
+msgstr "Ostrost:"
+
+#: src/snes9x.ui:3408
+msgid "Brightness:"
+msgstr "Jas:"
+
+#: src/snes9x.ui:3423
+msgid "Contrast:"
+msgstr "Kontrast:"
+
+#: src/snes9x.ui:3438
+msgid "Saturation:"
+msgstr "Sytost:"
+
+#: src/snes9x.ui:3453
+msgid "Hue:"
+msgstr "Odstín:"
+
+#: src/snes9x.ui:3654
+msgid "Gamma:"
+msgstr "Gama:"
+
+#: src/snes9x.ui:3669
+msgid "Fringing:"
+msgstr "Barevné lemování:"
+
+#: src/snes9x.ui:3684
+msgid "Bleed:"
+msgstr "Rozpíjení barev:"
+
+#: src/snes9x.ui:3699
+msgid "Resolution:"
+msgstr "Rozlišení:"
+
+#: src/snes9x.ui:3729
+msgid "Merge odd and even fields"
+msgstr "Sloučit liché a sudé půlsnímky"
+
+#: src/snes9x.ui:3751 src/snes9x.ui:3810
+msgid "Scanline intensity:"
+msgstr "Intenzita prokládání (scanlines):"
+
+#: src/snes9x.ui:3855
+msgid "Scaling"
+msgstr "Škálování"
+
+#: src/snes9x.ui:3897
+msgid "Bilinear‐filter output"
+msgstr "Bilineární filtrace výstupu"
+
+#: src/snes9x.ui:3912
+msgid "Use best settings for FreeSync/G‑Sync when in fullscreen"
+msgstr "Použít nejlepší nastavení pro FreeSync/G-Sync v režimu celé obrazovky"
+
+#: src/snes9x.ui:3933
+msgid "Sync to vertical blank"
+msgstr "Synchronizovat s vertikálním zatemněním (vsync)"
+
+#: src/snes9x.ui:3937
+msgid "Sync the image to the vertical retrace to stop tearing"
+msgstr "Synchronizuje obraz s vertikálním vykreslováním, aby se zamezilo trhání obrazu"
+
+#: src/snes9x.ui:3949
+msgid "Reduce input lag"
+msgstr "Snížit zpoždění vstupu (input lag)"
+
+#: src/snes9x.ui:3953
+msgid ""
+"Sync the program with the video output after every displayed frame to reduce "
+"input latency"
+msgstr ""
+"Synchronizuje program s video výstupem po každém zobrazeném snímku, čímž snižuje latenci vstupu"
+
+#: src/snes9x.ui:3969
+msgid "Shader:"
+msgstr "Shader:"
+
+#: src/snes9x.ui:4033
+msgid "Force an inverted byte‑ordering"
+msgstr "Vynutit obrácené pořadí bajtů (byte-ordering)"
+
+#: src/snes9x.ui:4037
+msgid ""
+"Forces a swapped byte‑ordering for cases where the system’s endian is used "
+"instead of the video card"
+msgstr ""
+"Vynutí prohozené pořadí bajtů v případech, kdy se používá endianita systému namísto grafické karty"
+
+#: src/snes9x.ui:4061
+msgid "Hardware Acceleration"
+msgstr "Hardwarová akcelerace"
+
+#: src/snes9x.ui:4090
+msgid "Display"
+msgstr "Displej"
+
+#: src/snes9x.ui:4143
+msgid "Sound driver:"
+msgstr "Ovladač zvuku:"
+
+#: src/snes9x.ui:4178
+msgid "Automatically adjust input rate to display"
+msgstr "Automaticky přizpůsobit vstupní frekvenci displeji"
+
+#: src/snes9x.ui:4182
+msgid "Sets the correct input rate based on the display’s refresh rate"
+msgstr "Nastaví správnou vstupní frekvenci na základě obnovovací frekvence displeje"
+
+#: src/snes9x.ui:4194
+msgid "Dynamic rate control"
+msgstr "Dynamické řízení frekvence"
+
+#: src/snes9x.ui:4198
+msgid "Smooth out slight hiccups in sound input rate"
+msgstr "Vyhlazuje drobné výpadky ve vstupní frekvenci zvuku"
+
+#: src/snes9x.ui:4209
+msgid "Mute sound output"
+msgstr "Ztlumit výstup zvuku"
+
+#: src/snes9x.ui:4213
+msgid "Disables output of sound"
+msgstr "Vypne výstup zvuku"
+
+#: src/snes9x.ui:4225
+msgid "Mute sound when using turbo or rewind"
+msgstr "Ztlumit zvuk při použití turbo režimu nebo přetáčení"
+
+#: src/snes9x.ui:4229
+msgid "Disables output of sound when using turbo or rewind"
+msgstr "Vypne výstup zvuku při použití turbo režimu nebo přetáčení"
+
+#: src/snes9x.ui:4252
+msgid "Playback rate:"
+msgstr "Vzorkovací frekvence:"
+
+#: src/snes9x.ui:4310
+msgid "Buffer size:"
+msgstr "Velikost vyrovnávací paměti:"
+
+#: src/snes9x.ui:4324
+msgid "Dynamic rate limit:"
+msgstr "Dynamický limit frekvence:"
+
+#: src/snes9x.ui:4369
+msgid "Input rate:"
+msgstr "Vstupní frekvence:"
+
+#: src/snes9x.ui:4382
+msgid ""
+"Adjust to produce more or less data. Decrease the rate if experiencing "
+"crackling. Increase the rate if experiencing frame rate stuttering. Best "
+"used with the “Sound buffer synchronization” option."
+msgstr ""
+"Upravte pro produkci více či méně dat. Snižte frekvenci, pokud zvuk praská. "
+"Zvyšte frekvenci, pokud se trhá obraz. Nejlépe funguje v kombinaci s volbou "
+"„Synchronizace zvukové vyrovnávací paměti“."
+
+#: src/snes9x.ui:4432
+msgid "Video rate:"
+msgstr "Snímková frekvence videa:"
+
+#: src/snes9x.ui:4469
+msgid "<b>Sound Settings</b>"
+msgstr "<b>Nastavení zvuku</b>"
+
+#: src/snes9x.ui:4503 src/snes9x.ui:8730
+msgid "Sound"
+msgstr "Zvuk"
+
+#: src/snes9x.ui:4561
+msgid "Throttling method:"
+msgstr "Metoda omezování rychlosti:"
+
+#: src/snes9x.ui:4603
+msgid "<b>Speed Control</b>"
+msgstr "<b>Řízení rychlosti</b>"
+
+#: src/snes9x.ui:4641
+msgid "Rewind buffer size (MB):"
+msgstr "Velikost paměti pro přetáčení (MB):"
+
+#: src/snes9x.ui:4683
+msgid "Number of frames between rewind snapshots:"
+msgstr "Počet snímků mezi snímky přetáčení:"
+
+#: src/snes9x.ui:4724
+msgid "<b>Rewind Settings</b>"
+msgstr "<b>Nastavení přetáčení</b>"
+
+#: src/snes9x.ui:4755
+msgid "Allow invalid VRAM access"
+msgstr "Povolit neplatný přístup k VRAM"
+
+#: src/snes9x.ui:4759
+msgid ""
+"Allows ROM hacks to write to screen at the wrong time. Only use if you know "
+"your ROM hack expects this"
+msgstr ""
+"Umožňuje ROM hackům zápis na obrazovku v nesprávný čas. Použijte pouze v případě, "
+"že víte, že váš ROM hack toto chování vyžaduje"
+
+#: src/snes9x.ui:4769
+msgid "Allow opposing dpad directions"
+msgstr "Povolit protichůdné směry na d-padu"
+
+#: src/snes9x.ui:4773
+msgid "Let left and right or up and down be pressed at the same time"
+msgstr "Umožňuje stisknout současně vlevo a vpravo nebo nahoru a dolů"
+
+#: src/snes9x.ui:4784
+msgid "Overclock CPU"
+msgstr "Přetaktovat CPU"
+
+#: src/snes9x.ui:4788
+msgid "Reduces slowdown, but has potential to break games"
+msgstr "Snižuje zpomalování hry, ale může způsobit nestabilitu či nefunkčnost her"
+
+#: src/snes9x.ui:4799
+msgid "Remove sprite limit"
+msgstr "Odstranit limit spritů"
+
+#: src/snes9x.ui:4803
+msgid "Reduces flicker, but may cause graphical artifacts"
+msgstr "Snižuje blikání, ale může způsobit grafické artefakty"
+
+#: src/snes9x.ui:4814
+msgid "Redirect echo buffer overflow"
+msgstr "Přesměrovat přetečení echo vyrovnávací paměti"
+
+#: src/snes9x.ui:4818
+msgid "Allows old addmusic hacks to work, but will likely hurt other games"
+msgstr "Umožňuje fungování starých addmusic hacků, ale pravděpodobně poškodí ostatní hry"
+
+#: src/snes9x.ui:4836
+msgid "SuperFX clock speed %:"
+msgstr "Taktovací frekvence SuperFX v %:"
+
+#: src/snes9x.ui:4875
+msgid "Gaussian is the correct behavior for SNES hardware"
+msgstr "Gaussovská filtrace je správné chování pro SNES hardware"
+
+#: src/snes9x.ui:4882
+msgid "Sound filter:"
+msgstr "Zvukový filtr:"
+
+#: src/snes9x.ui:4919
+msgid "<b>Hacks</b>"
+msgstr "<b>Hackery / Úpravy</b>"
+
+#: src/snes9x.ui:4961 src/snes9x.ui:7147
+msgid "Emulation"
+msgstr "Emulace"
+
+#: src/snes9x.ui:5202
+msgid "SRAM:"
+msgstr "SRAM:"
+
+#: src/snes9x.ui:5214
+msgid "Save states:"
+msgstr "Uložené pozice:"
+
+#: src/snes9x.ui:5228
+msgid "Cheats:"
+msgstr "Cheaty:"
+
+#: src/snes9x.ui:5242
+msgid "Patches:"
+msgstr "Patche:"
+
+#: src/snes9x.ui:5256
+msgid "Exports:"
+msgstr "Exporty:"
+
+#: src/snes9x.ui:5280
+msgid "<b>Game Data Locations</b>"
+msgstr "<b>Umístění herních dat</b>"
+
+#: src/snes9x.ui:5313
+msgid "Save SRAM:"
+msgstr "Ukládat SRAM:"
+
+#: src/snes9x.ui:5325
+msgid ""
+"Automatically save the game’s SRAM at this interval. Setting this to 0 will "
+"only save when quitting or changing ROMs"
+msgstr ""
+"Automaticky ukládat herní SRAM v tomto intervalu. Nastavením na 0 se bude "
+"ukládat pouze při ukončení nebo změně ROM"
+
+#: src/snes9x.ui:5355
+msgid "<b>Automatic Saving</b>"
+msgstr "<b>Automatické ukládání</b>"
+
+#: src/snes9x.ui:5392
+msgid "Files"
+msgstr "Soubory"
+
+#: src/snes9x.ui:5423
+msgid "<b>Joypad:</b>"
+msgstr "<b>Joypad:</b>"
+
+#: src/snes9x.ui:5464
+msgid "_Reset"
+msgstr "_Resetovat"
+
+#: src/snes9x.ui:5492
+msgid "Swap with:"
+msgstr "Prohodit s:"
+
+#: src/snes9x.ui:5520
+msgid "_Swap"
+msgstr "_Prohodit"
+
+#: src/snes9x.ui:5542
+msgid "Use _modifier keys (Ctrl, Shift, Alt) directly"
+msgstr "Používat _modifikační klávesy (Ctrl, Shift, Alt) přímo"
+
+#: src/snes9x.ui:5546
+msgid "Allow using modifier keys as independent keys instead of modifiers"
+msgstr "Povolit použití modifikačních kláves jako nezávislých kláves namísto modifikátorů"
+
+#: src/snes9x.ui:5581
+msgid "Up"
+msgstr "Nahoru"
+
+#: src/snes9x.ui:5593
+msgid "Down"
+msgstr "Dolů"
+
+#: src/snes9x.ui:5607
+msgid "Left"
+msgstr "Vlevo"
+
+#: src/snes9x.ui:5621
+msgid "Right"
+msgstr "Vpravo"
+
+#: src/snes9x.ui:5635
+msgid "Start"
+msgstr "Start"
+
+#: src/snes9x.ui:5649
+msgid "Select"
+msgstr "Select"
+
+#: src/snes9x.ui:5790 src/snes9x.ui:6020 src/snes9x.ui:6232
+msgid "A"
+msgstr "A"
+
+#: src/snes9x.ui:5802 src/snes9x.ui:6032 src/snes9x.ui:6244
+msgid "B"
+msgstr "B"
+
+#: src/snes9x.ui:5816 src/snes9x.ui:6046 src/snes9x.ui:6258
+msgid "X"
+msgstr "X"
+
+#: src/snes9x.ui:5830 src/snes9x.ui:6060 src/snes9x.ui:6272
+msgid "Y"
+msgstr "Y"
+
+#: src/snes9x.ui:5844 src/snes9x.ui:6074 src/snes9x.ui:6286
+msgid "L"
+msgstr "L"
+
+#: src/snes9x.ui:5858 src/snes9x.ui:6088 src/snes9x.ui:6300
+msgid "R"
+msgstr "R"
+
+#: src/snes9x.ui:5992
+msgid "Buttons"
+msgstr "Tlačítka"
+
+#: src/snes9x.ui:6433
+msgid "<b>Sticky</b>"
+msgstr "<b>Trvalé (Sticky)</b>"
+
+#: src/snes9x.ui:6449
+msgid "<b>Turbo</b>"
+msgstr "<b>Turbo</b>"
+
+#: src/snes9x.ui:6468
+msgid "Turbo / Sticky Buttons"
+msgstr "Turbo / Trvalá tlačítka"
+
+#: src/snes9x.ui:6505
+msgid "Set new axis bindings at:"
+msgstr "Nastavit nové vazby os na:"
+
+#: src/snes9x.ui:6517
+msgid ""
+"Changes the amount a joystick should be tilted to register a button press"
+msgstr ""
+"Mění míru naklonění joysticku potřebnou pro registraci stisknutí tlačítka"
+
+#: src/snes9x.ui:6536
+msgid "percent"
+msgstr "procent"
+
+#: src/snes9x.ui:6553
+msgid "<b>Joystick Axis Threshold</b>"
+msgstr "<b>Citlivost osy joysticku (Threshold)</b>"
+
+#: src/snes9x.ui:6590
+msgid "Center all axes on all joysticks and press Calibrate."
+msgstr "Vycentrujte všechny osy na všech joystickách a stiskněte Kalibrovat."
+
+#: src/snes9x.ui:6605
+msgid "Cali_brate"
+msgstr "Kali_brovat"
+
+#: src/snes9x.ui:6638
+msgid "<b>Calibration</b>"
+msgstr "<b>Kalibrace</b>"
+
+#: src/snes9x.ui:6659
+msgid "Joystick Options"
+msgstr "Možnosti joysticku"
+
+#: src/snes9x.ui:6677 src/snes9x.ui:9029
+msgid ""
+"<small>Click an entry and then press the desired keys or joystick button\n"
+"<tt>Escape</tt>: Move to next  <tt>Shift+Escape</tt>: Clear selected</small>"
+msgstr ""
+"<small>Klikněte na záznam a poté stiskněte požadované klávesy nebo tlačítko joysticku\n"
+"<tt>Escape</tt>: Další položka  <tt>Shift+Escape</tt>: Vymazat vybrané</small>"
+
+#: src/snes9x.ui:6715
+msgid "Joypads"
+msgstr "Joypady"
+
+#: src/snes9x.ui:6742
+msgid "<b>SuperSnes9x Emulator Shortcut Keys</b>"
+msgstr "<b>Klávesové zkratky emulátoru SuperSnes9x</b>"
+
+#: src/snes9x.ui:6793
+msgid "Soft reset"
+msgstr "Měkký reset"
+
+#: src/snes9x.ui:6807
+msgid "Hardware reset"
+msgstr "Hardwarový reset"
+
+#: src/snes9x.ui:6821
+msgid "Increase frame time"
+msgstr "Zvýšit čas snímku"
+
+#: src/snes9x.ui:6835
+msgid "Decrease frame time"
+msgstr "Snížit čas snímku"
+
+#: src/snes9x.ui:6849
+msgid "Increase frame rate"
+msgstr "Zvýšit snímkovou frekvenci"
+
+#: src/snes9x.ui:6863
+msgid "Decrease frame rate"
+msgstr "Snížit snímkovou frekvenci"
+
+#: src/snes9x.ui:6877
+msgid "Pause"
+msgstr "Pauza"
+
+#: src/snes9x.ui:6891
+msgid "Toggle turbo"
+msgstr "Přepnout turbo"
+
+#: src/snes9x.ui:6905
+msgid "Enable turbo"
+msgstr "Povolit turbo"
+
+#: src/snes9x.ui:6920
+msgid "Open ROM"
+msgstr "Otevřít ROM"
+
+#: src/snes9x.ui:7179
+msgid "Toggle BG layer 0"
+msgstr "Přepnout vrstvu pozadí 0"
+
+#: src/snes9x.ui:7191
+msgid "Toggle BG layer 1"
+msgstr "Přepnout vrstvu pozadí 1"
+
+#: src/snes9x.ui:7205
+msgid "Toggle BG layer 2"
+msgstr "Přepnout vrstvu pozadí 2"
+
+#: src/snes9x.ui:7219
+msgid "Toggle BG layer 3"
+msgstr "Přepnout vrstvu pozadí 3"
+
+#: src/snes9x.ui:7233
+msgid "Toggle sprites"
+msgstr "Přepnout sprity"
+
+#: src/snes9x.ui:7247
+msgid "Toggle forced backdrop color"
+msgstr "Přepnout vynucenou barvu pozadí"
+
+#: src/snes9x.ui:7261
+msgid "Screenshot"
+msgstr "Snímek obrazovky"
+
+#: src/snes9x.ui:7275
+msgid "Toggle fullscreen"
+msgstr "Přepnout celou obrazovku"
+
+#: src/snes9x.ui:7439
+msgid "Graphics"
+msgstr "Grafika"
+
+#: src/snes9x.ui:7476
+msgid "Save current slot"
+msgstr "Uložit aktuální slot"
+
+#: src/snes9x.ui:7509
+msgid "Load current slot"
+msgstr "Načíst aktuální slot"
+
+#: src/snes9x.ui:7542
+msgid "Increment and save"
+msgstr "Zvýšit a uložit"
+
+#: src/snes9x.ui:7575
+msgid "Decrement and load"
+msgstr "Snížit a načíst"
+
+#: src/snes9x.ui:7608
+msgid "Increment slot"
+msgstr "Zvýšit slot"
+
+#: src/snes9x.ui:7641
+msgid "Decrement slot"
+msgstr "Snížit slot"
+
+#: src/snes9x.ui:7685
+msgid "<b>Quick save state</b>"
+msgstr "<b>Rychlé uložení pozice</b>"
+
+#: src/snes9x.ui:7700
+msgid "<b>Quick load state</b>"
+msgstr "<b>Rychlé načtení pozice</b>"
+
+#: src/snes9x.ui:7715 src/snes9x.ui:7855
+msgid "Slot 0"
+msgstr "Slot 0"
+
+#: src/snes9x.ui:7729 src/snes9x.ui:7871
+msgid "Slot 1"
+msgstr "Slot 1"
+
+#: src/snes9x.ui:7743 src/snes9x.ui:7887
+msgid "Slot 2"
+msgstr "Slot 2"
+
+#: src/snes9x.ui:7757 src/snes9x.ui:7903
+msgid "Slot 3"
+msgstr "Slot 3"
+
+#: src/snes9x.ui:7771 src/snes9x.ui:7919
+msgid "Slot 4"
+msgstr "Slot 4"
+
+#: src/snes9x.ui:7785 src/snes9x.ui:7935
+msgid "Slot 5"
+msgstr "Slot 5"
+
+#: src/snes9x.ui:7799 src/snes9x.ui:7951
+msgid "Slot 6"
+msgstr "Slot 6"
+
+#: src/snes9x.ui:7813 src/snes9x.ui:7967
+msgid "Slot 7"
+msgstr "Slot 7"
+
+#: src/snes9x.ui:7827 src/snes9x.ui:7983
+msgid "Slot 8"
+msgstr "Slot 8"
+
+#: src/snes9x.ui:7841 src/snes9x.ui:7999
+msgid "Slot 9"
+msgstr "Slot 9"
+
+#: src/snes9x.ui:8438
+msgid "Toggle sound channel 0"
+msgstr "Přepnout zvukový kanál 0"
+
+#: src/snes9x.ui:8450
+msgid "Toggle sound channel 1"
+msgstr "Přepnout zvukový kanál 1"
+
+#: src/snes9x.ui:8464
+msgid "Toggle sound channel 2"
+msgstr "Přepnout zvukový kanál 2"
+
+#: src/snes9x.ui:8478
+msgid "Toggle sound channel 3"
+msgstr "Přepnout zvukový kanál 3"
+
+#: src/snes9x.ui:8492
+msgid "Toggle sound channel 4"
+msgstr "Přepnout zvukový kanál 4"
+
+#: src/snes9x.ui:8506
+msgid "Toggle sound channel 5"
+msgstr "Přepnout zvukový kanál 5"
+
+#: src/snes9x.ui:8520
+msgid "Toggle sound channel 6"
+msgstr "Přepnout zvukový kanál 6"
+
+#: src/snes9x.ui:8534
+msgid "Toggle sound channel 7"
+msgstr "Přepnout zvukový kanál 7"
+
+#: src/snes9x.ui:8548
+msgid "Toggle all sound channels"
+msgstr "Přepnout všechny zvukové kanály"
+
+#: src/snes9x.ui:8753
+msgid "Seek to frame"
+msgstr "Vyhledat snímek"
+
+#: src/snes9x.ui:8768
+msgid "Load Movie"
+msgstr "Načíst video"
+
+#: src/snes9x.ui:8783
+msgid "Stop movie recording"
+msgstr "Zastavit záznam videa"
+
+#: src/snes9x.ui:8798
+msgid "Begin movie recording"
+msgstr "Spustit záznam videa"
+
+#: src/snes9x.ui:8813
+msgid "Save SPC"
+msgstr "Uložit SPC"
+
+#: src/snes9x.ui:8913
+msgid "Swap controllers 1 & 2"
+msgstr "Prohodit ovladače 1 a 2"
+
+#: src/snes9x.ui:8944
+msgid "Rewind"
+msgstr "Přetočit zpět"
+
+#: src/snes9x.ui:8975
+msgid "Capture/release mouse"
+msgstr "Zachytit/uvolnit myš"
+
+#: src/snes9x.ui:9011
+msgid "Misc"
+msgstr "Různé"
+
+#: src/snes9x.ui:9067
+msgid "Shortcuts"
+msgstr "Zkratky"
+
+#: src/snes9x.ui:9106
+msgid "Pause emulation when switching away from SuperSnes9x"
+msgstr "Pozastavit emulaci, pokud přepnete z okna SuperSnes9x jinam"
+
+#: src/snes9x.ui:9120
+msgid "Force‑enable button and menu icons"
+msgstr "Vynutit ikony tlačítek a nabídek"
+
+#: src/snes9x.ui:9141
+msgid "The <tt>Esc</tt> key should:"
+msgstr "Klávesa <tt>Esc</tt> by měla:"
+
+#: src/snes9x.ui:9185
+msgid "Initial background:"
+msgstr "Počáteční pozadí:"
+
+#: src/snes9x.ui:9226
+msgid "<b>Window Behavior</b>"
+msgstr "<b>Chování okna</b>"
+
+#: src/snes9x.ui:9256
+msgid "Prevent the screensaver from activating"
+msgstr "Zabránit aktivaci spořiče obrazovky"
+
+#: src/snes9x.ui:9276
+msgid "<b>Screensaver</b>"
+msgstr "<b>Spořič obrazovky</b>"
+
+#: src/snes9x.ui:9310
+msgid "UI"
+msgstr "Uživatelské rozhraní (UI)"
+
+#: src/snes9x.ui:9344
+msgid ""
+"  SuperSnes9x – A Portable Super Nintendo Entertainment System™ Emulator\n"
+"\n"
+"  Snes9x homepage: http://www.snes9x.com/\n"
+"  SuperSnes9x source code: https://github.com/shanytc/snes9x/\n"
+"\n"
+"  Permission to use, copy, modify and/or distribute SuperSnes9x in both binary\n"
+"  and source form, for non‑commercial purposes, is hereby granted without\n"
+"  fee, providing that this license information and copyright notice appear\n"
+"  with all copies and any derived work.\n"
+"\n"
+"  This software is provided ‘as‑is’, without any express or implied\n"
+"  warranty. In no event shall the authors be held liable for any damages\n"
+"  arising from the use of this software or it’s derivatives.\n"
+"\n"
+"  SuperSnes9x is freeware for PERSONAL USE only. Commercial users should\n"
+"  seek permission of the copyright holders first. Commercial use includes,\n"
+"  but is not limited to, charging money for SuperSnes9x or software derived from\n"
+"  Snes9x, including SuperSnes9x or derivatives in commercial game bundles, and/"
+"or\n"
+"  using SuperSnes9x as a promotion for your commercial product.\n"
+"\n"
+"  The copyright holders request that bug fixes and improvements to the code\n"
+"  should be forwarded to them so everyone can benefit from the "
+"modifications\n"
+"  in future versions.\n"
+"\n"
+"  Super NES and Super Nintendo Entertainment System are trademarks of\n"
+"  Nintendo Co., Limited and its subsidiary companies."
+msgstr ""
+"  SuperSnes9x – Přenosný emulátor systému Super Nintendo Entertainment System™\n"
+"\n"
+"  Domovská stránka Snes9x: http://www.snes9x.com/\n"
+"  Zdrojový kód SuperSnes9x: https://github.com/shanytc/snes9x/\n"
+"\n"
+"  Oprávnění k používání, kopírování, úpravám a/nebo distribuci SuperSnes9x v binární\n"
+"  i zdrojové formě pro nekomerční účely se tímto uděluje bezplatně,\n"
+"  za předpokladu, že se tyto informace o licenci a oznámení o autorských právech\n"
+"  objeví ve všech kopiích a jakýchkoli odvozených dílech.\n"
+"\n"
+"  Tento software je poskytován „jak stojí a leží“ (as-is), bez jakékoli výslovné či implicitní\n"
+"  záruky. Autoři nenesou v žádném případě odpovědnost za jakékoli škody\n"
+"  vzniklé v důsledku používání tohoto softwaru nebo jeho odvozenin.\n"
+"\n"
+"  SuperSnes9x je freeware pouze pro OSOBNÍ POUŽITÍ. Komerční uživatelé by měli\n"
+"  nejprve požádat o svolení držitele autorských práv. Komerční použití zahrnuje,\n"
+"  mimo jiné, zpoplatnění SuperSnes9x nebo softwaru odvozeného od Snes9x,\n"
+"  včetně zahrnutí SuperSnes9x nebo odvozenin do komerčních herních balíčků a/nebo\n"
+"  používání SuperSnes9x jako propagace vašeho komerčního produktu.\n"
+"\n"
+"  Držitelé autorských práv žádají, aby jim byly opravy chyb a vylepšení kódu\n"
+"  zasílány, aby všichni mohli mít prospěch z těchto úprav\n"
+"  v budoucích verzích.\n"
+"\n"
+"  Super NES a Super Nintendo Entertainment System jsou ochranné známky společnosti\n"
+"  Nintendo Co., Limited a jejích dceřiných společností."
+
+# === Win32 strings (added by i18n/extract_strings.py) ===
+
+#: win32/rsrc/snes9x.rc
+msgid "!= (Not Equal To)"
+msgstr "!= (Není rovno)"
+
+#: win32/wlanguage.h
+msgid "(Not Available)"
+msgstr "(Není k dispozici)"
+
+#: win32/wlanguage.h
+msgid "(not stored in movie file)"
+msgstr "(neuloženo v souboru videa)"
+
+#: win32/rsrc/snes9x.rc
+msgid "(restart required)"
+msgstr "(vyžaduje restart)"
+
+#: win32/rsrc/snes9x.rc
+msgid "0 (off)"
+msgstr "0 (vypnuto)"
+
+#: win32/rsrc/snes9x.rc
+msgid "1 byte"
+msgstr "1 bajt"
+
+#: win32/rsrc/snes9x.rc
+msgid "1 frame"
+msgstr "1 snímek"
+
+#: win32/rsrc/snes9x.rc
+msgid "10x"
+msgstr "10x"
+
+#: win32/rsrc/snes9x.rc
+msgid "112ms"
+msgstr "112 ms"
+
+#: win32/rsrc/snes9x.rc
+msgid "11KHz"
+msgstr "11 kHz"
+
+#: win32/rsrc/snes9x.rc
+msgid "128ms"
+msgstr "128 ms"
+
+#: win32/rsrc/snes9x.rc
+msgid "144ms"
+msgstr "144 ms"
+
+#: win32/rsrc/snes9x.rc
+msgid "160ms"
+msgstr "160 ms"
+
+#: win32/rsrc/snes9x.rc
+msgid "16KHz"
+msgstr "16 kHz"
+
+#: win32/rsrc/snes9x.rc
+msgid "16ms"
+msgstr "16 ms"
+
+#: win32/rsrc/snes9x.rc
+msgid "176ms"
+msgstr "176 ms"
+
+#: win32/rsrc/snes9x.rc
+msgid "192ms"
+msgstr "192 ms"
+
+#: win32/rsrc/snes9x.rc
+msgid "1x"
+msgstr "1x"
+
+#: win32/rsrc/snes9x.rc
+msgid "2 bytes"
+msgstr "2 bajty"
+
+#: win32/rsrc/snes9x.rc
+msgid "2 frames"
+msgstr "2 snímky"
+
+#: win32/rsrc/snes9x.rc
+msgid "208ms"
+msgstr "208 ms"
+
+#: win32/rsrc/snes9x.rc
+msgid "22KHz"
+msgstr "22 kHz"
+
+#: win32/rsrc/snes9x.rc
+msgid "2x"
+msgstr "2x"
+
+#: win32/rsrc/snes9x.rc
+msgid "3 bytes"
+msgstr "3 bajty"
+
+#: win32/rsrc/snes9x.rc
+msgid "3 frames"
+msgstr "3 snímky"
+
+#: win32/rsrc/snes9x.rc
+msgid "30KHz"
+msgstr "30 kHz"
+
+#: win32/rsrc/snes9x.rc
+msgid "32KHz"
+msgstr "32 kHz"
+
+#: win32/rsrc/snes9x.rc
+msgid "32ms"
+msgstr "32 ms"
+
+#: win32/rsrc/snes9x.rc
+msgid "35KHz"
+msgstr "35 kHz"
+
+#: win32/rsrc/snes9x.rc
+msgid "3x"
+msgstr "3x"
+
+#: win32/rsrc/snes9x.rc
+msgid "4 bytes"
+msgstr "4 bajty"
+
+#: win32/rsrc/snes9x.rc
+msgid "4 frames"
+msgstr "4 snímky"
+
+#: win32/rsrc/snes9x.rc
+msgid "44KHz"
+msgstr "44 kHz"
+
+#: win32/rsrc/snes9x.rc
+msgid "48KHz"
+msgstr "48 kHz"
+
+#: win32/rsrc/snes9x.rc
+msgid "48ms"
+msgstr "48 ms"
+
+#: win32/rsrc/snes9x.rc
+msgid "4x"
+msgstr "4x"
+
+#: win32/rsrc/snes9x.rc
+msgid "5x"
+msgstr "5x"
+
+#: win32/rsrc/snes9x.rc
+msgid "64ms"
+msgstr "64 ms"
+
+#: win32/rsrc/snes9x.rc
+msgid "6x"
+msgstr "6x"
+
+#: win32/rsrc/snes9x.rc
+msgid "7x"
+msgstr "7x"
+
+#: win32/rsrc/snes9x.rc
+msgid "80ms"
+msgstr "80 ms"
+
+#: win32/rsrc/snes9x.rc
+msgid "8KHz"
+msgstr "8 kHz"
+
+#: win32/rsrc/snes9x.rc
+msgid "8x"
+msgstr "8x"
+
+#: win32/rsrc/snes9x.rc
+msgid "96ms"
+msgstr "96 ms"
+
+#: win32/rsrc/snes9x.rc
+msgid "9x"
+msgstr "9x"
+
+#: win32/rsrc/snes9x.rc
+msgid "< (Less Than)"
+msgstr "< (Menší než)"
+
+#: win32/wlanguage.h
+msgid "<-- MISMATCH !!!"
+msgstr "<-- NESOUHLASÍ !!!"
+
+#: win32/rsrc/snes9x.rc
+msgid "<= (Less Than or Equal to)"
+msgstr "<= (Menší nebo rovno)"
+
+#: win32/rsrc/snes9x.rc
+msgid "= (Equal To)"
+msgstr "= (Rovno)"
+
+#: win32/rsrc/snes9x.rc
+msgid "> (Greater Than)"
+msgstr "> (Větší než)"
+
+#: win32/rsrc/snes9x.rc
+msgid ">= (Greater than or Equal To)"
+msgstr ">= (Větší nebo rovno)"
+
+#: win32/rsrc/snes9x.rc
+msgid "About"
+msgstr "O programu"
+
+#: win32/rsrc/snes9x.rc
+msgid "Achievement List"
+msgstr "Seznam úspěchů (Achievements)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Act as Server"
+msgstr "Spustit jako server"
+
+#: win32/wlanguage.h
+msgid "Act As Server"
+msgstr "Spustit jako server"
+
+#: win32/rsrc/snes9x.rc
+msgid "Add"
+msgstr "Přidat"
+
+#: win32/rsrc/snes9x.rc
+msgid "Add Cheat"
+msgstr "Přidat cheat"
+
+#: win32/rsrc/snes9x.rc
+msgid "Add SuperSnes9x to registry for supported file types"
+msgstr "Přidat SuperSnes9x do registru pro podporované typy souborů"
+
+#: win32/rsrc/snes9x.rc
+msgid "Address"
+msgstr "Adresa"
+
+#: win32/rsrc/snes9x.rc
+msgid "Address:"
+msgstr "Adresa:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Adjustments"
+msgstr "Úpravy / Přizpůsobení"
+
+#: win32/wlanguage.h
+msgid "All files"
+msgstr "Všechny soubory"
+
+#: win32/rsrc/snes9x.rc
+msgid "all of SuperSnes9x's settings are stored in this file"
+msgstr "všechna nastavení SuperSnes9x jsou uložena v tomto souboru"
+
+#: win32/rsrc/snes9x.rc
+msgid "Allow executable logo override"
+msgstr "Povolit přepsání loga spustitelného souboru"
+
+#: win32/rsrc/snes9x.rc
+msgid "Allow Invalid VRAM Access"
+msgstr "Povolit neplatný přístup k VRAM"
+
+#: win32/rsrc/snes9x.rc
+msgid "Allow Left+Rt/Up+Dn"
+msgstr "Povolit Vlevo+Vpravo/Nahoru+Dolů"
+
+#: win32/rsrc/snes9x.rc
+msgid "APP - Emulator Settings"
+msgstr "Aplikace - Nastavení emulátoru"
+
+#: win32/rsrc/snes9x.rc
+msgid "Apply"
+msgstr "Použít"
+
+#: win32/rsrc/snes9x.rc
+msgid "Apply Adjustments"
+msgstr "Použít úpravy"
+
+#: win32/rsrc/snes9x.rc
+msgid "Apply Cheats"
+msgstr "Použít cheaty"
+
+#: win32/rsrc/snes9x.rc
+msgid "Ask for confirmation when saving/loading"
+msgstr "Požádat o potvrzení při ukládání/načítání"
+
+#: win32/rsrc/snes9x.rc
+msgid "Ask Server to Pause when"
+msgstr "Požádat server o pauzu, když"
+
+#: win32/rsrc/snes9x.rc
+msgid "Author Info:"
+msgstr "Informace o autorovi:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Auto Layer Transparency"
+msgstr "Automatická průhlednost vrstev"
+
+#: win32/rsrc/snes9x.rc
+msgid "Auto update"
+msgstr "Automatická aktualizace"
+
+#: win32/rsrc/snes9x.rc
+msgid "Auto-Assign"
+msgstr "Automaticky přiřadit"
+
+#: win32/wlanguage.h
+msgid "Auto-Detect"
+msgstr "Automaticky detekovat"
+
+#: win32/rsrc/snes9x.rc
+msgid "Auto-Save S-RAM"
+msgstr "Automatické ukládání S-RAM"
+
+#: win32/wlanguage.h
+msgid "Autofire"
+msgstr "Automatická střelba (Autofire)"
+
+#: win32/wlanguage.h
+msgid "Autohold"
+msgstr "Automatické držení (Autohold)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Automatic Input Rate"
+msgstr "Automatická vstupní frekvence"
+
+#: win32/rsrc/snes9x.rc
+msgid "Automatic, skip at most:"
+msgstr "Automaticky, vynechat nejvýše:"
+
+#: win32/wlanguage.h
+msgid "AVI file"
+msgstr "AVI soubor"
+
+#: win32/rsrc/snes9x.rc
+msgid "AVI Recording"
+msgstr "Nahrávání AVI"
+
+#: win32/rsrc/snes9x.rc
+msgid "Background Keyboard Hotkeys"
+msgstr "Klávesové zkratky na pozadí"
+
+#: win32/rsrc/snes9x.rc
+msgid "Background:"
+msgstr "Pozadí:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Bank +:"
+msgstr "Banka +:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Bank -:"
+msgstr "Banka -:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Bank:"
+msgstr "Banka:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Base Tile Addresses"
+msgstr "Základní adresy dlaždic (Tiles)"
+
+#: win32/rsrc/snes9x.rc
+msgid "BG1:"
+msgstr "BG1:"
+
+#: win32/rsrc/snes9x.rc
+msgid "BG2:"
+msgstr "BG2:"
+
+#: win32/rsrc/snes9x.rc
+msgid "BG3:"
+msgstr "BG3:"
+
+#: win32/rsrc/snes9x.rc
+msgid "BG4:"
+msgstr "BG4:"
+
+#: win32/rsrc/snes9x.rc
+msgid "BG:"
+msgstr "BG:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Bilinear Filtering"
+msgstr "Bilineární filtrování"
+
+#: win32/rsrc/snes9x.rc
+msgid "Binding"
+msgstr "Vazba / Přiřazení"
+
+#: win32/rsrc/snes9x.rc
+msgid "BIOS"
+msgstr "BIOS"
+
+#: win32/wlanguage.h
+msgid "BIOS files"
+msgstr "Soubory BIOS"
+
+#: win32/rsrc/snes9x.rc
+msgid "BIOS:"
+msgstr "BIOS:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Bit Depth:"
+msgstr "Bitová hloubka:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Blend Hi-Res Images"
+msgstr "Prolínat obrazy ve vysokém rozlišení"
+
+#: win32/rsrc/snes9x.rc
+msgid "Blue means already mapped. Pink conflicts with hotkey.\nRed is reserved by Windows. Escape clears bindings.\nPress multiple keys for multi-bind. Delete removes last."
+msgstr ""
+"Modrá znamená již namapováno. Růžová značí konflikt s horkou klávesou.\nČervená je rezervována systémem Windows. Escape vymaže přiřazení.\nStiskněte více kláves pro vícenásobnou vazbu. Delete odstraní poslední."
+
+#: win32/wlanguage.h
+msgid "Blue means the hotkey is already mapped.\nPink means it conflicts with a game button.\nRed means it's reserved by Windows.\nA hotkey can be disabled using Escape."
+msgstr ""
+"Modrá znamená, že klávesová zkratka je již namapována.\nRůžová znamená, že koliduje s herním tlačítkem.\nČervená znamená, že je rezervována systémem Windows.\nKlávesovou zkratku lze zakázat pomocí klávesy Escape."
+
+#: win32/rsrc/snes9x.rc
+msgid "Blue means the hotkey is already mapped. Pink means it conflicts with a game button. Red means it's reserved by Windows. Escape clears bindings.\nPress multiple keys for multi-bind. Delete removes last."
+msgstr ""
+"Modrá znamená, že horká klávesa je již namapována. Růžová značí konflikt s herním tlačítkem. Červená je rezervována systémem Windows. Escape vymaže vazby.\nStiskněte více kláves pro vícenásobnou vazbu. Klávesa Delete odstraní poslední."
+
+#: win32/rsrc/snes9x.rc
+msgid "Browse"
+msgstr "Procházet"
+
+#: win32/rsrc/snes9x.rc
+msgid "Buffer Length"
+msgstr "Délka vyrovnávací paměti"
+
+#: win32/rsrc/snes9x.rc
+msgid "Buffer Length:"
+msgstr "Délka vyrovnávací paměti:"
+
+#: win32/wlanguage.h
+msgid "Can't Open File"
+msgstr "Nelze otevřít soubor"
+
+#: win32/rsrc/snes9x.rc
+msgid "Cancel"
+msgstr "Zrušit"
+
+#: win32/rsrc/snes9x.rc
+msgid "Channel 1"
+msgstr "Kanál 1"
+
+#: win32/rsrc/snes9x.rc
+msgid "Channel 2"
+msgstr "Kanál 2"
+
+#: win32/rsrc/snes9x.rc
+msgid "Channel 3"
+msgstr "Kanál 3"
+
+#: win32/rsrc/snes9x.rc
+msgid "Channel 4"
+msgstr "Kanál 4"
+
+#: win32/rsrc/snes9x.rc
+msgid "Channel 5"
+msgstr "Kanál 5"
+
+#: win32/rsrc/snes9x.rc
+msgid "Channel 6"
+msgstr "Kanál 6"
+
+#: win32/rsrc/snes9x.rc
+msgid "Channel 7"
+msgstr "Kanál 7"
+
+#: win32/rsrc/snes9x.rc
+msgid "Channel 8"
+msgstr "Kanál 8"
+
+#: win32/rsrc/snes9x.rc
+msgid "Channels"
+msgstr "Kanály"
+
+#: win32/rsrc/snes9x.rc
+msgid "Chat"
+msgstr "Chat"
+
+#: win32/rsrc/snes9x.rc
+msgid "Cheat Description:"
+msgstr "Popis cheatu:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Cheat Details"
+msgstr "Podrobnosti o cheatu"
+
+#: win32/rsrc/snes9x.rc
+msgid "Cheat Entry and Editor"
+msgstr "Zadávání a editor cheatů"
+
+#: win32/rsrc/snes9x.rc
+msgid "Cheat Search"
+msgstr "Vyhledávání cheatů"
+
+#: win32/wlanguage.h
+msgid "Cheats Editor Dialog:"
+msgstr "Dialogové okno editoru cheatů:"
+
+#: win32/wlanguage.h
+msgid "Cheats Search Dialog:"
+msgstr "Dialogové okno vyhledávání cheatů:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Choose Logo"
+msgstr "Vybrat logo"
+
+#: win32/rsrc/snes9x.rc
+msgid "Clear"
+msgstr "Vymazat"
+
+#: win32/rsrc/snes9x.rc
+msgid "Clear All"
+msgstr "Vymazat vše"
+
+#: win32/rsrc/snes9x.rc
+msgid "Clear History"
+msgstr "Vymazat historii"
+
+#: win32/rsrc/snes9x.rc
+msgid "Clear SRAM"
+msgstr "Vymazat SRAM"
+
+#: win32/rsrc/snes9x.rc
+msgid "Clear Watches"
+msgstr "Vymazat sledované hodnoty (Watches)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Client Settings"
+msgstr "Nastavení klienta"
+
+#: win32/wlanguage.h
+msgid "Clipping Windows:"
+msgstr "Ořezová okna (Clipping Windows):"
+
+#: win32/rsrc/snes9x.rc
+msgid "Close"
+msgstr "Zavřít"
+
+#: win32/wlanguage.h
+msgid "Code"
+msgstr "Kód"
+
+#: win32/rsrc/snes9x.rc
+msgid "Color Correction"
+msgstr "Korekce barev"
+
+#: win32/rsrc/snes9x.rc
+msgid "Compare To"
+msgstr "Porovnat s"
+
+#: win32/rsrc/snes9x.rc
+msgid "Comparison Type"
+msgstr "Typ porovnání"
+
+#: win32/rsrc/snes9x.rc
+msgid "Config file:"
+msgstr "Konfigurační soubor:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Connect"
+msgstr "Připojit"
+
+#: win32/rsrc/snes9x.rc
+msgid "Connect clients to: 127.0.0.1 (localhost) or your LAN IP"
+msgstr "Připojit klienty k: 127.0.0.1 (localhost) nebo k vaší IP adrese v LAN"
+
+#: win32/rsrc/snes9x.rc
+msgid "Connect to Server"
+msgstr "Připojit se k serveru"
+
+#: win32/rsrc/snes9x.rc
+msgid "Controller"
+msgstr "Ovladač"
+
+#: win32/wlanguage.h
+msgid "Could not open movie file."
+msgstr "Nepodařilo se otevřít soubor videa."
+
+#: win32/rsrc/snes9x.rc
+msgid "CPU Overclock:"
+msgstr "Přetaktování CPU:"
+
+#: win32/wlanguage.h
+msgid "crc32=%08X, name=%s"
+msgstr "crc32=%08X, název=%s"
+
+#: win32/wlanguage.h
+msgid "Current ROM:"
+msgstr "Aktuální ROM:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Current ROM: CRC32=Unknown, Name=Unknown"
+msgstr "Aktuální ROM: CRC32=Neznámé, Název=Neznámý"
+
+#: win32/rsrc/snes9x.rc
+msgid "Current Value"
+msgstr "Aktuální hodnota"
+
+#: win32/rsrc/snes9x.rc
+msgid "Custom ROM Open Dialog"
+msgstr "Vlastní dialog otevření ROM"
+
+#: win32/rsrc/snes9x.rc
+msgid "Custom Screen Mode"
+msgstr "Vlastní režim obrazovky"
+
+#: win32/rsrc/snes9x.rc
+msgid "Customize Hotkeys"
+msgstr "Přizpůsobit klávesové zkratky"
+
+#: win32/rsrc/snes9x.rc
+msgid "Customize Special Keys"
+msgstr "Přizpůsobit speciální klávesy"
+
+#: win32/rsrc/snes9x.rc
+msgid "Data Size"
+msgstr "Velikost dat"
+
+#: win32/rsrc/snes9x.rc
+msgid "Data Type"
+msgstr "Typ dat"
+
+#: win32/rsrc/snes9x.rc
+msgid "DATE"
+msgstr "DATUM"
+
+#: win32/rsrc/snes9x.rc
+msgid "Defaults"
+msgstr "Výchozí"
+
+#: win32/rsrc/snes9x.rc
+msgid "Delete"
+msgstr "Smazat"
+
+#: win32/rsrc/snes9x.rc
+msgid "Detect gamepad changes"
+msgstr "Detekovat změny gamepadu"
+
+#: win32/rsrc/snes9x.rc
+msgid "Dialog"
+msgstr "Dialogové okno"
+
+#: win32/rsrc/snes9x.rc
+msgid "Direct3D Shader File"
+msgstr "Soubor Direct3D shaderu"
+
+#: win32/wlanguage.h
+msgid "Directory"
+msgstr "Adresář"
+
+#: win32/rsrc/snes9x.rc
+msgid "Directory:"
+msgstr "Adresář:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Disable Sprite Limit"
+msgstr "Zakázat limit spritů"
+
+#: win32/rsrc/snes9x.rc
+msgid "Disconnect"
+msgstr "Odpojit"
+
+#: win32/rsrc/snes9x.rc
+msgid "Disconnect from Server"
+msgstr "Odpojit se od serveru"
+
+#: win32/rsrc/snes9x.rc
+msgid "Display Configuration"
+msgstr "Konfigurace zobrazení"
+
+#: win32/rsrc/snes9x.rc
+msgid "Display messages inside SNES image"
+msgstr "Zobrazovat zprávy uvnitř obrazu SNES"
+
+#: win32/rsrc/snes9x.rc
+msgid "Display Settings"
+msgstr "Nastavení zobrazení"
+
+#: win32/rsrc/snes9x.rc
+msgid "DN LEFT"
+msgstr "DOLŮ VLEVO"
+
+#: win32/wlanguage.h
+msgid "Dn Left"
+msgstr "Dolů vlevo"
+
+#: win32/rsrc/snes9x.rc
+msgid "DN RIGHT"
+msgstr "DOLŮ VPRAVO"
+
+#: win32/wlanguage.h
+msgid "Dn Right"
+msgstr "Dolů vpravo"
+
+#: win32/rsrc/snes9x.rc
+msgid "DOWN"
+msgstr "DOLŮ"
+
+#: win32/rsrc/snes9x.rc
+msgid "Dummy"
+msgstr "Prázdný (Dummy)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Dynamic Rate Control"
+msgstr "Dynamické řízení frekvence"
+
+#: win32/rsrc/snes9x.rc
+msgid "Edit Cheat Group"
+msgstr "Upravit skupinu cheatů"
+
+#: win32/rsrc/snes9x.rc
+msgid "Emulate Fullscreen"
+msgstr "Emulovat celou obrazovku"
+
+#: win32/wlanguage.h
+msgid "Emulation Settings"
+msgstr "Nastavení emulace"
+
+#: win32/rsrc/snes9x.rc
+msgid "Emulator Hacks"
+msgstr "Úpravy (Hacks) emulátoru"
+
+#: win32/rsrc/snes9x.rc
+msgid "Enable"
+msgstr "Povolit"
+
+#: win32/rsrc/snes9x.rc
+msgid "Enable All"
+msgstr "Povolit vše"
+
+#: win32/rsrc/snes9x.rc
+msgid "Enable Background Input"
+msgstr "Povolit vstup na pozadí"
+
+#: win32/rsrc/snes9x.rc
+msgid "Enable Color Correction (accurate SNES colors)"
+msgstr "Povolit korekci barev (přesné barvy SNES)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Enable Triple Buffering"
+msgstr "Povolit trojitou vyrovnávací paměť (Triple Buffering)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Enabled"
+msgstr "Povoleno"
+
+#: win32/rsrc/snes9x.rc
+msgid "End Kaillera Game"
+msgstr "Ukončit Kaillera hru"
+
+#: win32/rsrc/snes9x.rc
+msgid "Enter a Value:"
+msgstr "Zadejte hodnotu:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Enter Cheat Code:"
+msgstr "Zadejte cheat kód:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Enter Cheat codes, one line at a time"
+msgstr "Zadejte cheat kódy, každý na nový řádek"
+
+#: win32/wlanguage.h
+msgid "enter host name"
+msgstr "zadejte název hostitele"
+
+#: win32/rsrc/snes9x.rc
+msgid "Entered Address"
+msgstr "Zadaná adresa"
+
+#: win32/rsrc/snes9x.rc
+msgid "Entered Value"
+msgstr "Zadaná hodnota"
+
+#: win32/wlanguage.h
+msgid "Error Info:"
+msgstr "Informace o chybě:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Exit"
+msgstr "Ukončit"
+
+#: win32/rsrc/snes9x.rc
+msgid "Extend Height of SNES Image"
+msgstr "Rozšířit výšku obrazu SNES"
+
+#: win32/wlanguage.h
+msgid "Fast forward:"
+msgstr "Rychlé přetáčení vpred:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Fast-Forward"
+msgstr "Rychlé přetáčení"
+
+#: win32/wlanguage.h
+msgid "Fast-forward toggle:"
+msgstr "Přepínač rychlého přetáčení:"
+
+#: win32/rsrc/snes9x.rc
+msgid "File"
+msgstr "Soubor"
+
+#: win32/wlanguage.h
+msgid "File not found."
+msgstr "Soubor nebyl nalezen."
+
+#: win32/rsrc/snes9x.rc
+msgid "First Sprite:"
+msgstr "První sprite:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Fixed, always skip:"
+msgstr "Pevně, vždy vynechat:"
+
+#: win32/wlanguage.h
+msgid "Force GD24"
+msgstr "Vynutit GD24"
+
+#: win32/wlanguage.h
+msgid "Force Header"
+msgstr "Vynutit hlavičku"
+
+#: win32/wlanguage.h
+msgid "Force HiROM"
+msgstr "Vynutit HiROM"
+
+#: win32/wlanguage.h
+msgid "Force LoROM"
+msgstr "Vynutit LoROM"
+
+#: win32/wlanguage.h
+msgid "Force mode 1"
+msgstr "Vynutit režim 1"
+
+#: win32/wlanguage.h
+msgid "Force mode 2"
+msgstr "Vynutit režim 2"
+
+#: win32/wlanguage.h
+msgid "Force No Header"
+msgstr "Vynutit absenci hlavičky"
+
+#: win32/wlanguage.h
+msgid "Force not interleaved"
+msgstr "Vynutit neprokládané"
+
+#: win32/wlanguage.h
+msgid "Force NTSC"
+msgstr "Vynutit NTSC"
+
+#: win32/wlanguage.h
+msgid "Force PAL"
+msgstr "Vynutit PAL"
+
+#: win32/rsrc/snes9x.rc
+msgid "Frame Advance"
+msgstr "Krokování snímků"
+
+#: win32/rsrc/snes9x.rc
+msgid "Frame Advance mute"
+msgstr "Ztlumit zvuk při krokování snímků"
+
+#: win32/wlanguage.h
+msgid "Frame advance:"
+msgstr "Krokování snímků:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Frame Skipping:"
+msgstr "Vynechávání snímků:"
+
+#: win32/rsrc/snes9x.rc
+msgid "frames"
+msgstr "snímků"
+
+#: win32/rsrc/snes9x.rc
+msgid "FRAMES"
+msgstr "SNÍMKY"
+
+#: win32/rsrc/snes9x.rc
+msgid "frames behind"
+msgstr "snímků pozadu"
+
+#: win32/rsrc/snes9x.rc
+msgid "frames in auto-frame rate mode"
+msgstr "snímků v automatickém režimu"
+
+#: win32/wlanguage.h
+msgid "frames in fast-forward mode"
+msgstr "snímků v režimu rychlého přetáčení"
+
+#: win32/rsrc/snes9x.rc
+msgid "frames in Turbo mode"
+msgstr "snímků v režimu Turbo"
+
+#: win32/rsrc/snes9x.rc
+msgid "Frames:"
+msgstr "Snímky:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Full Screen"
+msgstr "Celá obrazovka"
+
+#: win32/rsrc/snes9x.rc
+msgid "Fullscreen"
+msgstr "Celá obrazovka"
+
+#: win32/rsrc/snes9x.rc
+msgid "Fullscreen Display Settings"
+msgstr "Nastavení zobrazení na celou obrazovku"
+
+#: win32/rsrc/snes9x.rc
+msgid "Fullscreen on ROM Open"
+msgstr "Při otevření ROM na celou obrazovku"
+
+#: win32/rsrc/snes9x.rc
+msgid "Game Boy Image"
+msgstr "Obraz Game Boy"
+
+#: win32/rsrc/snes9x.rc
+msgid "Game Genie, Pro-Action Replay Codes"
+msgstr "Kódy Game Genie, Pro-Action Replay"
+
+#: win32/rsrc/snes9x.rc
+msgid "GB"
+msgstr "GB"
+
+#: win32/rsrc/snes9x.rc
+msgid "GB Sprite Viewer"
+msgstr "Prohlížeč Game Boy spritů"
+
+#: win32/rsrc/snes9x.rc
+msgid "GB Tile Viewer"
+msgstr "Prohlížeč Game Boy dlaždic (Tiles)"
+
+#: win32/rsrc/snes9x.rc
+msgid "GB Tilemap Viewer"
+msgstr "Prohlížeč Game Boy mapy dlaždic (Tilemap)"
+
+#: win32/rsrc/snes9x.rc
+msgid "GB-PPU"
+msgstr "GB-PPU"
+
+#: win32/rsrc/snes9x.rc
+msgid "General"
+msgstr "Obecné"
+
+#: win32/rsrc/snes9x.rc
+msgid "goto"
+msgstr "přejít na"
+
+#: win32/wlanguage.h
+msgid "Graphics layer 1:"
+msgstr "Grafická vrstva 1:"
+
+#: win32/wlanguage.h
+msgid "Graphics layer 2:"
+msgstr "Grafická vrstva 2:"
+
+#: win32/wlanguage.h
+msgid "Graphics layer 3:"
+msgstr "Grafická vrstva 3:"
+
+#: win32/wlanguage.h
+msgid "Graphics layer 4:"
+msgstr "Grafická vrstva 4:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Group"
+msgstr "Skupina"
+
+#: win32/rsrc/snes9x.rc
+msgid "Hacks"
+msgstr "Hacky / Úpravy"
+
+#: win32/rsrc/snes9x.rc
+msgid "Hard Reset (Power Cycle)"
+msgstr "Tvrdý reset (vypnutí a zapnutí)"
+
+#: win32/wlanguage.h
+msgid "Hard reset:"
+msgstr "Tvrdý reset:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Hardcore Mode"
+msgstr "Hardcore režim"
+
+#: win32/rsrc/snes9x.rc
+msgid "Header:"
+msgstr "Hlavička:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Help"
+msgstr "Nápověda"
+
+#: win32/rsrc/snes9x.rc
+msgid "Hexadecimal"
+msgstr "Šestnáctková (Hex)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Hi Res:"
+msgstr "Vysoké rozlišení:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Hi-Res AVI Recording"
+msgstr "Záznam AVI ve vysokém rozlišení"
+
+#: win32/rsrc/snes9x.rc
+msgid "Hide Menubar"
+msgstr "Skrýt panel nabídek"
+
+#: win32/rsrc/snes9x.rc
+msgid "Host Game"
+msgstr "Založit hru (Host)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Host Kaillera Server"
+msgstr "Založit Kaillera server"
+
+#: win32/wlanguage.h
+msgid "Hotkey Configuration"
+msgstr "Konfigurace klávesových zkratek"
+
+#: win32/rsrc/snes9x.rc
+msgid "Icon 1"
+msgstr "Ikona 1"
+
+#: win32/rsrc/snes9x.rc
+msgid "Icon 2"
+msgstr "Ikona 2"
+
+#: win32/rsrc/snes9x.rc
+msgid "Icon 3"
+msgstr "Ikona 3"
+
+#: win32/rsrc/snes9x.rc
+msgid "Icon 4"
+msgstr "Ikona 4"
+
+#: win32/rsrc/snes9x.rc
+msgid "Index:"
+msgstr "Index:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Input"
+msgstr "Vstup"
+
+#: win32/rsrc/snes9x.rc
+msgid "Input Configuration"
+msgstr "Konfigurace vstupu"
+
+#: win32/rsrc/snes9x.rc
+msgid "Input Rate:"
+msgstr "Vstupní frekvence:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Integer Scaling"
+msgstr "Celočíselné škálování"
+
+#: win32/rsrc/snes9x.rc
+msgid "Interleave Mode:"
+msgstr "Režim prokládání (Interleave):"
+
+#: win32/rsrc/snes9x.rc
+msgid "IP:"
+msgstr "IP:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Join"
+msgstr "Připojit se"
+
+#: win32/wlanguage.h
+msgid "Joypad #%d"
+msgstr "Joypad #%d"
+
+#: win32/rsrc/snes9x.rc
+msgid "Joypad 1"
+msgstr "Joypad 1"
+
+#: win32/rsrc/snes9x.rc
+msgid "Joypad 2"
+msgstr "Joypad 2"
+
+#: win32/rsrc/snes9x.rc
+msgid "Joypad 3"
+msgstr "Joypad 3"
+
+#: win32/rsrc/snes9x.rc
+msgid "Joypad 4"
+msgstr "Joypad 4"
+
+#: win32/rsrc/snes9x.rc
+msgid "Joypad 5"
+msgstr "Joypad 5"
+
+#: win32/wlanguage.h
+msgid "Joypad swap:"
+msgstr "Prohození joypadů:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Kaillera Netplay"
+msgstr "Kaillera Netplay"
+
+#: win32/rsrc/snes9x.rc
+msgid "Kaillera Server"
+msgstr "Kaillera server"
+
+#: win32/rsrc/snes9x.rc
+msgid "Layout:"
+msgstr "Rozvržení:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Leave Game"
+msgstr "Opustit hru"
+
+#: win32/rsrc/snes9x.rc
+msgid "LEFT"
+msgstr "VLEVO"
+
+#: win32/rsrc/snes9x.rc
+msgid "LENGTH"
+msgstr "DÉLKA"
+
+#: win32/rsrc/snes9x.rc
+msgid "Length:"
+msgstr "Délka:"
+
+#: win32/rsrc/snes9x.rc
+msgid "List1"
+msgstr "Seznam1"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load #:"
+msgstr "Načíst #:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load 0:"
+msgstr "Načíst 0:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load 1:"
+msgstr "Načíst 1:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load 2:"
+msgstr "Načíst 2:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load 3:"
+msgstr "Načíst 3:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load 4:"
+msgstr "Načíst 4:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load 5:"
+msgstr "Načíst 5:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load 6:"
+msgstr "Načíst 6:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load 7:"
+msgstr "Načíst 7:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load 8:"
+msgstr "Načíst 8:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load 9:"
+msgstr "Načíst 9:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load Dlg:"
+msgstr "Dialogové okno načtení:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load File:"
+msgstr "Načíst soubor:"
+
+#: win32/wlanguage.h
+msgid "Load from file:"
+msgstr "Načíst ze souboru:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load Game"
+msgstr "Načíst hru"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load Game Position"
+msgstr "Načíst pozici hry"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load MultiCart"
+msgstr "Načíst MultiCart"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load Watches"
+msgstr "Načíst sledované hodnoty (Watches)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load with Preview"
+msgstr "Načíst s náhledem"
+
+#: win32/wlanguage.h
+msgid "LOADED FROM MOVIE:"
+msgstr "NAČTENO Z VIDEA:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Location:"
+msgstr "Umístění:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Login"
+msgstr "Přihlášení"
+
+#: win32/rsrc/snes9x.rc
+msgid "Maintain Aspect Ratio"
+msgstr "Zachovat poměr stran"
+
+#: win32/rsrc/snes9x.rc
+msgid "Map"
+msgstr "Mapa"
+
+#: win32/rsrc/snes9x.rc
+msgid "Map Addr:"
+msgstr "Adresa mapy:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Map Size:"
+msgstr "Velikost mapy:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Map:"
+msgstr "Mapa:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Mask"
+msgstr "Maska"
+
+#: win32/rsrc/snes9x.rc
+msgid "Masked Addresses"
+msgstr "Maskované adresy"
+
+#: win32/rsrc/snes9x.rc
+msgid "Master Hotkey"
+msgstr "Hlavní klávesová zkratka (Master Hotkey)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Max Clients:"
+msgstr "Max. klientů:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Maximum Frame Rate Skip"
+msgstr "Maximální vynechání snímků"
+
+#: win32/rsrc/snes9x.rc
+msgid "MB (set to 0 to disable rewind support)"
+msgstr "MB (nastavte na 0 pro vypnutí podpory přetáčení)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Memory Type:"
+msgstr "Typ paměti:"
+
+#: win32/wlanguage.h
+msgid "Misc. Recording Settings"
+msgstr "Různá nastavení záznamu"
+
+#: win32/rsrc/snes9x.rc
+msgid "Mode:"
+msgstr "Režim:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Movie File"
+msgstr "Soubor videa"
+
+#: win32/wlanguage.h
+msgid "Movie frame count:"
+msgstr "Počet snímků videa:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Movie Play"
+msgstr "Přehrát video"
+
+#: win32/wlanguage.h
+msgid "Movie read-only:"
+msgstr "Video pouze pro čtení:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Movie Record"
+msgstr "Zaznamenat video"
+
+#: win32/rsrc/snes9x.rc
+msgid "Movie Stop"
+msgstr "Zastavit video"
+
+#: win32/wlanguage.h
+msgid "Movie's ROM:"
+msgstr "ROM videa:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Movie's ROM: CRC32=Unknown, Name=Unknown"
+msgstr "ROM videa: CRC32=Neznámé, Název=Neznámý"
+
+#: win32/wlanguage.h
+msgid "Movies"
+msgstr "Videa"
+
+#: win32/rsrc/snes9x.rc
+msgid "Mute"
+msgstr "Ztlumit"
+
+#: win32/rsrc/snes9x.rc
+msgid "Mute Sound"
+msgstr "Ztlumit zvuk"
+
+#: win32/rsrc/snes9x.rc
+msgid "Mute sound"
+msgstr "Ztlumit zvuk"
+
+#: win32/rsrc/snes9x.rc
+msgid "Netplay"
+msgstr "Netplay"
+
+#: win32/rsrc/snes9x.rc
+msgid "Netplay Options"
+msgstr "Možnosti Netplay"
+
+#: win32/rsrc/snes9x.rc
+msgid "New Value"
+msgstr "Nová hodnota"
+
+#: win32/rsrc/snes9x.rc
+msgid "No BIOS"
+msgstr "Žádný BIOS"
+
+#: win32/wlanguage.h
+msgid "Not a ROM"
+msgstr "Není to soubor ROM"
+
+#: win32/rsrc/snes9x.rc
+msgid "Not connected."
+msgstr "Nepřipojeno."
+
+#: win32/rsrc/snes9x.rc
+msgid "not found"
+msgstr "nenalezeno"
+
+#: win32/wlanguage.h
+msgid "not found!"
+msgstr "nenalezeno!"
+
+#: win32/rsrc/snes9x.rc
+msgid "NTSC Filter Scanlines"
+msgstr "Řádky filtru NTSC (Scanlines)"
+
+#: win32/rsrc/snes9x.rc
+msgid "OAM1:"
+msgstr "OAM1:"
+
+#: win32/rsrc/snes9x.rc
+msgid "OAM2:"
+msgstr "OAM2:"
+
+#: win32/rsrc/snes9x.rc
+msgid "OK"
+msgstr "OK"
+
+#: win32/rsrc/snes9x.rc
+msgid "On-screen Display Size:"
+msgstr "Velikost textu na obrazovce:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Online Servers"
+msgstr "Online servery"
+
+#: win32/rsrc/snes9x.rc
+msgid "Oops File"
+msgstr "Nouzový soubor (Oops)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Open MultiCart"
+msgstr "Otevřít MultiCart"
+
+#: win32/rsrc/snes9x.rc
+msgid "Open Read-Only"
+msgstr "Otevřít pouze pro čtení"
+
+#: win32/rsrc/snes9x.rc
+msgid "OpenGL/Vulkan Shader File"
+msgstr "Soubor OpenGL/Vulkan shaderu"
+
+#: win32/rsrc/snes9x.rc
+msgid "Options"
+msgstr "Možnosti"
+
+#: win32/rsrc/snes9x.rc
+msgid "Output Device:"
+msgstr "Výstupní zařízení:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Output Image Processing"
+msgstr "Zpracování výstupního obrazu"
+
+#: win32/rsrc/snes9x.rc
+msgid "Output Method"
+msgstr "Metoda výstupu"
+
+#: win32/rsrc/snes9x.rc
+msgid "Override Tilemap"
+msgstr "Přepsat mapu dlaždic (Tilemap)"
+
+#: win32/wlanguage.h
+msgid "Page %d"
+msgstr "Strana %d"
+
+#: win32/rsrc/snes9x.rc
+msgid "Palette (click to select offset)"
+msgstr "Paleta (kliknutím vyberete posun - offset)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Palette:"
+msgstr "Paleta:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Parameters"
+msgstr "Parametry"
+
+#: win32/rsrc/snes9x.rc
+msgid "Password:"
+msgstr "Heslo:"
+
+#: win32/wlanguage.h
+msgid "Patch"
+msgstr "Patch"
+
+#: win32/wlanguage.h
+msgid "Path: %s"
+msgstr "Cesta: %s"
+
+#: win32/rsrc/snes9x.rc
+msgid "Pause When Inactive"
+msgstr "Pozastavit při neaktivitě"
+
+#: win32/wlanguage.h
+msgid "Pause:"
+msgstr "Pauza:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Play Movie"
+msgstr "Přehrát video"
+
+#: win32/rsrc/snes9x.rc
+msgid "Playback Rate"
+msgstr "Vzorkovací frekvence"
+
+#: win32/rsrc/snes9x.rc
+msgid "Playback Rate:"
+msgstr "Vzorkovací frekvence:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Player Name:"
+msgstr "Jméno hráče:"
+
+#: win32/wlanguage.h
+msgid "Please enter a host name."
+msgstr "Zadejte prosím název hostitele."
+
+#: win32/wlanguage.h
+msgid "Please enter a valid value for a search!"
+msgstr "Zadejte prosím platnou hodnotu pro vyhledávání!"
+
+#: win32/rsrc/snes9x.rc
+msgid "Port Number"
+msgstr "Číslo portu"
+
+#: win32/rsrc/snes9x.rc
+msgid "Port Settings"
+msgstr "Nastavení portu"
+
+#: win32/wlanguage.h
+msgid "Press OK to start playing the movie."
+msgstr "Stisknutím tlačítka OK spustíte video."
+
+#: win32/rsrc/snes9x.rc
+msgid "Preview"
+msgstr "Náhled"
+
+#: win32/rsrc/snes9x.rc
+msgid "Previous Value"
+msgstr "Předchozí hodnota"
+
+#: win32/rsrc/snes9x.rc
+msgid "Progress1"
+msgstr "Průběh1"
+
+#: win32/rsrc/snes9x.rc
+msgid "Publish Online"
+msgstr "Publikovat online"
+
+#: win32/rsrc/snes9x.rc
+msgid "Publish to master server list"
+msgstr "Zveřejnit v hlavním seznamu serverů"
+
+#: win32/wlanguage.h
+msgid "Quit SuperSnes9x:"
+msgstr "Ukončit SuperSnes9x:"
+
+#: win32/wlanguage.h
+msgid "Range Error"
+msgstr "Chyba rozsahu"
+
+#: win32/rsrc/snes9x.rc
+msgid "Rate:"
+msgstr "Frekvence:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Re-record Count:"
+msgstr "Počet opětovných záznamů:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Re-sync all Clients Using Freeze File Now"
+msgstr "Nyní znovu synchronizovat všechny klienty pomocí souboru stavu (Freeze File)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Recent Games"
+msgstr "Nedávné hry"
+
+#: win32/rsrc/snes9x.rc
+msgid "Record Controllers"
+msgstr "Zaznamenávat ovladače"
+
+#: win32/rsrc/snes9x.rc
+msgid "Record from now"
+msgstr "Zaznamenávat od nynějška"
+
+#: win32/rsrc/snes9x.rc
+msgid "Record from reset"
+msgstr "Zaznamenávat od resetu"
+
+#: win32/rsrc/snes9x.rc
+msgid "Record Movie"
+msgstr "Zaznamenat video"
+
+#: win32/rsrc/snes9x.rc
+msgid "Record Options"
+msgstr "Možnosti záznamu"
+
+#: win32/rsrc/snes9x.rc
+msgid "Recording Date:"
+msgstr "Datum záznamu:"
+
+#: win32/wlanguage.h
+msgid "Recording Start"
+msgstr "Spuštění záznamu"
+
+#: win32/rsrc/snes9x.rc
+msgid "Reduce Input Lag"
+msgstr "Snížit zpoždění vstupu (input lag)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Refresh"
+msgstr "Obnovit"
+
+#: win32/rsrc/snes9x.rc
+msgid "Refresh List"
+msgstr "Obnovit seznam"
+
+#: win32/rsrc/snes9x.rc
+msgid "Regular"
+msgstr "Běžný (Regular)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Remove"
+msgstr "Odstranit"
+
+#: win32/rsrc/snes9x.rc
+msgid "Remove All"
+msgstr "Odstranit vše"
+
+#: win32/rsrc/snes9x.rc
+msgid "RERECORD"
+msgstr "OPĚTOVNÝ ZÁZNAM"
+
+#: win32/wlanguage.h
+msgid "Reset speed:"
+msgstr "Obnovit původní rychlost:"
+
+#: win32/rsrc/snes9x.rc
+msgid "RetroAchievements"
+msgstr "RetroAchievements"
+
+#: win32/rsrc/snes9x.rc
+msgid "RetroAchievements Login"
+msgstr "Přihlášení k RetroAchievements"
+
+#: win32/rsrc/snes9x.rc
+msgid "Rewind buffer size:"
+msgstr "Velikost vyrovnávací paměti přetáčení:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Rewind granularity:"
+msgstr "Krok / jemnost přetáčení zpět:"
+
+#: win32/wlanguage.h
+msgid "Rewind:"
+msgstr "Přetočit zpět:"
+
+#: win32/rsrc/snes9x.rc
+msgid "RIGHT"
+msgstr "VPRAVO"
+
+#: win32/wlanguage.h
+msgid "ROM files or archives"
+msgstr "Soubory ROM nebo archivy"
+
+#: win32/rsrc/snes9x.rc
+msgid "Rom Info"
+msgstr "Info o ROM"
+
+#: win32/rsrc/snes9x.rc
+msgid "ROM Information"
+msgstr "Informace o ROM"
+
+#: win32/rsrc/snes9x.rc
+msgid "ROM:"
+msgstr "ROM:"
+
+#: win32/wlanguage.h
+msgid "Roms"
+msgstr "Romy"
+
+#: win32/rsrc/snes9x.rc
+msgid "Run Ahead"
+msgstr "Run Ahead (předběžný výpočet)"
+
+#: win32/rsrc/snes9x.rc
+msgid "s"
+msgstr "s"
+
+#: win32/rsrc/snes9x.rc
+msgid "S-PPU"
+msgstr "S-PPU"
+
+#: win32/wlanguage.h
+msgid "Satellaview"
+msgstr "Satellaview"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save #:"
+msgstr "Uložit #:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save 0:"
+msgstr "Uložit 0:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save 1:"
+msgstr "Uložit 1:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save 2:"
+msgstr "Uložit 2:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save 3:"
+msgstr "Uložit 3:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save 4:"
+msgstr "Uložit 4:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save 5:"
+msgstr "Uložit 5:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save 6:"
+msgstr "Uložit 6:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save 7:"
+msgstr "Uložit 7:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save 8:"
+msgstr "Uložit 8:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save 9:"
+msgstr "Uložit 9:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save Dlg:"
+msgstr "Dialogové okno uložení:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save File:"
+msgstr "Uložit soubor:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save Game Position"
+msgstr "Uložit pozici hry"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save Memory Pack"
+msgstr "Uložit paměťový balíček (Memory Pack)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save Other"
+msgstr "Uložit jiné"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save S-RAM Data"
+msgstr "Uložit data S-RAM"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save Screenshot"
+msgstr "Uložit snímek obrazovky"
+
+#: win32/wlanguage.h
+msgid "Save screenshot"
+msgstr "Uložit snímek obrazovky"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save SPC Data"
+msgstr "Uložit data SPC"
+
+#: win32/wlanguage.h
+msgid "Save to file:"
+msgstr "Uložit do souboru:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save Watches"
+msgstr "Uložit sledované hodnoty (Watches)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save with Preview"
+msgstr "Uložit s náhledem"
+
+#: win32/wlanguage.h
+msgid "Saves"
+msgstr "Uložené pozice"
+
+#: win32/rsrc/snes9x.rc
+msgid "Screen"
+msgstr "Obrazovka"
+
+#: win32/wlanguage.h
+msgid "Screenshots"
+msgstr "Snímky obrazovky"
+
+#: win32/rsrc/snes9x.rc
+msgid "Search"
+msgstr "Hledat"
+
+#: win32/rsrc/snes9x.rc
+msgid "Search Database"
+msgstr "Hledat v databázi"
+
+#: win32/rsrc/snes9x.rc
+msgid "Search for New Cheats"
+msgstr "Hledat nové cheaty"
+
+#: win32/rsrc/snes9x.rc
+msgid "seconds after last change (0 disables auto-save)"
+msgstr "sekund po poslední změně (0 vypne automatické ukládání)"
+
+#: win32/rsrc/snes9x.rc
+msgid "SELECT"
+msgstr "SELECT"
+
+#: win32/rsrc/snes9x.rc
+msgid "Select 0:"
+msgstr "Vybrat 0:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Select 1:"
+msgstr "Vybrat 1:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Select 2:"
+msgstr "Vybrat 2:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Select 3:"
+msgstr "Vybrat 3:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Select 4:"
+msgstr "Vybrat 4:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Select 5:"
+msgstr "Vybrat 5:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Select 6:"
+msgstr "Vybrat 6:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Select 7:"
+msgstr "Vybrat 7:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Select 8:"
+msgstr "Vybrat 8:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Select 9:"
+msgstr "Vybrat 9:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Select File"
+msgstr "Vybrat soubor"
+
+#: win32/wlanguage.h
+msgid "Select Folder"
+msgstr "Vybrat složku"
+
+#: win32/wlanguage.h
+msgid "Select Slot 0:"
+msgstr "Vybrat slot 0:"
+
+#: win32/wlanguage.h
+msgid "Select Slot 1:"
+msgstr "Vybrat slot 1:"
+
+#: win32/wlanguage.h
+msgid "Select Slot 2:"
+msgstr "Vybrat slot 2:"
+
+#: win32/wlanguage.h
+msgid "Select Slot 3:"
+msgstr "Vybrat slot 3:"
+
+#: win32/wlanguage.h
+msgid "Select Slot 4:"
+msgstr "Vybrat slot 4:"
+
+#: win32/wlanguage.h
+msgid "Select Slot 5:"
+msgstr "Vybrat slot 5:"
+
+#: win32/wlanguage.h
+msgid "Select Slot 6:"
+msgstr "Vybrat slot 6:"
+
+#: win32/wlanguage.h
+msgid "Select Slot 7:"
+msgstr "Vybrat slot 7:"
+
+#: win32/wlanguage.h
+msgid "Select Slot 8:"
+msgstr "Vybrat slot 8:"
+
+#: win32/wlanguage.h
+msgid "Select Slot 9:"
+msgstr "Vybrat slot 9:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Send"
+msgstr "Odeslat"
+
+#: win32/rsrc/snes9x.rc
+msgid "Send ROM Image to Client on Connect"
+msgstr "Odeslat obraz ROM klientovi při připojení"
+
+#: win32/rsrc/snes9x.rc
+msgid "Send ROM Image to Clients"
+msgstr "Odeslat obraz ROM klientům"
+
+#: win32/rsrc/snes9x.rc
+msgid "Send ROM Image to Clients Now"
+msgstr "Odeslat obraz ROM klientům hned"
+
+#: win32/rsrc/snes9x.rc
+msgid "Separate Echo Buffer from RAM"
+msgstr "Oddělit vyrovnávací paměť ozvěny (Echo Buffer) od RAM"
+
+#: win32/rsrc/snes9x.rc
+msgid "Server Address"
+msgstr "Adresa serveru"
+
+#: win32/rsrc/snes9x.rc
+msgid "Server is stopped."
+msgstr "Server je zastaven."
+
+#: win32/rsrc/snes9x.rc
+msgid "Server Lobby"
+msgstr "Lobby serveru"
+
+#: win32/rsrc/snes9x.rc
+msgid "Server Name:"
+msgstr "Název serveru:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Server Settings"
+msgstr "Nastavení serveru"
+
+#: win32/rsrc/snes9x.rc
+msgid "Set Defaults"
+msgstr "Nastavit výchozí"
+
+#: win32/rsrc/snes9x.rc
+msgid "Set Value"
+msgstr "Nastavit hodnotu"
+
+#: win32/rsrc/snes9x.rc
+msgid "Settings"
+msgstr "Nastavení"
+
+#: win32/wlanguage.h
+msgid "SETTINGS NOT IN MOVIE; VERIFY:"
+msgstr "NASTAVENÍ NEJSOU VE VIDEU; OVĚŘTE:"
+
+#: win32/rsrc/snes9x.rc
+msgid "SGB Mix"
+msgstr "SGB Mix"
+
+#: win32/rsrc/snes9x.rc
+msgid "SGB1"
+msgstr "SGB1"
+
+#: win32/rsrc/snes9x.rc
+msgid "SGB2"
+msgstr "SGB2"
+
+#: win32/rsrc/snes9x.rc
+msgid "Show Audio Waveform"
+msgstr "Zobrazit zvukovou vlnu (Waveform)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Show Background"
+msgstr "Zobrazit pozadí"
+
+#: win32/rsrc/snes9x.rc
+msgid "Show Crosshair"
+msgstr "Zobrazit zaměřovač (Crosshair)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Show Frame Number"
+msgstr "Zobrazit číslo snímku"
+
+#: win32/rsrc/snes9x.rc
+msgid "Show Frame Rate"
+msgstr "Zobrazit snímkovou frekvenci"
+
+#: win32/rsrc/snes9x.rc
+msgid "Show Grid"
+msgstr "Zobrazit mřížku"
+
+#: win32/wlanguage.h
+msgid "Show pressed keys:"
+msgstr "Zobrazovat stisknuté klávesy:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Show screen"
+msgstr "Zobrazit obrazovku"
+
+#: win32/rsrc/snes9x.rc
+msgid "Show Screen Outline"
+msgstr "Zobrazit obrys obrazovky"
+
+#: win32/rsrc/snes9x.rc
+msgid "Show Sprites"
+msgstr "Zobrazit sprity"
+
+#: win32/rsrc/snes9x.rc
+msgid "Show viewport"
+msgstr "Zobrazit výřez (Viewport)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Show Window"
+msgstr "Zobrazit okno"
+
+#: win32/rsrc/snes9x.rc
+msgid "Signed (+/-)"
+msgstr "Se znaménkem (+/-)"
+
+#: win32/wlanguage.h
+msgid "Size"
+msgstr "Velikost"
+
+#: win32/rsrc/snes9x.rc
+msgid "Skip at most"
+msgstr "Vynechat nejvýše"
+
+#: win32/wlanguage.h
+msgid "Skip frames +:"
+msgstr "Vynechat snímky +:"
+
+#: win32/wlanguage.h
+msgid "Skip frames -:"
+msgstr "Vynechat snímky -:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Skip rendering"
+msgstr "Vynechat vykreslování (rendering)"
+
+#: win32/wlanguage.h
+msgid "Skip Rendering"
+msgstr "Vynechat vykreslování"
+
+#: win32/rsrc/snes9x.rc
+msgid "Slot +:"
+msgstr "Slot +:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Slot -:"
+msgstr "Slot -:"
+
+#: win32/rsrc/snes9x.rc
+msgid "SNES Image"
+msgstr "Obraz SNES"
+
+#: win32/rsrc/snes9x.rc
+msgid "SuperSnes9x - Unable to Initialize XAudio2"
+msgstr "SuperSnes9x - Nepodařilo se inicializovat XAudio2"
+
+#: win32/wlanguage.h
+msgid "SuperSnes9x Cheat Error"
+msgstr "Chyba cheatu v SuperSnes9x"
+
+#: win32/wlanguage.h
+msgid "SuperSnes9x Movie File"
+msgstr "Soubor videa SuperSnes9x"
+
+#: win32/rsrc/snes9x.rc
+msgid "Socket Port Number"
+msgstr "Číslo portu soketu (Socket)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Soft Reset"
+msgstr "Měkký reset"
+
+#: win32/wlanguage.h
+msgid "Soft reset:"
+msgstr "Měkký reset:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Sound Driver:"
+msgstr "Ovladač zvuku:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Sound Interpolation Type:"
+msgstr "Typ interpolace zvuku:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Sound Quality"
+msgstr "Kvalita zvuku"
+
+#: win32/rsrc/snes9x.rc
+msgid "Sound Settings"
+msgstr "Nastavení zvuku"
+
+#: win32/rsrc/snes9x.rc
+msgid "Source:"
+msgstr "Zdroj:"
+
+#: win32/rsrc/snes9x.rc
+msgid "SPC"
+msgstr "SPC"
+
+#: win32/wlanguage.h
+msgid "SPCs"
+msgstr "Soubory SPC"
+
+#: win32/wlanguage.h
+msgid "Speed +:"
+msgstr "Rychlost +:"
+
+#: win32/wlanguage.h
+msgid "Speed -:"
+msgstr "Rychlost -:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Spin1"
+msgstr "Spin1"
+
+#: win32/rsrc/snes9x.rc
+msgid "Spin2"
+msgstr "Spin2"
+
+#: win32/rsrc/snes9x.rc
+msgid "Spin3"
+msgstr "Spin3"
+
+#: win32/rsrc/snes9x.rc
+msgid "Spin4"
+msgstr "Spin4"
+
+#: win32/rsrc/snes9x.rc
+msgid "Sprite Viewer"
+msgstr "Prohlížeč spritů"
+
+#: win32/rsrc/snes9x.rc
+msgid "Sprite:"
+msgstr "Sprite:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Sprites"
+msgstr "Sprity"
+
+#: win32/wlanguage.h
+msgid "Sprites layer:"
+msgstr "Vrstva spritů:"
+
+#: win32/wlanguage.h
+msgid "SRAM"
+msgstr "SRAM"
+
+#: win32/rsrc/snes9x.rc
+msgid "START"
+msgstr "START"
+
+#: win32/rsrc/snes9x.rc
+msgid "Start Game"
+msgstr "Spustit hru"
+
+#: win32/rsrc/snes9x.rc
+msgid "Start Server"
+msgstr "Spustit server"
+
+#: win32/rsrc/snes9x.rc
+msgid "Static"
+msgstr "Statický"
+
+#: win32/rsrc/snes9x.rc
+msgid "Status"
+msgstr "Stav"
+
+#: win32/rsrc/snes9x.rc
+msgid "Stretch Image"
+msgstr "Roztáhnout obraz"
+
+#: win32/rsrc/snes9x.rc
+msgid "SuperFX Clock Speed %:"
+msgstr "Taktovací frekvence SuperFX v %:"
+
+#: win32/rsrc/snes9x.rc
+msgid "SuperFX speed:"
+msgstr "Rychlost SuperFX:"
+
+#: win32/wlanguage.h
+msgid "SuperScope pause:"
+msgstr "Pauza pro SuperScope:"
+
+#: win32/wlanguage.h
+msgid "SuperScope turbo:"
+msgstr "Turbo pro SuperScope:"
+
+#: win32/wlanguage.h
+msgid "SuperSnes9x (x64)"
+msgstr "SuperSnes9x (x64)"
+
+#: win32/rsrc/snes9x.rc
+msgid "SuperSnes9x - About"
+msgstr "SuperSnes9x - O programu"
+
+#: win32/wlanguage.h
+msgid "SuperSnes9x: DirectSound"
+msgstr "SuperSnes9x: DirectSound"
+
+#: win32/wlanguage.h
+msgid "SuperSnes9x: Information"
+msgstr "SuperSnes9x: Informace"
+
+#: win32/wlanguage.h
+msgid "SuperSnes9x: NetPlay Error"
+msgstr "SuperSnes9x: Chyba NetPlay"
+
+#: win32/wlanguage.h
+msgid "SuperSnes9x: Sound CPU Question"
+msgstr "SuperSnes9x: Otázka ohledně zvukového CPU"
+
+#: win32/wlanguage.h
+msgid "SuperSnes9x: WARNING!"
+msgstr "SuperSnes9x: VAROVÁNÍ!"
+
+#: win32/rsrc/snes9x.rc
+msgid "Swap A and B"
+msgstr "Prohodit A a B"
+
+#: win32/wlanguage.h
+msgid "Switch aspect Ratio:"
+msgstr "Přepnout poměr stran:"
+
+#: win32/wlanguage.h
+msgid "Switch controllers:"
+msgstr "Přepnout ovladače:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Sync By Reset"
+msgstr "Synchronizovat resetem"
+
+#: win32/rsrc/snes9x.rc
+msgid "Sync Sound"
+msgstr "Synchronizovat zvuk"
+
+#: win32/rsrc/snes9x.rc
+msgid "Sync Using Reset Game"
+msgstr "Synchronizovat pomocí resetu hry"
+
+#: win32/rsrc/snes9x.rc
+msgid "Synchronize with sound core"
+msgstr "Synchronizovat se zvukovým jádrem"
+
+#: win32/wlanguage.h
+msgid "TempTurbo"
+msgstr "DočasnéTurbo"
+
+#: win32/wlanguage.h
+msgid "Text file"
+msgstr "Textový soubor"
+
+#: win32/wlanguage.h
+msgid "The movie file is corrupt or in the wrong format."
+msgstr "Soubor videa je poškozen nebo má nesprávný formát."
+
+#: win32/wlanguage.h
+msgid "The movie file was not found or could not be opened."
+msgstr "Soubor videa nebyl nalezen nebo jej nebylo možné otevřít."
+
+#: win32/rsrc/snes9x.rc
+msgid "Tile Addr:"
+msgstr "Adresa dlaždice:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Tile Data:"
+msgstr "Data dlaždice:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Tile Size:"
+msgstr "Velikost dlaždice:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Tile Viewer"
+msgstr "Prohlížeč dlaždic (Tiles)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Tilemap"
+msgstr "Mapa dlaždic (Tilemap)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Tilemap Viewer"
+msgstr "Prohlížeč mapy dlaždic"
+
+#: win32/rsrc/snes9x.rc
+msgid "Tiles"
+msgstr "Dlaždice (Tiles)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Timeout:"
+msgstr "Časový limit (Timeout):"
+
+#: win32/rsrc/snes9x.rc
+msgid "Toggle Achievements Images"
+msgstr "Přepnout obrázky úspěchů"
+
+#: win32/wlanguage.h
+msgid "Toggle backdrop:"
+msgstr "Přepnout pozadí (backdrop):"
+
+#: win32/wlanguage.h
+msgid "Toggle cheats:"
+msgstr "Přepnout cheaty:"
+
+#: win32/wlanguage.h
+msgid "Toggle mute:"
+msgstr "Přepnout ztlumení:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Transparency Effects"
+msgstr "Efekty průhlednosti"
+
+#: win32/wlanguage.h
+msgid "Transparency:"
+msgstr "Průhlednost:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Tree1"
+msgstr "Strom1"
+
+#: win32/wlanguage.h
+msgid "Turbo"
+msgstr "Turbo"
+
+#: win32/wlanguage.h
+msgid "Turbo A mode:"
+msgstr "Režim Turbo A:"
+
+#: win32/wlanguage.h
+msgid "Turbo B mode:"
+msgstr "Režim Turbo B:"
+
+#: win32/wlanguage.h
+msgid "Turbo Down mode:"
+msgstr "Režim Turbo Dolů:"
+
+#: win32/wlanguage.h
+msgid "Turbo L mode:"
+msgstr "Režim Turbo L:"
+
+#: win32/wlanguage.h
+msgid "Turbo Left mode:"
+msgstr "Režim Turbo Vlevo:"
+
+#: win32/wlanguage.h
+msgid "Turbo R mode:"
+msgstr "Režim Turbo R:"
+
+#: win32/wlanguage.h
+msgid "Turbo Right mode:"
+msgstr "Režim Turbo Vpravo:"
+
+#: win32/wlanguage.h
+msgid "Turbo Select mode:"
+msgstr "Režim Turbo Select:"
+
+#: win32/wlanguage.h
+msgid "Turbo Start mode:"
+msgstr "Režim Turbo Start:"
+
+#: win32/wlanguage.h
+msgid "Turbo Up mode:"
+msgstr "Režim Turbo Nahoru:"
+
+#: win32/wlanguage.h
+msgid "Turbo X mode:"
+msgstr "Režim Turbo X:"
+
+#: win32/wlanguage.h
+msgid "Turbo Y mode:"
+msgstr "Režim Turbo Y:"
+
+#: win32/wlanguage.h
+msgid "Uncompressed ROM files"
+msgstr "Nekomprimované soubory ROM"
+
+#: win32/wlanguage.h
+msgid "Unrecognized format."
+msgstr "Neznámý formát."
+
+#: win32/rsrc/snes9x.rc
+msgid "Unsigned (>=0)"
+msgstr "Bez znaménka (>=0)"
+
+#: win32/wlanguage.h
+msgid "Unsupported movie version."
+msgstr "Nepodporovaná verze videa."
+
+#: win32/rsrc/snes9x.rc
+msgid "UP"
+msgstr "NAHORU"
+
+#: win32/rsrc/snes9x.rc
+msgid "UP LEFT"
+msgstr "NAHORU VLEVO"
+
+#: win32/wlanguage.h
+msgid "Up Left"
+msgstr "Nahoru vlevo"
+
+#: win32/rsrc/snes9x.rc
+msgid "UP RIGHT"
+msgstr "NAHORU VPRAVO"
+
+#: win32/wlanguage.h
+msgid "Up Right"
+msgstr "Nahoru vpravo"
+
+#: win32/rsrc/snes9x.rc
+msgid "Update"
+msgstr "Aktualizovat"
+
+#: win32/rsrc/snes9x.rc
+msgid "Use CGRAM"
+msgstr "Použít CGRAM"
+
+#: win32/rsrc/snes9x.rc
+msgid "Use DirectInput"
+msgstr "Použít DirectInput"
+
+#: win32/rsrc/snes9x.rc
+msgid "Use Dual Justifiers"
+msgstr "Použít dva Justifiery (světelné pistole)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Use Konami Justifier"
+msgstr "Použít Konami Justifier"
+
+#: win32/rsrc/snes9x.rc
+msgid "Use M.A.C.S. Rifle"
+msgstr "Použít pušku M.A.C.S."
+
+#: win32/rsrc/snes9x.rc
+msgid "Use Mouse in alternate port"
+msgstr "Použít myš v alternativním portu"
+
+#: win32/rsrc/snes9x.rc
+msgid "Use Multitaps (8-player)"
+msgstr "Použít Multitapy (8 hráčů)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Use Shader"
+msgstr "Použít shader"
+
+#: win32/rsrc/snes9x.rc
+msgid "Use SNES Joypad(s)"
+msgstr "Použít SNES Joypad(y)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Use SNES Mouse"
+msgstr "Použít SNES myš"
+
+#: win32/rsrc/snes9x.rc
+msgid "Use Super Multitap (5-player)"
+msgstr "Použít Super Multitap (5 hráčů)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Use Super Scope"
+msgstr "Použít Super Scope"
+
+#: win32/rsrc/snes9x.rc
+msgid "User Agent: SuperSnes9x/1.63"
+msgstr "User Agent: SuperSnes9x/1.63"
+
+#: win32/rsrc/snes9x.rc
+msgid "Username:"
+msgstr "Uživatelské jméno:"
+
+#: win32/wlanguage.h
+msgid "Value"
+msgstr "Hodnota"
+
+#: win32/rsrc/snes9x.rc
+msgid "Value (hex):"
+msgstr "Hodnota (hex):"
+
+#: win32/rsrc/snes9x.rc
+msgid "Video"
+msgstr "Video"
+
+#: win32/rsrc/snes9x.rc
+msgid "Video System:"
+msgstr "Video systém:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Volume"
+msgstr "Hlasitost"
+
+#: win32/rsrc/snes9x.rc
+msgid "VSync"
+msgstr "VSync"
+
+#: win32/wlanguage.h
+msgid "WARNING: You don't have the right ROM loaded!"
+msgstr "VAROVÁNÍ: Nemáte načtenou správnou ROM!"
+
+#: win32/rsrc/snes9x.rc
+msgid "Watch"
+msgstr "Sledovat (Watch)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Welcome Message (MOTD)"
+msgstr "Uvítací zpráva (MOTD)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Width:"
+msgstr "Šířka:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Window Size"
+msgstr "Velikost okna"
+
+#: win32/rsrc/snes9x.rc
+msgid "WOG!"
+msgstr "WOG!"
+
+#: win32/wlanguage.h
+msgid "You have entered an out of range or invalid value for the new value"
+msgstr "Zadali jste neplatnou hodnotu nebo hodnotu mimo rozsah"
+
+#: win32/wlanguage.h
+msgid "You need a different version of SuperSnes9x to play this movie."
+msgstr "K přehrání tohoto videa potřebujete jinou verzi SuperSnes9x."
+
+#: win32/rsrc/snes9x.rc
+msgid "Your password is only used to get an API token.\nIt is never stored."
+msgstr "Vaše heslo slouží pouze k získání API tokenu.\nNikdy se neukládá."
+
+#: win32/rsrc/snes9x.rc
+msgid "Zoom:"
+msgstr "Přiblížení (Zoom):"
+
+# === Win32 strings (added by i18n/extract_strings.py) ===
+
+#: win32/CSpriteViewerDlg.cpp
+msgid "Export Selected to PNG"
+msgstr "Exportovat vybrané do PNG"
+
+#: win32/CGBSpriteViewerDlg.cpp
+msgid "Export to PNG"
+msgstr "Exportovat do PNG"
+
+#: win32/CSpriteViewerDlg.cpp
+msgid "Show All Objects"
+msgstr "Zobrazit všechny objekty"
+
+#: win32/CSpriteViewerDlg.cpp
+msgid "Show Only Selected Objects"
+msgstr "Zobrazit pouze vybrané objekty"
+
+#: win32/CSpriteViewerDlg.cpp
+msgid "Toggle Visibility"
+msgstr "Přepnout viditelnost"
+
+#: win32/wsnes9x.cpp
+msgid "Translations"
+msgstr "Překlady"
+
+# === Win32 strings (added by i18n/extract_strings.py) ===
+
+#: win32/wsnes9x.cpp
+msgid "Language"
+msgstr "Jazyk"
+
+# === Win32 strings (added by i18n/extract_strings.py) ===
+
+#: qt/src/SoundPanel.ui
+msgid "44100 Hz"
+msgstr "44100 Hz"
+
+#: qt/src/SoundPanel.ui
+msgid "48000 Hz"
+msgstr "48000 Hz"
+
+#: qt/src/DisplayPanel.ui
+msgid "4:3 - Classic display aspect"
+msgstr "4:3 - Klasický poměr stran displeje"
+
+#: qt/src/DisplayPanel.ui
+msgid "64:49 - NTSC aspect"
+msgstr "64:49 - Poměr stran NTSC"
+
+#: qt/src/DisplayPanel.ui
+msgid "8:7 - Square pixels"
+msgstr "8:7 - Čtvercové pixely"
+
+#: qt/src/EmulationPanel.ui
+msgid "<html><head/><body><p>A hack option. Only use this if you are running a third-party hack of a game that was designed for emulators and needs this.</p></body></html>"
+msgstr "<html><head/><body><p>Volba úpravy (hack). Použijte ji pouze tehdy, pokud spouštíte neoficiální úpravu hry, která byla navržena pro emulátory a vyžaduje toto chování.</p></body></html>"
+
+#: qt/src/EmulationPanel.ui
+msgid "<html><head/><body><p>Allows more sprites to be displayed on the screen in an attempt to remove flickering.</p><p>Some games take advantage of this limit and use it to hide glitches, and removing the limit will make those visible.</p></body></html>"
+msgstr "<html><head/><body><p>Umožňuje zobrazit na obrazovce více spritů ve snaze eliminovat blikání obrazu.</p><p>Některé hry tohoto limitu využívají ke skrývání grafických chyb, takže jeho odstraněním se tyto chyby mohou zviditelnit.</p></body></html>"
+
+#: qt/src/EmulationPanel.ui
+msgid "<html><head/><body><p>Alternate sound filters can make the audio more crisp than the authentic gaussian filter.</p><p>The Cubic and Sinc filters provide the best improvement, but they can reveal some noise that would normally be hidden by the hardware.</p></body></html>"
+msgstr "<html><head/><body><p>Alternativní zvukové filtry mohou vytvořit čistší a ostřejší zvuk než původní gaussovský filtr.</p><p>Kubické (Cubic) a Sinc filtry sice poskytují nejlepší vylepšení, ale mohou odhalit určitý šum, který by původní hardware normálně skryl.</p></body></html>"
+
+#: qt/src/EmulationPanel.ui
+msgid "<html><head/><body><p>Amount of memory to use to enable the rewind function. The amount of time each MB gets you varies based on the complexity of the game. Set to 0 to disable rewind altogether and use less processor time.</p></body></html>"
+msgstr "<html><head/><body><p>Množství paměti vyhrazené pro funkci přetáčení zpět. Časový rozsah, který získáte za každý MB, se liší podle složitosti hry. Nastavením na 0 funkci přetáčení zcela vypnete a ušetříte čas procesoru.</p></body></html>"
+
+#: qt/src/EmulationPanel.ui
+msgid "<html><head/><body><p>Change the speed of the SuperFX chip. The SuperFX had some notoriously slow games, and this can be used to attempt to speed them up.</p></body></html>"
+msgstr "<html><head/><body><p>Změnit rychlost čipu SuperFX. Některé hry využívající SuperFX byly pověstné svou pomalostí, a tato volba slouží k pokusu o jejich zrychlení.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>Choose one of <span style=\" font-style:italic;\">Qt Software, Vulkan, or OpenGL</span>.</p><p>Qt Software will use the CPU to draw the display. Vulkan or OpenGL will use that respective graphics interface to draw the display.</p></body></html>"
+msgstr "<html><head/><body><p>Zvolte jednu z možností: <span style=\" font-style:italic;\">Qt Software, Vulkan nebo OpenGL</span>.</p><p>Možnost Qt Software využije k vykreslování procesor (CPU). Vulkan nebo OpenGL použijí k vykreslování obrazu dané grafické rozhraní grafické karty.</p></body></html>"
+
+#: qt/src/ControllerPanel.ui
+msgid "<html><head/><body><p>Clear or swap sets of bindings between controllers.</p></body></html>"
+msgstr "<html><head/><body><p>Vymazat nebo prohodit sady přiřazení tlačítek mezi ovladači.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>Control how much the audio is stretched initially.</p><p><br/></p><p>Unless you know what you're doing, it's best to use the option above this to adjust it automatically.</p></body></html>"
+msgstr "<html><head/><body><p>Řídí, do jaké míry se má zvuk na začátku roztáhnout.</p><p><br/></p><p>Pokud si nejste jisti, co děláte, je nejlepší použít výše uvedenou možnost pro automatické přizpůsobení.</p></body></html>"
+
+#: qt/src/FoldersPanel.ui
+msgid "<html><head/><body><p>Determines where to look for optional BIOS / boot ROM files (Super Game Boy boot ROM, BS-X.bin, etc).</p><p><span style=\" font-style:italic;\">ROM Folder</span> looks next to the loaded ROM.</p><p><span style=\" font-style:italic;\">Config Folder</span> uses a \"bios\" subfolder of the config folder.</p><p><span style=\" font-style:italic;\">Custom</span> uses an explicit path (default: \"Bios\" relative to the working directory).</p></body></html>"
+msgstr "<html><head/><body><p>Určuje, kde se mají hledat volitelné soubory BIOS / bootovacích ROM (boot ROM pro Super Game Boy, BS-X.bin atd.).</p><p>Možnost <span style=\" font-style:italic;\">Složka s ROM (ROM Folder)</span> hledá hned vedle načtené ROM.</p><p>Možnost <span style=\" font-style:italic;\">Konfigurační složka (Config Folder)</span> používá podsložku „bios“ uvnitř hlavní konfigurační složky.</p><p>Možnost <span style=\" font-style:italic;\">Vlastní (Custom)</span> používá pevně zadanou cestu (výchozí: složka „Bios“ v pracovním adresáři).</p></body></html>"
+
+#: qt/src/FoldersPanel.ui
+msgid "<html><head/><body><p>Determines where to save these files.</p><p><span style=\" font-style:italic;\">ROM Folder</span> will always save to the same folder as the ROM.</p><p><span style=\" font-style:italic;\">Config Folder</span> will save to a subfolder of the config folder that is shown. If there is a snes9x.conf file next to your executable, SuperSnes9x will operate in portable mode and the config folder will be the folder the executable is in.</p><p><span style=\" font-style:italic;\">Custom</span> allows you to specify exactly where to save these files.</p></body></html>"
+msgstr "<html><head/><body><p>Určuje, kam se mají tyto soubory ukládat.</p><p>Možnost <span style=\" font-style:italic;\">Složka s ROM (ROM Folder)</span> data uloží vždy do stejné složky, v níž se nachází daná ROM.</p><p>Možnost <span style=\" font-style:italic;\">Konfigurační složka (Config Folder)</span> data uloží do zobrazené podsložky konfiguračního adresáře. Pokud se vedle spouštěcího souboru nachází snes9x.conf, emulátor poběží v přenosném (portable) režimu a konfigurační složkou bude ta, v níž je spouštěcí soubor.</p><p>Možnost <span style=\" font-style:italic;\">Vlastní (Custom)</span> vám umožní přesně určit, kam se mají tyto soubory ukládat.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>Erases all emulated sound output and just sends out silence.</p></body></html>"
+msgstr "<html><head/><body><p>Zruší veškerý emulovaný výstup zvuku a bude posílat pouze ticho.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>If after everything, you're still getting pops and crackles in audio, you can increase this value. However, it may cause noticeable distortion.</p></body></html>"
+msgstr "<html><head/><body><p>Pokud i po veškerém nastavení stále slyšíte v audiu praskání, můžete tuto hodnotu zvýšit. Může to však způsobit znatelné zkreslení zvuku.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>Master output volume during normal play. Moving this also drags the per-source SGB sliders so they stay in step.</p></body></html>"
+msgstr "<html><head/><body><p>Hlavní hlasitost výstupu během běžného hraní. Posunutím tohoto jezdce se posunou i jednotlivé SGB jezdce pro zachování souladu.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>Master output volume during turbo and rewind.</p></body></html>"
+msgstr "<html><head/><body><p>Hlavní hlasitost výstupu během turbo režimu a přetáčení zpět.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>Mutes sound when using the turbo and rewind functions, which might be annoying to some users.</p></body></html>"
+msgstr "<html><head/><body><p>Ztlumí zvuk při použití funkcí turbo a přetáčení zpět, což by pro některé uživatele mohlo být rušivé.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>On classic CRT televisions, some areas of the screen were covered by the bezel, so weren't used often in games. This option allows you to show that area, but it will usually be just black bars.</p></body></html>"
+msgstr "<html><head/><body><p>U klasických CRT televizorů byly některé okrajové oblasti obrazovky zakryty rámem, takže se ve hrách často nevyužívaly. Tato možnost vám umožní danou oblast zobrazit, ale většinou půjde jen o černé pruhy.</p></body></html>"
+
+#: qt/src/EmulationPanel.ui
+msgid "<html><head/><body><p>Original controllers may have had a small pin in the dpad preventing left and right or up and down from being pressed at the same time. This will allow that behavior if you're using a keyboard or device that can press those buttons at the same time. Some games will glitch when this is done.</p></body></html>"
+msgstr "<html><head/><body><p>Původní ovladače měly uvnitř d-padu malý kolík, který bránil současnému stisknutí protilehlých směrů (vlevo+vpravo nebo nahoru+dolů). Tato volba toto chování povolí, pokud používáte klávesnici či zařízení, které umožňuje tyto klávesy stisknout naráz. Některé hry při tomto stavu mohou vykazovat chyby.</p></body></html>"
+
+#: qt/src/EmulationPanel.ui
+msgid "<html><head/><body><p>Override the frame rate of the emulated system. This can be used to run slightly faster or slower than usual, or to match the timer to your exact refresh rate.</p><p><br/></p><p>Set this to 0 to use whatever the emulated system uses.</p></body></html>"
+msgstr "<html><head/><body><p>Přebít snímkovou frekvenci emulovaného systému. Lze využít ke spuštění hry o něco rychleji či pomaleji, než je běžné, nebo k přizpůsobení časovače přesné obnovovací frekvenci vaší obrazovky.</p><p><br/></p><p>Nastavením na hodnotu 0 použijete standardní frekvenci daného emulovaného systému.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>Selects the driver to output sound with.</p><p><span style=\" font-style:italic;\">Cubeb: </span>The recommended option.</p><p><span style=\" font-style:italic;\">SDL</span>: If Cubeb doesn't work.</p><p><span style=\" font-style:italic;\">PulseAudio:</span> Unix only. May have less latency.</p></body></html>"
+msgstr "<html><head/><body><p>Vybírá ovladač, přes který se bude přehrávat zvuk.</p><p><span style=\" font-style:italic;\">Cubeb: </span>Doporučená volba.</p><p><span style=\" font-style:italic;\">SDL</span>: Použijte, pokud Cubeb nefunguje.</p><p><span style=\" font-style:italic;\">PulseAudio:</span> Pouze pro Unixové systémy. Může mít nižší latenci.</p></body></html>"
+
+#: qt/src/FoldersPanel.ui
+msgid "<html><head/><body><p>Setting this to anything other than 0 will save the SRAM (internal game saves) file regularly. If it is set to to 0, it will only save when exiting SuperSnes9x or changing games, and you will lose any progress since the last save if your device crashes.</p></body></html>"
+msgstr "<html><head/><body><p>Nastavením této hodnoty na jinou hodnotu než 0 se bude soubor SRAM (interní ukládání pozic ve hře) ukládat pravidelně. Pokud je nastavena na 0, uloží se pouze při ukončení SuperSnes9x nebo při změně hry; v případě pádu zařízení pak ztratíte veškerý postup od posledního uložení.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>SGB BIOS mix: GB channel volume. Active in SGB1/SGB2 BIOS mode; in BIOS-less mode this mirrors the Regular master, which is what actually scales GB output.</p></body></html>"
+msgstr "<html><head/><body><p>SGB BIOS mix: Hlasitost kanálu Game Boye. Aktivní v režimu SGB1/SGB2 BIOSu; v režimu bez BIOSu zrcadlí běžnou hlavní hlasitost (Regular master), která reálně řídí hlasitost výstupu GB.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>SGB BIOS mix: SPC channel volume. Only active in SGB1/SGB2 BIOS mode — BIOS-less GB playback discards SPC output.</p></body></html>"
+msgstr "<html><head/><body><p>SGB BIOS mix: Hlasitost kanálu SPC. Aktivní pouze v režimu SGB1/SGB2 BIOSu — přehrávání GB bez BIOSu výstup SPC zcela zahazuje.</p></body></html>"
+
+#: qt/src/EmulationPanel.ui
+msgid "<html><head/><body><p>Skips rendering the specified amount of frames when using the fast-forward function. The higher this amount, the faster it goes.</p></body></html>"
+msgstr "<html><head/><body><p>Vynechá vykreslování zadaného množství snímků při použití funkce rychlého přetáčení dopředu. Čím vyšší hodnota, tím rychleji proces probíhá.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>The buffer size for the emulator side of sound playback. Ideally, it should be about two frames worth of audio, or about 32ms at 60Hz. Latency will be half this value.</p></body></html>"
+msgstr "<html><head/><body><p>Velikost vyrovnávací paměti zvuku na straně emulátoru. Ideálně by měla odpovídat zvuku o délce zhruba dvou snímků, tedy cca 32 ms při 60 Hz. Latence (zpoždění) pak bude polovina této hodnoty.</p></body></html>"
+
+#: qt/src/ControllerPanel.ui
+msgid "<html><head/><body><p>The enumerated controller as seen by the SNES. Controller 1 will always be quot;Player 1quot; and so on, no matter what device is assigned to the controller ports.</p></body></html>"
+msgstr "<html><head/><body><p>Číslovaný ovladač, jak jej vidí konzole SNES. Ovladač 1 bude vždy představovat „Hráče 1“ atd., bez ohledu na to, jaké fyzické zařízení je k portům ovladačů reálně přiřazeno.</p></body></html>"
+
+#: qt/src/EmulationPanel.ui
+msgid "<html><head/><body><p>The number of frames between each rewind snapshot. More frames mean rewind can go back further and will rewind faster. </p></body></html>"
+msgstr "<html><head/><body><p>Počet snímků mezi jednotlivými snímky stavu pro přetáčení zpět. Vyšší počet snímků znamená, že se přetáčení dostane dále do minulosti a proces bude rychlejší.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>The output playback rate on your computer. This is <span style=\" font-weight:700;\">not</span> the playback rate of the emulated system.</p><p>You should set this to match your operating system's sound server. It should almost always be 48000Hz.</p></body></html>"
+msgstr "<html><head/><body><p>Výstupní vzorkovací frekvence zvuku na vašem počítači. Toto <span style=\" font-weight:700;\">není</span> vzorkovací frekvence emulovaného systému.</p><p>Měli byste ji nastavit tak, aby odpovídala zvukovému serveru vašeho operačního systému. Téměř vždy by to mělo být 48000 Hz.</p></body></html>"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "<html><head/><body><p>This box lists application shortcuts. There are 4 slots, so you can assign 4 different keys or buttons to one function.</p><p>To set a binding, click a box or highlight it with the keyboard and press Enter/Return. The box will show three dots quot;...quot;. Press the desired key or gamepad button to assign it to that box. The Escape key will clear the box.</p></body></html>"
+msgstr "<html><head/><body><p>Tato tabulka uvádí klávesové zkratky aplikace. K dispozici jsou 4 sloty, takže jedné funkci můžete přiřadit až 4 různé klávesy nebo tlačítka.</p><p>Pro nastavení vazby klikněte na políčko nebo jej označte klávesnicí a stiskněte Enter. V políčku se zobrazí tři tečky „...“. Poté stiskněte požadovanou klávesu nebo tlačítko gamepadu pro uložení. Klávesa Escape políčko vymaže.</p></body></html>"
+
+#: qt/src/ControllerPanel.ui
+msgid "<html><head/><body><p>This box lists keyboard keys and gamepad buttons mapped to the SNES controller. There are 4 slots, so you can assign 4 different keys or buttons to one SNES button.</p><p>To set a binding, click a box or highlight it with the keyboard and press Enter/Return. The box will show three dots quot;...quot;. Press the desired key or gamepad button to assign it to that box. The Escape key will clear the box.</p></body></html>"
+msgstr "<html><head/><body><p>Tato tabulka uvádí klávesy a tlačítka gamepadu namapovaná na ovladač SNES. K dispozici jsou 4 sloty, takže jednomu tlačítku SNES můžete přiřadit až 4 různé klávesy nebo tlačítka ovladače.</p><p>Pro nastavení vazby klikněte na políčko nebo jej označte klávesnicí a stiskněte Enter. V políčku se zobrazí tři tečky „...“. Poté stiskněte požadovanou klávesu nebo tlačítko ovladače pro uložení. Klávesa Escape políčko vymaže.</p></body></html>"
+
+#: qt/src/EmulationPanel.ui
+msgid "<html><head/><body><p>This controls how the program runs the emulated content at the correct speed.</p><p><span style=\" font-style:italic;\">Timer</span>: This sets a literal timer and shows emulated frames at the exact frame rate specified, or automatically matches the emulated system. It may not match your display's frame rate, which can cause judders.</p><p><span style=\" font-style:italic;\">Timer with Frameskipping</span>: The same as timer, except if your display has a lower refresh rate than the emulated system it will skip frames to keep up.</p><p><span style=\" font-style:italic;\">Sound Synchronization: </span>Assume the sound engine is outputting the sound at the correct speed and match the video output rate with it. This assumes your refresh rate is fairly close to the emulated system and you have vsync turned on.</p><p><span style=\" font-style:italic;\">None:</span> Don't attempt to slow emulation down. If you turn off vsync, this will run as fast as possible. If your display matches the emulated system's refresh rate closely, this with vsync enabled is generally the smoothest option aside from variable refresh rates with a timer.</p></body></html>"
+msgstr "<html><head/><body><p>Tato volba řídí, jak program udržuje správnou rychlost emulovaného obsahu.</p><p><span style=\" font-style:italic;\">Časovač (Timer)</span>: Nastaví pevný časovač a zobrazuje emulované snímky v přesně zadané frekvenci, nebo automaticky podle emulovaného systému. Nemusí se shodovat s obnovovací frekvencí displeje, což může způsobit trhání obrazu (judders).</p><p><span style=\" font-style:italic;\">Časovač s vynecháváním snímků (Timer with Frameskipping)</span>: Stejné jako časovač, s tím rozdílem, že pokud má váš displej nižší frekvenci než emulovaný systém, začnou se vynechávat snímky, aby se udrželo tempo hry.</p><p><span style=\" font-style:italic;\">Zvuková synchronizace (Sound Synchronization)</span>: Vychází z předpokladu, že zvukový engine přehrává zvuk správnou rychlostí, a přizpůsobuje jí video výstup. Předpokládá se, že frekvence vašeho monitoru je blízká emulovanému systému a máte zapnutý vsync.</p><p><span style=\" font-style:italic;\">Žádná (None)</span>: Nepokoušet se omezovat rychlost emulace. Pokud vypnete vsync, hra poběží tak rychle, jak hardware dovolí. Pokud frekvence vašeho monitoru přesně odpovídá emulovanému systému, je tato možnost se zapnutým vsync obecně tou nejplynulejší volbou (vyjma monitorů s variabilní obnovovací frekvencí).</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>This option adapts <span style=\" font-style:italic;\">maintain aspect ratio</span> and scales the image in steps of integral scale, so game pixels are never spread across the borders of screen pixels.</p></body></html>"
+msgstr "<html><head/><body><p>Tato možnost upravuje funkci <span style=\" font-style:italic;\">zachovat poměr stran</span> a škáluje obraz v celočíselných násobcích, takže pixely hry se nikdy nerozmažou přes okraje fyzických pixelů obrazovky.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>This option affects how <span style=\" font-style:italic;\">maintain aspect ratio </span>works. </p><p><span style=\" font-style:italic;\">4:3 </span>will maintain a ratio where the screen is 1.333 times wider than high.</p><p>64:49 presents an idealized ratio where the display output is perfect, but is affected by NTSC compression.</p><p>1:1 Means pixels will be square. This will squeeze the image horizontally.</p></body></html>"
+msgstr "<html><head/><body><p>Tato možnost ovlivňuje fungování volby <span style=\" font-style:italic;\">zachovat poměr stran</span>. </p><p>Možnost <span style=\" font-style:italic;\">4:3 </span>udrží poměr, kdy je obrazovka 1,333krát širší než vysoká.</p><p>Možnost 64:49 představuje idealizovaný poměr, kdy je zobrazení dokonalé, ale je ovlivněno kompresí NTSC.</p><p>Možnost 1:1 znamená, že pixely budou čtvercové. To obraz horizontálně zúží.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>This option causes the audio to be slightly stretched to keep the latency even and to prevent underruns and overruns, which will cause pops and cracks in the audio.</p></body></html>"
+msgstr "<html><head/><body><p>Tato možnost způsobí mírné roztažení zvuku za účelem udržení rovnoměrné latence a zamezení podtečení či přetečení dat, což by jinak způsobovalo praskání a lupání ve zvuku.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>This option determines whether messages show up in the game display:</p><p>Onscreen will show a high resolution overlay when using <span style=\" font-style:italic;\">Vulkan</span> or <span style=\" font-style:italic;\">OpenGL</span>.</p><p>Inscreen will draw in a pixel font to the ingame display.</p><p>Don't display messages will show nothing.</p></body></html>"
+msgstr "<html><head/><body><p>Tato možnost určuje, zda se budou zprávy zobrazovat přímo v herním okně:</p><p>Možnost <span style=\" font-style:italic;\">Na obrazovce (Onscreen)</span> zobrazí překryvnou vrstvu ve vysokém rozlišení při použití ovladačů <span style=\" font-style:italic;\">Vulkan</span> nebo <span style=\" font-style:italic;\">OpenGL</span>.</p><p>Možnost <span style=\" font-style:italic;\">V obraze (Inscreen)</span> vykreslí text pixelovým písmem přímo do herního obrazu.</p><p>Možnost <span style=\" font-style:italic;\">Nezobrazovat zprávy</span> skryje veškerá upozornění.</p></body></html>"
+
+#: qt/src/EmulationPanel.ui
+msgid "<html><head/><body><p>This option is explicitly for old AddMusic hacks. If you know you have one of those, you can enable this. Otherwise, leave it unchecked.</p></body></html>"
+msgstr "<html><head/><body><p>Tato volba je určena výhradně pro staré AddMusic úpravy (hacks). Pokud víte, že takovou používáte, můžete ji povolit. V opačném případě ji nechte nezaškrtnutou.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>This option keeps the proportions of the emulated display the same no matter how you change the size of the window.</p></body></html>"
+msgstr "<html><head/><body><p>Tato možnost zachová proporce emulovaného obrazu bez ohledu na to, jak změníte velikost okna aplikace.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>This option only affects the size of the font and the icons shown when display messages are set to the <span style=\" font-style:italic;\">Onscreen</span> option.</p></body></html>"
+msgstr "<html><head/><body><p>Tato možnost ovlivňuje pouze velikost písma a ikon zobrazených v případě, že jsou zprávy nastaveny na hodnotu <span style=\" font-style:italic;\">Na obrazovce (Onscreen)</span>.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>This option only affects the SNES's high-resolution, 512 pixel wide mode. Few games use this. </p><p><span style=\" font-style:italic;\">Output directly</span> will use whatever is output directly, but when the game changes modes, the filtering will get sharper or blurrier and may be distracting.</p><p><span style=\" font-style:italic;\">Merge fields </span>will scale the image down and blend the extra pixels together. This is useful in games like Jurassic Park and Kirby's Dreamland 3, which use it for a transparency effect.</p><p><span style=\" font-style:italic;\">Scale low resolution </span>will double the width of low-resolution screens, so when the game switches between modes there isn't any distracting changes in filtering. This is useful when a game uses the high resolution mode often, like Seiken Densetsu 3.</p></body></html>"
+msgstr "<html><head/><body><p>Tato možnost ovlivňuje pouze režim vysokého rozlišení konzole SNES o šířce 512 pixelů. Využívá jej málokterá hra. </p><p>Volba <span style=\" font-style:italic;\">Přímý výstup (Output directly)</span> zobrazí přesně to, co odchází z emulátoru, avšak při změně režimu se ostrost filtru může měnit, což může působit rušivě.</p><p>Volba <span style=\" font-style:italic;\">Sloučit půlsnímky (Merge fields)</span> zmenší velikost obrazu a slije nadbytečné pixely dohromady. To je užitečné ve hrách jako Jurassic Park nebo Kirby's Dreamland 3, kde se tím dosahuje efektu průhlednosti.</p><p>Volba <span style=\" font-style:italic;\">Zvětšit nízké rozlišení (Scale low resolution)</span> zdvojnásobí šířku obrazovek s nízkým rozlišením, takže při přepínání režimů hry nedochází k rušivým skokům v ostrosti obrazu. To se hodí u her, které režim vysokého rozlišení používají často, jako např. Seiken Densetsu 3.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>This option prevents tearing in the output.</p></body></html>"
+msgstr "<html><head/><body><p>Tato možnost zamezuje trhání obrazu (tearing) na výstupu.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>This option stretches the emulated audio output to coincide exactly with your display's refresh rate. It automatically handles the <span style=\" font-style:italic;\">Input Rate</span> option.</p></body></html>"
+msgstr "<html><head/><body><p>Tato možnost roztáhne emulovaný zvukový výstup tak, aby přesně korespondoval s obnovovací frekvencí vašeho monitoru. Automaticky spravuje nastavení volby <span style=\" font-style:italic;\">Vstupní frekvence (Input Rate)</span>.</p></body></html>"
+
+#: qt/src/ControllerPanel.ui
+msgid "<html><head/><body><p>This option will use the SDL library to auto-configure gamepads. It will take the XBox mappings for the left D-pad and analog stick, as well as the the face buttons and L/R shoulder buttons, and assign them to relative locations on the first SNES controller.</p><p><br/></p><p>All gamepads will be assigned to player 1. If you need more players, disable this option and set up the mappings manually.</p></body></html>"
+msgstr "<html><head/><body><p>Tato možnost použije knihovnu SDL k automatické konfiguraci gamepadů. Převezme namapování z ovladače Xbox pro směrový kříž (D-pad), analogové páčky, hlavní akční tlačítka i horní L/R triggery a přiřadí je na odpovídající pozice prvního ovladače SNES.</p><p><br/></p><p>Všechny připojené gamepady budou přiřazeny Hráči 1. Pokud potřebujete nakonfigurovat další hráče, tuto možnost vypněte a mapování proveďte ručně.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>This prevents the GPU from queuing up additional frames in advance, reducing the time it takes for the display to react to your input.</p></body></html>"
+msgstr "<html><head/><body><p>Tato volba brání grafické kartě (GPU) v předběžném vytváření dalších snímků do fronty, čímž zkracuje čas, za který displej zareaguje na váš vstup (snižuje latenci).</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>Turns on a bilinear smoothing filter to smooth out the pixels. This option won't work with a hardware shader enabled.</p></body></html>"
+msgstr "<html><head/><body><p>Zapne bilineární vyhlazovací filtr k zjemnění pixelů. Tato možnost nefunguje, pokud je aktivní hardwarový shader.</p></body></html>"
+
+#: qt/src/ControllerPanel.ui
+msgid "<html><head/><body><p>Use this to automatically assign the default keyboard mapping or a detected controller to a set of bindings.</p><p>This uses the XInput controller protocol and maps it as close as possible to a SNES controller.</p></body></html>"
+msgstr "<html><head/><body><p>Slouží k automatickému přiřazení výchozího mapování klávesnice nebo detekovaného ovladače do sady vazeb tlačítek.</p><p>Využívá protokol ovladačů XInput a namapuje jej co nejvěrněji rozvržení originálního ovladače SNES.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>Uses a hardware shader with <span style=\" font-style:italic;\">Vulkan</span> or <span style=\" font-style:italic;\">OpenGL</span> drivers. These can be either .glslp or .slangp preset files.</p><p>GLSL shaders (.glslp) can be downloaded from:</p><p><a href=\"https://github.com/libretro/glsl-shaders\"><span style=\" text-decoration: underline; color:#2980b9;\">https://github.com/libretro/glsl-shaders</span></a></p><p>Slang shaders (.slangp) can be downloaded from:</p><p><a href=\"https://github.com/libretro/slang-shaders\"><span style=\" text-decoration: underline; color:#2980b9;\">https://github.com/libretro/slang-shaders</span></a></p></body></html>"
+msgstr "<html><head/><body><p>Využije hardwarový shader v kombinaci s ovladači <span style=\" font-style:italic;\">Vulkan</span> nebo <span style=\" font-style:italic;\">OpenGL</span>. Může se jednat o soubory předvoleb typu .glslp nebo .slangp.</p><p>GLSL shadery (.glslp) lze stáhnout z:</p><p><a href=\"https://github.com/libretro/glsl-shaders\"><span style=\" text-decoration: underline; color:#2980b9;\">https://github.com/libretro/glsl-shaders</span></a></p><p>Slang shadery (.slangp) lze stáhnout z:</p><p><a href=\"https://github.com/libretro/slang-shaders\"><span style=\" text-decoration: underline; color:#2980b9;\">https://github.com/libretro/slang-shaders</span></a></p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>When entering fullscreen mode, this option temporarily sets a number of other options to values that make variable refresh rate monitors that use FreeSync or GSync smoother.</p><p>Enables vsync.</p><p>Sets synchronization mode to timer and the frame rate to exactly that of the SNES.</p><p>Sets input rate to 32040Hz.</p></body></html>"
+msgstr "<html><head/><body><p>Při přechodu do režimu celé obrazovky tato možnost dočasně upraví hodnoty několika dalších nastavení tak, aby byl obraz na monitorech s variabilní obnovovací frekvencí (FreeSync nebo G-Sync) plynulejší.</p><p>Zapne vsync.</p><p>Nastaví režim synchronizace na časovač a snímkovou frekvenci přesně podle specifikací konzole SNES.</p><p>Nastaví vstupní frekvenci na 32040 Hz.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>When using <span style=\" font-style:italic;\">Vulkan</span>, this chooses the GPU you wish to render with.</p></body></html>"
+msgstr "<html><head/><body><p>Při použití rozhraní <span style=\" font-style:italic;\">Vulkan</span> tato možnost vybere grafickou kartu (GPU), přes kterou chcete obraz vykreslovat.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "Adjust input rate to display rate automatically"
+msgstr "Automaticky přizpůsobit vstupní frekvenci obnovovací frekvenci displeje"
+
+#: qt/src/DisplayPanel.ui
+msgid "Adjust settings for VRR in fullscreen mode"
+msgstr "Přizpůsobit nastavení pro VRR v režimu celé obrazovky"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "All Files (*)"
+msgstr "Všechny soubory (*)"
+
+#: qt/src/EmulationPanel.ui
+msgid "Allow opposite D-pad directions simultaneously"
+msgstr "Povolit stisk protichůdných směrů d-padu současně"
+
+#: qt/src/EmulationPanel.ui
+msgid "Alternate sound filter:"
+msgstr "Alternativní zvukový filtr:"
+
+#: qt/src/ControllerPanel.ui
+msgid "Auto-Assign Gamepad Buttons Using SDL Controller Map"
+msgstr "Automaticky přiřadit tlačítka gamepadu pomocí SDL mapy ovladačů"
+
+#: qt/src/EmulationPanel.ui
+msgid "Auto-FastROM"
+msgstr "Auto-FastROM"
+
+#: qt/src/ControllerPanel.ui
+msgid "Automatically assign a controller's buttons to a slot"
+msgstr "Automaticky přiřadit tlačítka ovladače do slotu"
+
+#: qt/src/DisplayPanel.ui
+msgid "Bilinear filter"
+msgstr "Bilineární filtr"
+
+#: qt/src/ControllerPanel.ui
+msgid "Binding #1"
+msgstr "Vazba #1"
+
+#: qt/src/ControllerPanel.ui
+msgid "Binding #2"
+msgstr "Vazba #2"
+
+#: qt/src/ControllerPanel.ui
+msgid "Binding #3"
+msgstr "Vazba #3"
+
+#: qt/src/ControllerPanel.ui
+msgid "Binding #4"
+msgstr "Vazba #4"
+
+#: qt/src/ControllerPanel.cpp
+msgid "Binding Set #%1"
+msgstr "Sada vazeb #%1"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Change Backdrop Color"
+msgstr "Změnit barvu pozadí (Backdrop)"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Cheats"
+msgstr "Cheaty"
+
+#: qt/src/CheatsDialog.cpp
+msgid "cheats.bml was not found."
+msgstr "Soubor cheats.bml nebyl nalezen."
+
+#: qt/src/CheatsDialog.ui
+msgid "Check Database"
+msgstr "Zkontrolovat databázi"
+
+#: qt/src/DisplayPanel.ui
+msgid "Choose a device to render output. If you have no integrated graphics, there will be only one choice."
+msgstr "Zvolte zařízení pro vykreslování výstupu. Pokud nemáte integrovanou grafiku, bude k dispozici pouze jedna možnost."
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Choose a State File"
+msgstr "Vyberte soubor uložené pozice"
+
+#: qt/src/ControllerPanel.cpp
+msgid "Clear All Controllers"
+msgstr "Vymazat všechny ovladače"
+
+#: qt/src/ControllerPanel.cpp
+msgid "Clear Current Controller"
+msgstr "Vymazat aktuální ovladač"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Clear Recent Files"
+msgstr "Vymazat nedávné soubory"
+
+#: qt/src/EmuSettingsWindow.ui
+msgid "Click on a setting to find out more info."
+msgstr "Kliknutím na nastavení zobrazíte více informací."
+
+#: qt/src/FoldersPanel.ui
+msgid "Config Folder"
+msgstr "Konfigurační složka"
+
+#: qt/src/FoldersPanel.cpp
+msgid "Config folder is %1"
+msgstr "Konfigurační složka je %1"
+
+#: qt/src/ControllerPanel.cpp
+msgid "Controller %1"
+msgstr "Ovladač %1"
+
+#: qt/src/ControllerPanel.ui
+msgid "Controller + Multitap"
+msgstr "Ovladač + Multitap"
+
+#: qt/src/ControllerPanel.ui
+msgid "Controller Ports:"
+msgstr "Porty ovladačů:"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Controllers"
+msgstr "Ovladače"
+
+#: qt/src/FoldersPanel.ui
+msgid "Custom Folder"
+msgstr "Vlastní složka"
+
+#: qt/src/FoldersPanel.ui
+msgid "Data Locations"
+msgstr "Umístění dat"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Decrease Current Save Slot"
+msgstr "Snížit aktuální slot pro ukládání"
+
+#: qt/src/ControllerPanel.cpp
+msgid "Default Keyboard"
+msgstr "Výchozí klávesnice"
+
+#: qt/src/DisplayPanel.ui
+msgid "Device:"
+msgstr "Zařízení:"
+
+#: qt/src/GeneralPanel.ui
+msgid "Disable screensaver"
+msgstr "Zakázat spořič obrazovky"
+
+#: qt/src/DisplayPanel.ui
+msgid "Display messages:"
+msgstr "Zobrazovat zprávy:"
+
+#: qt/src/DisplayPanel.ui
+msgid "Display Output"
+msgstr "Zobrazit výstup"
+
+#: qt/src/DisplayPanel.ui
+msgid "Don't display messages"
+msgstr "Nezobrazovat zprávy"
+
+#: qt/src/DisplayPanel.ui
+msgid "Driver:"
+msgstr "Ovladač:"
+
+#: qt/src/ControllerPanel.ui
+msgid "Edit"
+msgstr "Upravit"
+
+#: qt/src/EmulationPanel.ui
+msgid "Emulation Speed"
+msgstr "Rychlost emulace"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Enable Fast-Forward"
+msgstr "Povolit rychlé přetáčení"
+
+#: qt/src/DisplayPanel.ui
+msgid "Enable vsync"
+msgstr "Povolit vsync"
+
+#: qt/src/FoldersPanel.ui
+msgid "Exports"
+msgstr "Exporty"
+
+#: qt/src/EmulationPanel.ui
+msgid "Fast-forward frame skip:"
+msgstr "Vynechání snímků při rychlém přetáčení:"
+
+#: qt/src/SoundPanel.ui
+msgid "Fast-Forward:"
+msgstr "Rychlé přetáčení:"
+
+#: qt/src/ControllerPanel.ui
+msgid "Form"
+msgstr "Formulář"
+
+#: qt/src/EmulationPanel.ui
+msgid "fps"
+msgstr "fps"
+
+#: qt/src/EmulationPanel.ui
+msgid "Frame rate:"
+msgstr "Snímková frekvence:"
+
+#: qt/src/EmulationPanel.ui
+msgid "Frames between steps"
+msgstr "Počet snímků mezi kroky"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "From File"
+msgstr "Ze souboru"
+
+#: qt/src/EmulationPanel.ui
+msgid "Gaussian"
+msgstr "Gaussovské"
+
+#: qt/src/SoundPanel.ui
+msgid "GB:"
+msgstr "GB:"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Grab Mouse"
+msgstr "Zachytit myš"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Hard Reset"
+msgstr "Tvrdý reset"
+
+#: qt/src/EmulationPanel.ui
+msgid "High"
+msgstr "Vysoká"
+
+#: qt/src/DisplayPanel.ui
+msgid "High-resolution mode:"
+msgstr "Režim vysokého rozlišení:"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Increase Current Save Slot"
+msgstr "Zvýšit aktuální slot pro ukládání"
+
+#: qt/src/DisplayPanel.ui
+msgid "Inside the screen - Low resolution"
+msgstr "V obraze - Nízké rozlišení"
+
+#: qt/src/CheatsDialog.cpp
+msgid "Invalid Cheat"
+msgstr "Neplatný cheat"
+
+#: qt/src/DisplayPanel.ui
+msgid "Keep the screen at the requested proportions for width and height."
+msgstr "Udržovat obrazovku v požadovaných proporcích pro šířku a výšku."
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Load State"
+msgstr "Načíst pozici"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Load State from Current Slot"
+msgstr "Načíst pozici z aktuálního slotu"
+
+#: qt/src/EmulationPanel.ui
+msgid "Low"
+msgstr "Nízká"
+
+#: qt/src/EmulationPanel.ui
+msgid "MB"
+msgstr "MB"
+
+#: qt/src/DisplayPanel.ui
+msgid "Merge the fields of the high-resolution lines"
+msgstr "Sloučit půlsnímky řádků s vysokým rozlišením"
+
+#: qt/src/DisplayPanel.ui
+msgid "Messages"
+msgstr "Zprávy"
+
+#: qt/src/ControllerPanel.ui
+msgid "Mouse + Controller"
+msgstr "Myš + Ovladač"
+
+#: qt/src/SoundPanel.ui
+msgid "ms"
+msgstr "ms"
+
+#: qt/src/SoundPanel.ui
+msgid "Mute all sound"
+msgstr "Ztlumit veškerý zvuk"
+
+#: qt/src/SoundPanel.ui
+msgid "Mute sound during turbo or rewind"
+msgstr "Ztlumit zvuk během turbo režimu nebo přetáčení"
+
+#: qt/src/CheatsDialog.cpp
+msgid "No cheats for the current game were found in the database."
+msgstr "V databázi nebyly nalezeny žádné cheaty pro aktuální hru."
+
+#: qt/src/CheatsDialog.cpp
+msgid "No Cheats Found"
+msgstr "Nenalezeny žádné cheaty"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "No recent files"
+msgstr "Žádné nedávné soubory"
+
+#: qt/src/EmulationPanel.ui
+msgid "None - Run unthrottled, unless vsync is turned on"
+msgstr "Žádné - Spustit neomezeně, pokud není zapnut vsync"
+
+#: qt/src/ControllerPanel.ui
+msgid "One Controller"
+msgstr "Jeden ovladač"
+
+#: qt/src/DisplayPanel.ui
+msgid "Onscreen - High resolution"
+msgstr "Na obrazovce - Vysoké rozlišení"
+
+#: qt/src/DisplayPanel.ui
+msgid "Onscreen display size:"
+msgstr "Velikost textu na obrazovce:"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Open a ROM File"
+msgstr "Otevřít soubor ROM"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Open File"
+msgstr "Otevřít soubor"
+
+#: qt/src/FoldersPanel.cpp
+msgid "Open Folder"
+msgstr "Otevřít složku"
+
+#: qt/src/EmuCanvasOpenGL.cpp
+msgid "OpenGL Driver"
+msgstr "Ovladač OpenGL"
+
+#: qt/src/EmulationPanel.ui
+msgid "Overclock:"
+msgstr "Přetaktování:"
+
+#: qt/src/GeneralPanel.ui
+msgid "Overlays"
+msgstr "Překryvné vrstvy (Overlays)"
+
+#: qt/src/FoldersPanel.ui
+msgid "Patches"
+msgstr "Patche"
+
+#: qt/src/GeneralPanel.ui
+msgid "Pause emulation when window is not focused"
+msgstr "Pozastavit emulaci, pokud okno nemá zaměření (focus)"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Pause/Continue"
+msgstr "Pozastavit / Pokračovat"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Power Cycle Console"
+msgstr "Vypnout a zapnout konzoli (Power Cycle)"
+
+#: qt/src/ShaderParametersDialog.cpp
+msgid "Preset name:"
+msgstr "Název předvolby:"
+
+#: qt/src/DisplayPanel.ui
+msgid "Prevent the display driver from getting too far ahead in order to reduce lag."
+msgstr "Zabránit ovladači zobrazení v přílišném předstihu, aby se snížilo zpoždění (lag)."
+
+#: qt/src/DisplayPanel.ui
+msgid "pt"
+msgstr "pt"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Load Slot 0"
+msgstr "Rychlé načtení slotu 0"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Load Slot 1"
+msgstr "Rychlé načtení slotu 1"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Load Slot 2"
+msgstr "Rychlé načtení slotu 2"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Load Slot 3"
+msgstr "Rychlé načtení slotu 3"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Load Slot 4"
+msgstr "Rychlé načtení slotu 4"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Load Slot 5"
+msgstr "Rychlé načtení slotu 5"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Load Slot 6"
+msgstr "Rychlé načtení slotu 6"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Load Slot 7"
+msgstr "Rychlé načtení slotu 7"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Load Slot 8"
+msgstr "Rychlé načtení slotu 8"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Load Slot 9"
+msgstr "Rychlé načtení slotu 9"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Save Slot 0"
+msgstr "Rychlé uložení slotu 0"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Save Slot 1"
+msgstr "Rychlé uložení slotu 1"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Save Slot 2"
+msgstr "Rychlé uložení slotu 2"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Save Slot 3"
+msgstr "Rychlé uložení slotu 3"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Save Slot 4"
+msgstr "Rychlé uložení slotu 4"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Save Slot 5"
+msgstr "Rychlé uložení slotu 5"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Save Slot 6"
+msgstr "Rychlé uložení slotu 6"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Save Slot 7"
+msgstr "Rychlé uložení slotu 7"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Save Slot 8"
+msgstr "Rychlé uložení slotu 8"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Save Slot 9"
+msgstr "Rychlé uložení slotu 9"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quit"
+msgstr "Ukončit"
+
+#: qt/src/SoundPanel.ui
+msgid "Regular:"
+msgstr "Běžná:"
+
+#: qt/src/EmulationPanel.ui
+msgid "Remove the sprite limit"
+msgstr "Odstranit limit spritů"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Reset to Default"
+msgstr "Obnovit výchozí"
+
+#: qt/src/EmuSettingsWindow.ui
+msgid "Restore all settings on the current page to their default values."
+msgstr "Obnovit všechna nastavení na aktuální stránce na jejich výchozí hodnoty."
+
+#: qt/src/EmuSettingsWindow.ui
+msgid "Restore Defaults"
+msgstr "Obnovit výchozí"
+
+#: qt/src/EmulationPanel.ui
+msgid "Rewind buffer size (0 to disable):"
+msgstr "Velikost vyrovnávací paměti přetáčení (0 pro zakázání):"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "ROM Files (*.sfc *.smc *.bin *.fig *.msu *.zip)"
+msgstr "Soubory ROM (*.sfc *.smc *.bin *.fig *.msu *.zip)"
+
+#: qt/src/FoldersPanel.ui
+msgid "ROM Folder"
+msgstr "Složka s ROM"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Run"
+msgstr "Spustit"
+
+#: qt/src/ShaderParametersDialog.cpp
+msgid "Save"
+msgstr "Uložit"
+
+#: qt/src/ShaderParametersDialog.cpp
+msgid "Save As"
+msgstr "Uložit jako"
+
+#: qt/src/ShaderParametersDialog.cpp
+msgid "Save Shader Preset As"
+msgstr "Uložit předvolbu shaderu jako"
+
+#: qt/src/FoldersPanel.ui
+msgid "Save SRAM to disk every:"
+msgstr "Ukládat SRAM na disk každých:"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Save State to Current Slot"
+msgstr "Uložit pozici do aktuálního slotu"
+
+#: qt/src/FoldersPanel.ui
+msgid "Save states"
+msgstr "Uložené pozice"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Save States (*.sst *.oops *.undo *.0?? *.1?? *.2?? *.3?? *.4?? *.5?? *.6?? *.7?? *.8?? *.9*)"
+msgstr "Uložené pozice (*.sst *.oops *.undo *.0?? *.1?? *.2?? *.3?? *.4?? *.5?? *.6?? *.7?? *.8?? *.9*)"
+
+#: qt/src/DisplayPanel.ui
+msgid "Scale normal resolution screens up"
+msgstr "Zvětšit obrazovky se standardním rozlišením"
+
+#: qt/src/DisplayPanel.ui
+msgid "Scaling and Aspect Ratio"
+msgstr "Škálování a poměr stran"
+
+#: qt/src/FoldersPanel.ui
+msgid "seconds"
+msgstr "sekund"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Seek to Frame"
+msgstr "Vyhledat snímek"
+
+#: qt/src/DisplayPanel.cpp
+msgid "Select a Folder"
+msgstr "Vyberte složku"
+
+#: qt/src/DisplayPanel.ui
+msgid "Select the output driver."
+msgstr "Vyberte výstupní ovladač."
+
+#: qt/src/ControllerPanel.ui
+msgid "Set"
+msgstr "Nastavit"
+
+#: qt/src/EmulationPanel.ui
+msgid "Set frame rate to 0 to automatically change based on PAL/NTSC and with interlacing on and off."
+msgstr "Nastavením snímkové frekvence na 0 se bude měnit automaticky podle režimu PAL/NTSC a stavu prokládání obrazu."
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Set Size"
+msgstr "Nastavit velikost"
+
+#: qt/src/DisplayPanel.cpp
+msgid "Shader Presets (*.slangp *.glslp)"
+msgstr "Předvolby shaderů (*.slangp *.glslp)"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Shader Settings"
+msgstr "Nastavení shaderu"
+
+#: qt/src/GeneralPanel.ui
+msgid "Show fast-forward and pause icons"
+msgstr "Zobrazovat ikony rychlého přetáčení a pauzy"
+
+#: qt/src/DisplayPanel.ui
+msgid "Show overscan area"
+msgstr "Zobrazovat oblast overscanu"
+
+#: qt/src/DisplayPanel.ui
+msgid "Show the areas on the top and bottom of the screen that are normally black and hidden by the TV. Some games will draw in these areas."
+msgstr "Zobrazí oblasti na horním a dolním okraji obrazovky, které jsou na TV normálně černé a skryté. Některé hry do těchto oblastí vykreslují grafiku."
+
+#: qt/src/GeneralPanel.ui
+msgid "Show the time"
+msgstr "Zobrazovat čas"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Slot %1"
+msgstr "Slot %1"
+
+#: qt/src/DisplayPanel.ui
+msgid "Smooth screen output."
+msgstr "Vyhlazovat výstup obrazovky."
+
+#: qt/src/ControllerPanel.ui
+msgid "SNES Controller 1"
+msgstr "SNES Ovladač 1"
+
+#: qt/src/ControllerPanel.ui
+msgid "SNES Controller 2"
+msgstr "SNES Ovladač 2"
+
+#: qt/src/ControllerPanel.ui
+msgid "SNES Controller 3 (Multitap)"
+msgstr "SNES Ovladač 3 (Multitap)"
+
+#: qt/src/ControllerPanel.ui
+msgid "SNES Controller 4 (Multitap)"
+msgstr "SNES Ovladač 4 (Multitap)"
+
+#: qt/src/ControllerPanel.ui
+msgid "SNES Controller 5 (Multitap)"
+msgstr "SNES Ovladač 5 (Multitap)"
+
+#: qt/src/DisplayPanel.ui
+msgid "Software Filters"
+msgstr "Softwarové filtry"
+
+#: qt/src/SoundPanel.ui
+msgid "Sound Output"
+msgstr "Výstup zvuku"
+
+#: qt/src/SoundPanel.ui
+msgid "Sound Stretching"
+msgstr "Roztažení zvuku"
+
+#: qt/src/EmulationPanel.ui
+msgid "Sound Synchronization - Wait on the sound buffer"
+msgstr "Zvuková synchronizace - Čekat na vyrovnávací paměť zvuku"
+
+#: qt/src/SoundPanel.ui
+msgid "SPC:"
+msgstr "SPC:"
+
+#: qt/src/EmulationPanel.ui
+msgid "Speed control method:"
+msgstr "Metoda řízení rychlosti:"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Start Recording"
+msgstr "Spustit záznam"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Stop Recording"
+msgstr "Zastavit záznam"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Super Game Boy (SGB1)"
+msgstr "Super Game Boy (SGB1)"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Super Game Boy 2 (SGB2)"
+msgstr "Super Game Boy 2 (SGB2)"
+
+#: qt/src/EmulationPanel.ui
+msgid "SuperFX clock speed:"
+msgstr "Taktovací frekvence SuperFX:"
+
+#: qt/src/ControllerPanel.ui
+msgid "SuperScope + Controller"
+msgstr "SuperScope + Ovladač"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Swap Controllers 1 and 2"
+msgstr "Prohodit ovladače 1 a 2"
+
+#: qt/src/ControllerPanel.ui
+msgid "Swap or clear groups of bindings"
+msgstr "Prohodit nebo vymazat skupiny vazeb tlačítek"
+
+#: qt/src/ControllerPanel.cpp
+msgid "Swap With"
+msgstr "Prohodit s"
+
+#: qt/src/GeneralPanel.ui
+msgid "Switch to fullscreen after opening a ROM"
+msgstr "Po otevření ROM přepnout na celou obrazovku"
+
+#: qt/src/DisplayPanel.ui
+msgid "Sync the display to vertical retrace to eliminate tearing."
+msgstr "Synchronizovat displej s vertikálním vykreslováním pro odstranění trhání obrazu."
+
+#: qt/src/CheatsDialog.cpp
+msgid "The cheat you entered was not valid."
+msgstr "Zadaný cheat nebyl platný."
+
+#: qt/src/EmuCanvasOpenGL.cpp
+msgid "The driver isn't using a specialized shader preset right now."
+msgstr "Ovladač aktuálně nepoužívá žádnou specifickou předvolbu shaderu."
+
+#: qt/src/EmuMainWindow.cpp
+msgid "The language change will take effect after you restart SuperSnes9x."
+msgstr "Změna jazyka se projeví až po restartování emulátoru SuperSnes9x."
+
+#: qt/src/EmuCanvasVulkan.cpp
+msgid "The vulkan display driver hasn't properly loaded."
+msgstr "Ovladač zobrazení Vulkan se nenačetl správně."
+
+#: qt/src/DisplayPanel.ui
+msgid "This affects the rarely used 512-pixels-wide mode used by the SNES.\nFor games like Kirby 3 and Jurassic Park, choose the \"merge fields\" option.\nFor games like Seiken Densetsu 3 and Marvelous, choose the \"scale up\" option.\nOutput directly will cause the screen to change between the two modes and look weird."
+msgstr ""
+"Toto ovlivňuje zřídka používaný režim o šířce 512 pixelů u konzole SNES.\nPro hry jako Kirby 3 a Jurassic Park zvolte možnost „sloučit půlsnímky“ (merge fields).\nPro hry jako Seiken Densetsu 3 a Marvelous zvolte možnost „zvětšit rozlišení“ (scale up).\nPřímý výstup způsobí neustálé přepínání obrazovky mezi oběma režimy, což vypadá podivně."
+
+#: qt/src/EmuCanvasOpenGL.cpp
+msgid "This shader preset doesn't offer any configurable parameters."
+msgstr "Tato předvolba shaderu nenabízí žádné nastavitelné parametry."
+
+#: qt/src/EmulationPanel.ui
+msgid "Timer - Match the frame rate configured below"
+msgstr "Časovač - Odpovídá snímkové frekvenci nastavené níže"
+
+#: qt/src/EmulationPanel.ui
+msgid "Timer with Frame Skipping - Skip frames if needed"
+msgstr "Časovač s vynecháváním snímků - V případě potřeby vynechá snímky"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "To File"
+msgstr "Do souboru"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle All Sound Channels"
+msgstr "Přepnout všechny zvukové kanály"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle BG Layer 0"
+msgstr "Přepnout vrstvu pozadí 0"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle BG Layer 1"
+msgstr "Přepnout vrstvu pozadí 1"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle BG Layer 2"
+msgstr "Přepnout vrstvu pozadí 2"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle BG Layer 3"
+msgstr "Přepnout vrstvu pozadí 3"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle Fast-Forward"
+msgstr "Přepnout rychlé přetáčení"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle Fullscreen"
+msgstr "Přepnout celou obrazovku"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle Sound Channel 1"
+msgstr "Přepnout zvukový kanál 1"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle Sound Channel 2"
+msgstr "Přepnout zvukový kanál 2"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle Sound Channel 3"
+msgstr "Přepnout zvukový kanál 3"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle Sound Channel 4"
+msgstr "Přepnout zvukový kanál 4"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle Sound Channel 5"
+msgstr "Přepnout zvukový kanál 5"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle Sound Channel 6"
+msgstr "Přepnout zvukový kanál 6"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle Sound Channel 7"
+msgstr "Přepnout zvukový kanál 7"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle Sound Channel 8"
+msgstr "Přepnout zvukový kanál 8"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle Sprites"
+msgstr "Přepnout sprity"
+
+#: qt/src/ControllerPanel.ui
+msgid "Turbo A"
+msgstr "Turbo A"
+
+#: qt/src/ControllerPanel.ui
+msgid "Turbo B"
+msgstr "Turbo B"
+
+#: qt/src/ControllerPanel.ui
+msgid "Turbo L"
+msgstr "Turbo L"
+
+#: qt/src/ControllerPanel.ui
+msgid "Turbo R"
+msgstr "Turbo R"
+
+#: qt/src/ControllerPanel.ui
+msgid "Turbo X"
+msgstr "Turbo X"
+
+#: qt/src/ControllerPanel.ui
+msgid "Turbo Y"
+msgstr "Turbo Y"
+
+#: qt/src/ControllerPanel.ui
+msgid "Two Controllers"
+msgstr "Dva ovladače"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Unable to create a %1 context. Attempting to use %2."
+msgstr "Nelze vytvořit kontext %1. Pokus o použití %2."
+
+#: qt/src/CheatsDialog.cpp
+msgid "Unable to Open Cheats Database"
+msgstr "Nelze otevřít databázi cheatů"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Unable to Start Display Driver"
+msgstr "Nelze spustit ovladač zobrazení"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Undo Load State"
+msgstr "Vrátit zpět načtení pozice"
+
+#: qt/src/DisplayPanel.ui
+msgid "Use a hardware shader:"
+msgstr "Použít hardwarový shader:"
+
+#: qt/src/DisplayPanel.ui
+msgid "Use a selected .slangp or .glslp shader file. \n.slangp is supported by Vulkan and OpenGL. \n.glslp is supported by OpenGL."
+msgstr "Použít vybraný soubor shaderu typu .slangp nebo .glslp. \nFormát .slangp podporují rozhraní Vulkan a OpenGL. \nFormát .glslp podporuje pouze OpenGL."
+
+#: qt/src/EmulationPanel.ui
+msgid "Use a shadow echo buffer"
+msgstr "Použít stínovou vyrovnávací paměť ozvěny (Shadow echo buffer)"
+
+#: qt/src/DisplayPanel.ui
+msgid "Use integer scaling"
+msgstr "Použít celočíselné škálování"
+
+#: qt/src/ControllerPanel.ui
+msgid "Use SDL to set up the D-pad, face buttons, and L/R. Other buttons may still be configured."
+msgstr "Použít knihovnu SDL k nastavení směrového kříže, akčních tlačítek a L/R triggerů. Ostatní tlačítka lze stále nakonfigurovat ručně."
+
+#: qt/src/EmuMainWindow.cpp
+msgid "View"
+msgstr "Zobrazit"
+
+#: qt/src/EmuCanvasVulkan.cpp
+msgid "Vulkan Driver"
+msgstr "Ovladač Vulkan"
+
+#: qt/src/DisplayPanel.ui
+msgid "When entering fullscreen mode, temporarily change other settings to use VRR (G-Sync or FreeSync) correctly."
+msgstr "Při přechodu do režimu celé obrazovky dočasně upravit ostatní nastavení pro správné fungování VRR (G-Sync nebo FreeSync)."
+
+#: qt/src/DisplayPanel.ui
+msgid "When scaling up, only use integer multiples of the original height."
+msgstr "Při zvětšování obrazu používat výhradně celočíselné násobky původní výšky."

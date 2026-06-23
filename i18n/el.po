@@ -1,0 +1,5449 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: SuperSnes9x\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-10-29 23:56+0100\n"
+"PO-Revision-Date: 2026-06-20 21:07+0200\n"
+"Last-Translator: Gemini AI\n"
+"Language-Team: Greek <el@li.org>\n"
+"Language: el\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: src/gtk_binding.cpp:248
+msgid "Unknown"
+msgstr "Άγνωστο"
+
+#: src/gtk_binding.cpp:257
+msgid "Keyboard {}{}{}{}"
+msgstr "Πληκτρολόγιο {}{}{}{}"
+
+#: src/gtk_binding.cpp:267
+msgid "Axis {} {} {}%"
+msgstr "Άξονας {} {} {}%"
+
+#: src/gtk_binding.cpp:272
+msgid "Button {}"
+msgstr "Κουμπί {}"
+
+#: src/gtk_binding.cpp:274
+msgid "Joystick {} {}"
+msgstr "Joystick {} {}"
+
+#: src/gtk_binding.cpp:278
+msgid "Unset"
+msgstr "Ακυρωμένο"
+
+#: src/gtk_cheat.cpp:24
+msgid "Error"
+msgstr "Σφάλμα"
+
+#: src/gtk_cheat.cpp:60
+msgid "Description"
+msgstr "Περιγραφή"
+
+#: src/gtk_cheat.cpp:66
+msgid "Cheat"
+msgstr "Cheat"
+
+#: src/gtk_cheat.cpp:227 src/gtk_cheat.cpp:355
+msgid "No description"
+msgstr "Καμία περιγραφή"
+
+#: src/gtk_cheat.cpp:231 src/gtk_cheat.cpp:360
+msgid "Couldn't find any cheat codes in input."
+msgstr "Δεν βρέθηκαν κωδικοί cheat στην είσοδο."
+
+#: src/gtk_cheat.cpp:306
+msgid "Couldn't Find Cheats Database"
+msgstr "Δεν βρέθηκε η βάση δεδομένων cheat"
+
+#: src/gtk_cheat.cpp:306
+msgid "No Matching Game Found"
+msgstr "Δεν βρέθηκε αντίστοιχο παιχνίδι"
+
+#: src/gtk_cheat.cpp:307
+msgid ""
+"The database file <b>cheats.bml</b> was not found. It is normally installed "
+"with Snes9x, but you may also place a custom copy in your configuration or "
+"cheats directory."
+msgstr ""
+"Το αρχείο βάσης δεδομένων <b>cheats.bml</b> δεν βρέθηκε. Συνήθως εγκαθίσταται "
+"με το Snes9x, αλλά μπορείτε επίσης να τοποθετήσετε ένα προσαρμοσμένο αντίγραφο στον κατάλογο ρυθμίσεων ή cheat."
+
+#: src/gtk_cheat.cpp:309
+msgid ""
+"No matching game was found in the databases. If you are using a non-official "
+"translation or modified copy, you may be able to find and manually enter the "
+"codes."
+msgstr ""
+"Δεν βρέθηκε αντίστοιχο παιχνίδι στις βάσεις δεδομένων. Εάν χρησιμοποιείτε ανεπίσημη "
+"μετάφραση ή τροποποιημένο αντίγραφο, ίσως μπορέσετε να βρείτε και να εισαγάγετε τους κωδικούς χειροκίνητα."
+
+#: src/gtk_config.cpp:407
+msgid "Couldn't create config directory: {}\n"
+msgstr "Δεν ήταν δυνατή η δημιουργία καταλόγου ρυθμίσεων: {}\n"
+
+#: src/gtk_netplay.cpp:66
+msgid "Connection Error"
+msgstr "Σφάλμα σύνδεσης"
+
+#: src/gtk_netplay_dialog.cpp:31
+msgid "frame behind"
+msgid_plural "frames behind"
+msgstr[0] "καρέ πίσω"
+msgstr[1] "καρέ πίσω"
+
+#: src/gtk_preferences.cpp:19
+msgid "Same location as current game"
+msgstr "Ίδια τοποθεσία με το τρέχον παιχνίδι"
+
+#: src/gtk_preferences.cpp:110
+msgid "{0:Ld}×{1:Ld} @ {2:.3Lf} Hz"
+msgstr "{0:Ld}×{1:Ld} @ {2:.3Lf} Hz"
+
+#: src/gtk_preferences.cpp:143
+msgid "OpenGL – Use 3D graphics hardware"
+msgstr "OpenGL – Χρήση υλικού 3D γραφικών"
+
+#: src/gtk_preferences.cpp:145
+msgid "XVideo – Use hardware video blitter"
+msgstr "XVideo – Χρήση hardware video blitter"
+
+#: src/gtk_preferences.cpp:147
+msgid "Vulkan"
+msgstr "Vulkan"
+
+#: src/gtk_preferences.cpp:149
+msgid "None – Use software scaler"
+msgstr "Κανένα – Χρήση λογισμικού κλιμάκωσης"
+
+#: src/gtk_preferences.cpp:179 src/gtk_preferences.cpp:446
+msgid "thread for filtering and scaling"
+msgid_plural "threads for filtering and scaling"
+msgstr[0] "νήμα για φιλτράρισμα και κλιμάκωση"
+msgstr[1] "νήματα για φιλτράρισμα και κλιμάκωση"
+
+#: src/gtk_preferences.cpp:236 src/gtk_preferences.cpp:500
+msgid "millisecond"
+msgid_plural "milliseconds"
+msgstr[0] "χιλιοστό του δευτερολέπτου"
+msgstr[1] "χιλιοστά του δευτερολέπτου"
+
+#: src/gtk_preferences.cpp:260 src/gtk_preferences.cpp:476
+msgid "second after change"
+msgid_plural "seconds after change"
+msgstr[0] "δευτερόλεπτο μετά την αλλαγή"
+msgstr[1] "δευτερόλεπτα μετά την αλλαγή"
+
+#: src/gtk_preferences.cpp:271
+msgid "SuperSnes9x version: "
+msgstr "Έκδοση SuperSnes9x: "
+
+#: src/gtk_preferences.cpp:272
+msgid "GTK+ port version: "
+msgstr "Έκδοση θύρας GTK+: "
+
+#: src/gtk_preferences.cpp:274
+msgid "English localization by Brandon Wright"
+msgstr "Αγγλική μεταγλώττιση από τον Brandon Wright"
+
+#: src/gtk_preferences.cpp:298
+msgid "Select directory"
+msgstr "Επιλογή καταλόγου"
+
+#: src/gtk_preferences.cpp:323
+msgid "{0:.4Lf} Hz"
+msgstr "{0:.4Lf} Hz"
+
+#: src/gtk_preferences.cpp:328
+msgid "{0:Ld} Hz"
+msgstr "{0:Ld} Hz"
+
+#: src/gtk_preferences.cpp:379
+msgid "Select Shader File"
+msgstr "Επιλογή αρχείου Shader"
+
+#: src/gtk_preferences.cpp:720
+msgid ""
+"Changing the SRAM directory with a game loaded will replace the .srm file in "
+"the selected directory with the SRAM from the running game. If this is not "
+"what you want, click 'cancel'."
+msgstr ""
+"Η αλλαγή του καταλόγου SRAM με φορτωμένο παιχνίδι θα αντικαταστήσει το αρχείο .srm στον "
+"επιλεγμένο κατάλογο με το SRAM από το παιχνίδι που εκτελείται. Εάν δεν είναι αυτό που θέλετε, κάντε κλικ στο 'άκυρο'."
+
+#: src/gtk_preferences.cpp:725
+msgid "Warning: Possible File Overwrite"
+msgstr "Προειδοποίηση: Πιθανή αντικατάσταση αρχείου"
+
+#: src/gtk_preferences.cpp:980
+msgid "Current joystick centers have been saved."
+msgstr "Τα τρέχοντα κέντρα του joystick έχουν αποθηκευτεί."
+
+#: src/gtk_preferences.cpp:981
+msgid "Calibration Complete"
+msgstr "Η βαθμονόμηση ολοκληρώθηκε"
+
+#: src/gtk_s9x.cpp:206
+msgid "Using rewind buffer of {0}\n"
+msgstr "Χρήση buffer επαναφοράς {0}\n"
+
+#: src/gtk_s9x.cpp:598
+msgid ""
+"GTK port options:\n"
+"-filter [option]               Use a filter to scale the image.\n"
+"                               [option] is one of: none supereagle 2xsai\n"
+"                               super2xsai hq2x hq3x hq4x 2xbrz 3xbrz 4xbrz "
+"epx ntsc\n"
+"\n"
+"-mutesound                     Disables sound output.\n"
+msgstr ""
+"Επιλογές θύρας GTK:\n"
+"-filter [option]               Χρησιμοποιήστε ένα φίλτρο για την κλιμάκωση της εικόνας.\n"
+"                               [option] είναι ένα από τα: none supereagle 2xsai\n"
+"                               super2xsai hq2x hq3x hq4x 2xbrz 3xbrz 4xbrz epx ntsc\n"
+"\n"
+"-mutesound                     Απενεργοποιεί την έξοδο ήχου.\n"
+
+#: src/gtk_s9xwindow.cpp:48 src/snes9x.ui:8405
+msgid "Save States"
+msgstr "Αποθηκευμένες καταστάσεις"
+
+#: src/gtk_s9xwindow.cpp:57
+msgid "All Files"
+msgstr "Όλα τα αρχεία"
+
+#: src/gtk_s9xwindow.cpp:616
+msgid "Couldn't load files."
+msgstr "Δεν ήταν δυνατή η φόρτωση αρχείων."
+
+#: src/gtk_s9xwindow.cpp:637
+msgid "Open SNES Movie"
+msgstr "Άνοιγμα ταινίας SNES"
+
+#: src/gtk_s9xwindow.cpp:642
+msgid "New SNES Movie"
+msgstr "Νέα ταινία SNES"
+
+#: src/gtk_s9xwindow.cpp:661
+msgid "SNES Movies"
+msgstr "Ταινίες SNES"
+
+#: src/gtk_s9xwindow.cpp:690
+msgid "Open SNES ROM Image"
+msgstr "Άνοιγμα εικόνας ROM SNES"
+
+#: src/gtk_s9xwindow.cpp:695
+msgid "SNES ROM Images"
+msgstr "Εικόνες ROM SNES"
+
+#: src/gtk_s9xwindow.cpp:740
+msgid "Couldn't load file: "
+msgstr "Δεν ήταν δυνατή η φόρτωση του αρχείου: "
+
+#: src/gtk_s9xwindow.cpp:767
+msgid "Load Saved State"
+msgstr "Φόρτωση αποθηκευμένης κατάστασης"
+
+#: src/gtk_s9xwindow.cpp:796
+msgid "The current frame in the movie is <b>{0:Ld}</b>."
+msgstr "Το τρέχον καρέ στην ταινία είναι <b>{0:Ld}</b>."
+
+#: src/gtk_s9xwindow.cpp:829
+msgid "Save State"
+msgstr "Αποθήκευση κατάστασης"
+
+#: src/gtk_s9xwindow.cpp:850
+msgid "Save SPC file..."
+msgstr "Αποθήκευση αρχείου SPC..."
+
+#: src/gtk_s9xwindow.cpp:872
+msgid "Couldn't save SPC file:"
+msgstr "Δεν ήταν δυνατή η αποθήκευση του αρχείου SPC:"
+
+#: src/gtk_s9xwindow.cpp:888
+#, c-format
+msgid ""
+"<b>Information for %s</b>\n"
+"\n"
+"<i>Name:</i> %s\n"
+"<i>Speed:</i> %02X/%s\n"
+"<i>Map:</i> %s\n"
+"<i>Type:</i> %02x\n"
+"<i>Contents:</i> %s\n"
+"<i>ROM Size:</i> %s\n"
+"<i>Calculated Size:</i> %d\n"
+"<i>SRAM Size:</i> %s\n"
+"<i>Header Checksum:</i> %04X\n"
+"<i>Checksum Complement:</i> %04X\n"
+"<i>Actual Checksum:</i> %04X\n"
+"<i>Video:</i> %s\n"
+"<i>CRC32:</i> %08X\n"
+"<i>Revision:</i> %s\n"
+"<b><i>%s%s</i></b>"
+msgstr ""
+"<b>Πληροφορίες για το %s</b>\n"
+"\n"
+"<i>Όνομα:</i> %s\n"
+"<i>Ταχύτητα:</i> %02X/%s\n"
+"<i>Χάρτης:</i> %s\n"
+"<i>Τύπος:</i> %02x\n"
+"<i>Περιεχόμενα:</i> %s\n"
+"<i>Μέγεθος ROM:</i> %s\n"
+"<i>Υπολογισμένο μέγεθος:</i> %d\n"
+"<i>Μέγεθος SRAM:</i> %s\n"
+"<i>Checksum κεφαλίδας:</i> %04X\n"
+"<i>Συμπλήρωμα Checksum:</i> %04X\n"
+"<i>Πραγματικό Checksum:</i> %04X\n"
+"<i>Βίντεο:</i> %s\n"
+"<i>CRC32:</i> %08X\n"
+"<i>Αναθεώρηση:</i> %s\n"
+"<b><i>%s%s</i></b>"
+
+#: src/gtk_s9xwindow.cpp:924
+msgid ""
+"\n"
+"\n"
+"This ROM has been auto-patched with "
+msgstr ""
+"\n"
+"\n"
+"Αυτή η ROM έχει επιδιορθωθεί αυτόματα με "
+
+#: src/gtk_s9xwindow.cpp:924
+msgid ""
+"\n"
+"\n"
+"This ROM has been modified or damaged"
+msgstr ""
+"\n"
+"\n"
+"Αυτή η ROM έχει τροποποιηθεί ή καταστραφεί"
+
+#: src/gtk_s9xwindow.cpp:938
+msgid "File Information"
+msgstr "Πληροφορίες αρχείου"
+
+#: src/gtk_shader_parameters.cpp:67
+msgid "Export Shader Preset to:"
+msgstr "Εξαγωγή προκαθορισμένου shader σε:"
+
+#: src/gtk_shader_parameters.cpp:90
+msgid "Shader Preset"
+msgstr "Προκαθορισμένο Shader"
+
+#: src/gtk_shader_parameters.cpp:131
+msgid "Shader Parameters"
+msgstr "Παράμετροι Shader"
+
+#: src/snes9x.ui:10
+msgid "About SuperSnes9x"
+msgstr "Σχετικά με το SuperSnes9x"
+
+#: src/snes9x.ui:283
+msgid "SuperSnes9x Cheats"
+msgstr "SuperSnes9x Cheats"
+
+#: src/snes9x.ui:401
+msgid "Update Cheat"
+msgstr "Ενημέρωση Cheat"
+
+#: src/snes9x.ui:416
+msgid "Disable All"
+msgstr "Απενεργοποίηση όλων"
+
+#: src/snes9x.ui:432
+msgid "Delete All Cheats"
+msgstr "Διαγραφή όλων των Cheat"
+
+#: src/snes9x.ui:447
+msgid "Search Cheat Database"
+msgstr "Αναζήτηση στη βάση δεδομένων Cheat"
+
+#: src/snes9x.ui:489
+msgid "Code:"
+msgstr "Κωδικός:"
+
+#: src/snes9x.ui:526
+msgid "Description:"
+msgstr "Περιγραφή:"
+
+#: src/snes9x.ui:573
+msgid "Advance to Frame"
+msgstr "Προώθηση σε καρέ"
+
+#: src/snes9x.ui:642
+msgid "The current frame in the movie is"
+msgstr "Το τρέχον καρέ στην ταινία είναι"
+
+#: src/snes9x.ui:663
+msgid "Fast‑forward to frame"
+msgstr "Γρήγορη προώθηση στο καρέ"
+
+#: src/snes9x.ui:806
+msgid "Black"
+msgstr "Μαύρο"
+
+#: src/snes9x.ui:809
+msgid "Color bars"
+msgstr "Μπάρες χρώματος"
+
+#: src/snes9x.ui:812
+msgid "Pixel art patterns"
+msgstr "Μοτίβα pixel art"
+
+#: src/snes9x.ui:815
+msgid "Dithered gradient"
+msgstr "Διαβαθμισμένη κλίση"
+
+#: src/snes9x.ui:818
+msgid "Color bars and patterns"
+msgstr "Μπάρες χρώματος και μοτίβα"
+
+#: src/snes9x.ui:821
+msgid "Starfield"
+msgstr "Αστρικό πεδίο"
+
+#: src/snes9x.ui:824
+msgid "Snow"
+msgstr "Χιόνι"
+
+#: src/snes9x.ui:852 src/snes9x.ui:875
+msgid "12.5%"
+msgstr "12.5%"
+
+#: src/snes9x.ui:855 src/snes9x.ui:878
+msgid "25%"
+msgstr "25%"
+
+#: src/snes9x.ui:858 src/snes9x.ui:881
+msgid "50%"
+msgstr "50%"
+
+#: src/snes9x.ui:861 src/snes9x.ui:884
+msgid "100%"
+msgstr "100%"
+
+#: src/snes9x.ui:872
+msgid "0%"
+msgstr "0%"
+
+#: src/snes9x.ui:895
+msgctxt "filter list"
+msgid "None"
+msgstr "Κανένα"
+
+#: src/snes9x.ui:936
+msgid "8:7 Square pixels"
+msgstr "8:7 Τετράγωνα pixel"
+
+#: src/snes9x.ui:939
+msgid "8:7 Square pixels, integer multiples"
+msgstr "8:7 Τετράγωνα pixel, ακέραια πολλαπλάσια"
+
+#: src/snes9x.ui:942
+msgid "4:3 SNES correct aspect"
+msgstr "4:3 SNES σωστή αναλογία"
+
+#: src/snes9x.ui:945
+msgid "4:3 SNES correct aspect, integer multiples"
+msgstr "4:3 SNES σωστή αναλογία, ακέραια πολλαπλάσια"
+
+#: src/snes9x.ui:948
+msgid "8*8:7*7 NTSC"
+msgstr "8*8:7*7 NTSC"
+
+#: src/snes9x.ui:951
+msgid "8*8:7*7 NTSC, integer multiples"
+msgstr "8*8:7*7 NTSC, ακέραια πολλαπλάσια"
+
+#: src/snes9x.ui:968
+msgid "Merge adjacent pairs"
+msgstr "Συγχώνευση γειτονικών ζευγών"
+
+#: src/snes9x.ui:971
+msgid "Output directly"
+msgstr "Άμεση έξοδος"
+
+#: src/snes9x.ui:974
+msgid "Scale low‑resolution screens"
+msgstr "Κλιμάκωση οθονών χαμηλής ανάλυσης"
+
+#: src/snes9x.ui:985 src/snes9x.ui:1023
+msgid "1"
+msgstr "1"
+
+#: src/snes9x.ui:988 src/snes9x.ui:1026
+msgid "2"
+msgstr "2"
+
+#: src/snes9x.ui:991 src/snes9x.ui:1029
+msgid "3"
+msgstr "3"
+
+#: src/snes9x.ui:994 src/snes9x.ui:1032
+msgid "4"
+msgstr "4"
+
+#: src/snes9x.ui:997 src/snes9x.ui:1035
+msgid "5"
+msgstr "5"
+
+#: src/snes9x.ui:1000 src/snes9x.ui:1038
+msgid "1+"
+msgstr "1+"
+
+#: src/snes9x.ui:1003 src/snes9x.ui:1041
+msgid "2+"
+msgstr "2+"
+
+#: src/snes9x.ui:1006 src/snes9x.ui:1044
+msgid "3+"
+msgstr "3+"
+
+#: src/snes9x.ui:1009 src/snes9x.ui:1047
+msgid "4+"
+msgstr "4+"
+
+#: src/snes9x.ui:1012 src/snes9x.ui:1050
+msgid "5+"
+msgstr "5+"
+
+#: src/snes9x.ui:1061
+msgid "Toggle the menu bar"
+msgstr "Εναλλαγή γραμμής μενού"
+
+#: src/snes9x.ui:1064
+msgid "Exit fullscreen mode"
+msgstr "Έξοδος από πλήρη οθόνη"
+
+#: src/snes9x.ui:1067 src/snes9x.ui:6932
+msgid "Quit SuperSnes9x"
+msgstr "Τερματισμός SuperSnes9x"
+
+#: src/snes9x.ui:1078
+msgid "Timer‑based"
+msgstr "Με βάση χρονοδιακόπτη"
+
+#: src/snes9x.ui:1081
+msgid "Timer‑based with automatic frame-skipping"
+msgstr "Με βάση χρονοδιακόπτη με αυτόματη παράλειψη καρέ"
+
+#: src/snes9x.ui:1084
+msgid "Sound buffer synchronization"
+msgstr "Συγχρονισμός buffer ήχου"
+
+#: src/snes9x.ui:1087
+msgid "No throttling, use vsync to control speed"
+msgstr "Καμία επιβράδυνση, χρήση vsync για έλεγχο ταχύτητας"
+
+#: src/snes9x.ui:1098
+msgid "48,000 Hz"
+msgstr "48.000 Hz"
+
+#: src/snes9x.ui:1101
+msgid "44,100 Hz"
+msgstr "44.100 Hz"
+
+#: src/snes9x.ui:1104
+msgid "32,000 Hz"
+msgstr "32.000 Hz"
+
+#: src/snes9x.ui:1107
+msgid "22,050 Hz"
+msgstr "22.050 Hz"
+
+#: src/snes9x.ui:1110
+msgid "16,000 Hz"
+msgstr "16.000 Hz"
+
+#: src/snes9x.ui:1113
+msgid "11,025 Hz"
+msgstr "11.025 Hz"
+
+#: src/snes9x.ui:1116
+msgid "8,000 Hz"
+msgstr "8.000 Hz"
+
+#: src/snes9x.ui:1119
+msgid "0 Hz"
+msgstr "0 Hz"
+
+#: src/snes9x.ui:1136
+msgid "16‑bit (GL_RGB)"
+msgstr "16-bit (GL_RGB)"
+
+#: src/snes9x.ui:1139
+msgid "32‑bit (GL_BGRA)"
+msgstr "32-bit (GL_BGRA)"
+
+#: src/snes9x.ui:1150
+msgid "Nearest"
+msgstr "Πλησιέστερο"
+
+#: src/snes9x.ui:1153
+msgid "Linear"
+msgstr "Γραμμικό"
+
+#: src/snes9x.ui:1156
+msgid "Gaussian (correct)"
+msgstr "Gaussian (σωστό)"
+
+#: src/snes9x.ui:1159
+msgid "Cubic"
+msgstr "Κυβικό"
+
+#: src/snes9x.ui:1162
+msgid "Sinc"
+msgstr "Sinc"
+
+#: src/snes9x.ui:1175
+msgid "SuperSnes9x"
+msgstr "SuperSnes9x"
+
+#: src/snes9x.ui:1195
+msgid "_File"
+msgstr "_Αρχείο"
+
+#: src/snes9x.ui:1202
+msgid "_Open ROM Image…"
+msgstr "_Άνοιγμα εικόνας ROM…"
+
+#: src/snes9x.ui:1216
+msgid "Open Recent"
+msgstr "Άνοιγμα πρόσφατων"
+
+#: src/snes9x.ui:1225
+msgid "Clear Recent Items"
+msgstr "Εκκαθάριση πρόσφατων στοιχείων"
+
+#: src/snes9x.ui:1237
+msgid "Open with _NetPlay…"
+msgstr "Άνοιγμα με _NetPlay…"
+
+#: src/snes9x.ui:1240
+msgid "Open a ROM to use with NetPlay"
+msgstr "Άνοιγμα μιας ROM για χρήση με NetPlay"
+
+#: src/snes9x.ui:1251
+msgid "Open _MultiCart…"
+msgstr "Άνοιγμα _MultiCart…"
+
+#: src/snes9x.ui:1266
+msgid "_Load State"
+msgstr "_Φόρτωση κατάστασης"
+
+#: src/snes9x.ui:1276 src/snes9x.ui:1410
+msgid "Slot _0"
+msgstr "Slot _0"
+
+#: src/snes9x.ui:1285 src/snes9x.ui:1419
+msgid "Slot _1"
+msgstr "Slot _1"
+
+#: src/snes9x.ui:1294 src/snes9x.ui:1428
+msgid "Slot _2"
+msgstr "Slot _2"
+
+#: src/snes9x.ui:1303 src/snes9x.ui:1437
+msgid "Slot _3"
+msgstr "Slot _3"
+
+#: src/snes9x.ui:1312 src/snes9x.ui:1446
+msgid "Slot _4"
+msgstr "Slot _4"
+
+#: src/snes9x.ui:1321 src/snes9x.ui:1455
+msgid "Slot _5"
+msgstr "Slot _5"
+
+#: src/snes9x.ui:1330 src/snes9x.ui:1464
+msgid "Slot _6"
+msgstr "Slot _6"
+
+#: src/snes9x.ui:1339 src/snes9x.ui:1473
+msgid "Slot _7"
+msgstr "Slot _7"
+
+#: src/snes9x.ui:1348 src/snes9x.ui:1482
+msgid "Slot _8"
+msgstr "Slot _8"
+
+#: src/snes9x.ui:1357 src/snes9x.ui:1491
+msgid "Slot _9"
+msgstr "Slot _9"
+
+#: src/snes9x.ui:1372
+msgid "From _File…"
+msgstr "Από _αρχείο…"
+
+#: src/snes9x.ui:1387
+msgid "_Undo Load State"
+msgstr "_Αναίρεση φόρτωσης κατάστασης"
+
+#: src/snes9x.ui:1400
+msgid "_Save State"
+msgstr "_Αποθήκευση κατάστασης"
+
+#: src/snes9x.ui:1506
+msgid "To _File…"
+msgstr "Σε _αρχείο…"
+
+#: src/snes9x.ui:1523
+msgid "Save SPC…"
+msgstr "Αποθήκευση SPC…"
+
+#: src/snes9x.ui:1540
+msgid "Show ROM _Info…"
+msgstr "Εμφάνιση _πληροφοριών ROM…"
+
+#: src/snes9x.ui:1557
+msgid "gtk-quit"
+msgstr "Έξοδος"
+
+#: src/snes9x.ui:1571
+msgid "_Emulation"
+msgstr "_Εξομοίωση"
+
+#: src/snes9x.ui:1578
+msgid "Run / _Continue"
+msgstr "Εκτέλεση / _Συνέχεια"
+
+#: src/snes9x.ui:1589
+msgid "_Pause"
+msgstr "_Παύση"
+
+#: src/snes9x.ui:1607
+msgid "Load _Movie…"
+msgstr "Φόρτωση _ταινίας…"
+
+#: src/snes9x.ui:1619
+msgid "R_ecord Movie…"
+msgstr "Εγγραφή _ταινίας…"
+
+#: src/snes9x.ui:1631
+msgid "_Stop Recording"
+msgstr "Διακοπή _εγγραφής"
+
+#: src/snes9x.ui:1643
+msgid "_Jump to Frame…"
+msgstr "_Μετάβαση σε καρέ…"
+
+#: src/snes9x.ui:1661
+msgid "Sy_nc Clients"
+msgstr "Συγχρο_νισμός πελατών"
+
+#: src/snes9x.ui:1678
+msgid "Reset"
+msgstr "Επαναφορά"
+
+#: src/snes9x.ui:1690
+msgid "Soft _Reset"
+msgstr "Ήπια _επαναφορά"
+
+#: src/snes9x.ui:1707
+msgid "_View"
+msgstr "_Προβολή"
+
+#: src/snes9x.ui:1715
+msgid "_Toggle Menubar"
+msgstr "Εναλλαγή γραμμής _μενού"
+
+#: src/snes9x.ui:1732
+msgid "_Change Size"
+msgstr "Αλλαγή _μεγέθους"
+
+#: src/snes9x.ui:1746
+msgid "_1×"
+msgstr "_1×"
+
+#: src/snes9x.ui:1755
+msgid "_2×"
+msgstr "_2×"
+
+#: src/snes9x.ui:1764
+msgid "_3×"
+msgstr "_3×"
+
+#: src/snes9x.ui:1773
+msgid "_4×"
+msgstr "_4×"
+
+#: src/snes9x.ui:1782
+msgid "_5×"
+msgstr "_5×"
+
+#: src/snes9x.ui:1791
+msgid "_6×"
+msgstr "_6×"
+
+#: src/snes9x.ui:1800
+msgid "_7×"
+msgstr "_7×"
+
+#: src/snes9x.ui:1809
+msgid "_8×"
+msgstr "_8×"
+
+#: src/snes9x.ui:1818
+msgid "_9×"
+msgstr "_9×"
+
+#: src/snes9x.ui:1827
+msgid "1_0×"
+msgstr "1_0×"
+
+#: src/snes9x.ui:1844
+msgid "gtk-fullscreen"
+msgstr "Πλήρης οθόνη"
+
+#: src/snes9x.ui:1858
+msgid "_Options"
+msgstr "_Επιλογές"
+
+#: src/snes9x.ui:1867
+msgid "Controller Ports"
+msgstr "Θύρες ελεγκτή"
+
+#: src/snes9x.ui:1876
+msgid "SNES Port 1"
+msgstr "Θύρα SNES 1"
+
+#: src/snes9x.ui:1886 src/snes9x.ui:1930
+msgid "Joypad"
+msgstr "Joypad"
+
+#: src/snes9x.ui:1895 src/snes9x.ui:1939
+msgid "Mouse"
+msgstr "Ποντίκι"
+
+#: src/snes9x.ui:1905 src/snes9x.ui:1959
+msgid "Superscope"
+msgstr "Superscope"
+
+#: src/snes9x.ui:1920
+msgid "SNES Port 2"
+msgstr "Θύρα SNES 2"
+
+#: src/snes9x.ui:1949
+msgid "Multitap"
+msgstr "Multitap"
+
+#: src/snes9x.ui:1970
+msgctxt "SNES port 2"
+msgid "None"
+msgstr "Κανένα"
+
+#: src/snes9x.ui:1996
+msgid "_Cheats…"
+msgstr "_Cheats…"
+
+#: src/snes9x.ui:2010
+msgid "_Shader Parameters…"
+msgstr "Παράμετροι _Shader…"
+
+#: src/snes9x.ui:2026
+msgid "gtk-preferences"
+msgstr "Προτιμήσεις"
+
+#: src/snes9x.ui:2068
+msgid "Open Multiple ROM Images (MultiCart)"
+msgstr "Άνοιγμα πολλαπλών εικόνων ROM (MultiCart)"
+
+#: src/snes9x.ui:2131
+msgid "Slot A:"
+msgstr "Slot A:"
+
+#: src/snes9x.ui:2143
+msgid "Select an Image for Slot A"
+msgstr "Επιλογή εικόνας για το Slot A"
+
+#: src/snes9x.ui:2167
+msgid "Slot B:"
+msgstr "Slot B:"
+
+#: src/snes9x.ui:2179
+msgid "Select an Image for Slot B"
+msgstr "Επιλογή εικόνας για το Slot B"
+
+#: src/snes9x.ui:2211
+msgid "SuperSnes9x NetPlay"
+msgstr "SuperSnes9x NetPlay"
+
+#: src/snes9x.ui:2288
+msgid ""
+"The game chosen will be loaded before connecting. This field can be blank if "
+"the server will send the ROM image"
+msgstr ""
+"Το επιλεγμένο παιχνίδι θα φορτωθεί πριν από τη σύνδεση. Αυτό το πεδίο μπορεί να παραμείνει κενό εάν "
+"ο διακομιστής στείλει την εικόνα ROM"
+
+#: src/snes9x.ui:2303 src/snes9x.ui:4001 src/snes9x.ui:5116 src/snes9x.ui:5131
+#: src/snes9x.ui:5148 src/snes9x.ui:5165 src/snes9x.ui:5182
+msgid "Browse…"
+msgstr "Αναζήτηση…"
+
+#: src/snes9x.ui:2325
+msgid "Clear entry"
+msgstr "Εκκαθάριση εισαγωγής"
+
+#: src/snes9x.ui:2345
+msgid "<b>ROM Image</b>"
+msgstr "<b>Εικόνα ROM</b>"
+
+#: src/snes9x.ui:2374
+msgid "Connect to another computer"
+msgstr "Σύνδεση σε άλλο υπολογιστή"
+
+#: src/snes9x.ui:2378
+msgid "Connect to another computer that is running SuperSnes9x NetPlay as a server"
+msgstr "Σύνδεση σε άλλον υπολογιστή που εκτελεί το SuperSnes9x NetPlay ως διακομιστής"
+
+#: src/snes9x.ui:2398
+msgid "Name or IP address:"
+msgstr "Όνομα ή διεύθυνση IP:"
+
+#: src/snes9x.ui:2410
+msgid "Domain name or internet protocol address of a remote computer"
+msgstr "Όνομα τομέα ή διεύθυνση πρωτοκόλλου διαδικτύου ενός απομακρυσμένου υπολογιστή"
+
+#: src/snes9x.ui:2426
+msgid "Port:"
+msgstr "Θύρα:"
+
+#: src/snes9x.ui:2438
+msgid "Connect to specified TCP port on remote computer"
+msgstr "Σύνδεση στην καθορισμένη θύρα TCP στον απομακρυσμένο υπολογιστή"
+
+#: src/snes9x.ui:2463
+msgid "Act as a server"
+msgstr "Ενέργεια ως διακομιστής"
+
+#: src/snes9x.ui:2467
+msgid ""
+"Host a game on this computer as Player 1, requiring extra throughput to "
+"support multitple users"
+msgstr ""
+"Φιλοξενία παιχνιδιού σε αυτόν τον υπολογιστή ως Παίκτης 1, που απαιτεί επιπλέον εύρος ζώνης για "
+"υποστήριξη πολλαπλών χρηστών"
+
+#: src/snes9x.ui:2487
+msgid "<b>Server</b>"
+msgstr "<b>Διακομιστής</b>"
+
+#: src/snes9x.ui:2517
+msgid "Sync using reset"
+msgstr "Συγχρονισμός με χρήση επαναφοράς"
+
+#: src/snes9x.ui:2521
+msgid ""
+"Reset the game when players join instead of transferring potentially "
+"unreliable freeze states"
+msgstr ""
+"Επαναφορά του παιχνιδιού όταν εισέρχονται παίκτες αντί για μεταφορά ενδεχομένως "
+"αναξιόπιστων καταστάσεων παγώματος"
+
+#: src/snes9x.ui:2532
+msgid "Send ROM image to clients"
+msgstr "Αποστολή εικόνας ROM σε πελάτες"
+
+#: src/snes9x.ui:2536
+msgid ""
+"Send the running game image to players instead of requiring them to have "
+"their own copies"
+msgstr ""
+"Αποστολή της εικόνας του παιχνιδιού που εκτελείται στους παίκτες αντί να απαιτείται να έχουν "
+"τα δικά τους αντίγραφα"
+
+#: src/snes9x.ui:2554
+msgid "Default port:"
+msgstr "Προεπιλεγμένη θύρα:"
+
+#: src/snes9x.ui:2566
+msgid "TCP port used as a connection point for remote clients"
+msgstr "Θύρα TCP που χρησιμοποιείται ως σημείο σύνδεσης για απομακρυσμένους πελάτες"
+
+#: src/snes9x.ui:2598
+msgid "Ask server to pause when"
+msgstr "Ερώτηση διακομιστή για παύση όταν"
+
+#: src/snes9x.ui:2652
+msgid "<b>Settings</b>"
+msgstr "<b>Ρυθμίσεις</b>"
+
+#: src/snes9x.ui:2680
+msgid "SuperSnes9x Preferences"
+msgstr "Προτιμήσεις SuperSnes9x"
+
+#: src/snes9x.ui:2796
+msgid "Use fullscreen on ROM open"
+msgstr "Χρήση πλήρους οθόνης κατά το άνοιγμα ROM"
+
+#: src/snes9x.ui:2800
+msgid "Go to fullscreen mode immediately after opening a ROM"
+msgstr "Μετάβαση σε πλήρη οθόνη αμέσως μετά το άνοιγμα μιας ROM"
+
+#: src/snes9x.ui:2812
+msgid "Show local time"
+msgstr "Εμφάνιση τοπικής ώρας"
+
+#: src/snes9x.ui:2827
+msgid "Show frame rate"
+msgstr "Εμφάνιση ρυθμού καρέ"
+
+#: src/snes9x.ui:2842
+msgid "Show pressed keys"
+msgstr "Εμφάνιση πατημένων πλήκτρων"
+
+#: src/snes9x.ui:2857
+msgid "Show fast‑forward and pause indicators"
+msgstr "Εμφάνιση ενδείξεων γρήγορης προώθησης και παύσης"
+
+#: src/snes9x.ui:2872
+msgid "Use overscanned height"
+msgstr "Χρήση ύψους overscan"
+
+#: src/snes9x.ui:2876
+msgid "Use SNES extended height. Will probably cause letterboxing"
+msgstr "Χρήση εκτεταμένου ύψους SNES. Πιθανώς θα προκαλέσει letterboxing"
+
+#: src/snes9x.ui:2898
+msgid "On‑screen display size:"
+msgstr "Μέγεθος εμφάνισης στην οθόνη:"
+
+#: src/snes9x.ui:2909
+msgid "The size of on‑screen display messages in pixels"
+msgstr "Το μέγεθος των μηνυμάτων εμφάνισης στην οθόνη σε pixel"
+
+#: src/snes9x.ui:2940
+msgid "Change fullscreen resolution:"
+msgstr "Αλλαγή ανάλυσης πλήρους οθόνης:"
+
+#: src/snes9x.ui:2944
+msgid "Changes the screen resolution when running SuperSnes9x in fullscreen mode"
+msgstr "Αλλάζει την ανάλυση οθόνης κατά την εκτέλεση του SuperSnes9x σε πλήρη οθόνη"
+
+#: src/snes9x.ui:2989
+msgid "Basic Settings"
+msgstr "Βασικές ρυθμίσεις"
+
+#: src/snes9x.ui:3030
+msgid "Scale image to fit window"
+msgstr "Κλιμάκωση εικόνας για προσαρμογή στο παράθυρο"
+
+#: src/snes9x.ui:3034
+msgid "Scales the image so no black bars are present"
+msgstr "Κλιμακώνει την εικόνα ώστε να μην υπάρχουν μαύρες μπάρες"
+
+#: src/snes9x.ui:3054
+msgid "Aspect ratio:"
+msgstr "Αναλογία διαστάσεων:"
+
+#: src/snes9x.ui:3089
+msgid "Maintain aspect ratio"
+msgstr "Διατήρηση αναλογίας διαστάσεων"
+
+#: src/snes9x.ui:3093
+msgid "Scales the image as large as possible without distortion"
+msgstr "Κλιμακώνει την εικόνα όσο το δυνατόν μεγαλύτερη χωρίς παραμόρφωση"
+
+#: src/snes9x.ui:3108
+msgid "Allows scaling and filtering to use multiple processors"
+msgstr "Επιτρέπει την κλιμάκωση και το φιλτράρισμα να χρησιμοποιούν πολλούς επεξεργαστές"
+
+#: src/snes9x.ui:3111
+msgid "Use"
+msgstr "Χρήση"
+
+#: src/snes9x.ui:3170
+msgid "High‑resolution effect:"
+msgstr "Εφέ υψηλής ανάλυσης:"
+
+#: src/snes9x.ui:3213
+msgid "Apply scaling filter:"
+msgstr "Εφαρμογή φίλτρου κλιμάκωσης:"
+
+#: src/snes9x.ui:3281
+msgid "Video preset:"
+msgstr "Προκαθορισμένο βίντεο:"
+
+#: src/snes9x.ui:3295
+msgid "Composite"
+msgstr "Composite"
+
+#: src/snes9x.ui:3309
+msgid "S‑Video"
+msgstr "S-Video"
+
+#: src/snes9x.ui:3323
+msgid "RGB"
+msgstr "RGB"
+
+#: src/snes9x.ui:3337
+msgid "Monochrome"
+msgstr "Μονόχρωμο"
+
+#: src/snes9x.ui:3378
+msgid "Artifacts:"
+msgstr "Τεχνουργήματα:"
+
+#: src/snes9x.ui:3393
+msgid "Sharpness:"
+msgstr "Οξύτητα:"
+
+#: src/snes9x.ui:3408
+msgid "Brightness:"
+msgstr "Φωτεινότητα:"
+
+#: src/snes9x.ui:3423
+msgid "Contrast:"
+msgstr "Αντίθεση:"
+
+#: src/snes9x.ui:3438
+msgid "Saturation:"
+msgstr "Κορεσμός:"
+
+#: src/snes9x.ui:3453
+msgid "Hue:"
+msgstr "Απόχρωση:"
+
+#: src/snes9x.ui:3654
+msgid "Gamma:"
+msgstr "Γάμμα:"
+
+#: src/snes9x.ui:3669
+msgid "Fringing:"
+msgstr "Fringing:"
+
+#: src/snes9x.ui:3684
+msgid "Bleed:"
+msgstr "Διαρροή:"
+
+#: src/snes9x.ui:3699
+msgid "Resolution:"
+msgstr "Ανάλυση:"
+
+#: src/snes9x.ui:3729
+msgid "Merge odd and even fields"
+msgstr "Συγχώνευση περιττών και άρτιων πεδίων"
+
+#: src/snes9x.ui:3751 src/snes9x.ui:3810
+msgid "Scanline intensity:"
+msgstr "Ένταση γραμμής σάρωσης:"
+
+#: src/snes9x.ui:3855
+msgid "Scaling"
+msgstr "Κλιμάκωση"
+
+#: src/snes9x.ui:3897
+msgid "Bilinear‐filter output"
+msgstr "Έξοδος διγραμμικού φίλτρου"
+
+#: src/snes9x.ui:3912
+msgid "Use best settings for FreeSync/G‑Sync when in fullscreen"
+msgstr "Χρήση των καλύτερων ρυθμίσεων για FreeSync/G-Sync σε πλήρη οθόνη"
+
+#: src/snes9x.ui:3933
+msgid "Sync to vertical blank"
+msgstr "Συγχρονισμός με κάθετο κενό"
+
+#: src/snes9x.ui:3937
+msgid "Sync the image to the vertical retrace to stop tearing"
+msgstr "Συγχρονισμός της εικόνας με την κάθετη επιστροφή για διακοπή του tearing"
+
+#: src/snes9x.ui:3949
+msgid "Reduce input lag"
+msgstr "Μείωση υστέρησης εισόδου"
+
+#: src/snes9x.ui:3953
+msgid ""
+"Sync the program with the video output after every displayed frame to reduce "
+"input latency"
+msgstr ""
+"Συγχρονισμός του προγράμματος με την έξοδο βίντεο μετά από κάθε εμφανιζόμενο καρέ για μείωση της καθυστέρησης εισόδου"
+
+#: src/snes9x.ui:3969
+msgid "Shader:"
+msgstr "Shader:"
+
+#: src/snes9x.ui:4033
+msgid "Force an inverted byte‑ordering"
+msgstr "Επιβολή ανεστραμμένης σειράς byte"
+
+#: src/snes9x.ui:4037
+msgid ""
+"Forces a swapped byte‑ordering for cases where the system’s endian is used "
+"instead of the video card"
+msgstr ""
+"Επιβάλλει μια εναλλαγμένη σειρά byte για περιπτώσεις όπου χρησιμοποιείται το endian του συστήματος "
+"αντί της κάρτας γραφικών"
+
+#: src/snes9x.ui:4061
+msgid "Hardware Acceleration"
+msgstr "Επιτάχυνση υλικού"
+
+#: src/snes9x.ui:4090
+msgid "Display"
+msgstr "Οθόνη"
+
+#: src/snes9x.ui:4143
+msgid "Sound driver:"
+msgstr "Πρόγραμμα οδήγησης ήχου:"
+
+#: src/snes9x.ui:4178
+msgid "Automatically adjust input rate to display"
+msgstr "Αυτόματη ρύθμιση ρυθμού εισόδου στην οθόνη"
+
+#: src/snes9x.ui:4182
+msgid "Sets the correct input rate based on the display’s refresh rate"
+msgstr "Ορίζει τον σωστό ρυθμό εισόδου με βάση τον ρυθμό ανανέωσης της οθόνης"
+
+#: src/snes9x.ui:4194
+msgid "Dynamic rate control"
+msgstr "Δυναμικός έλεγχος ρυθμού"
+
+#: src/snes9x.ui:4198
+msgid "Smooth out slight hiccups in sound input rate"
+msgstr "Εξομάλυνση ελαφρών προβλημάτων στον ρυθμό εισόδου ήχου"
+
+#: src/snes9x.ui:4209
+msgid "Mute sound output"
+msgstr "Σίγαση εξόδου ήχου"
+
+#: src/snes9x.ui:4213
+msgid "Disables output of sound"
+msgstr "Απενεργοποιεί την έξοδο ήχου"
+
+#: src/snes9x.ui:4225
+msgid "Mute sound when using turbo or rewind"
+msgstr "Σίγαση ήχου κατά τη χρήση turbo ή επαναφοράς"
+
+#: src/snes9x.ui:4229
+msgid "Disables output of sound when using turbo or rewind"
+msgstr "Απενεργοποιεί την έξοδο ήχου κατά τη χρήση turbo ή επαναφοράς"
+
+#: src/snes9x.ui:4252
+msgid "Playback rate:"
+msgstr "Ρυθμός αναπαραγωγής:"
+
+#: src/snes9x.ui:4310
+msgid "Buffer size:"
+msgstr "Μέγεθος buffer:"
+
+#: src/snes9x.ui:4324
+msgid "Dynamic rate limit:"
+msgstr "Δυναμικό όριο ρυθμού:"
+
+#: src/snes9x.ui:4369
+msgid "Input rate:"
+msgstr "Ρυθμός εισόδου:"
+
+#: src/snes9x.ui:4382
+msgid ""
+"Adjust to produce more or less data. Decrease the rate if experiencing "
+"crackling. Increase the rate if experiencing frame rate stuttering. Best "
+"used with the “Sound buffer synchronization” option."
+msgstr ""
+"Προσαρμόστε για παραγωγή περισσότερων ή λιγότερων δεδομένων. Μειώστε τον ρυθμό εάν ακούγονται "
+"θόρυβοι. Αυξήστε τον ρυθμό εάν παρουσιάζεται τραύλισμα στον ρυθμό καρέ. Χρησιμοποιείται καλύτερα "
+"με την επιλογή “Συγχρονισμός buffer ήχου”."
+
+#: src/snes9x.ui:4432
+msgid "Video rate:"
+msgstr "Ρυθμός βίντεο:"
+
+#: src/snes9x.ui:4469
+msgid "<b>Sound Settings</b>"
+msgstr "<b>Ρυθμίσεις ήχου</b>"
+
+#: src/snes9x.ui:4503 src/snes9x.ui:8730
+msgid "Sound"
+msgstr "Ήχος"
+
+#: src/snes9x.ui:4561
+msgid "Throttling method:"
+msgstr "Μέθοδος επιβράδυνσης:"
+
+#: src/snes9x.ui:4603
+msgid "<b>Speed Control</b>"
+msgstr "<b>Έλεγχος ταχύτητας</b>"
+
+#: src/snes9x.ui:4641
+msgid "Rewind buffer size (MB):"
+msgstr "Μέγεθος buffer επαναφοράς (MB):"
+
+#: src/snes9x.ui:4683
+msgid "Number of frames between rewind snapshots:"
+msgstr "Αριθμός καρέ μεταξύ στιγμιότυπων επαναφοράς:"
+
+#: src/snes9x.ui:4724
+msgid "<b>Rewind Settings</b>"
+msgstr "<b>Ρυθμίσεις επαναφοράς</b>"
+
+#: src/snes9x.ui:4755
+msgid "Allow invalid VRAM access"
+msgstr "Επιτρέπει μη έγκυρη πρόσβαση στη VRAM"
+
+#: src/snes9x.ui:4759
+msgid ""
+"Allows ROM hacks to write to screen at the wrong time. Only use if you know "
+"your ROM hack expects this"
+msgstr ""
+"Επιτρέπει στα ROM hacks να γράφουν στην οθόνη τη λάθος στιγμή. Χρησιμοποιήστε το μόνο εάν γνωρίζετε "
+"ότι το ROM hack σας το αναμένει"
+
+#: src/snes9x.ui:4769
+msgid "Allow opposing dpad directions"
+msgstr "Επιτρέπει αντίθετες κατευθύνσεις dpad"
+
+#: src/snes9x.ui:4773
+msgid "Let left and right or up and down be pressed at the same time"
+msgstr "Επιτρέπει το πάτημα αριστερά και δεξιά ή πάνω και κάτω ταυτόχρονα"
+
+#: src/snes9x.ui:4784
+msgid "Overclock CPU"
+msgstr "Overclock CPU"
+
+#: src/snes9x.ui:4788
+msgid "Reduces slowdown, but has potential to break games"
+msgstr "Μειώνει την επιβράδυνση, αλλά υπάρχει πιθανότητα να προκαλέσει προβλήματα σε παιχνίδια"
+
+#: src/snes9x.ui:4799
+msgid "Remove sprite limit"
+msgstr "Αφαίρεση ορίου sprite"
+
+#: src/snes9x.ui:4803
+msgid "Reduces flicker, but may cause graphical artifacts"
+msgstr "Μειώνει το τρεμόπαιγμα, αλλά μπορεί να προκαλέσει γραφικά τεχνουργήματα"
+
+#: src/snes9x.ui:4814
+msgid "Redirect echo buffer overflow"
+msgstr "Ανακατεύθυνση υπερχείλισης buffer ηχούς"
+
+#: src/snes9x.ui:4818
+msgid "Allows old addmusic hacks to work, but will likely hurt other games"
+msgstr "Επιτρέπει στα παλιά addmusic hacks να λειτουργούν, αλλά πιθανώς θα βλάψει άλλα παιχνίδια"
+
+#: src/snes9x.ui:4836
+msgid "SuperFX clock speed %:"
+msgstr "Ταχύτητα ρολογιού SuperFX %:"
+
+#: src/snes9x.ui:4875
+msgid "Gaussian is the correct behavior for SNES hardware"
+msgstr "Το Gaussian είναι η σωστή συμπεριφορά για το υλικό SNES"
+
+#: src/snes9x.ui:4882
+msgid "Sound filter:"
+msgstr "Φίλτρο ήχου:"
+
+#: src/snes9x.ui:4919
+msgid "<b>Hacks</b>"
+msgstr "<b>Hacks</b>"
+
+#: src/snes9x.ui:4961 src/snes9x.ui:7147
+msgid "Emulation"
+msgstr "Εξομοίωση"
+
+#: src/snes9x.ui:5202
+msgid "SRAM:"
+msgstr "SRAM:"
+
+#: src/snes9x.ui:5214
+msgid "Save states:"
+msgstr "Αποθηκευμένες καταστάσεις:"
+
+#: src/snes9x.ui:5228
+msgid "Cheats:"
+msgstr "Cheats:"
+
+#: src/snes9x.ui:5242
+msgid "Patches:"
+msgstr "Patches:"
+
+#: src/snes9x.ui:5256
+msgid "Exports:"
+msgstr "Εξαγωγές:"
+
+#: src/snes9x.ui:5280
+msgid "<b>Game Data Locations</b>"
+msgstr "<b>Τοποθεσίες δεδομένων παιχνιδιού</b>"
+
+#: src/snes9x.ui:5313
+msgid "Save SRAM:"
+msgstr "Αποθήκευση SRAM:"
+
+#: src/snes9x.ui:5325
+msgid ""
+"Automatically save the game’s SRAM at this interval. Setting this to 0 will "
+"only save when quitting or changing ROMs"
+msgstr ""
+"Αυτόματη αποθήκευση του SRAM του παιχνιδιού σε αυτό το διάστημα. Η ρύθμιση στο 0 θα "
+"αποθηκεύει μόνο κατά την έξοδο ή την αλλαγή ROM"
+
+#: src/snes9x.ui:5355
+msgid "<b>Automatic Saving</b>"
+msgstr "<b>Αυτόματη αποθήκευση</b>"
+
+#: src/snes9x.ui:5392
+msgid "Files"
+msgstr "Αρχεία"
+
+#: src/snes9x.ui:5423
+msgid "<b>Joypad:</b>"
+msgstr "<b>Joypad:</b>"
+
+#: src/snes9x.ui:5464
+msgid "_Reset"
+msgstr "_Επαναφορά"
+
+#: src/snes9x.ui:5492
+msgid "Swap with:"
+msgstr "Εναλλαγή με:"
+
+#: src/snes9x.ui:5520
+msgid "_Swap"
+msgstr "_Εναλλαγή"
+
+#: src/snes9x.ui:5542
+msgid "Use _modifier keys (Ctrl, Shift, Alt) directly"
+msgstr "Χρήση _πλήκτρων τροποποίησης (Ctrl, Shift, Alt) απευθείας"
+
+#: src/snes9x.ui:5546
+msgid "Allow using modifier keys as independent keys instead of modifiers"
+msgstr "Επιτρέπει τη χρήση πλήκτρων τροποποίησης ως ανεξάρτητα πλήκτρα αντί για τροποποιητές"
+
+#: src/snes9x.ui:5581
+msgid "Up"
+msgstr "Πάνω"
+
+#: src/snes9x.ui:5593
+msgid "Down"
+msgstr "Κάτω"
+
+#: src/snes9x.ui:5607
+msgid "Left"
+msgstr "Αριστερά"
+
+#: src/snes9x.ui:5621
+msgid "Right"
+msgstr "Δεξιά"
+
+#: src/snes9x.ui:5635
+msgid "Start"
+msgstr "Start"
+
+#: src/snes9x.ui:5649
+msgid "Select"
+msgstr "Select"
+
+#: src/snes9x.ui:5790 src/snes9x.ui:6020 src/snes9x.ui:6232
+msgid "A"
+msgstr "A"
+
+#: src/snes9x.ui:5802 src/snes9x.ui:6032 src/snes9x.ui:6244
+msgid "B"
+msgstr "B"
+
+#: src/snes9x.ui:5816 src/snes9x.ui:6046 src/snes9x.ui:6258
+msgid "X"
+msgstr "X"
+
+#: src/snes9x.ui:5830 src/snes9x.ui:6074 src/snes9x.ui:6286
+msgid "Y"
+msgstr "Y"
+
+#: src/snes9x.ui:5844 src/snes9x.ui:6088 src/snes9x.ui:6300
+msgid "L"
+msgstr "L"
+
+#: src/snes9x.ui:5858 src/snes9x.ui:6088 src/snes9x.ui:6300
+msgid "R"
+msgstr "R"
+
+#: src/snes9x.ui:5992
+msgid "Buttons"
+msgstr "Κουμπιά"
+
+#: src/snes9x.ui:6433
+msgid "<b>Sticky</b>"
+msgstr "<b>Sticky</b>"
+
+#: src/snes9x.ui:6449
+msgid "<b>Turbo</b>"
+msgstr "<b>Turbo</b>"
+
+#: src/snes9x.ui:6468
+msgid "Turbo / Sticky Buttons"
+msgstr "Κουμπιά Turbo / Sticky"
+
+#: src/snes9x.ui:6505
+msgid "Set new axis bindings at:"
+msgstr "Ορισμός νέων δεσμών άξονα στο:"
+
+#: src/snes9x.ui:6517
+msgid ""
+"Changes the amount a joystick should be tilted to register a button press"
+msgstr ""
+"Αλλάζει το ποσό που πρέπει να κλίνει ένα joystick για να καταγραφεί ένα πάτημα κουμπιού"
+
+#: src/snes9x.ui:6536
+msgid "percent"
+msgstr "τοις εκατό"
+
+#: src/snes9x.ui:6553
+msgid "<b>Joystick Axis Threshold</b>"
+msgstr "<b>Κατώφλι άξονα Joystick</b>"
+
+#: src/snes9x.ui:6590
+msgid "Center all axes on all joysticks and press Calibrate."
+msgstr "Κεντράρετε όλους τους άξονες σε όλα τα joystick και πατήστε Βαθμονόμηση."
+
+#: src/snes9x.ui:6605
+msgid "Cali_brate"
+msgstr "Βαθ_μονόμηση"
+
+#: src/snes9x.ui:6638
+msgid "<b>Calibration</b>"
+msgstr "<b>Βαθμονόμηση</b>"
+
+#: src/snes9x.ui:6659
+msgid "Joystick Options"
+msgstr "Επιλογές Joystick"
+
+#: src/snes9x.ui:6677 src/snes9x.ui:9029
+msgid ""
+"<small>Click an entry and then press the desired keys or joystick button\n"
+"<tt>Escape</tt>: Move to next  <tt>Shift+Escape</tt>: Clear selected</small>"
+msgstr ""
+"<small>Κάντε κλικ σε μια εγγραφή και μετά πατήστε τα επιθυμητά πλήκτρα ή το κουμπί του joystick\n"
+"<tt>Escape</tt>: Μετάβαση στο επόμενο  <tt>Shift+Escape</tt>: Εκκαθάριση επιλεγμένου</small>"
+
+#: src/snes9x.ui:6715
+msgid "Joypads"
+msgstr "Joypads"
+
+#: src/snes9x.ui:6742
+msgid "<b>SuperSnes9x Emulator Shortcut Keys</b>"
+msgstr "<b>Πλήκτρα συντόμευσης εξομοιωτή SuperSnes9x</b>"
+
+#: src/snes9x.ui:6793
+msgid "Soft reset"
+msgstr "Ήπια επαναφορά"
+
+#: src/snes9x.ui:6807
+msgid "Hardware reset"
+msgstr "Επαναφορά υλικού"
+
+#: src/snes9x.ui:6821
+msgid "Increase frame time"
+msgstr "Αύξηση χρόνου καρέ"
+
+#: src/snes9x.ui:6835
+msgid "Decrease frame time"
+msgstr "Μείωση χρόνου καρέ"
+
+#: src/snes9x.ui:6849
+msgid "Increase frame rate"
+msgstr "Αύξηση ρυθμού καρέ"
+
+#: src/snes9x.ui:6863
+msgid "Decrease frame rate"
+msgstr "Μείωση ρυθμού καρέ"
+
+#: src/snes9x.ui:6877
+msgid "Pause"
+msgstr "Παύση"
+
+#: src/snes9x.ui:6891
+msgid "Toggle turbo"
+msgstr "Εναλλαγή turbo"
+
+#: src/snes9x.ui:6905
+msgid "Enable turbo"
+msgstr "Ενεργοποίηση turbo"
+
+#: src/snes9x.ui:6920
+msgid "Open ROM"
+msgstr "Άνοιγμα ROM"
+
+#: src/snes9x.ui:7179
+msgid "Toggle BG layer 0"
+msgstr "Εναλλαγή επιπέδου BG 0"
+
+#: src/snes9x.ui:7191
+msgid "Toggle BG layer 1"
+msgstr "Εναλλαγή επιπέδου BG 1"
+
+#: src/snes9x.ui:7205
+msgid "Toggle BG layer 2"
+msgstr "Εναλλαγή επιπέδου BG 2"
+
+#: src/snes9x.ui:7219
+msgid "Toggle BG layer 3"
+msgstr "Εναλλαγή επιπέδου BG 3"
+
+#: src/snes9x.ui:7233
+msgid "Toggle sprites"
+msgstr "Εναλλαγή sprites"
+
+#: src/snes9x.ui:7247
+msgid "Toggle forced backdrop color"
+msgstr "Εναλλαγή εξαναγκασμένου χρώματος φόντου"
+
+#: src/snes9x.ui:7261
+msgid "Screenshot"
+msgstr "Στιγμιότυπο οθόνης"
+
+#: src/snes9x.ui:7275
+msgid "Toggle fullscreen"
+msgstr "Εναλλαγή πλήρους οθόνης"
+
+#: src/snes9x.ui:7439
+msgid "Graphics"
+msgstr "Γραφικά"
+
+#: src/snes9x.ui:7476
+msgid "Save current slot"
+msgstr "Αποθήκευση τρέχοντος slot"
+
+#: src/snes9x.ui:7509
+msgid "Load current slot"
+msgstr "Φόρτωση τρέχοντος slot"
+
+#: src/snes9x.ui:7542
+msgid "Increment and save"
+msgstr "Αύξηση και αποθήκευση"
+
+#: src/snes9x.ui:7575
+msgid "Decrement and load"
+msgstr "Μείωση και φόρτωση"
+
+#: src/snes9x.ui:7608
+msgid "Increment slot"
+msgstr "Αύξηση slot"
+
+#: src/snes9x.ui:7641
+msgid "Decrement slot"
+msgstr "Μείωση slot"
+
+#: src/snes9x.ui:7685
+msgid "<b>Quick save state</b>"
+msgstr "<b>Γρήγορη αποθήκευση κατάστασης</b>"
+
+#: src/snes9x.ui:7700
+msgid "<b>Quick load state</b>"
+msgstr "<b>Γρήγορη φόρτωση κατάστασης</b>"
+
+#: src/snes9x.ui:7715 src/snes9x.ui:7855
+msgid "Slot 0"
+msgstr "Slot 0"
+
+#: src/snes9x.ui:7729 src/snes9x.ui:7871
+msgid "Slot 1"
+msgstr "Slot 1"
+
+#: src/snes9x.ui:7743 src/snes9x.ui:7887
+msgid "Slot 2"
+msgstr "Slot 2"
+
+#: src/snes9x.ui:7757 src/snes9x.ui:7903
+msgid "Slot 3"
+msgstr "Slot 3"
+
+#: src/snes9x.ui:7771 src/snes9x.ui:7919
+msgid "Slot 4"
+msgstr "Slot 4"
+
+#: src/snes9x.ui:7785 src/snes9x.ui:7935
+msgid "Slot 5"
+msgstr "Slot 5"
+
+#: src/snes9x.ui:7799 src/snes9x.ui:7951
+msgid "Slot 6"
+msgstr "Slot 6"
+
+#: src/snes9x.ui:7813 src/snes9x.ui:7967
+msgid "Slot 7"
+msgstr "Slot 7"
+
+#: src/snes9x.ui:7827 src/snes9x.ui:7983
+msgid "Slot 8"
+msgstr "Slot 8"
+
+#: src/snes9x.ui:7841 src/snes9x.ui:7999
+msgid "Slot 9"
+msgstr "Slot 9"
+
+#: src/snes9x.ui:8438
+msgid "Toggle sound channel 0"
+msgstr "Εναλλαγή καναλιού ήχου 0"
+
+#: src/snes9x.ui:8450
+msgid "Toggle sound channel 1"
+msgstr "Εναλλαγή καναλιού ήχου 1"
+
+#: src/snes9x.ui:8464
+msgid "Toggle sound channel 2"
+msgstr "Εναλλαγή καναλιού ήχου 2"
+
+#: src/snes9x.ui:8478
+msgid "Toggle sound channel 3"
+msgstr "Εναλλαγή καναλιού ήχου 3"
+
+#: src/snes9x.ui:8492
+msgid "Toggle sound channel 4"
+msgstr "Εναλλαγή καναλιού ήχου 4"
+
+#: src/snes9x.ui:8506
+msgid "Toggle sound channel 5"
+msgstr "Εναλλαγή καναλιού ήχου 5"
+
+#: src/snes9x.ui:8520
+msgid "Toggle sound channel 6"
+msgstr "Εναλλαγή καναλιού ήχου 6"
+
+#: src/snes9x.ui:8534
+msgid "Toggle sound channel 7"
+msgstr "Εναλλαγή καναλιού ήχου 7"
+
+#: src/snes9x.ui:8548
+msgid "Toggle all sound channels"
+msgstr "Εναλλαγή όλων των καναλιών ήχου"
+
+#: src/snes9x.ui:8753
+msgid "Seek to frame"
+msgstr "Αναζήτηση σε καρέ"
+
+#: src/snes9x.ui:8768
+msgid "Load Movie"
+msgstr "Φόρτωση ταινίας"
+
+#: src/snes9x.ui:8783
+msgid "Stop movie recording"
+msgstr "Διακοπή εγγραφής ταινίας"
+
+#: src/snes9x.ui:8798
+msgid "Begin movie recording"
+msgstr "Έναρξη εγγραφής ταινίας"
+
+#: src/snes9x.ui:8813
+msgid "Save SPC"
+msgstr "Αποθήκευση SPC"
+
+#: src/snes9x.ui:8913
+msgid "Swap controllers 1 & 2"
+msgstr "Εναλλαγή ελεγκτών 1 & 2"
+
+#: src/snes9x.ui:8944
+msgid "Rewind"
+msgstr "Επαναφορά"
+
+#: src/snes9x.ui:8975
+msgid "Capture/release mouse"
+msgstr "Λήψη/απελευθέρωση ποντικιού"
+
+#: src/snes9x.ui:9011
+msgid "Misc"
+msgstr "Διάφορα"
+
+#: src/snes9x.ui:9067
+msgid "Shortcuts"
+msgstr "Συντομεύσεις"
+
+#: src/snes9x.ui:9106
+msgid "Pause emulation when switching away from SuperSnes9x"
+msgstr "Παύση εξομοίωσης κατά την εναλλαγή από το SuperSnes9x"
+
+#: src/snes9x.ui:9120
+msgid "Force‑enable button and menu icons"
+msgstr "Εξαναγκασμένη ενεργοποίηση εικονιδίων κουμπιών και μενού"
+
+#: src/snes9x.ui:9141
+msgid "The <tt>Esc</tt> key should:"
+msgstr "Το πλήκτρο <tt>Esc</tt> πρέπει:"
+
+#: src/snes9x.ui:9185
+msgid "Initial background:"
+msgstr "Αρχικό φόντο:"
+
+#: src/snes9x.ui:9226
+msgid "<b>Window Behavior</b>"
+msgstr "<b>Συμπεριφορά παραθύρου</b>"
+
+#: src/snes9x.ui:9256
+msgid "Prevent the screensaver from activating"
+msgstr "Αποτροπή ενεργοποίησης προστασίας οθόνης"
+
+#: src/snes9x.ui:9276
+msgid "<b>Screensaver</b>"
+msgstr "<b>Προστασία οθόνης</b>"
+
+#: src/snes9x.ui:9310
+msgid "UI"
+msgstr "UI"
+
+#: src/snes9x.ui:9344
+msgid ""
+"  SuperSnes9x – A Portable Super Nintendo Entertainment System™ Emulator\n"
+"\n"
+"  Snes9x homepage: http://www.snes9x.com/\n"
+"  SuperSnes9x source code: https://github.com/shanytc/snes9x/\n"
+"\n"
+"  Permission to use, copy, modify and/or distribute SuperSnes9x in both binary\n"
+"  and source form, for non‑commercial purposes, is hereby granted without\n"
+"  fee, providing that this license information and copyright notice appear\n"
+"  with all copies and any derived work.\n"
+"\n"
+"  This software is provided ‘as‑is’, without any express or implied\n"
+"  warranty. In no event shall the authors be held liable for any damages\n"
+"  arising from the use of this software or it’s derivatives.\n"
+"\n"
+"  SuperSnes9x is freeware for PERSONAL USE only. Commercial users should\n"
+"  seek permission of the copyright holders first. Commercial use includes,\n"
+"  but is not limited to, charging money for SuperSnes9x or software derived from\n"
+"  Snes9x, including SuperSnes9x or derivatives in commercial game bundles, and/"
+"or\n"
+"  using SuperSnes9x as a promotion for your commercial product.\n"
+"\n"
+"  The copyright holders request that bug fixes and improvements to the code\n"
+"  should be forwarded to them so everyone can benefit from the "
+"modifications\n"
+"  in future versions.\n"
+"\n"
+"  Super NES and Super Nintendo Entertainment System are trademarks of\n"
+"  Nintendo Co., Limited and its subsidiary companies."
+msgstr ""
+"  SuperSnes9x – Ένας φορητός εξομοιωτής Super Nintendo Entertainment System™\n"
+"\n"
+"  Αρχική σελίδα Snes9x: http://www.snes9x.com/\n"
+"  Πηγαίος κώδικας SuperSnes9x: https://github.com/shanytc/snes9x/\n"
+"\n"
+"  Η άδεια χρήσης, αντιγραφής, τροποποίησης και/ή διανομής του SuperSnes9x σε δυαδική\n"
+"  και πηγαία μορφή, για μη εμπορικούς σκοπούς, παραχωρείται δια του παρόντος χωρίς\n"
+"  αμοιβή, υπό την προϋπόθεση ότι αυτές οι πληροφορίες άδειας χρήσης και η σημείωση πνευματικών δικαιωμάτων εμφανίζονται\n"
+"  με όλα τα αντίγραφα και οποιοδήποτε παράγωγο έργο.\n"
+"\n"
+"  Αυτό το λογισμικό παρέχεται «ως έχει», χωρίς καμία ρητή ή σιωπηρή\n"
+"  εγγύηση. Σε καμία περίπτωση οι συγγραφείς δεν φέρουν ευθύνη για τυχόν ζημιές\n"
+"  που προκύπτουν από τη χρήση αυτού του λογισμικού ή των παραγώγων του.\n"
+"\n"
+"  Το SuperSnes9x είναι δωρεάν λογισμικό για ΠΡΟΣΩΠΙΚΗ ΧΡΗΣΗ μόνο. Οι εμπορικοί χρήστες θα πρέπει\n"
+"  πρώτα να ζητήσουν άδεια από τους κατόχους των πνευματικών δικαιωμάτων. Η εμπορική χρήση περιλαμβάνει,\n"
+"  αλλά δεν περιορίζεται σε, χρέωση χρημάτων για το SuperSnes9x ή λογισμικό που προέρχεται από\n"
+"  το Snes9x, συμπεριλαμβανομένης της συμπερίληψης του SuperSnes9x ή παραγώγων του σε εμπορικά πακέτα παιχνιδιών, και/ή\n"
+"  τη χρήση του SuperSnes9x ως προώθηση για το εμπορικό σας προϊόν.\n"
+"\n"
+"  Οι κάτοχοι των πνευματικών δικαιωμάτων ζητούν όπως οι διορθώσεις σφαλμάτων και οι βελτιώσεις στον κώδικα\n"
+"  να διαβιβάζονται σε αυτούς ώστε όλοι να μπορούν να επωφεληθούν από τις τροποποιήσεις\n"
+"  σε μελλοντικές εκδόσεις.\n"
+"\n"
+"  Τα Super NES και Super Nintendo Entertainment System είναι εμπορικά σήματα της\n"
+"  Nintendo Co., Limited και των θυγατρικών της εταιρειών."
+
+# === Win32 strings (added by i18n/extract_strings.py) ===
+
+#: win32/rsrc/snes9x.rc
+msgid "!= (Not Equal To)"
+msgstr "!= (Δεν ισούται με)"
+
+#: win32/wlanguage.h
+msgid "(Not Available)"
+msgstr "(Δεν είναι διαθέσιμο)"
+
+#: win32/wlanguage.h
+msgid "(not stored in movie file)"
+msgstr "(δεν αποθηκεύεται στο αρχείο ταινίας)"
+
+#: win32/rsrc/snes9x.rc
+msgid "(restart required)"
+msgstr "(απαιτείται επανεκκίνηση)"
+
+#: win32/rsrc/snes9x.rc
+msgid "0 (off)"
+msgstr "0 (απενεργοποιημένο)"
+
+#: win32/rsrc/snes9x.rc
+msgid "1 byte"
+msgstr "1 byte"
+
+#: win32/rsrc/snes9x.rc
+msgid "1 frame"
+msgstr "1 καρέ"
+
+#: win32/rsrc/snes9x.rc
+msgid "10x"
+msgstr "10x"
+
+#: win32/rsrc/snes9x.rc
+msgid "112ms"
+msgstr "112ms"
+
+#: win32/rsrc/snes9x.rc
+msgid "11KHz"
+msgstr "11KHz"
+
+#: win32/rsrc/snes9x.rc
+msgid "128ms"
+msgstr "128ms"
+
+#: win32/rsrc/snes9x.rc
+msgid "144ms"
+msgstr "144ms"
+
+#: win32/rsrc/snes9x.rc
+msgid "160ms"
+msgstr "160ms"
+
+#: win32/rsrc/snes9x.rc
+msgid "16KHz"
+msgstr "16KHz"
+
+#: win32/rsrc/snes9x.rc
+msgid "16ms"
+msgstr "16ms"
+
+#: win32/rsrc/snes9x.rc
+msgid "176ms"
+msgstr "176ms"
+
+#: win32/rsrc/snes9x.rc
+msgid "192ms"
+msgstr "192ms"
+
+#: win32/rsrc/snes9x.rc
+msgid "1x"
+msgstr "1x"
+
+#: win32/rsrc/snes9x.rc
+msgid "2 bytes"
+msgstr "2 bytes"
+
+#: win32/rsrc/snes9x.rc
+msgid "2 frames"
+msgstr "2 καρέ"
+
+#: win32/rsrc/snes9x.rc
+msgid "208ms"
+msgstr "208ms"
+
+#: win32/rsrc/snes9x.rc
+msgid "22KHz"
+msgstr "22KHz"
+
+#: win32/rsrc/snes9x.rc
+msgid "2x"
+msgstr "2x"
+
+#: win32/rsrc/snes9x.rc
+msgid "3 bytes"
+msgstr "3 bytes"
+
+#: win32/rsrc/snes9x.rc
+msgid "3 frames"
+msgstr "3 καρέ"
+
+#: win32/rsrc/snes9x.rc
+msgid "30KHz"
+msgstr "30KHz"
+
+#: win32/rsrc/snes9x.rc
+msgid "32KHz"
+msgstr "32KHz"
+
+#: win32/rsrc/snes9x.rc
+msgid "32ms"
+msgstr "32ms"
+
+#: win32/rsrc/snes9x.rc
+msgid "35KHz"
+msgstr "35KHz"
+
+#: win32/rsrc/snes9x.rc
+msgid "3x"
+msgstr "3x"
+
+#: win32/rsrc/snes9x.rc
+msgid "4 bytes"
+msgstr "4 bytes"
+
+#: win32/rsrc/snes9x.rc
+msgid "4 frames"
+msgstr "4 καρέ"
+
+#: win32/rsrc/snes9x.rc
+msgid "44KHz"
+msgstr "44KHz"
+
+#: win32/rsrc/snes9x.rc
+msgid "48KHz"
+msgstr "48KHz"
+
+#: win32/rsrc/snes9x.rc
+msgid "48ms"
+msgstr "48ms"
+
+#: win32/rsrc/snes9x.rc
+msgid "4x"
+msgstr "4x"
+
+#: win32/rsrc/snes9x.rc
+msgid "5x"
+msgstr "5x"
+
+#: win32/rsrc/snes9x.rc
+msgid "64ms"
+msgstr "64ms"
+
+#: win32/rsrc/snes9x.rc
+msgid "6x"
+msgstr "6x"
+
+#: win32/rsrc/snes9x.rc
+msgid "7x"
+msgstr "7x"
+
+#: win32/rsrc/snes9x.rc
+msgid "80ms"
+msgstr "80ms"
+
+#: win32/rsrc/snes9x.rc
+msgid "8KHz"
+msgstr "8KHz"
+
+#: win32/rsrc/snes9x.rc
+msgid "8x"
+msgstr "8x"
+
+#: win32/rsrc/snes9x.rc
+msgid "96ms"
+msgstr "96ms"
+
+#: win32/rsrc/snes9x.rc
+msgid "9x"
+msgstr "9x"
+
+#: win32/rsrc/snes9x.rc
+msgid "< (Less Than)"
+msgstr "< (Μικρότερο από)"
+
+#: win32/wlanguage.h
+msgid "<-- MISMATCH !!!"
+msgstr "<-- ΑΣΥΜΦΩΝΙΑ !!!"
+
+#: win32/rsrc/snes9x.rc
+msgid "<= (Less Than or Equal to)"
+msgstr "<= (Μικρότερο ή ίσο με)"
+
+#: win32/rsrc/snes9x.rc
+msgid "= (Equal To)"
+msgstr "= (Ίσο με)"
+
+#: win32/rsrc/snes9x.rc
+msgid "> (Greater Than)"
+msgstr "> (Μεγαλύτερο από)"
+
+#: win32/rsrc/snes9x.rc
+msgid ">= (Greater than or Equal To)"
+msgstr ">= (Μεγαλύτερο ή ίσο με)"
+
+#: win32/rsrc/snes9x.rc
+msgid "About"
+msgstr "Σχετικά"
+
+#: win32/rsrc/snes9x.rc
+msgid "Achievement List"
+msgstr "Λίστα επιτευγμάτων"
+
+#: win32/rsrc/snes9x.rc
+msgid "Act as Server"
+msgstr "Ενέργεια ως διακομιστής"
+
+#: win32/wlanguage.h
+msgid "Act As Server"
+msgstr "Ενέργεια ως διακομιστής"
+
+#: win32/rsrc/snes9x.rc
+msgid "Add"
+msgstr "Προσθήκη"
+
+#: win32/rsrc/snes9x.rc
+msgid "Add Cheat"
+msgstr "Προσθήκη Cheat"
+
+#: win32/rsrc/snes9x.rc
+msgid "Add SuperSnes9x to registry for supported file types"
+msgstr "Προσθήκη του SuperSnes9x στο μητρώο για υποστηριζόμενους τύπους αρχείων"
+
+#: win32/rsrc/snes9x.rc
+msgid "Address"
+msgstr "Διεύθυνση"
+
+#: win32/rsrc/snes9x.rc
+msgid "Address:"
+msgstr "Διεύθυνση:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Adjustments"
+msgstr "Ρυθμίσεις"
+
+#: win32/wlanguage.h
+msgid "All files"
+msgstr "Όλα τα αρχεία"
+
+#: win32/rsrc/snes9x.rc
+msgid "all of SuperSnes9x's settings are stored in this file"
+msgstr "όλες οι ρυθμίσεις του SuperSnes9x αποθηκεύονται σε αυτό το αρχείο"
+
+#: win32/rsrc/snes9x.rc
+msgid "Allow executable logo override"
+msgstr "Επιτρέπεται η αντικατάσταση λογότυπου εκτελέσιμου"
+
+#: win32/rsrc/snes9x.rc
+msgid "Allow Invalid VRAM Access"
+msgstr "Επιτρέπεται μη έγκυρη πρόσβαση στη VRAM"
+
+#: win32/rsrc/snes9x.rc
+msgid "Allow Left+Rt/Up+Dn"
+msgstr "Επιτρέπεται Αριστερά+Δεξιά/Πάνω+Κάτω"
+
+#: win32/rsrc/snes9x.rc
+msgid "APP - Emulator Settings"
+msgstr "APP - Ρυθμίσεις εξομοιωτή"
+
+#: win32/rsrc/snes9x.rc
+msgid "Apply"
+msgstr "Εφαρμογή"
+
+#: win32/rsrc/snes9x.rc
+msgid "Apply Adjustments"
+msgstr "Εφαρμογή ρυθμίσεων"
+
+#: win32/rsrc/snes9x.rc
+msgid "Apply Cheats"
+msgstr "Εφαρμογή Cheat"
+
+#: win32/rsrc/snes9x.rc
+msgid "Ask for confirmation when saving/loading"
+msgstr "Ζήτηση επιβεβαίωσης κατά την αποθήκευση/φόρτωση"
+
+#: win32/rsrc/snes9x.rc
+msgid "Ask Server to Pause when"
+msgstr "Ερώτηση διακομιστή για παύση όταν"
+
+#: win32/rsrc/snes9x.rc
+msgid "Author Info:"
+msgstr "Πληροφορίες συγγραφέα:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Auto Layer Transparency"
+msgstr "Αυτόματη διαφάνεια επιπέδου"
+
+#: win32/rsrc/snes9x.rc
+msgid "Auto update"
+msgstr "Αυτόματη ενημέρωση"
+
+#: win32/rsrc/snes9x.rc
+msgid "Auto-Assign"
+msgstr "Αυτόματη ανάθεση"
+
+#: win32/wlanguage.h
+msgid "Auto-Detect"
+msgstr "Αυτόματη ανίχνευση"
+
+#: win32/rsrc/snes9x.rc
+msgid "Auto-Save S-RAM"
+msgstr "Αυτόματη αποθήκευση S-RAM"
+
+#: win32/wlanguage.h
+msgid "Autofire"
+msgstr "Αυτόματη βολή"
+
+#: win32/wlanguage.h
+msgid "Autohold"
+msgstr "Αυτόματο κράτημα"
+
+#: win32/rsrc/snes9x.rc
+msgid "Automatic Input Rate"
+msgstr "Αυτόματος ρυθμός εισόδου"
+
+#: win32/rsrc/snes9x.rc
+msgid "Automatic, skip at most:"
+msgstr "Αυτόματα, παράλειψη το πολύ:"
+
+#: win32/wlanguage.h
+msgid "AVI file"
+msgstr "Αρχείο AVI"
+
+#: win32/rsrc/snes9x.rc
+msgid "AVI Recording"
+msgstr "Εγγραφή AVI"
+
+#: win32/rsrc/snes9x.rc
+msgid "Background Keyboard Hotkeys"
+msgstr "Πλήκτρα συντόμευσης πληκτρολογίου παρασκηνίου"
+
+#: win32/rsrc/snes9x.rc
+msgid "Background:"
+msgstr "Φόντο:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Bank +:"
+msgstr "Τράπεζα +:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Bank -:"
+msgstr "Τράπεζα -:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Bank:"
+msgstr "Τράπεζα:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Base Tile Addresses"
+msgstr "Διευθύνσεις βασικών πλακιδίων"
+
+#: win32/rsrc/snes9x.rc
+msgid "BG1:"
+msgstr "BG1:"
+
+#: win32/rsrc/snes9x.rc
+msgid "BG2:"
+msgstr "BG2:"
+
+#: win32/rsrc/snes9x.rc
+msgid "BG3:"
+msgstr "BG3:"
+
+#: win32/rsrc/snes9x.rc
+msgid "BG4:"
+msgstr "BG4:"
+
+#: win32/rsrc/snes9x.rc
+msgid "BG:"
+msgstr "BG:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Bilinear Filtering"
+msgstr "Διγραμμικό φιλτράρισμα"
+
+#: win32/rsrc/snes9x.rc
+msgid "Binding"
+msgstr "Δέσμευση"
+
+#: win32/rsrc/snes9x.rc
+msgid "BIOS"
+msgstr "BIOS"
+
+#: win32/wlanguage.h
+msgid "BIOS files"
+msgstr "Αρχεία BIOS"
+
+#: win32/rsrc/snes9x.rc
+msgid "BIOS:"
+msgstr "BIOS:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Bit Depth:"
+msgstr "Βάθος bit:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Blend Hi-Res Images"
+msgstr "Ανάμειξη εικόνων υψηλής ανάλυσης"
+
+#: win32/rsrc/snes9x.rc
+msgid "Blue means already mapped. Pink conflicts with hotkey.\nRed is reserved by Windows. Escape clears bindings.\nPress multiple keys for multi-bind. Delete removes last."
+msgstr ""
+"Το μπλε σημαίνει ήδη αντιστοιχισμένο. Το ροζ συγκρούεται με το hotkey.\nΤο κόκκινο δεσμεύεται από τα Windows. Το Escape διαγράφει τις δεσμεύσεις.\nΠατήστε πολλά πλήκτρα για πολλαπλή δέσμευση. Το Delete αφαιρεί το τελευταίο."
+
+#: win32/wlanguage.h
+msgid "Blue means the hotkey is already mapped.\nPink means it conflicts with a game button.\nRed means it's reserved by Windows.\nA hotkey can be disabled using Escape."
+msgstr ""
+"Το μπλε σημαίνει ότι το hotkey έχει ήδη αντιστοιχιστεί.\nΤο ροζ σημαίνει ότι συγκρούεται με ένα κουμπί παιχνιδιού.\nΤο κόκκινο σημαίνει ότι δεσμεύεται από τα Windows.\nΈνα hotkey μπορεί να απενεργοποιηθεί χρησιμοποιώντας το Escape."
+
+#: win32/rsrc/snes9x.rc
+msgid "Blue means the hotkey is already mapped. Pink means it conflicts with a game button. Red means it's reserved by Windows. Escape clears bindings.\nPress multiple keys for multi-bind. Delete removes last."
+msgstr ""
+"Το μπλε σημαίνει ότι το hotkey έχει ήδη αντιστοιχιστεί. Το ροζ σημαίνει ότι συγκρούεται με ένα κουμπί παιχνιδιού. Το κόκκινο σημαίνει ότι δεσμεύεται από τα Windows. Το Escape διαγράφει τις δεσμεύσεις.\nΠατήστε πολλά πλήκτρα για πολλαπλή δέσμευση. Το Delete αφαιρεί το τελευταίο."
+
+#: win32/rsrc/snes9x.rc
+msgid "Browse"
+msgstr "Αναζήτηση"
+
+#: win32/rsrc/snes9x.rc
+msgid "Buffer Length"
+msgstr "Μήκος buffer"
+
+#: win32/rsrc/snes9x.rc
+msgid "Buffer Length:"
+msgstr "Μήκος buffer:"
+
+#: win32/wlanguage.h
+msgid "Can't Open File"
+msgstr "Δεν είναι δυνατό το άνοιγμα αρχείου"
+
+#: win32/rsrc/snes9x.rc
+msgid "Cancel"
+msgstr "Άκυρο"
+
+#: win32/rsrc/snes9x.rc
+msgid "Channel 1"
+msgstr "Κανάλι 1"
+
+#: win32/rsrc/snes9x.rc
+msgid "Channel 2"
+msgstr "Κανάλι 2"
+
+#: win32/rsrc/snes9x.rc
+msgid "Channel 3"
+msgstr "Κανάλι 3"
+
+#: win32/rsrc/snes9x.rc
+msgid "Channel 4"
+msgstr "Κανάλι 4"
+
+#: win32/rsrc/snes9x.rc
+msgid "Channel 5"
+msgstr "Κανάλι 5"
+
+#: win32/rsrc/snes9x.rc
+msgid "Channel 6"
+msgstr "Κανάλι 6"
+
+#: win32/rsrc/snes9x.rc
+msgid "Channel 7"
+msgstr "Κανάλι 7"
+
+#: win32/rsrc/snes9x.rc
+msgid "Channel 8"
+msgstr "Κανάλι 8"
+
+#: win32/rsrc/snes9x.rc
+msgid "Channels"
+msgstr "Κανάλια"
+
+#: win32/rsrc/snes9x.rc
+msgid "Chat"
+msgstr "Συνομιλία"
+
+#: win32/rsrc/snes9x.rc
+msgid "Cheat Description:"
+msgstr "Περιγραφή Cheat:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Cheat Details"
+msgstr "Λεπτομέρειες Cheat"
+
+#: win32/rsrc/snes9x.rc
+msgid "Cheat Entry and Editor"
+msgstr "Εισαγωγή και επεξεργαστής Cheat"
+
+#: win32/rsrc/snes9x.rc
+msgid "Cheat Search"
+msgstr "Αναζήτηση Cheat"
+
+#: win32/wlanguage.h
+msgid "Cheats Editor Dialog:"
+msgstr "Διάλογος επεξεργαστή Cheats:"
+
+#: win32/wlanguage.h
+msgid "Cheats Search Dialog:"
+msgstr "Διάλογος αναζήτησης Cheats:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Choose Logo"
+msgstr "Επιλογή λογότυπου"
+
+#: win32/rsrc/snes9x.rc
+msgid "Clear"
+msgstr "Εκκαθάριση"
+
+#: win32/rsrc/snes9x.rc
+msgid "Clear All"
+msgstr "Εκκαθάριση όλων"
+
+#: win32/rsrc/snes9x.rc
+msgid "Clear History"
+msgstr "Εκκαθάριση ιστορικού"
+
+#: win32/rsrc/snes9x.rc
+msgid "Clear SRAM"
+msgstr "Εκκαθάριση SRAM"
+
+#: win32/rsrc/snes9x.rc
+msgid "Clear Watches"
+msgstr "Εκκαθάριση παρακολουθήσεων"
+
+#: win32/rsrc/snes9x.rc
+msgid "Client Settings"
+msgstr "Ρυθμίσεις πελάτη"
+
+#: win32/wlanguage.h
+msgid "Clipping Windows:"
+msgstr "Παράθυρα αποκοπής:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Close"
+msgstr "Κλείσιμο"
+
+#: win32/wlanguage.h
+msgid "Code"
+msgstr "Κωδικός"
+
+#: win32/rsrc/snes9x.rc
+msgid "Color Correction"
+msgstr "Διόρθωση χρώματος"
+
+#: win32/rsrc/snes9x.rc
+msgid "Compare To"
+msgstr "Σύγκριση με"
+
+#: win32/rsrc/snes9x.rc
+msgid "Comparison Type"
+msgstr "Τύπος σύγκρισης"
+
+#: win32/rsrc/snes9x.rc
+msgid "Config file:"
+msgstr "Αρχείο ρυθμίσεων:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Connect"
+msgstr "Σύνδεση"
+
+#: win32/rsrc/snes9x.rc
+msgid "Connect clients to: 127.0.0.1 (localhost) or your LAN IP"
+msgstr "Σύνδεση πελατών σε: 127.0.0.1 (localhost) ή την IP του LAN σας"
+
+#: win32/rsrc/snes9x.rc
+msgid "Connect to Server"
+msgstr "Σύνδεση σε διακομιστή"
+
+#: win32/rsrc/snes9x.rc
+msgid "Controller"
+msgstr "Ελεγκτής"
+
+#: win32/wlanguage.h
+msgid "Could not open movie file."
+msgstr "Δεν ήταν δυνατό το άνοιγμα του αρχείου ταινίας."
+
+#: win32/rsrc/snes9x.rc
+msgid "CPU Overclock:"
+msgstr "Overclock CPU:"
+
+#: win32/wlanguage.h
+msgid "crc32=%08X, name=%s"
+msgstr "crc32=%08X, όνομα=%s"
+
+#: win32/wlanguage.h
+msgid "Current ROM:"
+msgstr "Τρέχουσα ROM:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Current ROM: CRC32=Unknown, Name=Unknown"
+msgstr "Τρέχουσα ROM: CRC32=Άγνωστο, Όνομα=Άγνωστο"
+
+#: win32/rsrc/snes9x.rc
+msgid "Current Value"
+msgstr "Τρέχουσα τιμή"
+
+#: win32/rsrc/snes9x.rc
+msgid "Custom ROM Open Dialog"
+msgstr "Προσαρμοσμένος διάλογος ανοίγματος ROM"
+
+#: win32/rsrc/snes9x.rc
+msgid "Custom Screen Mode"
+msgstr "Προσαρμοσμένη λειτουργία οθόνης"
+
+#: win32/rsrc/snes9x.rc
+msgid "Customize Hotkeys"
+msgstr "Προσαρμογή πλήκτρων συντόμευσης"
+
+#: win32/rsrc/snes9x.rc
+msgid "Customize Special Keys"
+msgstr "Προσαρμογή ειδικών πλήκτρων"
+
+#: win32/rsrc/snes9x.rc
+msgid "Data Size"
+msgstr "Μέγεθος δεδομένων"
+
+#: win32/rsrc/snes9x.rc
+msgid "Data Type"
+msgstr "Τύπος δεδομένων"
+
+#: win32/rsrc/snes9x.rc
+msgid "DATE"
+msgstr "ΗΜΕΡΟΜΗΝΙΑ"
+
+#: win32/rsrc/snes9x.rc
+msgid "Defaults"
+msgstr "Προεπιλογές"
+
+#: win32/rsrc/snes9x.rc
+msgid "Delete"
+msgstr "Διαγραφή"
+
+#: win32/rsrc/snes9x.rc
+msgid "Detect gamepad changes"
+msgstr "Ανίχνευση αλλαγών gamepad"
+
+#: win32/rsrc/snes9x.rc
+msgid "Dialog"
+msgstr "Διάλογος"
+
+#: win32/rsrc/snes9x.rc
+msgid "Direct3D Shader File"
+msgstr "Αρχείο Direct3D Shader"
+
+#: win32/wlanguage.h
+msgid "Directory"
+msgstr "Κατάλογος"
+
+#: win32/rsrc/snes9x.rc
+msgid "Directory:"
+msgstr "Κατάλογος:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Disable Sprite Limit"
+msgstr "Απενεργοποίηση ορίου sprite"
+
+#: win32/rsrc/snes9x.rc
+msgid "Disconnect"
+msgstr "Αποσύνδεση"
+
+#: win32/rsrc/snes9x.rc
+msgid "Disconnect from Server"
+msgstr "Αποσύνδεση από τον διακομιστή"
+
+#: win32/rsrc/snes9x.rc
+msgid "Display Configuration"
+msgstr "Διαμόρφωση οθόνης"
+
+#: win32/rsrc/snes9x.rc
+msgid "Display messages inside SNES image"
+msgstr "Εμφάνιση μηνυμάτων μέσα στην εικόνα SNES"
+
+#: win32/rsrc/snes9x.rc
+msgid "Display Settings"
+msgstr "Ρυθμίσεις οθόνης"
+
+#: win32/rsrc/snes9x.rc
+msgid "DN LEFT"
+msgstr "ΚΑΤΩ ΑΡΙΣΤΕΡΑ"
+
+#: win32/wlanguage.h
+msgid "Dn Left"
+msgstr "Κάτω αριστερά"
+
+#: win32/rsrc/snes9x.rc
+msgid "DN RIGHT"
+msgstr "ΚΑΤΩ ΔΕΞΙΑ"
+
+#: win32/wlanguage.h
+msgid "Dn Right"
+msgstr "Κάτω δεξιά"
+
+#: win32/rsrc/snes9x.rc
+msgid "DOWN"
+msgstr "ΚΑΤΩ"
+
+#: win32/rsrc/snes9x.rc
+msgid "Dummy"
+msgstr "Dummy"
+
+#: win32/rsrc/snes9x.rc
+msgid "Dynamic Rate Control"
+msgstr "Δυναμικός έλεγχος ρυθμού"
+
+#: win32/rsrc/snes9x.rc
+msgid "Edit Cheat Group"
+msgstr "Επεξεργασία ομάδας Cheat"
+
+#: win32/rsrc/snes9x.rc
+msgid "Emulate Fullscreen"
+msgstr "Εξομοίωση πλήρους οθόνης"
+
+#: win32/wlanguage.h
+msgid "Emulation Settings"
+msgstr "Ρυθμίσεις εξομοίωσης"
+
+#: win32/rsrc/snes9x.rc
+msgid "Emulator Hacks"
+msgstr "Hacks εξομοιωτή"
+
+#: win32/rsrc/snes9x.rc
+msgid "Enable"
+msgstr "Ενεργοποίηση"
+
+#: win32/rsrc/snes9x.rc
+msgid "Enable All"
+msgstr "Ενεργοποίηση όλων"
+
+#: win32/rsrc/snes9x.rc
+msgid "Enable Background Input"
+msgstr "Ενεργοποίηση εισόδου παρασκηνίου"
+
+#: win32/rsrc/snes9x.rc
+msgid "Enable Color Correction (accurate SNES colors)"
+msgstr "Ενεργοποίηση διόρθωσης χρώματος (ακριβή χρώματα SNES)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Enable Triple Buffering"
+msgstr "Ενεργοποίηση τριπλού buffering"
+
+#: win32/rsrc/snes9x.rc
+msgid "Enabled"
+msgstr "Ενεργοποιημένο"
+
+#: win32/rsrc/snes9x.rc
+msgid "End Kaillera Game"
+msgstr "Τερματισμός παιχνιδιού Kaillera"
+
+#: win32/rsrc/snes9x.rc
+msgid "Enter a Value:"
+msgstr "Εισαγάγετε μια τιμή:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Enter Cheat Code:"
+msgstr "Εισαγάγετε κωδικό Cheat:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Enter Cheat codes, one line at a time"
+msgstr "Εισαγάγετε κωδικούς Cheat, μία γραμμή τη φορά"
+
+#: win32/wlanguage.h
+msgid "enter host name"
+msgstr "εισαγάγετε όνομα κεντρικού υπολογιστή"
+
+#: win32/rsrc/snes9x.rc
+msgid "Entered Address"
+msgstr "Εισαγόμενη διεύθυνση"
+
+#: win32/rsrc/snes9x.rc
+msgid "Entered Value"
+msgstr "Εισαγόμενη τιμή"
+
+#: win32/wlanguage.h
+msgid "Error Info:"
+msgstr "Πληροφορίες σφάλματος:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Exit"
+msgstr "Έξοδος"
+
+#: win32/rsrc/snes9x.rc
+msgid "Extend Height of SNES Image"
+msgstr "Επέκταση ύψους εικόνας SNES"
+
+#: win32/wlanguage.h
+msgid "Fast forward:"
+msgstr "Γρήγορη προώθηση:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Fast-Forward"
+msgstr "Γρήγορη προώθηση"
+
+#: win32/wlanguage.h
+msgid "Fast-forward toggle:"
+msgstr "Εναλλαγή γρήγορης προώθησης:"
+
+#: win32/rsrc/snes9x.rc
+msgid "File"
+msgstr "Αρχείο"
+
+#: win32/wlanguage.h
+msgid "File not found."
+msgstr "Το αρχείο δεν βρέθηκε."
+
+#: win32/rsrc/snes9x.rc
+msgid "First Sprite:"
+msgstr "Πρώτο sprite:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Fixed, always skip:"
+msgstr "Σταθερό, πάντα παράλειψη:"
+
+#: win32/wlanguage.h
+msgid "Force GD24"
+msgstr "Επιβολή GD24"
+
+#: win32/wlanguage.h
+msgid "Force Header"
+msgstr "Επιβολή κεφαλίδας"
+
+#: win32/wlanguage.h
+msgid "Force HiROM"
+msgstr "Επιβολή HiROM"
+
+#: win32/wlanguage.h
+msgid "Force LoROM"
+msgstr "Επιβολή LoROM"
+
+#: win32/wlanguage.h
+msgid "Force mode 1"
+msgstr "Επιβολή λειτουργίας 1"
+
+#: win32/wlanguage.h
+msgid "Force mode 2"
+msgstr "Επιβολή λειτουργίας 2"
+
+#: win32/wlanguage.h
+msgid "Force No Header"
+msgstr "Επιβολή χωρίς κεφαλίδα"
+
+#: win32/wlanguage.h
+msgid "Force not interleaved"
+msgstr "Επιβολή όχι interleaved"
+
+#: win32/wlanguage.h
+msgid "Force NTSC"
+msgstr "Επιβολή NTSC"
+
+#: win32/wlanguage.h
+msgid "Force PAL"
+msgstr "Επιβολή PAL"
+
+#: win32/rsrc/snes9x.rc
+msgid "Frame Advance"
+msgstr "Προώθηση καρέ"
+
+#: win32/rsrc/snes9x.rc
+msgid "Frame Advance mute"
+msgstr "Σίγαση προώθησης καρέ"
+
+#: win32/wlanguage.h
+msgid "Frame advance:"
+msgstr "Προώθηση καρέ:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Frame Skipping:"
+msgstr "Παράλειψη καρέ:"
+
+#: win32/rsrc/snes9x.rc
+msgid "frames"
+msgstr "καρέ"
+
+#: win32/rsrc/snes9x.rc
+msgid "FRAMES"
+msgstr "ΚΑΡΕ"
+
+#: win32/rsrc/snes9x.rc
+msgid "frames behind"
+msgstr "καρέ πίσω"
+
+#: win32/rsrc/snes9x.rc
+msgid "frames in auto-frame rate mode"
+msgstr "καρέ σε λειτουργία αυτόματου ρυθμού καρέ"
+
+#: win32/wlanguage.h
+msgid "frames in fast-forward mode"
+msgstr "καρέ σε λειτουργία γρήγορης προώθησης"
+
+#: win32/rsrc/snes9x.rc
+msgid "frames in Turbo mode"
+msgstr "καρέ σε λειτουργία Turbo"
+
+#: win32/rsrc/snes9x.rc
+msgid "Frames:"
+msgstr "Καρέ:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Full Screen"
+msgstr "Πλήρης οθόνη"
+
+#: win32/rsrc/snes9x.rc
+msgid "Fullscreen"
+msgstr "Πλήρης οθόνη"
+
+#: win32/rsrc/snes9x.rc
+msgid "Fullscreen Display Settings"
+msgstr "Ρυθμίσεις οθόνης πλήρους οθόνης"
+
+#: win32/rsrc/snes9x.rc
+msgid "Fullscreen on ROM Open"
+msgstr "Πλήρης οθόνη στο άνοιγμα ROM"
+
+#: win32/rsrc/snes9x.rc
+msgid "Game Boy Image"
+msgstr "Εικόνα Game Boy"
+
+#: win32/rsrc/snes9x.rc
+msgid "Game Genie, Pro-Action Replay Codes"
+msgstr "Κωδικοί Game Genie, Pro-Action Replay"
+
+#: win32/rsrc/snes9x.rc
+msgid "GB"
+msgstr "GB"
+
+#: win32/rsrc/snes9x.rc
+msgid "GB Sprite Viewer"
+msgstr "Προβολή GB sprite"
+
+#: win32/rsrc/snes9x.rc
+msgid "GB Tile Viewer"
+msgstr "Προβολή GB Tile"
+
+#: win32/rsrc/snes9x.rc
+msgid "GB Tilemap Viewer"
+msgstr "Προβολή GB Tilemap"
+
+#: win32/rsrc/snes9x.rc
+msgid "GB-PPU"
+msgstr "GB-PPU"
+
+#: win32/rsrc/snes9x.rc
+msgid "General"
+msgstr "Γενικά"
+
+#: win32/rsrc/snes9x.rc
+msgid "goto"
+msgstr "μετάβαση σε"
+
+#: win32/wlanguage.h
+msgid "Graphics layer 1:"
+msgstr "Επίπεδο γραφικών 1:"
+
+#: win32/wlanguage.h
+msgid "Graphics layer 2:"
+msgstr "Επίπεδο γραφικών 2:"
+
+#: win32/wlanguage.h
+msgid "Graphics layer 3:"
+msgstr "Επίπεδο γραφικών 3:"
+
+#: win32/wlanguage.h
+msgid "Graphics layer 4:"
+msgstr "Επίπεδο γραφικών 4:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Group"
+msgstr "Ομάδα"
+
+#: win32/rsrc/snes9x.rc
+msgid "Hacks"
+msgstr "Hacks"
+
+#: win32/rsrc/snes9x.rc
+msgid "Hard Reset (Power Cycle)"
+msgstr "Επαναφορά υλικού (Κύκλος ισχύος)"
+
+#: win32/wlanguage.h
+msgid "Hard reset:"
+msgstr "Επαναφορά υλικού:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Hardcore Mode"
+msgstr "Λειτουργία Hardcore"
+
+#: win32/rsrc/snes9x.rc
+msgid "Header:"
+msgstr "Κεφαλίδα:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Help"
+msgstr "Βοήθεια"
+
+#: win32/rsrc/snes9x.rc
+msgid "Hexadecimal"
+msgstr "Δεκαεξαδικό"
+
+#: win32/rsrc/snes9x.rc
+msgid "Hi Res:"
+msgstr "Υψηλή ανάλυση:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Hi-Res AVI Recording"
+msgstr "Εγγραφή AVI υψηλής ανάλυσης"
+
+#: win32/rsrc/snes9x.rc
+msgid "Hide Menubar"
+msgstr "Απόκρυψη γραμμής μενού"
+
+#: win32/rsrc/snes9x.rc
+msgid "Host Game"
+msgstr "Φιλοξενία παιχνιδιού"
+
+#: win32/rsrc/snes9x.rc
+msgid "Host Kaillera Server"
+msgstr "Φιλοξενία διακομιστή Kaillera"
+
+#: win32/wlanguage.h
+msgid "Hotkey Configuration"
+msgstr "Διαμόρφωση πλήκτρων συντόμευσης"
+
+#: win32/rsrc/snes9x.rc
+msgid "Icon 1"
+msgstr "Εικονίδιο 1"
+
+#: win32/rsrc/snes9x.rc
+msgid "Icon 2"
+msgstr "Εικονίδιο 2"
+
+#: win32/rsrc/snes9x.rc
+msgid "Icon 3"
+msgstr "Εικονίδιο 3"
+
+#: win32/rsrc/snes9x.rc
+msgid "Icon 4"
+msgstr "Εικονίδιο 4"
+
+#: win32/rsrc/snes9x.rc
+msgid "Index:"
+msgstr "Ευρετήριο:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Input"
+msgstr "Είσοδος"
+
+#: win32/rsrc/snes9x.rc
+msgid "Input Configuration"
+msgstr "Διαμόρφωση εισόδου"
+
+#: win32/rsrc/snes9x.rc
+msgid "Input Rate:"
+msgstr "Ρυθμός εισόδου:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Integer Scaling"
+msgstr "Ακέραια κλιμάκωση"
+
+#: win32/rsrc/snes9x.rc
+msgid "Interleave Mode:"
+msgstr "Λειτουργία αλληλοδιαπλοκής:"
+
+#: win32/rsrc/snes9x.rc
+msgid "IP:"
+msgstr "IP:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Join"
+msgstr "Συμμετοχή"
+
+#: win32/wlanguage.h
+msgid "Joypad #%d"
+msgstr "Joypad #%d"
+
+#: win32/rsrc/snes9x.rc
+msgid "Joypad 1"
+msgstr "Joypad 1"
+
+#: win32/rsrc/snes9x.rc
+msgid "Joypad 2"
+msgstr "Joypad 2"
+
+#: win32/rsrc/snes9x.rc
+msgid "Joypad 3"
+msgstr "Joypad 3"
+
+#: win32/rsrc/snes9x.rc
+msgid "Joypad 4"
+msgstr "Joypad 4"
+
+#: win32/rsrc/snes9x.rc
+msgid "Joypad 5"
+msgstr "Joypad 5"
+
+#: win32/wlanguage.h
+msgid "Joypad swap:"
+msgstr "Εναλλαγή Joypad:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Kaillera Netplay"
+msgstr "Kaillera Netplay"
+
+#: win32/rsrc/snes9x.rc
+msgid "Kaillera Server"
+msgstr "Διακομιστής Kaillera"
+
+#: win32/rsrc/snes9x.rc
+msgid "Layout:"
+msgstr "Διάταξη:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Leave Game"
+msgstr "Αποχώρηση από το παιχνίδι"
+
+#: win32/rsrc/snes9x.rc
+msgid "LEFT"
+msgstr "ΑΡΙΣΤΕΡΑ"
+
+#: win32/rsrc/snes9x.rc
+msgid "LENGTH"
+msgstr "ΜΗΚΟΣ"
+
+#: win32/rsrc/snes9x.rc
+msgid "Length:"
+msgstr "Μήκος:"
+
+#: win32/rsrc/snes9x.rc
+msgid "List1"
+msgstr "Λίστα1"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load #:"
+msgstr "Φόρτωση #:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load 0:"
+msgstr "Φόρτωση 0:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load 1:"
+msgstr "Φόρτωση 1:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load 2:"
+msgstr "Φόρτωση 2:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load 3:"
+msgstr "Φόρτωση 3:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load 4:"
+msg        "Φόρτωση 4:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load 5:"
+msgstr "Φόρτωση 5:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load 6:"
+msgstr "Φόρτωση 6:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load 7:"
+msgstr "Φόρτωση 7:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load 8:"
+msgstr "Φόρτωση 8:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load 9:"
+msgstr "Φόρτωση 9:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load Dlg:"
+msgstr "Διάλογος φόρτωσης:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load File:"
+msgstr "Φόρτωση αρχείου:"
+
+#: win32/wlanguage.h
+msgid "Load from file:"
+msgstr "Φόρτωση από αρχείο:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load Game"
+msgstr "Φόρτωση παιχνιδιού"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load Game Position"
+msgstr "Φόρτωση θέσης παιχνιδιού"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load MultiCart"
+msgstr "Φόρτωση MultiCart"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load Watches"
+msgstr "Φόρτωση παρακολουθήσεων"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load with Preview"
+msgstr "Φόρτωση με προεπισκόπηση"
+
+#: win32/wlanguage.h
+msgid "LOADED FROM MOVIE:"
+msgstr "ΦΟΡΤΩΘΗΚΕ ΑΠΟ ΤΑΙΝΙΑ:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Location:"
+msgstr "Τοποθεσία:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Login"
+msgstr "Σύνδεση"
+
+#: win32/rsrc/snes9x.rc
+msgid "Maintain Aspect Ratio"
+msgstr "Διατήρηση αναλογίας διαστάσεων"
+
+#: win32/rsrc/snes9x.rc
+msgid "Map"
+msgstr "Χάρτης"
+
+#: win32/rsrc/snes9x.rc
+msgid "Map Addr:"
+msgstr "Διεύθυνση χάρτη:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Map Size:"
+msgstr "Μέγεθος χάρτη:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Map:"
+msgstr "Χάρτης:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Mask"
+msgstr "Μάσκα"
+
+#: win32/rsrc/snes9x.rc
+msgid "Masked Addresses"
+msgstr "Μασκαρισμένες διευθύνσεις"
+
+#: win32/rsrc/snes9x.rc
+msgid "Master Hotkey"
+msgstr "Κύριο Hotkey"
+
+#: win32/rsrc/snes9x.rc
+msgid "Max Clients:"
+msgstr "Μέγιστοι πελάτες:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Maximum Frame Rate Skip"
+msgstr "Μέγιστη παράλειψη ρυθμού καρέ"
+
+#: win32/rsrc/snes9x.rc
+msgid "MB (set to 0 to disable rewind support)"
+msgstr "MB (ρυθμίστε στο 0 για απενεργοποίηση της υποστήριξης επαναφοράς)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Memory Type:"
+msgstr "Τύπος μνήμης:"
+
+#: win32/wlanguage.h
+msgid "Misc. Recording Settings"
+msgstr "Διάφορες ρυθμίσεις εγγραφής"
+
+#: win32/rsrc/snes9x.rc
+msgid "Mode:"
+msgstr "Λειτουργία:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Movie File"
+msgstr "Αρχείο ταινίας"
+
+#: win32/wlanguage.h
+msgid "Movie frame count:"
+msgstr "Καταμέτρηση καρέ ταινίας:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Movie Play"
+msgstr "Αναπαραγωγή ταινίας"
+
+#: win32/wlanguage.h
+msgid "Movie read-only:"
+msgstr "Ταινία μόνο για ανάγνωση:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Movie Record"
+msgstr "Εγγραφή ταινίας"
+
+#: win32/rsrc/snes9x.rc
+msgid "Movie Stop"
+msgstr "Διακοπή ταινίας"
+
+#: win32/wlanguage.h
+msgid "Movie's ROM:"
+msgstr "ROM ταινίας:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Movie's ROM: CRC32=Unknown, Name=Unknown"
+msgstr "ROM ταινίας: CRC32=Άγνωστο, Όνομα=Άγνωστο"
+
+#: win32/wlanguage.h
+msgid "Movies"
+msgstr "Ταινίες"
+
+#: win32/rsrc/snes9x.rc
+msgid "Mute"
+msgstr "Σίγαση"
+
+#: win32/rsrc/snes9x.rc
+msgid "Mute Sound"
+msgstr "Σίγαση ήχου"
+
+#: win32/rsrc/snes9x.rc
+msgid "Mute sound"
+msgstr "Σίγαση ήχου"
+
+#: win32/rsrc/snes9x.rc
+msgid "Netplay"
+msgstr "Netplay"
+
+#: win32/rsrc/snes9x.rc
+msgid "Netplay Options"
+msgstr "Επιλογές Netplay"
+
+#: win32/rsrc/snes9x.rc
+msgid "New Value"
+msgstr "Νέα τιμή"
+
+#: win32/rsrc/snes9x.rc
+msgid "No BIOS"
+msgstr "Κανένα BIOS"
+
+#: win32/wlanguage.h
+msgid "Not a ROM"
+msgstr "Δεν είναι ROM"
+
+#: win32/rsrc/snes9x.rc
+msgid "Not connected."
+msgstr "Δεν είναι συνδεδεμένο."
+
+#: win32/rsrc/snes9x.rc
+msgid "not found"
+msgstr "δεν βρέθηκε"
+
+#: win32/wlanguage.h
+msgid "not found!"
+msgstr "δεν βρέθηκε!"
+
+#: win32/rsrc/snes9x.rc
+msgid "NTSC Filter Scanlines"
+msgstr "Γραμμές σάρωσης φίλτρου NTSC"
+
+#: win32/rsrc/snes9x.rc
+msgid "OAM1:"
+msgstr "OAM1:"
+
+#: win32/rsrc/snes9x.rc
+msgid "OAM2:"
+msgstr "OAM2:"
+
+#: win32/rsrc/snes9x.rc
+msgid "OK"
+msgstr "OK"
+
+#: win32/rsrc/snes9x.rc
+msgid "On-screen Display Size:"
+msgstr "Μέγεθος εμφάνισης στην οθόνη:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Online Servers"
+msgstr "Διαδικτυακοί διακομιστές"
+
+#: win32/rsrc/snes9x.rc
+msgid "Oops File"
+msgstr "Αρχείο Oops"
+
+#: win32/rsrc/snes9x.rc
+msgid "Open MultiCart"
+msgstr "Άνοιγμα MultiCart"
+
+#: win32/rsrc/snes9x.rc
+msgid "Open Read-Only"
+msgstr "Άνοιγμα μόνο για ανάγνωση"
+
+#: win32/rsrc/snes9x.rc
+msgid "OpenGL/Vulkan Shader File"
+msgstr "Αρχείο Shader OpenGL/Vulkan"
+
+#: win32/rsrc/snes9x.rc
+msgid "Options"
+msgstr "Επιλογές"
+
+#: win32/rsrc/snes9x.rc
+msgid "Output Device:"
+msgstr "Συσκευή εξόδου:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Output Image Processing"
+msgstr "Επεξεργασία εικόνας εξόδου"
+
+#: win32/rsrc/snes9x.rc
+msgid "Output Method"
+msgstr "Μέθοδος εξόδου"
+
+#: win32/rsrc/snes9x.rc
+msgid "Override Tilemap"
+msgstr "Παράκαμψη Tilemap"
+
+#: win32/wlanguage.h
+msgid "Page %d"
+msgstr "Σελίδα %d"
+
+#: win32/rsrc/snes9x.rc
+msgid "Palette (click to select offset)"
+msgstr "Παλέτα (κάντε κλικ για επιλογή offset)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Palette:"
+msgstr "Παλέτα:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Parameters"
+msgstr "Παράμετροι"
+
+#: win32/rsrc/snes9x.rc
+msgid "Password:"
+msgstr "Κωδικός πρόσβασης:"
+
+#: win32/wlanguage.h
+msgid "Patch"
+msgstr "Patch"
+
+#: win32/wlanguage.h
+msgid "Path: %s"
+msgstr "Διαδρομή: %s"
+
+#: win32/rsrc/snes9x.rc
+msgid "Pause When Inactive"
+msgstr "Παύση όταν είναι ανενεργό"
+
+#: win32/wlanguage.h
+msgid "Pause:"
+msgstr "Παύση:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Play Movie"
+msgstr "Αναπαραγωγή ταινίας"
+
+#: win32/rsrc/snes9x.rc
+msgid "Playback Rate"
+msgstr "Ρυθμός αναπαραγωγής"
+
+#: win32/rsrc/snes9x.rc
+msgid "Playback Rate:"
+msgstr "Ρυθμός αναπαραγωγής:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Player Name:"
+msgstr "Όνομα παίκτη:"
+
+#: win32/wlanguage.h
+msgid "Please enter a host name."
+msgstr "Παρακαλώ εισαγάγετε ένα όνομα κεντρικού υπολογιστή."
+
+#: win32/wlanguage.h
+msgid "Please enter a valid value for a search!"
+msgstr "Παρακαλώ εισαγάγετε μια έγκυρη τιμή για αναζήτηση!"
+
+#: win32/rsrc/snes9x.rc
+msgid "Port Number"
+msgstr "Αριθμός θύρας"
+
+#: win32/rsrc/snes9x.rc
+msgid "Port Settings"
+msgstr "Ρυθμίσεις θύρας"
+
+#: win32/wlanguage.h
+msgid "Press OK to start playing the movie."
+msgstr "Πατήστε OK για να ξεκινήσετε την αναπαραγωγή της ταινίας."
+
+#: win32/rsrc/snes9x.rc
+msgid "Preview"
+msgstr "Προεπισκόπηση"
+
+#: win32/rsrc/snes9x.rc
+msgid "Previous Value"
+msgstr "Προηγούμενη τιμή"
+
+#: win32/rsrc/snes9x.rc
+msgid "Progress1"
+msgstr "Πρόοδος1"
+
+#: win32/rsrc/snes9x.rc
+msgid "Publish Online"
+msgstr "Δημοσίευση στο διαδίκτυο"
+
+#: win32/rsrc/snes9x.rc
+msgid "Publish to master server list"
+msgstr "Δημοσίευση στη λίστα κύριων διακομιστών"
+
+#: win32/wlanguage.h
+msgid "Quit SuperSnes9x:"
+msgstr "Τερματισμός SuperSnes9x:"
+
+#: win32/wlanguage.h
+msgid "Range Error"
+msgstr "Σφάλμα εύρους"
+
+#: win32/rsrc/snes9x.rc
+msgid "Rate:"
+msgstr "Ρυθμός:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Re-record Count:"
+msgstr "Καταμέτρηση επανεγγραφών:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Re-sync all Clients Using Freeze File Now"
+msgstr "Επανασυγχρονισμός όλων των πελατών με χρήση αρχείου παγώματος τώρα"
+
+#: win32/rsrc/snes9x.rc
+msgid "Recent Games"
+msgstr "Πρόσφατα παιχνίδια"
+
+#: win32/rsrc/snes9x.rc
+msgid "Record Controllers"
+msgstr "Εγγραφή ελεγκτών"
+
+#: win32/rsrc/snes9x.rc
+msgid "Record from now"
+msgstr "Εγγραφή από τώρα"
+
+#: win32/rsrc/snes9x.rc
+msgid "Record from reset"
+msgstr "Εγγραφή από επαναφορά"
+
+#: win32/rsrc/snes9x.rc
+msgid "Record Movie"
+msgstr "Εγγραφή ταινίας"
+
+#: win32/rsrc/snes9x.rc
+msgid "Record Options"
+msgstr "Επιλογές εγγραφής"
+
+#: win32/rsrc/snes9x.rc
+msgid "Recording Date:"
+msgstr "Ημερομηνία εγγραφής:"
+
+#: win32/wlanguage.h
+msgid "Recording Start"
+msgstr "Έναρξη εγγραφής"
+
+#: win32/rsrc/snes9x.rc
+msgid "Reduce Input Lag"
+msgstr "Μείωση υστέρησης εισόδου"
+
+#: win32/rsrc/snes9x.rc
+msgid "Refresh"
+msgstr "Ανανέωση"
+
+#: win32/rsrc/snes9x.rc
+msgid "Refresh List"
+msgstr "Ανανέωση λίστας"
+
+#: win32/rsrc/snes9x.rc
+msgid "Regular"
+msgstr "Κανονικό"
+
+#: win32/rsrc/snes9x.rc
+msgid "Remove"
+msgstr "Αφαίρεση"
+
+#: win32/rsrc/snes9x.rc
+msgid "Remove All"
+msgstr "Αφαίρεση όλων"
+
+#: win32/rsrc/snes9x.rc
+msgid "RERECORD"
+msgstr "ΕΠΑΝΕΓΓΡΑΦΗ"
+
+#: win32/wlanguage.h
+msgid "Reset speed:"
+msgstr "Επαναφορά ταχύτητας:"
+
+#: win32/rsrc/snes9x.rc
+msgid "RetroAchievements"
+msgstr "RetroAchievements"
+
+#: win32/rsrc/snes9x.rc
+msgid "RetroAchievements Login"
+msgstr "Σύνδεση RetroAchievements"
+
+#: win32/rsrc/snes9x.rc
+msgid "Rewind buffer size:"
+msgstr "Μέγεθος buffer επαναφοράς:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Rewind granularity:"
+msgstr "Κοκκομετρία επαναφοράς:"
+
+#: win32/wlanguage.h
+msgid "Rewind:"
+msgstr "Επαναφορά:"
+
+#: win32/rsrc/snes9x.rc
+msgid "RIGHT"
+msgstr "ΔΕΞΙΑ"
+
+#: win32/wlanguage.h
+msgid "ROM files or archives"
+msgstr "Αρχεία ROM ή αρχειοθήκες"
+
+#: win32/rsrc/snes9x.rc
+msgid "Rom Info"
+msgstr "Info ROM"
+
+#: win32/rsrc/snes9x.rc
+msgid "ROM Information"
+msgstr "Πληροφορίες ROM"
+
+#: win32/rsrc/snes9x.rc
+msgid "ROM:"
+msgstr "ROM:"
+
+#: win32/wlanguage.h
+msgid "Roms"
+msgstr "Roms"
+
+#: win32/rsrc/snes9x.rc
+msgid "Run Ahead"
+msgstr "Run Ahead"
+
+#: win32/rsrc/snes9x.rc
+msgid "s"
+msgstr "s"
+
+#: win32/rsrc/snes9x.rc
+msgid "S-PPU"
+msgstr "S-PPU"
+
+#: win32/wlanguage.h
+msgid "Satellaview"
+msgstr "Satellaview"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save #:"
+msgstr "Αποθήκευση #:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save 0:"
+msgstr "Αποθήκευση 0:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save 1:"
+msgstr "Αποθήκευση 1:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save 2:"
+msgstr "Αποθήκευση 2:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save 3:"
+msgstr "Αποθήκευση 3:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save 4:"
+msgstr "Αποθήκευση 4:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save 5:"
+msgstr "Αποθήκευση 5:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save 6:"
+msgstr "Αποθήκευση 6:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save 7:"
+msgstr "Αποθήκευση 7:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save 8:"
+msgstr "Αποθήκευση 8:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save 9:"
+msgstr "Αποθήκευση 9:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save Dlg:"
+msgstr "Διάλογος αποθήκευσης:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save File:"
+msgstr "Αποθήκευση αρχείου:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save Game Position"
+msgstr "Αποθήκευση θέσης παιχνιδιού"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save Memory Pack"
+msgstr "Αποθήκευση Memory Pack"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save Other"
+msgstr "Αποθήκευση άλλων"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save S-RAM Data"
+msgstr "Αποθήκευση δεδομένων S-RAM"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save Screenshot"
+msgstr "Αποθήκευση στιγμιότυπου οθόνης"
+
+#: win32/wlanguage.h
+msgid "Save screenshot"
+msgstr "Αποθήκευση στιγμιότυπου οθόνης"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save SPC Data"
+msgstr "Αποθήκευση δεδομένων SPC"
+
+#: win32/wlanguage.h
+msgid "Save to file:"
+msgstr "Αποθήκευση σε αρχείο:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save Watches"
+msgstr "Αποθήκευση παρακολουθήσεων"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save with Preview"
+msgstr "Αποθήκευση με προεπισκόπηση"
+
+#: win32/wlanguage.h
+msgid "Saves"
+msgstr "Αποθηκεύσεις"
+
+#: win32/rsrc/snes9x.rc
+msgid "Screen"
+msgstr "Οθόνη"
+
+#: win32/wlanguage.h
+msgid "Screenshots"
+msgstr "Στιγμιότυπα οθόνης"
+
+#: win32/rsrc/snes9x.rc
+msgid "Search"
+msgstr "Αναζήτηση"
+
+#: win32/rsrc/snes9x.rc
+msgid "Search Database"
+msgstr "Αναζήτηση βάσης δεδομένων"
+
+#: win32/rsrc/snes9x.rc
+msgid "Search for New Cheats"
+msgstr "Αναζήτηση για νέα Cheat"
+
+#: win32/rsrc/snes9x.rc
+msgid "seconds after last change (0 disables auto-save)"
+msgstr "δευτερόλεπτα μετά την τελευταία αλλαγή (το 0 απενεργοποιεί την αυτόματη αποθήκευση)"
+
+#: win32/rsrc/snes9x.rc
+msgid "SELECT"
+msgstr "SELECT"
+
+#: win32/rsrc/snes9x.rc
+msgid "Select 0:"
+msgstr "Επιλογή 0:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Select 1:"
+msgstr "Επιλογή 1:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Select 2:"
+msgstr "Επιλογή 2:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Select 3:"
+msgstr "Επιλογή 3:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Select 4:"
+msgstr "Επιλογή 4:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Select 5:"
+msgstr "Επιλογή 5:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Select 6:"
+msgstr "Επιλογή 6:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Select 7:"
+msgstr "Επιλογή 7:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Select 8:"
+msgstr "Επιλογή 8:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Select 9:"
+msgstr "Επιλογή 9:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Select File"
+msgstr "Επιλογή αρχείου"
+
+#: win32/wlanguage.h
+msgid "Select Folder"
+msgstr "Επιλογή φακέλου"
+
+#: win32/wlanguage.h
+msgid "Select Slot 0:"
+msgstr "Επιλογή Slot 0:"
+
+#: win32/wlanguage.h
+msgid "Select Slot 1:"
+msgstr "Επιλογή Slot 1:"
+
+#: win32/wlanguage.h
+msgid "Select Slot 2:"
+msgstr "Επιλογή Slot 2:"
+
+#: win32/wlanguage.h
+msgid "Select Slot 3:"
+msgstr "Επιλογή Slot 3:"
+
+#: win32/wlanguage.h
+msgid "Select Slot 4:"
+msgstr "Επιλογή Slot 4:"
+
+#: win32/wlanguage.h
+msgid "Select Slot 5:"
+msgstr "Επιλογή Slot 5:"
+
+#: win32/wlanguage.h
+msgid "Select Slot 6:"
+msgstr "Επιλογή Slot 6:"
+
+#: win32/wlanguage.h
+msgid "Select Slot 7:"
+msgstr "Επιλογή Slot 7:"
+
+#: win32/wlanguage.h
+msgid "Select Slot 8:"
+msgstr "Επιλογή Slot 8:"
+
+#: win32/wlanguage.h
+msgid "Select Slot 9:"
+msgstr "Επιλογή Slot 9:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Send"
+msgstr "Αποστολή"
+
+#: win32/rsrc/snes9x.rc
+msgid "Send ROM Image to Client on Connect"
+msgstr "Αποστολή εικόνας ROM στον πελάτη κατά τη σύνδεση"
+
+#: win32/rsrc/snes9x.rc
+msgid "Send ROM Image to Clients"
+msgstr "Αποστολή εικόνας ROM στους πελάτες"
+
+#: win32/rsrc/snes9x.rc
+msgid "Send ROM Image to Clients Now"
+msgstr "Αποστολή εικόνας ROM στους πελάτες τώρα"
+
+#: win32/rsrc/snes9x.rc
+msgid "Separate Echo Buffer from RAM"
+msgstr "Διαχωρισμός buffer ηχούς από τη RAM"
+
+#: win32/rsrc/snes9x.rc
+msgid "Server Address"
+msgstr "Διεύθυνση διακομιστή"
+
+#: win32/rsrc/snes9x.rc
+msgid "Server is stopped."
+msgstr "Ο διακομιστής έχει σταματήσει."
+
+#: win32/rsrc/snes9x.rc
+msgid "Server Lobby"
+msgstr "Lobby διακομιστή"
+
+#: win32/rsrc/snes9x.rc
+msgid "Server Name:"
+msgstr "Όνομα διακομιστή:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Server Settings"
+msgstr "Ρυθμίσεις διακομιστή"
+
+#: win32/rsrc/snes9x.rc
+msgid "Set Defaults"
+msgstr "Ορισμός προεπιλογών"
+
+#: win32/rsrc/snes9x.rc
+msgid "Set Value"
+msgstr "Ορισμός τιμής"
+
+#: win32/rsrc/snes9x.rc
+msgid "Settings"
+msgstr "Ρυθμίσεις"
+
+#: win32/wlanguage.h
+msgid "SETTINGS NOT IN MOVIE; VERIFY:"
+msgstr "ΟΙ ΡΥΘΜΙΣΕΙΣ ΔΕΝ ΕΙΝΑΙ ΣΤΗΝ ΤΑΙΝΙΑ; ΕΠΑΛΗΘΕΥΣΗ:"
+
+#: win32/rsrc/snes9x.rc
+msgid "SGB Mix"
+msgstr "SGB Mix"
+
+#: win32/rsrc/snes9x.rc
+msgid "SGB1"
+msgstr "SGB1"
+
+#: win32/rsrc/snes9x.rc
+msgid "SGB2"
+msgstr "SGB2"
+
+#: win32/rsrc/snes9x.rc
+msgid "Show Audio Waveform"
+msgstr "Εμφάνιση κυματομορφής ήχου"
+
+#: win32/rsrc/snes9x.rc
+msgid "Show Background"
+msgstr "Εμφάνιση φόντου"
+
+#: win32/rsrc/snes9x.rc
+msgid "Show Crosshair"
+msgstr "Εμφάνιση σταυρονήματος"
+
+#: win32/rsrc/snes9x.rc
+msgid "Show Frame Number"
+msgstr "Εμφάνιση αριθμού καρέ"
+
+#: win32/rsrc/snes9x.rc
+msgid "Show Frame Rate"
+msgstr "Εμφάνιση ρυθμού καρέ"
+
+#: win32/rsrc/snes9x.rc
+msgid "Show Grid"
+msgstr "Εμφάνιση πλέγματος"
+
+#: win32/wlanguage.h
+msgid "Show pressed keys:"
+msgstr "Εμφάνιση πατημένων πλήκτρων:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Show screen"
+msgstr "Εμφάνιση οθόνης"
+
+#: win32/rsrc/snes9x.rc
+msgid "Show Screen Outline"
+msgstr "Εμφάνιση περιγράμματος οθόνης"
+
+#: win32/rsrc/snes9x.rc
+msgid "Show Sprites"
+msgstr "Εμφάνιση sprites"
+
+#: win32/rsrc/snes9x.rc
+msgid "Show viewport"
+msgstr "Εμφάνιση viewport"
+
+#: win32/rsrc/snes9x.rc
+msgid "Show Window"
+msgstr "Εμφάνιση παραθύρου"
+
+#: win32/rsrc/snes9x.rc
+msgid "Signed (+/-)"
+msgstr "Με πρόσημο (+/-)"
+
+#: win32/wlanguage.h
+msgid "Size"
+msgstr "Μέγεθος"
+
+#: win32/rsrc/snes9x.rc
+msgid "Skip at most"
+msgstr "Παράλειψη το πολύ"
+
+#: win32/wlanguage.h
+msgid "Skip frames +:"
+msgstr "Παράλειψη καρέ +:"
+
+#: win32/wlanguage.h
+msgid "Skip frames -:"
+msgstr "Παράλειψη καρέ -:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Skip rendering"
+msgstr "Παράλειψη απόδοσης"
+
+#: win32/wlanguage.h
+msgid "Skip Rendering"
+msgstr "Παράλειψη απόδοσης"
+
+#: win32/rsrc/snes9x.rc
+msgid "Slot +:"
+msgstr "Slot +:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Slot -:"
+msgstr "Slot -:"
+
+#: win32/rsrc/snes9x.rc
+msgid "SNES Image"
+msgstr "Εικόνα SNES"
+
+#: win32/rsrc/snes9x.rc
+msgid "SuperSnes9x - Unable to Initialize XAudio2"
+msgstr "SuperSnes9x - Αδυναμία αρχικοποίησης XAudio2"
+
+#: win32/wlanguage.h
+msgid "SuperSnes9x Cheat Error"
+msgstr "Σφάλμα SuperSnes9x Cheat"
+
+#: win32/wlanguage.h
+msgid "SuperSnes9x Movie File"
+msgstr "Αρχείο ταινίας SuperSnes9x"
+
+#: win32/rsrc/snes9x.rc
+msgid "Socket Port Number"
+msgstr "Αριθμός θύρας υποδοχής"
+
+#: win32/rsrc/snes9x.rc
+msgid "Soft Reset"
+msgstr "Ήπια επαναφορά"
+
+#: win32/wlanguage.h
+msgid "Soft reset:"
+msgstr "Ήπια επαναφορά:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Sound Driver:"
+msgstr "Πρόγραμμα οδήγησης ήχου:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Sound Interpolation Type:"
+msgstr "Τύπος παρεμβολής ήχου:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Sound Quality"
+msgstr "Ποιότητα ήχου"
+
+#: win32/rsrc/snes9x.rc
+msgid "Sound Settings"
+msgstr "Ρυθμίσεις ήχου"
+
+#: win32/rsrc/snes9x.rc
+msgid "Source:"
+msgstr "Πηγή:"
+
+#: win32/rsrc/snes9x.rc
+msgid "SPC"
+msgstr "SPC"
+
+#: win32/wlanguage.h
+msgid "SPCs"
+msgstr "SPCs"
+
+#: win32/wlanguage.h
+msgid "Speed +:"
+msgstr "Ταχύτητα +:"
+
+#: win32/wlanguage.h
+msgid "Speed -:"
+msgstr "Ταχύτητα -:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Spin1"
+msgstr "Spin1"
+
+#: win32/rsrc/snes9x.rc
+msgid "Spin2"
+msgstr "Spin2"
+
+#: win32/rsrc/snes9x.rc
+msgid "Spin3"
+msgstr "Spin3"
+
+#: win32/rsrc/snes9x.rc
+msgid "Spin4"
+msgstr "Spin4"
+
+#: win32/rsrc/snes9x.rc
+msgid "Sprite Viewer"
+msgstr "Προβολή sprite"
+
+#: win32/rsrc/snes9x.rc
+msgid "Sprite:"
+msgstr "Sprite:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Sprites"
+msgstr "Sprites"
+
+#: win32/wlanguage.h
+msgid "Sprites layer:"
+msgstr "Επίπεδο sprite:"
+
+#: win32/wlanguage.h
+msgid "SRAM"
+msgstr "SRAM"
+
+#: win32/rsrc/snes9x.rc
+msgid "START"
+msgstr "START"
+
+#: win32/rsrc/snes9x.rc
+msgid "Start Game"
+msgstr "Έναρξη παιχνιδιού"
+
+#: win32/rsrc/snes9x.rc
+msgid "Start Server"
+msgstr "Έναρξη διακομιστή"
+
+#: win32/rsrc/snes9x.rc
+msgid "Static"
+msgstr "Στατικό"
+
+#: win32/rsrc/snes9x.rc
+msgid "Status"
+msgstr "Κατάσταση"
+
+#: win32/rsrc/snes9x.rc
+msgid "Stretch Image"
+msgstr "Επέκταση εικόνας"
+
+#: win32/rsrc/snes9x.rc
+msgid "SuperFX Clock Speed %:"
+msgstr "Ταχύτητα ρολογιού SuperFX %:"
+
+#: win32/rsrc/snes9x.rc
+msgid "SuperFX speed:"
+msgstr "Ταχύτητα SuperFX:"
+
+#: win32/wlanguage.h
+msgid "SuperScope pause:"
+msgstr "Παύση SuperScope:"
+
+#: win32/wlanguage.h
+msgid "SuperScope turbo:"
+msgstr "Turbo SuperScope:"
+
+#: win32/wlanguage.h
+msgid "SuperSnes9x (x64)"
+msgstr "SuperSnes9x (x64)"
+
+#: win32/rsrc/snes9x.rc
+msgid "SuperSnes9x - About"
+msgstr "SuperSnes9x - Σχετικά"
+
+#: win32/wlanguage.h
+msgid "SuperSnes9x: DirectSound"
+msgstr "SuperSnes9x: DirectSound"
+
+#: win32/wlanguage.h
+msgid "SuperSnes9x: Information"
+msgstr "SuperSnes9x: Πληροφορίες"
+
+#: win32/wlanguage.h
+msgid "SuperSnes9x: NetPlay Error"
+msgstr "SuperSnes9x: Σφάλμα NetPlay"
+
+#: win32/wlanguage.h
+msgid "SuperSnes9x: Sound CPU Question"
+msgstr "SuperSnes9x: Ερώτηση CPU ήχου"
+
+#: win32/wlanguage.h
+msgid "SuperSnes9x: WARNING!"
+msgstr "SuperSnes9x: ΠΡΟΕΙΔΟΠΟΙΗΣΗ!"
+
+#: win32/rsrc/snes9x.rc
+msgid "Swap A and B"
+msgstr "Εναλλαγή A και B"
+
+#: win32/wlanguage.h
+msgid "Switch aspect Ratio:"
+msgstr "Εναλλαγή αναλογίας διαστάσεων:"
+
+#: win32/wlanguage.h
+msgid "Switch controllers:"
+msgstr "Εναλλαγή ελεγκτών:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Sync By Reset"
+msgstr "Συγχρονισμός μέσω επαναφοράς"
+
+#: win32/rsrc/snes9x.rc
+msgid "Sync Sound"
+msgstr "Συγχρονισμός ήχου"
+
+#: win32/rsrc/snes9x.rc
+msgid "Sync Using Reset Game"
+msgstr "Συγχρονισμός με χρήση επαναφοράς παιχνιδιού"
+
+#: win32/rsrc/snes9x.rc
+msgid "Synchronize with sound core"
+msgstr "Συγχρονισμός με τον πυρήνα ήχου"
+
+#: win32/wlanguage.h
+msgid "TempTurbo"
+msgstr "TempTurbo"
+
+#: win32/wlanguage.h
+msgid "Text file"
+msgstr "Αρχείο κειμένου"
+
+#: win32/wlanguage.h
+msgid "The movie file is corrupt or in the wrong format."
+msgstr "Το αρχείο ταινίας είναι κατεστραμμένο ή σε λάθος μορφή."
+
+#: win32/wlanguage.h
+msgid "The movie file was not found or could not be opened."
+msgstr "Το αρχείο ταινίας δεν βρέθηκε ή δεν ήταν δυνατό το άνοιγμά του."
+
+#: win32/rsrc/snes9x.rc
+msgid "Tile Addr:"
+msgstr "Διεύθυνση Tile:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Tile Data:"
+msgstr "Δεδομένα Tile:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Tile Size:"
+msgstr "Μέγεθος Tile:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Tile Viewer"
+msgstr "Προβολή Tile"
+
+#: win32/rsrc/snes9x.rc
+msgid "Tilemap"
+msgstr "Tilemap"
+
+#: win32/rsrc/snes9x.rc
+msgid "Tilemap Viewer"
+msgstr "Προβολή Tilemap"
+
+#: win32/rsrc/snes9x.rc
+msgid "Tiles"
+msgstr "Tiles"
+
+#: win32/rsrc/snes9x.rc
+msgid "Timeout:"
+msgstr "Λήξη χρονικού ορίου:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Toggle Achievements Images"
+msgstr "Εναλλαγή εικόνων επιτευγμάτων"
+
+#: win32/wlanguage.h
+msgid "Toggle backdrop:"
+msgstr "Εναλλαγή φόντου:"
+
+#: win32/wlanguage.h
+msgid "Toggle cheats:"
+msgstr "Εναλλαγή cheat:"
+
+#: win32/wlanguage.h
+msgid "Toggle mute:"
+msgstr "Εναλλαγή σίγασης:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Transparency Effects"
+msgstr "Εφέ διαφάνειας"
+
+#: win32/wlanguage.h
+msgid "Transparency:"
+msgstr "Διαφάνεια:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Tree1"
+msgstr "Δέντρο1"
+
+#: win32/wlanguage.h
+msgid "Turbo"
+msgstr "Turbo"
+
+#: win32/wlanguage.h
+msgid "Turbo A mode:"
+msgstr "Λειτουργία Turbo A:"
+
+#: win32/wlanguage.h
+msgid "Turbo B mode:"
+msgstr "Λειτουργία Turbo B:"
+
+#: win32/wlanguage.h
+msgid "Turbo Down mode:"
+msgstr "Λειτουργία Turbo Κάτω:"
+
+#: win32/wlanguage.h
+msgid "Turbo L mode:"
+msgstr "Λειτουργία Turbo L:"
+
+#: win32/wlanguage.h
+msgid "Turbo Left mode:"
+msgstr "Λειτουργία Turbo Αριστερά:"
+
+#: win32/wlanguage.h
+msgid "Turbo R mode:"
+msgstr "Λειτουργία Turbo R:"
+
+#: win32/wlanguage.h
+msgid "Turbo Right mode:"
+msgstr "Λειτουργία Turbo Δεξιά:"
+
+#: win32/wlanguage.h
+msgid "Turbo Select mode:"
+msgstr "Λειτουργία Turbo Select:"
+
+#: win32/wlanguage.h
+msgid "Turbo Start mode:"
+msgstr "Λειτουργία Turbo Start:"
+
+#: win32/wlanguage.h
+msgid "Turbo Up mode:"
+msgstr "Λειτουργία Turbo Πάνω:"
+
+#: win32/wlanguage.h
+msgid "Turbo X mode:"
+msgstr "Λειτουργία Turbo X:"
+
+#: win32/wlanguage.h
+msgid "Turbo Y mode:"
+msgstr "Λειτουργία Turbo Y:"
+
+#: win32/wlanguage.h
+msgid "Uncompressed ROM files"
+msgstr "Αποσυμπιεσμένα αρχεία ROM"
+
+#: win32/wlanguage.h
+msgid "Unrecognized format."
+msgstr "Μη αναγνωρίσιμη μορφή."
+
+#: win32/rsrc/snes9x.rc
+msgid "Unsigned (>=0)"
+msgstr "Χωρίς πρόσημο (>=0)"
+
+#: win32/wlanguage.h
+msgid "Unsupported movie version."
+msgstr "Μη υποστηριζόμενη έκδοση ταινίας."
+
+#: win32/rsrc/snes9x.rc
+msgid "UP"
+msgstr "ΠΑΝΩ"
+
+#: win32/rsrc/snes9x.rc
+msgid "UP LEFT"
+msgstr "ΠΑΝΩ ΑΡΙΣΤΕΡΑ"
+
+#: win32/wlanguage.h
+msgid "Up Left"
+msgstr "Πάνω αριστερά"
+
+#: win32/rsrc/snes9x.rc
+msgid "UP RIGHT"
+msgstr "ΠΑΝΩ ΔΕΞΙΑ"
+
+#: win32/wlanguage.h
+msgid "Up Right"
+msgstr "Πάνω δεξιά"
+
+#: win32/rsrc/snes9x.rc
+msgid "Update"
+msgstr "Ενημέρωση"
+
+#: win32/rsrc/snes9x.rc
+msgid "Use CGRAM"
+msgstr "Χρήση CGRAM"
+
+#: win32/rsrc/snes9x.rc
+msgid "Use DirectInput"
+msgstr "Χρήση DirectInput"
+
+#: win32/rsrc/snes9x.rc
+msgid "Use Dual Justifiers"
+msgstr "Χρήση διπλών Justifiers"
+
+#: win32/rsrc/snes9x.rc
+msgid "Use Konami Justifier"
+msgstr "Χρήση Konami Justifier"
+
+#: win32/rsrc/snes9x.rc
+msgid "Use M.A.C.S. Rifle"
+msgstr "Χρήση M.A.C.S. Rifle"
+
+#: win32/rsrc/snes9x.rc
+msgid "Use Mouse in alternate port"
+msgstr "Χρήση ποντικιού σε εναλλακτική θύρα"
+
+#: win32/rsrc/snes9x.rc
+msgid "Use Multitaps (8-player)"
+msgstr "Χρήση Multitaps (8 παίκτες)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Use Shader"
+msgstr "Χρήση Shader"
+
+#: win32/rsrc/snes9x.rc
+msgid "Use SNES Joypad(s)"
+msgstr "Χρήση SNES Joypad(s)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Use SNES Mouse"
+msgstr "Χρήση ποντικιού SNES"
+
+#: win32/rsrc/snes9x.rc
+msgid "Use Super Multitap (5-player)"
+msgstr "Χρήση Super Multitap (5 παίκτες)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Use Super Scope"
+msgstr "Χρήση Super Scope"
+
+#: win32/rsrc/snes9x.rc
+msgid "User Agent: SuperSnes9x/1.63"
+msgstr "User Agent: SuperSnes9x/1.63"
+
+#: win32/rsrc/snes9x.rc
+msgid "Username:"
+msgstr "Όνομα χρήστη:"
+
+#: win32/wlanguage.h
+msgid "Value"
+msgstr "Τιμή"
+
+#: win32/rsrc/snes9x.rc
+msgid "Value (hex):"
+msgstr "Τιμή (hex):"
+
+#: win32/rsrc/snes9x.rc
+msgid "Video"
+msgstr "Βίντεο"
+
+#: win32/rsrc/snes9x.rc
+msgid "Video System:"
+msgstr "Σύστημα βίντεο:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Volume"
+msgstr "Ένταση"
+
+#: win32/rsrc/snes9x.rc
+msgid "VSync"
+msgstr "VSync"
+
+#: win32/wlanguage.h
+msgid "WARNING: You don't have the right ROM loaded!"
+msgstr "ΠΡΟΕΙΔΟΠΟΙΗΣΗ: Δεν έχετε φορτώσει τη σωστή ROM!"
+
+#: win32/rsrc/snes9x.rc
+msgid "Watch"
+msgstr "Παρακολούθηση"
+
+#: win32/rsrc/snes9x.rc
+msgid "Welcome Message (MOTD)"
+msgstr "Μήνυμα καλωσορίσματος (MOTD)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Width:"
+msgstr "Πλάτος:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Window Size"
+msgstr "Μέγεθος παραθύρου"
+
+#: win32/rsrc/snes9x.rc
+msgid "WOG!"
+msgstr "WOG!"
+
+#: win32/wlanguage.h
+msgid "You have entered an out of range or invalid value for the new value"
+msgstr "Εισαγάγατε μια τιμή εκτός εύρους ή μη έγκυρη τιμή για τη νέα τιμή"
+
+#: win32/wlanguage.h
+msgid "You need a different version of SuperSnes9x to play this movie."
+msgstr "Χρειάζεστε μια διαφορετική έκδοση του SuperSnes9x για να αναπαράγετε αυτήν την ταινία."
+
+#: win32/rsrc/snes9x.rc
+msgid "Your password is only used to get an API token.\nIt is never stored."
+msgstr "Ο κωδικός πρόσβασής σας χρησιμοποιείται μόνο για τη λήψη ενός API token.\nΔεν αποθηκεύεται ποτέ."
+
+#: win32/rsrc/snes9x.rc
+msgid "Zoom:"
+msgstr "Ζουμ:"
+
+# === Win32 strings (added by i18n/extract_strings.py) ===
+
+#: win32/CSpriteViewerDlg.cpp
+msgid "Export Selected to PNG"
+msgstr "Εξαγωγή επιλεγμένου σε PNG"
+
+#: win32/CGBSpriteViewerDlg.cpp
+msgid "Export to PNG"
+msgstr "Εξαγωγή σε PNG"
+
+#: win32/CSpriteViewerDlg.cpp
+msgid "Show All Objects"
+msgstr "Εμφάνιση όλων των αντικειμένων"
+
+#: win32/CSpriteViewerDlg.cpp
+msgid "Show Only Selected Objects"
+msgstr "Εμφάνιση μόνο επιλεγμένων αντικειμένων"
+
+#: win32/CSpriteViewerDlg.cpp
+msgid "Toggle Visibility"
+msgstr "Εναλλαγή ορατότητας"
+
+#: win32/wsnes9x.cpp
+msgid "Translations"
+msgstr "Μεταφράσεις"
+
+# === Win32 strings (added by i18n/extract_strings.py) ===
+
+#: win32/wsnes9x.cpp
+msgid "Language"
+msgstr "Γλώσσα"
+
+# === Win32 strings (added by i18n/extract_strings.py) ===
+
+#: qt/src/SoundPanel.ui
+msgid "44100 Hz"
+msgstr "44100 Hz"
+
+#: qt/src/SoundPanel.ui
+msgid "48000 Hz"
+msgstr "48000 Hz"
+
+#: qt/src/DisplayPanel.ui
+msgid "4:3 - Classic display aspect"
+msgstr "4:3 - Κλασική αναλογία οθόνης"
+
+#: qt/src/DisplayPanel.ui
+msgid "64:49 - NTSC aspect"
+msgstr "64:49 - Αναλογία NTSC"
+
+#: qt/src/DisplayPanel.ui
+msgid "8:7 - Square pixels"
+msgstr "8:7 - Τετράγωνα pixel"
+
+#: qt/src/EmulationPanel.ui
+msgid "<html><head/><body><p>A hack option. Only use this if you are running a third-party hack of a game that was designed for emulators and needs this.</p></body></html>"
+msgstr "<html><head/><body><p>Μια επιλογή hack. Χρησιμοποιήστε το μόνο εάν εκτελείτε ένα third-party hack ενός παιχνιδιού που σχεδιάστηκε για εξομοιωτές και το χρειάζεται.</p></body></html>"
+
+#: qt/src/EmulationPanel.ui
+msgid "<html><head/><body><p>Allows more sprites to be displayed on the screen in an attempt to remove flickering.</p><p>Some games take advantage of this limit and use it to hide glitches, and removing the limit will make those visible.</p></body></html>"
+msgstr "<html><head/><body><p>Επιτρέπει την εμφάνιση περισσότερων sprite στην οθόνη σε μια προσπάθεια εξάλειψης του τρεμοπαίγματος.</p><p>Ορισμένα παιχνίδια εκμεταλλεύονται αυτό το όριο για να κρύψουν σφάλματα, και η κατάργηση του ορίου θα τα κάνει ορατά.</p></body></html>"
+
+#: qt/src/EmulationPanel.ui
+msgid "<html><head/><body><p>Alternate sound filters can make the audio more crisp than the authentic gaussian filter.</p><p>The Cubic and Sinc filters provide the best improvement, but they can reveal some noise that would normally be hidden by the hardware.</p></body></html>"
+msgstr "<html><head/><body><p>Τα εναλλακτικά φίλτρα ήχου μπορούν να κάνουν τον ήχο πιο καθαρό από το αυθεντικό φίλτρο gaussian.</p><p>Τα φίλτρα Cubic και Sinc παρέχουν τη βέλτιστη βελτίωση, αλλά μπορεί να αποκαλύψουν κάποιο θόρυβο που κανονικά θα ήταν κρυμμένος από το υλικό.</p></body></html>"
+
+#: qt/src/EmulationPanel.ui
+msgid "<html><head/><body><p>Amount of memory to use to enable the rewind function. The amount of time each MB gets you varies based on the complexity of the game. Set to 0 to disable rewind altogether and use less processor time.</p></body></html>"
+msgstr "<html><head/><body><p>Ποσό μνήμης για χρήση ώστε να ενεργοποιηθεί η λειτουργία επαναφοράς. Ο χρόνος που προσφέρει κάθε MB ποικίλλει ανάλογα με την πολυπλοκότητα του παιχνιδιού. Ρυθμίστε στο 0 για να απενεργοποιήσετε εντελώς την επαναφορά και να χρησιμοποιήσετε λιγότερο χρόνο επεξεργαστή.</p></body></html>"
+
+#: qt/src/EmulationPanel.ui
+msgid "<html><head/><body><p>Change the speed of the SuperFX chip. The SuperFX had some notoriously slow games, and this can be used to attempt to speed them up.</p></body></html>"
+msgstr "<html><head/><body><p>Αλλαγή της ταχύτητας του τσιπ SuperFX. Το SuperFX είχε μερικά διαβόητα αργά παιχνίδια, και αυτό μπορεί να χρησιμοποιηθεί για να επιχειρηθεί η επιτάχυνσή τους.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>Choose one of <span style=\" font-style:italic;\">Qt Software, Vulkan, or OpenGL</span>.</p><p>Qt Software will use the CPU to draw the display. Vulkan or OpenGL will use that respective graphics interface to draw the display.</p></body></html>"
+msgstr "<html><head/><body><p>Επιλέξτε ένα από τα <span style=\" font-style:italic;\">Qt Software, Vulkan, ή OpenGL</span>.</p><p>Το Qt Software θα χρησιμοποιήσει την CPU για να σχεδιάσει την οθόνη. Το Vulkan ή το OpenGL θα χρησιμοποιήσουν την αντίστοιχη διεπαφή γραφικών για να σχεδιάσουν την οθόνη.</p></body></html>"
+
+#: qt/src/ControllerPanel.ui
+msgid "<html><head/><body><p>Clear or swap sets of bindings between controllers.</p></body></html>"
+msgstr "<html><head/><body><p>Εκκαθάριση ή εναλλαγή συνόλων δεσμών μεταξύ ελεγκτών.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>Control how much the audio is stretched initially.</p><p><br/></p><p>Unless you know what you're doing, it's best to use the option above this to adjust it automatically.</p></body></html>"
+msgstr "<html><head/><body><p>Ελέγξτε πόσο τεντώνεται ο ήχος αρχικά.</p><p><br/></p><p>Εκτός εάν ξέρετε τι κάνετε, είναι προτιμότερο να χρησιμοποιήσετε την παραπάνω επιλογή για να το προσαρμόσετε αυτόματα.</p></body></html>"
+
+#: qt/src/FoldersPanel.ui
+msgid "<html><head/><body><p>Determines where to look for optional BIOS / boot ROM files (Super Game Boy boot ROM, BS-X.bin, etc).</p><p><span style=\" font-style:italic;\">ROM Folder</span> looks next to the loaded ROM.</p><p><span style=\" font-style:italic;\">Config Folder</span> uses a \"bios\" subfolder of the config folder.</p><p><span style=\" font-style:italic;\">Custom</span> uses an explicit path (default: \"Bios\" relative to the working directory).</p></body></html>"
+msgstr "<html><head/><body><p>Καθορίζει πού να αναζητήσετε προαιρετικά αρχεία BIOS / boot ROM (Super Game Boy boot ROM, BS-X.bin, κ.λπ.).</p><p>Το <span style=\" font-style:italic;\">ROM Folder</span> ψάχνει δίπλα στη φορτωμένη ROM.</p><p>Το <span style=\" font-style:italic;\">Config Folder</span> χρησιμοποιεί έναν υποφάκελο \"bios\" του φακέλου ρυθμίσεων.</p><p>Το <span style=\" font-style:italic;\">Custom</span> χρησιμοποιεί μια ρητή διαδρομή (προεπιλογή: \"Bios\" σε σχέση με τον κατάλογο εργασίας).</p></body></html>"
+
+#: qt/src/FoldersPanel.ui
+msgid "<html><head/><body><p>Determines where to save these files.</p><p><span style=\" font-style:italic;\">ROM Folder</span> will always save to the same folder as the ROM.</p><p><span style=\" font-style:italic;\">Config Folder</span> will save to a subfolder of the config folder that is shown. If there is a snes9x.conf file next to your executable, SuperSnes9x will operate in portable mode and the config folder will be the folder the executable is in.</p><p><span style=\" font-style:italic;\">Custom</span> allows you to specify exactly where to save these files.</p></body></html>"
+msgstr "<html><head/><body><p>Καθορίζει πού να αποθηκεύσετε αυτά τα αρχεία.</p><p>Το <span style=\" font-style:italic;\">ROM Folder</span> θα αποθηκεύει πάντα στον ίδιο φάκελο με τη ROM.</p><p>Το <span style=\" font-style:italic;\">Config Folder</span> θα αποθηκεύει σε έναν υποφάκελο του φακέλου ρυθμίσεων που εμφανίζεται. Εάν υπάρχει ένα αρχείο snes9x.conf δίπλα στο εκτελέσιμό σας, το SuperSnes9x θα λειτουργεί σε φορητή λειτουργία και ο φάκελος ρυθμίσεων θα είναι ο φάκελος στον οποίο βρίσκεται το εκτελέσιμο.</p><p>Το <span style=\" font-style:italic;\">Custom</span> σας επιτρέπει να ορίσετε ακριβώς πού να αποθηκεύσετε αυτά τα αρχεία.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>Erases all emulated sound output and just sends out silence.</p></body></html>"
+msgstr "<html><head/><body><p>Διαγράφει όλη την εξομοιωμένη έξοδο ήχου και στέλνει μόνο σιωπή.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>If after everything, you're still getting pops and crackles in audio, you can increase this value. However, it may cause noticeable distortion.</p></body></html>"
+msgstr "<html><head/><body><p>Εάν μετά από όλα εξακολουθείτε να ακούτε θορύβους στον ήχο, μπορείτε να αυξήσετε αυτήν την τιμή. Ωστόσο, μπορεί να προκαλέσει αισθητή παραμόρφωση.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>Master output volume during normal play. Moving this also drags the per-source SGB sliders so they stay in step.</p></body></html>"
+msgstr "<html><head/><body><p>Κύρια ένταση εξόδου κατά την κανονική αναπαραγωγή. Η μετακίνηση αυτού σέρνει επίσης τα ρυθμιστικά SGB ανά πηγή, ώστε να παραμένουν σε συγχρονισμό.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>Master output volume during turbo and rewind.</p></body></html>"
+msgstr "<html><head/><body><p>Κύρια ένταση εξόδου κατά τη διάρκεια turbo και επαναφοράς.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>Mutes sound when using the turbo and rewind functions, which might be annoying to some users.</p></body></html>"
+msgstr "<html><head/><body><p>Σίγαση ήχου κατά τη χρήση των λειτουργιών turbo και επαναφοράς, κάτι που μπορεί να είναι ενοχλητικό για ορισμένους χρήστες.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>On classic CRT televisions, some areas of the screen were covered by the bezel, so weren't used often in games. This option allows you to show that area, but it will usually be just black bars.</p></body></html>"
+msgstr "<html><head/><body><p>Στις κλασικές τηλεοράσεις CRT, ορισμένες περιοχές της οθόνης καλύπτονταν από το πλαίσιο, επομένως δεν χρησιμοποιούνταν συχνά στα παιχνίδια. Αυτή η επιλογή σάς επιτρέπει να εμφανίσετε αυτήν την περιοχή, αλλά συνήθως θα είναι μόνο μαύρες μπάρες.</p></body></html>"
+
+#: qt/src/EmulationPanel.ui
+msgid "<html><head/><body><p>Original controllers may have had a small pin in the dpad preventing left and right or up and down from being pressed at the same time. This will allow that behavior if you're using a keyboard or device that can press those buttons at the same time. Some games will glitch when this is done.</p></body></html>"
+msgstr "<html><head/><body><p>Οι αρχικοί ελεγκτές μπορεί να είχαν μια μικρή ακίδα στο dpad που εμπόδιζε το πάτημα αριστερά και δεξιά ή πάνω και κάτω την ίδια στιγμή. Αυτό θα επιτρέψει αυτή τη συμπεριφορά εάν χρησιμοποιείτε πληκτρολόγιο ή συσκευή που μπορεί να πατήσει αυτά τα κουμπιά την ίδια στιγμή. Ορισμένα παιχνίδια θα παρουσιάσουν σφάλματα όταν γίνεται αυτό.</p></body></html>"
+
+#: qt/src/EmulationPanel.ui
+msgid "<html><head/><body><p>Override the frame rate of the emulated system. This can be used to run slightly faster or slower than usual, or to match the timer to your exact refresh rate.</p><p><br/></p><p>Set this to 0 to use whatever the emulated system uses.</p></body></html>"
+msgstr "<html><head/><body><p>Παράκαμψη του ρυθμού καρέ του εξομοιωμένου συστήματος. Αυτό μπορεί να χρησιμοποιηθεί για ελαφρώς ταχύτερη ή βραδύτερη εκτέλεση από το συνηθισμένο, ή για ταίριασμα του χρονοδιακόπτη με τον ακριβή ρυθμό ανανέωσης σας.</p><p><br/></p><p>Ρυθμίστε το στο 0 για να χρησιμοποιήσετε ό,τι χρησιμοποιεί το εξομοιωμένο σύστημα.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>Selects the driver to output sound with.</p><p><span style=\" font-style:italic;\">Cubeb: </span>The recommended option.</p><p><span style=\" font-style:italic;\">SDL</span>: If Cubeb doesn't work.</p><p><span style=\" font-style:italic;\">PulseAudio:</span> Unix only. May have less latency.</p></body></html>"
+msgstr "<html><head/><body><p>Επιλέγει το πρόγραμμα οδήγησης για την έξοδο ήχου.</p><p><span style=\" font-style:italic;\">Cubeb: </span>Η προτεινόμενη επιλογή.</p><p><span style=\" font-style:italic;\">SDL</span>: Εάν το Cubeb δεν λειτουργεί.</p><p><span style=\" font-style:italic;\">PulseAudio:</span> Μόνο Unix. Μπορεί να έχει λιγότερη υστέρηση.</p></body></html>"
+
+#: qt/src/FoldersPanel.ui
+msgid "<html><head/><body><p>Setting this to anything other than 0 will save the SRAM (internal game saves) file regularly. If it is set to to 0, it will only save when exiting SuperSnes9x or changing games, and you will lose any progress since the last save if your device crashes.</p></body></html>"
+msgstr "<html><head/><body><p>Η ρύθμιση αυτή σε οτιδήποτε άλλο εκτός από 0 θα αποθηκεύει τακτικά το αρχείο SRAM (εσωτερικές αποθηκεύσεις παιχνιδιού). Εάν έχει οριστεί στο 0, θα αποθηκεύεται μόνο κατά την έξοδο από το SuperSnes9x ή την αλλαγή παιχνιδιών, και θα χάσετε οποιαδήποτε πρόοδο από την τελευταία αποθήκευση εάν η συσκευή σας καταρρεύσει.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>SGB BIOS mix: GB channel volume. Active in SGB1/SGB2 BIOS mode; in BIOS-less mode this mirrors the Regular master, which is what actually scales GB output.</p></body></html>"
+msgstr "<html><head/><body><p>SGB BIOS mix: Ένταση καναλιού GB. Ενεργό σε λειτουργία SGB1/SGB2 BIOS· σε λειτουργία χωρίς BIOS αντικατοπτρίζει τον Regular master, ο οποίος είναι αυτός που πραγματικά κλιμακώνει την έξοδο GB.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>SGB BIOS mix: SPC channel volume. Only active in SGB1/SGB2 BIOS mode — BIOS-less GB playback discards SPC output.</p></body></html>"
+msgstr "<html><head/><body><p>SGB BIOS mix: Ένταση καναλιού SPC. Ενεργό μόνο σε λειτουργία SGB1/SGB2 BIOS — η αναπαραγωγή GB χωρίς BIOS απορρίπτει την έξοδο SPC.</p></body></html>"
+
+#: qt/src/EmulationPanel.ui
+msgid "<html><head/><body><p>Skips rendering the specified amount of frames when using the fast-forward function. The higher this amount, the faster it goes.</p></body></html>"
+msgstr "<html><head/><body><p>Παραλείπει την απόδοση του καθορισμένου αριθμού καρέ κατά τη χρήση της λειτουργίας γρήγορης προώθησης. Όσο μεγαλύτερο είναι αυτό το ποσό, τόσο πιο γρήγορα πάει.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>The buffer size for the emulator side of sound playback. Ideally, it should be about two frames worth of audio, or about 32ms at 60Hz. Latency will be half this value.</p></body></html>"
+msgstr "<html><head/><body><p>Το μέγεθος του buffer για την πλευρά εξομοίωσης της αναπαραγωγής ήχου. Ιδανικά, θα πρέπει να είναι περίπου δύο καρέ ήχου, ή περίπου 32ms στα 60Hz. Η υστέρηση θα είναι το μισό αυτής της τιμής.</p></body></html>"
+
+#: qt/src/ControllerPanel.ui
+msgid "<html><head/><body><p>The enumerated controller as seen by the SNES. Controller 1 will always be quot;Player 1quot; and so on, no matter what device is assigned to the controller ports.</p></body></html>"
+msgstr "<html><head/><body><p>Ο απαριθμημένος ελεγκτής όπως φαίνεται από το SNES. Ο ελεγκτής 1 θα είναι πάντα ο quot;Παίκτης 1quot; και ούτω καθεξής, ανεξάρτητα από τη συσκευή που έχει αντιστοιχιστεί στις θύρες ελεγκτή.</p></body></html>"
+
+#: qt/src/EmulationPanel.ui
+msgid "<html><head/><body><p>The number of frames between each rewind snapshot. More frames mean rewind can go back further and will rewind faster. </p></body></html>"
+msgstr "<html><head/><body><p>Ο αριθμός των καρέ μεταξύ κάθε στιγμιότυπου επαναφοράς. Περισσότερα καρέ σημαίνουν ότι η επαναφορά μπορεί να πάει πιο πίσω και θα γίνει πιο γρήγορα.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>The output playback rate on your computer. This is <span style=\" font-weight:700;\">not</span> the playback rate of the emulated system.</p><p>You should set this to match your operating system's sound server. It should almost always be 48000Hz.</p></body></html>"
+msgstr "<html><head/><body><p>Ο ρυθμός αναπαραγωγής εξόδου στον υπολογιστή σας. Αυτός <span style=\" font-weight:700;\">δεν</span> είναι ο ρυθμός αναπαραγωγής του εξομοιωμένου συστήματος.</p><p>Θα πρέπει να το ρυθμίσετε ώστε να ταιριάζει με τον διακομιστή ήχου του λειτουργικού σας συστήματος. Θα πρέπει σχεδόν πάντα να είναι 48000Hz.</p></body></html>"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "<html><head/><body><p>This box lists application shortcuts. There are 4 slots, so you can assign 4 different keys or buttons to one function.</p><p>To set a binding, click a box or highlight it with the keyboard and press Enter/Return. The box will show three dots quot;...quot;. Press the desired key or gamepad button to assign it to that box. The Escape key will clear the box.</p></body></html>"
+msgstr "<html><head/><body><p>Αυτό το πλαίσιο παραθέτει τις συντομεύσεις εφαρμογών. Υπάρχουν 4 slot, ώστε να μπορείτε να αντιστοιχίσετε 4 διαφορετικά πλήκτρα ή κουμπιά σε μία λειτουργία.</p><p>Για να ορίσετε μια δέσμευση, κάντε κλικ σε ένα πλαίσιο ή επισημάνετέ το με το πληκτρολόγιο και πατήστε Enter/Return. Το πλαίσιο θα εμφανίσει τρεις τελείες quot;...quot;. Πατήστε το επιθυμητό πλήκτρο ή κουμπί gamepad για να το αντιστοιχίσετε σε αυτό το πλαίσιο. Το πλήκτρο Escape θα εκκαθαρίσει το πλαίσιο.</p></body></html>"
+
+#: qt/src/ControllerPanel.ui
+msgid "<html><head/><body><p>This box lists keyboard keys and gamepad buttons mapped to the SNES controller. There are 4 slots, so you can assign 4 different keys or buttons to one SNES button.</p><p>To set a binding, click a box or highlight it with the keyboard and press Enter/Return. The box will show three dots quot;...quot;. Press the desired key or gamepad button to assign it to that box. The Escape key will clear the box.</p></body></html>"
+msgstr "<html><head/><body><p>Αυτό το πλαίσιο παραθέτει πλήκτρα πληκτρολογίου και κουμπιά gamepad που έχουν αντιστοιχιστεί στον ελεγκτή SNES. Υπάρχουν 4 slot, ώστε να μπορείτε να αντιστοιχίσετε 4 διαφορετικά πλήκτρα ή κουμπιά σε ένα κουμπί SNES.</p><p>Για να ορίσετε μια δέσμευση, κάντε κλικ σε ένα πλαίσιο ή επισημάνετέ το με το πληκτρολόγιο και πατήστε Enter/Return. Το πλαίσιο θα εμφανίσει τρεις τελείες quot;...quot;. Πατήστε το επιθυμητό πλήκτρο ή κουμπί gamepad για να το αντιστοιχίσετε σε αυτό το πλαίσιο. Το πλήκτρο Escape θα εκκαθαρίσει το πλαίσιο.</p></body></html>"
+
+#: qt/src/EmulationPanel.ui
+msgid "<html><head/><body><p>This controls how the program runs the emulated content at the correct speed.</p><p><span style=\" font-style:italic;\">Timer</span>: This sets a literal timer and shows emulated frames at the exact frame rate specified, or automatically matches the emulated system. It may not match your display's frame rate, which can cause judders.</p><p><span style=\" font-style:italic;\">Timer with Frameskipping</span>: The same as timer, except if your display has a lower refresh rate than the emulated system it will skip frames to keep up.</p><p><span style=\" font-style:italic;\">Sound Synchronization: </span>Assume the sound engine is outputting the sound at the correct speed and match the video output rate with it. This assumes your refresh rate is fairly close to the emulated system and you have vsync turned on.</p><p><span style=\" font-style:italic;\">None:</span> Don't attempt to slow emulation down. If you turn off vsync, this will run as fast as possible. If your display matches the emulated system's refresh rate closely, this with vsync enabled is generally the smoothest option aside from variable refresh rates with a timer.</p></body></html>"
+msgstr "<html><head/><body><p>Αυτό ελέγχει πώς το πρόγραμμα εκτελεί το εξομοιωμένο περιεχόμενο στη σωστή ταχύτητα.</p><p><span style=\" font-style:italic;\">Timer</span>: Αυτό ορίζει έναν κυριολεκτικό χρονοδιακόπτη και εμφανίζει εξομοιωμένα καρέ στον ακριβή ρυθμό καρέ που καθορίζεται, ή ταιριάζει αυτόματα με το εξομοιωμένο σύστημα. Ενδέχεται να μην ταιριάζει με τον ρυθμό καρέ της οθόνης σας, γεγονός που μπορεί να προκαλέσει τρέμουλο.</p><p><span style=\" font-style:italic;\">Timer with Frameskipping</span>: Το ίδιο με το timer, εκτός εάν η οθόνη σας έχει χαμηλότερο ρυθμό ανανέωσης από το εξομοιωμένο σύστημα, θα παραλείψει καρέ για να συμβαδίσει.</p><p><span style=\" font-style:italic;\">Sound Synchronization: </span>Υποθέτει ότι η μηχανή ήχου εξάγει τον ήχο στη σωστή ταχύτητα και ταιριάζει τον ρυθμό εξόδου βίντεο με αυτόν. Αυτό προϋποθέτει ότι ο ρυθμός ανανέωσης σας είναι αρκετά κοντά στο εξομοιωμένο σύστημα και έχετε ενεργοποιημένο το vsync.</p><p><span style=\" font-style:italic;\">None:</span> Μην προσπαθήσετε να επιβραδύνετε την εξομοίωση. Εάν απενεργοποιήσετε το vsync, αυτό θα τρέξει όσο πιο γρήγορα γίνεται. Εάν η οθόνη σας ταιριάζει στενά με τον ρυθμό ανανέωσης του εξομοιωμένου συστήματος, αυτό με ενεργοποιημένο το vsync είναι γενικά η πιο ομαλή επιλογή εκτός από μεταβλητούς ρυθμούς ανανέωσης με χρονοδιακόπτη.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>This option adapts <span style=\" font-style:italic;\">maintain aspect ratio</span> and scales the image in steps of integral scale, so game pixels are never spread across the borders of screen pixels.</p></body></html>"
+msgstr "<html><head/><body><p>Αυτή η επιλογή προσαρμόζει τη <span style=\" font-style:italic;\">διατήρηση αναλογίας διαστάσεων</span> και κλιμακώνει την εικόνα σε βήματα ακέραιας κλιμάκωσης, ώστε τα pixel του παιχνιδιού να μην εξαπλώνονται ποτέ πέρα από τα όρια των pixel της οθόνης.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>This option affects how <span style=\" font-style:italic;\">maintain aspect ratio </span>works. </p><p><span style=\" font-style:italic;\">4:3 </span>will maintain a ratio where the screen is 1.333 times wider than high.</p><p>64:49 presents an idealized ratio where the display output is perfect, but is affected by NTSC compression.</p><p>1:1 Means pixels will be square. This will squeeze the image horizontally.</p></body></html>"
+msgstr "<html><head/><body><p>Αυτή η επιλογή επηρεάζει τον τρόπο λειτουργίας της <span style=\" font-style:italic;\">διατήρησης αναλογίας διαστάσεων</span>. </p><p>Το <span style=\" font-style:italic;\">4:3 </span>θα διατηρήσει μια αναλογία όπου η οθόνη είναι 1,333 φορές ευρύτερη από ό,τι ψηλή.</p><p>Το 64:49 παρουσιάζει μια εξιδανικευμένη αναλογία όπου η έξοδος της οθόνης είναι τέλεια, αλλά επηρεάζεται από τη συμπίεση NTSC.</p><p>Το 1:1 σημαίνει ότι τα pixel θα είναι τετράγωνα. Αυτό θα συμπιέσει την εικόνα οριζόντια.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>This option causes the audio to be slightly stretched to keep the latency even and to prevent underruns and overruns, which will cause pops and cracks in the audio.</p></body></html>"
+msgstr "<html><head/><body><p>Αυτή η επιλογή προκαλεί το ελαφρύ τέντωμα του ήχου για να διατηρηθεί η υστέρηση ομοιόμορφη και να αποφευχθούν underruns και overruns, τα οποία θα προκαλέσουν θορύβους στον ήχο.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>This option determines whether messages show up in the game display:</p><p>Onscreen will show a high resolution overlay when using <span style=\" font-style:italic;\">Vulkan</span> or <span style=\" font-style:italic;\">OpenGL</span>.</p><p>Inscreen will draw in a pixel font to the ingame display.</p><p>Don't display messages will show nothing.</p></body></html>"
+msgstr "<html><head/><body><p>Αυτή η επιλογή καθορίζει εάν τα μηνύματα εμφανίζονται στην οθόνη του παιχνιδιού:</p><p>Το Onscreen θα εμφανίσει ένα overlay υψηλής ανάλυσης κατά τη χρήση <span style=\" font-style:italic;\">Vulkan</span> ή <span style=\" font-style:italic;\">OpenGL</span>.</p><p>Το Inscreen θα σχεδιάσει με γραμματοσειρά pixel στην οθόνη του παιχνιδιού.</p><p>Το \"Μην εμφανίζονται μηνύματα\" δεν θα εμφανίζει τίποτα.</p></body></html>"
+
+#: qt/src/EmulationPanel.ui
+msgid "<html><head/><body><p>This option is explicitly for old AddMusic hacks. If you know you have one of those, you can enable this. Otherwise, leave it unchecked.</p></body></html>"
+msgstr "<html><head/><body><p>Αυτή η επιλογή είναι ρητά για παλιά AddMusic hacks. Εάν γνωρίζετε ότι έχετε ένα από αυτά, μπορείτε να το ενεργοποιήσετε. Διαφορετικά, αφήστε το μη επιλεγμένο.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>This option keeps the proportions of the emulated display the same no matter how you change the size of the window.</p></body></html>"
+msgstr "<html><head/><body><p>Αυτή η επιλογή διατηρεί τις αναλογίες της εξομοιωμένης οθόνης ίδιες, ανεξάρτητα από το πώς αλλάζετε το μέγεθος του παραθύρου.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>This option only affects the size of the font and the icons shown when display messages are set to the <span style=\" font-style:italic;\">Onscreen</span> option.</p></body></html>"
+msgstr "<html><head/><body><p>Αυτή η επιλογή επηρεάζει μόνο το μέγεθος της γραμματοσειράς και των εικονιδίων που εμφανίζονται όταν τα μηνύματα εμφάνισης έχουν ρυθμιστεί στην επιλογή <span style=\" font-style:italic;\">Onscreen</span>.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>This option only affects the SNES's high-resolution, 512 pixel wide mode. Few games use this. </p><p><span style=\" font-style:italic;\">Output directly</span> will use whatever is output directly, but when the game changes modes, the filtering will get sharper or blurrier and may be distracting.</p><p><span style=\" font-style:italic;\">Merge fields </span>will scale the image down and blend the extra pixels together. This is useful in games like Jurassic Park and Kirby's Dreamland 3, which use it for a transparency effect.</p><p><span style=\" font-style:italic;\">Scale low resolution </span>will double the width of low-resolution screens, so when the game switches between modes there isn't any distracting changes in filtering. This is useful when a game uses the high resolution mode often, like Seiken Densetsu 3.</p></body></html>"
+msgstr "<html><head/><body><p>Αυτή η επιλογή επηρεάζει μόνο τη λειτουργία υψηλής ανάλυσης 512 pixel του SNES. Λίγα παιχνίδια το χρησιμοποιούν. </p><p>Το <span style=\" font-style:italic;\">Output directly</span> θα χρησιμοποιεί ό,τι εξάγεται απευθείας, αλλά όταν το παιχνίδι αλλάζει λειτουργίες, το φιλτράρισμα θα γίνει πιο οξύ ή πιο θολό και μπορεί να αποσπά την προσοχή.</p><p>Το <span style=\" font-style:italic;\">Merge fields </span>θα κλιμακώσει την εικόνα προς τα κάτω και θα αναμίξει τα επιπλέον pixel μαζί. Αυτό είναι χρήσιμο σε παιχνίδια όπως το Jurassic Park και το Kirby's Dreamland 3, που το χρησιμοποιούν για εφέ διαφάνειας.</p><p>Το <span style=\" font-style:italic;\">Scale low resolution </span>θα διπλασιάσει το πλάτος των οθονών χαμηλής ανάλυσης, οπότε όταν το παιχνίδι αλλάζει μεταξύ λειτουργιών δεν υπάρχουν αποσπασματικές αλλαγές στο φιλτράρισμα. Αυτό είναι χρήσιμο όταν ένα παιχνίδι χρησιμοποιεί συχνά τη λειτουργία υψηλής ανάλυσης, όπως το Seiken Densetsu 3.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>This option prevents tearing in the output.</p></body></html>"
+msgstr "<html><head/><body><p>Αυτή η επιλογή αποτρέπει το tearing στην έξοδο.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>This option stretches the emulated audio output to coincide exactly with your display's refresh rate. It automatically handles the <span style=\" font-style:italic;\">Input Rate</span> option.</p></body></html>"
+msgstr "<html><head/><body><p>Αυτή η επιλογή τεντώνει την εξομοιωμένη έξοδο ήχου ώστε να συμπίπτει ακριβώς με τον ρυθμό ανανέωσης της οθόνης σας. Διαχειρίζεται αυτόματα την επιλογή <span style=\" font-style:italic;\">Input Rate</span>.</p></body></html>"
+
+#: qt/src/ControllerPanel.ui
+msgid "<html><head/><body><p>This option will use the SDL library to auto-configure gamepads. It will take the XBox mappings for the left D-pad and analog stick, as well as the the face buttons and L/R shoulder buttons, and assign them to relative locations on the first SNES controller.</p><p><br/></p><p>All gamepads will be assigned to player 1. If you need more players, disable this option and set up the mappings manually.</p></body></html>"
+msgstr "<html><head/><body><p>Αυτή η επιλογή θα χρησιμοποιήσει τη βιβλιοθήκη SDL για την αυτόματη διαμόρφωση gamepads. Θα λάβει τις αντιστοιχίσεις XBox για το αριστερό D-pad και τον αναλογικό μοχλό, καθώς και τα κουμπιά προσώπου και τα κουμπιά ώμου L/R, και θα τα αντιστοιχίσει σε σχετικές θέσεις στον πρώτο ελεγκτή SNES.</p><p><br/></p><p>Όλα τα gamepads θα αντιστοιχιστούν στον παίκτη 1. Εάν χρειάζεστε περισσότερους παίκτες, απενεργοποιήστε αυτήν την επιλογή και ρυθμίστε τις αντιστοιχίσεις χειροκίνητα.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>This prevents the GPU from queuing up additional frames in advance, reducing the time it takes for the display to react to your input.</p></body></html>"
+msgstr "<html><head/><body><p>Αυτό εμποδίζει την GPU να βάζει επιπλέον καρέ στην ουρά εκ των προτέρων, μειώνοντας τον χρόνο που χρειάζεται η οθόνη για να αντιδράσει στην είσοδό σας.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>Turns on a bilinear smoothing filter to smooth out the pixels. This option won't work with a hardware shader enabled.</p></body></html>"
+msgstr "<html><head/><body><p>Ενεργοποιεί ένα διγραμμικό φίλτρο εξομάλυνσης για την εξομάλυνση των pixel. Αυτή η επιλογή δεν θα λειτουργήσει με ενεργοποιημένο shader υλικού.</p></body></html>"
+
+#: qt/src/ControllerPanel.ui
+msgid "<html><head/><body><p>Use this to automatically assign the default keyboard mapping or a detected controller to a set of bindings.</p><p>This uses the XInput controller protocol and maps it as close as possible to a SNES controller.</p></body></html>"
+msgstr "<html><head/><body><p>Χρησιμοποιήστε το για να αντιστοιχίσετε αυτόματα την προεπιλεγμένη αντιστοίχιση πληκτρολογίου ή έναν ανιχνευμένο ελεγκτή σε ένα σύνολο δεσμών.</p><p>Αυτό χρησιμοποιεί το πρωτόκολλο ελεγκτή XInput και το αντιστοιχίζει όσο το δυνατόν πιο κοντά σε έναν ελεγκτή SNES.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>Uses a hardware shader with <span style=\" font-style:italic;\">Vulkan</span> or <span style=\" font-style:italic;\">OpenGL</span> drivers. These can be either .glslp or .slangp preset files.</p><p>GLSL shaders (.glslp) can be downloaded from:</p><p><a href=\"https://github.com/libretro/glsl-shaders\"><span style=\" text-decoration: underline; color:#2980b9;\">https://github.com/libretro/glsl-shaders</span></a></p><p>Slang shaders (.slangp) can be downloaded from:</p><p><a href=\"https://github.com/libretro/slang-shaders\"><span style=\" text-decoration: underline; color:#2980b9;\">https://github.com/libretro/slang-shaders</span></a></p></body></html>"
+msgstr "<html><head/><body><p>Χρησιμοποιεί shader υλικού με προγράμματα οδήγησης <span style=\" font-style:italic;\">Vulkan</span> ή <span style=\" font-style:italic;\">OpenGL</span>. Αυτά μπορεί να είναι αρχεία προεπιλογών .glslp ή .slangp.</p><p>Οι shaders GLSL (.glslp) μπορούν να ληφθούν από:</p><p><a href=\"https://github.com/libretro/glsl-shaders\"><span style=\" text-decoration: underline; color:#2980b9;\">https://github.com/libretro/glsl-shaders</span></a></p><p>Οι shaders Slang (.slangp) μπορούν να ληφθούν από:</p><p><a href=\"https://github.com/libretro/slang-shaders\"><span style=\" text-decoration: underline; color:#2980b9;\">https://github.com/libretro/slang-shaders</span></a></p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>When entering fullscreen mode, this option temporarily sets a number of other options to values that make variable refresh rate monitors that use FreeSync or GSync smoother.</p><p>Enables vsync.</p><p>Sets synchronization mode to timer and the frame rate to exactly that of the SNES.</p><p>Sets input rate to 32040Hz.</p></body></html>"
+msgstr "<html><head/><body><p>Κατά την είσοδο σε λειτουργία πλήρους οθόνης, αυτή η επιλογή ορίζει προσωρινά ορισμένες άλλες επιλογές σε τιμές που καθιστούν τις οθόνες με μεταβλητό ρυθμό ανανέωσης που χρησιμοποιούν FreeSync ή GSync πιο ομαλές.</p><p>Ενεργοποιεί το vsync.</p><p>Ορίζει τη λειτουργία συγχρονισμού σε χρονοδιακόπτη και τον ρυθμό καρέ ακριβώς σε αυτόν του SNES.</p><p>Ορίζει τον ρυθμό εισόδου στα 32040Hz.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>When using <span style=\" font-style:italic;\">Vulkan</span>, this chooses the GPU you wish to render with.</p></body></html>"
+msgstr "<html><head/><body><p>Κατά τη χρήση <span style=\" font-style:italic;\">Vulkan</span>, αυτό επιλέγει την GPU με την οποία θέλετε να κάνετε απόδοση.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "Adjust input rate to display rate automatically"
+msgstr "Αυτόματη ρύθμιση ρυθμού εισόδου στον ρυθμό εμφάνισης"
+
+#: qt/src/DisplayPanel.ui
+msgid "Adjust settings for VRR in fullscreen mode"
+msgstr "Προσαρμογή ρυθμίσεων για VRR σε λειτουργία πλήρους οθόνης"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "All Files (*)"
+msgstr "Όλα τα αρχεία (*)"
+
+#: qt/src/EmulationPanel.ui
+msgid "Allow opposite D-pad directions simultaneously"
+msgstr "Επιτρέπει αντίθετες κατευθύνσεις D-pad ταυτόχρονα"
+
+#: qt/src/EmulationPanel.ui
+msgid "Alternate sound filter:"
+msgstr "Εναλλακτικό φίλτρο ήχου:"
+
+#: qt/src/ControllerPanel.ui
+msgid "Auto-Assign Gamepad Buttons Using SDL Controller Map"
+msgstr "Αυτόματη ανάθεση κουμπιών Gamepad με χρήση χάρτη ελεγκτή SDL"
+
+#: qt/src/EmulationPanel.ui
+msgid "Auto-FastROM"
+msgstr "Auto-FastROM"
+
+#: qt/src/ControllerPanel.ui
+msgid "Automatically assign a controller's buttons to a slot"
+msgstr "Αυτόματη ανάθεση των κουμπιών ενός ελεγκτή σε ένα slot"
+
+#: qt/src/DisplayPanel.ui
+msgid "Bilinear filter"
+msgstr "Διγραμμικό φίλτρο"
+
+#: qt/src/ControllerPanel.ui
+msgid "Binding #1"
+msgstr "Δέσμευση #1"
+
+#: qt/src/ControllerPanel.ui
+msgid "Binding #2"
+msgstr "Δέσμευση #2"
+
+#: qt/src/ControllerPanel.ui
+msgid "Binding #3"
+msgstr "Δέσμευση #3"
+
+#: qt/src/ControllerPanel.ui
+msgid "Binding #4"
+msgstr "Δέσμευση #4"
+
+#: qt/src/ControllerPanel.cpp
+msgid "Binding Set #%1"
+msgstr "Σετ δεσμών #%1"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Change Backdrop Color"
+msgstr "Αλλαγή χρώματος φόντου"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Cheats"
+msgstr "Cheats"
+
+#: qt/src/CheatsDialog.cpp
+msgid "cheats.bml was not found."
+msgstr "Το cheats.bml δεν βρέθηκε."
+
+#: qt/src/CheatsDialog.ui
+msgid "Check Database"
+msgstr "Έλεγχος βάσης δεδομένων"
+
+#: qt/src/DisplayPanel.ui
+msgid "Choose a device to render output. If you have no integrated graphics, there will be only one choice."
+msgstr "Επιλέξτε μια συσκευή για απόδοση εξόδου. Εάν δεν έχετε ενσωματωμένα γραφικά, θα υπάρχει μόνο μία επιλογή."
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Choose a State File"
+msgstr "Επιλέξτε ένα αρχείο κατάστασης"
+
+#: qt/src/ControllerPanel.cpp
+msgid "Clear All Controllers"
+msgstr "Εκκαθάριση όλων των ελεγκτών"
+
+#: qt/src/ControllerPanel.cpp
+msgid "Clear Current Controller"
+msgstr "Εκκαθάριση τρέχοντος ελεγκτή"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Clear Recent Files"
+msgstr "Εκκαθάριση πρόσφατων αρχείων"
+
+#: qt/src/EmuSettingsWindow.ui
+msgid "Click on a setting to find out more info."
+msgstr "Κάντε κλικ σε μια ρύθμιση για να μάθετε περισσότερες πληροφορίες."
+
+#: qt/src/FoldersPanel.ui
+msgid "Config Folder"
+msgstr "Φάκελος ρυθμίσεων"
+
+#: qt/src/FoldersPanel.cpp
+msgid "Config folder is %1"
+msgstr "Ο φάκελος ρυθμίσεων είναι %1"
+
+#: qt/src/ControllerPanel.cpp
+msgid "Controller %1"
+msgstr "Ελεγκτής %1"
+
+#: qt/src/ControllerPanel.ui
+msgid "Controller + Multitap"
+msgstr "Ελεγκτής + Multitap"
+
+#: qt/src/ControllerPanel.ui
+msgid "Controller Ports:"
+msgstr "Θύρες ελεγκτή:"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Controllers"
+msgstr "Ελεγκτές"
+
+#: qt/src/FoldersPanel.ui
+msgid "Custom Folder"
+msgstr "Προσαρμοσμένος φάκελος"
+
+#: qt/src/FoldersPanel.ui
+msgid "Data Locations"
+msgstr "Τοποθεσίες δεδομένων"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Decrease Current Save Slot"
+msgstr "Μείωση τρέχοντος slot αποθήκευσης"
+
+#: qt/src/ControllerPanel.cpp
+msgid "Default Keyboard"
+msgstr "Προεπιλεγμένο πληκτρολόγιο"
+
+#: qt/src/DisplayPanel.ui
+msgid "Device:"
+msgstr "Συσκευή:"
+
+#: qt/src/GeneralPanel.ui
+msgid "Disable screensaver"
+msgstr "Απενεργοποίηση προστασίας οθόνης"
+
+#: qt/src/DisplayPanel.ui
+msgid "Display messages:"
+msgstr "Εμφάνιση μηνυμάτων:"
+
+#: qt/src/DisplayPanel.ui
+msgid "Display Output"
+msgstr "Έξοδος οθόνης"
+
+#: qt/src/DisplayPanel.ui
+msgid "Don't display messages"
+msgstr "Μην εμφανίζονται μηνύματα"
+
+#: qt/src/DisplayPanel.ui
+msgid "Driver:"
+msgstr "Πρόγραμμα οδήγησης:"
+
+#: qt/src/ControllerPanel.ui
+msgid "Edit"
+msgstr "Επεξεργασία"
+
+#: qt/src/EmulationPanel.ui
+msgid "Emulation Speed"
+msgstr "Ταχύτητα εξομοίωσης"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Enable Fast-Forward"
+msgstr "Ενεργοποίηση γρήγορης προώθησης"
+
+#: qt/src/DisplayPanel.ui
+msgid "Enable vsync"
+msgstr "Ενεργοποίηση vsync"
+
+#: qt/src/FoldersPanel.ui
+msgid "Exports"
+msgstr "Εξαγωγές"
+
+#: qt/src/EmulationPanel.ui
+msgid "Fast-forward frame skip:"
+msgstr "Παράλειψη καρέ γρήγορης προώθησης:"
+
+#: qt/src/SoundPanel.ui
+msgid "Fast-Forward:"
+msgstr "Γρήγορη προώθηση:"
+
+#: qt/src/ControllerPanel.ui
+msgid "Form"
+msgstr "Φόρμα"
+
+#: qt/src/EmulationPanel.ui
+msgid "fps"
+msgstr "fps"
+
+#: qt/src/EmulationPanel.ui
+msgid "Frame rate:"
+msgstr "Ρυθμός καρέ:"
+
+#: qt/src/EmulationPanel.ui
+msgid "Frames between steps"
+msgstr "Καρέ μεταξύ βημάτων"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "From File"
+msgstr "Από αρχείο"
+
+#: qt/src/EmulationPanel.ui
+msgid "Gaussian"
+msgstr "Gaussian"
+
+#: qt/src/SoundPanel.ui
+msgid "GB:"
+msgstr "GB:"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Grab Mouse"
+msgstr "Λήψη ποντικιού"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Hard Reset"
+msgstr "Επαναφορά υλικού"
+
+#: qt/src/EmulationPanel.ui
+msgid "High"
+msgstr "Υψηλή"
+
+#: qt/src/DisplayPanel.ui
+msgid "High-resolution mode:"
+msgstr "Λειτουργία υψηλής ανάλυσης:"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Increase Current Save Slot"
+msgstr "Αύξηση τρέχοντος slot αποθήκευσης"
+
+#: qt/src/DisplayPanel.ui
+msgid "Inside the screen - Low resolution"
+msgstr "Μέσα στην οθόνη - Χαμηλή ανάλυση"
+
+#: qt/src/CheatsDialog.cpp
+msgid "Invalid Cheat"
+msgstr "Μη έγκυρο Cheat"
+
+#: qt/src/DisplayPanel.ui
+msgid "Keep the screen at the requested proportions for width and height."
+msgstr "Διατηρήστε την οθόνη στις ζητούμενες αναλογίες για πλάτος και ύψος."
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Load State"
+msgstr "Φόρτωση κατάστασης"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Load State from Current Slot"
+msgstr "Φόρτωση κατάστασης από τρέχον slot"
+
+#: qt/src/EmulationPanel.ui
+msgid "Low"
+msgstr "Χαμηλή"
+
+#: qt/src/EmulationPanel.ui
+msgid "MB"
+msgstr "MB"
+
+#: qt/src/DisplayPanel.ui
+msgid "Merge the fields of the high-resolution lines"
+msgstr "Συγχώνευση των πεδίων των γραμμών υψηλής ανάλυσης"
+
+#: qt/src/DisplayPanel.ui
+msgid "Messages"
+msgstr "Μηνύματα"
+
+#: qt/src/ControllerPanel.ui
+msgid "Mouse + Controller"
+msgstr "Ποντίκι + Ελεγκτής"
+
+#: qt/src/SoundPanel.ui
+msgid "ms"
+msgstr "ms"
+
+#: qt/src/SoundPanel.ui
+msgid "Mute all sound"
+msgstr "Σίγαση όλων των ήχων"
+
+#: qt/src/SoundPanel.ui
+msgid "Mute sound during turbo or rewind"
+msgstr "Σίγαση ήχου κατά τη διάρκεια turbo ή επαναφοράς"
+
+#: qt/src/CheatsDialog.cpp
+msgid "No cheats for the current game were found in the database."
+msgstr "Δεν βρέθηκαν cheats για το τρέχον παιχνίδι στη βάση δεδομένων."
+
+#: qt/src/CheatsDialog.cpp
+msgid "No Cheats Found"
+msgstr "Δεν βρέθηκαν Cheats"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "No recent files"
+msgstr "Κανένα πρόσφατο αρχείο"
+
+#: qt/src/EmulationPanel.ui
+msgid "None - Run unthrottled, unless vsync is turned on"
+msgstr "Κανένα - Εκτέλεση χωρίς περιορισμό, εκτός εάν είναι ενεργοποιημένο το vsync"
+
+#: qt/src/ControllerPanel.ui
+msgid "One Controller"
+msgstr "Ένας ελεγκτής"
+
+#: qt/src/DisplayPanel.ui
+msgid "Onscreen - High resolution"
+msgstr "Στην οθόνη - Υψηλή ανάλυση"
+
+#: qt/src/DisplayPanel.ui
+msgid "Onscreen display size:"
+msgstr "Μέγεθος εμφάνισης στην οθόνη:"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Open a ROM File"
+msgstr "Άνοιγμα αρχείου ROM"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Open File"
+msgstr "Άνοιγμα αρχείου"
+
+#: qt/src/FoldersPanel.cpp
+msgid "Open Folder"
+msgstr "Άνοιγμα φακέλου"
+
+#: qt/src/EmuCanvasOpenGL.cpp
+msgid "OpenGL Driver"
+msgstr "Πρόγραμμα οδήγησης OpenGL"
+
+#: qt/src/EmulationPanel.ui
+msgid "Overclock:"
+msgstr "Overclock:"
+
+#: qt/src/GeneralPanel.ui
+msgid "Overlays"
+msgstr "Overlays"
+
+#: qt/src/FoldersPanel.ui
+msgid "Patches"
+msgstr "Patches"
+
+#: qt/src/GeneralPanel.ui
+msgid "Pause emulation when window is not focused"
+msgstr "Παύση εξομοίωσης όταν το παράθυρο δεν είναι σε εστίαση"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Pause/Continue"
+msgstr "Παύση/Συνέχεια"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Power Cycle Console"
+msgstr "Κύκλος ισχύος κονσόλας"
+
+#: qt/src/ShaderParametersDialog.cpp
+msgid "Preset name:"
+msgstr "Όνομα προεπιλογής:"
+
+#: qt/src/DisplayPanel.ui
+msgid "Prevent the display driver from getting too far ahead in order to reduce lag."
+msgstr "Αποτρέπει το πρόγραμμα οδήγησης οθόνης από το να προηγείται πολύ για μείωση της υστέρησης."
+
+#: qt/src/DisplayPanel.ui
+msgid "pt"
+msgstr "pt"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Load Slot 0"
+msgstr "Γρήγορη φόρτωση Slot 0"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Load Slot 1"
+msgstr "Γρήγορη φόρτωση Slot 1"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Load Slot 2"
+msgstr "Γρήγορη φόρτωση Slot 2"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Load Slot 3"
+msgstr "Γρήγορη φόρτωση Slot 3"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Load Slot 4"
+msgstr "Γρήγορη φόρτωση Slot 4"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Load Slot 5"
+msgstr "Γρήγορη φόρτωση Slot 5"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Load Slot 6"
+msgstr "Γρήγορη φόρτωση Slot 6"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Load Slot 7"
+msgstr "Γρήγορη φόρτωση Slot 7"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Load Slot 8"
+msgstr "Γρήγορη φόρτωση Slot 8"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Load Slot 9"
+msgstr "Γρήγορη φόρτωση Slot 9"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Save Slot 0"
+msgstr "Γρήγορη αποθήκευση Slot 0"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Save Slot 1"
+msgstr "Γρήγορη αποθήκευση Slot 1"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Save Slot 2"
+msgstr "Γρήγορη αποθήκευση Slot 2"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Save Slot 3"
+msgstr "Γρήγορη αποθήκευση Slot 3"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Save Slot 4"
+msgstr "Γρήγορη αποθήκευση Slot 4"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Save Slot 5"
+msgstr "Γρήγορη αποθήκευση Slot 5"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Save Slot 6"
+msgstr "Γρήγορη αποθήκευση Slot 6"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Save Slot 7"
+msgstr "Γρήγορη αποθήκευση Slot 7"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Save Slot 8"
+msgstr "Γρήγορη αποθήκευση Slot 8"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Save Slot 9"
+msgstr "Γρήγορη αποθήκευση Slot 9"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quit"
+msgstr "Έξοδος"
+
+#: qt/src/SoundPanel.ui
+msgid "Regular:"
+msgstr "Κανονικό:"
+
+#: qt/src/EmulationPanel.ui
+msgid "Remove the sprite limit"
+msgstr "Αφαίρεση του ορίου sprite"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Reset to Default"
+msgstr "Επαναφορά στις προεπιλογές"
+
+#: qt/src/EmuSettingsWindow.ui
+msgid "Restore all settings on the current page to their default values."
+msgstr "Επαναφορά όλων των ρυθμίσεων στην τρέχουσα σελίδα στις προεπιλεγμένες τιμές τους."
+
+#: qt/src/EmuSettingsWindow.ui
+msgid "Restore Defaults"
+msgstr "Επαναφορά προεπιλογών"
+
+#: qt/src/EmulationPanel.ui
+msgid "Rewind buffer size (0 to disable):"
+msgstr "Μέγεθος buffer επαναφοράς (0 για απενεργοποίηση):"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "ROM Files (*.sfc *.smc *.bin *.fig *.msu *.zip)"
+msgstr "Αρχεία ROM (*.sfc *.smc *.bin *.fig *.msu *.zip)"
+
+#: qt/src/FoldersPanel.ui
+msgid "ROM Folder"
+msgstr "Φάκελος ROM"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Run"
+msgstr "Εκτέλεση"
+
+#: qt/src/ShaderParametersDialog.cpp
+msgid "Save"
+msgstr "Αποθήκευση"
+
+#: qt/src/ShaderParametersDialog.cpp
+msgid "Save As"
+msgstr "Αποθήκευση ως"
+
+#: qt/src/ShaderParametersDialog.cpp
+msgid "Save Shader Preset As"
+msgstr "Αποθήκευση προεπιλογής Shader ως"
+
+#: qt/src/FoldersPanel.ui
+msgid "Save SRAM to disk every:"
+msgstr "Αποθήκευση SRAM στο δίσκο κάθε:"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Save State to Current Slot"
+msgstr "Αποθήκευση κατάστασης στο τρέχον slot"
+
+#: qt/src/FoldersPanel.ui
+msgid "Save states"
+msgstr "Αποθηκευμένες καταστάσεις"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Save States (*.sst *.oops *.undo *.0?? *.1?? *.2?? *.3?? *.4?? *.5?? *.6?? *.7?? *.8?? *.9*)"
+msgstr "Αποθηκευμένες καταστάσεις (*.sst *.oops *.undo *.0?? *.1?? *.2?? *.3?? *.4?? *.5?? *.6?? *.7?? *.8?? *.9*)"
+
+#: qt/src/DisplayPanel.ui
+msgid "Scale normal resolution screens up"
+msgstr "Κλιμάκωση οθονών κανονικής ανάλυσης προς τα πάνω"
+
+#: qt/src/DisplayPanel.ui
+msgid "Scaling and Aspect Ratio"
+msgstr "Κλιμάκωση και αναλογία διαστάσεων"
+
+#: qt/src/FoldersPanel.ui
+msgid "seconds"
+msgstr "δευτερόλεπτα"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Seek to Frame"
+msgstr "Αναζήτηση σε καρέ"
+
+#: qt/src/DisplayPanel.cpp
+msgid "Select a Folder"
+msgstr "Επιλογή φακέλου"
+
+#: qt/src/DisplayPanel.ui
+msgid "Select the output driver."
+msgstr "Επιλογή του προγράμματος οδήγησης εξόδου."
+
+#: qt/src/ControllerPanel.ui
+msgid "Set"
+msgstr "Ορισμός"
+
+#: qt/src/EmulationPanel.ui
+msgid "Set frame rate to 0 to automatically change based on PAL/NTSC and with interlacing on and off."
+msgstr "Ορίστε τον ρυθμό καρέ στο 0 για αυτόματη αλλαγή με βάση PAL/NTSC και με το interlacing ενεργό και ανενεργό."
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Set Size"
+msgstr "Ορισμός μεγέθους"
+
+#: qt/src/DisplayPanel.cpp
+msgid "Shader Presets (*.slangp *.glslp)"
+msgstr "Προεπιλογές Shader (*.slangp *.glslp)"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Shader Settings"
+msgstr "Ρυθμίσεις Shader"
+
+#: qt/src/GeneralPanel.ui
+msgid "Show fast-forward and pause icons"
+msgstr "Εμφάνιση εικονιδίων γρήγορης προώθησης και παύσης"
+
+#: qt/src/DisplayPanel.ui
+msgid "Show overscan area"
+msgstr "Εμφάνιση περιοχής overscan"
+
+#: qt/src/DisplayPanel.ui
+msgid "Show the areas on the top and bottom of the screen that are normally black and hidden by the TV. Some games will draw in these areas."
+msgstr "Εμφανίστε τις περιοχές στο πάνω και κάτω μέρος της οθόνης που είναι κανονικά μαύρες και κρυμμένες από την τηλεόραση. Ορισμένα παιχνίδια θα σχεδιάσουν σε αυτές τις περιοχές."
+
+#: qt/src/GeneralPanel.ui
+msgid "Show the time"
+msgstr "Εμφάνιση ώρας"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Slot %1"
+msgstr "Slot %1"
+
+#: qt/src/DisplayPanel.ui
+msgid "Smooth screen output."
+msgstr "Ομαλή έξοδος οθόνης."
+
+#: qt/src/ControllerPanel.ui
+msgid "SNES Controller 1"
+msgstr "Ελεγκτής SNES 1"
+
+#: qt/src/ControllerPanel.ui
+msgid "SNES Controller 2"
+msgstr "Ελεγκτής SNES 2"
+
+#: qt/src/ControllerPanel.ui
+msgid "SNES Controller 3 (Multitap)"
+msgstr "Ελεγκτής SNES 3 (Multitap)"
+
+#: qt/src/ControllerPanel.ui
+msgid "SNES Controller 4 (Multitap)"
+msgstr "Ελεγκτής SNES 4 (Multitap)"
+
+#: qt/src/ControllerPanel.ui
+msgid "SNES Controller 5 (Multitap)"
+msgstr "Ελεγκτής SNES 5 (Multitap)"
+
+#: qt/src/DisplayPanel.ui
+msgid "Software Filters"
+msgstr "Φίλτρα λογισμικού"
+
+#: qt/src/SoundPanel.ui
+msgid "Sound Output"
+msgstr "Έξοδος ήχου"
+
+#: qt/src/SoundPanel.ui
+msgid "Sound Stretching"
+msgstr "Τέντωμα ήχου"
+
+#: qt/src/EmulationPanel.ui
+msgid "Sound Synchronization - Wait on the sound buffer"
+msgstr "Συγχρονισμός ήχου - Αναμονή στο buffer ήχου"
+
+#: qt/src/SoundPanel.ui
+msgid "SPC:"
+msgstr "SPC:"
+
+#: qt/src/EmulationPanel.ui
+msgid "Speed control method:"
+msgstr "Μέθοδος ελέγχου ταχύτητας:"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Start Recording"
+msgstr "Έναρξη εγγραφής"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Stop Recording"
+msgstr "Διακοπή εγγραφής"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Super Game Boy (SGB1)"
+msgstr "Super Game Boy (SGB1)"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Super Game Boy 2 (SGB2)"
+msgstr "Super Game Boy 2 (SGB2)"
+
+#: qt/src/EmulationPanel.ui
+msgid "SuperFX clock speed:"
+msgstr "Ταχύτητα ρολογιού SuperFX:"
+
+#: qt/src/ControllerPanel.ui
+msgid "SuperScope + Controller"
+msgstr "SuperScope + Ελεγκτής"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Swap Controllers 1 and 2"
+msgstr "Εναλλαγή ελεγκτών 1 και 2"
+
+#: qt/src/ControllerPanel.ui
+msgid "Swap or clear groups of bindings"
+msgstr "Εναλλαγή ή εκκαθάριση ομάδων δεσμών"
+
+#: qt/src/ControllerPanel.cpp
+msgid "Swap With"
+msgstr "Εναλλαγή με"
+
+#: qt/src/GeneralPanel.ui
+msgid "Switch to fullscreen after opening a ROM"
+msgstr "Μετάβαση σε πλήρη οθόνη μετά το άνοιγμα μιας ROM"
+
+#: qt/src/DisplayPanel.ui
+msgid "Sync the display to vertical retrace to eliminate tearing."
+msgstr "Συγχρονισμός της οθόνης με την κάθετη επιστροφή για εξάλειψη του tearing."
+
+#: qt/src/CheatsDialog.cpp
+msgid "The cheat you entered was not valid."
+msgstr "Το cheat που εισαγάγατε δεν ήταν έγκυρο."
+
+#: qt/src/EmuCanvasOpenGL.cpp
+msgid "The driver isn't using a specialized shader preset right now."
+msgstr "Το πρόγραμμα οδήγησης δεν χρησιμοποιεί εξειδικευμένη προεπιλογή shader αυτή τη στιγμή."
+
+#: qt/src/EmuMainWindow.cpp
+msgid "The language change will take effect after you restart SuperSnes9x."
+msgstr "Η αλλαγή γλώσσας θα τεθεί σε ισχύ μετά την επανεκκίνηση του SuperSnes9x."
+
+#: qt/src/EmuCanvasVulkan.cpp
+msgid "The vulkan display driver hasn't properly loaded."
+msgstr "Το πρόγραμμα οδήγησης οθόνης Vulkan δεν έχει φορτωθεί σωστά."
+
+#: qt/src/DisplayPanel.ui
+msgid "This affects the rarely used 512-pixels-wide mode used by the SNES.\nFor games like Kirby 3 and Jurassic Park, choose the \"merge fields\" option.\nFor games like Seiken Densetsu 3 and Marvelous, choose the \"scale up\" option.\nOutput directly will cause the screen to change between the two modes and look weird."
+msgstr ""
+"Αυτό επηρεάζει τη σπάνια χρησιμοποιούμενη λειτουργία πλάτους 512 pixel που χρησιμοποιείται από το SNES.\nΓια παιχνίδια όπως το Kirby 3 και το Jurassic Park, επιλέξτε την επιλογή \"merge fields\".\nΓια παιχνίδια όπως το Seiken Densetsu 3 και το Marvelous, επιλέξτε την επιλογή \"scale up\".\nΗ απευθείας έξοδος θα προκαλέσει την εναλλαγή της οθόνης μεταξύ των δύο λειτουργιών και θα φαίνεται περίεργη."
+
+#: qt/src/EmuCanvasOpenGL.cpp
+msgid "This shader preset doesn't offer any configurable parameters."
+msgstr "Αυτή η προεπιλογή shader δεν προσφέρει παραμέτρους με δυνατότητα ρύθμισης."
+
+#: qt/src/EmulationPanel.ui
+msgid "Timer - Match the frame rate configured below"
+msgstr "Timer - Ταίριασμα του ρυθμού καρέ που έχει ρυθμιστεί παρακάτω"
+
+#: qt/src/EmulationPanel.ui
+msgid "Timer with Frame Skipping - Skip frames if needed"
+msgstr "Timer με παράλειψη καρέ - Παράλειψη καρέ εάν χρειάζεται"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "To File"
+msgstr "Σε αρχείο"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle All Sound Channels"
+msgstr "Εναλλαγή όλων των καναλιών ήχου"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle BG Layer 0"
+msgstr "Εναλλαγή επιπέδου BG 0"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle BG Layer 1"
+msgstr "Εναλλαγή επιπέδου BG 1"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle BG Layer 2"
+msgstr "Εναλλαγή επιπέδου BG 2"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle BG Layer 3"
+msgstr "Εναλλαγή επιπέδου BG 3"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle Fast-Forward"
+msgstr "Εναλλαγή γρήγορης προώθησης"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle Fullscreen"
+msgstr "Εναλλαγή πλήρους οθόνης"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle Sound Channel 1"
+msgstr "Εναλλαγή καναλιού ήχου 1"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle Sound Channel 2"
+msgstr "Εναλλαγή καναλιού ήχου 2"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle Sound Channel 3"
+msgstr "Εναλλαγή καναλιού ήχου 3"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle Sound Channel 4"
+msgstr "Εναλλαγή καναλιού ήχου 4"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle Sound Channel 5"
+msgstr "Εναλλαγή καναλιού ήχου 5"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle Sound Channel 6"
+msgstr "Εναλλαγή καναλιού ήχου 6"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle Sound Channel 7"
+msgstr "Εναλλαγή καναλιού ήχου 7"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle Sound Channel 8"
+msgstr "Εναλλαγή καναλιού ήχου 8"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle Sprites"
+msgstr "Εναλλαγή sprites"
+
+#: qt/src/ControllerPanel.ui
+msgid "Turbo A"
+msgstr "Turbo A"
+
+#: qt/src/ControllerPanel.ui
+msgid "Turbo B"
+msgstr "Turbo B"
+
+#: qt/src/ControllerPanel.ui
+msgid "Turbo L"
+msgstr "Turbo L"
+
+#: qt/src/ControllerPanel.ui
+msgid "Turbo R"
+msgstr "Turbo R"
+
+#: qt/src/ControllerPanel.ui
+msgid "Turbo X"
+msgstr "Turbo X"
+
+#: qt/src/ControllerPanel.ui
+msgid "Turbo Y"
+msgstr "Turbo Y"
+
+#: qt/src/ControllerPanel.ui
+msgid "Two Controllers"
+msgstr "Δύο ελεγκτές"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Unable to create a %1 context. Attempting to use %2."
+msgstr "Δεν ήταν δυνατή η δημιουργία πλαισίου %1. Επιχειρείται χρήση του %2."
+
+#: qt/src/CheatsDialog.cpp
+msgid "Unable to Open Cheats Database"
+msgstr "Αδυναμία ανοίγματος βάσης δεδομένων Cheat"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Unable to Start Display Driver"
+msgstr "Αδυναμία έναρξης προγράμματος οδήγησης οθόνης"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Undo Load State"
+msgstr "Αναίρεση φόρτωσης κατάστασης"
+
+#: qt/src/DisplayPanel.ui
+msgid "Use a hardware shader:"
+msgstr "Χρήση shader υλικού:"
+
+#: qt/src/DisplayPanel.ui
+msgid "Use a selected .slangp or .glslp shader file. \n.slangp is supported by Vulkan and OpenGL. \n.glslp is supported by OpenGL."
+msgstr "Χρησιμοποιήστε ένα επιλεγμένο αρχείο shader .slangp ή .glslp. \nΤο .slangp υποστηρίζεται από Vulkan και OpenGL. \nΤο .glslp υποστηρίζεται από OpenGL."
+
+#: qt/src/EmulationPanel.ui
+msgid "Use a shadow echo buffer"
+msgstr "Χρήση buffer σκιασμένης ηχούς"
+
+#: qt/src/DisplayPanel.ui
+msgid "Use integer scaling"
+msgstr "Χρήση ακέραιας κλιμάκωσης"
+
+#: qt/src/ControllerPanel.ui
+msgid "Use SDL to set up the D-pad, face buttons, and L/R. Other buttons may still be configured."
+msgstr "Χρησιμοποιήστε το SDL για να ρυθμίσετε το D-pad, τα κουμπιά προσώπου και το L/R. Άλλα κουμπιά μπορούν ακόμα να ρυθμιστούν."
+
+#: qt/src/EmuMainWindow.cpp
+msgid "View"
+msgstr "Προβολή"
+
+#: qt/src/EmuCanvasVulkan.cpp
+msgid "Vulkan Driver"
+msgstr "Πρόγραμμα οδήγησης Vulkan"
+
+#: qt/src/DisplayPanel.ui
+msgid "When entering fullscreen mode, temporarily change other settings to use VRR (G-Sync or FreeSync) correctly."
+msgstr "Κατά την είσοδο σε πλήρη οθόνη, αλλάξτε προσωρινά άλλες ρυθμίσεις για να χρησιμοποιήσετε σωστά το VRR (G-Sync ή FreeSync)."
+
+#: qt/src/DisplayPanel.ui
+msgid "When scaling up, only use integer multiples of the original height."
+msgstr "Κατά την κλιμάκωση προς τα πάνω, χρησιμοποιήστε μόνο ακέραια πολλαπλάσια του αρχικού ύψους."

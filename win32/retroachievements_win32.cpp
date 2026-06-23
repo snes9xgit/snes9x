@@ -13,6 +13,7 @@
 #include "rc_client.h"
 
 #include "wsnes9x.h"
+#include "wlocale.h"
 #include "snes9x.h"
 
 #pragma comment(lib, "wininet.lib")
@@ -282,6 +283,7 @@ static INT_PTR CALLBACK DlgRAAchievementsProc(HWND hDlg, UINT msg, WPARAM wParam
     switch (msg)
     {
     case WM_INITDIALOG:
+    	LocalizeDialog(hDlg);
     {
         HWND hList = GetDlgItem(hDlg, IDC_RA_ACHLIST);
         ListView_SetExtendedListViewStyle(hList, LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES);
@@ -365,6 +367,7 @@ static INT_PTR CALLBACK DlgRALoginProc(HWND hDlg, UINT msg, WPARAM wParam, LPARA
     switch (msg)
     {
     case WM_INITDIALOG:
+    	LocalizeDialog(hDlg);
         SetDlgItemTextA(hDlg, IDC_RA_USERNAME, GUI.RAUsername);
         SetFocus(GetDlgItem(hDlg, GUI.RAUsername[0] ? IDC_RA_PASSWORD : IDC_RA_USERNAME));
         return FALSE;

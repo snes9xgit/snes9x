@@ -28,6 +28,7 @@
 #include "EmuCanvasQt.hpp"
 #include "EmuCanvasVulkan.hpp"
 #include "EmuMainWindow.hpp"
+#include "EmuPoTranslator.hpp"
 #include "EmuSettingsWindow.hpp"
 #include "memmap.h"
 
@@ -259,6 +260,30 @@ void EmuMainWindow::createWidgets()
     });
     core_actions.push_back(save_state_file_item);
     file_menu->addMenu(save_state_menu);
+
+    auto languages = EmuPoTranslator::availableLanguages();
+    if (languages.size() > 1)
+    {
+        auto language_menu = new QMenu(tr("&Language"), file_menu);
+        auto language_group = new QActionGroup(language_menu);
+        for (const auto &lang : languages)
+        {
+            QString code = lang.code;
+            auto action = language_menu->addAction(lang.name);
+            action->setCheckable(true);
+            action->setActionGroup(language_group);
+            action->setChecked(code.toStdString() == app->config->language);
+            connect(action, &QAction::triggered, this, [this, code] {
+                app->config->language = code.toStdString();
+                app->config->saveFile(EmuConfig::findConfigFile());
+                QMessageBox::information(
+                    this, tr("Language"),
+                    tr("The language change will take effect after you restart SuperSnes9x."));
+            });
+        }
+        file_menu->addMenu(language_menu);
+        file_menu->addSeparator();
+    }
 
     auto exit_item = new QAction(QIcon(iconset + "exit.svg"), tr("E&xit"));
     connect(exit_item, &QAction::triggered, this, [&](bool checked) {

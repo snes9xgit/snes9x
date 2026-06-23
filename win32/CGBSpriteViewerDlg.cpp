@@ -12,6 +12,7 @@
 #include "debug_viewer_export.h"
 #include "gb_viewer_common.h"
 #include "wsnes9x.h"
+#include "wlocale.h"
 #include "rsrc/resource.h"
 #include "../snes9x.h"
 
@@ -182,6 +183,7 @@ void ExportToPng(HWND hDlg) {
 INT_PTR CALLBACK DlgGBSpriteViewer(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam) {
     switch (msg) {
     case WM_INITDIALOG: {
+    	LocalizeDialog(hDlg);
         GBSVState *st = new GBSVState();
         st->zoom = 2;
         st->autoUpdate = true;
@@ -225,7 +227,7 @@ INT_PTR CALLBACK DlgGBSpriteViewer(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lP
         int x = (short)LOWORD(lParam), y = (short)HIWORD(lParam);
         if (x == -1 && y == -1) { RECT rc; GetWindowRect(hCanvas, &rc); x = rc.left + 20; y = rc.top + 20; }
         HMENU hMenu = CreatePopupMenu();
-        AppendMenu(hMenu, MF_STRING, 1, _T("Export to PNG..."));
+        AppendMenu(hMenu, MF_STRING, 1, _L(_T("Export to PNG...")));
         int cmd = TrackPopupMenu(hMenu, TPM_LEFTALIGN | TPM_RIGHTBUTTON | TPM_RETURNCMD, x, y, 0, hDlg, NULL);
         DestroyMenu(hMenu);
         if (cmd == 1) ExportToPng(hDlg);

@@ -1,0 +1,5363 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: SuperSnes9x\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-10-29 23:56+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: vi\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: src/gtk_binding.cpp:248
+msgid "Unknown"
+msgstr "Không rõ"
+
+#: src/gtk_binding.cpp:257
+msgid "Keyboard {}{}{}{}"
+msgstr "Bàn phím {}{}{}{}"
+
+#: src/gtk_binding.cpp:267
+msgid "Axis {} {} {}%"
+msgstr "Trục {} {} {}%"
+
+#: src/gtk_binding.cpp:272
+msgid "Button {}"
+msgstr "Nút {}"
+
+#: src/gtk_binding.cpp:274
+msgid "Joystick {} {}"
+msgstr "Cần điều khiển {} {}"
+
+#: src/gtk_binding.cpp:278
+msgid "Unset"
+msgstr "Chưa đặt"
+
+#: src/gtk_cheat.cpp:24
+msgid "Error"
+msgstr "Lỗi"
+
+#: src/gtk_cheat.cpp:60
+msgid "Description"
+msgstr "Mô tả"
+
+#: src/gtk_cheat.cpp:66
+msgid "Cheat"
+msgstr "Gian lận (Cheat)"
+
+#: src/gtk_cheat.cpp:227 src/gtk_cheat.cpp:355
+msgid "No description"
+msgstr "Không có mô tả"
+
+#: src/gtk_cheat.cpp:231 src/gtk_cheat.cpp:360
+msgid "Couldn't find any cheat codes in input."
+msgstr "Không tìm thấy bất kỳ mã gian lận nào trong dữ liệu nhập."
+
+#: src/gtk_cheat.cpp:306
+msgid "Couldn't Find Cheats Database"
+msgstr "Không thể tìm thấy cơ sở dữ liệu gian lận"
+
+#: src/gtk_cheat.cpp:306
+msgid "No Matching Game Found"
+msgstr "Không tìm thấy trò chơi phù hợp"
+
+#: src/gtk_cheat.cpp:307
+msgid ""
+"The database file <b>cheats.bml</b> was not found. It is normally installed "
+"with SuperSnes9x, but you may also place a custom copy in your configuration or "
+"cheats directory."
+msgstr "Tập tin cơ sở dữ liệu <b>cheats.bml</b> không tìm thấy. Thông thường tệp này được cài đặt cùng SuperSnes9x, nhưng bạn cũng có thể đặt một bản sao tùy chỉnh trong thư mục cấu hình hoặc thư mục chứa cheat."
+
+#: src/gtk_cheat.cpp:309
+msgid ""
+"No matching game was found in the databases. If you are using a non-official "
+"translation or modified copy, you may be able to find and manually enter the "
+"codes."
+msgstr "Không tìm thấy trò chơi phù hợp trong cơ sở dữ liệu. Nếu bạn đang sử dụng một bản dịch không chính thức hoặc một bản sao đã bị chỉnh sửa, bạn có thể tự tìm và nhập mã thủ công."
+
+#: src/gtk_config.cpp:407
+msgid "Couldn't create config directory: {}\n"
+msgstr "Không thể tạo thư mục cấu hình: {}\n"
+
+#: src/gtk_netplay.cpp:66
+msgid "Connection Error"
+msgstr "Lỗi kết nối"
+
+#: src/gtk_netplay_dialog.cpp:31
+msgid "frame behind"
+msgid_plural "frames behind"
+msgstr[0] "khung hình bị trễ"
+msgstr[1] "khung hình bị trễ"
+
+#: src/gtk_preferences.cpp:19
+msgid "Same location as current game"
+msgstr "Cùng vị trí với trò chơi hiện tại"
+
+#: src/gtk_preferences.cpp:110
+msgid "{0:Ld}×{1:Ld} @ {2:.3Lf} Hz"
+msgstr "{0:Ld}×{1:Ld} @ {2:.3Lf} Hz"
+
+#: src/gtk_preferences.cpp:143
+msgid "OpenGL – Use 3D graphics hardware"
+msgstr "OpenGL – Sử dụng phần cứng đồ họa 3D"
+
+#: src/gtk_preferences.cpp:145
+msgid "XVideo – Use hardware video blitter"
+msgstr "XVideo – Sử dụng bộ phần cứng blitter video"
+
+#: src/gtk_preferences.cpp:147
+msgid "Vulkan"
+msgstr "Vulkan"
+
+#: src/gtk_preferences.cpp:149
+msgid "None – Use software scaler"
+msgstr "Không – Sử dụng bộ thu phóng phần mềm"
+
+#: src/gtk_preferences.cpp:179 src/gtk_preferences.cpp:446
+msgid "thread for filtering and scaling"
+msgid_plural "threads for filtering and scaling"
+msgstr[0] "luồng để lọc và thu phóng"
+msgstr[1] "luồng để lọc và thu phóng"
+
+#: src/gtk_preferences.cpp:236 src/gtk_preferences.cpp:500
+msgid "millisecond"
+msgid_plural "milliseconds"
+msgstr[0] "lâng giây (ms)"
+msgstr[1] "mili giây (ms)"
+
+#: src/gtk_preferences.cpp:260 src/gtk_preferences.cpp:476
+msgid "second after change"
+msgid_plural "seconds after change"
+msgstr[0] "giây sau khi thay đổi"
+msgstr[1] "giây sau khi thay đổi"
+
+#: src/gtk_preferences.cpp:271
+msgid "SuperSnes9x version: "
+msgstr "Phiên bản SuperSnes9x: "
+
+#: src/gtk_preferences.cpp:272
+msgid "GTK+ port version: "
+msgstr "Phiên bản cổng GTK+: "
+
+#: src/gtk_preferences.cpp:274
+msgid "English localization by Brandon Wright"
+msgstr "Bản dịch tiếng Anh bởi Brandon Wright"
+
+#: src/gtk_preferences.cpp:298
+msgid "Select directory"
+msgstr "Chọn thư mục"
+
+#: src/gtk_preferences.cpp:323
+msgid "{0:.4Lf} Hz"
+msgstr "{0:.4Lf} Hz"
+
+#: src/gtk_preferences.cpp:328
+msgid "{0:Ld} Hz"
+msgstr "{0:Ld} Hz"
+
+#: src/gtk_preferences.cpp:379
+msgid "Select Shader File"
+msgstr "Chọn tập tin bộ đổ bóng (Shader)"
+
+#: src/gtk_preferences.cpp:720
+msgid ""
+"Changing the SRAM directory with a game loaded will replace the .srm file in "
+"the selected directory with the SRAM from the running game. If this is not "
+"what you want, click 'cancel'."
+msgstr "Thay đổi thư mục SRAM khi trò chơi đang tải sẽ thay thế tập tin .srm trong thư mục đã chọn bằng SRAM từ trò chơi đang chạy. Nếu không muốn điều này, nhấn 'Hủy'."
+
+#: src/gtk_preferences.cpp:725
+msgid "Warning: Possible File Overwrite"
+msgstr "Cảnh báo: Có thể ghi đè tập tin"
+
+#: src/gtk_preferences.cpp:980
+msgid "Current joystick centers have been saved."
+msgstr "Tọa độ trung tâm hiện tại của cần điều khiển đã được lưu."
+
+#: src/gtk_preferences.cpp:981
+msg1 "Calibration Complete"
+msgstr "Hiệu chỉnh hoàn tất"
+
+#: src/gtk_s9x.cpp:206
+msgid "Using rewind buffer of {0}\n"
+msgstr "Sử dụng bộ đệm tua lại của {0}\n"
+
+#: src/gtk_s9x.cpp:598
+msgid ""
+"GTK port options:\n"
+"-filter [option]               Use a filter to scale the image.\n"
+"                               [option] is one of: none supereagle 2xsai\n"
+"                               super2xsai hq2x hq3x hq4x 2xbrz 3xbrz 4xbrz "
+"epx ntsc\n"
+"\n"
+"-mutesound                     Disables sound output.\n"
+msgstr "Tùy chọn cổng GTK:\n-filter [tùy chọn]               Sử dụng bộ lọc để thu phóng hình ảnh.\n                               [tùy chọn] là một trong số: none supereagle 2xsai\n                               super2xsai hq2x hq3x hq4x 2xbrz 3xbrz 4xbrz epx ntsc\n\n-mutesound                     Tắt đầu ra âm thanh.\n"
+
+#: src/gtk_s9xwindow.cpp:48 src/snes9x.ui:8405
+msgid "Save States"
+msgstr "Lưu trạng thái (Save State)"
+
+#: src/gtk_s9xwindow.cpp:57
+msgid "All Files"
+msgstr "Tất cả tập tin"
+
+#: src/gtk_s9xwindow.cpp:616
+msgid "Couldn't load files."
+msgstr "Không thể tải tập tin."
+
+#: src/gtk_s9xwindow.cpp:637
+msgid "Open SNES Movie"
+msgstr "Mở video SNES Movie"
+
+#: src/gtk_s9xwindow.cpp:642
+msgid "New SNES Movie"
+msgstr "Tạo video SNES Movie mới"
+
+#: src/gtk_s9xwindow.cpp:661
+msgid "SNES Movies"
+msgstr "Video SNES Movie"
+
+#: src/gtk_s9xwindow.cpp:690
+msgid "Open SNES ROM Image"
+msgstr "Mở tệp ROM SNES"
+
+#: src/gtk_s9xwindow.cpp:695
+msgid "SNES ROM Images"
+msgstr "Tệp ROM SNES"
+
+#: src/gtk_s9xwindow.cpp:740
+msgid "Couldn't load file: "
+msgstr "Không thể tải tập tin: "
+
+#: src/gtk_s9xwindow.cpp:767
+msgid "Load Saved State"
+msgstr "Tải trạng thái đã lưu"
+
+#: src/gtk_s9xwindow.cpp:796
+msgid "The current frame in the movie is <b>{0:Ld}</b>."
+msgstr "Khung hình hiện tại trong movie là <b>{0:Ld}</b>."
+
+#: src/gtk_s9xwindow.cpp:829
+msgid "Save State"
+msgstr "Lưu trạng thái"
+
+#: src/gtk_s9xwindow.cpp:850
+msgid "Save SPC file..."
+msgstr "Lưu tập tin SPC..."
+
+#: src/gtk_s9xwindow.cpp:872
+msgid "Couldn't save SPC file:"
+msgstr "Không thể lưu tập tin SPC:"
+
+#: src/gtk_s9xwindow.cpp:888
+#, c-format
+msgid ""
+"<b>Information for %s</b>\n"
+"\n"
+"<i>Name:</i> %s\n"
+"<i>Speed:</i> %02X/%s\n"
+"<i>Map:</i> %s\n"
+"<i>Type:</i> %02x\n"
+"<i>Contents:</i> %s\n"
+"<i>ROM Size:</i> %s\n"
+"<i>Calculated Size:</i> %d\n"
+"<i>SRAM Size:</i> %s\n"
+"<i>Header Checksum:</i> %04X\n"
+"<i>Checksum Complement:</i> %04X\n"
+"<i>Actual Checksum:</i> %04X\n"
+"<i>Video:</i> %s\n"
+"<i>CRC32:</i> %08X\n"
+"<i>Revision:</i> %s\n"
+"<b><i>%s%s</i></b>"
+msgstr "<b>Thông tin cho %s</b>\n\n<i>Tên:</i> %s\n<i>Tốc độ:</i> %02X/%s\n<i>Bản đồ:</i> %s\n<i>Loại:</i> %02x\n<i>Nội dung:</i> %s\n<i>Kích thước ROM:</i> %s\n<i>Kích thước tính toán:</i> %d\n<i>Kích thước SRAM:</i> %s\n<i>Mã kiểm tra Header:</i> %04X\n<i>Mã bù Checksum:</i> %04X\n<i>Mã kiểm tra thực tế:</i> %04X\n<i>Video:</i> %s\n<i>CRC32:</i> %08X\n<i>Bản sửa đổi:</i> %s\n<b><i>%s%s</i></b>"
+
+#: src/gtk_s9xwindow.cpp:924
+msgid ""
+"\n"
+"\n"
+"This ROM has been auto-patched with "
+msgstr "\n\nROM này đã được tự động vá bằng "
+
+#: src/gtk_s9xwindow.cpp:924
+msgid ""
+"\n"
+"\n"
+"This ROM has been modified or damaged"
+msgstr "\n\nROM này đã bị sửa đổi hoặc bị hỏng"
+
+#: src/gtk_s9xwindow.cpp:938
+msgid "File Information"
+msgstr "Thông tin tập tin"
+
+#: src/gtk_shader_parameters.cpp:67
+msgid "Export Shader Preset to:"
+msgstr "Xuất cấu hình Shader sang:"
+
+#: src/gtk_shader_parameters.cpp:90
+msgid "Shader Preset"
+msgstr "Cấu hình Shader mẫu"
+
+#: src/gtk_shader_parameters.cpp:131
+msgid "Shader Parameters"
+msgstr "Thông số Shader"
+
+#: src/snes9x.ui:10
+msgid "About SuperSnes9x"
+msgstr "Thông tin về SuperSnes9x"
+
+#: src/snes9x.ui:283
+msgid "SuperSnes9x Cheats"
+msgstr "Mã gian lận SuperSnes9x"
+
+#: src/snes9x.ui:401
+msgid "Update Cheat"
+msgstr "Cập nhật mã gian lận"
+
+#: src/snes9x.ui:416
+msgid "Disable All"
+msgstr "Vô hiệu hóa tất cả"
+
+#: src/snes9x.ui:432
+msgid "Delete All Cheats"
+msgstr "Xóa tất cả mã gian lận"
+
+#: src/snes9x.ui:447
+msgid "Search Cheat Database"
+msgstr "Tìm kiếm cơ sở dữ liệu gian lận"
+
+#: src/snes9x.ui:489
+msgid "Code:"
+msgstr "Mã:"
+
+#: src/snes9x.ui:526
+msgid "Description:"
+msgstr "Mô tả:"
+
+#: src/snes9x.ui:573
+msgid "Advance to Frame"
+msgstr "Đi tới khung hình"
+
+#: src/snes9x.ui:642
+msgid "The current frame in the movie is"
+msgstr "Khung hình hiện tại trong movie là"
+
+#: src/snes9x.ui:663
+msgid "Fast‑forward to frame"
+msgstr "Tua nhanh đến khung hình"
+
+#: src/snes9x.ui:806
+msgid "Black"
+msgstr "Đen"
+
+#: src/snes9x.ui:809
+msgid "Color bars"
+msgstr "Thanh màu sắc"
+
+#: src/snes9x.ui:812
+msgid "Pixel art patterns"
+msgstr "Mẫu Pixel nghệ thuật"
+
+#: src/snes9x.ui:815
+msgid "Dithered gradient"
+msgstr "Hiệu ứng chuyển màu dithered"
+
+#: src/snes9x.ui:818
+msgid "Color bars and patterns"
+msgstr "Mẫu và các thanh màu"
+
+#: src/snes9x.ui:821
+msgid "Starfield"
+msgstr "Bầu trời sao"
+
+#: src/snes9x.ui:824
+msgid "Snow"
+msgstr "Hiệu ứng nhiễu tuyết"
+
+#: src/snes9x.ui:852 src/snes9x.ui:875
+msgid "12.5%"
+msgstr "12.5%"
+
+#: src/snes9x.ui:855 src/snes9x.ui:878
+msgid "25%"
+msgstr "25%"
+
+#: src/snes9x.ui:858 src/snes9x.ui:881
+msgid "50%"
+msgstr "50%"
+
+#: src/snes9x.ui:861 src/snes9x.ui:884
+msgid "100%"
+msgstr "100%"
+
+#: src/snes9x.ui:872
+msgid "0%"
+msgstr "0%"
+
+#: src/snes9x.ui:895
+msgctxt "filter list"
+msgid "None"
+msgstr "Không"
+
+#: src/snes9x.ui:936
+msgid "8:7 Square pixels"
+msgstr "8:7 Điểm ảnh vuông"
+
+#: src/snes9x.ui:939
+msgid "8:7 Square pixels, integer multiples"
+msgstr "8:7 Điểm ảnh vuông, bội số nguyên"
+
+#: src/snes9x.ui:942
+msgid "4:3 SNES correct aspect"
+msgstr "4:3 Tỷ lệ chuẩn SNES"
+
+#: src/snes9x.ui:945
+msgid "4:3 SNES correct aspect, integer multiples"
+msgstr "4:3 Tỷ lệ chuẩn SNES, bội số nguyên"
+
+#: src/snes9x.ui:948
+msgid "8*8:7*7 NTSC"
+msgstr "8*8:7*7 NTSC"
+
+#: src/snes9x.ui:951
+msgid "8*8:7*7 NTSC, integer multiples"
+msgstr "8*8:7*7 NTSC, bội số nguyên"
+
+#: src/snes9x.ui:968
+msgid "Merge adjacent pairs"
+msgstr "Trộn các cặp kề nhau"
+
+#: src/snes9x.ui:971
+msgid "Output directly"
+msgstr "Xuất trực tiếp"
+
+#: src/snes9x.ui:974
+msgid "Scale low‑resolution screens"
+msgstr "Thu phóng màn hình độ phân giải thấp"
+
+#: src/snes9x.ui:895 src/snes9x.ui:1023
+msgid "1"
+msgstr "1"
+
+#: src/snes9x.ui:988 src/snes9x.ui:1026
+msgid "2"
+msgstr "2"
+
+#: src/snes9x.ui:991 src/snes9x.ui:1029
+msgid "3"
+msgstr "3"
+
+#: src/snes9x.ui:994 src/snes9x.ui:1032
+msgid "4"
+msgstr "4"
+
+#: src/snes9x.ui:997 src/snes9x.ui:1035
+msgid "5"
+msgstr "5"
+
+#: src/snes9x.ui:1000 src/snes9x.ui:1038
+msgid "1+"
+msgstr "1+"
+
+#: src/snes9x.ui:1003 src/snes9x.ui:1041
+msgid "2+"
+msgstr "2+"
+
+#: src/snes9x.ui:1006 src/snes9x.ui:1044
+msgid "3+"
+msgstr "3+"
+
+#: src/snes9x.ui:1009 src/snes9x.ui:1047
+msgid "4+"
+msgstr "4+"
+
+#: src/snes9x.ui:1012 src/snes9x.ui:1050
+msgid "5+"
+msgstr "5+"
+
+#: src/snes9x.ui:1061
+msgid "Toggle the menu bar"
+msgstr "Bật/tắt thanh menu"
+
+#: src/snes9x.ui:1064
+msgid "Exit fullscreen mode"
+msgstr "Thoát chế độ toàn màn hình"
+
+#: src/snes9x.ui:1067 src/snes9x.ui:6932
+msgid "Quit SuperSnes9x"
+msgstr "Thoát SuperSnes9x"
+
+#: src/snes9x.ui:1078
+msgid "Timer‑based"
+msgstr "Dựa trên bộ định thời (Timer)"
+
+#: src/snes9x.ui:1081
+msgid "Timer‑based with automatic frame-skipping"
+msgstr "Dựa trên bộ định thời kèm tự động bỏ qua khung hình"
+
+#: src/snes9x.ui:1084
+msgid "Sound buffer synchronization"
+msgstr "Đồng bộ hóa bộ đệm âm thanh"
+
+#: src/snes9x.ui:1087
+msgid "No throttling, use vsync to control speed"
+msgstr "Không giới hạn, dùng vsync để kiểm soát tốc độ"
+
+#: src/snes9x.ui:1098
+msgid "48,000 Hz"
+msgstr "48,000 Hz"
+
+#: src/snes9x.ui:1101
+msgid "44,100 Hz"
+msgstr "44,100 Hz"
+
+#: src/snes9x.ui:1104
+msgid "32,000 Hz"
+msgstr "32,000 Hz"
+
+#: src/snes9x.ui:1107
+msgid "22,050 Hz"
+msgstr "22,050 Hz"
+
+#: src/snes9x.ui:1110
+msgid "16,000 Hz"
+msgstr "16,000 Hz"
+
+#: src/snes9x.ui:1113
+msgid "11,025 Hz"
+msgstr "11,025 Hz"
+
+#: src/snes9x.ui:1116
+msgid "8,000 Hz"
+msgstr "8,000 Hz"
+
+#: src/snes9x.ui:1119
+msgid "0 Hz"
+msgstr "0 Hz"
+
+#: src/snes9x.ui:1136
+msgid "16‑bit (GL_RGB)"
+msgstr "16‑bit (GL_RGB)"
+
+#: src/snes9x.ui:1139
+msgid "32‑bit (GL_BGRA)"
+msgstr "32‑bit (GL_BGRA)"
+
+#: src/snes9x.ui:1150
+msgid "Nearest"
+msgstr "Gần nhất (Nearest)"
+
+#: src/snes9x.ui:1153
+msgid "Linear"
+msgstr "Tuyến tính (Linear)"
+
+#: src/snes9x.ui:1156
+msgid "Gaussian (correct)"
+msgstr "Gaussian (Chuẩn)"
+
+#: src/snes9x.ui:1162
+msgid "Cubic"
+msgstr "Cubic"
+
+#: src/snes9x.ui:1162
+msgid "Sinc"
+msgstr "Sinc"
+
+#: src/snes9x.ui:1175
+msgid "SuperSnes9x"
+msgstr "SuperSnes9x"
+
+#: src/snes9x.ui:1195
+msgid "_File"
+msgstr "_Tập tin"
+
+#: src/snes9x.ui:1202
+msgid "_Open ROM Image…"
+msgstr "_Mở tệp ROM…"
+
+#: src/snes9x.ui:1216
+msgid "Open Recent"
+msgstr "Mở gần đây"
+
+#: src/snes9x.ui:1225
+msgid "Clear Recent Items"
+msgstr "Xóa các mục gần đây"
+
+#: src/snes9x.ui:1237
+msgid "Open with _NetPlay…"
+msgstr "Mở bằng _NetPlay…"
+
+#: src/snes9x.ui:1240
+msgid "Open a ROM to use with NetPlay"
+msgstr "Mở một ROM để chơi qua NetPlay"
+
+#: src/snes9x.ui:1251
+msgid "Open _MultiCart…"
+msgstr "Mở _MultiCart…"
+
+#: src/snes9x.ui:1266
+msgid "_Load State"
+msgstr "_Tải trạng thái"
+
+#: src/snes9x.ui:1276 src/snes9x.ui:1410
+msgid "Slot _0"
+msgstr "Khe _0"
+
+#: src/snes9x.ui:1285 src/snes9x.ui:1419
+msgid "Slot _1"
+msgstr "Khe _1"
+
+#: src/snes9x.ui:1294 src/snes9x.ui:1428
+msgid "Slot _2"
+msgstr "Khe _2"
+
+#: src/snes9x.ui:1303 src/snes9x.ui:1437
+msgid "Slot _3"
+msgstr "Khe _3"
+
+#: src/snes9x.ui:1312 src/snes9x.ui:1446
+msgid "Slot _4"
+msgstr "Khe _4"
+
+#: src/snes9x.ui:1321 src/snes9x.ui:1455
+msgid "Slot _5"
+msgstr "Khe _5"
+
+#: src/snes9x.ui:1330 src/snes9x.ui:1464
+msgid "Slot _6"
+msgstr "Khe _6"
+
+#: src/snes9x.ui:1339 src/snes9x.ui:1473
+msgid "Slot _7"
+msgstr "Khe _7"
+
+#: src/snes9x.ui:1348 src/snes9x.ui:1482
+msgid "Slot _8"
+msgstr "Khe _8"
+
+#: src/snes9x.ui:1357 src/snes9x.ui:1491
+msgid "Slot _9"
+msgstr "Khe _9"
+
+#: src/snes9x.ui:1372
+msgid "From _File…"
+msgstr "Từ _Tập tin…"
+
+#: src/snes9x.ui:1387
+msgid "_Undo Load State"
+msgstr "_Hoàn tác Tải trạng thái"
+
+#: src/snes9x.ui:1400
+msgid "_Save State"
+msgstr "_Lưu trạng thái"
+
+#: src/snes9x.ui:1506
+msgid "To _File…"
+msgstr "Đến _Tập tin…"
+
+#: src/snes9x.ui:1523
+msgid "Save SPC…"
+msgstr "Lưu SPC…"
+
+#: src/snes9x.ui:1540
+msgid "Show ROM _Info…"
+msgstr "Hiển thị thông tin ROM _Info…"
+
+#: src/snes9x.ui:1557
+msgid "gtk-quit"
+msgstr "gtk-quit"
+
+#: src/snes9x.ui:1571
+msgid "_Emulation"
+msgstr "_Giả lập"
+
+#: src/snes9x.ui:1578
+msgid "Run / _Continue"
+msgstr "Chạy / _Tiếp tục"
+
+#: src/snes9x.ui:1589
+msgid "_Pause"
+msgstr "_Tạm dừng"
+
+#: src/snes9x.ui:1607
+msgid "Load _Movie…"
+msgstr "Tải _Movie…"
+
+#: src/snes9x.ui:1619
+msgid "R_ecord Movie…"
+msgstr "G_hi Movie…"
+
+#: src/snes9x.ui:1631
+msgid "_Stop Recording"
+msgstr "_Dừng ghi hình"
+
+#: src/snes9x.ui:1643
+msgid "_Jump to Frame…"
+msgstr "_Nhảy tới khung hình…"
+
+#: src/snes9x.ui:1661
+msgid "Sy_nc Clients"
+msgstr "Đồ_ng bộ máy khách"
+
+#: src/snes9x.ui:1678
+msgid "Reset"
+msgstr "Đặt lại"
+
+#: src/snes9x.ui:1690
+msgid "Soft _Reset"
+msgstr "Khởi động lại mề_m"
+
+#: src/snes9x.ui:1707
+msgid "_View"
+msgstr "_Hiển thị"
+
+#: src/snes9x.ui:1715
+msgid "_Toggle Menubar"
+msgstr "_Bật/tắt thanh Menu"
+
+#: src/snes9x.ui:1732
+msgid "_Change Size"
+msgstr "_Thay đổi kích thước"
+
+#: src/snes9x.ui:1746
+msgid "_1×"
+msgstr "_1×"
+
+#: src/snes9x.ui:1755
+msgid "_2×"
+msgstr "_2×"
+
+#: src/snes9x.ui:1764
+msgid "_3×"
+msgstr "_3×"
+
+#: src/snes9x.ui:1773
+msgid "_4×"
+msgstr "_4×"
+
+#: src/snes9x.ui:1782
+msgid "_5×"
+msgstr "_5×"
+
+#: src/snes9x.ui:1791
+msgid "_6×"
+msgstr "_6×"
+
+#: src/snes9x.ui:1800
+msgid "_7×"
+msgstr "_7×"
+
+#: src/snes9x.ui:1809
+msgid "_8×"
+msgstr "_8×"
+
+#: src/snes9x.ui:1818
+msgid "_9×"
+msgstr "_9×"
+
+#: src/snes9x.ui:1827
+msgid "1_0×"
+msgstr "1_0×"
+
+#: src/snes9x.ui:1844
+msgid "gtk-fullscreen"
+msgstr "gtk-fullscreen"
+
+#: src/snes9x.ui:1858
+msgid "_Options"
+msgstr "_Tùy chọn"
+
+#: src/snes9x.ui:1867
+msgid "Controller Ports"
+msgstr "Cổng tay cầm"
+
+#: src/snes9x.ui:1876
+msgid "SNES Port 1"
+msgstr "Cổng SNES 1"
+
+#: src/snes9x.ui:1886 src/snes9x.ui:1930
+msgid "Joypad"
+msgstr "Tay cầm (Joypad)"
+
+#: src/snes9x.ui:1895 src/snes9x.ui:1939
+msgid "Mouse"
+msgstr "Chuột"
+
+#: src/snes9x.ui:1905 src/snes9x.ui:1959
+msgid "Superscope"
+msgstr "Superscope"
+
+#: src/snes9x.ui:1920
+msgid "SNES Port 2"
+msgstr "Cổng SNES 2"
+
+#: src/snes9x.ui:1949
+msgid "Multitap"
+msgstr "Bộ chia tay cầm (Multitap)"
+
+#: src/snes9x.ui:1970
+msgctxt "SNES port 2"
+msgid "None"
+msgstr "Không có"
+
+#: src/snes9x.ui:1996
+msgid "_Cheats…"
+msgstr "_Mã gian lận…"
+
+#: src/snes9x.ui:2010
+msgid "_Shader Parameters…"
+msgstr "_Thông số Shader…"
+
+#: src/snes9x.ui:2026
+msgid "gtk-preferences"
+msgstr "gtk-preferences"
+
+#: src/snes9x.ui:2068
+msgid "Open Multiple ROM Images (MultiCart)"
+msgstr "Mở nhiều tệp ROM (MultiCart)"
+
+#: src/snes9x.ui:2131
+msgid "Slot A:"
+msgstr "Khe A:"
+
+#: src/snes9x.ui:2143
+msgid "Select an Image for Slot A"
+msgstr "Chọn một tệp ROM cho Khe A"
+
+#: src/snes9x.ui:2167
+msgid "Slot B:"
+msgstr "Khe B:"
+
+#: src/snes9x.ui:2179
+msgid "Select an Image for Slot B"
+msgstr "Chọn một tệp ROM cho Khe B"
+
+#: src/snes9x.ui:2211
+msgid "SuperSnes9x NetPlay"
+msgstr "Mạng chơi chung SuperSnes9x NetPlay"
+
+#: src/snes9x.ui:2288
+msgid ""
+"The game chosen will be loaded before connecting. This field can be blank if "
+"the server will send the ROM image"
+msgstr "Trò chơi được chọn sẽ được tải trước khi kết nối. Trường này có thể để trống nếu máy chủ sẽ tự gửi tệp ROM qua."
+
+#: src/snes9x.ui:2303 src/snes9x.ui:4001 src/snes9x.ui:5116 src/snes9x.ui:5131
+#: src/snes9x.ui:5148 src/snes9x.ui:5165 src/snes9x.ui:5182
+msgid "Browse…"
+msgstr "Duyệt tìm…"
+
+#: src/snes9x.ui:2325
+msgid "Clear entry"
+msgstr "Xóa mục nhập"
+
+#: src/snes9x.ui:2345
+msgid "<b>ROM Image</b>"
+msgstr "<b>Tệp ROM</b>"
+
+#: src/snes9x.ui:2374
+msgid "Connect to another computer"
+msgstr "Kết nối tới máy tính khác"
+
+#: src/snes9x.ui:2378
+msgid "Connect to another computer that is running SuperSnes9x NetPlay as a server"
+msgstr "Kết nối tới máy tính khác đang chạy SuperSnes9x NetPlay với tư cách máy chủ"
+
+#: src/snes9x.ui:2398
+msgid "Name or IP address:"
+msgstr "Tên hoặc Địa chỉ IP:"
+
+#: src/snes9x.ui:2410
+msgid "Domain name or internet protocol address of a remote computer"
+msgstr "Tên miền hoặc địa chỉ IP của máy tính từ xa"
+
+#: src/snes9x.ui:2426
+msgid "Port:"
+msgstr "Cổng (Port):"
+
+#: src/snes9x.ui:2438
+msgid "Connect to specified TCP port on remote computer"
+msgstr "Kết nối tới cổng TCP được chỉ định trên máy tính từ xa"
+
+#: src/snes9x.ui:2463
+msgid "Act as a server"
+msgstr "Làm máy chủ (Server)"
+
+#: src/snes9x.ui:2467
+msgid ""
+"Host a game on this computer as Player 1, requiring extra throughput to "
+"support multitple users"
+msgstr "Tạo phòng game trên máy tính này với tư cách Người chơi 1, yêu cầu băng thông cao hơn để hỗ trợ nhiều người chơi."
+
+#: src/snes9x.ui:2487
+msgid "<b>Server</b>"
+msgstr "<b>Máy chủ</b>"
+
+#: src/snes9x.ui:2517
+msgid "Sync using reset"
+msgstr "Đồng bộ bằng cách Reset"
+
+#: src/snes9x.ui:2521
+msgid ""
+"Reset the game when players join instead of transferring potentially "
+"unreliable freeze states"
+msgstr "Khởi động lại trò chơi khi có người chơi tham gia thay vì truyền tải các trạng thái đóng băng (freeze state) có thể không ổn định."
+
+#: src/snes9x.ui:2532
+msgid "Send ROM image to clients"
+msgstr "Gửi tệp ROM cho máy khách"
+
+#: src/snes9x.ui:2536
+msgid ""
+"Send the running game image to players instead of requiring them to have "
+"their own copies"
+msgstr "Gửi tệp game đang chạy tới người chơi khác thay vì yêu cầu họ phải tự có bản sao trò chơi đó."
+
+#: src/snes9x.ui:2554
+msgid "Default port:"
+msgstr "Cổng mặc định:"
+
+#: src/snes9x.ui:2566
+msgid "TCP port used as a connection point for remote clients"
+msgstr "Cổng TCP được sử dụng làm điểm kết nối cho các máy khách từ xa"
+
+#: src/snes9x.ui:2598
+msgid "Ask server to pause when"
+msgstr "Yêu cầu máy chủ tạm dừng khi"
+
+#: src/snes9x.ui:2652
+msgid "<b>Settings</b>"
+msgstr "<b>Thiết lập</b>"
+
+#: src/snes9x.ui:2680
+msgid "SuperSnes9x Preferences"
+msgstr "Tùy chọn SuperSnes9x"
+
+#: src/snes9x.ui:2796
+msgid "Use fullscreen on ROM open"
+msgstr "Mở toàn màn hình khi chạy ROM"
+
+#: src/snes9x.ui:2800
+msgid "Go to fullscreen mode immediately after opening a ROM"
+msgstr "Vào chế độ toàn màn hình ngay sau khi mở một tệp ROM"
+
+#: src/snes9x.ui:2812
+msgid "Show local time"
+msgstr "Hiển thị thời gian cục bộ"
+
+#: src/snes9x.ui:2827
+msgid "Show frame rate"
+msgstr "Hiển thị tốc độ khung hình"
+
+#: src/snes9x.ui:2842
+msgid "Show pressed keys"
+msgstr "Hiển thị các phím đã nhấn"
+
+#: src/snes9x.ui:2857
+msgid "Show fast‑forward and pause indicators"
+msgstr "Hiển thị chỉ báo tua nhanh và tạm dừng"
+
+#: src/snes9x.ui:2872
+msgid "Use overscanned height"
+msgstr "Sử dụng chiều cao quét quá mức (overscanned)"
+
+#: src/snes9x.ui:2876
+msgid "Use SNES extended height. Will probably cause letterboxing"
+msgstr "Sử dụng chiều cao mở rộng của SNES. Có thể gây ra hiện tượng viền đen"
+
+#: src/snes9x.ui:2898
+msgid "On‑screen display size:"
+msgstr "Kích thước hiển thị trên màn hình:"
+
+#: src/snes9x.ui:2909
+msgid "The size of on‑screen display messages in pixels"
+msgstr "Kích thước của các thông báo hiển thị trên màn hình bằng pixel"
+
+#: src/snes9x.ui:2940
+msgid "Change fullscreen resolution:"
+msgstr "Thay đổi độ phân giải toàn màn hình:"
+
+#: src/snes9x.ui:2944
+msgid "Changes the screen resolution when running SuperSnes9x in fullscreen mode"
+msgstr "Thay đổi độ phân giải màn hình khi chạy SuperSnes9x ở chế độ toàn màn hình"
+
+#: src/snes9x.ui:2989
+msgid "Basic Settings"
+msgstr "Cài đặt cơ bản"
+
+#: src/snes9x.ui:3030
+msgid "Scale image to fit window"
+msgstr "Thu phóng hình ảnh vừa khít cửa sổ"
+
+#: src/snes9x.ui:3034
+msgid "Scales the image so no black bars are present"
+msgstr "Thu phóng hình ảnh để không xuất hiện các thanh viền đen"
+
+#: src/snes9x.ui:3054
+msgid "Aspect ratio:"
+msgstr "Tỷ lệ màn hình:"
+
+#: src/snes9x.ui:3089
+msgid "Maintain aspect ratio"
+msgstr "Giữ nguyên tỷ lệ khung hình"
+
+#: src/snes9x.ui:3093
+msgid "Scales the image as large as possible without distortion"
+msgstr "Thu phóng hình ảnh lớn nhất có thể mà không bị méo hình"
+
+#: src/snes9x.ui:3108
+msgid "Allows scaling and filtering to use multiple processors"
+msgstr "Cho phép việc thu phóng và lọc hình ảnh sử dụng nhiều bộ xử lý"
+
+#: src/snes9x.ui:3111
+msgid "Use"
+msgstr "Sử dụng"
+
+#: src/snes9x.ui:3170
+msgid "High‑resolution effect:"
+msgstr "Hiệu ứng độ phân giải cao:"
+
+#: src/snes9x.ui:3213
+msgid "Apply scaling filter:"
+msgstr "Áp dụng bộ lọc thu phóng:"
+
+#: src/snes9x.ui:3281
+msgid "Video preset:"
+msgstr "Cấu hình video mẫu:"
+
+#: src/snes9x.ui:3295
+msgid "Composite"
+msgstr "Composite"
+
+#: src/snes9x.ui:3309
+msgid "S‑Video"
+msgstr "S‑Video"
+
+#: src/snes9x.ui:3323
+msgid "RGB"
+msgstr "RGB"
+
+#: src/snes9x.ui:3337
+msgid "Monochrome"
+msgstr "Trắng đen (Monochrome)"
+
+#: src/snes9x.ui:3378
+msgid "Artifacts:"
+msgstr "Độ nhiễu (Artifacts):"
+
+#: src/snes9x.ui:3393
+msgid "Sharpness:"
+msgstr "Độ sắc nét:"
+
+#: src/snes9x.ui:3408
+msgid "Brightness:"
+msgstr "Độ sáng:"
+
+#: src/snes9x.ui:3423
+msgid "Contrast:"
+msgstr "Độ tương phản:"
+
+#: src/snes9x.ui:3438
+msgid "Saturation:"
+msgstr "Độ bão hòa màu:"
+
+#: src/snes9x.ui:3453
+msgid "Hue:"
+msgstr "Tông màu (Hue):"
+
+#: src/snes9x.ui:3654
+msgid "Gamma:"
+msgstr "Độ Gamma:"
+
+#: src/snes9x.ui:3669
+msgid "Fringing:"
+msgstr "Rìa màu (Fringing):"
+
+#: src/snes9x.ui:3684
+msgid "Bleed:"
+msgstr "Nhòe màu (Bleed):"
+
+#: src/snes9x.ui:3699
+msgid "Resolution:"
+msgstr "Độ phân giải:"
+
+#: src/snes9x.ui:3729
+msgid "Merge odd and even fields"
+msgstr "Trộn các trường dòng quét lẻ và chẵn"
+
+#: src/snes9x.ui:3751 src/snes9x.ui:3810
+msgid "Scanline intensity:"
+msgstr "Cường độ đường quét (Scanline):"
+
+#: src/snes9x.ui:3855
+msgid "Scaling"
+msgstr "Thu phóng hình ảnh"
+
+#: src/snes9x.ui:3897
+msgid "Bilinear‐filter output"
+msgstr "Đầu ra bộ lọc Bilinear"
+
+#: src/snes9x.ui:3912
+msgid "Use best settings for FreeSync/G‑Sync when in fullscreen"
+msgstr "Sử dụng thiết lập tốt nhất cho FreeSync/G-Sync khi ở chế độ toàn màn hình"
+
+#: src/snes9x.ui:3933
+msgid "Sync to vertical blank"
+msgstr "Đồng bộ đứng (V-sync)"
+
+#: src/snes9x.ui:3937
+msgid "Sync the image to the vertical retrace to stop tearing"
+msgstr "Đồng bộ hình ảnh với chu kỳ quét đứng để dừng tình trạng xé hình"
+
+#: src/snes9x.ui:3949
+msgid "Reduce input lag"
+msgstr "Giảm độ trễ đầu vào"
+
+#: src/snes9x.ui:3953
+msgid ""
+"Sync the program with the video output after every displayed frame to reduce "
+"input latency"
+msgstr "Đồng bộ chương trình với đầu ra video sau mỗi khung hình hiển thị để giảm độ trễ điều khiển"
+
+#: src/snes9x.ui:3969
+msgid "Shader:"
+msgstr "Bộ đổ bóng (Shader):"
+
+#: src/snes9x.ui:4033
+msgid "Force an inverted byte‑ordering"
+msgstr "Ép buộc đảo ngược thứ tự byte (byte-ordering)"
+
+#: src/snes9x.ui:4037
+msgid ""
+"Forces a swapped byte‑ordering for cases where the system’s endian is used "
+"instead of the video card"
+msgstr "Ép buộc hoán đổi thứ tự byte cho trường hợp sử dụng cơ chế số cuối (endian) của hệ thống thay vì card màn hình"
+
+#: src/snes9x.ui:4061
+msgid "Hardware Acceleration"
+msgstr "Tăng tốc phần cứng"
+
+#: src/snes9x.ui:4090
+msgid "Display"
+msgstr "Màn hình hiển thị"
+
+#: src/snes9x.ui:4143
+msgid "Sound driver:"
+msgstr "Trình điều khiển âm thanh:"
+
+#: src/snes9x.ui:4178
+msgid "Automatically adjust input rate to display"
+msgstr "Tự động điều chỉnh tỷ lệ đầu vào theo màn hình"
+
+#: src/snes9x.ui:4182
+msgid "Sets the correct input rate based on the display’s refresh rate"
+msgstr "Đặt tỷ lệ đầu vào chính xác dựa trên tần số quét của màn hình hiển thị"
+
+#: src/snes9x.ui:4194
+msgid "Dynamic rate control"
+msgstr "Kiểm soát tốc độ động (Dynamic rate control)"
+
+#: src/snes9x.ui:4198
+msgid "Smooth out slight hiccups in sound input rate"
+msgstr "Làm mượt các lỗi giật nhẹ trong tỷ lệ đầu vào âm thanh"
+
+#: src/snes9x.ui:4209
+msgid "Mute sound output"
+msgstr "Tắt âm thanh đầu ra"
+
+#: src/snes9x.ui:4213
+msgid "Disables output of sound"
+msgstr "Vô hiệu hóa việc phát âm thanh"
+
+#: src/snes9x.ui:4225
+msgid "Mute sound when using turbo or rewind"
+msgstr "Tắt âm thanh khi dùng chế độ tăng tốc (turbo) hoặc tua lại"
+
+#: src/snes9x.ui:4229
+msgid "Disables output of sound when using turbo or rewind"
+msgstr "Tắt đầu ra âm thanh khi đang sử dụng tính năng tua nhanh hoặc tua lại"
+
+#: src/snes9x.ui:4252
+msgid "Playback rate:"
+msgstr "Tần số phát lại:"
+
+#: src/snes9x.ui:4310
+msgid "Buffer size:"
+msgstr "Kích thước bộ đệm:"
+
+#: src/snes9x.ui:4324
+msgid "Dynamic rate limit:"
+msgstr "Giới hạn tốc độ động:"
+
+#: src/snes9x.ui:4369
+msgid "Input rate:"
+msgstr "Tỷ lệ đầu vào:"
+
+#: src/snes9x.ui:4382
+msgid ""
+"Adjust to produce more or less data. Decrease the rate if experiencing "
+"crackling. Increase the rate if experiencing frame rate stuttering. Best "
+"used with the “Sound buffer synchronization” option."
+msgstr "Điều chỉnh để tạo ra nhiều hoặc ít dữ liệu hơn. Giảm tỷ lệ nếu gặp âm thanh rèn rẹt. Tăng tỷ lệ nếu gặp hiện tượng giật khung hình. Tốt nhất nên dùng kèm tùy chọn \"Đồng bộ hóa bộ đệm âm thanh\"."
+
+#: src/snes9x.ui:4432
+msgid "Video rate:"
+msgstr "Tần số video:"
+
+#: src/snes9x.ui:4469
+msgid "<b>Sound Settings</b>"
+msgstr "<b>Cài đặt âm thanh</b>"
+
+#: src/snes9x.ui:4503 src/snes9x.ui:8730
+msgid "Sound"
+msgstr "Âm thanh"
+
+#: src/snes9x.ui:4561
+msgid "Throttling method:"
+msgstr "Phương thức giới hạn tốc độ:"
+
+#: src/snes9x.ui:4603
+msgid "<b>Speed Control</b>"
+msgstr "<b>Kiểm soát tốc độ</b>"
+
+#: src/snes9x.ui:4641
+msgid "Rewind buffer size (MB):"
+msgstr "Kích thước bộ đệm tua lại (MB):"
+
+#: src/snes9x.ui:4683
+msgid "Number of frames between rewind snapshots:"
+msgstr "Số khung hình giữa các ảnh chụp tua lại:"
+
+#: src/snes9x.ui:4724
+msgid "<b>Rewind Settings</b>"
+msgstr "<b>Cài đặt tua lại</b>"
+
+#: src/snes9x.ui:4755
+msgid "Allow invalid VRAM access"
+msgstr "Cho phép truy cập VRAM không hợp lệ"
+
+#: src/snes9x.ui:4759
+msgid ""
+"Allows ROM hacks to write to screen at the wrong time. Only use if you know "
+"your ROM hack expects this"
+msgstr "Cho phép các bản ROM hack ghi dữ liệu lên màn hình sai thời điểm. Chỉ sử dụng nếu bạn biết bản ROM hack của mình yêu cầu điều này."
+
+#: src/snes9x.ui:4769
+msgid "Allow opposing dpad directions"
+msgstr "Cho phép nhấn các hướng d-pad đối nghịch nhau"
+
+#: src/snes9x.ui:4773
+msgid "Let left and right or up and down be pressed at the same time"
+msgstr "Cho phép nhấn Trái và Phải hoặc Lên và Xuống cùng một lúc"
+
+#: src/snes9x.ui:4784
+msgid "Overclock CPU"
+msgstr "Ép xung CPU"
+
+#: src/snes9x.ui:4788
+msgid "Reduces slowdown, but has potential to break games"
+msgstr "Giảm tình trạng chậm lag game, nhưng có khả năng làm lỗi trò chơi"
+
+#: src/snes9x.ui:4799
+msgid "Remove sprite limit"
+msgstr "Loại bỏ giới hạn sprite"
+
+#: src/snes9x.ui:4803
+msgid "Reduces flicker, but may cause graphical artifacts"
+msgstr "Giảm hiện tượng nhấp nháy, nhưng có thể gây lỗi hiển thị đồ họa"
+
+#: src/snes9x.ui:4814
+msgid "Redirect echo buffer overflow"
+msgstr "Chuyển hướng tràn bộ đệm tiếng vang (echo buffer)"
+
+#: src/snes9x.ui:4818
+msgid "Allows old addmusic hacks to work, but will likely hurt other games"
+msgstr "Cho phép các bản hack addmusic cũ hoạt động, nhưng có thể gây hại cho các trò chơi khác"
+
+#: src/snes9x.ui:4836
+msgid "SuperFX clock speed %:"
+msgstr "Tốc độ xung nhịp chip SuperFX %:"
+
+#: src/snes9x.ui:4875
+msgid "Gaussian is the correct behavior for SNES hardware"
+msgstr "Gaussian là cơ chế hoạt động chính xác của phần cứng SNES"
+
+#: src/snes9x.ui:4882
+msgid "Sound filter:"
+msgstr "Bộ lọc âm thanh:"
+
+#: src/snes9x.ui:4919
+msgid "<b>Hacks</b>"
+msgstr "<b>Hacks / Tùy chỉnh phần cứng</b>"
+
+#: src/snes9x.ui:4961 src/snes9x.ui:7147
+msgid "Emulation"
+msgstr "Giả lập"
+
+#: src/snes9x.ui:5202
+msgid "SRAM:"
+msgstr "SRAM:"
+
+#: src/snes9x.ui:5214
+msgid "Save states:"
+msgstr "File lưu nhanh (Save state):"
+
+#: src/snes9x.ui:5228
+msgid "Cheats:"
+msgstr "Mã gian lận (Cheats):"
+
+#: src/snes9x.ui:5242
+msgid "Patches:"
+msgstr "Tập tin vá (Patches):"
+
+#: src/snes9x.ui:5256
+msgid "Exports:"
+msgstr "Tập tin xuất ra:"
+
+#: src/snes9x.ui:5280
+msgid "<b>Game Data Locations</b>"
+msgstr "<b>Vị trí lưu dữ liệu trò chơi</b>"
+
+#: src/snes9x.ui:5313
+msgid "Save SRAM:"
+msgstr "Lưu SRAM:"
+
+#: src/snes9x.ui:5325
+msgid ""
+"Automatically save the game’s SRAM at this interval. Setting this to 0 will "
+"only save when quitting or changing ROMs"
+msgstr "Tự động lưu SRAM của trò chơi theo khoảng thời gian này. Đặt thành 0 sẽ chỉ lưu khi thoát hoặc đổi ROM."
+
+#: src/snes9x.ui:5355
+msgid "<b>Automatic Saving</b>"
+msgstr "<b>Tự động lưu</b>"
+
+#: src/snes9x.ui:5392
+msgid "Files"
+msgstr "Tập tin"
+
+#: src/snes9x.ui:5423
+msgid "<b>Joypad:</b>"
+msgstr "<b>Tay cầm:</b>"
+
+#: src/snes9x.ui:5464
+msgid "_Reset"
+msgstr "_Đặt lại"
+
+#: src/snes9x.ui:5492
+msgid "Swap with:"
+msgstr "Hoán đổi với:"
+
+#: src/snes9x.ui:5520
+msgid "_Swap"
+msgstr "_Hoán đổi"
+
+#: src/snes9x.ui:5542
+msgid "Use _modifier keys (Ctrl, Shift, Alt) directly"
+msgstr "Sử dụng trực tiếp các phím bổ trợ _modifier keys (Ctrl, Shift, Alt)"
+
+#: src/snes9x.ui:5546
+msgid "Allow using modifier keys as independent keys instead of modifiers"
+msgstr "Cho phép sử dụng các phím bổ trợ như các phím độc lập thay vì phím chức năng phụ"
+
+#: src/snes9x.ui:5581
+msgid "Up"
+msgstr "Lên"
+
+#: src/snes9x.ui:5593
+msgid "Down"
+msgstr "Xuống"
+
+#: src/snes9x.ui:5607
+msgid "Left"
+msgstr "Trái"
+
+#: src/snes9x.ui:5621
+msgid "Right"
+msgstr "Phải"
+
+#: src/snes9x.ui:5635
+msgid "Start"
+msgstr "Bắt đầu"
+
+#: src/snes9x.ui:5649
+msgid "Select"
+msgstr "Chọn (Select)"
+
+#: src/snes9x.ui:5790 src/snes9x.ui:6020 src/snes9x.ui:6232
+msgid "A"
+msgstr "A"
+
+#: src/snes9x.ui:5802 src/snes9x.ui:6032 src/snes9x.ui:6244
+msgid "B"
+msgstr "B"
+
+#: src/snes9x.ui:5816 src/snes9x.ui:6046 src/snes9x.ui:6258
+msgid "X"
+msgstr "X"
+
+#: src/snes9x.ui:5830 src/snes9x.ui:6060 src/snes9x.ui:6272
+msgid "Y"
+msgstr "Y"
+
+#: src/snes9x.ui:5844 src/snes9x.ui:6074 src/snes9x.ui:6286
+msgid "L"
+msgstr "L"
+
+#: src/snes9x.ui:5858 src/snes9x.ui:6088 src/snes9x.ui:6300
+msgid "R"
+msgstr "R"
+
+#: src/snes9x.ui:5992
+msgid "Buttons"
+msgstr "Các nút bấm"
+
+#: src/snes9x.ui:6433
+msgid "<b>Sticky</b>"
+msgstr "<b>Nút dính (Sticky)</b>"
+
+#: src/snes9x.ui:6449
+msgid "<b>Turbo</b>"
+msgstr "<b>Tự động nhấn nhanh (Turbo)</b>"
+
+#: src/snes9x.ui:6468
+msgid "Turbo / Sticky Buttons"
+msgstr "Cài đặt nút Turbo / Sticky"
+
+#: src/snes9x.ui:6505
+msgid "Set new axis bindings at:"
+msgstr "Đặt liên kết trục mới tại:"
+
+#: src/snes9x.ui:6517
+msgid ""
+"Changes the amount a joystick should be tilted to register a button press"
+msgstr "Thay đổi độ nghiêng của cần điều khiển để ghi nhận một lần nhấn nút"
+
+#: src/snes9x.ui:6536
+msgid "percent"
+msgstr "phần trăm"
+
+#: src/snes9x.ui:6553
+msgid "<b>Joystick Axis Threshold</b>"
+msgstr "<b>Ngưỡng nhạy của trục cần điều khiển</b>"
+
+#: src/snes9x.ui:6590
+msgid "Center all axes on all joysticks and press Calibrate."
+msgstr "Đặt tất cả các trục của cần điều khiển về vị trí trung tâm rồi nhấn Hiệu chỉnh."
+
+#: src/snes9x.ui:6605
+msgid "Cali_brate"
+msgstr "Hiệu _chỉnh"
+
+#: src/snes9x.ui:6638
+msgid "<b>Calibration</b>"
+msgstr "<b>Hiệu chỉnh cân bằng</b>"
+
+#: src/snes9x.ui:6659
+msgid "Joystick Options"
+msgstr "Tùy chọn cần điều khiển"
+
+#: src/snes9x.ui:6677 src/snes9x.ui:9029
+msgid ""
+"<small>Click an entry and then press the desired keys or joystick button\n"
+"<tt>Escape</tt>: Move to next  <tt>Shift+Escape</tt>: Clear selected</small>"
+msgstr "<small>Nhấp vào một mục rồi nhấn phím hoặc nút cần điều khiển mong muốn\n<tt>Escape</tt>: Chuyển sang mục tiếp theo  <tt>Shift+Escape</tt>: Xóa mục đã chọn</small>"
+
+#: src/snes9x.ui:6715
+msgid "Joypads"
+msgstr "Các tay cầm"
+
+#: src/snes9x.ui:6742
+msgid "<b>SuperSnes9x Emulator Shortcut Keys</b>"
+msgstr "<b>Các phím tắt giả lập SuperSnes9x</b>"
+
+#: src/snes9x.ui:6793
+msgid "Soft reset"
+msgstr "Reset mềm"
+
+#: src/snes9x.ui:6807
+msgid "Hardware reset"
+msgstr "Reset phần cứng"
+
+#: src/snes9x.ui:6821
+msgid "Increase frame time"
+msgstr "Tăng thời gian khung hình"
+
+#: src/snes9x.ui:6835
+msgid "Decrease frame time"
+msgstr "Giảm thời gian khung hình"
+
+#: src/snes9x.ui:6849
+msgid "Increase frame rate"
+msgstr "Tăng tốc độ khung hình"
+
+#: src/snes9x.ui:6863
+msgid "Decrease frame rate"
+msgstr "Giảm tốc độ khung hình"
+
+#: src/snes9x.ui:6877
+msgid "Pause"
+msgstr "Tạm dừng"
+
+#: src/snes9x.ui:6891
+msgid "Toggle turbo"
+msgstr "Bật/tắt tắt nhanh turbo"
+
+#: src/snes9x.ui:6905
+msgid "Enable turbo"
+msgstr "Bật turbo"
+
+#: src/snes9x.ui:6920
+msgid "Open ROM"
+msgstr "Mở ROM"
+
+#: src/snes9x.ui:7179
+msgid "Toggle BG layer 0"
+msgstr "Bật/tắt lớp nền BG layer 0"
+
+#: src/snes9x.ui:7191
+msgid "Toggle BG layer 1"
+msgstr "Bật/tắt lớp nền BG layer 1"
+
+#: src/snes9x.ui:7205
+msgid "Toggle BG layer 2"
+msgstr "Bật/tắt lớp nền BG layer 2"
+
+#: src/snes9x.ui:7219
+msgid "Toggle BG layer 3"
+msgstr "Bật/tắt lớp nền BG layer 3"
+
+#: src/snes9x.ui:7233
+msgid "Toggle sprites"
+msgstr "Bật/tắt các đối tượng đồ họa (sprites)"
+
+#: src/snes9x.ui:7247
+msgid "Toggle forced backdrop color"
+msgstr "Bật/tắt ép buộc màu nền"
+
+#: src/snes9x.ui:7261
+msgid "Screenshot"
+msgstr "Chụp ảnh màn hình"
+
+#: src/snes9x.ui:7275
+msgid "Toggle fullscreen"
+msgstr "Bật/tắt chế độ toàn màn hình"
+
+#: src/snes9x.ui:7439
+msgid "Graphics"
+msgstr "Đồ họa"
+
+#: src/snes9x.ui:7476
+msgid "Save current slot"
+msgstr "Lưu vào khe hiện tại"
+
+#: src/snes9x.ui:7509
+msgid "Load current slot"
+msgstr "Tải từ khe hiện tại"
+
+#: src/snes9x.ui:7542
+msgid "Increment and save"
+msgstr "Tăng số khe và lưu"
+
+#: src/snes9x.ui:7575
+msgid "Decrement and load"
+msgstr "Giảm số khe và tải"
+
+#: src/snes9x.ui:7608
+msgid "Increment slot"
+msgstr "Tăng số khe"
+
+#: src/snes9x.ui:7641
+msgid "Decrement slot"
+msgstr "Giảm số khe"
+
+#: src/snes9x.ui:7685
+msgid "<b>Quick save state</b>"
+msgstr "<b>Lưu trạng thái nhanh</b>"
+
+#: src/snes9x.ui:7700
+msgid "<b>Quick load state</b>"
+msgstr "<b>Tải trạng thái nhanh</b>"
+
+#: src/snes9x.ui:7715 src/snes9x.ui:7855
+msgid "Slot 0"
+msgstr "Khe 0"
+
+#: src/snes9x.ui:7729 src/snes9x.ui:7871
+msgid "Slot 1"
+msgstr "Khe 1"
+
+#: src/snes9x.ui:7743 src/snes9x.ui:7887
+msgid "Slot 2"
+msgstr "Khe 2"
+
+#: src/snes9x.ui:7757 src/snes9x.ui:7903
+msgid "Slot 3"
+msgstr "Khe 3"
+
+#: src/snes9x.ui:7771 src/snes9x.ui:7919
+msgid "Slot 4"
+msgstr "Khe 4"
+
+#: src/snes9x.ui:7785 src/snes9x.ui:7935
+msgid "Slot 5"
+msgstr "Khe 5"
+
+#: src/snes9x.ui:7799 src/snes9x.ui:7951
+msgid "Slot 6"
+msgstr "Khe 6"
+
+#: src/snes9x.ui:7813 src/snes9x.ui:7967
+msgid "Slot 7"
+msgstr "Khe 7"
+
+#: src/snes9x.ui:7827 src/snes9x.ui:7983
+msgid "Slot 8"
+msgstr "Khe 8"
+
+#: src/snes9x.ui:7841 src/snes9x.ui:7999
+msgid "Slot 9"
+msgstr "Khe 9"
+
+#: src/snes9x.ui:8438
+msgid "Toggle sound channel 0"
+msgstr "Bật/tắt kênh âm thanh 0"
+
+#: src/snes9x.ui:8450
+msgid "Toggle sound channel 1"
+msgstr "Bật/tắt kênh âm thanh 1"
+
+#: src/snes9x.ui:8464
+msgid "Toggle sound channel 2"
+msgstr "Bật/tắt kênh âm thanh 2"
+
+#: src/snes9x.ui:8478
+msgid "Toggle sound channel 3"
+msgstr "Bật/tắt kênh âm thanh 3"
+
+#: src/snes9x.ui:8492
+msgid "Toggle sound channel 4"
+msgstr "Bật/tắt kênh âm thanh 4"
+
+#: src/snes9x.ui:8506
+msgid "Toggle sound channel 5"
+msgstr "Bật/tắt kênh âm thanh 5"
+
+#: src/snes9x.ui:8520
+msgid "Toggle sound channel 6"
+msgstr "Bật/tắt kênh âm thanh 6"
+
+#: src/snes9x.ui:8534
+msgid "Toggle sound channel 7"
+msgstr "Bật/tắt kênh âm thanh 7"
+
+#: src/snes9x.ui:8548
+msgid "Toggle all sound channels"
+msgstr "Bật/tắt tất cả các kênh âm thanh"
+
+#: src/snes9x.ui:8753
+msgid "Seek to frame"
+msgstr "Tìm đến khung hình"
+
+#: src/snes9x.ui:8768
+msgid "Load Movie"
+msgstr "Tải Movie"
+
+#: src/snes9x.ui:8783
+msgid "Stop movie recording"
+msgstr "Dừng ghi hình Movie"
+
+#: src/snes9x.ui:8798
+msgid "Begin movie recording"
+msgstr "Bắt đầu ghi hình Movie"
+
+#: src/snes9x.ui:8813
+msgid "Save SPC"
+msgstr "Lưu SPC"
+
+#: src/snes9x.ui:8913
+msgid "Swap controllers 1 & 2"
+msgstr "Hoán đổi tay cầm 1 & 2"
+
+#: src/snes9x.ui:8944
+msgid "Rewind"
+msgstr "Tua lại"
+
+#: src/snes9x.ui:8975
+msgid "Capture/release mouse"
+msgstr "Bắt/Thả chuột"
+
+#: src/snes9x.ui:9011
+msgid "Misc"
+msgstr "Khác (Misc)"
+
+#: src/snes9x.ui:9067
+msgid "Shortcuts"
+msgstr "Phím tắt"
+
+#: src/snes9x.ui:9106
+msgid "Pause emulation when switching away from SuperSnes9x"
+msgstr "Tạm dừng giả lập khi chuyển cửa sổ khỏi SuperSnes9x"
+
+#: src/snes9x.ui:9120
+msgid "Force‑enable button and menu icons"
+msgstr "Bắt buộc hiển thị biểu tượng trên nút và menu"
+
+#: src/snes9x.ui:9141
+msgid "The <tt>Esc</tt> key should:"
+msgstr "Phím <tt>Esc</tt> sẽ thực hiện:"
+
+#: src/snes9x.ui:9185
+msgid "Initial background:"
+msgstr "Hình nền ban đầu:"
+
+#: src/snes9x.ui:9226
+msgid "<b>Window Behavior</b>"
+msgstr "<b>Hành vi cửa sổ</b>"
+
+#: src/snes9x.ui:9256
+msgid "Prevent the screensaver from activating"
+msgstr "Ngăn không cho trình bảo vệ màn hình kích hoạt"
+
+#: src/snes9x.ui:9276
+msgid "<b>Screensaver</b>"
+msgstr "<b>Trình bảo vệ màn hình</b>"
+
+#: src/snes9x.ui:9310
+msgid "UI"
+msgstr "Giao diện (UI)"
+
+#: src/snes9x.ui:9344
+msgid ""
+"  SuperSnes9x – A Portable Super Nintendo Entertainment System™ Emulator\n"
+"\n"
+"  Snes9x homepage: http://www.snes9x.com/\n"
+"  SuperSnes9x source code: https://github.com/shanytc/snes9x/\n"
+"\n"
+"  Permission to use, copy, modify and/or distribute SuperSnes9x in both binary\n"
+"  and source form, for non‑commercial purposes, is hereby granted without\n"
+"  fee, providing that this license information and copyright notice appear\n"
+"  with all copies and any derived work.\n"
+"\n"
+"  This software is provided ‘as‑is’, without any express or implied\n"
+"  warranty. In no event shall the authors be held liable for any damages\n"
+"  arising from the use of this software or it’s derivatives.\n"
+"\n"
+"  SuperSnes9x is freeware for PERSONAL USE only. Commercial users should\n"
+"  seek permission of the copyright holders first. Commercial use includes,\n"
+"  but is not limited to, charging money for SuperSnes9x or software derived from\n"
+"  SuperSnes9x, including SuperSnes9x or derivatives in commercial game bundles, and/"
+"or\n"
+"  using SuperSnes9x as a promotion for your commercial product.\n"
+"\n"
+"  The copyright holders request that bug fixes and improvements to the code\n"
+"  should be forwarded to them so everyone can benefit from the "
+"modifications\n"
+"  in future versions.\n"
+"\n"
+"  Super NES and Super Nintendo Entertainment System are trademarks of\n"
+"  Nintendo Co., Limited and its subsidiary companies."
+msgstr "  SuperSnes9x – A Portable Super Nintendo Entertainment System™ Emulator\n\n  Trang chủ Snes9x: http://www.snes9x.com/\n  Mã nguồn SuperSnes9x: https://github.com/shanytc/snes9x/\n\n  Quyền sử dụng, sao chép, sửa đổi và/hoặc phân phối SuperSnes9x dưới cả dạng mã nhị phân\n  và mã nguồn, cho mục đích phi thương mại, được cấp mà không tốn phí,\n  với điều kiện thông tin giấy phép này và thông báo bản quyền xuất hiện\n  trong tất cả các bản sao và mọi sản phẩm phái sinh.\n\n  Phần mềm này được cung cấp theo nguyên trạng ‘as‑is’, không có bất kỳ sự đảm bảo\n  rõ ràng hay ngầm định nào. Trong mọi trường hợp, các tác giả sẽ không chịu trách nhiệm cho bất kỳ thiệt hại nào\n  phát sinh từ việc sử dụng phần mềm này hoặc các sản phẩm phái sinh từ nó.\n\n  SuperSnes9x là phần mềm miễn phí chỉ dành cho SỬ DỤNG CÁ NHÂN. Người dùng thương mại nên\n  xin phép chủ sở hữu bản quyền trước. Sử dụng thương mại bao gồm,\n  nhưng không giới hạn ở việc thu tiền cho SuperSnes9x hoặc phần mềm phái sinh từ\n  SuperSnes9x, bao gồm cả SuperSnes9x hoặc các phái sinh trong các gói trò chơi thương mại, và/hoặc\n  sử dụng SuperSnes9x như một hình thức quảng bá cho sản phẩm thương mại của bạn.\n\n  Các chủ sở hữu bản quyền yêu cầu các bản sửa lỗi và cải tiến mã nguồn\n  nên được gửi cho họ để mọi người cùng được hưởng lợi từ các sửa đổi\n  trong các phiên bản tương lai.\n\n  Super NES và Super Nintendo Entertainment System là các thương hiệu của\n  Nintendo Co., Limited và các công ty con của nó."
+
+# === Win32 strings (added by i18n/extract_strings.py) ===
+
+#: win32/rsrc/snes9x.rc
+msgid "!= (Not Equal To)"
+msgstr "!= (Không bằng)"
+
+#: win32/wlanguage.h
+msgid "(Not Available)"
+msgstr "(Không khả dụng)"
+
+#: win32/wlanguage.h
+msgid "(not stored in movie file)"
+msgstr "(không được lưu trong tập tin movie)"
+
+#: win32/rsrc/snes9x.rc
+msgid "(restart required)"
+msgstr "(yêu cầu khởi động lại)"
+
+#: win32/rsrc/snes9x.rc
+msgid "0 (off)"
+msgstr "0 (tắt)"
+
+#: win32/rsrc/snes9x.rc
+msgid "1 byte"
+msgstr "1 byte"
+
+#: win32/rsrc/snes9x.rc
+msgid "1 frame"
+msgstr "1 khung hình"
+
+#: win32/rsrc/snes9x.rc
+msgid "10x"
+msgstr "10x"
+
+#: win32/rsrc/snes9x.rc
+msgid "112ms"
+msgstr "112ms"
+
+#: win32/rsrc/snes9x.rc
+msgid "11KHz"
+msgstr "11KHz"
+
+#: win32/rsrc/snes9x.rc
+msgid "128ms"
+msgstr "128ms"
+
+#: win32/rsrc/snes9x.rc
+msgid "144ms"
+msgstr "144ms"
+
+#: win32/rsrc/snes9x.rc
+msgid "160ms"
+msgstr "160ms"
+
+#: win32/rsrc/snes9x.rc
+msgid "16KHz"
+msgstr "16KHz"
+
+#: win32/rsrc/snes9x.rc
+msgid "16ms"
+msgstr "16ms"
+
+#: win32/rsrc/snes9x.rc
+msgid "176ms"
+msgstr "176ms"
+
+#: win32/rsrc/snes9x.rc
+msgid "192ms"
+msgstr "192ms"
+
+#: win32/rsrc/snes9x.rc
+msgid "1x"
+msgstr "1x"
+
+#: win32/rsrc/snes9x.rc
+msgid "2 bytes"
+msgstr "2 byte"
+
+#: win32/rsrc/snes9x.rc
+msgid "2 frames"
+msgstr "2 khung hình"
+
+#: win32/rsrc/snes9x.rc
+msgid "208ms"
+msgstr "208ms"
+
+#: win32/rsrc/snes9x.rc
+msgid "22KHz"
+msgstr "22KHz"
+
+#: win32/rsrc/snes9x.rc
+msgid "2x"
+msgstr "2x"
+
+#: win32/rsrc/snes9x.rc
+msgid "3 bytes"
+msgstr "3 byte"
+
+#: win32/rsrc/snes9x.rc
+msgid "3 frames"
+msgstr "3 khung hình"
+
+#: win32/rsrc/snes9x.rc
+msgid "30KHz"
+msgstr "30KHz"
+
+#: win32/rsrc/snes9x.rc
+msgid "32KHz"
+msgstr "32KHz"
+
+#: win32/rsrc/snes9x.rc
+msgid "32ms"
+msgstr "32ms"
+
+#: win32/rsrc/snes9x.rc
+msgid "35KHz"
+msgstr "35KHz"
+
+#: win32/rsrc/snes9x.rc
+msgid "3x"
+msgstr "3x"
+
+#: win32/rsrc/snes9x.rc
+msgid "4 bytes"
+msgstr "4 byte"
+
+#: win32/rsrc/snes9x.rc
+msgid "4 frames"
+msgstr "4 khung hình"
+
+#: win32/rsrc/snes9x.rc
+msgid "44KHz"
+msgstr "44KHz"
+
+#: win32/rsrc/snes9x.rc
+msgid "48KHz"
+msgstr "48KHz"
+
+#: win32/rsrc/snes9x.rc
+msgid "48ms"
+msgstr "48ms"
+
+#: win32/rsrc/snes9x.rc
+msgid "4x"
+msgstr "4x"
+
+#: win32/rsrc/snes9x.rc
+msgid "5x"
+msgstr "5x"
+
+#: win32/rsrc/snes9x.rc
+msgid "64ms"
+msgstr "64ms"
+
+#: win32/rsrc/snes9x.rc
+msgid "6x"
+msgstr "6x"
+
+#: win32/rsrc/snes9x.rc
+msgid "7x"
+msgstr "7x"
+
+#: win32/rsrc/snes9x.rc
+msgid "80ms"
+msgstr "80ms"
+
+#: win32/rsrc/snes9x.rc
+msgid "8KHz"
+msgstr "8KHz"
+
+#: win32/rsrc/snes9x.rc
+msgid "8x"
+msgstr "8x"
+
+#: win32/rsrc/snes9x.rc
+msgid "96ms"
+msgstr "96ms"
+
+#: win32/rsrc/snes9x.rc
+msgid "9x"
+msgstr "9x"
+
+#: win32/rsrc/snes9x.rc
+msgid "< (Less Than)"
+msgstr "< (Nhỏ hơn)"
+
+#: win32/wlanguage.h
+msgid "<-- MISMATCH !!!"
+msgstr "<-- KHÔNG KHỚP !!!"
+
+#: win32/rsrc/snes9x.rc
+msgid "<= (Less Than or Equal to)"
+msgstr "<= (Nhỏ hơn hoặc bằng)"
+
+#: win32/rsrc/snes9x.rc
+msgid "= (Equal To)"
+msgstr "= (Bằng)"
+
+#: win32/rsrc/snes9x.rc
+msgid "> (Greater Than)"
+msgstr "> (Lớn hơn)"
+
+#: win32/rsrc/snes9x.rc
+msgid ">= (Greater than or Equal To)"
+msgstr ">= (Lớn hơn hoặc bằng)"
+
+#: win32/rsrc/snes9x.rc
+msgid "About"
+msgstr "Giới thiệu"
+
+#: win32/rsrc/snes9x.rc
+msgid "Achievement List"
+msgstr "Danh sách thành tích"
+
+#: win32/rsrc/snes9x.rc
+msgid "Act as Server"
+msgstr "Đóng vai trò Máy chủ"
+
+#: win32/wlanguage.h
+msgid "Act As Server"
+msgstr "Đóng vai trò Máy chủ"
+
+#: win32/rsrc/snes9x.rc
+msgid "Add"
+msgstr "Thêm"
+
+#: win32/rsrc/snes9x.rc
+msgid "Add Cheat"
+msgstr "Thêm mã gian lận"
+
+#: win32/rsrc/snes9x.rc
+msgid "Add SuperSnes9x to registry for supported file types"
+msgstr "Thêm SuperSnes9x vào registry cho các định dạng tệp được hỗ trợ"
+
+#: win32/rsrc/snes9x.rc
+msgid "Address"
+msgstr "Địa chỉ"
+
+#: win32/rsrc/snes9x.rc
+msgid "Address:"
+msgstr "Địa chỉ:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Adjustments"
+msgstr "Điều chỉnh"
+
+#: win32/wlanguage.h
+msgid "All files"
+msgstr "Tất cả các tập tin"
+
+#: win32/rsrc/snes9x.rc
+msgid "all of SuperSnes9x's settings are stored in this file"
+msgstr "tất cả cài đặt của SuperSnes9x được lưu trong tệp này"
+
+#: win32/rsrc/snes9x.rc
+msgid "Allow executable logo override"
+msgstr "Cho phép ghi đè logo của tệp thực thi"
+
+#: win32/rsrc/snes9x.rc
+msgid "Allow Invalid VRAM Access"
+msgstr "Cho phép truy cập VRAM không hợp lệ"
+
+#: win32/rsrc/snes9x.rc
+msgid "Allow Left+Rt/Up+Dn"
+msgstr "Cho phép nhấn đồng thời Trái+Phải/Lên+Xuống"
+
+#: win32/rsrc/snes9x.rc
+msgid "APP - Emulator Settings"
+msgstr "Ứng dụng - Cài đặt giả lập"
+
+#: win32/rsrc/snes9x.rc
+msgid "Apply"
+msgstr "Áp dụng"
+
+#: win32/rsrc/snes9x.rc
+msgid "Apply Adjustments"
+msgstr "Áp dụng các thay đổi"
+
+#: win32/rsrc/snes9x.rc
+msgid "Apply Cheats"
+msgstr "Áp dụng mã gian lận"
+
+#: win32/rsrc/snes9x.rc
+msgid "Ask for confirmation when saving/loading"
+msgstr "Yêu cầu xác nhận khi lưu/tải"
+
+#: win32/rsrc/snes9x.rc
+msgid "Ask Server to Pause when"
+msgstr "Yêu cầu máy chủ tạm dừng khi"
+
+#: win32/rsrc/snes9x.rc
+msgid "Author Info:"
+msgstr "Thông tin tác giả:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Auto Layer Transparency"
+msgstr "Tự động làm trong suốt các lớp đồ họa"
+
+#: win32/rsrc/snes9x.rc
+msgid "Auto update"
+msgstr "Tự động cập nhật"
+
+#: win32/rsrc/snes9x.rc
+msgid "Auto-Assign"
+msgstr "Tự động gán phím"
+
+#: win32/wlanguage.h
+msgid "Auto-Detect"
+msgstr "Tự động phát hiện"
+
+#: win32/rsrc/snes9x.rc
+msgid "Auto-Save S-RAM"
+msgstr "Tự động lưu S-RAM"
+
+#: win32/wlanguage.h
+msgid "Autofire"
+msgstr "Tự động nhấn liên tục (Autofire)"
+
+#: win32/wlanguage.h
+msgid "Autohold"
+msgstr "Tự động giữ phím (Autohold)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Automatic Input Rate"
+msgstr "Tần số đầu vào tự động"
+
+#: win32/rsrc/snes9x.rc
+msgid "Automatic, skip at most:"
+msgstr "Tự động, bỏ qua tối đa:"
+
+#: win32/wlanguage.h
+msgid "AVI file"
+msgstr "Tập tin AVI"
+
+#: win32/rsrc/snes9x.rc
+msgid "AVI Recording"
+msgstr "Đang ghi hình AVI"
+
+#: win32/rsrc/snes9x.rc
+msgid "Background Keyboard Hotkeys"
+msgstr "Phím tắt bàn phím khi ứng dụng chạy nền"
+
+#: win32/rsrc/snes9x.rc
+msgid "Background:"
+msgstr "Nền sau:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Bank +:"
+msgstr "Bank +:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Bank -:"
+msgstr "Bank -:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Bank:"
+msgstr "Bank:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Base Tile Addresses"
+msgstr "Địa chỉ ô gạch (Tile) gốc"
+
+#: win32/rsrc/snes9x.rc
+msgid "BG1:"
+msgstr "Lớp nền 1 (BG1):"
+
+#: win32/rsrc/snes9x.rc
+msgid "BG2:"
+msgstr "Lớp nền 2 (BG2):"
+
+#: win32/rsrc/snes9x.rc
+msgid "BG3:"
+msgstr "Lớp nền 3 (BG3):"
+
+#: win32/rsrc/snes9x.rc
+msgid "BG4:"
+msgstr "Lớp nền 4 (BG4):"
+
+#: win32/rsrc/snes9x.rc
+msgid "BG:"
+msgstr "Lớp nền (BG):"
+
+#: win32/rsrc/snes9x.rc
+msgid "Bilinear Filtering"
+msgstr "Lọc tuyến tính (Bilinear)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Binding"
+msgstr "Liên kết phím"
+
+#: win32/rsrc/snes9x.rc
+msgid "BIOS"
+msgstr "BIOS"
+
+#: win32/wlanguage.h
+msgid "BIOS files"
+msgstr "Các tệp tin BIOS"
+
+#: win32/rsrc/snes9x.rc
+msgid "BIOS:"
+msgstr "BIOS:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Bit Depth:"
+msgstr "Độ sâu bit màu:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Blend Hi-Res Images"
+msgstr "Trộn hình ảnh độ phân giải cao"
+
+#: win32/rsrc/snes9x.rc
+msgid "Blue means already mapped. Pink conflicts with hotkey.\nRed is reserved by Windows. Escape clears bindings.\nPress multiple keys for multi-bind. Delete removes last."
+msgstr "Màu xanh dương nghĩa là đã được gán. Màu hồng nghĩa là xung đột với phím tắt.\nMàu đỏ do Windows thiết lập riêng. Nhấn Escape để xóa liên kết phím.\nNhấn tổ hợp nhiều phím để gán đa phím. Nhấn Delete để xóa phím cuối cùng."
+
+#: win32/wlanguage.h
+msgid "Blue means the hotkey is already mapped.\nPink means it conflicts with a game button.\nRed means it's reserved by Windows.\nA hotkey can be disabled using Escape."
+msgstr "Màu xanh dương nghĩa là phím tắt đã được gán.\nMàu hồng nghĩa là xung đột với nút bấm trong game.\nMàu đỏ do Windows thiết lập riêng.\nCó thể vô hiệu hóa phím tắt bằng phím Escape."
+
+#: win32/rsrc/snes9x.rc
+msgid "Blue means the hotkey is already mapped. Pink means it conflicts with a game button. Red means it's reserved by Windows. Escape clears bindings.\nPress multiple keys for multi-bind. Delete removes last."
+msgstr "Màu xanh dương nghĩa là phím tắt đã được gán. Màu hồng nghĩa là xung đột với nút bấm trong game. Màu đỏ do Windows thiết lập riêng. Nhấn Escape để xóa liên kết phím.\nNhấn tổ hợp nhiều phím để gán đa phím. Nhấn Delete để xóa phím cuối cùng."
+
+#: win32/rsrc/snes9x.rc
+msgid "Browse"
+msgstr "Duyệt tìm"
+
+#: win32/rsrc/snes9x.rc
+msgid "Buffer Length"
+msgstr "Độ dài bộ đệm"
+
+#: win32/rsrc/snes9x.rc
+msgid "Buffer Length:"
+msgstr "Độ dài bộ đệm:"
+
+#: win32/wlanguage.h
+msgid "Can't Open File"
+msgstr "Không thể mở tập tin"
+
+#: win32/rsrc/snes9x.rc
+msgid "Cancel"
+msgstr "Hủy"
+
+#: win32/rsrc/snes9x.rc
+msgid "Channel 1"
+msgstr "Kênh âm thanh 1"
+
+#: win32/rsrc/snes9x.rc
+msgid "Channel 2"
+msgstr "Kênh âm thanh 2"
+
+#: win32/rsrc/snes9x.rc
+msgid "Channel 3"
+msgstr "Kênh âm thanh 3"
+
+#: win32/rsrc/snes9x.rc
+msgid "Channel 4"
+msgstr "Kênh âm thanh 4"
+
+#: win32/rsrc/snes9x.rc
+msgid "Channel 5"
+msgstr "Kênh âm thanh 5"
+
+#: win32/rsrc/snes9x.rc
+msgid "Channel 6"
+msgstr "Kênh âm thanh 6"
+
+#: win32/rsrc/snes9x.rc
+msgid "Channel 7"
+msgstr "Kênh âm thanh 7"
+
+#: win32/rsrc/snes9x.rc
+msgid "Channel 8"
+msgstr "Kênh âm thanh 8"
+
+#: win32/rsrc/snes9x.rc
+msgid "Channels"
+msgstr "Các kênh âm thanh"
+
+#: win32/rsrc/snes9x.rc
+msgid "Chat"
+msgstr "Trò chuyện"
+
+#: win32/rsrc/snes9x.rc
+msgid "Cheat Description:"
+msgstr "Mô tả mã gian lận:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Cheat Details"
+msgstr "Chi tiết mã gian lận"
+
+#: win32/rsrc/snes9x.rc
+msgid "Cheat Entry and Editor"
+msgstr "Bảng nhập và chỉnh sửa mã gian lận"
+
+#: win32/rsrc/snes9x.rc
+msgid "Cheat Search"
+msgstr "Tìm kiếm mã gian lận"
+
+#: win32/wlanguage.h
+msgid "Cheats Editor Dialog:"
+msgstr "Hộp thoại chỉnh sửa mã gian lận:"
+
+#: win32/wlanguage.h
+msgid "Cheats Search Dialog:"
+msgstr "Hộp thoại tìm kiếm mã gian lận:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Choose Logo"
+msgstr "Chọn Logo"
+
+#: win32/rsrc/snes9x.rc
+msgid "Clear"
+msgstr "Xóa"
+
+#: win32/rsrc/snes9x.rc
+msgid "Clear All"
+msgstr "Xóa tất cả"
+
+#: win32/rsrc/snes9x.rc
+msgid "Clear History"
+msgstr "Xóa lịch sử"
+
+#: win32/rsrc/snes9x.rc
+msgid "Clear SRAM"
+msgstr "Xóa SRAM"
+
+#: win32/rsrc/snes9x.rc
+msgid "Clear Watches"
+msgstr "Xóa danh sách theo dõi dữ liệu"
+
+#: win32/rsrc/snes9x.rc
+msgid "Client Settings"
+msgstr "Cài đặt Máy khách"
+
+#: win32/wlanguage.h
+msgid "Clipping Windows:"
+msgstr "Cửa sổ giới hạn vùng hiển thị (Clipping Windows):"
+
+#: win32/rsrc/snes9x.rc
+msgid "Close"
+msgstr "Đóng"
+
+#: win32/wlanguage.h
+msgid "Code"
+msgstr "Mã"
+
+#: win32/rsrc/snes9x.rc
+msgid "Color Correction"
+msgstr "Sửa lỗi màu sắc"
+
+#: win32/rsrc/snes9x.rc
+msgid "Compare To"
+msgstr "So sánh với"
+
+#: win32/rsrc/snes9x.rc
+msgid "Comparison Type"
+msgstr "Loại so sánh"
+
+#: win32/rsrc/snes9x.rc
+msgid "Config file:"
+msgstr "Tập tin cấu hình:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Connect"
+msgstr "Kết nối"
+
+#: win32/rsrc/snes9x.rc
+msgid "Connect clients to: 127.0.0.1 (localhost) or your LAN IP"
+msgstr "Kết nối máy khách tới: 127.0.0.1 (localhost) hoặc địa chỉ IP mạng nội bộ (LAN)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Connect to Server"
+msgstr "Kết nối tới Máy chủ"
+
+#: win32/rsrc/snes9x.rc
+msgid "Controller"
+msgstr "Tay cầm điều khiển"
+
+#: win32/wlanguage.h
+msgid "Could not open movie file."
+msgstr "Không thể mở tập tin movie."
+
+#: win32/rsrc/snes9x.rc
+msgid "CPU Overclock:"
+msgstr "Ép xung CPU:"
+
+#: win32/wlanguage.h
+msgid "crc32=%08X, name=%s"
+msgstr "crc32=%08X, tên=%s"
+
+#: win32/wlanguage.h
+msgid "Current ROM:"
+msgstr "ROM hiện tại:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Current ROM: CRC32=Unknown, Name=Unknown"
+msgstr "ROM hiện tại: CRC32=Không rõ, Tên=Không rõ"
+
+#: win32/rsrc/snes9x.rc
+msgid "Current Value"
+msgstr "Giá trị hiện tại"
+
+#: win32/rsrc/snes9x.rc
+msgid "Custom ROM Open Dialog"
+msgstr "Hộp thoại mở ROM tùy chỉnh"
+
+#: win32/rsrc/snes9x.rc
+msgid "Custom Screen Mode"
+msgstr "Chế độ màn hình tùy chỉnh"
+
+#: win32/rsrc/snes9x.rc
+msgid "Customize Hotkeys"
+msgstr "Tùy chỉnh phím tắt"
+
+#: win32/rsrc/snes9x.rc
+msgid "Customize Special Keys"
+msgstr "Tùy chỉnh phím đặc biệt"
+
+#: win32/rsrc/snes9x.rc
+msgid "Data Size"
+msgstr "Kích thước dữ liệu"
+
+#: win32/rsrc/snes9x.rc
+msgid "Data Type"
+msgstr "Kiểu dữ liệu"
+
+#: win32/rsrc/snes9x.rc
+msgid "DATE"
+msgstr "NGÀY THÁNG"
+
+#: win32/rsrc/snes9x.rc
+msgid "Defaults"
+msgstr "Giá trị mặc định"
+
+#: win32/rsrc/snes9x.rc
+msgid "Delete"
+msgstr "Xóa"
+
+#: win32/rsrc/snes9x.rc
+msgid "Detect gamepad changes"
+msgstr "Nhận biết thay đổi từ gamepad"
+
+#: win32/rsrc/snes9x.rc
+msgid "Dialog"
+msgstr "Hộp thoại"
+
+#: win32/rsrc/snes9x.rc
+msgid "Direct3D Shader File"
+msgstr "Tập tin bộ đổ bóng Direct3D"
+
+#: win32/wlanguage.h
+msgid "Directory"
+msgstr "Thư mục"
+
+#: win32/rsrc/snes9x.rc
+msgid "Directory:"
+msgstr "Thư mục:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Disable Sprite Limit"
+msgstr "Tắt giới hạn Sprite"
+
+#: win32/rsrc/snes9x.rc
+msgid "Disconnect"
+msgstr "Ngắt kết nối"
+
+#: win32/rsrc/snes9x.rc
+msgid "Disconnect from Server"
+msgstr "Ngắt kết nối khỏi Máy chủ"
+
+#: win32/rsrc/snes9x.rc
+msgid "Display Configuration"
+msgstr "Cấu hình màn hình"
+
+#: win32/rsrc/snes9x.rc
+msgid "Display messages inside SNES image"
+msgstr "Hiển thị thông báo bên trong khung hình SNES"
+
+#: win32/rsrc/snes9x.rc
+msgid "Display Settings"
+msgstr "Cài đặt hiển thị"
+
+#: win32/rsrc/snes9x.rc
+msgid "DN LEFT"
+msgstr "DƯỚI TRÁI"
+
+#: win32/wlanguage.h
+msgid "Dn Left"
+msgstr "Dưới Trái"
+
+#: win32/rsrc/snes9x.rc
+msgid "DN RIGHT"
+msgstr "DƯỚI PHẢI"
+
+#: win32/wlanguage.h
+msgid "Dn Right"
+msgstr "Dưới Phải"
+
+#: win32/rsrc/snes9x.rc
+msgid "DOWN"
+msgstr "XUỐNG"
+
+#: win32/rsrc/snes9x.rc
+msgid "Dummy"
+msgstr "Giả lập trống (Dummy)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Dynamic Rate Control"
+msgstr "Kiểm soát tỷ lệ động"
+
+#: win32/rsrc/snes9x.rc
+msgid "Edit Cheat Group"
+msgstr "Chỉnh sửa nhóm mã gian lận"
+
+#: win32/rsrc/snes9x.rc
+msgid "Emulate Fullscreen"
+msgstr "Giả lập Toàn màn hình"
+
+#: win32/wlanguage.h
+msgid "Emulation Settings"
+msgstr "Cài đặt giả lập"
+
+#: win32/rsrc/snes9x.rc
+msgid "Emulator Hacks"
+msgstr "Tùy chỉnh giả lập (Hacks)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Enable"
+msgstr "Kích hoạt"
+
+#: win32/rsrc/snes9x.rc
+msgid "Enable All"
+msgstr "Bật tất cả (All)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Enable Background Input"
+msgstr "Bật nhận lệnh từ nền (Background Input)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Enable Color Correction (accurate SNES colors)"
+msgstr "Bật sửa màu (Chính xác màu SNES)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Enable Triple Buffering"
+msgstr "Bật bộ đệm ba (Triple Buffering)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Enabled"
+msgstr "Đã kích hoạt"
+
+#: win32/rsrc/snes9x.rc
+msgid "End Kaillera Game"
+msgstr "Kết thúc trò chơi Kaillera"
+
+#: win32/rsrc/snes9x.rc
+msgid "Enter a Value:"
+msgstr "Nhập một giá trị:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Enter Cheat Code:"
+msgstr "Nhập mã gian lận:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Enter Cheat codes, one line at a time"
+msgstr "Nhập các mã gian lận, mỗi mã trên một dòng"
+
+#: win32/wlanguage.h
+msgid "enter host name"
+msgstr "nhập tên máy chủ (host name)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Entered Address"
+msgstr "Địa chỉ đã nhập"
+
+#: win32/rsrc/snes9x.rc
+msgid "Entered Value"
+msgstr "Giá trị đã nhập"
+
+#: win32/wlanguage.h
+msgid "Error Info:"
+msgstr "Thông tin lỗi:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Exit"
+msgstr "Thoát"
+
+#: win32/rsrc/snes9x.rc
+msgid "Extend Height of SNES Image"
+msgstr "Mở rộng chiều cao hình ảnh SNES"
+
+#: win32/wlanguage.h
+msgid "Fast forward:"
+msgstr "Tua nhanh:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Fast-Forward"
+msgstr "Tua nhanh"
+
+#: win32/wlanguage.h
+msgid "Fast-forward toggle:"
+msgstr "Phím tắt bật/tắt tua nhanh:"
+
+#: win32/rsrc/snes9x.rc
+msgid "File"
+msgstr "Tập tin"
+
+#: win32/wlanguage.h
+msgid "File not found."
+msgstr "Không tìm thấy tập tin."
+
+#: win32/rsrc/snes9x.rc
+msgid "First Sprite:"
+msgstr "Sprite đầu tiên:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Fixed, always skip:"
+msgstr "Cố định, luôn bỏ qua:"
+
+#: win32/wlanguage.h
+msgid "Force GD24"
+msgstr "Ép buộc chế độ GD24"
+
+#: win32/wlanguage.h
+msgid "Force Header"
+msgstr "Ép buộc có Header"
+
+#: win32/wlanguage.h
+msgid "Force HiROM"
+msgstr "Ép buộc định dạng HiROM"
+
+#: win32/wlanguage.h
+msgid "Force LoROM"
+msgstr "Ép buộc định dạng LoROM"
+
+#: win32/wlanguage.h
+msgid "Force mode 1"
+msgstr "Ép buộc chế độ hiển thị 1"
+
+#: win32/wlanguage.h
+msgid "Force mode 2"
+msgstr "Ép buộc chế độ hiển thị 2"
+
+#: win32/wlanguage.h
+msgid "Force No Header"
+msgstr "Ép buộc không có Header"
+
+#: win32/wlanguage.h
+msgid "Force not interleaved"
+msgstr "Ép buộc không đan xen (not interleaved)"
+
+#: win32/wlanguage.h
+msgid "Force NTSC"
+msgstr "Ép buộc hệ video NTSC"
+
+#: win32/wlanguage.h
+msgid "Force PAL"
+msgstr "Ép buộc hệ video PAL"
+
+#: win32/rsrc/snes9x.rc
+msgid "Frame Advance"
+msgstr "Tiến khung hình"
+
+#: win32/rsrc/snes9x.rc
+msgid "Frame Advance mute"
+msgstr "Tắt tiếng khi tiến khung hình"
+
+#: win32/wlanguage.h
+msgid "Frame advance:"
+msgstr "Nút tiến khung hình:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Frame Skipping:"
+msgstr "Bỏ qua khung hình (Frame skip):"
+
+#: win32/rsrc/snes9x.rc
+msgid "frames"
+msgstr "khung hình"
+
+#: win32/rsrc/snes9x.rc
+msgid "FRAMES"
+msgstr "KHUNG HÌNH"
+
+#: win32/rsrc/snes9x.rc
+msgid "frames behind"
+msgstr "khung hình bị trễ"
+
+#: win32/rsrc/snes9x.rc
+msgid "frames in auto-frame rate mode"
+msgstr "khung hình trong chế độ tự động đồng bộ"
+
+#: win32/wlanguage.h
+msgid "frames in fast-forward mode"
+msgstr "khung hình trong chế độ tua nhanh"
+
+#: win32/rsrc/snes9x.rc
+msgid "frames in Turbo mode"
+msgstr "khung hình trong chế độ Turbo"
+
+#: win32/rsrc/snes9x.rc
+msgid "Frames:"
+msgstr "Khung hình:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Full Screen"
+msgstr "Toàn màn hình"
+
+#: win32/rsrc/snes9x.rc
+msgid "Fullscreen"
+msgstr "Toàn màn hình"
+
+#: win32/rsrc/snes9x.rc
+msgid "Fullscreen Display Settings"
+msgstr "Cài đặt hiển thị toàn màn hình"
+
+#: win32/rsrc/snes9x.rc
+msgid "Fullscreen on ROM Open"
+msgstr "Vào toàn màn hình khi mở ROM"
+
+#: win32/rsrc/snes9x.rc
+msgid "Game Boy Image"
+msgstr "Hình ảnh Game Boy"
+
+#: win32/rsrc/snes9x.rc
+msgid "Game Genie, Pro-Action Replay Codes"
+msgstr "Mã Game Genie, Pro-Action Replay"
+
+#: win32/rsrc/snes9x.rc
+msgid "GB"
+msgstr "GB"
+
+#: win32/rsrc/snes9x.rc
+msgid "GB Sprite Viewer"
+msgstr "Bộ xem Sprite Game Boy"
+
+#: win32/rsrc/snes9x.rc
+msgid "GB Tile Viewer"
+msgstr "Bộ xem ô gạch (Tile) Game Boy"
+
+#: win32/rsrc/snes9x.rc
+msgid "GB Tilemap Viewer"
+msgstr "Bộ xem bản đồ gạch (Tilemap) Game Boy"
+
+#: win32/rsrc/snes9x.rc
+msgid "GB-PPU"
+msgstr "GB-PPU"
+
+#: win32/rsrc/snes9x.rc
+msgid "General"
+msgstr "Cài đặt chung"
+
+#: win32/rsrc/snes9x.rc
+msgid "goto"
+msgstr "đi tới"
+
+#: win32/wlanguage.h
+msgid "Graphics layer 1:"
+msgstr "Lớp đồ họa 1:"
+
+#: win32/wlanguage.h
+msgid "Graphics layer 2:"
+msgstr "Lớp đồ họa 2:"
+
+#: win32/wlanguage.h
+msgid "Graphics layer 3:"
+msgstr "Lớp đồ họa 3:"
+
+#: win32/wlanguage.h
+msgid "Graphics layer 4:"
+msgstr "Lớp đồ họa 4:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Group"
+msgstr "Nhóm"
+
+#: win32/rsrc/snes9x.rc
+msgid "Hacks"
+msgstr "Tùy chỉnh hệ thống (Hacks)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Hard Reset (Power Cycle)"
+msgstr "Reset cứng (Chu kỳ tắt mở nguồn)"
+
+#: win32/wlanguage.h
+msgid "Hard reset:"
+msgstr "Nút khởi động lại cứng:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Hardcore Mode"
+msgstr "Chế độ Hardcore (Không gian lận/Lưu nhanh)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Header:"
+msgstr "Header:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Help"
+msgstr "Trợ giúp"
+
+#: win32/rsrc/snes9x.rc
+msgid "Hexadecimal"
+msgstr "Hệ thập lục phân (Hex)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Hi Res:"
+msgstr "Độ phân giải cao (Hi Res):"
+
+#: win32/rsrc/snes9x.rc
+msgid "Hi-Res AVI Recording"
+msgstr "Ghi video AVI độ phân giải cao"
+
+#: win32/rsrc/snes9x.rc
+msgid "Hide Menubar"
+msgstr "Ẩn thanh Menu"
+
+#: win32/rsrc/snes9x.rc
+msgid "Host Game"
+msgstr "Tạo máy chủ phòng game"
+
+#: win32/rsrc/snes9x.rc
+msgid "Host Kaillera Server"
+msgstr "Tạo máy chủ Kaillera"
+
+#: win32/wlanguage.h
+msgid "Hotkey Configuration"
+msgstr "Cấu hình phím tắt"
+
+#: win32/rsrc/snes9x.rc
+msgid "Icon 1"
+msgstr "Biểu tượng 1"
+
+#: win32/rsrc/snes9x.rc
+msgid "Icon 2"
+msgstr "Biểu tượng 2"
+
+#: win32/rsrc/snes9x.rc
+msgid "Icon 3"
+msgstr "Biểu tượng 3"
+
+#: win32/rsrc/snes9x.rc
+msgid "Icon 4"
+msgstr "Biểu tượng 4"
+
+#: win32/rsrc/snes9x.rc
+msgid "Index:"
+msgstr "Mục lục:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Input"
+msgstr "Đầu vào điều khiển"
+
+#: win32/rsrc/snes9x.rc
+msgid "Input Configuration"
+msgstr "Cấu hình nút bấm điều khiển"
+
+#: win32/rsrc/snes9x.rc
+msgid "Input Rate:"
+msgstr "Tần số đầu vào:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Integer Scaling"
+msgstr "Thu phóng theo tỷ lệ nguyên (Integer)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Interleave Mode:"
+msgstr "Chế độ đan xen dữ liệu:"
+
+#: win32/rsrc/snes9x.rc
+msgid "IP:"
+msgstr "IP:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Join"
+msgstr "Tham gia"
+
+#: win32/wlanguage.h
+msgid "Joypad #%d"
+msgstr "Tay cầm #%d"
+
+#: win32/rsrc/snes9x.rc
+msgid "Joypad 1"
+msgstr "Tay cầm 1"
+
+#: win32/rsrc/snes9x.rc
+msgid "Joypad 2"
+msgstr "Tay cầm 2"
+
+#: win32/rsrc/snes9x.rc
+msgid "Joypad 3"
+msgstr "Tay cầm 3"
+
+#: win32/rsrc/snes9x.rc
+msgid "Joypad 4"
+msgstr "Tay cầm 4"
+
+#: win32/rsrc/snes9x.rc
+msgid "Joypad 5"
+msgstr "Tay cầm 5"
+
+#: win32/wlanguage.h
+msgid "Joypad swap:"
+msgstr "Hoán đổi tay cầm:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Kaillera Netplay"
+msgstr "Chơi qua mạng Kaillera"
+
+#: win32/rsrc/snes9x.rc
+msgid "Kaillera Server"
+msgstr "Máy chủ Kaillera"
+
+#: win32/rsrc/snes9x.rc
+msgid "Layout:"
+msgstr "Bố cục hiển thị:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Leave Game"
+msgstr "Rời khỏi trò chơi"
+
+#: win32/rsrc/snes9x.rc
+msgid "LEFT"
+msgstr "TRÁI"
+
+#: win32/rsrc/snes9x.rc
+msgid "LENGTH"
+msgstr "ĐỘ DÀI"
+
+#: win32/rsrc/snes9x.rc
+msgid "Length:"
+msgstr "Độ dài:"
+
+#: win32/rsrc/snes9x.rc
+msgid "List1"
+msgstr "Danh sách 1"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load #:"
+msgstr "Tải khe số #:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load 0:"
+msgstr "Tải khe 0:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load 1:"
+msgstr "Tải khe 1:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load 2:"
+msgstr "Tải khe 2:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load 3:"
+msgstr "Tải khe 3:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load 4:"
+msgstr "Tải khe 4:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load 5:"
+msgstr "Tải khe 5:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load 6:"
+msgstr "Tải khe 6:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load 7:"
+msgstr "Tải khe 7:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load 8:"
+msgstr "Tải khe 8:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load 9:"
+msgstr "Tải khe 9:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load Dlg:"
+msgstr "Hộp thoại tải:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load File:"
+msgstr "Tải tập tin:"
+
+#: win32/wlanguage.h
+msgid "Load from file:"
+msgstr "Tải từ tập tin:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load Game"
+msgstr "Tải trò chơi"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load Game Position"
+msgstr "Tải vị trí trò chơi"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load MultiCart"
+msgstr "Tải MultiCart"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load Watches"
+msgstr "Tải danh sách theo dõi dữ liệu"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load with Preview"
+msgstr "Tải kèm hình ảnh xem trước"
+
+#: win32/wlanguage.h
+msgid "LOADED FROM MOVIE:"
+msgstr "ĐƯỢC TẢI TỪ TẬP TIN MOVIE:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Location:"
+msgstr "Vị trí:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Login"
+msgstr "Đăng nhập"
+
+#: win32/rsrc/snes9x.rc
+msgid "Maintain Aspect Ratio"
+msgstr "Giữ nguyên tỷ lệ khung hình"
+
+#: win32/rsrc/snes9x.rc
+msgid "Map"
+msgstr "Bản đồ (Map)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Map Addr:"
+msgstr "Địa chỉ bản đồ:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Map Size:"
+msgstr "Kích thước bản đồ:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Map:"
+msgstr "Bản đồ:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Mask"
+msgstr "Mặt nạ dữ liệu (Mask)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Masked Addresses"
+msgstr "Các địa chỉ được đặt mặt nạ"
+
+#: win32/rsrc/snes9x.rc
+msgid "Master Hotkey"
+msgstr "Phím tắt chính"
+
+#: win32/rsrc/snes9x.rc
+msgid "Max Clients:"
+msgstr "Số máy khách tối đa:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Maximum Frame Rate Skip"
+msgstr "Số khung hình bỏ qua tối đa"
+
+#: win32/rsrc/snes9x.rc
+msgid "MB (set to 0 to disable rewind support)"
+msgstr "MB (đặt thành 0 để vô hiệu hóa tính năng tua lại)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Memory Type:"
+msgstr "Loại bộ nhớ:"
+
+#: win32/wlanguage.h
+msgid "Misc. Recording Settings"
+msgstr "Các cài đặt ghi hình khác"
+
+#: win32/rsrc/snes9x.rc
+msgid "Mode:"
+msgstr "Chế độ:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Movie File"
+msgstr "Tập tin Movie"
+
+#: win32/wlanguage.h
+msgid "Movie frame count:"
+msgstr "Số khung hình của movie:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Movie Play"
+msgstr "Phát Movie"
+
+#: win32/wlanguage.h
+msgid "Movie read-only:"
+msgstr "Chế độ movie chỉ đọc:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Movie Record"
+msgstr "Ghi hình Movie"
+
+#: win32/rsrc/snes9x.rc
+msgid "Movie Stop"
+msgstr "Dừng Movie"
+
+#: win32/wlanguage.h
+msgid "Movie's ROM:"
+msgstr "Tệp ROM của Movie:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Movie's ROM: CRC32=Unknown, Name=Unknown"
+msgstr "ROM của Movie: CRC32=Không rõ, Tên=Không rõ"
+
+#: win32/wlanguage.h
+msgid "Movies"
+msgstr "Video cấu hình (Movies)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Mute"
+msgstr "Tắt tiếng"
+
+#: win32/rsrc/snes9x.rc
+msgid "Mute Sound"
+msgstr "Tắt âm thanh"
+
+#: win32/rsrc/snes9x.rc
+msgid "Mute sound"
+msgstr "Tắt âm thanh"
+
+#: win32/rsrc/snes9x.rc
+msgid "Netplay"
+msgstr "Mạng chơi chung (Netplay)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Netplay Options"
+msgstr "Tùy chọn mạng Netplay"
+
+#: win32/rsrc/snes9x.rc
+msgid "New Value"
+msgstr "Giá trị mới"
+
+#: win32/rsrc/snes9x.rc
+msgid "No BIOS"
+msgstr "Không có BIOS"
+
+#: win32/wlanguage.h
+msgid "Not a ROM"
+msgstr "Không phải tập tin ROM"
+
+#: win32/rsrc/snes9x.rc
+msgid "Not connected."
+msgstr "Chưa kết nối."
+
+#: win32/rsrc/snes9x.rc
+msgid "not found"
+msgstr "không tìm thấy"
+
+#: win32/wlanguage.h
+msgid "not found!"
+msgstr "không tìm thấy!"
+
+#: win32/rsrc/snes9x.rc
+msgid "NTSC Filter Scanlines"
+msgstr "Các đường quét bộ lọc NTSC"
+
+#: win32/rsrc/snes9x.rc
+msgid "OAM1:"
+msgstr "OAM1:"
+
+#: win32/rsrc/snes9x.rc
+msgid "OAM2:"
+msgstr "OAM2:"
+
+#: win32/rsrc/snes9x.rc
+msgid "OK"
+msgstr "Xác nhận (OK)"
+
+#: win32/rsrc/snes9x.rc
+msgid "On-screen Display Size:"
+msgstr "Kích thước hiển thị trên màn hình:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Online Servers"
+msgstr "Máy chủ trực tuyến"
+
+#: win32/rsrc/snes9x.rc
+msgid "Oops File"
+msgstr "Tập tin lưu sự cố (Oops File)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Open MultiCart"
+msgstr "Mở MultiCart"
+
+#: win32/rsrc/snes9x.rc
+msgid "Open Read-Only"
+msgstr "Mở ở chế độ chỉ đọc"
+
+#: win32/rsrc/snes9x.rc
+msgid "OpenGL/Vulkan Shader File"
+msgstr "Tập tin đổ bóng OpenGL/Vulkan Shader"
+
+#: win32/rsrc/snes9x.rc
+msgid "Options"
+msgstr "Tùy chọn"
+
+#: win32/rsrc/snes9x.rc
+msgid "Output Device:"
+msgstr "Thiết bị đầu ra:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Output Image Processing"
+msgstr "Xử lý hình ảnh đầu ra"
+
+#: win32/rsrc/snes9x.rc
+msgid "Output Method"
+msgstr "Phương thức đầu ra"
+
+#: win32/rsrc/snes9x.rc
+msgid "Override Tilemap"
+msgstr "Ghi đè bản đồ gạch (Tilemap)"
+
+#: win32/wlanguage.h
+msgid "Page %d"
+msgstr "Trang %d"
+
+#: win32/rsrc/snes9x.rc
+msgid "Palette (click to select offset)"
+msgstr "Bảng màu (nhấp để chọn offset)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Palette:"
+msgstr "Bảng màu:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Parameters"
+msgstr "Thông số"
+
+#: win32/rsrc/snes9x.rc
+msgid "Password:"
+msgstr "Mật khẩu:"
+
+#: win32/wlanguage.h
+msgid "Patch"
+msgstr "Bản vá (Patch)"
+
+#: win32/wlanguage.h
+msgid "Path: %s"
+msgstr "Đường dẫn: %s"
+
+#: win32/rsrc/snes9x.rc
+msgid "Pause When Inactive"
+msgstr "Tạm dừng khi cửa sổ không hoạt động"
+
+#: win32/wlanguage.h
+msgid "Pause:"
+msgstr "Phím tạm dừng:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Play Movie"
+msgstr "Phát Movie"
+
+#: win32/rsrc/snes9x.rc
+msgid "Playback Rate"
+msgstr "Tần số phát lại"
+
+#: win32/rsrc/snes9x.rc
+msgid "Playback Rate:"
+msgstr "Tần số phát lại:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Player Name:"
+msgstr "Tên người chơi:"
+
+#: win32/wlanguage.h
+msgid "Please enter a host name."
+msgstr "Vui lòng nhập tên máy chủ."
+
+#: win32/wlanguage.h
+msgid "Please enter a valid value for a search!"
+msgstr "Vui lòng nhập một giá trị hợp lệ để tìm kiếm!"
+
+#: win32/rsrc/snes9x.rc
+msgid "Port Number"
+msgstr "Mã số cổng (Port)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Port Settings"
+msgstr "Cài đặt cổng"
+
+#: win32/wlanguage.h
+msgid "Press OK to start playing the movie."
+msgstr "Nhấn OK để bắt đầu phát movie."
+
+#: win32/rsrc/snes9x.rc
+msgid "Preview"
+msgstr "Xem trước"
+
+#: win32/rsrc/snes9x.rc
+msgid "Previous Value"
+msgstr "Giá trị trước đó"
+
+#: win32/rsrc/snes9x.rc
+msgid "Progress1"
+msgstr "Tiến trình 1"
+
+#: win32/rsrc/snes9x.rc
+msgid "Publish Online"
+msgstr "Công khai trực tuyến"
+
+#: win32/rsrc/snes9x.rc
+msgid "Publish to master server list"
+msgstr "Công khai lên danh sách máy chủ chính"
+
+#: win32/wlanguage.h
+msgid "Quit SuperSnes9x:"
+msgstr "Thoát SuperSnes9x:"
+
+#: win32/wlanguage.h
+msgid "Range Error"
+msgstr "Lỗi vượt quá phạm vi"
+
+#: win32/rsrc/snes9x.rc
+msgid "Rate:"
+msgstr "Tỷ lệ / Tần số:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Re-record Count:"
+msgstr "Số lần ghi hình lại:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Re-sync all Clients Using Freeze File Now"
+msgstr "Đồng bộ lại tất cả máy khách bằng tệp đóng băng ngay bây giờ"
+
+#: win32/rsrc/snes9x.rc
+msgid "Recent Games"
+msgstr "Trò chơi gần đây"
+
+#: win32/rsrc/snes9x.rc
+msgid "Record Controllers"
+msgstr "Ghi nhận tay cầm điều khiển"
+
+#: win32/rsrc/snes9x.rc
+msgid "Record from now"
+msgstr "Ghi hình từ thời điểm này"
+
+#: win32/rsrc/snes9x.rc
+msgid "Record from reset"
+msgstr "Ghi hình từ lúc reset game"
+
+#: win32/rsrc/snes9x.rc
+msgid "Record Movie"
+msgstr "Ghi hình Movie"
+
+#: win32/rsrc/snes9x.rc
+msgid "Record Options"
+msgstr "Tùy chọn ghi hình"
+
+#: win32/rsrc/snes9x.rc
+msgid "Recording Date:"
+msgstr "Ngày ghi hình:"
+
+#: win32/wlanguage.h
+msgid "Recording Start"
+msgstr "Bắt đầu ghi hình"
+
+#: win32/rsrc/snes9x.rc
+msgid "Reduce Input Lag"
+msgstr "Giảm độ trễ đầu vào"
+
+#: win32/rsrc/snes9x.rc
+msgid "Refresh"
+msgstr "Làm mới"
+
+#: win32/rsrc/snes9x.rc
+msgid "Refresh List"
+msgstr "Làm mới danh sách"
+
+#: win32/rsrc/snes9x.rc
+msgid "Regular"
+msgstr "Thông thường (Regular)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Remove"
+msgstr "Xóa bỏ"
+
+#: win32/rsrc/snes9x.rc
+msgid "Remove All"
+msgstr "Xóa bỏ tất cả"
+
+#: win32/rsrc/snes9x.rc
+msgid "RERECORD"
+msgstr "GHI LẠI"
+
+#: win32/wlanguage.h
+msgid "Reset speed:"
+msgstr "Đặt lại tốc độ:"
+
+#: win32/rsrc/snes9x.rc
+msgid "RetroAchievements"
+msgstr "Hệ thống thành tích RetroAchievements"
+
+#: win32/rsrc/snes9x.rc
+msgid "RetroAchievements Login"
+msgstr "Đăng nhập RetroAchievements"
+
+#: win32/rsrc/snes9x.rc
+msgid "Rewind buffer size:"
+msgstr "Kích thước bộ đệm tua lại:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Rewind granularity:"
+msgstr "Độ chi tiết của tính năng tua lại:"
+
+#: win32/wlanguage.h
+msgid "Rewind:"
+msgstr "Phím tua lại:"
+
+#: win32/rsrc/snes9x.rc
+msgid "RIGHT"
+msgstr "PHẢI"
+
+#: win32/wlanguage.h
+msgid "ROM files or archives"
+msgstr "Các tập tin ROM hoặc tệp nén"
+
+#: win32/rsrc/snes9x.rc
+msgid "Rom Info"
+msgstr "Thông tin ROM"
+
+#: win32/rsrc/snes9x.rc
+msgid "ROM Information"
+msgstr "Thông tin tệp ROM"
+
+#: win32/rsrc/snes9x.rc
+msgid "ROM:"
+msgstr "ROM:"
+
+#: win32/wlanguage.h
+msgid "Roms"
+msgstr "Các tệp ROM"
+
+#: win32/rsrc/snes9x.rc
+msgid "Run Ahead"
+msgstr "Chạy trước khung hình (Run Ahead)"
+
+#: win32/rsrc/snes9x.rc
+msgid "s"
+msgstr "giây"
+
+#: win32/rsrc/snes9x.rc
+msgid "S-PPU"
+msgstr "S-PPU"
+
+#: win32/wlanguage.h
+msgid "Satellaview"
+msgstr "Hệ thống vệ tinh Satellaview"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save #:"
+msgstr "Lưu vào khe số #:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save 0:"
+msgstr "Lưu khe 0:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save 1:"
+msgstr "Lưu khe 1:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save 2:"
+msgstr "Lưu khe 2:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save 3:"
+msgstr "Lưu khe 3:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save 4:"
+msgstr "Lưu khe 4:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save 5:"
+msgstr "Lưu khe 5:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save 6:"
+msgstr "Lưu khe 6:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save 7:"
+msgstr "Lưu khe 7:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save 8:"
+msgstr "Lưu khe 8:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save 9:"
+msgstr "Lưu khe 9:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save Dlg:"
+msgstr "Hộp thoại lưu:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save File:"
+msgstr "Lưu tập tin:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save Game Position"
+msgstr "Lưu vị trí trò chơi"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save Memory Pack"
+msgstr "Lưu gói bộ nhớ (Memory Pack)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save Other"
+msgstr "Lưu dữ liệu khác"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save S-RAM Data"
+msgstr "Lưu dữ liệu S-RAM"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save Screenshot"
+msgstr "Lưu ảnh chụp màn hình"
+
+#: win32/wlanguage.h
+msgid "Save screenshot"
+msgstr "Lưu ảnh chụp màn hình"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save SPC Data"
+msgstr "Lưu dữ liệu SPC"
+
+#: win32/wlanguage.h
+msgid "Save to file:"
+msgstr "Lưu vào tập tin:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save Watches"
+msgstr "Lưu danh sách theo dõi dữ liệu"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save with Preview"
+msgstr "Lưu kèm hình ảnh xem trước"
+
+#: win32/wlanguage.h
+msgid "Saves"
+msgstr "Các tệp lưu game"
+
+#: win32/rsrc/snes9x.rc
+msgid "Screen"
+msgstr "Màn hình"
+
+#: win32/wlanguage.h
+msgid "Screenshots"
+msgstr "Ảnh chụp màn hình"
+
+#: win32/rsrc/snes9x.rc
+msgid "Search"
+msgstr "Tìm"
+
+#: win32/rsrc/snes9x.rc
+msgid "Search Database"
+msgstr "Tìm kiếm cơ sở dữ liệu"
+
+#: win32/rsrc/snes9x.rc
+msgid "Search for New Cheats"
+msgstr "Tìm kiếm mã gian lận mới"
+
+#: win32/rsrc/snes9x.rc
+msgid "seconds after last change (0 disables auto-save)"
+msgstr "giây sau thay đổi cuối cùng (0 để tắt tự động lưu)"
+
+#: win32/rsrc/snes9x.rc
+msgid "SELECT"
+msgstr "SELECT"
+
+#: win32/rsrc/snes9x.rc
+msgid "Select 0:"
+msgstr "Chọn khe 0:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Select 1:"
+msgstr "Chọn khe 1:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Select 2:"
+msgstr "Chọn khe 2:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Select 3:"
+msgstr "Chọn khe 3:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Select 4:"
+msgstr "Chọn khe 4:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Select 5:"
+msgstr "Chọn khe 5:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Select 6:"
+msgstr "Chọn khe 6:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Select 7:"
+msgstr "Chọn khe 7:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Select 8:"
+msgstr "Chọn khe 8:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Select 9:"
+msgstr "Chọn khe 9:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Select File"
+msgstr "Chọn tập tin"
+
+#: win32/wlanguage.h
+msgid "Select Folder"
+msgstr "Chọn thư mục"
+
+#: win32/wlanguage.h
+msgid "Select Slot 0:"
+msgstr "Chọn Khe số 0:"
+
+#: win32/wlanguage.h
+msgid "Select Slot 1:"
+msgstr "Chọn Khe số 1:"
+
+#: win32/wlanguage.h
+msgid "Select Slot 2:"
+msgstr "Chọn Khe số 2:"
+
+#: win32/wlanguage.h
+msgid "Select Slot 3:"
+msgstr "Chọn Khe số 3:"
+
+#: win32/wlanguage.h
+msgid "Select Slot 4:"
+msgstr "Chọn Khe số 4:"
+
+#: win32/wlanguage.h
+msgid "Select Slot 5:"
+msgstr "Chọn Khe số 5:"
+
+#: win32/wlanguage.h
+msgid "Select Slot 6:"
+msgstr "Chọn Khe số 6:"
+
+#: win32/wlanguage.h
+msgid "Select Slot 7:"
+msgstr "Chọn Khe số 7:"
+
+#: win32/wlanguage.h
+msgid "Select Slot 8:"
+msgstr "Chọn Khe số 8:"
+
+#: win32/wlanguage.h
+msgid "Select Slot 9:"
+msgstr "Chọn Khe số 9:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Send"
+msgstr "Gửi"
+
+#: win32/rsrc/snes9x.rc
+msgid "Send ROM Image to Client on Connect"
+msgstr "Gửi tệp ROM cho máy khách khi kết nối"
+
+#: win32/rsrc/snes9x.rc
+msgid "Send ROM Image to Clients"
+msgstr "Gửi tệp ROM cho các máy khách"
+
+#: win32/rsrc/snes9x.rc
+msgid "Send ROM Image to Clients Now"
+msgstr "Gửi tệp ROM cho các máy khách ngay bây giờ"
+
+#: win32/rsrc/snes9x.rc
+msgid "Separate Echo Buffer from RAM"
+msgstr "Tách biệt bộ đệm tiếng vang khỏi RAM"
+
+#: win32/rsrc/snes9x.rc
+msgid "Server Address"
+msgstr "Địa chỉ Máy chủ"
+
+#: win32/rsrc/snes9x.rc
+msgid "Server is stopped."
+msgstr "Máy chủ đã dừng."
+
+#: win32/rsrc/snes9x.rc
+msgid "Server Lobby"
+msgstr "Sảnh chờ Máy chủ"
+
+#: win32/rsrc/snes9x.rc
+msgid "Server Name:"
+msgstr "Tên Máy chủ:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Server Settings"
+msgstr "Cài đặt Máy chủ"
+
+#: win32/rsrc/snes9x.rc
+msgid "Set Defaults"
+msgstr "Đặt về mặc định"
+
+#: win32/rsrc/snes9x.rc
+msgid "Set Value"
+msgstr "Đặt giá trị"
+
+#: win32/rsrc/snes9x.rc
+msgid "Settings"
+msgstr "Cài đặt"
+
+#: win32/wlanguage.h
+msgid "SETTINGS NOT IN MOVIE; VERIFY:"
+msgstr "CÁC CÀI ĐẶT KHÔNG CÓ TRONG MOVIE; VUI LÒNG XÁC MINH:"
+
+#: win32/rsrc/snes9x.rc
+msgid "SGB Mix"
+msgstr "Bộ trộn SGB"
+
+#: win32/rsrc/snes9x.rc
+msgid "SGB1"
+msgstr "SGB1"
+
+#: win32/rsrc/snes9x.rc
+msgid "SGB2"
+msgstr "SGB2"
+
+#: win32/rsrc/snes9x.rc
+msgid "Show Audio Waveform"
+msgstr "Hiển thị dạng sóng âm thanh (Audio Waveform)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Show Background"
+msgstr "Hiển thị hình nền (Background)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Show Crosshair"
+msgstr "Hiển thị tâm ngắm (Crosshair)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Show Frame Number"
+msgstr "Hiển thị số khung hình (Frame Number)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Show Frame Rate"
+msgstr "Hiển thị tốc độ khung hình (Frame Rate)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Show Grid"
+msgstr "Hiển thị lưới (Grid)"
+
+#: win32/wlanguage.h
+msgid "Show pressed keys:"
+msgstr "Hiển thị các phím đã nhấn:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Show screen"
+msgstr "Hiển thị màn hình"
+
+#: win32/rsrc/snes9x.rc
+msgid "Show Screen Outline"
+msgstr "Hiển thị đường viền màn hình"
+
+#: win32/rsrc/snes9x.rc
+msgid "Show Sprites"
+msgstr "Hiển thị Sprites"
+
+#: win32/rsrc/snes9x.rc
+msgid "Show viewport"
+msgstr "Hiển thị khung nhìn (viewport)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Show Window"
+msgstr "Hiển thị cửa sổ (Window)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Signed (+/-)"
+msgstr "Có dấu (+/-)"
+
+#: win32/wlanguage.h
+msgid "Size"
+msgstr "Kích thước"
+
+#: win32/rsrc/snes9x.rc
+msgid "Skip at most"
+msgstr "Bỏ qua tối đa"
+
+#: win32/wlanguage.h
+msgid "Skip frames +:"
+msgstr "Tăng số khung hình bỏ qua:"
+
+#: win32/wlanguage.h
+msgid "Skip frames -:"
+msgstr "Giảm số khung hình bỏ qua:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Skip rendering"
+msgstr "Bỏ qua việc dựng hình (render)"
+
+#: win32/wlanguage.h
+msgid "Skip Rendering"
+msgstr "Bỏ qua việc dựng hình"
+
+#: win32/rsrc/snes9x.rc
+msgid "Slot +:"
+msgstr "Khe tiếp theo:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Slot -:"
+msgstr "Khe trước đó:"
+
+#: win32/rsrc/snes9x.rc
+msgid "SNES Image"
+msgstr "Hình ảnh hệ máy SNES"
+
+#: win32/rsrc/snes9x.rc
+msgid "SuperSnes9x - Unable to Initialize XAudio2"
+msgstr "SuperSnes9x - Không thể khởi tạo XAudio2"
+
+#: win32/wlanguage.h
+msgid "SuperSnes9x Cheat Error"
+msgstr "Lỗi mã gian lận SuperSnes9x"
+
+#: win32/wlanguage.h
+msgid "SuperSnes9x Movie File"
+msgstr "Tập tin SuperSnes9x Movie"
+
+#: win32/rsrc/snes9x.rc
+msgid "Socket Port Number"
+msgstr "Số cổng Socket"
+
+#: win32/rsrc/snes9x.rc
+msgid "Soft Reset"
+msgstr "Reset mềm"
+
+#: win32/wlanguage.h
+msgid "Soft reset:"
+msgstr "Phím tắt reset mềm:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Sound Driver:"
+msgstr "Trình điều khiển âm thanh:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Sound Interpolation Type:"
+msgstr "Kiểu nội suy âm thanh:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Sound Quality"
+msgstr "Chất lượng âm thanh"
+
+#: win32/rsrc/snes9x.rc
+msgid "Sound Settings"
+msgstr "Cài đặt âm thanh"
+
+#: win32/rsrc/snes9x.rc
+msgid "Source:"
+msgstr "Nguồn:"
+
+#: win32/rsrc/snes9x.rc
+msgid "SPC"
+msgstr "SPC"
+
+#: win32/wlanguage.h
+msgid "SPCs"
+msgstr "Các tệp tin SPC"
+
+#: win32/wlanguage.h
+msgid "Speed +:"
+msgstr "Tăng tốc độ:"
+
+#: win32/wlanguage.h
+msgid "Speed -:"
+msgstr "Giảm tốc độ:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Spin1"
+msgstr "Spin1"
+
+#: win32/rsrc/snes9x.rc
+msgid "Spin2"
+msgstr "Spin2"
+
+#: win32/rsrc/snes9x.rc
+msgid "Spin3"
+msgstr "Spin3"
+
+#: win32/rsrc/snes9x.rc
+msgid "Spin4"
+msgstr "Spin4"
+
+#: win32/rsrc/snes9x.rc
+msgid "Sprite Viewer"
+msgstr "Trình xem Sprite"
+
+#: win32/rsrc/snes9x.rc
+msgid "Sprite:"
+msgstr "Đối tượng đồ họa (Sprite):"
+
+#: win32/rsrc/snes9x.rc
+msgid "Sprites"
+msgstr "Các đối tượng đồ họa (Sprites)"
+
+#: win32/wlanguage.h
+msgid "Sprites layer:"
+msgstr "Lớp hiển thị Sprites:"
+
+#: win32/wlanguage.h
+msgid "SRAM"
+msgstr "SRAM"
+
+#: win32/rsrc/snes9x.rc
+msgid "START"
+msgstr "START"
+
+#: win32/rsrc/snes9x.rc
+msgid "Start Game"
+msgstr "Bắt đầu trò chơi"
+
+#: win32/rsrc/snes9x.rc
+msgid "Start Server"
+msgstr "Khởi chạy Máy chủ"
+
+#: win32/rsrc/snes9x.rc
+msgid "Static"
+msgstr "Tĩnh (Static)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Status"
+msgstr "Trạng thái"
+
+#: win32/rsrc/snes9x.rc
+msgid "Stretch Image"
+msgstr "Kéo giãn hình ảnh"
+
+#: win32/rsrc/snes9x.rc
+msgid "SuperFX Clock Speed %:"
+msgstr "Tốc độ xung nhịp chip SuperFX %:"
+
+#: src/snes9x.ui:4836
+msgid "SuperFX speed:"
+msgstr "Tốc độ chip SuperFX:"
+
+#: win32/wlanguage.h
+msgid "SuperScope pause:"
+msgstr "Phím tạm dừng SuperScope:"
+
+#: win32/wlanguage.h
+msgid "SuperScope turbo:"
+msgstr "Phím kích hoạt nhanh SuperScope turbo:"
+
+#: win32/wlanguage.h
+msgid "SuperSnes9x (x64)"
+msgstr "SuperSnes9x (Bản 64‑bit)"
+
+#: win32/rsrc/snes9x.rc
+msgid "SuperSnes9x - About"
+msgstr "Thông tin về SuperSnes9x"
+
+#: win32/wlanguage.h
+msgid "SuperSnes9x: DirectSound"
+msgstr "SuperSnes9x: Cấu hình DirectSound"
+
+#: win32/wlanguage.h
+msgid "SuperSnes9x: Information"
+msgstr "SuperSnes9x: Thông tin thông báo"
+
+#: win32/wlanguage.h
+msgid "SuperSnes9x: NetPlay Error"
+msgstr "SuperSnes9x: Lỗi kết nối mạng NetPlay"
+
+#: win32/wlanguage.h
+msgid "SuperSnes9x: Sound CPU Question"
+msgstr "SuperSnes9x: Câu hỏi về bộ vi xử lý âm thanh"
+
+#: win32/wlanguage.h
+msgid "SuperSnes9x: WARNING!"
+msgstr "SuperSnes9x: CẢNH BÁO NGUY HIỂM!"
+
+#: win32/rsrc/snes9x.rc
+msgid "Swap A and B"
+msgstr "Hoán đổi nút A và B"
+
+#: win32/wlanguage.h
+msgid "Switch aspect Ratio:"
+msgstr "Thay đổi tỷ lệ khung hình:"
+
+#: win32/wlanguage.h
+msgid "Switch controllers:"
+msgstr "Đổi vị trí tay cầm:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Sync By Reset"
+msgstr "Đồng bộ bằng cách khởi động lại"
+
+#: win32/rsrc/snes9x.rc
+msgid "Sync Sound"
+msgstr "Đồng bộ âm thanh"
+
+#: win32/rsrc/snes9x.rc
+msgid "Sync Using Reset Game"
+msgstr "Đồng bộ bằng cách khởi động lại trò chơi"
+
+#: win32/rsrc/snes9x.rc
+msgid "Synchronize with sound core"
+msgstr "Đồng bộ hóa với nhân xử lý âm thanh"
+
+#: win32/wlanguage.h
+msgid "TempTurbo"
+msgstr "Tăng tốc tạm thời (TempTurbo)"
+
+#: win32/wlanguage.h
+msgid "Text file"
+msgstr "Tập tin văn bản (.txt)"
+
+#: win32/wlanguage.h
+msgid "The movie file is corrupt or in the wrong format."
+msgstr "Tập tin movie đã bị hỏng hoặc sai định dạng."
+
+#: win32/wlanguage.h
+msgid "The movie file was not found or could not be opened."
+msgstr "Không tìm thấy hoặc không thể mở tập tin movie."
+
+#: win32/rsrc/snes9x.rc
+msgid "Tile Addr:"
+msgstr "Địa chỉ ô gạch (Tile):"
+
+#: win32/rsrc/snes9x.rc
+msgid "Tile Data:"
+msgstr "Dữ liệu ô gạch (Tile):"
+
+#: win32/rsrc/snes9x.rc
+msgid "Tile Size:"
+msgstr "Kích thước ô gạch (Tile):"
+
+#: win32/rsrc/snes9x.rc
+msgid "Tile Viewer"
+msgstr "Bộ xem ô gạch (Tile)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Tilemap"
+msgstr "Bản đồ gạch (Tilemap)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Tilemap Viewer"
+msgstr "Bộ xem bản đồ gạch (Tilemap)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Tiles"
+msgstr "Các ô đồ họa (Tiles)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Timeout:"
+msgstr "Thời gian chờ tối đa:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Toggle Achievements Images"
+msgstr "Bật/tắt hình ảnh thành tích (Achievements Images)"
+
+#: win32/wlanguage.h
+msgid "Toggle backdrop:"
+msgstr "Bật/tắt màu phông sau (backdrop):"
+
+#: win32/wlanguage.h
+msgid "Toggle cheats:"
+msgstr "Bật/tắt gian lận (cheats):"
+
+#: win32/wlanguage.h
+msgid "Toggle mute:"
+msgstr "Bật/tắt tắt tiếng (mute):"
+
+#: win32/rsrc/snes9x.rc
+msgid "Transparency Effects"
+msgstr "Hiệu ứng trong suốt"
+
+#: win32/wlanguage.h
+msgid "Transparency:"
+msgstr "Độ trong suốt:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Tree1"
+msgstr "Tree1"
+
+#: win32/wlanguage.h
+msgid "Turbo"
+msgstr "Tốc độ nhanh (Turbo)"
+
+#: win32/wlanguage.h
+msgid "Turbo A mode:"
+msgstr "Chế độ Turbo nút A:"
+
+#: win32/wlanguage.h
+msgid "Turbo B mode:"
+msgstr "Chế độ Turbo nút B:"
+
+#: win32/wlanguage.h
+msgid "Turbo Down mode:"
+msgstr "Chế độ Turbo nút Xuống:"
+
+#: win32/wlanguage.h
+msgid "Turbo L mode:"
+msgstr "Chế độ Turbo nút L:"
+
+#: win32/wlanguage.h
+msgid "Turbo Left mode:"
+msgstr "Chế độ Turbo nút Trái:"
+
+#: win32/wlanguage.h
+msgid "Turbo R mode:"
+msgstr "Chế độ Turbo nút R:"
+
+#: win32/wlanguage.h
+msgid "Turbo Right mode:"
+msgstr "Chế độ Turbo nút Phải:"
+
+#: win32/wlanguage.h
+msgid "Turbo Select mode:"
+msgstr "Chế độ Turbo nút Select:"
+
+#: win32/wlanguage.h
+msgid "Turbo Start mode:"
+msgstr "Chế độ Turbo nút Start:"
+
+#: win32/wlanguage.h
+msgid "Turbo Up mode:"
+msgstr "Chế độ Turbo nút Lên:"
+
+#: win32/wlanguage.h
+msgid "Turbo X mode:"
+msgstr "Chế độ Turbo nút X:"
+
+#: win32/wlanguage.h
+msgid "Turbo Y mode:"
+msgstr "Chế độ Turbo nút Y:"
+
+#: win32/wlanguage.h
+msgid "Uncompressed ROM files"
+msgstr "Các tệp ROM chưa giải nén"
+
+#: win32/wlanguage.h
+msgid "Unrecognized format."
+msgstr "Định dạng không được nhận diện."
+
+#: win32/rsrc/snes9x.rc
+msgid "Unsigned (>=0)"
+msgstr "Không dấu (>=0)"
+
+#: win32/wlanguage.h
+msgid "Unsupported movie version."
+msgstr "Phiên bản movie không được hỗ trợ."
+
+#: win32/rsrc/snes9x.rc
+msgid "UP"
+msgstr "LÊN"
+
+#: win32/rsrc/snes9x.rc
+msgid "UP LEFT"
+msgstr "LÊN TRÁI"
+
+#: win32/wlanguage.h
+msgid "Up Left"
+msgstr "Lên Trái"
+
+#: win32/rsrc/snes9x.rc
+msgid "UP RIGHT"
+msgstr "LÊN PHẢI"
+
+#: win32/wlanguage.h
+msgid "Up Right"
+msgstr "Lên Phải"
+
+#: win32/rsrc/snes9x.rc
+msgid "Update"
+msgstr "Cập nhật"
+
+#: win32/rsrc/snes9x.rc
+msgid "Use CGRAM"
+msgstr "Sử dụng CGRAM"
+
+#: win32/rsrc/snes9x.rc
+msgid "Use DirectInput"
+msgstr "Sử dụng DirectInput"
+
+#: win32/rsrc/snes9x.rc
+msgid "Use Dual Justifiers"
+msgstr "Sử dụng Dual Justifiers"
+
+#: win32/rsrc/snes9x.rc
+msgid "Use Konami Justifier"
+msgstr "Sử dụng Konami Justifier"
+
+#: win32/rsrc/snes9x.rc
+msgid "Use M.A.C.S. Rifle"
+msgstr "Sử dụng súng M.A.C.S. Rifle"
+
+#: win32/rsrc/snes9x.rc
+msgid "Use Mouse in alternate port"
+msgstr "Sử dụng Chuột ở cổng phụ"
+
+#: win32/rsrc/snes9x.rc
+msgid "Use Multitaps (8-player)"
+msgstr "Sử dụng Multitap (Hỗ trợ 8 người chơi)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Use Shader"
+msgstr "Sử dụng Shader"
+
+#: win32/rsrc/snes9x.rc
+msgid "Use SNES Joypad(s)"
+msgstr "Sử dụng các tay cầm SNES"
+
+#: win32/rsrc/snes9x.rc
+msgid "Use SNES Mouse"
+msgstr "Sử dụng Chuột SNES"
+
+#: win32/rsrc/snes9x.rc
+msgid "Use Super Multitap (5-player)"
+msgstr "Sử dụng Super Multitap (Hỗ trợ 5 người chơi)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Use Super Scope"
+msgstr "Sử dụng tâm ngắm Super Scope"
+
+#: win32/rsrc/snes9x.rc
+msgid "User Agent: SuperSnes9x/1.63"
+msgstr "Chuỗi định danh User Agent: SuperSnes9x/1.63"
+
+#: win32/rsrc/snes9x.rc
+msgid "Username:"
+msgstr "Tên người dùng:"
+
+#: win32/wlanguage.h
+msgid "Value"
+msgstr "Giá trị"
+
+#: win32/rsrc/snes9x.rc
+msgid "Value (hex):"
+msgstr "Giá trị (Hệ mã Hex):"
+
+#: win32/rsrc/snes9x.rc
+msgid "Video"
+msgstr "Video / Hình ảnh"
+
+#: win32/rsrc/snes9x.rc
+msgid "Video System:"
+msgstr "Hệ thống Video:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Volume"
+msgstr "Âm lượng"
+
+#: win32/rsrc/snes9x.rc
+msgid "VSync"
+msgstr "Đồng bộ đứng (VSync)"
+
+#: win32/wlanguage.h
+msgid "WARNING: You don't have the right ROM loaded!"
+msgstr "CẢNH BÁO: Bạn chưa tải đúng tệp ROM phù hợp!"
+
+#: win32/rsrc/snes9x.rc
+msgid "Watch"
+msgstr "Theo dõi dữ liệu"
+
+#: win32/rsrc/snes9x.rc
+msgid "Welcome Message (MOTD)"
+msgstr "Thông điệp chào mừng (MOTD)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Width:"
+msgstr "Chiều rộng:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Window Size"
+msgstr "Kích thước cửa sổ"
+
+#: win32/rsrc/snes9x.rc
+msgid "WOG!"
+msgstr "WOG!"
+
+#: win32/wlanguage.h
+msgid "You have entered an out of range or invalid value for the new value"
+msgstr "Bạn đã nhập một giá trị nằm ngoài phạm vi hoặc không hợp lệ cho giá trị mới"
+
+#: win32/wlanguage.h
+msgid "You need a different version of SuperSnes9x to play this movie."
+msgstr "Bạn cần một phiên bản SuperSnes9x khác để phát tập tin movie này."
+
+#: win32/rsrc/snes9x.rc
+msgid "Your password is only used to get an API token.\nIt is never stored."
+msgstr "Mật khẩu của bạn chỉ được dùng để lấy mã API token.\nNó không bao giờ được lưu lại."
+
+#: win32/rsrc/snes9x.rc
+msgid "Zoom:"
+msgstr "Thu phóng kính (Zoom):"
+
+# === Win32 strings (added by i18n/extract_strings.py) ===
+
+#: win32/CSpriteViewerDlg.cpp
+msgid "Export Selected to PNG"
+msgstr "Xuất các mục được chọn sang tệp ảnh PNG"
+
+#: win32/CGBSpriteViewerDlg.cpp
+msgid "Export to PNG"
+msgstr "Xuất sang tệp ảnh PNG"
+
+#: win32/CSpriteViewerDlg.cpp
+msgid "Show All Objects"
+msgstr "Hiển thị tất cả đối tượng (All Objects)"
+
+#: win32/CSpriteViewerDlg.cpp
+msgid "Show Only Selected Objects"
+msgstr "Hiển thị các đối tượng được chọn (Only Selected)"
+
+#: win32/CSpriteViewerDlg.cpp
+msgid "Toggle Visibility"
+msgstr "Bật/tắt chế độ hiển thị (Visibility)"
+
+#: win32/wsnes9x.cpp
+msgid "Translations"
+msgstr "Bản dịch ngôn ngữ"
+
+# === Win32 strings (added by i18n/extract_strings.py) ===
+
+#: win32/wsnes9x.cpp
+msgid "Language"
+msgstr "Ngôn ngữ"
+
+# === Win32 strings (added by i18n/extract_strings.py) ===
+
+#: qt/src/SoundPanel.ui
+msgid "44100 Hz"
+msgstr "44100 Hz"
+
+#: qt/src/SoundPanel.ui
+msgid "48000 Hz"
+msgstr "48000 Hz"
+
+#: qt/src/DisplayPanel.ui
+msgid "4:3 - Classic display aspect"
+msgstr "4:3 - Tỷ lệ màn hình cổ điển"
+
+#: qt/src/DisplayPanel.ui
+msgid "64:49 - NTSC aspect"
+msgstr "64:49 - Tỷ lệ khung hình NTSC chuẩn"
+
+#: qt/src/DisplayPanel.ui
+msgid "8:7 - Square pixels"
+msgstr "8:7 - Điểm ảnh vuông"
+
+#: qt/src/EmulationPanel.ui
+msgid "<html><head/><body><p>A hack option. Only use this if you are running a third-party hack of a game that was designed for emulators and needs this.</p></body></html>"
+msgstr "<html><head/><body><p>Một tùy chọn hack phần cứng. Chỉ sử dụng tùy chọn này nếu bạn đang chạy một bản hack game bên thứ ba được thiết kế riêng cho các trình giả lập và yêu cầu tính năng này.</p></body></html>"
+
+#: qt/src/EmulationPanel.ui
+msgid "<html><head/><body><p>Allows more sprites to be displayed on the screen in an attempt to remove flickering.</p><p>Some games take advantage of this limit and use it to hide glitches, and removing the limit will make those visible.</p></body></html>"
+msgstr "<html><head/><body><p>Cho phép hiển thị nhiều đối tượng đồ họa (sprites) hơn trên màn hình nhằm loại bỏ hiện tượng nhấp nháy màn hình.</p><p>Một số trò chơi tận dụng giới hạn phần cứng gốc này để che giấu các lỗi hình ảnh, và việc loại bỏ giới hạn có thể khiến các lỗi đó hiển thị rõ ra ngoài.</p></body></html>"
+
+#: qt/src/EmulationPanel.ui
+msgid "<html><head/><body><p>Alternate sound filters can make the audio more crisp than the authentic gaussian filter.</p><p>The Cubic and Sinc filters provide the best improvement, but they can reveal some noise that would normally be hidden by the hardware.</p></body></html>"
+msgstr "<html><head/><body><p>Các bộ lọc âm thanh thay thế có thể làm cho âm thanh trở nên sắc nét hơn bộ lọc chuẩn gaussian gốc.</p><p>Bộ lọc Cubic và Sinc đem lại sự cải thiện tốt nhất, nhưng chúng có thể để lộ một số tạp âm nhiễu đáng lẽ sẽ bị phần cứng gốc che giấu đi.</p></body></html>"
+
+#: qt/src/EmulationPanel.ui
+msgid "<html><head/><body><p>Amount of memory to use to enable the rewind function. The amount of time each MB gets you varies based on the complexity of the game. Set to 0 to disable rewind altogether and use less processor time.</p></body></html>"
+msgstr "<html><head/><body><p>Dung lượng bộ nhớ sử dụng để kích hoạt tính năng tua lại. Thời gian tua lại có được trên mỗi MB sẽ khác nhau tùy thuộc vào độ phức tạp của trò chơi. Đặt thành 0 để vô hiệu hóa hoàn toàn tính năng tua lại nhằm tiết kiệm tài nguyên xử lý của CPU.</p></body></html>"
+
+#: qt/src/EmulationPanel.ui
+msgid "<html><head/><body><p>Change the speed of the SuperFX chip. The SuperFX had some notoriously slow games, and this can be used to attempt to speed them up.</p></body></html>"
+msgstr "<html><head/><body><p>Thay đổi tốc độ của chip xử lý đồ họa SuperFX. Chip SuperFX nổi tiếng là có một số trò chơi chạy rất chậm, và tính năng này có thể được dùng để cố gắng tăng tốc chúng lên.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>Choose one of <span style=\" font-style:italic;\">Qt Software, Vulkan, or OpenGL</span>.</p><p>Qt Software will use the CPU to draw the display. Vulkan or OpenGL will use that respective graphics interface to draw the display.</p></body></html>"
+msgstr "<html><head/><body><p>Chọn một trong các trình xuất đồ họa <span style=\" font-style:italic;\">Qt Software, Vulkan, hoặc OpenGL</span>.</p><p>Qt Software sẽ dùng CPU máy tính để dựng hình. Vulkan hoặc OpenGL sẽ sử dụng giao diện phần cứng đồ họa tương ứng để xử lý hiển thị màn hình.</p></body></html>"
+
+#: qt/src/ControllerPanel.ui
+msgid "<html><head/><body><p>Clear or swap sets of bindings between controllers.</p></body></html>"
+msgstr "<html><head/><body><p>Xóa hoặc hoán đổi các bộ phím thiết lập giữa các tay cầm điều khiển.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>Control how much the audio is stretched initially.</p><p><br/></p><p>Unless you know what you're doing, it's best to use the option above this to adjust it automatically.</p></body></html>"
+msgstr "<html><head/><body><p>Kiểm soát mức độ kéo giãn âm thanh ban đầu.</p><p><br/></p><p>Trừ khi bạn hiểu rõ mình đang làm gì, tốt nhất nên sử dụng tùy chọn ngay phía trên để hệ thống tự động điều chỉnh.</p></body></html>"
+
+#: qt/src/FoldersPanel.ui
+msgid "<html><head/><body><p>Determines where to look for optional BIOS / boot ROM files (Super Game Boy boot ROM, BS-X.bin, etc).</p><p><span style=\" font-style:italic;\">ROM Folder</span> looks next to the loaded ROM.</p><p><span style=\" font-style:italic;\">Config Folder</span> uses a \"bios\" subfolder of the config folder.</p><p><span style=\" font-style:italic;\">Custom</span> uses an explicit path (default: \"Bios\" relative to the working directory).</p></body></html>"
+msgstr "<html><head/><body><p>Xác định nơi tìm kiếm tập tin BIOS / tệp khởi động hệ thống tùy chọn (Super Game Boy boot ROM, BS-X.bin, v.v.).</p><p><span style=\" font-style:italic;\">Thư mục ROM</span> tìm ngay bên cạnh tệp ROM đang chạy.</p><p><span style=\" font-style:italic;\">Thư mục cấu hình</span> sử dụng thư mục con tên \"bios\" nằm bên trong thư mục cấu hình chung.</p><p><span style=\" font-style:italic;\">Tùy chỉnh</span> cho phép chỉ định chính xác đường dẫn mong muốn (mặc định: thư mục \"Bios\" trong thư mục đang làm việc).</p></body></html>"
+
+#: qt/src/FoldersPanel.ui
+msgid "<html><head/><body><p>Determines where to save these files.</p><p><span style=\" font-style:italic;\">ROM Folder</span> will always save to the same folder as the ROM.</p><p><span style=\" font-style:italic;\">Config Folder</span> will save to a subfolder of the config folder that is shown. If there is a supersnes9x.conf file next to your executable, SuperSnes9x will operate in portable mode and the config folder will be the folder the executable is in.</p><p><span style=\" font-style:italic;\">Custom</span> allows you to specify exactly where to save these files.</p></body></html>"
+msgstr "<html><head/><body><p>Xác định vị trí lưu trữ các tập tin này.</p><p><span style=\" font-style:italic;\">Thư mục ROM</span> sẽ luôn lưu dữ liệu vào cùng thư mục chứa tệp ROM.</p><p><span style=\" font-style:italic;\">Thư mục cấu hình</span> sẽ lưu vào một thư mục con của thư mục cấu hình hiển thị bên dưới. Nếu có tập tin supersnes9x.conf nằm cạnh tệp chạy, SuperSnes9x sẽ hoạt động ở chế độ di động (portable) và thư mục cấu hình chính là thư mục chứa tệp chạy đó.</p><p><span style=\" font-style:italic;\">Tùy chỉnh</span> cho phép bạn chỉ định chính xác vị trí lưu các tập tin này theo ý muốn.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>Erases all emulated sound output and just sends out silence.</p></body></html>"
+msgstr "<html><head/><body><p>Xóa bỏ tất cả âm thanh giả lập đầu ra và chỉ phát ra tín hiệu im lặng hoàn toàn.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>If after everything, you're still getting pops and crackles in audio, you can increase this value. However, it may cause noticeable distortion.</p></body></html>"
+msgstr "<html><head/><body><p>Nếu sau khi thiết lập mọi thứ mà bạn vẫn nghe thấy tiếng lộp bộp hay rèn rẹt ở âm thanh, bạn có thể tăng giá trị này lên. Tuy nhiên, nó có thể gây ra hiện tượng méo tiếng khá rõ ràng.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>Master output volume during normal play. Moving this also drags the per-source SGB sliders so they stay in step.</p></body></html>"
+msgstr "<html><head/><body><p>Âm lượng đầu ra tổng thể (Master) trong khi chơi bình thường. Di chuyển thanh này cũng sẽ kéo các thanh trượt SGB của từng nguồn đi cùng để giữ đồng bộ mức âm.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>Master output volume during turbo and rewind.</p></body></html>"
+msgstr "<html><head/><body><p>Âm lượng tổng thể (Master) phát ra trong quá trình sử dụng chức năng tăng tốc (turbo) và tua lại.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>Mutes sound when using the turbo and rewind functions, which might be annoying to some users.</p></body></html>"
+msgstr "<html><head/><body><p>Tắt âm thanh khi sử dụng chức năng tăng tốc (turbo) và tua lại, các âm thanh biến đổi siêu tốc này có thể gây khó chịu cho một số người dùng.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>On classic CRT televisions, some areas of the screen were covered by the bezel, so weren't used often in games. This option allows you to show that area, but it will usually be just black bars.</p></body></html>"
+msgstr "<html><head/><body><p>Trên TV CRT cổ điển, một số vùng rìa ngoài màn hình bị che khuất bởi khung viền TV, nên hiếm khi được trò chơi sử dụng để hiển thị thông tin. Tùy chọn này cho phép bạn hiển thị khu vực đó, nhưng thông thường nó sẽ chỉ là những dải viền đen.</p></body></html>"
+
+#: qt/src/EmulationPanel.ui
+msgid "<html><head/><body><p>Original controllers may have had a small pin in the dpad preventing left and right or up and down from being pressed at the same time. This will allow that behavior if you're using a keyboard or device that can press those buttons at the same time. Some games will glitch when this is done.</p></body></html>"
+msgstr "<html><head/><body><p>Tay cầm điều khiển gốc trước đây có một chốt nhựa nhỏ bên trong nút D-pad để ngăn không cho nhấn cùng lúc Trái và Phải hoặc Lên và Xuống. Tùy chọn này sẽ phá bỏ giới hạn đó nếu bạn đang sử dụng bàn phím hoặc thiết bị có khả năng nhấn các nút đối nghịch đồng thời. Một số trò chơi sẽ gặp lỗi đồ họa/điều khiển khi thực hiện việc này.</p></body></html>"
+
+#: qt/src/EmulationPanel.ui
+msgid "<html><head/><body><p>Override the frame rate of the emulated system. This can be used to run slightly faster or slower than usual, or to match the timer to your exact refresh rate.</p><p><br/></p><p>Set this to 0 to use whatever the emulated system uses.</p></body></html>"
+msgstr "<html><head/><body><p>Ghi đè tốc độ khung hình (frame rate) gốc của hệ máy giả lập. Tính năng này có thể dùng để chạy game nhanh hơn hoặc chậm hơn một chút so với bình thường, hoặc điều chỉnh bộ đếm thời gian cho khớp hoàn hảo với tần số quét màn hình của bạn.</p><p><br/></p><p>Đặt giá trị thành 0 để sử dụng đúng tốc độ mặc định mà hệ máy gốc quy định.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>Selects the driver to output sound with.</p><p><span style=\" font-style:italic;\">Cubeb: </span>The recommended option.</p><p><span style=\" font-style:italic;\">SDL</span>: If Cubeb doesn't work.</p><p><span style=\" font-style:italic;\">PulseAudio:</span> Unix only. May have less latency.</p></body></html>"
+msgstr "<html><head/><body><p>Chọn trình điều khiển âm thanh đầu ra.</p><p><span style=\" font-style:italic;\">Cubeb: </span>Tùy chọn khuyến nghị khuyên dùng.</p><p><span style=\" font-style:italic;\">SDL</span>: Sử dụng dự phòng nếu hệ thống không chạy được Cubeb.</p><p><span style=\" font-style:italic;\">PulseAudio:</span> Chỉ dành cho hệ điều hành Unix/Linux. Có thể đem lại độ trễ thấp hơn.</p></body></html>"
+
+#: qt/src/FoldersPanel.ui
+msgid "<html><head/><body><p>Setting this to anything other than 0 will save the SRAM (internal game saves) file regularly. If it is set to to 0, it will only save when exiting SuperSnes9x or changing games, and you will lose any progress since the last save if your device crashes.</p></body></html>"
+msgstr "<html><head/><body><p>Đặt giá trị này khác 0 sẽ tự động lưu tệp SRAM (lưu game nội bộ) định kỳ theo thời gian. Nếu đặt về 0, hệ thống chỉ lưu khi bạn thoát hẳn phần mềm SuperSnes9x hoặc đổi trò chơi khác, và bạn sẽ mất toàn bộ tiến trình kể từ lần lưu cuối cùng nếu thiết bị hoặc ứng dụng bị sập bất ngờ.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>SGB BIOS mix: GB channel volume. Active in SGB1/SGB2 BIOS mode; in BIOS-less mode this mirrors the Regular master, which is what actually scales GB output.</p></body></html>"
+msgstr "<html><head/><body><p>Hòa âm SGB BIOS (SGB BIOS mix): Âm lượng kênh âm thanh Game Boy (GB). Chỉ hoạt động ở chế độ dùng tệp BIOS SGB1/SGB2; ở chế độ không dùng BIOS, thanh này sẽ mô phỏng lại thanh âm lượng Regular Master tổng, vốn là bộ điều phối chính thực tế của đầu ra âm thanh GB.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>SGB BIOS mix: SPC channel volume. Only active in SGB1/SGB2 BIOS mode — BIOS-less GB playback discards SPC output.</p></body></html>"
+msgstr "<html><head/><body><p>Hòa âm SGB BIOS (SGB BIOS mix): Âm lượng kênh âm thanh SPC. Chỉ kích hoạt ở chế độ dùng tệp BIOS SGB1/SGB2 — Việc phát lại GB không dùng tệp BIOS sẽ loại bỏ hoàn toàn đầu ra của kênh SPC.</p></body></html>"
+
+#: qt/src/EmulationPanel.ui
+msgid "<html><head/><body><p>Skips rendering the specified amount of frames when using the fast-forward function. The higher this amount, the faster it goes.</p></body></html>"
+msgstr "<html><head/><body><p>Bỏ qua việc dựng hình (render) một số lượng khung hình nhất định khi sử dụng chức năng tua nhanh. Số lượng đặt càng cao, tốc độ trò chơi diễn ra càng nhanh.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>The buffer size for the emulator side of sound playback. Ideally, it should be about two frames worth of audio, or about 32ms at 60Hz. Latency will be half this value.</p></body></html>"
+msgstr "<html><head/><body><p>Kích thước bộ đệm cho phía trình giả lập khi phát lại âm thanh. Lý tưởng nhất, nó nên ở mức dung lượng tương đương khoảng hai khung hình âm thanh, hoặc tầm 32ms ở tần số 60Hz. Độ trễ thực tế sẽ bằng một nửa giá trị này.</p></body></html>"
+
+#: qt/src/ControllerPanel.ui
+msgid "<html><head/><body><p>The enumerated controller as seen by the SNES. Controller 1 will always be quot;Player 1quot; and so on, no matter what device is assigned to the controller ports.</p></body></html>"
+msgstr "<html><head/><body><p>Cổng thứ tự tay cầm được nhận diện bởi hệ máy SNES. Tay cầm 1 sẽ luôn đóng vai trò là &quot;Người chơi 1&quot; và tương tự cho các cổng sau, bất kể thiết bị phần cứng nào đang được gán vào cổng tay cầm đó.</p></body></html>"
+
+#: qt/src/EmulationPanel.ui
+msgid "<html><head/><body><p>The number of frames between each rewind snapshot. More frames mean rewind can go back further and will rewind faster. </p></body></html>"
+msgstr "<html><head/><body><p>Số lượng khung hình giữa mỗi lần chụp ảnh lưu ảnh trạng thái tua lại. Khoảng cách khung hình càng lớn đồng nghĩa tính năng tua lại có thể lùi về thời gian xa hơn và tốc độ tua lại sẽ diễn ra nhanh hơn.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>The output playback rate on your computer. This is <span style=\" font-weight:700;\">not</span> the playback rate of the emulated system.</p><p>You should set this to match your operating system's sound server. It should almost always be 48000Hz.</p></body></html>"
+msgstr "<html><head/><body><p>Tần số lấy mẫu phát âm thanh đầu ra trên máy tính của bạn. Đây <span style=\" font-weight:700;\">không phải</span> là tần số âm thanh gốc của hệ máy game được giả lập.</p><p>Bạn nên thiết lập thông số này trùng khớp với cấu hình máy chủ âm thanh (sound server) của hệ điều hành máy tính. Giá trị thông dụng hầu như luôn là 48000Hz.</p></body></html>"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "<html><head/><body><p>This box lists application shortcuts. There are 4 slots, so you can assign 4 different keys or buttons to one function.</p><p>To set a binding, click a box or highlight it with the keyboard and press Enter/Return. The box will show three dots quot;...quot;. Press the desired key or gamepad button to assign it to that box. The Escape key will clear the box.</p></body></html>"
+msgstr "<html><head/><body><p>Hộp này liệt kê các phím tắt của ứng dụng. Có 4 ô trống, do đó bạn có thể gán tối đa 4 phím hoặc nút bấm phần cứng khác nhau cho cùng một chức năng duy nhất.</p><p>Để thiết lập liên kết, nhấp chuột vào một ô hoặc dùng bàn phím chuyển đến ô đó rồi nhấn Enter. Ô bấm sẽ chuyển sang hiển thị ký tự ba dấu chấm &quot;...&quot;. Tiếp theo, hãy nhấn phím bàn phím hoặc nút bấm trên tay cầm điều khiển mong muốn để gán phím cho ô đó. Nhấn phím Escape để xóa trống dữ liệu ô gán.</p></body></html>"
+
+#: qt/src/ControllerPanel.ui
+msgid "<html><head/><body><p>This box lists keyboard keys and gamepad buttons mapped to the SNES controller. There are 4 slots, so you can assign 4 different keys or buttons to one SNES button.</p><p>To set a binding, click a box or highlight it with the keyboard and press Enter/Return. The box will show three dots quot;...quot;. Press the desired key or gamepad button to assign it to that box. The Escape key will clear the box.</p></body></html>"
+msgstr "<html><head/><body><p>Hộp này liệt kê các phím bàn phím và nút trên gamepad được ánh xạ tới tay cầm điều khiển hệ máy SNES. Có 4 ô trống, cho phép gán tối đa 4 phím bàn phím hoặc nút bấm khác nhau cho cùng một nút bấm chức năng SNES.</p><p>Để thiết lập liên kết, nhấp chuột vào một ô hoặc dùng bàn phím chuyển đến ô đó rồi nhấn Enter. Ô bấm sẽ chuyển sang hiển thị ký tự ba dấu chấm &quot;...&quot;. Hãy nhấn phím bàn phím hoặc nút bấm gamepad mong muốn để thực hiện gán nút. Nhấn phím Escape để xóa trống liên kết phím.</p></body></html>"
+
+#: qt/src/EmulationPanel.ui
+msgid "<html><head/><body><p>This controls how the program runs the emulated content at the correct speed.</p><p><span style=\" font-style:italic;\">Timer</span>: This sets a literal timer and shows emulated frames at the exact frame rate specified, or automatically matches the emulated system. It may not match your display's frame rate, which can cause judders.</p><p><span style=\" font-style:italic;\">Timer with Frameskipping</span>: The same as timer, except if your display has a lower refresh rate than the emulated system it will skip frames to keep up.</p><p><span style=\" font-style:italic;\">Sound Synchronization: </span>Assume the sound engine is outputting the sound at the correct speed and match the video output rate with it. This assumes your refresh rate is fairly close to the emulated system and you have vsync turned on.</p><p><span style=\" font-style:italic;\">None:</span> Don't attempt to slow emulation down. If you turn off vsync, this will run as fast as possible. If your display matches the emulated system's refresh rate closely, this with vsync enabled is generally the smoothest option aside from variable refresh rates with a timer.</p></body></html>"
+msgstr "<html><head/><body><p>Tùy chọn này kiểm soát cách chương trình vận hành nội dung giả lập theo đúng tốc độ chuẩn của trò chơi.</p><p><span style=\" font-style:italic;\">Timer (Bộ định thời)</span>: Tùy chọn này thiết lập một bộ đếm thời gian cố định và hiển thị các khung hình giả lập theo đúng tốc độ khung hình chỉ định, hoặc tự động khớp với hệ máy gốc. Cơ chế này có thể lệch với tần số quét thực tế của màn hình máy tính và gây ra hiện tượng giật giật hình.</p><p><span style=\" font-style:italic;\">Timer kèm Bỏ qua khung hình</span>: Tương tự như cơ chế dùng bộ định thời, ngoại trừ việc nếu màn hình hiển thị của bạn có tần số quét thấp hơn hệ máy giả lập, ứng dụng sẽ chủ động bỏ qua một số khung hình đồ họa để giữ đúng tiến độ tốc độ game.</p><p><span style=\" font-style:italic;\">Đồng bộ hóa âm thanh: </span>Hệ thống coi như lõi âm thanh đang phát ra đúng tốc độ chuẩn và sẽ ép tốc độ xuất hình ảnh đồ họa khớp theo tốc độ âm thanh đó. Yêu cầu tần số quét màn hình máy tính của bạn phải tương đối gần với tần số của hệ máy game gốc và bạn đã bật tính năng vsync.</p><p><span style=\" font-style:italic;\">Không (None):</span> Trình giả lập sẽ không tìm cách kìm hãm hay giới hạn tốc độ game. Nếu tắt vsync, trò chơi sẽ chạy nhanh nhất có thể theo sức mạnh phần cứng máy tính. Nếu màn hình của bạn có tần số quét khớp gần như hoàn hảo với hệ máy game gốc, việc chọn chế độ này kết hợp bật vsync nhìn chung là tùy chọn mượt mà nhất.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>This option adapts <span style=\" font-style:italic;\">maintain aspect ratio</span> and scales the image in steps of integral scale, so game pixels are never spread across the borders of screen pixels.</p></body></html>"
+msgstr "<html><head/><body><p>Tùy chọn này áp dụng cơ chế <span style=\" font-style:italic;\">giữ nguyên tỷ lệ khung hình</span> và thực hiện thu phóng hình ảnh theo các bước bội số nguyên (integral scale), giúp các điểm ảnh (pixels) của trò chơi không bao giờ bị nứt vỡ hay trải lệch mờ giữa các ranh giới điểm ảnh của màn hình thực tế.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>This option affects how <span style=\" font-style:italic;\">maintain aspect ratio </span>works. </p><p><span style=\" font-style:italic;\">4:3 </span>will maintain a ratio where the screen is 1.333 times wider than high.</p><p>64:49 presents an idealized ratio where the display output is perfect, but is affected by NTSC compression.</p><p>1:1 Means pixels will be square. This will squeeze the image horizontally.</p></body></html>"
+msgstr "<html><head/><body><p>Tùy chọn này ảnh hưởng trực tiếp đến cách thức hoạt động của cơ chế <span style=\" font-style:italic;\">giữ nguyên tỷ lệ khung hình</span>. </p><p><span style=\" font-style:italic;\">4:3 </span>sẽ duy trì tỷ lệ hiển thị màn hình có chiều rộng gấp 1.333 lần chiều cao cổ điển.</p><p>64:49 đem lại tỷ lệ màn hình lý tưởng hóa nơi hình ảnh xuất ra hiển thị hoàn hảo nhất, nhưng chịu ảnh hưởng đôi chút bởi thuật toán nén hệ NTSC.</p><p>1:1 Đồng nghĩa các điểm ảnh sẽ hiển thị theo dạng vuông hoàn toàn. Thiết lập này sẽ bóp méo co hẹp hình ảnh theo chiều ngang.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>This option causes the audio to be slightly stretched to keep the latency even and to prevent underruns and overruns, which will cause pops and cracks in the audio.</p></body></html>"
+msgstr "<html><head/><body><p>Tùy chọn này khiến dữ liệu âm thanh được kéo giãn nhẹ nhằm giữ cho độ trễ luôn ổn định đồng đều, đồng thời ngăn chặn các sự cố thiếu hoặc tràn bộ đệm dữ liệu (underruns / overruns) vốn là nguyên nhân chính gây ra tiếng nổ lộp bộp và rèn rẹt khó chịu khi phát âm thanh.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>This option determines whether messages show up in the game display:</p><p>Onscreen will show a high resolution overlay when using <span style=\" font-style:italic;\">Vulkan</span> or <span style=\" font-style:italic;\">OpenGL</span>.</p><p>Inscreen will draw in a pixel font to the ingame display.</p><p>Don't display messages will show nothing.</p></body></html>"
+msgstr "<html><head/><body><p>Tùy chọn này xác định xem các thông báo hệ thống có hiển thị trên màn hình trò chơi hay không:</p><p>Onscreen (Trên màn hình) sẽ hiển thị một lớp giao diện phủ độ phân giải cao khi sử dụng trình xuất đồ họa <span style=\" font-style:italic;\">Vulkan</span> hoặc <span style=\" font-style:italic;\">OpenGL</span>.</p><p>Inscreen (Trong màn hình) sẽ vẽ chữ thông báo bằng phông chữ dạng pixel thô trực tiếp vào khung hình game.</p><p>Không hiển thị thông báo (Don't display messages) sẽ tắt hoàn toàn mọi thông báo hệ thống.</p></body></html>"
+
+#: qt/src/EmulationPanel.ui
+msgid "<html><head/><body><p>This option is explicitly for old AddMusic hacks. If you know you have one of those, you can enable this. Otherwise, leave it unchecked.</p></body></html>"
+msgstr "<html><head/><body><p>Tùy chọn này được thiết kế dành riêng cho các bản hack game dùng công cụ AddMusic cũ trước đây. Nếu bạn biết chắc chắn bản game của mình thuộc loại đó, hãy kích hoạt nó lên. Nếu không, hãy để trống không chọn.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>This option keeps the proportions of the emulated display the same no matter how you change the size of the window.</p></body></html>"
+msgstr "<html><head/><body><p>Tùy chọn này giúp giữ nguyên tỷ lệ kích thước hình ảnh của màn hình giả lập luôn đồng dạng, bất kể bạn co giãn hay thay đổi kích thước cửa sổ phần mềm ra sao.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>This option only affects the size of the font and the icons shown when display messages are set to the <span style=\" font-style:italic;\">Onscreen</span> option.</p></body></html>"
+msgstr "<html><head/><body><p>Tùy chọn này chỉ ảnh hưởng đến kích thước phông chữ chữ viết và biểu tượng hiển thị khi cài đặt thông báo hệ thống được đặt ở chế độ <span style=\" font-style:italic;\">Onscreen (Trên màn hình)</span>.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>This option only affects the SNES's high-resolution, 512 pixel wide mode. Few games use this. </p><p><span style=\" font-style:italic;\">Output directly</span> will use whatever is output directly, but when the game changes modes, the filtering will get sharper or blurrier and may be distracting.</p><p><span style=\" font-style:italic;\">Merge fields </span>will scale the image down and blend the extra pixels together. This is useful in games like Jurassic Park and Kirby's Dreamland 3, which use it for a transparency effect.</p><p><span style=\" font-style:italic;\">Scale low resolution </span>will double the width of low-resolution screens, so when the game switches between modes there isn't any distracting changes in filtering. This is useful when a game uses the high resolution mode often, like Seiken Densetsu 3.</p></body></html>"
+msgstr "<html><head/><body><p>Tùy chọn này chỉ ảnh hưởng đến chế độ phân giải cao rộng 512 pixel đặc biệt của hệ máy SNES. Rất ít trò chơi sử dụng chế độ này. </p><p><span style=\" font-style:italic;\">Xuất trực tiếp (Output directly)</span> sẽ sử dụng trực tiếp bất kỳ dữ liệu hình ảnh nào xuất ra, nhưng khi trò chơi tự động chuyển đổi qua lại giữa các chế độ hiển thị, bộ lọc hình ảnh sẽ đột ngột trở nên sắc nét hơn hoặc mờ đi, có thể gây mất tập trung khi chơi.</p><p><span style=\" font-style:italic;\">Trộn trường hình (Merge fields) </span>thực hiện thu nhỏ hình ảnh xuống và hòa trộn các điểm ảnh thừa lại với nhau. Tính năng này rất hữu ích trong các trò chơi như Jurassic Park và Kirby's Dreamland 3, vốn tận dụng cơ chế này để tạo hiệu ứng đồ họa giả lập trong suốt.</p><p><span style=\" font-style:italic;\">Thu phóng độ phân giải thấp (Scale low resolution) </span>sẽ nhân đôi chiều rộng của các màn hình độ phân giải thấp, nhờ đó khi trò chơi chuyển đổi qua lại giữa các chế độ hiển thị sẽ không có bất kỳ sự thay đổi đột ngột nào về bộ lọc gây khó chịu. Thiết lập này cực kỳ hữu ích khi chơi các tựa game thường xuyên chuyển sang chế độ phân giải cao như Seiken Densetsu 3.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>This option prevents tearing in the output.</p></body></html>"
+msgstr "<html><head/><body><p>Tùy chọn này ngăn chặn hiện tượng xé hình xảy ra ở khung hình đồ họa đầu ra.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>This option stretches the emulated audio output to coincide exactly with your display's refresh rate. It automatically handles the <span style=\" font-style:italic;\">Input Rate</span> option.</p></body></html>"
+msgstr "<html><head/><body><p>Tùy chọn này kéo giãn nhẹ đầu ra âm thanh giả lập sao cho trùng khớp hoàn hảo với tần số quét thực tế của màn hình hiển thị máy tính. Nó sẽ tự động quản lý và xử lý thông số của tùy chọn <span style=\" font-style:italic;\">Tỷ lệ đầu vào (Input Rate)</span>.</p></body></html>"
+
+#: qt/src/ControllerPanel.ui
+msgid "<html><head/><body><p>This option will use the SDL library to auto-configure gamepads. It will take the XBox mappings for the left D-pad and analog stick, as well as the the face buttons and L/R shoulder buttons, and assign them to relative locations on the first SNES controller.</p><p><br/></p><p>All gamepads will be assigned to player 1. If you need more players, disable this option and set up the mappings manually.</p></body></html>"
+msgstr "<html><head/><body><p>Tùy chọn này sẽ sử dụng thư viện phần mềm SDL để tự động cấu hình các tay cầm điều khiển (gamepads). Nó sẽ lấy sơ đồ nút bấm chuẩn của hệ máy Xbox (cho cụm nút di chuyển D-pad trái, cần xoay analog, các nút mặt điều khiển chính và các nút vai L/R), sau đó tự động ánh xạ gán chúng vào các vị trí tương ứng trên tay cầm SNES đầu tiên.</p><p><br/></p><p>Mặc định mọi tay cầm kết nối vào sẽ đều được gán chung cho Người chơi 1 (Player 1). Nếu bạn cần thiết lập chơi nhiều người, hãy tắt tùy chọn này đi và tự cài đặt sơ đồ nút thủ công bằng tay.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>This prevents the GPU from queuing up additional frames in advance, reducing the time it takes for the display to react to your input.</p></body></html>"
+msgstr "<html><head/><body><p>Tính năng này ngăn không cho card đồ họa (GPU) xếp hàng dựng trước quá nhiều khung hình trong hàng đợi, từ đó giảm thiểu tối đa thời gian màn hình phản hồi lại các thao tác nhấn nút điều khiển của bạn (giảm độ trễ).</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>Turns on a bilinear smoothing filter to smooth out the pixels. This option won't work with a hardware shader enabled.</p></body></html>"
+msgstr "<html><head/><body><p>Kích hoạt bộ lọc làm mượt tuyến tính song song (bilinear) để làm mượt các góc cạnh thô ráp của các điểm ảnh pixel. Tùy chọn này sẽ không có tác dụng nếu bạn đang bật một bộ đổ bóng phần cứng (hardware shader) tùy chỉnh khác.</p></body></html>"
+
+#: qt/src/ControllerPanel.ui
+msgid "<html><head/><body><p>Use this to automatically assign the default keyboard mapping or a detected controller to a set of bindings.</p><p>This uses the XInput controller protocol and maps it as close as possible to a SNES controller.</p></body></html>"
+msgstr "<html><head/><body><p>Sử dụng tùy chọn này để tự động gán sơ đồ phím bàn phím mặc định hoặc một tay cầm điều khiển vừa phát hiện vào một bộ liên kết phím bấm.</p><p>Hệ thống sử dụng giao thức tay cầm XInput chuẩn và tiến hành ánh xạ nút bấm sao cho giống và gần gũi nhất với bố cục của một tay cầm máy SNES thực tế.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>Uses a hardware shader with <span style=\" font-style:italic;\">Vulkan</span> or <span style=\" font-style:italic;\">OpenGL</span> drivers. These can be either .glslp or .slangp preset files.</p><p>GLSL shaders (.glslp) can be downloaded from:</p><p><a href=\"https://github.com/libretro/glsl-shaders\"><span style=\" text-decoration: underline; color:#2980b9;\">https://github.com/libretro/glsl-shaders</span></a></p><p>Slang shaders (.slangp) can be downloaded from:</p><p><a href=\"https://github.com/libretro/slang-shaders\"><span style=\" text-decoration: underline; color:#2980b9;\">https://github.com/libretro/slang-shaders</span></a></p></body></html>"
+msgstr "<html><head/><body><p>Sử dụng tệp đổ bóng đồ họa phần cứng kết hợp với các trình điều khiển <span style=\" font-style:italic;\">Vulkan</span> hoặc <span style=\" font-style:italic;\">OpenGL</span>. Các tệp này có định dạng tệp cấu hình mẫu là .glslp hoặc .slangp.</p><p>Các tệp Shader định dạng GLSL (.glslp) có thể tải xuống tại:</p><p><a href=\"https://github.com/libretro/glsl-shaders\"><span style=\" text-decoration: underline; color:#2980b9;\">https://github.com/libretro/glsl-shaders</span></a></p><p>Các tệp Shader định dạng Slang (.slangp) có thể tải xuống tại:</p><p><a href=\"https://github.com/libretro/slang-shaders\"><span style=\" text-decoration: underline; color:#2980b9;\">https://github.com/libretro/slang-shaders</span></a></p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>When entering fullscreen mode, this option temporarily sets a number of other options to values that make variable refresh rate monitors that use FreeSync or GSync smoother.</p><p>Enables vsync.</p><p>Sets synchronization mode to timer and the frame rate to exactly that of the SNES.</p><p>Sets input rate to 32040Hz.</p></body></html>"
+msgstr "<html><head/><body><p>Khi chuyển sang chế độ toàn màn hình, tùy chọn này sẽ tạm thời cấu hình tự động một loạt các thiết lập khác về các giá trị tối ưu, giúp các màn hình máy tính có tính năng thay đổi tần số quét linh hoạt (VRR) như FreeSync hoặc G-Sync hiển thị hình ảnh game mượt mà hơn.</p><p>Tự động kích hoạt đồng bộ đứng vsync.</p><p>Đặt chế độ đồng bộ hóa thành bộ định thời (timer) và ép tốc độ khung hình đồ họa chạy khớp chuẩn xác theo thông số gốc của hệ máy SNES.</p><p>Đặt tốc độ lấy mẫu đầu vào cố định thành 32040Hz.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>When using <span style=\" font-style:italic;\">Vulkan</span>, this chooses the GPU you wish to render with.</p></body></html>"
+msgstr "<html><head/><body><p>Khi sử dụng trình xuất đồ họa <span style=\" font-style:italic;\">Vulkan</span>, tùy chọn này cho phép chọn chip đồ họa (GPU/Card màn hình) cụ thể mà bạn muốn sử dụng để xử lý hình ảnh hiển thị.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "Adjust input rate to display rate automatically"
+msgstr "Tự động điều chỉnh tỷ lệ đầu vào theo tần số màn hình"
+
+#: qt/src/DisplayPanel.ui
+msgid "Adjust settings for VRR in fullscreen mode"
+msgstr "Tối ưu hóa các cài đặt cho màn hình VRR khi ở chế độ toàn màn hình"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "All Files (*)"
+msgstr "Tất cả tập tin (*)"
+
+#: qt/src/EmulationPanel.ui
+msgid "Allow opposite D-pad directions simultaneously"
+msgstr "Cho phép nhấn đồng thời các hướng D-pad đối nghịch nhau"
+
+#: qt/src/EmulationPanel.ui
+msgid "Alternate sound filter:"
+msgstr "Bộ lọc âm thanh thay thế:"
+
+#: qt/src/ControllerPanel.ui
+msgid "Auto-Assign Gamepad Buttons Using SDL Controller Map"
+msgstr "Tự động gán nút Gamepad bằng Sơ đồ tay cầm của thư viện SDL"
+
+#: qt/src/EmulationPanel.ui
+msgid "Auto-FastROM"
+msgstr "Tự động kích hoạt chế độ bộ nhớ FastROM nhanh"
+
+#: qt/src/ControllerPanel.ui
+msgid "Automatically assign a controller's buttons to a slot"
+msgstr "Tự động gán các nút bấm của một tay cầm vào một khe cấu hình"
+
+#: qt/src/DisplayPanel.ui
+msgid "Bilinear filter"
+msgstr "Bộ lọc tuyến tính song song (Bilinear filter)"
+
+#: qt/src/ControllerPanel.ui
+msgid "Binding #1"
+msgstr "Cấu hình phím gán số 1"
+
+#: qt/src/ControllerPanel.ui
+msgid "Binding #2"
+msgstr "Cấu hình phím gán số 2"
+
+#: qt/src/ControllerPanel.ui
+msgid "Binding #3"
+msgstr "Cấu hình phím gán số 3"
+
+#: qt/src/ControllerPanel.ui
+msgid "Binding #4"
+msgstr "Cấu hình phím gán số 4"
+
+#: qt/src/ControllerPanel.cpp
+msgid "Binding Set #%1"
+msgstr "Bộ phím gán thiết lập #%1"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Change Backdrop Color"
+msgstr "Thay đổi màu phông nền sau"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Cheats"
+msgstr "Mã gian lận (Cheats)"
+
+#: qt/src/CheatsDialog.cpp
+msgid "cheats.bml was not found."
+msgstr "Không tìm thấy tập tin cơ sở dữ liệu cheats.bml."
+
+#: qt/src/CheatsDialog.ui
+msgid "Check Database"
+msgstr "Kiểm tra cơ sở dữ liệu"
+
+#: qt/src/DisplayPanel.ui
+msgid "Choose a device to render output. If you have no integrated graphics, there will be only one choice."
+msgstr "Chọn thiết bị phần cứng để xử lý đầu ra hình ảnh hiển thị. Nếu máy tính của bạn không có nhiều card màn hình song song, hệ thống sẽ chỉ hiển thị một lựa chọn duy nhất."
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Choose a State File"
+msgstr "Chọn một tập tin trạng thái game (Save State)"
+
+#: qt/src/ControllerPanel.cpp
+msgid "Clear All Controllers"
+msgstr "Xóa cấu hình toàn bộ các tay cầm"
+
+#: qt/src/ControllerPanel.cpp
+msgid "Clear Current Controller"
+msgstr "Xóa cấu hình tay cầm hiện tại"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Clear Recent Files"
+msgstr "Xóa danh sách các tập tin mở gần đây"
+
+#: qt/src/EmuSettingsWindow.ui
+msgid "Click on a setting to find out more info."
+msgstr "Nhấp chuột vào một mục cài đặt để xem thêm thông tin chi tiết."
+
+#: qt/src/FoldersPanel.ui
+msgid "Config Folder"
+msgstr "Thư mục Cấu hình"
+
+#: qt/src/FoldersPanel.cpp
+msgid "Config folder is %1"
+msgstr "Thư mục cấu hình hiện tại là %1"
+
+#: qt/src/ControllerPanel.cpp
+msgid "Controller %1"
+msgstr "Tay cầm điều khiển số %1"
+
+#: qt/src/ControllerPanel.ui
+msgid "Controller + Multitap"
+msgstr "Cấu hình Tay cầm + Bộ chia Multitap"
+
+#: qt/src/ControllerPanel.ui
+msgid "Controller Ports:"
+msgstr "Danh sách các cổng tay cầm:"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Controllers"
+msgstr "Các tay cầm điều khiển"
+
+#: qt/src/FoldersPanel.ui
+msgid "Custom Folder"
+msgstr "Thư mục tùy chỉnh tùy ý"
+
+#: qt/src/FoldersPanel.ui
+msgid "Data Locations"
+msgstr "Vị trí lưu trữ dữ liệu"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Decrease Current Save Slot"
+msgstr "Giảm số thứ tự khe lưu hiện tại xuống"
+
+#: qt/src/ControllerPanel.cpp
+msgid "Default Keyboard"
+msgstr "Sơ đồ bàn phím mặc định"
+
+#: qt/src/DisplayPanel.ui
+msgid "Device:"
+msgstr "Thiết bị phần cứng:"
+
+#: qt/src/GeneralPanel.ui
+msgid "Disable screensaver"
+msgstr "Vô hiệu hóa trình bảo vệ màn hình (screensaver)"
+
+#: qt/src/DisplayPanel.ui
+msgid "Display messages:"
+msgstr "Hiển thị thông báo hệ thống:"
+
+#: qt/src/DisplayPanel.ui
+msgid "Display Output"
+msgstr "Thiết bị đầu ra hình ảnh hiển thị"
+
+#: qt/src/DisplayPanel.ui
+msgid "Don't display messages"
+msgstr "Không hiển thị bất kỳ thông báo nào"
+
+#: qt/src/DisplayPanel.ui
+msgid "Driver:"
+msgstr "Trình điều khiển hệ thống (Driver):"
+
+#: qt/src/ControllerPanel.ui
+msgid "Edit"
+msgstr "Sửa"
+
+#: qt/src/EmulationPanel.ui
+msgid "Emulation Speed"
+msgstr "Tốc độ vòng lặp giả lập"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Enable Fast-Forward"
+msgstr "Bật bộ tua nhanh (Fast-Forward)"
+
+#: qt/src/DisplayPanel.ui
+msgid "Enable vsync"
+msgstr "Bật đồng bộ đứng (vsync)"
+
+#: qt/src/FoldersPanel.ui
+msgid "Exports"
+msgstr "Tập tin dữ liệu xuất ra"
+
+#: qt/src/EmulationPanel.ui
+msgid "Fast-forward frame skip:"
+msgstr "Số khung hình bỏ qua khi tua nhanh:"
+
+#: qt/src/SoundPanel.ui
+msgid "Fast-Forward:"
+msgstr "Tua nhanh tốc độ:"
+
+#: qt/src/ControllerPanel.ui
+msgid "Form"
+msgstr "Biểu mẫu (Form)"
+
+#: qt/src/EmulationPanel.ui
+msgid "fps"
+msgstr "khung hình/giây (fps)"
+
+#: qt/src/EmulationPanel.ui
+msgid "Frame rate:"
+msgstr "Tốc độ khung hình màn hình:"
+
+#: qt/src/EmulationPanel.ui
+msgid "Frames between steps"
+msgstr "Số lượng khung hình giữa các bước chạy"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "From File"
+msgstr "Mở từ tập tin máy tính"
+
+#: qt/src/EmulationPanel.ui
+msgid "Gaussian"
+msgstr "Gaussian (Bộ lọc chuẩn gốc)"
+
+#: qt/src/SoundPanel.ui
+msgid "GB:"
+msgstr "Game Boy (GB):"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Grab Mouse"
+msgstr "Bắt giữ chuột vào cửa sổ game"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Hard Reset"
+msgstr "Khởi động lại cứng hệ máy (Hard Reset)"
+
+#: qt/src/EmulationPanel.ui
+msgid "High"
+msgstr "Chất lượng Cao"
+
+#: qt/src/DisplayPanel.ui
+msgid "High-resolution mode:"
+msgstr "Cơ chế xử lý độ phân giải cao:"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Increase Current Save Slot"
+msgstr "Tăng số thứ tự khe lưu hiện tại lên"
+
+#: qt/src/DisplayPanel.ui
+msgid "Inside the screen - Low resolution"
+msgstr "Vẽ bên trong khung hình game - Độ phân giải thấp pixel thô"
+
+#: qt/src/CheatsDialog.cpp
+msgid "Invalid Cheat"
+msgstr "Mã gian lận nhập vào không hợp lệ"
+
+#: qt/src/DisplayPanel.ui
+msgid "Keep the screen at the requested proportions for width and height."
+msgstr "Luôn duy trì kích thước hiển thị màn hình đúng theo tỷ lệ cân đối giữa chiều rộng và chiều cao quy định."
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Load State"
+msgstr "Tải trạng thái nhanh (Load State)"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Load State from Current Slot"
+msgstr "Tải trạng thái game nhanh từ khe hiện tại"
+
+#: qt/src/EmulationPanel.ui
+msgid "Low"
+msgstr "Chất lượng Thấp"
+
+#: qt/src/EmulationPanel.ui
+msgid "MB"
+msgstr "MB"
+
+#: qt/src/DisplayPanel.ui
+msgid "Merge the fields of the high-resolution lines"
+msgstr "Trộn các trường dòng quét của các đường phân giải cao"
+
+#: qt/src/DisplayPanel.ui
+msgid "Messages"
+msgstr "Các thông báo hệ thống"
+
+#: qt/src/ControllerPanel.ui
+msgid "Mouse + Controller"
+msgstr "Cấu hình sử dụng Chuột + Tay cầm điều khiển"
+
+#: qt/src/SoundPanel.ui
+msgid "ms"
+msgstr "mili giây (ms)"
+
+#: qt/src/SoundPanel.ui
+msgid "Mute all sound"
+msgstr "Tắt toàn bộ âm thanh hệ thống"
+
+#: qt/src/SoundPanel.ui
+msgid "Mute sound during turbo or rewind"
+msgstr "Tắt tiếng khi đang sử dụng tính năng tua nhanh hoặc tua lại"
+
+#: qt/src/CheatsDialog.cpp
+msgid "No cheats for the current game were found in the database."
+msgstr "Không tìm thấy bất kỳ mã gian lận nào cho tựa game hiện tại trong cơ sở dữ liệu hệ thống."
+
+#: qt/src/CheatsDialog.cpp
+msgid "No Cheats Found"
+msgstr "Không tìm thấy mã gian lận"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "No recent files"
+msgstr "Không có tập tin nào mở gần đây"
+
+#: qt/src/EmulationPanel.ui
+msgid "None - Run unthrottled, unless vsync is turned on"
+msgstr "Không giới hạn - Chạy thả ga hết công suất máy, trừ khi tính năng vsync được bật"
+
+#: qt/src/ControllerPanel.ui
+msgid "One Controller"
+msgstr "Cấu hình sử dụng một Tay cầm duy nhất"
+
+#: qt/src/DisplayPanel.ui
+msgid "Onscreen - High resolution"
+msgstr "Hiển thị đè lên màn hình - Độ phân giải đồ họa cao sắc nét"
+
+#: qt/src/DisplayPanel.ui
+msgid "Onscreen display size:"
+msgstr "Kích thước các chữ thông báo trên màn hình:"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Open a ROM File"
+msgstr "Mở một tập tin game ROM"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Open File"
+msgstr "Mở tập tin"
+
+#: qt/src/FoldersPanel.cpp
+msgid "Open Folder"
+msgstr "Mở thư mục"
+
+#: qt/src/EmuCanvasOpenGL.cpp
+msgid "OpenGL Driver"
+msgstr "Trình điều khiển đồ họa OpenGL"
+
+#: qt/src/EmulationPanel.ui
+msgid "Overclock:"
+msgstr "Ép xung phần cứng giả lập (Overclock):"
+
+#: qt/src/GeneralPanel.ui
+msgid "Overlays"
+msgstr "Lớp giao diện phủ ngoài (Overlays)"
+
+#: qt/src/FoldersPanel.ui
+msgid "Patches"
+msgstr "Các tệp bản vá game (.ips/.bps)"
+
+#: qt/src/GeneralPanel.ui
+msgid "Pause emulation when window is not focused"
+msgstr "Tự động tạm dừng game khi cửa sổ giả lập bị mất tập trung"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Pause/Continue"
+msgstr "Tạm dừng / Tiếp tục trò chơi"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Power Cycle Console"
+msgstr "Chu kỳ tắt mở nguồn giả lập hệ máy"
+
+#: qt/src/ShaderParametersDialog.cpp
+msgid "Preset name:"
+msgstr "Tên cấu hình mẫu (Preset name):"
+
+#: qt/src/DisplayPanel.ui
+msgid "Prevent the display driver from getting too far ahead in order to reduce lag."
+msgstr "Ngăn chặn trình điều khiển hiển thị dựng hình trước quá xa nhằm cắt giảm tối đa độ trễ điều khiển (lag)."
+
+#: qt/src/DisplayPanel.ui
+msgid "pt"
+msgstr "điểm font (pt)"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Load Slot 0"
+msgstr "Tải nhanh trạng thái ở Khe số 0"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Load Slot 1"
+msgstr "Tải nhanh trạng thái ở Khe số 1"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Load Slot 2"
+msgstr "Tải nhanh trạng thái ở Khe số 2"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Load Slot 3"
+msgstr "Tải nhanh trạng thái ở Khe số 3"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Load Slot 4"
+msgstr "Tải nhanh trạng thái ở Khe số 4"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Load Slot 5"
+msgstr "Tải nhanh trạng thái ở Khe số 5"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Load Slot 6"
+msgstr "Tải nhanh trạng thái ở Khe số 6"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Load Slot 7"
+msgstr "Tải nhanh trạng thái ở Khe số 7"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Load Slot 8"
+msgstr "Tải nhanh trạng thái ở Khe số 8"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Load Slot 9"
+msgstr "Tải nhanh trạng thái ở Khe số 9"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Save Slot 0"
+msgstr "Lưu nhanh trạng thái vào Khe số 0"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Save Slot 1"
+msgstr "Lưu nhanh trạng thái vào Khe số 1"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Save Slot 2"
+msgstr "Lưu nhanh trạng thái vào Khe số 2"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Save Slot 3"
+msgstr "Lưu nhanh trạng thái vào Khe số 3"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Save Slot 4"
+msgstr "Lưu nhanh trạng thái vào Khe số 4"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Save Slot 5"
+msgstr "Lưu nhanh trạng thái vào Khe số 5"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Save Slot 6"
+msgstr "Lưu nhanh trạng thái vào Khe số 6"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Save Slot 7"
+msgstr "Lưu nhanh trạng thái vào Khe số 7"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Save Slot 8"
+msgstr "Lưu nhanh trạng thái vào Khe số 8"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Save Slot 9"
+msgstr "Lưu nhanh trạng thái vào Khe số 9"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quit"
+msgstr "Thoát ứng dụng"
+
+#: qt/src/SoundPanel.ui
+msgid "Regular:"
+msgstr "Chơi thông thường (Regular):"
+
+#: qt/src/EmulationPanel.ui
+msgid "Remove the sprite limit"
+msgstr "Hủy bỏ giới hạn hiển thị sprite phần cứng gốc"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Reset to Default"
+msgstr "Đặt lại về giá trị mặc định gốc"
+
+#: qt/src/EmuSettingsWindow.ui
+msgid "Restore all settings on the current page to their default values."
+msgstr "Khôi phục lại toàn bộ tất cả cài đặt xuất hiện trên trang này về giá trị mặc định ban đầu."
+
+#: qt/src/EmuSettingsWindow.ui
+msgid "Restore Defaults"
+msgstr "Khôi phục cài đặt gốc"
+
+#: qt/src/EmulationPanel.ui
+msgid "Rewind buffer size (0 to disable):"
+msgstr "Kích thước bộ đệm dùng cho tua lại (đặt 0 để tắt):"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "ROM Files (*.sfc *.smc *.bin *.fig *.msu *.zip)"
+msgstr "Tập tin trò chơi ROM (*.sfc *.smc *.bin *.fig *.msu *.zip)"
+
+#: qt/src/FoldersPanel.ui
+msgid "ROM Folder"
+msgstr "Thư mục chứa tệp ROM"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Run"
+msgstr "Vận hành / Chạy game"
+
+#: qt/src/ShaderParametersDialog.cpp
+msgid "Save"
+msgstr "Lưu"
+
+#: qt/src/ShaderParametersDialog.cpp
+msgid "Save As"
+msgstr "Lưu thành tập tin mới..."
+
+#: qt/src/ShaderParametersDialog.cpp
+msgid "Save Shader Preset As"
+msgstr "Lưu cấu hình Shader mẫu này thành..."
+
+#: qt/src/FoldersPanel.ui
+msgid "Save SRAM to disk every:"
+msgstr "Tự động ghi file lưu SRAM xuống ổ cứng mỗi:"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Save State to Current Slot"
+msgstr "Lưu trạng thái game nhanh vào khe hiện tại"
+
+#: qt/src/FoldersPanel.ui
+msgid "Save states"
+msgstr "Các tệp lưu nhanh (Save State)"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Save States (*.sst *.oops *.undo *.0?? *.1?? *.2?? *.3?? *.4?? *.5?? *.6?? *.7?? *.8?? *.9*)"
+msgstr "Tập tin lưu nhanh (*.sst *.oops *.undo *.0?? *.1?? *.2?? *.3?? *.4?? *.5?? *.6?? *.7?? *.8?? *.9*)"
+
+#: qt/src/DisplayPanel.ui
+msgid "Scale normal resolution screens up"
+msgstr "Chủ động phóng lớn các màn hình độ phân giải thông thường lên"
+
+#: qt/src/DisplayPanel.ui
+msgid "Scaling and Aspect Ratio"
+msgstr "Cấu hình Thu phóng và Tỷ lệ khung hình"
+
+#: qt/src/FoldersPanel.ui
+msgid "seconds"
+msgstr "giây"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Seek to Frame"
+msgstr "Tìm nhảy nhanh tới khung hình"
+
+#: qt/src/DisplayPanel.cpp
+msgid "Select a Folder"
+msgstr "Chọn một Thư mục lưu trữ"
+
+#: qt/src/DisplayPanel.ui
+msgid "Select the output driver."
+msgstr "Chọn trình xuất đồ họa hiển thị tương ứng."
+
+#: qt/src/ControllerPanel.ui
+msgid "Set"
+msgstr "Đặt"
+
+#: qt/src/EmulationPanel.ui
+msgid "Set frame rate to 0 to automatically change based on PAL/NTSC and with interlacing on and off."
+msgstr "Thiết lập tốc độ khung hình bằng 0 để hệ thống tự động nhận diện thay đổi dựa theo hệ video PAL/NTSC hoặc trạng thái bật/tắt của chế độ đan xen dòng quét (interlacing)."
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Set Size"
+msgstr "Thiết lập kích thước hiển thị"
+
+#: qt/src/DisplayPanel.cpp
+msgid "Shader Presets (*.slangp *.glslp)"
+msgstr "Cấu hình mẫu bộ đổ bóng (*.slangp *.glslp)"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Shader Settings"
+msgstr "Cài đặt bộ đổ bóng (Shader)"
+
+#: qt/src/GeneralPanel.ui
+msgid "Show fast-forward and pause icons"
+msgstr "Hiển thị các biểu tượng tua nhanh và tạm dừng"
+
+#: qt/src/DisplayPanel.ui
+msgid "Show overscan area"
+msgstr "Hiển thị vùng quét quá mức (overscan area)"
+
+#: qt/src/DisplayPanel.ui
+msgid "Show the areas on the top and bottom of the screen that are normally black and hidden by the TV. Some games will draw in these areas."
+msgstr "Hiển thị hiển thị thêm các khu vực trên cùng và dưới cùng màn hình vốn dĩ mặc định có màu đen và bị che khuất bởi TV cổ điển ngày xưa. Một số trò chơi đặc thù sẽ dựng dữ liệu hình ảnh trong các vùng khuất này."
+
+#: qt/src/GeneralPanel.ui
+msgid "Show the time"
+msgstr "Hiển thị đồng hồ thời gian"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Slot %1"
+msgstr "Khe cấu hình lưu số %1"
+
+#: qt/src/DisplayPanel.ui
+msgid "Smooth screen output."
+msgstr "Thực hiện làm mượt hình ảnh màn hình xuất ra."
+
+#: qt/src/ControllerPanel.ui
+msgid "SNES Controller 1"
+msgstr "Tay cầm SNES số 1"
+
+#: qt/src/ControllerPanel.ui
+msgid "SNES Controller 2"
+msgstr "Tay cầm SNES số 2"
+
+#: qt/src/ControllerPanel.ui
+msgid "SNES Controller 3 (Multitap)"
+msgstr "Tay cầm SNES số 3 (Kết nối qua Multitap)"
+
+#: qt/src/ControllerPanel.ui
+msgid "SNES Controller 4 (Multitap)"
+msgstr "Tay cầm SNES số 4 (Kết nối qua Multitap)"
+
+#: qt/src/ControllerPanel.ui
+msgid "SNES Controller 5 (Multitap)"
+msgstr "Tay cầm SNES số 5 (Kết nối qua Multitap)"
+
+#: qt/src/DisplayPanel.ui
+msgid "Software Filters"
+msgstr "Các bộ lọc xử lý bằng phần mềm"
+
+#: qt/src/SoundPanel.ui
+msgid "Sound Output"
+msgstr "Đầu ra phát âm thanh"
+
+#: qt/src/SoundPanel.ui
+msgid "Sound Stretching"
+msgstr "Cơ chế kéo giãn tần số âm thanh mượt mà"
+
+#: qt/src/EmulationPanel.ui
+msgid "Sound Synchronization - Wait on the sound buffer"
+msgstr "Đồng bộ hóa theo âm thanh - Chờ tín hiệu từ bộ đệm âm thanh phát ra"
+
+#: qt/src/SoundPanel.ui
+msgid "SPC:"
+msgstr "Tệp âm thanh SPC:"
+
+#: qt/src/EmulationPanel.ui
+msgid "Speed control method:"
+msgstr "Phương thức kiểm soát tốc độ game:"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Start Recording"
+msgstr "Bắt đầu tiến trình ghi hình video/âm thanh"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Stop Recording"
+msgstr "Dừng tiến trình ghi hình"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Super Game Boy (SGB1)"
+msgstr "Thiết bị Super Game Boy (SGB1)"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Super Game Boy 2 (SGB2)"
+msgstr "Thiết bị Super Game Boy 2 (SGB2)"
+
+#: qt/src/EmulationPanel.ui
+msgid "SuperFX clock speed:"
+msgstr "Tốc độ xung nhịp chip đồ họa bổ trợ SuperFX:"
+
+#: qt/src/ControllerPanel.ui
+msgid "SuperScope + Controller"
+msgstr "Cấu hình kết hợp Súng phụ kiện SuperScope + Tay cầm"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Swap Controllers 1 and 2"
+msgstr "Hoán đổi vị trí cổng cắm của Tay cầm 1 và Tay cầm 2"
+
+#: qt/src/ControllerPanel.ui
+msgid "Swap or clear groups of bindings"
+msgstr "Hoán đổi vị trí hoặc xóa sạch các nhóm liên kết phím bấm đã cài"
+
+#: qt/src/ControllerPanel.cpp
+msgid "Swap With"
+msgstr "Tiến hành hoán đổi với"
+
+#: qt/src/GeneralPanel.ui
+msgid "Switch to fullscreen after opening a ROM"
+msgstr "Chuyển sang chế độ toàn màn hình sau khi mở ROM"
+
+#: qt/src/DisplayPanel.ui
+msgid "Sync the display to vertical retrace to eliminate tearing."
+msgstr "Tiến hành đồng bộ hóa màn hình hiển thị trực tiếp với chu kỳ quét đứng (vertical retrace) nhằm triệt tiêu hoàn toàn lỗi xé hình."
+
+#: qt/src/CheatsDialog.cpp
+msgid "The cheat you entered was not valid."
+msgstr "Mã gian lận bạn vừa điền vào hệ thống không hợp lệ hoặc sai cấu trúc."
+
+#: qt/src/EmuCanvasOpenGL.cpp
+msgid "The driver isn't using a specialized shader preset right now."
+msgstr "Trình điều khiển hiện tại không sử dụng bất kỳ cấu hình Shader mẫu chuyên dụng nào."
+
+#: qt/src/EmuMainWindow.cpp
+msgid "The language change will take effect after you restart SuperSnes9x."
+msgstr "Thay đổi ngôn ngữ hiển thị sẽ chính thức có hiệu lực sau khi bạn khởi động lại phần mềm SuperSnes9x."
+
+#: qt/src/EmuCanvasVulkan.cpp
+msgid "The vulkan display driver hasn't properly loaded."
+msgstr "Trình điều khiển hiển thị đồ họa Vulkan đã gặp sự cố và không thể tải lên một cách chính xác."
+
+#: qt/src/DisplayPanel.ui
+msgid "This affects the rarely used 512-pixels-wide mode used by the SNES.\nFor games like Kirby 3 and Jurassic Park, choose the \"merge fields\" option.\nFor games like Seiken Densetsu 3 and Marvelous, choose the \"scale up\" option.\nOutput directly will cause the screen to change between the two modes and look weird."
+msgstr "Mục này ảnh hưởng trực tiếp đến chế độ hiển thị rộng 512 pixel đặc biệt hiếm khi được sử dụng của hệ máy SNES.\nĐối với các tựa game như Kirby 3 và Jurassic Park, vui lòng chọn tùy chọn \"Trộn trường hình (merge fields)\".\nĐối với các tựa game như Seiken Densetsu 3 và Marvelous, hãy ưu tiên chọn tùy chọn \"Phóng lớn lên (scale up)\".\nNếu để mặc định \"Xuất trực tiếp (Output directly)\" sẽ khiến màn hình liên tục thay đổi đột ngột giữa hai chế độ hiển thị khác biệt và nhìn rất kỳ quặc."
+
+#: qt/src/EmuCanvasOpenGL.cpp
+msgid "This shader preset doesn't offer any configurable parameters."
+msgstr "Cấu hình Shader mẫu được chọn này không cung cấp bất kỳ thông số tùy chỉnh mở rộng nào có thể can thiệp."
+
+#: qt/src/EmulationPanel.ui
+msgid "Timer - Match the frame rate configured below"
+msgstr "Dùng bộ định thời (Timer) - Ép chạy khớp theo đúng tốc độ khung hình được cấu hình bên dưới"
+
+#: qt/src/EmulationPanel.ui
+msgid "Timer with Frame Skipping - Skip frames if needed"
+msgstr "Dùng bộ định thời kèm Bỏ qua khung hình - Chủ động bỏ qua khung hình đồ họa nếu phần cứng máy tính không đuổi kịp tốc độ game"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "To File"
+msgstr "Xuất ghi tệp dữ liệu ra máy tính"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle All Sound Channels"
+msgstr "Bật/tắt tất cả các kênh âm thanh (All Sound Channels)"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle BG Layer 0"
+msgstr "Bật/tắt lớp nền BG Layer 0"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle BG Layer 1"
+msgstr "Bật/tắt lớp nền BG Layer 1"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle BG Layer 2"
+msgstr "Bật/tắt lớp nền BG Layer 2"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle BG Layer 3"
+msgstr "Bật/tắt lớp nền BG Layer 3"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle Fast-Forward"
+msgstr "Bật/tắt tính năng tua nhanh (Fast-Forward)"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle Fullscreen"
+msgstr "Bật/tắt chế độ toàn màn hình (Fullscreen)"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle Sound Channel 1"
+msgstr "Bật/tắt kênh âm thanh Sound Channel 1"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle Sound Channel 2"
+msgstr "Bật/tắt kênh âm thanh Sound Channel 2"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle Sound Channel 3"
+msgstr "Bật/tắt kênh âm thanh Sound Channel 3"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle Sound Channel 4"
+msgstr "Bật/tắt kênh âm thanh Sound Channel 4"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle Sound Channel 5"
+msgstr "Bật/tắt kênh âm thanh Sound Channel 5"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle Sound Channel 6"
+msgstr "Bật/tắt kênh âm thanh Sound Channel 6"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle Sound Channel 7"
+msgstr "Bật/tắt kênh âm thanh Sound Channel 7"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle Sound Channel 8"
+msgstr "Bật/tắt kênh âm thanh Sound Channel 8"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle Sprites"
+msgstr "Bật/tắt các lớp Sprites"
+
+#: qt/src/ControllerPanel.ui
+msgid "Turbo A"
+msgstr "Nút bắn siêu tốc Turbo A"
+
+#: qt/src/ControllerPanel.ui
+msgid "Turbo B"
+msgstr "Nút bắn siêu tốc Turbo B"
+
+#: qt/src/ControllerPanel.ui
+msgid "Turbo L"
+msgstr "Nút bắn siêu tốc Turbo L"
+
+#: qt/src/ControllerPanel.ui
+msgid "Turbo R"
+msgstr "Nút bắn siêu tốc Turbo R"
+
+#: qt/src/ControllerPanel.ui
+msgid "Turbo X"
+msgstr "Nút bắn siêu tốc Turbo X"
+
+#: qt/src/ControllerPanel.ui
+msgid "Turbo Y"
+msgstr "Nút bắn siêu tốc Turbo Y"
+
+#: qt/src/ControllerPanel.ui
+msgid "Two Controllers"
+msgstr "Cấu hình sử dụng song song hai Tay cầm điều khiển"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Unable to create a %1 context. Attempting to use %2."
+msgstr "Không thể khởi tạo môi trường ngữ cảnh %1. Đang thử nghiệm chuyển sang sử dụng giải pháp thay thế %2."
+
+#: qt/src/CheatsDialog.cpp
+msgid "Unable to Open Cheats Database"
+msgstr "Không thể truy cập mở tệp cơ sở dữ liệu gian lận"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Unable to Start Display Driver"
+msgstr "Không thể khởi chạy Trình điều khiển xuất hình ảnh hiển thị"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Undo Load State"
+msgstr "Hoàn tác hành động Tải trạng thái nhanh (Undo Load)"
+
+#: qt/src/DisplayPanel.ui
+msgid "Use a hardware shader:"
+msgstr "Sử dụng bộ đổ bóng phần cứng (hardware shader):"
+
+#: qt/src/DisplayPanel.ui
+msgid "Use a selected .slangp or .glslp shader file. \n.slangp is supported by Vulkan and OpenGL. \n.glslp is supported by OpenGL."
+msgstr "Sử dụng tệp đổ bóng .slangp hoặc .glslp đã chọn. \n.slangp được hỗ trợ bởi Vulkan và OpenGL. \n.glslp được hỗ trợ bởi OpenGL."
+
+#: qt/src/EmulationPanel.ui
+msgid "Use a shadow echo buffer"
+msgstr "Sử dụng một bộ đệm shadow echo ẩn độc lập"
+
+#: qt/src/DisplayPanel.ui
+msgid "Use integer scaling"
+msgstr "Sử dụng tỷ lệ nguyên (integer scaling)"
+
+#: qt/src/ControllerPanel.ui
+msgid "Use SDL to set up the D-pad, face buttons, and L/R. Other buttons may still be configured."
+msgstr "Sử dụng hệ thống thư viện SDL để tự động thiết lập nhanh các phím di chuyển D-pad, cụm nút bấm chính trên mặt điều khiển và phím vai chức năng L/R. Những nút bấm bổ trợ mở rộng còn lại vẫn có thể được cấu hình thủ công độc lập."
+
+#: qt/src/EmuMainWindow.cpp
+msgid "View"
+msgstr "Hiển thị / Xem"
+
+#: qt/src/EmuCanvasVulkan.cpp
+msgid "Vulkan Driver"
+msgstr "Trình điều khiển đồ họa tối tân Vulkan"
+
+#: qt/src/DisplayPanel.ui
+msgid "When entering fullscreen mode, temporarily change other settings to use VRR (G-Sync or FreeSync) correctly."
+msgstr "Khi vào chế độ toàn màn hình, tạm thời thay đổi các thiết lập khác để sử dụng VRR (G-Sync hoặc FreeSync) một cách chính xác."
+
+#: qt/src/DisplayPanel.ui
+msgid "When scaling up, only use integer multiples of the original height."
+msgstr "Khi tăng kích thước, chỉ sử dụng các bội số nguyên của chiều cao ban đầu."

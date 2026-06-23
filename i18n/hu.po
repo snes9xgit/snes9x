@@ -1,0 +1,5011 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: SuperSnes9x\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-10-29 23:56+0100\n"
+"PO-Revision-Date: 2026-06-20 22:45+0200\n"
+"Last-Translator: Gemini AI\n"
+"Language-Team: Hungarian <hu@li.org>\n"
+"Language: hu\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: src/gtk_binding.cpp:248
+msgid "Unknown"
+msgstr "Ismeretlen"
+
+#: src/gtk_binding.cpp:257
+msgid "Keyboard {}{}{}{}"
+msgstr "Billentyűzet {}{}{}{}"
+
+#: src/gtk_binding.cpp:267
+msgid "Axis {} {} {}%"
+msgstr "Tengely {} {} {}%"
+
+#: src/gtk_binding.cpp:272
+msgid "Button {}"
+msgstr "Gomb {}"
+
+#: src/gtk_binding.cpp:274
+msgid "Joystick {} {}"
+msgstr "Joystick {} {}"
+
+#: src/gtk_binding.cpp:278
+msgid "Unset"
+msgstr "Nincs beállítva"
+
+#: src/gtk_cheat.cpp:24
+msgid "Error"
+msgstr "Hiba"
+
+#: src/gtk_cheat.cpp:60
+msgid "Description"
+msgstr "Leírás"
+
+#: src/gtk_cheat.cpp:66
+msgid "Cheat"
+msgstr "Csalás"
+
+#: src/gtk_cheat.cpp:227 src/gtk_cheat.cpp:355
+msgid "No description"
+msgstr "Nincs leírás"
+
+#: src/gtk_cheat.cpp:231 src/gtk_cheat.cpp:360
+msgid "Couldn't find any cheat codes in input."
+msgstr "Nem találhatók csaláskódok a bemenetben."
+
+#: src/gtk_cheat.cpp:306
+msgid "Couldn't Find Cheats Database"
+msgstr "A csalásadatbázis nem található"
+
+#: src/gtk_cheat.cpp:306
+msgid "No Matching Game Found"
+msgstr "Nem található megfelelő játék"
+
+#: src/gtk_cheat.cpp:307
+msgid ""
+"The database file <b>cheats.bml</b> was not found. It is normally installed "
+"with Snes9x, but you may also place a custom copy in your configuration or "
+"cheats directory."
+msgstr ""
+"A <b>cheats.bml</b> adatbázisfájl nem található. Általában a SuperSnes9x emulátorral "
+"együtt települ, de elhelyezhet egy egyéni másolatot a konfigurációs vagy a csalások könyvtárában is."
+
+#: src/gtk_cheat.cpp:309
+msgid ""
+"No matching game was found in the databases. If you are using a non-official "
+"translation or modified copy, you may be able to find and manually enter the "
+"codes."
+msgstr ""
+"Nem található egyező játék az adatbázisokban. Ha nem hivatalos fordítást "
+"vagy módosított másolatot használ, előfordulhat, hogy manuálisan kell megkeresnie és megadnia a kódokat."
+
+#: src/gtk_config.cpp:407
+msgid "Couldn't create config directory: {}\n"
+msgstr "A konfigurációs könyvtár nem hozható létre: {}\n"
+
+#: src/gtk_netplay.cpp:66
+msgid "Connection Error"
+msgstr "Kapcsolódási hiba"
+
+#: src/gtk_netplay_dialog.cpp:31
+msgid "frame behind"
+msgid_plural "frames behind"
+msgstr[0] "képkocka hátrány"
+msgstr[1] "képkocka hátrány"
+
+#: src/gtk_preferences.cpp:19
+msgid "Same location as current game"
+msgstr "Ugyanaz a hely, mint a jelenlegi játéknál"
+
+#: src/gtk_preferences.cpp:110
+msgid "{0:Ld}×{1:Ld} @ {2:.3Lf} Hz"
+msgstr "{0:Ld}×{1:Ld} @ {2:.3Lf} Hz"
+
+#: src/gtk_preferences.cpp:143
+msgid "OpenGL – Use 3D graphics hardware"
+msgstr "OpenGL – 3D grafikus hardver használata"
+
+#: src/gtk_preferences.cpp:145
+msgid "XVideo – Use hardware video blitter"
+msgstr "XVideo – Hardveres videoblimmer használata"
+
+#: src/gtk_preferences.cpp:147
+msgid "Vulkan"
+msgstr "Vulkan"
+
+#: src/gtk_preferences.cpp:149
+msgid "None – Use software scaler"
+msgstr "Nincs – Szoftveres skálázó használata"
+
+#: src/gtk_preferences.cpp:179 src/gtk_preferences.cpp:446
+msgid "thread for filtering and scaling"
+msgid_plural "threads for filtering and scaling"
+msgstr[0] "szál a szűréshez és skálázáshoz"
+msgstr[1] "szál a szűréshez és skálázáshoz"
+
+#: src/gtk_preferences.cpp:236 src/gtk_preferences.cpp:500
+msgid "millisecond"
+msgid_plural "milliseconds"
+msgstr[0] "ezredmásodperc"
+msgstr[1] "ezredmásodperc"
+
+#: src/gtk_preferences.cpp:260 src/gtk_preferences.cpp:476
+msgid "second after change"
+msgid_plural "seconds after change"
+msgstr[0] "másodperccel a változtatás után"
+msgstr[1] "másodperccel a változtatás után"
+
+#: src/gtk_preferences.cpp:271
+msgid "SuperSnes9x version: "
+msgstr "SuperSnes9x verzió: "
+
+#: src/gtk_preferences.cpp:272
+msgid "GTK+ port version: "
+msgstr "GTK+ port verzió: "
+
+#: src/gtk_preferences.cpp:274
+msgid "English localization by Brandon Wright"
+msgstr "Angol lokalizáció: Brandon Wright"
+
+#: src/gtk_preferences.cpp:298
+msgid "Select directory"
+msgstr "Könyvtár kiválasztása"
+
+#: src/gtk_preferences.cpp:323
+msgid "{0:.4Lf} Hz"
+msgstr "{0:.4Lf} Hz"
+
+#: src/gtk_preferences.cpp:328
+msgid "{0:Ld} Hz"
+msgstr "{0:Ld} Hz"
+
+#: src/gtk_preferences.cpp:379
+msgid "Select Shader File"
+msgstr "Shadertájl kiválasztása"
+
+#: src/gtk_preferences.cpp:720
+msgid ""
+"Changing the SRAM directory with a game loaded will replace the .srm file in "
+"the selected directory with the SRAM from the running game. If this is not "
+"what you want, click 'cancel'."
+msgstr ""
+"Az SRAM könyvtár módosítása betöltött játék közben felülírja a kiválasztott könyvtárban "
+"található .srm fájlt a futó játék SRAM adataival. Ha nem ezt szeretné, kattintson a 'Mégse' gombra."
+
+#: src/gtk_preferences.cpp:725
+msgid "Warning: Possible File Overwrite"
+msgstr "Figyelmeztetés: Fájl felülírási lehetőség"
+
+#: src/gtk_preferences.cpp:980
+msgid "Current joystick centers have been saved."
+msgstr "Az aktuális joystick középpontok elmentve."
+
+#: src/gtk_preferences.cpp:981
+msgid "Calibration Complete"
+msgstr "Kalibrálás befejeződött"
+
+#: src/gtk_s9x.cpp:206
+msgid "Using rewind buffer of {0}\n"
+msgstr "Visszatekerési puffer használata: {0}\n"
+
+#: src/gtk_s9x.cpp:598
+msgid ""
+"GTK port options:\n"
+"-filter [option]               Use a filter to scale the image.\n"
+"                               [option] is one of: none supereagle 2xsai\n"
+"                               super2xsai hq2x hq3x hq4x 2xbrz 3xbrz 4xbrz "
+"epx ntsc\n"
+"\n"
+"-mutesound                     Disables sound output.\n"
+msgstr ""
+"GTK port opciók:\n"
+"-filter [opció]                Szűrő használata a kép skálázásához.\n"
+"                               az [opció] a következők egyike: none supereagle 2xsai\n"
+"                               super2xsai hq2x hq3x hq4x 2xbrz 3xbrz 4xbrz epx ntsc\n"
+"\n"
+"-mutesound                     Letiltja a hangkimenetet.\n"
+
+#: src/gtk_s9xwindow.cpp:48 src/snes9x.ui:8405
+msgid "Save States"
+msgstr "Mentési állapotok"
+
+#: src/gtk_s9xwindow.cpp:57
+msgid "All Files"
+msgstr "Minden fájl"
+
+#: src/gtk_s9xwindow.cpp:616
+msgid "Couldn't load files."
+msgstr "Nem sikerült a fájlok betöltése."
+
+#: src/gtk_s9xwindow.cpp:637
+msgid "Open SNES Movie"
+msgstr "SNES mozi megnyitása"
+
+#: src/gtk_s9xwindow.cpp:642
+msgid "New SNES Movie"
+msgstr "Új SNES mozi"
+
+#: src/gtk_s9xwindow.cpp:661
+msgid "SNES Movies"
+msgstr "SNES mozik"
+
+#: src/gtk_s9xwindow.cpp:690
+msgid "Open SNES ROM Image"
+msgstr "SNES ROM képfájl megnyitása"
+
+#: src/gtk_s9xwindow.cpp:695
+msgid "SNES ROM Images"
+msgstr "SNES ROM képfájlok"
+
+#: src/gtk_s9xwindow.cpp:740
+msgid "Couldn't load file: "
+msgstr "Nem sikerült a fájl betöltése: "
+
+#: src/gtk_s9xwindow.cpp:767
+msgid "Load Saved State"
+msgstr "Mentett állapot betöltése"
+
+#: src/gtk_s9xwindow.cpp:796
+msgid "The current frame in the movie is <b>{0:Ld}</b>."
+msgstr "A mozi aktuális képkockája: <b>{0:Ld}</b>."
+
+#: src/gtk_s9xwindow.cpp:829
+msgid "Save State"
+msgstr "Állapot mentése"
+
+#: src/gtk_s9xwindow.cpp:850
+msgid "Save SPC file..."
+msgstr "SPC fájl mentése..."
+
+#: src/gtk_s9xwindow.cpp:872
+msgid "Couldn't save SPC file:"
+msgstr "Nem sikerült az SPC fájl mentése:"
+
+#: src/gtk_s9xwindow.cpp:888
+#, c-format
+msgid ""
+"<b>Information for %s</b>\n"
+"\n"
+"<i>Name:</i> %s\n"
+"<i>Speed:</i> %02X/%s\n"
+"<i>Map:</i> %s\n"
+"<i>Type:</i> %02x\n"
+"<i>Contents:</i> %s\n"
+"<i>ROM Size:</i> %s\n"
+"<i>Calculated Size:</i> %d\n"
+"<i>SRAM Size:</i> %s\n"
+"<i>Header Checksum:</i> %04X\n"
+"<i>Checksum Complement:</i> %04X\n"
+"<i>Actual Checksum:</i> %04X\n"
+"<i>Video:</i> %s\n"
+"<i>CRC32:</i> %08X\n"
+"<i>Revision:</i> %s\n"
+"<b><i>%s%s</i></b>"
+msgstr ""
+"<b>Információk a következőről: %s</b>\n"
+"\n"
+"<i>Név:</i> %s\n"
+"<i>Sebesség:</i> %02X/%s\n"
+"<i>Térkép:</i> %s\n"
+"<i>Típus:</i> %02x\n"
+"<i>Tartalom:</i> %s\n"
+"<i>ROM mérete:</i> %s\n"
+"<i>Számított méret:</i> %d\n"
+"<i>SRAM mérete:</i> %s\n"
+"<i>Fejléc ellenőrzőösszeg:</i> %04X\n"
+"<i>Ellenőrzőösszeg komplementer:</i> %04X\n"
+"<i>Tényleges ellenőrzőösszeg:</i> %04X\n"
+"<i>Videó:</i> %s\n"
+"<i>CRC32:</i> %08X\n"
+"<i>Revízió:</i> %s\n"
+"<b><i>%s%s</i></b>"
+
+#: src/gtk_s9xwindow.cpp:924
+msgid ""
+"\n"
+"\n"
+"This ROM has been auto-patched with "
+msgstr ""
+"\n"
+"\n"
+"Ez a ROM automatikusan foltozva (patched) lett a következővel: "
+
+#: src/gtk_s9xwindow.cpp:924
+msgid ""
+"\n"
+"\n"
+"This ROM has been modified or damaged"
+msgstr ""
+"\n"
+"\n"
+"Ez a ROM módosított vagy sérült"
+
+#: src/gtk_s9xwindow.cpp:938
+msgid "File Information"
+msgstr "Fájlinformációk"
+
+#: src/gtk_shader_parameters.cpp:67
+msgid "Export Shader Preset to:"
+msgstr "Shader esiasetés exportálása ide:"
+
+#: src/gtk_shader_parameters.cpp:90
+msgid "Shader Preset"
+msgstr "Shader előbeállítás"
+
+#: src/gtk_shader_parameters.cpp:131
+msgid "Shader Parameters"
+msgstr "Shader paraméterek"
+
+#: src/snes9x.ui:10
+msgid "About SuperSnes9x"
+msgstr "A SuperSnes9x névjegye"
+
+#: src/snes9x.ui:283
+msgid "SuperSnes9x Cheats"
+msgstr "SuperSnes9x csalások"
+
+#: src/snes9x.ui:401
+msgid "Update Cheat"
+msgstr "Csalás frissítése"
+
+#: src/snes9x.ui:416
+msgid "Disable All"
+msgstr "Összes letiltása"
+
+#: src/snes9x.ui:432
+msgid "Delete All Cheats"
+msgstr "Összes csalás törlése"
+
+#: src/snes9x.ui:447
+msgid "Search Cheat Database"
+msgstr "Keresés a csalásadatbázisban"
+
+#: src/snes9x.ui:489
+msgid "Code:"
+msgstr "Kód:"
+
+#: src/snes9x.ui:526
+msgid "Description:"
+msgstr "Leírás:"
+
+#: src/snes9x.ui:573
+msgid "Advance to Frame"
+msgstr "Léptetés képkockára"
+
+#: src/snes9x.ui:642
+msgid "The current frame in the movie is"
+msgstr "A mozi aktuális képkockája:"
+
+#: src/snes9x.ui:663
+msgid "Fast‑forward to frame"
+msgstr "Gyors előretekerés képkockára"
+
+#: src/snes9x.ui:806
+msgid "Black"
+msgstr "Fekete"
+
+#: src/snes9x.ui:809
+msgid "Color bars"
+msgstr "Színminták"
+
+#: src/snes9x.ui:812
+msgid "Pixel art patterns"
+msgstr "Pixel art minták"
+
+#: src/snes9x.ui:815
+msgid "Dithered gradient"
+msgstr "Rácsozott színátmenet"
+
+#: src/snes9x.ui:818
+msgid "Color bars and patterns"
+msgstr "Színminták és minták"
+
+#: src/snes9x.ui:821
+msgid "Starfield"
+msgstr "Csillagmező"
+
+#: src/snes9x.ui:824
+msgid "Snow"
+msgstr "Havazás (zaj)"
+
+#: src/snes9x.ui:852 src/snes9x.ui:875
+msgid "12.5%"
+msgstr "12.5%"
+
+#: src/snes9x.ui:855 src/snes9x.ui:878
+msgid "25%"
+msgstr "25%"
+
+#: src/snes9x.ui:858 src/snes9x.ui:881
+msgid "50%"
+msgstr "50%"
+
+#: src/snes9x.ui:861 src/snes9x.ui:884
+msgid "100%"
+msgstr "100%"
+
+#: src/snes9x.ui:872
+msgid "0%"
+msgstr "0%"
+
+#: src/snes9x.ui:895
+msgctxt "filter list"
+msgid "None"
+msgstr "Nincs"
+
+#: src/snes9x.ui:936
+msgid "8:7 Square pixels"
+msgstr "8:7 Négyzetes képpontok"
+
+#: src/snes9x.ui:939
+msgid "8:7 Square pixels, integer multiples"
+msgstr "8:7 Négyzetes képpontok, egész számú többszörösök"
+
+#: src/snes9x.ui:942
+msgid "4:3 SNES correct aspect"
+msgstr "4:3 SNES helyes képarány"
+
+#: src/snes9x.ui:945
+msgid "4:3 SNES correct aspect, integer multiples"
+msgstr "4:3 SNES helyes képarány, egész számú többszörösök"
+
+#: src/snes9x.ui:948
+msgid "8*8:7*7 NTSC"
+msgstr "8*8:7*7 NTSC"
+
+#: src/snes9x.ui:951
+msgid "8*8:7*7 NTSC, integer multiples"
+msgstr "8*8:7*7 NTSC, egész számú többszörösök"
+
+#: src/snes9x.ui:968
+msgid "Merge adjacent pairs"
+msgstr "Szomszédos párok összevonása"
+
+#: src/snes9x.ui:971
+msgid "Output directly"
+msgstr "Közvetlen kimenet"
+
+#: src/snes9x.ui:974
+msgid "Scale low‑resolution screens"
+msgstr "Alacsony felbontású képernyők skálázása"
+
+#: src/snes9x.ui:985 src/snes9x.ui:1023
+msgid "1"
+msgstr "1"
+
+#: src/snes9x.ui:988 src/snes9x.ui:1026
+msgid "2"
+msgstr "2"
+
+#: src/snes9x.ui:991 src/snes9x.ui:1029
+msgid "3"
+msgstr "3"
+
+#: src/snes9x.ui:994 src/snes9x.ui:1032
+msgid "4"
+msgstr "4"
+
+#: src/snes9x.ui:997 src/snes9x.ui:1035
+msgid "5"
+msgstr "5"
+
+#: src/snes9x.ui:1000 src/snes9x.ui:1038
+msgid "1+"
+msgstr "1+"
+
+#: src/snes9x.ui:1003 src/snes9x.ui:1041
+msgid "2+"
+msgstr "2+"
+
+#: src/snes9x.ui:1006 src/snes9x.ui:1044
+msgid "3+"
+msgstr "3+"
+
+#: src/snes9x.ui:1009 src/snes9x.ui:1047
+msgid "4+"
+msgstr "4+"
+
+#: src/snes9x.ui:1012 src/snes9x.ui:1050
+msgid "5+"
+msgstr "5+"
+
+#: src/snes9x.ui:1061
+msgid "Toggle the menu bar"
+msgstr "Menüsor ki-/bekapcsolása"
+
+#: src/snes9x.ui:1064
+msgid "Exit fullscreen mode"
+msgstr "Kilépés a teljes képernyős módból"
+
+#: src/snes9x.ui:1067 src/snes9x.ui:6932
+msgid "Quit SuperSnes9x"
+msgstr "Kilépés a SuperSnes9x-ből"
+
+#: src/snes9x.ui:1078
+msgid "Timer‑based"
+msgstr "Időzítő-alapú"
+
+#: src/snes9x.ui:1081
+msgid "Timer‑based with automatic frame-skipping"
+msgstr "Időzítő-alapú automatikus képkocka-kihagyással"
+
+#: src/snes9x.ui:1084
+msgid "Sound buffer synchronization"
+msgstr "Hangpuffer szinkronizáció"
+
+#: src/snes9x.ui:1087
+msgid "No throttling, use vsync to control speed"
+msgstr "Nincs sebességkorlátozás, függőleges szinkronizáció (vsync) használata"
+
+#: src/snes9x.ui:1098
+msgid "48,000 Hz"
+msgstr "48 000 Hz"
+
+#: src/snes9x.ui:1101
+msgid "44,100 Hz"
+msgstr "44 100 Hz"
+
+#: src/snes9x.ui:1104
+msgid "32,000 Hz"
+msgstr "32 000 Hz"
+
+#: src/snes9x.ui:1107
+msgid "22,050 Hz"
+msgstr "22 050 Hz"
+
+#: src/snes9x.ui:1110
+msgid "16,000 Hz"
+msgstr "16 000 Hz"
+
+#: src/snes9x.ui:1113
+msgid "11,025 Hz"
+msgstr "11 025 Hz"
+
+#: src/snes9x.ui:1116
+msgid "8,000 Hz"
+msgstr "8 000 Hz"
+
+#: src/snes9x.ui:1119
+msgid "0 Hz"
+msgstr "0 Hz"
+
+#: src/snes9x.ui:1136
+msgid "16‑bit (GL_RGB)"
+msgstr "16 bites (GL_RGB)"
+
+#: src/snes9x.ui:1139
+msgid "32‑bit (GL_BGRA)"
+msgstr "32 bites (GL_BGRA)"
+
+#: src/snes9x.ui:1150
+msgid "Nearest"
+msgstr "Legközelebbi"
+
+#: src/snes9x.ui:1153
+msgid "Linear"
+msgstr "Lineáris"
+
+#: src/snes9x.ui:1156
+msgid "Gaussian (correct)"
+msgstr "Gauss-féle (helyes)"
+
+#: src/snes9x.ui:1159
+msgid "Cubic"
+msgstr "Köbös"
+
+#: src/snes9x.ui:1162
+msgid "Sinc"
+msgstr "Sinc"
+
+#: src/snes9x.ui:1175
+msgid "SuperSnes9x"
+msgstr "SuperSnes9x"
+
+#: src/snes9x.ui:1195
+msgid "_File"
+msgstr "_Fájl"
+
+#: src/snes9x.ui:1202
+msgid "_Open ROM Image…"
+msgstr "ROM képfájl megnyitása (_O)…"
+
+#: src/snes9x.ui:1216
+msgid "Open Recent"
+msgstr "Legutóbbi megnyitása"
+
+#: src/snes9x.ui:1225
+msgid "Clear Recent Items"
+msgstr "Legutóbbi elemek törlése"
+
+#: src/snes9x.ui:1237
+msgid "Open with _NetPlay…"
+msgstr "Megnyitás _Hálózati játékként…"
+
+#: src/snes9x.ui:1240
+msgid "Open a ROM to use with NetPlay"
+msgstr "ROM megnyitása a Hálózati játékhoz"
+
+#: src/snes9x.ui:1251
+msgid "Open _MultiCart…"
+msgstr "MultiCart megnyitása (_M)…"
+
+#: src/snes9x.ui:1266
+msgid "_Load State"
+msgstr "Á_llapot betöltése"
+
+#: src/snes9x.ui:1276 src/snes9x.ui:1410
+msgid "Slot _0"
+msgstr "_0. mentési hely"
+
+#: src/snes9x.ui:1285 src/snes9x.ui:1419
+msgid "Slot _1"
+msgstr "_1. mentési hely"
+
+#: src/snes9x.ui:1294 src/snes9x.ui:1428
+msgid "Slot _2"
+msgstr "_2. mentési hely"
+
+#: src/snes9x.ui:1303 src/snes9x.ui:1437
+msgid "Slot _3"
+msgstr "_3. mentési hely"
+
+#: src/snes9x.ui:1312 src/snes9x.ui:1446
+msgid "Slot _4"
+msgstr "_4. mentési hely"
+
+#: src/snes9x.ui:1321 src/snes9x.ui:1455
+msgid "Slot _5"
+msgstr "_5. mentési hely"
+
+#: src/snes9x.ui:1330 src/snes9x.ui:1464
+msgid "Slot _6"
+msgstr "_6. mentési hely"
+
+#: src/snes9x.ui:1339 src/snes9x.ui:1473
+msgid "Slot _7"
+msgstr "_7. mentési hely"
+
+#: src/snes9x.ui:1348 src/snes9x.ui:1482
+msgid "Slot _8"
+msgstr "_8. mentési hely"
+
+#: src/snes9x.ui:1357 src/snes9x.ui:1491
+msgid "Slot _9"
+msgstr "_9. mentési hely"
+
+#: src/snes9x.ui:1372
+msgid "From _File…"
+msgstr "_Fájlból…"
+
+#: src/snes9x.ui:1387
+msgid "_Undo Load State"
+msgstr "Állapotbetöltés visszavonása (_U)"
+
+#: src/snes9x.ui:1400
+msgid "_Save State"
+msgstr "Állapot mentése (_S)"
+
+#: src/snes9x.ui:1506
+msgid "To _File…"
+msgstr "Fá_jlba…"
+
+#: src/snes9x.ui:1523
+msgid "Save SPC…"
+msgstr "SPC mentése…"
+
+#: src/snes9x.ui:1540
+msgid "Show ROM _Info…"
+msgstr "ROM _információk mutatása…"
+
+#: src/snes9x.ui:1557
+msgid "gtk-quit"
+msgstr "Bezárás"
+
+#: src/snes9x.ui:1571
+msgid "_Emulation"
+msgstr "_Emuláció"
+
+#: src/snes9x.ui:1578
+msgid "Run / _Continue"
+msgstr "Futtatás / _Folytatás"
+
+#: src/snes9x.ui:1589
+msgid "_Pause"
+msgstr "_Szünet"
+
+#: src/snes9x.ui:1607
+msgid "Load _Movie…"
+msgstr "Film betöltése (_M)…"
+
+#: src/snes9x.ui:1619
+msgid "R_ecord Movie…"
+msgstr "Film r_ögzítése…"
+
+#: src/snes9x.ui:1631
+msgid "_Stop Recording"
+msgstr "Rögzítés leállítása (_S)"
+
+#: src/snes9x.ui:1643
+msgid "_Jump to Frame…"
+msgstr "Ugrás képkockára (_J)…"
+
+#: src/snes9x.ui:1661
+msgid "Sy_nc Clients"
+msgstr "Kliensek szí_nkronizálása"
+
+#: src/snes9x.ui:1678
+msgid "Reset"
+msgstr "Visszaállítás"
+
+#: src/snes9x.ui:1690
+msgid "Soft _Reset"
+msgstr "Szoftveres újraindítás (_R)"
+
+#: src/snes9x.ui:1707
+msgid "_View"
+msgstr "_Nézet"
+
+#: src/snes9x.ui:1715
+msgid "_Toggle Menubar"
+msgstr "Menüsor ki-/bekapcsolása (_T)"
+
+#: src/snes9x.ui:1732
+msgid "_Change Size"
+msgstr "Méret változtatása (_C)"
+
+#: src/snes9x.ui:1746
+msgid "_1×"
+msgstr "_1×"
+
+#: src/snes9x.ui:1755
+msgid "_2×"
+msgstr "_2×"
+
+#: src/snes9x.ui:1764
+msgid "_3×"
+msgstr "_3×"
+
+#: src/snes9x.ui:1773
+msgid "_4×"
+msgstr "_4×"
+
+#: src/snes9x.ui:1782
+msgid "_5×"
+msgstr "_5×"
+
+#: src/snes9x.ui:1791
+msgid "_6×"
+msgstr "_6×"
+
+#: src/snes9x.ui:1800
+msgid "_7×"
+msgstr "_7×"
+
+#: src/snes9x.ui:1809
+msgid "_8×"
+msgstr "_8×"
+
+#: src/snes9x.ui:1818
+msgid "_9×"
+msgstr "_9×"
+
+#: src/snes9x.ui:1827
+msgid "1_0×"
+msgstr "1_0×"
+
+#: src/snes9x.ui:1844
+msgid "gtk-fullscreen"
+msgstr "Teljes képernyő"
+
+#: src/snes9x.ui:1858
+msgid "_Options"
+msgstr "_Beállítások"
+
+#: src/snes9x.ui:1867
+msgid "Controller Ports"
+msgstr "Vezérlőportok"
+
+#: src/snes9x.ui:1876
+msgid "SNES Port 1"
+msgstr "SNES 1-es port"
+
+#: src/snes9x.ui:1886 src/snes9x.ui:1930
+msgid "Joypad"
+msgstr "Irányítópad"
+
+#: src/snes9x.ui:1895 src/snes9x.ui:1939
+msgid "Mouse"
+msgstr "Egér"
+
+#: src/snes9x.ui:1905 src/snes9x.ui:1959
+msgid "Superscope"
+msgstr "Superscope"
+
+#: src/snes9x.ui:1920
+msgid "SNES Port 2"
+msgstr "SNES 2-es port"
+
+#: src/snes9x.ui:1949
+msgid "Multitap"
+msgstr "Multitap"
+
+#: src/snes9x.ui:1970
+msgctxt "SNES port 2"
+msgid "None"
+msgstr "Nincs"
+
+#: src/snes9x.ui:1996
+msgid "_Cheats…"
+msgstr "_Csalások…"
+
+#: src/snes9x.ui:2010
+msgid "_Shader Parameters…"
+msgstr "_Shader paraméterek…"
+
+#: src/snes9x.ui:2026
+msgid "gtk-preferences"
+msgstr "Beállítások"
+
+#: src/snes9x.ui:2068
+msgid "Open Multiple ROM Images (MultiCart)"
+msgstr "Több ROM képfájl megnyitása (MultiCart)"
+
+#: src/snes9x.ui:2131
+msgid "Slot A:"
+msgstr "A foglalat:"
+
+#: src/snes9x.ui:2143
+msgid "Select an Image for Slot A"
+msgstr "Válasszon képfájlt az A foglalatba"
+
+#: src/snes9x.ui:2167
+msgid "Slot B:"
+msgstr "B foglalat:"
+
+#: src/snes9x.ui:2179
+msgid "Select an Image for Slot B"
+msgstr "Válasszon képfájlt a B foglalatba"
+
+#: src/snes9x.ui:2211
+msgid "SuperSnes9x NetPlay"
+msgstr "SuperSnes9x hálózati játék"
+
+#: src/snes9x.ui:2288
+msgid ""
+"The game chosen will be loaded before connecting. This field can be blank if "
+"the server will send the ROM image"
+msgstr ""
+"A kiválasztott játék betöltődik a csatlakozás előtt. Ez a mező üresen maradhat, ha "
+"a szerver küldi majd a ROM képfájlt"
+
+#: src/snes9x.ui:2303 src/snes9x.ui:4001 src/snes9x.ui:5116 src/snes9x.ui:5131
+#: src/snes9x.ui:5148 src/snes9x.ui:5165 src/snes9x.ui:5182
+msgid "Browse…"
+msgstr "Tallózás…"
+
+#: src/snes9x.ui:2325
+msgid "Clear entry"
+msgstr "Bejegyzés törlése"
+
+#: src/snes9x.ui:2345
+msgid "<b>ROM Image</b>"
+msgstr "<b>ROM képfájl</b>"
+
+#: src/snes9x.ui:2374
+msgid "Connect to another computer"
+msgstr "Csatlakozás másik számítógéphez"
+
+#: src/snes9x.ui:2378
+msgid "Connect to another computer that is running SuperSnes9x NetPlay as a server"
+msgstr "Csatlakozás egy másik számítógéphez, amely a SuperSnes9x hálózati játékot futtatja szerverként"
+
+#: src/snes9x.ui:2398
+msgid "Name or IP address:"
+msgstr "Név vagy IP-cím:"
+
+#: src/snes9x.ui:2410
+msgid "Domain name or internet protocol address of a remote computer"
+msgstr "Távoli számítógép tartományneve (domain) vagy IP-címe"
+
+#: src/snes9x.ui:2426
+msgid "Port:"
+msgstr "Port:"
+
+#: src/snes9x.ui:2438
+msgid "Connect to specified TCP port on remote computer"
+msgstr "Csatlakozás a megadott TCP porthoz a távoli számítógépen"
+
+#: src/snes9x.ui:2463
+msgid "Act as a server"
+msgstr "Működés szerverként"
+
+#: src/snes9x.ui:2467
+msgid ""
+"Host a game on this computer as Player 1, requiring extra throughput to "
+"support multitple users"
+msgstr ""
+"Játék hosztolása ezen a számítógépen 1. játékosként, ami extra sávszélességet "
+"igényel több felhasználó támogatásához"
+
+#: src/snes9x.ui:2487
+msgid "<b>Server</b>"
+msgstr "<b>Szerver</b>"
+
+#: src/snes9x.ui:2517
+msgid "Sync using reset"
+msgstr "Szinkronizálás újraindítással"
+
+#: src/snes9x.ui:2521
+msgid ""
+"Reset the game when players join instead of transferring potentially "
+"unreliable freeze states"
+msgstr ""
+"A játék újraindítása, amikor játékosok csatlakoznak, a potenciálisan "
+"megbízhatatlan mentési állapotok átvitele helyett"
+
+#: src/snes9x.ui:2532
+msgid "Send ROM image to clients"
+msgstr "ROM képfájl küldése a klienseknek"
+
+#: src/snes9x.ui:2536
+msgid ""
+"Send the running game image to players instead of requiring them to have "
+"their own copies"
+msgstr ""
+"A futó játék képfájljának elküldése a játékosoknak, ahelyett hogy saját másolattal kellene rendelkezniük"
+
+#: src/snes9x.ui:2554
+msgid "Default port:"
+msgstr "Alapértelmezett port:"
+
+#: src/snes9x.ui:2566
+msgid "TCP port used as a connection point for remote clients"
+msgstr "Távoli kliensek kapcsolódási pontjaként használt TCP port"
+
+#: src/snes9x.ui:2598
+msgid "Ask server to pause when"
+msgstr "Szerver megkérése a szüneteltetésre, ha"
+
+#: src/snes9x.ui:2652
+msgid "<b>Settings</b>"
+msgstr "<b>Beállítások</b>"
+
+#: src/snes9x.ui:2680
+msgid "SuperSnes9x Preferences"
+msgstr "SuperSnes9x beállításai"
+
+#: src/snes9x.ui:2796
+msgid "Use fullscreen on ROM open"
+msgstr "Teljes képernyő használata ROM megnyitásakor"
+
+#: src/snes9x.ui:2800
+msgid "Go to fullscreen mode immediately after opening a ROM"
+msgstr "Átlépés teljes képernyős módba azonnal a ROM megnyitása után"
+
+#: src/snes9x.ui:2812
+msgid "Show local time"
+msgstr "Helyi idő mutatása"
+
+#: src/snes9x.ui:2827
+msgid "Show frame rate"
+msgstr "Képkockasebesség (FPS) mutatása"
+
+#: src/snes9x.ui:2842
+msgid "Show pressed keys"
+msgstr "Lenyomott billentyűk mutatása"
+
+#: src/snes9x.ui:2857
+msgid "Show fast‑forward and pause indicators"
+msgstr "Gyorsítás és szünet jelzők mutatása"
+
+#: src/snes9x.ui:2872
+msgid "Use overscanned height"
+msgstr "Túlskálázott (overscan) magasság használata"
+
+#: src/snes9x.ui:2876
+msgid "Use SNES extended height. Will probably cause letterboxing"
+msgstr "A SNES kiterjesztett magasságának használata. Valószínűleg fekete sávokat okoz"
+
+#: src/snes9x.ui:2898
+msgid "On‑screen display size:"
+msgstr "Képernyőüzenetek mérete:"
+
+#: src/snes9x.ui:2909
+msgid "The size of on‑screen display messages in pixels"
+msgstr "A képernyőn megjelenő üzenetek mérete képpontban"
+
+#: src/snes9x.ui:2940
+msgid "Change fullscreen resolution:"
+msgstr "Teljes képernyős felbontás módosítása:"
+
+#: src/snes9x.ui:2944
+msgid "Changes the screen resolution when running SuperSnes9x in fullscreen mode"
+msgstr "Megváltoztatja a képernyő felbontását, amikor a SuperSnes9x teljes képernyős módban fut"
+
+#: src/snes9x.ui:2989
+msgid "Basic Settings"
+msgstr "Alapbeállítások"
+
+#: src/snes9x.ui:3030
+msgid "Scale image to fit window"
+msgstr "Kép skálázása az ablakhoz"
+
+#: src/snes9x.ui:3034
+msgid "Scales the image so no black bars are present"
+msgstr "Úgy skálázza a képet, hogy ne legyenek fekete sávok"
+
+#: src/snes9x.ui:3054
+msgid "Aspect ratio:"
+msgstr "Képarány:"
+
+#: src/snes9x.ui:3089
+msgid "Maintain aspect ratio"
+msgstr "Képarány megtartása"
+
+#: src/snes9x.ui:3093
+msgid "Scales the image as large as possible without distortion"
+msgstr "A lehető legnagyobbra skálázza a képet torzítás nélkül"
+
+#: src/snes9x.ui:3108
+msgid "Allows scaling and filtering to use multiple processors"
+msgstr "Lehetővé teszi, hogy a skálázás és szűrés több processzort használjon"
+
+#: src/snes9x.ui:3111
+msgid "Use"
+msgstr "Használat"
+
+#: src/snes9x.ui:3170
+msgid "High‑resolution effect:"
+msgstr "Nagy felbontású effektus:"
+
+#: src/snes9x.ui:3213
+msgid "Apply scaling filter:"
+msgstr "Skálázási szűrő alkalmazása:"
+
+#: src/snes9x.ui:3281
+msgid "Video preset:"
+msgstr "Videó profil:"
+
+#: src/snes9x.ui:3295
+msgid "Composite"
+msgstr "Kompozit"
+
+#: src/snes9x.ui:3309
+msgid "S‑Video"
+msgstr "S-Video"
+
+#: src/snes9x.ui:3323
+msgid "RGB"
+msgstr "RGB"
+
+#: src/snes9x.ui:3337
+msgid "Monochrome"
+msgstr "Monokróm (Egyszínű)"
+
+#: src/snes9x.ui:3378
+msgid "Artifacts:"
+msgstr "Képhibák (Artifacts):"
+
+#: src/snes9x.ui:3393
+msgid "Sharpness:"
+msgstr "Élesség:"
+
+#: src/snes9x.ui:3408
+msgid "Brightness:"
+msgstr "Fényerő:"
+
+#: src/snes9x.ui:3423
+msgid "Contrast:"
+msgstr "Kontraszt:"
+
+#: src/snes9x.ui:3438
+msgid "Saturation:"
+msgstr "Telítettség:"
+
+#: src/snes9x.ui:3453
+msgid "Hue:"
+msgstr "Árnyalat (Hue):"
+
+#: src/snes9x.ui:3654
+msgid "Gamma:"
+msgstr "Gamma:"
+
+#: src/snes9x.ui:3669
+msgid "Fringing:"
+msgstr "Színszegély (Fringing):"
+
+#: src/snes9x.ui:3684
+msgid "Bleed:"
+msgstr "Színelszivárgás (Bleed):"
+
+#: src/snes9x.ui:3699
+msgid "Resolution:"
+msgstr "Felbontás:"
+
+#: src/snes9x.ui:3729
+msgid "Merge odd and even fields"
+msgstr "Páratlan és páros mezők összevonása"
+
+#: src/snes9x.ui:3751 src/snes9x.ui:3810
+msgid "Scanline intensity:"
+msgstr "Képváltó sorok (scanlines) intenzitása:"
+
+#: src/snes9x.ui:3855
+msgid "Scaling"
+msgstr "Skálázás"
+
+#: src/snes9x.ui:3897
+msgid "Bilinear‐filter output"
+msgstr "Bilineárisan szűrt kimenet"
+
+#: src/snes9x.ui:3912
+msgid "Use best settings for FreeSync/G‑Sync when in fullscreen"
+msgstr "A legjobb FreeSync/G-Sync beállítások használata teljes képernyőn"
+
+#: src/snes9x.ui:3933
+msgid "Sync to vertical blank"
+msgstr "Szinkronizálás a függőleges kioltáshoz (vsync)"
+
+#: src/snes9x.ui:3937
+msgid "Sync the image to the vertical retrace to stop tearing"
+msgstr "A kép szinkronizálása a függőleges frissítéshez a képtörés megelőzésére"
+
+#: src/snes9x.ui:3949
+msgid "Reduce input lag"
+msgstr "Bemeneti késleltetés (input lag) csökkentése"
+
+#: src/snes9x.ui:3953
+msgid ""
+"Sync the program with the video output after every displayed frame to reduce "
+"input latency"
+msgstr ""
+"A program szinkronizálása a videokimenettel minden megjelenített képkocka után a bemeneti késleltetés csökkentésére"
+
+#: src/snes9x.ui:3969
+msgid "Shader:"
+msgstr "Shader:"
+
+#: src/snes9x.ui:4033
+msgid "Force an inverted byte‑ordering"
+msgstr "Invertált bájtsorrend kényszerítése"
+
+#: src/snes9x.ui:4037
+msgid ""
+"Forces a swapped byte‑ordering for cases where the system’s endian is used "
+"instead of the video card"
+msgstr ""
+"Felcserélt bájtsorrendet kényszerít ki azon esetekben, amikor a rendszer bájtsorrendje használatos a videokártya helyett"
+
+#: src/snes9x.ui:4061
+msgid "Hardware Acceleration"
+msgstr "Hardveres gyorsítás"
+
+#: src/snes9x.ui:4090
+msgid "Display"
+msgstr "Képernyő"
+
+#: src/snes9x.ui:4143
+msgid "Sound driver:"
+msgstr "Hangillesztő (driver):"
+
+#: src/snes9x.ui:4178
+msgid "Automatically adjust input rate to display"
+msgstr "Bemeneti ráta automatikus igazítása a kijelzőhöz"
+
+#: src/snes9x.ui:4182
+msgid "Sets the correct input rate based on the display’s refresh rate"
+msgstr "Beállítja a helyes bemeneti rátát a kijelző frissítési gyakorisága alapján"
+
+#: src/snes9x.ui:4194
+msgid "Dynamic rate control"
+msgstr "Dinamikus rátavezérlés"
+
+#: src/snes9x.ui:4198
+msgid "Smooth out slight hiccups in sound input rate"
+msgstr "Kisimítja a hangbemeneti ráta apróbb egyenetlenségeit"
+
+#: src/snes9x.ui:4209
+msgid "Mute sound output"
+msgstr "Hangkimenet némítása"
+
+#: src/snes9x.ui:4213
+msgid "Disables output of sound"
+msgstr "Letiltja a hangkimenetet"
+
+#: src/snes9x.ui:4225
+msgid "Mute sound when using turbo or rewind"
+msgstr "Hang némítása turbó vagy visszatekerés használatakor"
+
+#: src/snes9x.ui:4229
+msgid "Disables output of sound when using turbo or rewind"
+msgstr "Letiltja a hangkimenetet turbó vagy visszatekerés használatakor"
+
+#: src/snes9x.ui:4252
+msgid "Playback rate:"
+msgstr "Lejátszási ráta (mintavételezési frekvencia):"
+
+#: src/snes9x.ui:4310
+msgid "Buffer size:"
+msgstr "Puffer mérete:"
+
+#: src/snes9x.ui:4324
+msgid "Dynamic rate limit:"
+msgstr "Dinamikus rátakorlát:"
+
+#: src/snes9x.ui:4369
+msgid "Input rate:"
+msgstr "Bemeneti ráta:"
+
+#: src/snes9x.ui:4382
+msgid ""
+"Adjust to produce more or less data. Decrease the rate if experiencing "
+"crackling. Increase the rate if experiencing frame rate stuttering. Best "
+"used with the “Sound buffer synchronization” option."
+msgstr ""
+"Állítsa be több vagy kevesebb adat előállításához. Csökkentse a rátát, ha recsegést tapasztal. "
+"Növelje a rátát, ha a képkockasebesség akadozik. Legjobb a „Hangpuffer szinkronizáció” opcióval együtt használni."
+
+#: src/snes9x.ui:4432
+msgid "Video rate:"
+msgstr "Videoráta:"
+
+#: src/snes9x.ui:4469
+msgid "<b>Sound Settings</b>"
+msgstr "<b>Hangbeállítások</b>"
+
+#: src/snes9x.ui:4503 src/snes9x.ui:8730
+msgid "Sound"
+msgstr "Hang"
+
+#: src/snes9x.ui:4561
+msgid "Throttling method:"
+msgstr "Sebességkorlátozási módszer:"
+
+#: src/snes9x.ui:4603
+msgid "<b>Speed Control</b>"
+msgstr "<b>Sebességvezérlés</b>"
+
+#: src/snes9x.ui:4641
+msgid "Rewind buffer size (MB):"
+msgstr "Visszatekerési puffer mérete (MB):"
+
+#: src/snes9x.ui:4683
+msgid "Number of frames between rewind snapshots:"
+msgstr "Képkockák száma a visszatekerési pillanatképek között:"
+
+#: src/snes9x.ui:4724
+msgid "<b>Rewind Settings</b>"
+msgstr "<b>Visszatekerési beállítások</b>"
+
+#: src/snes9x.ui:4755
+msgid "Allow invalid VRAM access"
+msgstr "Érvénytelen VRAM hozzáférés engedélyezése"
+
+#: src/snes9x.ui:4759
+msgid ""
+"Allows ROM hacks to write to screen at the wrong time. Only use if you know "
+"your ROM hack expects this"
+msgstr ""
+"Lehetővé teszi a ROM-módosítások számára, hogy rossz időben írjanak a képernyőre. Csak akkor használja, "
+"ha tudja, hogy a ROM-módosítása ezt igényli"
+
+#: src/snes9x.ui:4769
+msgid "Allow opposing dpad directions"
+msgstr "Ellentétes dpad irányok engedélyezése"
+
+#: src/snes9x.ui:4773
+msgid "Let left and right or up and down be pressed at the same time"
+msgstr "Lehetővé teszi a bal és jobb, vagy a fel és le gombok egyidejű lenyomását"
+
+#: src/snes9x.ui:4784
+msgid "Overclock CPU"
+msgstr "CPU túlhajtása (Overclock)"
+
+#: src/snes9x.ui:4788
+msgid "Reduces slowdown, but has potential to break games"
+msgstr "Csökkenti a lassulást, de instabilitást vagy játékhibákat okozhat"
+
+#: src/snes9x.ui:4799
+msgid "Remove sprite limit"
+msgstr "Sprite limit eltávolítása"
+
+#: src/snes9x.ui:4803
+msgid "Reduces flicker, but may cause graphical artifacts"
+msgstr "Csökkenti a villódzást, de grafikai hibákat (artefaktokat) okozhat"
+
+#: src/snes9x.ui:4814
+msgid "Redirect echo buffer overflow"
+msgstr "Visszhangpuffer ylivuoto átirányítása"
+
+#: src/snes9x.ui:4818
+msgid "Allows old addmusic hacks to work, but will likely hurt other games"
+msgstr "Lehetővé teszi a régi addmusic hackek működését, de valószínűleg ront más játékokat"
+
+#: src/snes9x.ui:4836
+msgid "SuperFX clock speed %:"
+msgstr "SuperFX órajel sebessége %:"
+
+#: src/snes9x.ui:4875
+msgid "Gaussian is the correct behavior for SNES hardware"
+msgstr "A Gauss-szűrés a helyes működés a SNES hardver esetében"
+
+#: src/snes9x.ui:4882
+msgid "Sound filter:"
+msgstr "Hangszűrő:"
+
+#: src/snes9x.ui:4919
+msgid "<b>Hacks</b>"
+msgstr "<b>Módosítások / Hackek</b>"
+
+#: src/snes9x.ui:4961 src/snes9x.ui:7147
+msgid "Emulation"
+msgstr "Emuláció"
+
+#: src/snes9x.ui:5202
+msgid "SRAM:"
+msgstr "SRAM:"
+
+#: src/snes9x.ui:5214
+msgid "Save states:"
+msgstr "Mentési állapotok:"
+
+#: src/snes9x.ui:5228
+msgid "Cheats:"
+msgstr "Csalások:"
+
+#: src/snes9x.ui:5242
+msgid "Patches:"
+msgstr "Javítások (Patches):"
+
+#: src/snes9x.ui:5256
+msgid "Exports:"
+msgstr "Exportálások:"
+
+#: src/snes9x.ui:5280
+msgid "<b>Game Data Locations</b>"
+msgstr "<b>Játékadatok helyei</b>"
+
+#: src/snes9x.ui:5313
+msgid "Save SRAM:"
+msgstr "SRAM mentése:"
+
+#: src/snes9x.ui:5325
+msgid ""
+"Automatically save the game’s SRAM at this interval. Setting this to 0 will "
+"only save when quitting or changing ROMs"
+msgstr ""
+"A játék SRAM adatainak automatikus mentése ezen időközönként. Ha ezt 0-ra állítja, "
+"csak kilépéskor vagy ROM váltásakor ment"
+
+#: src/snes9x.ui:5355
+msgid "<b>Automatic Saving</b>"
+msgstr "<b>Automatikus mentés</b>"
+
+#: src/snes9x.ui:5392
+msgid "Files"
+msgstr "Fájlok"
+
+#: src/snes9x.ui:5423
+msgid "<b>Joypad:</b>"
+msgstr "<b>Irányítópad:</b>"
+
+#: src/snes9x.ui:5464
+msgid "_Reset"
+msgstr "Újraindítás (_R)"
+
+#: src/snes9x.ui:5492
+msgid "Swap with:"
+msgstr "Csere a következőre:"
+
+#: src/snes9x.ui:5520
+msgid "_Swap"
+msgstr "C_sere"
+
+#: src/snes9x.ui:5542
+msgid "Use _modifier keys (Ctrl, Shift, Alt) directly"
+msgstr "Módosító billentyűk (Ctrl, Shift, Alt) közvetlen használata (_M)"
+
+#: src/snes9x.ui:5546
+msgid "Allow using modifier keys as independent keys instead of modifiers"
+msgstr "Módosító billentyűk független billentyűként való használatának engedélyezése módosítás helyett"
+
+#: src/snes9x.ui:5581
+msgid "Up"
+msgstr "Fel"
+
+#: src/snes9x.ui:5593
+msgid "Down"
+msgstr "Le"
+
+#: src/snes9x.ui:5607
+msgid "Left"
+msgstr "Balra"
+
+#: src/snes9x.ui:5621
+msgid "Right"
+msgstr "Jobbra"
+
+#: src/snes9x.ui:5635
+msgid "Start"
+msgstr "Start"
+
+#: src/snes9x.ui:5649
+msgid "Select"
+msgstr "Select"
+
+#: src/snes9x.ui:5790 src/snes9x.ui:6020 src/snes9x.ui:6232
+msgid "A"
+msgstr "A"
+
+#: src/snes9x.ui:5802 src/snes9x.ui:6032 src/snes9x.ui:6244
+msgid "B"
+msgstr "B"
+
+#: src/snes9x.ui:5816 src/snes9x.ui:6046 src/snes9x.ui:6258
+msgid "X"
+msgstr "X"
+
+#: src/snes9x.ui:5830 src/snes9x.ui:6060 src/snes9x.ui:6272
+msgid "Y"
+msgstr "Y"
+
+#: src/snes9x.ui:5844 src/snes9x.ui:6074 src/snes9x.ui:6286
+msgid "L"
+msgstr "L"
+
+#: src/snes9x.ui:5858 src/snes9x.ui:6088 src/snes9x.ui:6300
+msgid "R"
+msgstr "R"
+
+#: src/snes9x.ui:5992
+msgid "Buttons"
+msgstr "Gombok"
+
+#: src/snes9x.ui:6433
+msgid "<b>Sticky</b>"
+msgstr "<b>Ragadós / Rögzített</b>"
+
+#: src/snes9x.ui:6449
+msgid "<b>Turbo</b>"
+msgstr "<b>Turbó</b>"
+
+#: src/snes9x.ui:6468
+msgid "Turbo / Sticky Buttons"
+msgstr "Turbó / Rögzített gombok"
+
+#: src/snes9x.ui:6505
+msgid "Set new axis bindings at:"
+msgstr "Új tengely hozzárendelések beállítása itt:"
+
+#: src/snes9x.ui:6517
+msgid ""
+"Changes the amount a joystick should be tilted to register a button press"
+msgstr ""
+"Megváltoztatja, hogy mennyire kell elmozdítani a joysticket egy gombnyomás regisztrálásához"
+
+#: src/snes9x.ui:6536
+msgid "percent"
+msgstr "százalék"
+
+#: src/snes9x.ui:6553
+msgid "<b>Joystick Axis Threshold</b>"
+msgstr "<b>Joystick tengely holttere (Threshold)</b>"
+
+#: src/snes9x.ui:6590
+msgid "Center all axes on all joysticks and press Calibrate."
+msgstr "Állítsa középre az összes tengelyt minden joystickon, majd nyomja meg a Kalibrálás gombot."
+
+#: src/snes9x.ui:6605
+msgid "Cali_brate"
+msgstr "Kali_brálás"
+
+#: src/snes9x.ui:6638
+msgid "<b>Calibration</b>"
+msgstr "<b>Kalibrálás</b>"
+
+#: src/snes9x.ui:6659
+msgid "Joystick Options"
+msgstr "Joystick beállításai"
+
+#: src/snes9x.ui:6677 src/snes9x.ui:9029
+msgid ""
+"<small>Click an entry and then press the desired keys or joystick button\n"
+"<tt>Escape</tt>: Move to next  <tt>Shift+Escape</tt>: Clear selected</small>"
+msgstr ""
+"<small>Kattintson egy bejegyzésre, majd nyomja meg a kívánt billentyűket vagy joystick gombot\n"
+"<tt>Escape</tt>: Lépés a következőre  <tt>Shift+Escape</tt>: Kijelölt törlése</small>"
+
+#: src/snes9x.ui:6715
+msgid "Joypads"
+msgstr "Irányítópaddok"
+
+#: src/snes9x.ui:6742
+msgid "<b>SuperSnes9x Emulator Shortcut Keys</b>"
+msgstr "<b>SuperSnes9x emulátor gyorsbillentyűk</b>"
+
+#: src/snes9x.ui:6793
+msgid "Soft reset"
+msgstr "Szoftveres újraindítás"
+
+#: src/snes9x.ui:6807
+msgid "Hardware reset"
+msgstr "Hardveres újraindítás"
+
+#: src/snes9x.ui:6821
+msgid "Increase frame time"
+msgstr "Képkockaidő növelése"
+
+#: src/snes9x.ui:6835
+msgid "Decrease frame time"
+msgstr "Képkockaidő csökkentése"
+
+#: src/snes9x.ui:6849
+msgid "Increase frame rate"
+msgstr "Képkockasebesség növelése"
+
+#: src/snes9x.ui:6863
+msgid "Decrease frame rate"
+msgstr "Képkockasebesség csökkentése"
+
+#: src/snes9x.ui:6877
+msgid "Pause"
+msgstr "Szünet"
+
+#: src/snes9x.ui:6891
+msgid "Toggle turbo"
+msgstr "Turbó ki-/bekapcsolása"
+
+#: src/snes9x.ui:6905
+msgid "Enable turbo"
+msgstr "Turbó engedélyezése"
+
+#: src/snes9x.ui:6920
+msgid "Open ROM"
+msgstr "ROM megnyitása"
+
+#: src/snes9x.ui:7179
+msgid "Toggle BG layer 0"
+msgstr "0. háttérréteg ki-/bekapcsolása"
+
+#: src/snes9x.ui:7191
+msgid "Toggle BG layer 1"
+msgstr "1. háttérréteg ki-/bekapcsolása"
+
+#: src/snes9x.ui:7205
+msgid "Toggle BG layer 2"
+msgstr "2. háttérréteg ki-/bekapcsolása"
+
+#: src/snes9x.ui:7219
+msgid "Toggle BG layer 3"
+msgstr "3. háttérréteg ki-/bekapcsolása"
+
+#: src/snes9x.ui:7233
+msgid "Toggle sprites"
+msgstr "Sprite-ok ki-/bekapcsolása"
+
+#: src/snes9x.ui:7247
+msgid "Toggle forced backdrop color"
+msgstr "Kényszerített háttérszín ki-/bekapcsolása"
+
+#: src/snes9x.ui:7261
+msgid "Screenshot"
+msgstr "Képernyőkép"
+
+#: src/snes9x.ui:7275
+msgid "Toggle fullscreen"
+msgstr "Teljes képernyő ki-/bekapcsolása"
+
+#: src/snes9x.ui:7439
+msgid "Graphics"
+msgstr "Grafika"
+
+#: src/snes9x.ui:7476
+msgid "Save current slot"
+msgstr "Aktuális hely mentése"
+
+#: src/snes9x.ui:7509
+msgid "Load current slot"
+msgstr "Aktuális hely betöltése"
+
+#: src/snes9x.ui:7542
+msgid "Increment and save"
+msgstr "Növelés és mentés"
+
+#: src/snes9x.ui:7575
+msgid "Decrement and load"
+msgstr "Csökkentés és betöltés"
+
+#: src/snes9x.ui:7608
+msgid "Increment slot"
+msgstr "Mentési hely növelése"
+
+#: src/snes9x.ui:7641
+msgid "Decrement slot"
+msgstr "Mentési hely csökkentése"
+
+#: src/snes9x.ui:7685
+msgid "<b>Quick save state</b>"
+msgstr "<b>Gyors állapotmentés</b>"
+
+#: src/snes9x.ui:7700
+msgid "<b>Quick load state</b>"
+msgstr "<b>Gyors állapotbetöltés</b>"
+
+#: src/snes9x.ui:7715 src/snes9x.ui:7855
+msgid "Slot 0"
+msgstr "0. hely"
+
+#: src/snes9x.ui:7729 src/snes9x.ui:7871
+msgid "Slot 1"
+msgstr "1. hely"
+
+#: src/snes9x.ui:7743 src/snes9x.ui:7887
+msgid "Slot 2"
+msgstr "2. hely"
+
+#: src/snes9x.ui:7757 src/snes9x.ui:7903
+msgid "Slot 3"
+msgstr "3. hely"
+
+#: src/snes9x.ui:7771 src/snes9x.ui:7919
+msgid "Slot 4"
+msgstr "4. hely"
+
+#: src/snes9x.ui:7785 src/snes9x.ui:7935
+msgid "Slot 5"
+msgstr "5. hely"
+
+#: src/snes9x.ui:7799 src/snes9x.ui:7951
+msgid "Slot 6"
+msgstr "6. hely"
+
+#: src/snes9x.ui:7813 src/snes9x.ui:7967
+msgid "Slot 7"
+msgstr "7. hely"
+
+#: src/snes9x.ui:7827 src/snes9x.ui:7983
+msgid "Slot 8"
+msgstr "8. hely"
+
+#: src/snes9x.ui:7841 src/snes9x.ui:7999
+msgid "Slot 9"
+msgstr "9. hely"
+
+#: src/snes9x.ui:8438
+msgid "Toggle sound channel 0"
+msgstr "0. hangcsatorna ki-/bekapcsolása"
+
+#: src/snes9x.ui:8450
+msgid "Toggle sound channel 1"
+msgstr "1. hangcsatorna ki-/bekapcsolása"
+
+#: src/snes9x.ui:8464
+msgid "Toggle sound channel 2"
+msgstr "2. hangcsatorna ki-/bekapcsolása"
+
+#: src/snes9x.ui:8478
+msgid "Toggle sound channel 3"
+msgstr "3. hangcsatorna ki-/bekapcsolása"
+
+#: src/snes9x.ui:8492
+msgid "Toggle sound channel 4"
+msgstr "4. hangcsatorna ki-/bekapcsolása"
+
+#: src/snes9x.ui:8506
+msgid "Toggle sound channel 5"
+msgstr "5. hangcsatorna ki-/bekapcsolása"
+
+#: src/snes9x.ui:8520
+msgid "Toggle sound channel 6"
+msgstr "6. hangcsatorna ki-/bekapcsolása"
+
+#: src/snes9x.ui:8534
+msgid "Toggle sound channel 7"
+msgstr "7. hangcsatorna ki-/bekapcsolása"
+
+#: src/snes9x.ui:8548
+msgid "Toggle all sound channels"
+msgstr "Összes hangcsatorna ki-/bekapcsolása"
+
+#: src/snes9x.ui:8753
+msgid "Seek to frame"
+msgstr "Keresés képkockára"
+
+#: src/snes9x.ui:8768
+msgid "Load Movie"
+msgstr "Film betöltése"
+
+#: src/snes9x.ui:8783
+msgid "Stop movie recording"
+msgstr "Film rögzítésének leállítása"
+
+#: src/snes9x.ui:8798
+msgid "Begin movie recording"
+msgstr "Film rögzítésének elindítása"
+
+#: src/snes9x.ui:8813
+msgid "Save SPC"
+msgstr "SPC mentése"
+
+#: src/snes9x.ui:8913
+msgid "Swap controllers 1 & 2"
+msgstr "1. és 2. vezérlő felcserélése"
+
+#: src/snes9x.ui:8944
+msgid "Rewind"
+msgstr "Visszatekerés"
+
+#: src/snes9x.ui:8975
+msgid "Capture/release mouse"
+msgstr "Egér elkapása/elengedése"
+
+#: src/snes9x.ui:9011
+msgid "Misc"
+msgstr "Egyebek"
+
+#: src/snes9x.ui:9067
+msgid "Shortcuts"
+msgstr "Gyorsbillentyűk"
+
+#: src/snes9x.ui:9106
+msgid "Pause emulation when switching away from SuperSnes9x"
+msgstr "Emuláció szüneteltetése, ha elvált a SuperSnes9x-től"
+
+#: src/snes9x.ui:9120
+msgid "Force‑enable button and menu icons"
+msgstr "Gomb- és menüikonok kényszerített engedélyezése"
+
+#: src/snes9x.ui:9141
+msgid "The <tt>Esc</tt> key should:"
+msgstr "Az <tt>Esc</tt> billentyűnek ezt kell tennie:"
+
+#: src/snes9x.ui:9185
+msgid "Initial background:"
+msgstr "Kezdeti háttér:"
+
+#: src/snes9x.ui:9226
+msgid "<b>Window Behavior</b>"
+msgstr "<b>Ablak viselkedése</b>"
+
+#: src/snes9x.ui:9256
+msgid "Prevent the screensaver from activating"
+msgstr "Képernyővédő aktiválásának megakadályozása"
+
+#: src/snes9x.ui:9276
+msgid "<b>Screensaver</b>"
+msgstr "<b>Képernyővédő</b>"
+
+#: src/snes9x.ui:9310
+msgid "UI"
+msgstr "Felhasználói felület (UI)"
+
+#: src/snes9x.ui:9344
+msgid ""
+"  SuperSnes9x – A Portable Super Nintendo Entertainment System™ Emulator\n"
+"\n"
+"  Snes9x homepage: http://www.snes9x.com/\n"
+"  SuperSnes9x source code: https://github.com/shanytc/snes9x/\n"
+"\n"
+"  Permission to use, copy, modify and/or distribute SuperSnes9x in both binary\n"
+"  and source form, for non‑commercial purposes, is hereby granted without\n"
+"  fee, providing that this license information and copyright notice appear\n"
+"  with all copies and any derived work.\n"
+"\n"
+"  This software is provided ‘as‑is’, without any express or implied\n"
+"  warranty. In no event shall the authors be held liable for any damages\n"
+"  arising from the use of this software or it’s derivatives.\n"
+"\n"
+"  SuperSnes9x is freeware for PERSONAL USE only. Commercial users should\n"
+"  seek permission of the copyright holders first. Commercial use includes,\n"
+"  but is not limited to, charging money for SuperSnes9x or software derived from\n"
+"  Snes9x, including SuperSnes9x or derivatives in commercial game bundles, and/"
+"or\n"
+"  using SuperSnes9x as a promotion for your commercial product.\n"
+"\n"
+"  The copyright holders request that bug fixes and improvements to the code\n"
+"  should be forwarded to them so everyone can benefit from the "
+"modifications\n"
+"  in future versions.\n"
+"\n"
+"  Super NES and Super Nintendo Entertainment System are trademarks of\n"
+"  Nintendo Co., Limited and its subsidiary companies."
+msgstr ""
+"  SuperSnes9x – Egy hordozható Super Nintendo Entertainment System™ emulátor\n"
+"\n"
+"  Snes9x honlap: http://www.snes9x.com/\n"
+"  SuperSnes9x forráskód: https://github.com/shanytc/snes9x/\n"
+"\n"
+"  A Snes9x bináris és forrásformában történő felhasználása, másolása, módosítása és/vagy terjesztése nem kereskedelmi\n"
+"  célokra díjmentesen engedélyezett, feltéve, hogy ez a licencinformáció és a szerzői jogi nyilatkozat megjelenik\n"
+"  minden másolatban és minden származtatott munkában.\n"
+"\n"
+"  Ez a szoftver jelenlegi állapotában („as-is”) kerül biztosításra, bármilyen kifejezett vagy hallgatólagos\n"
+"  szavatosság nélkül. A szerzők semmilyen esetben sem vonhatók felelősségre a szoftver vagy\n"
+"  származékai használatából eredő károkért.\n"
+"\n"
+"  A Snes9x freeware, kizárólag SZEMÉLYES HASZNÁLATRA szolgál. A kereskedelmi felhasználóknak\n"
+"  először a szerzői jogok tulajdonosaitól kell engedélyt kérniük. A kereskedelmi felhasználás magában foglalja, de nem\n"
+"  korlátozódik a Snes9x vagy a Snes9x-ből származó szoftverekért való pénz felszámítására, a SuperSnes9x vagy származékai\n"
+"  kereskedelmi játékcsomagokba való felvételére és/vagy a SuperSnes9x promócióként való használatára a kereskedelmi termékéhez.\n"
+"\n"
+"  A szerzői jogok tulajdonosai kérik, hogy a kód hibajavításait és fejlesztéseit\n"
+"  továbbítsák feléjük, hogy a jövőbeni verziókban mindenki profitálhasson a módosításokból.\n"
+"\n"
+"  A Super NES és a Super Nintendo Entertainment System a Nintendo Co., Limited\n"
+"  és leányvállalatainak védjegyei."
+
+# === Win32 strings (added by i18n/extract_strings.py) ===
+
+#: win32/rsrc/snes9x.rc
+msgid "!= (Not Equal To)"
+msgstr "!= (Nem egyenlő)"
+
+#: win32/wlanguage.h
+msgid "(Not Available)"
+msgstr "(Nem érhető el)"
+
+#: win32/wlanguage.h
+msgid "(not stored in movie file)"
+msgstr "(nincs tárolva a filmfájlban)"
+
+#: win32/rsrc/snes9x.rc
+msgid "(restart required)"
+msgstr "(újraindítás szükséges)"
+
+#: win32/rsrc/snes9x.rc
+msgid "0 (off)"
+msgstr "0 (ki)"
+
+#: win32/rsrc/snes9x.rc
+msgid "1 byte"
+msgstr "1 bájt"
+
+#: win32/rsrc/snes9x.rc
+msgid "1 frame"
+msgstr "1 képkocka"
+
+#: win32/rsrc/snes9x.rc
+msgid "10x"
+msgstr "10-szeres"
+
+#: win32/rsrc/snes9x.rc
+msgid "112ms"
+msgstr "112ms"
+
+#: win32/rsrc/snes9x.rc
+msgid "11KHz"
+msgstr "11kHz"
+
+#: win32/rsrc/snes9x.rc
+msgid "128ms"
+msgstr "128ms"
+
+#: win32/rsrc/snes9x.rc
+msgid "144ms"
+msgstr "144ms"
+
+#: win32/rsrc/snes9x.rc
+msgid "160ms"
+msgstr "160ms"
+
+#: win32/rsrc/snes9x.rc
+msgid "16KHz"
+msgstr "16kHz"
+
+#: win32/rsrc/snes9x.rc
+msgid "16ms"
+msgstr "16ms"
+
+#: win32/rsrc/snes9x.rc
+msgid "176ms"
+msgstr "176ms"
+
+#: win32/rsrc/snes9x.rc
+msgid "192ms"
+msgstr "192ms"
+
+#: win32/rsrc/snes9x.rc
+msgid "1x"
+msgstr "1-szeres"
+
+#: win32/rsrc/snes9x.rc
+msgid "2 bytes"
+msgstr "2 bájt"
+
+#: win32/rsrc/snes9x.rc
+msgid "2 frames"
+msgstr "2 képkocka"
+
+#: win32/rsrc/snes9x.rc
+msgid "208ms"
+msgstr "208ms"
+
+#: win32/rsrc/snes9x.rc
+msgid "22KHz"
+msgstr "22kHz"
+
+#: win32/rsrc/snes9x.rc
+msgid "2x"
+msgstr "2-szeres"
+
+#: win32/rsrc/snes9x.rc
+msgid "3 bytes"
+msgstr "3 bájt"
+
+#: win32/rsrc/snes9x.rc
+msgid "3 frames"
+msgstr "3 képkocka"
+
+#: win32/rsrc/snes9x.rc
+msgid "30KHz"
+msgstr "30kHz"
+
+#: win32/rsrc/snes9x.rc
+msgid "32KHz"
+msgstr "32kHz"
+
+#: win32/rsrc/snes9x.rc
+msgid "32ms"
+msgstr "32ms"
+
+#: win32/rsrc/snes9x.rc
+msgid "35KHz"
+msgstr "35kHz"
+
+#: win32/rsrc/snes9x.rc
+msgid "3x"
+msgstr "3-szoros"
+
+#: win32/rsrc/snes9x.rc
+msgid "4 bytes"
+msgstr "4 bájt"
+
+#: win32/rsrc/snes9x.rc
+msgid "4 frames"
+msgstr "4 képkocka"
+
+#: win32/rsrc/snes9x.rc
+msgid "44KHz"
+msgstr "44kHz"
+
+#: win32/rsrc/snes9x.rc
+msgid "48KHz"
+msgstr "48kHz"
+
+#: win32/rsrc/snes9x.rc
+msgid "48ms"
+msgstr "48ms"
+
+#: win32/rsrc/snes9x.rc
+msgid "4x"
+msgstr "4-szeres"
+
+#: win32/rsrc/snes9x.rc
+msgid "5x"
+msgstr "5-szörös"
+
+#: win32/rsrc/snes9x.rc
+msgid "64ms"
+msgstr "64ms"
+
+#: win32/rsrc/snes9x.rc
+msgid "6x"
+msgstr "6-szoros"
+
+#: win32/rsrc/snes9x.rc
+msgid "7x"
+msgstr "7-szeres"
+
+#: win32/rsrc/snes9x.rc
+msgid "80ms"
+msgstr "80ms"
+
+#: win32/rsrc/snes9x.rc
+msgid "8KHz"
+msgstr "8kHz"
+
+#: win32/rsrc/snes9x.rc
+msgid "8x"
+msgstr "8-szoros"
+
+#: win32/rsrc/snes9x.rc
+msgid "96ms"
+msgstr "96ms"
+
+#: win32/rsrc/snes9x.rc
+msgid "9x"
+msgstr "9-szeres"
+
+#: win32/rsrc/snes9x.rc
+msgid "< (Less Than)"
+msgstr "< (Kisebb mint)"
+
+#: win32/wlanguage.h
+msgid "<-- MISMATCH !!!"
+msgstr "<-- ELTÉRÉS !!!"
+
+#: win32/rsrc/snes9x.rc
+msgid "<= (Less Than or Equal to)"
+msgstr "<= (Kisebb vagy egyenlő)"
+
+#: win32/rsrc/snes9x.rc
+msgid "= (Equal To)"
+msgstr "= (Egyenlő)"
+
+#: win32/rsrc/snes9x.rc
+msgid "> (Greater Than)"
+msgstr "> (Nagyobb mint)"
+
+#: win32/rsrc/snes9x.rc
+msgid ">= (Greater than or Equal To)"
+msgstr ">= (Nagyobb vagy egyenlő)"
+
+#: win32/rsrc/snes9x.rc
+msgid "About"
+msgstr "Névjegy"
+
+#: win32/rsrc/snes9x.rc
+msgid "Achievement List"
+msgstr "Sikerek listája (Achievements)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Act as Server"
+msgstr "Működés szerverként"
+
+#: win32/wlanguage.h
+msgid "Act As Server"
+msgstr "Működés szerverként"
+
+#: win32/rsrc/snes9x.rc
+msgid "Add"
+msgstr "Hozzáadás"
+
+#: win32/rsrc/snes9x.rc
+msgid "Add Cheat"
+msgstr "Csalás hozzáadása"
+
+#: win32/rsrc/snes9x.rc
+msgid "Add SuperSnes9x to registry for supported file types"
+msgstr "A SuperSnes9x hozzáadása a rendszerleíró adatbázishoz a támogatott fájltípusokhoz"
+
+#: win32/rsrc/snes9x.rc
+msgid "Address"
+msgstr "Cím (Address)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Address:"
+msgstr "Cím:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Adjustments"
+msgstr "Beállítások"
+
+#: win32/wlanguage.h
+msgid "All files"
+msgstr "Minden fájl"
+
+#: win32/rsrc/snes9x.rc
+msgid "all of SuperSnes9x's settings are stored in this file"
+msgstr "a SuperSnes9x összes beállítása ebben a fájlban tárolódik"
+
+#: win32/rsrc/snes9x.rc
+msgid "Allow executable logo override"
+msgstr "Végrehajtható logó felülbírálásának engedélyezése"
+
+#: win32/rsrc/snes9x.rc
+msgid "Allow Invalid VRAM Access"
+msgstr "Érvénytelen VRAM hozzáférés engedélyezése"
+
+#: win32/rsrc/snes9x.rc
+msgid "Allow Left+Rt/Up+Dn"
+msgstr "Bal+Jobb / Fel+Le engedélyezése"
+
+#: win32/rsrc/snes9x.rc
+msgid "APP - Emulator Settings"
+msgstr "APP - Emulátor beállításai"
+
+#: win32/rsrc/snes9x.rc
+msgid "Apply"
+msgstr "Alkalmaz"
+
+#: win32/rsrc/snes9x.rc
+msgid "Apply Adjustments"
+msgstr "Beállítások alkalmazása"
+
+#: win32/rsrc/snes9x.rc
+msgid "Apply Cheats"
+msgstr "Csalások alkalmazása"
+
+#: win32/rsrc/snes9x.rc
+msgid "Ask for confirmation when saving/loading"
+msgstr "Megerősítés kérése mentéskor/betöltéskor"
+
+#: win32/rsrc/snes9x.rc
+msgid "Ask Server to Pause when"
+msgstr "Szerver megkérése a szüneteltetésre, ha"
+
+#: win32/rsrc/snes9x.rc
+msgid "Author Info:"
+msgstr "Szerző információi:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Auto Layer Transparency"
+msgstr "Automatikus rétegátlátszóság"
+
+#: win32/rsrc/snes9x.rc
+msgid "Auto update"
+msgstr "Automatikus frissítés"
+
+#: win32/rsrc/snes9x.rc
+msgid "Auto-Assign"
+msgstr "Automatikus hozzárendelés"
+
+#: win32/wlanguage.h
+msgid "Auto-Detect"
+msgstr "Automatikus felismerés"
+
+#: win32/rsrc/snes9x.rc
+msgid "Auto-Save S-RAM"
+msgstr "S-RAM automatikus mentése"
+
+#: win32/wlanguage.h
+msgid "Autofire"
+msgstr "Automatikus tüzelés"
+
+#: win32/wlanguage.h
+msgid "Autohold"
+msgstr "Automatikus tartás"
+
+#: win32/rsrc/snes9x.rc
+msgid "Automatic Input Rate"
+msgstr "Automatikus bemeneti ráta"
+
+#: win32/rsrc/snes9x.rc
+msgid "Automatic, skip at most:"
+msgstr "Automatikus, kihagyás legfeljebb:"
+
+#: win32/wlanguage.h
+msgid "AVI file"
+msgstr "AVI fájl"
+
+#: win32/rsrc/snes9x.rc
+msgid "AVI Recording"
+msgstr "AVI rögzítés"
+
+#: win32/rsrc/snes9x.rc
+msgid "Background Keyboard Hotkeys"
+msgstr "Háttérben futó billentyűzet gyorsbillentyűk"
+
+#: win32/rsrc/snes9x.rc
+msgid "Background:"
+msgstr "Háttér:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Bank +:"
+msgstr "Bank +:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Bank -:"
+msgstr "Bank -:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Bank:"
+msgstr "Bank:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Base Tile Addresses"
+msgstr "Alap csempe (tile) címek"
+
+#: win32/rsrc/snes9x.rc
+msgid "BG1:"
+msgstr "1. háttér:"
+
+#: win32/rsrc/snes9x.rc
+msgid "BG2:"
+msgstr "2. háttér:"
+
+#: win32/rsrc/snes9x.rc
+msgid "BG3:"
+msgstr "3. háttér:"
+
+#: win32/rsrc/snes9x.rc
+msgid "BG4:"
+msgstr "4. háttér:"
+
+#: win32/rsrc/snes9x.rc
+msgid "BG:"
+msgstr "Háttér:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Bilinear Filtering"
+msgstr "Bilineáris szűrés"
+
+#: win32/rsrc/snes9x.rc
+msgid "Binding"
+msgstr "Hozzárendelés"
+
+#: win32/rsrc/snes9x.rc
+msgid "BIOS"
+msgstr "BIOS"
+
+#: win32/wlanguage.h
+msgid "BIOS files"
+msgstr "BIOS fájlok"
+
+#: win32/rsrc/snes9x.rc
+msgid "BIOS:"
+msgstr "BIOS:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Bit Depth:"
+msgstr "Színmélység (Bit depth):"
+
+#: win32/rsrc/snes9x.rc
+msgid "Blend Hi-Res Images"
+msgstr "Nagy felbontású képek keverése"
+
+#: win32/rsrc/snes9x.rc
+msgid "Blue means already mapped. Pink conflicts with hotkey.\nRed is reserved by Windows. Escape clears bindings.\nPress multiple keys for multi-bind. Delete removes last."
+msgstr ""
+"A kék azt jelenti, hogy már hozzá van rendelve. A rózsaszín ütközik a gyorsbillentyűvel.\nA pirosat a Windows tartja fenn. Az Escape törli a hozzárendeléseket.\nNyomjon meg több billentyűt a többszörös hozzárendeléshez. A Delete eltávolítja az utolsót."
+
+#: win32/wlanguage.h
+msgid "Blue means the hotkey is already mapped.\nPink means it conflicts with a game button.\nRed means it's reserved by Windows.\nA hotkey can be disabled using Escape."
+msgstr ""
+"A kék azt jelenti, hogy a gyorsbillentyű már hozzá van rendelve.\nA rózsaszín azt jelenti, hogy ütközik egy játékgombbal.\nA piros azt jelenti, hogy a Windows fenntartja magának.\nA gyorsbillentyű az Escape gombbal tiltható le."
+
+#: win32/rsrc/snes9x.rc
+msgid "Blue means the hotkey is already mapped. Pink means it conflicts with a game button. Red means it's reserved by Windows. Escape clears bindings.\nPress multiple keys for multi-bind. Delete removes last."
+msgstr ""
+"A kék azt jelenti, hogy a gyorsbillentyű már hozzá van rendelve. A rózsaszín azt jelenti, hogy ütközik egy játékgombbal. A piros azt jelenti, hogy a Windows fenntartja magának. Az Escape törli a hozzárendeléseket.\nNyomjon meg több billentyűt a többszörös hozzárendeléshez. A Delete eltávolítja az utolsót."
+
+#: win32/rsrc/snes9x.rc
+msgid "Browse"
+msgstr "Tallózás"
+
+#: win32/rsrc/snes9x.rc
+msgid "Buffer Length"
+msgstr "Puffer hossza"
+
+#: win32/rsrc/snes9x.rc
+msgid "Buffer Length:"
+msgstr "Puffer hossza:"
+
+#: win32/wlanguage.h
+msgid "Can't Open File"
+msgstr "A fájl nem nyitható meg"
+
+#: win32/rsrc/snes9x.rc
+msgid "Cancel"
+msgstr "Mégse"
+
+#: win32/rsrc/snes9x.rc
+msgid "Channel 1"
+msgstr "1. csatorna"
+
+#: win32/rsrc/snes9x.rc
+msgid "Channel 2"
+msgstr "2. csatorna"
+
+#: win32/rsrc/snes9x.rc
+msgid "Channel 3"
+msgstr "3. csatorna"
+
+#: win32/rsrc/snes9x.rc
+msgid "Channel 4"
+msgstr "4. csatorna"
+
+#: win32/rsrc/snes9x.rc
+msgid "Channel 5"
+msgstr "5. csatorna"
+
+#: win32/rsrc/snes9x.rc
+msgid "Channel 6"
+msgstr "6. csatorna"
+
+#: win32/rsrc/snes9x.rc
+msgid "Channel 7"
+msgstr "7. csatorna"
+
+#: win32/rsrc/snes9x.rc
+msgid "Channel 8"
+msgstr "8. csatorna"
+
+#: win32/rsrc/snes9x.rc
+msgid "Channels"
+msgstr "Csatornák"
+
+#: win32/rsrc/snes9x.rc
+msgid "Chat"
+msgstr "Csevegés"
+
+#: win32/rsrc/snes9x.rc
+msgid "Cheat Description:"
+msgstr "Csalás leírása:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Cheat Details"
+msgstr "Csalás részletei"
+
+#: win32/rsrc/snes9x.rc
+msgid "Cheat Entry and Editor"
+msgstr "Csalás bevitele és szerkesztője"
+
+#: win32/rsrc/snes9x.rc
+msgid "Cheat Search"
+msgstr "Csalás keresése"
+
+#: win32/wlanguage.h
+msgid "Cheats Editor Dialog:"
+msgstr "Csalásszerkesztő ablak:"
+
+#: win32/wlanguage.h
+msgid "Cheats Search Dialog:"
+msgstr "Csaláskereső ablak:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Choose Logo"
+msgstr "Logó kiválasztása"
+
+#: win32/rsrc/snes9x.rc
+msgid "Clear"
+msgstr "Törlés"
+
+#: win32/rsrc/snes9x.rc
+msgid "Clear All"
+msgstr "Összes törlése"
+
+#: win32/rsrc/snes9x.rc
+msgid "Clear History"
+msgstr "Előzmények törlése"
+
+#: win32/rsrc/snes9x.rc
+msgid "Clear SRAM"
+msgstr "SRAM törlése"
+
+#: win32/rsrc/snes9x.rc
+msgid "Clear Watches"
+msgstr "Seurantalista törlése"
+
+#: win32/rsrc/snes9x.rc
+msgid "Client Settings"
+msgstr "Kliensbeállítások"
+
+#: win32/wlanguage.h
+msgid "Clipping Windows:"
+msgstr "Vágási ablakok (Clipping Windows):"
+
+#: win32/rsrc/snes9x.rc
+msgid "Close"
+msgstr "Bezárás"
+
+#: win32/wlanguage.h
+msgid "Code"
+msgstr "Kód"
+
+#: win32/rsrc/snes9x.rc
+msgid "Color Correction"
+msgstr "Színkorrekció"
+
+#: win32/rsrc/snes9x.rc
+msgid "Compare To"
+msgstr "Összehasonlítás a következővel"
+
+#: win32/rsrc/snes9x.rc
+msgid "Comparison Type"
+msgstr "Összehasonlítás típusa"
+
+#: win32/rsrc/snes9x.rc
+msgid "Config file:"
+msgstr "Konfigurációs fájl:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Connect"
+msgstr "Csatlakozás"
+
+#: win32/rsrc/snes9x.rc
+msgid "Connect clients to: 127.0.0.1 (localhost) or your LAN IP"
+msgstr "Kliensek csatlakoztatása ide: 127.0.0.1 (localhost) vagy az Ön LAN IP-címe"
+
+#: win32/rsrc/snes9x.rc
+msgid "Connect to Server"
+msgstr "Csatlakozás szerverhez"
+
+#: win32/rsrc/snes9x.rc
+msgid "Controller"
+msgstr "Vezérlő"
+
+#: win32/wlanguage.h
+msgid "Could not open movie file."
+msgstr "Nem sikerült megnyitni a filmfájlt."
+
+#: win32/rsrc/snes9x.rc
+msgid "CPU Overclock:"
+msgstr "CPU túlhajtás:"
+
+#: win32/wlanguage.h
+msgid "crc32=%08X, name=%s"
+msgstr "crc32=%08X, név=%s"
+
+#: win32/wlanguage.h
+msgid "Current ROM:"
+msgstr "Aktuális ROM:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Current ROM: CRC32=Unknown, Name=Unknown"
+msgstr "Aktuális ROM: CRC32=Ismeretlen, Név=Ismeretlen"
+
+#: win32/rsrc/snes9x.rc
+msgid "Current Value"
+msgstr "Aktuális érték"
+
+#: win32/rsrc/snes9x.rc
+msgid "Custom ROM Open Dialog"
+msgstr "Egyéni ROM megnyitási ablak"
+
+#: win32/rsrc/snes9x.rc
+msgid "Custom Screen Mode"
+msgstr "Egyéni képernyőmód"
+
+#: win32/rsrc/snes9x.rc
+msgid "Customize Hotkeys"
+msgstr "Gyorsbillentyűk testreszabása"
+
+#: win32/rsrc/snes9x.rc
+msgid "Customize Special Keys"
+msgstr "Speciális billentyűk testreszabása"
+
+#: win32/rsrc/snes9x.rc
+msgid "Data Size"
+msgstr "Adatméret"
+
+#: win32/rsrc/snes9x.rc
+msgid "Data Type"
+msgstr "Adattípus"
+
+#: win32/rsrc/snes9x.rc
+msgid "DATE"
+msgstr "DÁTUM"
+
+#: win32/rsrc/snes9x.rc
+msgid "Defaults"
+msgstr "Alapértelmezések"
+
+#: win32/rsrc/snes9x.rc
+msgid "Delete"
+msgstr "Törlés"
+
+#: win32/rsrc/snes9x.rc
+msgid "Detect gamepad changes"
+msgstr "Gamepad változások észlelése"
+
+#: win32/rsrc/snes9x.rc
+msgid "Dialog"
+msgstr "Ablak"
+
+#: win32/rsrc/snes9x.rc
+msgid "Direct3D Shader File"
+msgstr "Direct3D shader fájl"
+
+#: win32/wlanguage.h
+msgid "Directory"
+msgstr "Könyvtár"
+
+#: win32/rsrc/snes9x.rc
+msgid "Directory:"
+msgstr "Könyvtár:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Disable Sprite Limit"
+msgstr "Sprite limit letiltása"
+
+#: win32/rsrc/snes9x.rc
+msgid "Disconnect"
+msgstr "Leválasztás"
+
+#: win32/rsrc/snes9x.rc
+msgid "Disconnect from Server"
+msgstr "Leválasztás a szerverről"
+
+#: win32/rsrc/snes9x.rc
+msgid "Display Configuration"
+msgstr "Képernyő konfiguráció"
+
+#: win32/rsrc/snes9x.rc
+msgid "Display messages inside SNES image"
+msgstr "Üzenetek megjelenítése a SNES képen belül"
+
+#: win32/rsrc/snes9x.rc
+msgid "Display Settings"
+msgstr "Képernyő beállításai"
+
+#: win32/rsrc/snes9x.rc
+msgid "DN LEFT"
+msgstr "LE BALRA"
+
+#: win32/wlanguage.h
+msgid "Dn Left"
+msgstr "Le balra"
+
+#: win32/rsrc/snes9x.rc
+msgid "DN RIGHT"
+msgstr "LE JOBBRA"
+
+#: win32/wlanguage.h
+msgid "Dn Right"
+msgstr "Le jobbra"
+
+#: win32/rsrc/snes9x.rc
+msgid "DOWN"
+msgstr "LE"
+
+#: win32/rsrc/snes9x.rc
+msgid "Dummy"
+msgstr "Dummy"
+
+#: win32/rsrc/snes9x.rc
+msgid "Dynamic Rate Control"
+msgstr "Dinamikus rátavezérlés"
+
+#: win32/rsrc/snes9x.rc
+msgid "Edit Cheat Group"
+msgstr "Csaláscsoport szerkesztése"
+
+#: win32/rsrc/snes9x.rc
+msgid "Emulate Fullscreen"
+msgstr "Teljes képernyő emulálása"
+
+#: win32/wlanguage.h
+msgid "Emulation Settings"
+msgstr "Emulációs beállítások"
+
+#: win32/rsrc/snes9x.rc
+msgid "Emulator Hacks"
+msgstr "Emulátor módosítások (Hacks)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Enable"
+msgstr "Engedélyezés"
+
+#: win32/rsrc/snes9x.rc
+msgid "Enable All"
+msgstr "Összes engedélyezése"
+
+#: win32/rsrc/snes9x.rc
+msgid "Enable Background Input"
+msgstr "Irányítás engedélyezése a háttérben"
+
+#: win32/rsrc/snes9x.rc
+msgid "Enable Color Correction (accurate SNES colors)"
+msgstr "Színkorrekció engedélyezése (pontos SNES színek)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Enable Triple Buffering"
+msgstr "Hármas pufferelés engedélyezése"
+
+#: win32/rsrc/snes9x.rc
+msgid "Enabled"
+msgstr "Engedélyezve"
+
+#: win32/rsrc/snes9x.rc
+msgid "End Kaillera Game"
+msgstr "Kaillera játék befejezése"
+
+#: win32/rsrc/snes9x.rc
+msgid "Enter a Value:"
+msgstr "Adjon meg egy értéket:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Enter Cheat Code:"
+msgstr "Adja meg a csaláskódot:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Enter Cheat codes, one line at a time"
+msgstr "Adja meg a csaláskódokat, soronként egyet"
+
+#: win32/wlanguage.h
+msgid "enter host name"
+msgstr "adja meg a gépnevet"
+
+#: win32/rsrc/snes9x.rc
+msgid "Entered Address"
+msgstr "Megadott cím"
+
+#: win32/rsrc/snes9x.rc
+msgid "Entered Value"
+msgstr "Megadott érték"
+
+#: win32/wlanguage.h
+msgid "Error Info:"
+msgstr "Hiba-információk:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Exit"
+msgstr "Kilépés"
+
+#: win32/rsrc/snes9x.rc
+msgid "Extend Height of SNES Image"
+msgstr "A SNES kép magasságának kiterjesztése"
+
+#: win32/wlanguage.h
+msgid "Fast forward:"
+msgstr "Gyors előretekerés:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Fast-Forward"
+msgstr "Gyors előretekerés"
+
+#: win32/wlanguage.h
+msgid "Fast-forward toggle:"
+msgstr "Gyors előretekerés ki-/bekapcsolása:"
+
+#: win32/rsrc/snes9x.rc
+msgid "File"
+msgstr "Fájl"
+
+#: win32/wlanguage.h
+msgid "File not found."
+msgstr "A fájl nem található."
+
+#: win32/rsrc/snes9x.rc
+msgid "First Sprite:"
+msgstr "Első sprite:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Fixed, always skip:"
+msgstr "Fix, mindig hagyja ki:"
+
+#: win32/wlanguage.h
+msgid "Force GD24"
+msgstr "Kényszerített GD24"
+
+#: win32/wlanguage.h
+msgid "Force Header"
+msgstr "Kényszerített fejléc"
+
+#: win32/wlanguage.h
+msgid "Force HiROM"
+msgstr "Kényszerített HiROM"
+
+#: win32/wlanguage.h
+msgid "Force LoROM"
+msgstr "Kényszerített LoROM"
+
+#: win32/wlanguage.h
+msgid "Force mode 1"
+msgstr "Kényszerített 1-es mód"
+
+#: win32/wlanguage.h
+msgid "Force mode 2"
+msgstr "Kényszerített 2-es mód"
+
+#: win32/wlanguage.h
+msgid "Force No Header"
+msgstr "Kényszerített fejléc nélkül"
+
+#: win32/wlanguage.h
+msgid "Force not interleaved"
+msgstr "Kényszerített nem-interleaved"
+
+#: win32/wlanguage.h
+msgid "Force NTSC"
+msgstr "Kényszerített NTSC"
+
+#: win32/wlanguage.h
+msgid "Force PAL"
+msgstr "Kényszerített PAL"
+
+#: win32/rsrc/snes9x.rc
+msgid "Frame Advance"
+msgstr "Képkockánkénti léptetés"
+
+#: win32/rsrc/snes9x.rc
+msgid "Frame Advance mute"
+msgstr "Némítás képkockánkénti léptetéskor"
+
+#: win32/wlanguage.h
+msgid "Frame advance:"
+msgstr "Képkockánkénti léptetés:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Frame Skipping:"
+msgstr "Képkocka-kihagyás:"
+
+#: win32/rsrc/snes9x.rc
+msgid "frames"
+msgstr "képkocka"
+
+#: win32/rsrc/snes9x.rc
+msgid "FRAMES"
+msgstr "KÉPKOCKÁK"
+
+#: win32/rsrc/snes9x.rc
+msgid "frames behind"
+msgstr "képkocka hátrány"
+
+#: win32/rsrc/snes9x.rc
+msgid "frames in auto-frame rate mode"
+msgstr "képkocka az automatikus képkockasebesség módban"
+
+#: win32/wlanguage.h
+msgid "frames in fast-forward mode"
+msgstr "képkocka a gyors előretekerés módban"
+
+#: win32/rsrc/snes9x.rc
+msgid "frames in Turbo mode"
+msgstr "képkocka a Turbó módban"
+
+#: win32/rsrc/snes9x.rc
+msgid "Frames:"
+msgstr "Képkockák:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Full Screen"
+msgstr "Teljes képernyő"
+
+#: win32/rsrc/snes9x.rc
+msgid "Fullscreen"
+msgstr "Teljes képernyő"
+
+#: win32/rsrc/snes9x.rc
+msgid "Fullscreen Display Settings"
+msgstr "Teljes képernyős megjelenítés beállításai"
+
+#: win32/rsrc/snes9x.rc
+msgid "Fullscreen on ROM Open"
+msgstr "Teljes képernyő ROM megnyitásakor"
+
+#: win32/rsrc/snes9x.rc
+msgid "Game Boy Image"
+msgstr "Game Boy kép"
+
+#: win32/rsrc/snes9x.rc
+msgid "Game Genie, Pro-Action Replay Codes"
+msgstr "Game Genie, Pro-Action Replay kódok"
+
+#: win32/rsrc/snes9x.rc
+msgid "GB"
+msgstr "GB"
+
+#: win32/rsrc/snes9x.rc
+msgid "GB Sprite Viewer"
+msgstr "Game Boy sprite-megjelenítő"
+
+#: win32/rsrc/snes9x.rc
+msgid "GB Tile Viewer"
+msgstr "Game Boy csempe-megjelenítő (tile)"
+
+#: win32/rsrc/snes9x.rc
+msgid "GB Tilemap Viewer"
+msgstr "Game Boy csempe-térkép megjelenítő"
+
+#: win32/rsrc/snes9x.rc
+msgid "GB-PPU"
+msgstr "GB-PPU"
+
+#: win32/rsrc/snes9x.rc
+msgid "General"
+msgstr "Általános"
+
+#: win32/rsrc/snes9x.rc
+msgid "goto"
+msgstr "ugrás ide"
+
+#: win32/wlanguage.h
+msgid "Graphics layer 1:"
+msgstr "1. grafikai réteg:"
+
+#: win32/wlanguage.h
+msgid "Graphics layer 2:"
+msgstr "2. grafikai réteg:"
+
+#: win32/wlanguage.h
+msgid "Graphics layer 3:"
+msgstr "3. grafikai réteg:"
+
+#: win32/wlanguage.h
+msgid "Graphics layer 4:"
+msgstr "4. grafikai réteg:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Group"
+msgstr "Csoport"
+
+#: win32/rsrc/snes9x.rc
+msgid "Hacks"
+msgstr "Módosítások / Hackek"
+
+#: win32/rsrc/snes9x.rc
+msgid "Hard Reset (Power Cycle)"
+msgstr "Hardveres újraindítás (áramtalanítás)"
+
+#: win32/wlanguage.h
+msgid "Hard reset:"
+msgstr "Hardveres újraindítás:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Hardcore Mode"
+msgstr "Hardcore mód"
+
+#: win32/rsrc/snes9x.rc
+msgid "Header:"
+msgstr "Fejléc:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Help"
+msgstr "Súgó"
+
+#: win32/rsrc/snes9x.rc
+msgid "Hexadecimal"
+msgstr "Hexadecimális (16-os számrendszer)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Hi Res:"
+msgstr "Nagy felbontás:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Hi-Res AVI Recording"
+msgstr "Nagy felbontású AVI rögzítés"
+
+#: win32/rsrc/snes9x.rc
+msgid "Hide Menubar"
+msgstr "Menüsor elrejtése"
+
+#: win32/rsrc/snes9x.rc
+msgid "Host Game"
+msgstr "Játék hosztolása"
+
+#: win32/rsrc/snes9x.rc
+msgid "Host Kaillera Server"
+msgstr "Kaillera szerver hosztolása"
+
+#: win32/wlanguage.h
+msgid "Hotkey Configuration"
+msgstr "Gyorsbillentyűk konfigurációja"
+
+#: win32/rsrc/snes9x.rc
+msgid "Icon 1"
+msgstr "Ikon 1"
+
+#: win32/rsrc/snes9x.rc
+msgid "Icon 2"
+msgstr "Ikon 2"
+
+#: win32/rsrc/snes9x.rc
+msgid "Icon 3"
+msgstr "Ikon 3"
+
+#: win32/rsrc/snes9x.rc
+msgid "Icon 4"
+msgstr "Ikon 4"
+
+#: win32/rsrc/snes9x.rc
+msgid "Index:"
+msgstr "Index:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Input"
+msgstr "Irányítás"
+
+#: win32/rsrc/snes9x.rc
+msgid "Input Configuration"
+msgstr "Irányítási beállítások"
+
+#: win32/rsrc/snes9x.rc
+msgid "Input Rate:"
+msgstr "Bemeneti ráta:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Integer Scaling"
+msgstr "Egész számú skálázás"
+
+#: win32/rsrc/snes9x.rc
+msgid "Interleave Mode:"
+msgstr "Összevonási mód (Interleave):"
+
+#: win32/rsrc/snes9x.rc
+msgid "IP:"
+msgstr "IP:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Join"
+msgstr "Csatlakozás"
+
+#: win32/wlanguage.h
+msgid "Joypad #%d"
+msgstr "%d. számú irányítópad"
+
+#: win32/rsrc/snes9x.rc
+msgid "Joypad 1"
+msgstr "1. irányítópad"
+
+#: win32/rsrc/snes9x.rc
+msgid "Joypad 2"
+msgstr "2. irányítópad"
+
+#: win32/rsrc/snes9x.rc
+msgid "Joypad 3"
+msgstr "3. irányítópad"
+
+#: win32/rsrc/snes9x.rc
+msgid "Joypad 4"
+msgstr "4. irányítópad"
+
+#: win32/rsrc/snes9x.rc
+msgid "Joypad 5"
+msgstr "5. irányítópad"
+
+#: win32/wlanguage.h
+msgid "Joypad swap:"
+msgstr "Irányítópaddok felcserélése:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Kaillera Netplay"
+msgstr "Kaillera hálózati játék"
+
+#: win32/rsrc/snes9x.rc
+msgid "Kaillera Server"
+msgstr "Kaillera szerver"
+
+#: win32/rsrc/snes9x.rc
+msgid "Layout:"
+msgstr "Elrendezés:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Leave Game"
+msgstr "Játék elhagyása"
+
+#: win32/rsrc/snes9x.rc
+msgid "LEFT"
+msgstr "BALRA"
+
+#: win32/rsrc/snes9x.rc
+msgid "LENGTH"
+msgstr "HOSSZ"
+
+#: win32/rsrc/snes9x.rc
+msgid "Length:"
+msgstr "Hossz:"
+
+#: win32/rsrc/snes9x.rc
+msgid "List1"
+msgstr "Lista1"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load #:"
+msgstr "Betöltés #:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load 0:"
+msgstr "Betöltés 0:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load 1:"
+msgstr "Betöltés 1:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load 2:"
+msgstr "Betöltés 2:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load 3:"
+msgstr "Betöltés 3:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load 4:"
+msgstr "Betöltés 4:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load 5:"
+msgstr "Betöltés 5:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load 6:"
+msgstr "Betöltés 6:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load 7:"
+msgstr "Betöltés 7:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load 8:"
+msgstr "Betöltés 8:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load 9:"
+msgstr "Betöltés 9:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load Dlg:"
+msgstr "Betöltési ablak:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load File:"
+msgstr "Fájl betöltése:"
+
+#: win32/wlanguage.h
+msgid "Load from file:"
+msgstr "Betöltés fájlból:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load Game"
+msgstr "Játék betöltése"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load Game Position"
+msgstr "Játékállás betöltése"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load MultiCart"
+msgstr "MultiCart betöltése"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load Watches"
+msgstr "Seurantalista betöltése"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load with Preview"
+msgstr "Betöltés előnézettel"
+
+#: win32/wlanguage.h
+msgid "LOADED FROM MOVIE:"
+msgstr "FILMBŐL BETÖLTVE:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Location:"
+msgstr "Helyszín:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Login"
+msgstr "Bejelentkezés"
+
+#: win32/rsrc/snes9x.rc
+msgid "Maintain Aspect Ratio"
+msgstr "Képarány megtartása"
+
+#: win32/rsrc/snes9x.rc
+msgid "Map"
+msgstr "Térkép"
+
+#: win32/rsrc/snes9x.rc
+msgid "Map Addr:"
+msgstr "Térkép címe:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Map Size:"
+msgstr "Térkép mérete:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Map:"
+msgstr "Térkép:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Mask"
+msgstr "Maszk"
+
+#: win32/rsrc/snes9x.rc
+msgid "Masked Addresses"
+msgstr "Maszkolt címek"
+
+#: win32/rsrc/snes9x.rc
+msgid "Master Hotkey"
+msgstr "Mester gyorsbillentyű"
+
+#: win32/rsrc/snes9x.rc
+msgid "Max Clients:"
+msgstr "Maximális kliensszám:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Maximum Frame Rate Skip"
+msgstr "Maximális képkocka-kihagyás"
+
+#: win32/rsrc/snes9x.rc
+msgid "MB (set to 0 to disable rewind support)"
+msgstr "MB (állítsa 0-ra a visszatekerési támogatás letiltásához)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Memory Type:"
+msgstr "Memóriatípus:"
+
+#: win32/wlanguage.h
+msgid "Misc. Recording Settings"
+msgstr "Egyéb rögzítési beállítások"
+
+#: win32/rsrc/snes9x.rc
+msgid "Mode:"
+msgstr "Mód:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Movie File"
+msgstr "Filmfájl"
+
+#: win32/wlanguage.h
+msgid "Movie frame count:"
+msgstr "Film képkockaszáma:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Movie Play"
+msgstr "Film lejátszása"
+
+#: win32/wlanguage.h
+msgid "Movie read-only:"
+msgstr "Film írásvédett:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Movie Record"
+msgstr "Film rögzítése"
+
+#: win32/rsrc/snes9x.rc
+msgid "Movie Stop"
+msgstr "Film leállítása"
+
+#: win32/wlanguage.h
+msgid "Movie's ROM:"
+msgstr "A film ROM-fájlja:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Movie's ROM: CRC32=Unknown, Name=Unknown"
+msgstr "A film ROM-fájlja: CRC32=Ismeretlen, Név=Ismeretlen"
+
+#: win32/wlanguage.h
+msgid "Movies"
+msgstr "Filmek"
+
+#: win32/rsrc/snes9x.rc
+msgid "Mute"
+msgstr "Némítás"
+
+#: win32/rsrc/snes9x.rc
+msgid "Mute Sound"
+msgstr "Hang némítása"
+
+#: win32/rsrc/snes9x.rc
+msgid "Mute sound"
+msgstr "Hang némítása"
+
+#: win32/rsrc/snes9x.rc
+msgid "Netplay"
+msgstr "Hálózati játék"
+
+#: win32/rsrc/snes9x.rc
+msgid "Netplay Options"
+msgstr "Hálózati játék beállításai"
+
+#: win32/rsrc/snes9x.rc
+msgid "New Value"
+msgstr "Új érték"
+
+#: win32/rsrc/snes9x.rc
+msgid "No BIOS"
+msgstr "Nincs BIOS"
+
+#: win32/wlanguage.h
+msgid "Not a ROM"
+msgstr "Ez nem egy ROM-fájl"
+
+#: win32/rsrc/snes9x.rc
+msgid "Not connected."
+msgstr "Nincs csatlakozva."
+
+#: win32/rsrc/snes9x.rc
+msgid "not found"
+msgstr "nem található"
+
+#: win32/wlanguage.h
+msgid "not found!"
+msgstr "nem található!"
+
+#: win32/rsrc/snes9x.rc
+msgid "NTSC Filter Scanlines"
+msgstr "NTSC szűrő képváltó sorai"
+
+#: win32/rsrc/snes9x.rc
+msgid "OAM1:"
+msgstr "OAM1:"
+
+#: win32/rsrc/snes9x.rc
+msgid "OAM2:"
+msgstr "OAM2:"
+
+#: win32/rsrc/snes9x.rc
+msgid "OK"
+msgstr "OK"
+
+#: win32/rsrc/snes9x.rc
+msgid "On-screen Display Size:"
+msgstr "Képernyőüzenetek mérete:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Online Servers"
+msgstr "Online szerverek"
+
+#: win32/rsrc/snes9x.rc
+msgid "Oops File"
+msgstr "Vészmentési fájl (Oops)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Open MultiCart"
+msgstr "MultiCart megnyitása"
+
+#: win32/rsrc/snes9x.rc
+msgid "Open Read-Only"
+msgstr "Megnyitás csak olvasásra"
+
+#: win32/rsrc/snes9x.rc
+msgid "OpenGL/Vulkan Shader File"
+msgstr "OpenGL/Vulkan shader fájl"
+
+#: win32/rsrc/snes9x.rc
+msgid "Options"
+msgstr "Beállítások"
+
+#: win32/rsrc/snes9x.rc
+msgid "Output Device:"
+msgstr "Kimeneti eszköz:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Output Image Processing"
+msgstr "Képkimenet feldolgozása"
+
+#: win32/rsrc/snes9x.rc
+msgid "Output Method"
+msgstr "Kimeneti módszer"
+
+#: win32/rsrc/snes9x.rc
+msgid "Override Tilemap"
+msgstr "Csempe-térkép (Tilemap) felülbírálása"
+
+#: win32/wlanguage.h
+msgid "Page %d"
+msgstr "%d. oldal"
+
+#: win32/rsrc/snes9x.rc
+msgid "Palette (click to select offset)"
+msgstr "Paletta (kattintson az eltolás - offset - kiválasztásához)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Palette:"
+msgstr "Paletta:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Parameters"
+msgstr "Paraméterek"
+
+#: win32/rsrc/snes9x.rc
+msgid "Password:"
+msgstr "Jelszó:"
+
+#: win32/wlanguage.h
+msgid "Patch"
+msgstr "Javítás (Patch)"
+
+#: win32/wlanguage.h
+msgid "Path: %s"
+msgstr "Útvonal: %s"
+
+#: win32/rsrc/snes9x.rc
+msgid "Pause When Inactive"
+msgstr "Szüneteltetés, ha inaktív"
+
+#: win32/wlanguage.h
+msgid "Pause:"
+msgstr "Szünet:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Play Movie"
+msgstr "Film lejátszása"
+
+#: win32/rsrc/snes9x.rc
+msgid "Playback Rate"
+msgstr "Lejátszási ráta"
+
+#: win32/rsrc/snes9x.rc
+msgid "Playback Rate:"
+msgstr "Lejátszási ráta:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Player Name:"
+msgstr "Játékos neve:"
+
+#: win32/wlanguage.h
+msgid "Please enter a host name."
+msgstr "Kérjük, adjon meg egy gépnevet."
+
+#: win32/wlanguage.h
+msgid "Please enter a valid value for a search!"
+msgstr "Kérjük, adjon meg egy érvényes értéket a kereséshez!"
+
+#: win32/rsrc/snes9x.rc
+msgid "Port Number"
+msgstr "Portszám"
+
+#: win32/rsrc/snes9x.rc
+msgid "Port Settings"
+msgstr "Portbeállítások"
+
+#: win32/wlanguage.h
+msgid "Press OK to start playing the movie."
+msgstr "Nyomja meg az OK gombot a film lejátszásának elindításához."
+
+#: win32/rsrc/snes9x.rc
+msgid "Preview"
+msgstr "Előnézet"
+
+#: win32/rsrc/snes9x.rc
+msgid "Previous Value"
+msgstr "Előző érték"
+
+#: win32/rsrc/snes9x.rc
+msgid "Progress1"
+msgstr "Folyamat1"
+
+#: win32/rsrc/snes9x.rc
+msgid "Publish Online"
+msgstr "Közzététel online"
+
+#: win32/rsrc/snes9x.rc
+msgid "Publish to master server list"
+msgstr "Közzététel a mesterszerver listán"
+
+#: win32/wlanguage.h
+msgid "Quit SuperSnes9x:"
+msgstr "Kilépés a SuperSnes9x-ből:"
+
+#: win32/wlanguage.h
+msgid "Range Error"
+msgstr "Tartományhiba"
+
+#: win32/rsrc/snes9x.rc
+msgid "Rate:"
+msgstr "Ráta:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Re-record Count:"
+msgstr "Újrarögzítések száma:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Re-sync all Clients Using Freeze File Now"
+msgstr "Minden kliens újraszinkronizálása állapotfájl használatával most"
+
+#: win32/rsrc/snes9x.rc
+msgid "Recent Games"
+msgstr "Legutóbbi játékok"
+
+#: win32/rsrc/snes9x.rc
+msgid "Record Controllers"
+msgstr "Vezérlők rögzítése"
+
+#: win32/rsrc/snes9x.rc
+msgid "Record from now"
+msgstr "Rögzítés mostantól"
+
+#: win32/rsrc/snes9x.rc
+msgid "Record from reset"
+msgstr "Rögzítés az újraindítástól"
+
+#: win32/rsrc/snes9x.rc
+msgid "Record Movie"
+msgstr "Film rögzítése"
+
+#: win32/rsrc/snes9x.rc
+msgid "Record Options"
+msgstr "Rögzítési opciók"
+
+#: win32/rsrc/snes9x.rc
+msgid "Recording Date:"
+msgstr "Rögzítés dátuma:"
+
+#: win32/wlanguage.h
+msgid "Recording Start"
+msgstr "Rögzítés kezdete"
+
+#: win32/rsrc/snes9x.rc
+msgid "Reduce Input Lag"
+msgstr "Bemeneti késleltetés csökkentése"
+
+#: win32/rsrc/snes9x.rc
+msgid "Refresh"
+msgstr "Frissítés"
+
+#: win32/rsrc/snes9x.rc
+msgid "Refresh List"
+msgstr "Lista frissítése"
+
+#: win32/rsrc/snes9x.rc
+msgid "Regular"
+msgstr "Normál (Regular)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Remove"
+msgstr "Eltávolítás"
+
+#: win32/rsrc/snes9x.rc
+msgid "Remove All"
+msgstr "Összes eltávolítása"
+
+#: win32/rsrc/snes9x.rc
+msgid "RERECORD"
+msgstr "ÚJRARÖGZÍTÉS"
+
+#: win32/wlanguage.h
+msgid "Reset speed:"
+msgstr "Sebesség visszaállítása:"
+
+#: win32/rsrc/snes9x.rc
+msgid "RetroAchievements"
+msgstr "RetroAchievements"
+
+#: win32/rsrc/snes9x.rc
+msgid "RetroAchievements Login"
+msgstr "RetroAchievements bejelentkezés"
+
+#: win32/rsrc/snes9x.rc
+msgid "Rewind buffer size:"
+msgstr "Visszatekerési puffer mérete:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Rewind granularity:"
+msgstr "Visszatekerési lépésköz / finomság:"
+
+#: win32/wlanguage.h
+msgid "Rewind:"
+msgstr "Visszatekerés:"
+
+#: win32/rsrc/snes9x.rc
+msgid "RIGHT"
+msgstr "JOBBRA"
+
+#: win32/wlanguage.h
+msgid "ROM files or archives"
+msgstr "ROM fájlok vagy archívumok"
+
+#: win32/rsrc/snes9x.rc
+msgid "Rom Info"
+msgstr "ROM infó"
+
+#: win32/rsrc/snes9x.rc
+msgid "ROM Information"
+msgstr "ROM információk"
+
+#: win32/rsrc/snes9x.rc
+msgid "ROM:"
+msgstr "ROM:"
+
+#: win32/wlanguage.h
+msgid "Roms"
+msgstr "ROM fájlok"
+
+#: win32/rsrc/snes9x.rc
+msgid "Run Ahead"
+msgstr "Előrefutás (Run Ahead)"
+
+#: win32/rsrc/snes9x.rc
+msgid "s"
+msgstr "mp"
+
+#: win32/rsrc/snes9x.rc
+msgid "S-PPU"
+msgstr "S-PPU"
+
+#: win32/wlanguage.h
+msgid "Satellaview"
+msgstr "Satellaview"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save #:"
+msgstr "Mentés #:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save 0:"
+msgstr "Mentés 0:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save 1:"
+msgstr "Mentés 1:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save 2:"
+msgstr "Mentés 2:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save 3:"
+msgstr "Mentés 3:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save 4:"
+msgstr "Mentés 4:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save 5:"
+msgstr "Mentés 5:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save 6:"
+msgstr "Mentés 6:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save 7:"
+msgstr "Mentés 7:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save 8:"
+msgstr "Mentés 8:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save 9:"
+msgstr "Mentés 9:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save Dlg:"
+msgstr "Mentési ablak:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save File:"
+msgstr "Fájl mentése:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save Game Position"
+msgstr "Játékállás mentése"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save Memory Pack"
+msgstr "Memóriacsomag mentése"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save Other"
+msgstr "Egyéb mentése"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save S-RAM Data"
+msgstr "S-RAM adatok mentése"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save Screenshot"
+msgstr "Képernyőkép mentése"
+
+#: win32/wlanguage.h
+msgid "Save screenshot"
+msgstr "Képernyőkép mentése"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save SPC Data"
+msgstr "SPC adatok mentése"
+
+#: win32/wlanguage.h
+msgid "Save to file:"
+msgstr "Mentés fájlba:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save Watches"
+msgstr "Seurantalista mentése"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save with Preview"
+msgstr "Mentés előnézettel"
+
+#: win32/wlanguage.h
+msgid "Saves"
+msgstr "Mentések"
+
+#: win32/rsrc/snes9x.rc
+msgid "Screen"
+msgstr "Képernyő"
+
+#: win32/wlanguage.h
+msgid "Screenshots"
+msgstr "Képernyőképek"
+
+#: win32/rsrc/snes9x.rc
+msgid "Search"
+msgstr "Keresés"
+
+#: win32/rsrc/snes9x.rc
+msgid "Search Database"
+msgstr "Keresés az adatbázisban"
+
+#: win32/rsrc/snes9x.rc
+msgid "Search for New Cheats"
+msgstr "Új csalások keresése"
+
+#: win32/rsrc/snes9x.rc
+msgid "seconds after last change (0 disables auto-save)"
+msgstr "másodperccel az utolsó változtatás után (a 0 letiltja az automatikus mentést)"
+
+#: win32/rsrc/snes9x.rc
+msgid "SELECT"
+msgstr "SELECT"
+
+#: win32/rsrc/snes9x.rc
+msgid "Select 0:"
+msgstr "Válasszon 0:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Select 1:"
+msgstr "Válasszon 1:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Select 2:"
+msgstr "Válasszon 2:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Select 3:"
+msgstr "Válasszon 3:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Select 4:"
+msgstr "Válasszon 4:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Select 5:"
+msgstr "Válasszon 5:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Select 6:"
+msgstr "Válasszon 6:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Select 7:"
+msgstr "Válasszon 7:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Select 8:"
+msgstr "Válasszon 8:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Select 9:"
+msgstr "Válasszon 9:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Select File"
+msgstr "Fájl kiválasztása"
+
+#: win32/wlanguage.h
+msgid "Select Folder"
+msgstr "Mappa kiválasztása"
+
+#: win32/wlanguage.h
+msgid "Select Slot 0:"
+msgstr "0. hely kiválasztása:"
+
+#: win32/wlanguage.h
+msgid "Select Slot 1:"
+msgstr "1. hely kiválasztása:"
+
+#: win32/wlanguage.h
+msgid "Select Slot 2:"
+msgstr "2. hely kiválasztása:"
+
+#: win32/wlanguage.h
+msgid "Select Slot 3:"
+msgstr "3. hely kiválasztása:"
+
+#: win32/wlanguage.h
+msgid "Select Slot 4:"
+msgstr "4. hely kiválasztása:"
+
+#: win32/wlanguage.h
+msgid "Select Slot 5:"
+msgstr "5. hely kiválasztása:"
+
+#: win32/wlanguage.h
+msgid "Select Slot 6:"
+msgstr "6. hely kiválasztása:"
+
+#: win32/wlanguage.h
+msgid "Select Slot 7:"
+msgstr "7. hely kiválasztása:"
+
+#: win32/wlanguage.h
+msgid "Select Slot 8:"
+msgstr "8. hely kiválasztása:"
+
+#: win32/wlanguage.h
+msgid "Select Slot 9:"
+msgstr "9. hely kiválasztása:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Send"
+msgstr "Küldés"
+
+#: win32/rsrc/snes9x.rc
+msgid "Send ROM Image to Client on Connect"
+msgstr "ROM képfájl elküldése a kliensnek csatlakozáskor"
+
+#: win32/rsrc/snes9x.rc
+msgid "Send ROM Image to Clients"
+msgstr "ROM képfájl elküldése a klienseknek"
+
+#: win32/rsrc/snes9x.rc
+msgid "Send ROM Image to Clients Now"
+msgstr "ROM képfájl elküldése a klienseknek most"
+
+#: win32/rsrc/snes9x.rc
+msgid "Separate Echo Buffer from RAM"
+msgstr "Visszhangpuffer elkülönítése a RAM-tól"
+
+#: win32/rsrc/snes9x.rc
+msgid "Server Address"
+msgstr "Szerver címe"
+
+#: win32/rsrc/snes9x.rc
+msgid "Server is stopped."
+msgstr "A szerver leállítva."
+
+#: win32/rsrc/snes9x.rc
+msgid "Server Lobby"
+msgstr "Szerver lobby"
+
+#: win32/rsrc/snes9x.rc
+msgid "Server Name:"
+msgstr "Szerver neve:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Server Settings"
+msgstr "Szerverbeállítások"
+
+#: win32/rsrc/snes9x.rc
+msgid "Set Defaults"
+msgstr "Alapértelmezések beállítása"
+
+#: win32/rsrc/snes9x.rc
+msgid "Set Value"
+msgstr "Érték beállítása"
+
+#: win32/rsrc/snes9x.rc
+msgid "Settings"
+msgstr "Beállítások"
+
+#: win32/wlanguage.h
+msgid "SETTINGS NOT IN MOVIE; VERIFY:"
+msgstr "A BEÁLLÍTÁSOK NINCSENEK A FILMBEN; ELLENŐRIZZE:"
+
+#: win32/rsrc/snes9x.rc
+msgid "SGB Mix"
+msgstr "SGB keverés"
+
+#: win32/rsrc/snes9x.rc
+msgid "SGB1"
+msgstr "SGB1"
+
+#: win32/rsrc/snes9x.rc
+msgid "SGB2"
+msgstr "SGB2"
+
+#: win32/rsrc/snes9x.rc
+msgid "Show Audio Waveform"
+msgstr "Hanghullámforma (Waveform) mutatása"
+
+#: win32/rsrc/snes9x.rc
+msgid "Show Background"
+msgstr "Háttér mutatása"
+
+#: win32/rsrc/snes9x.rc
+msgid "Show Crosshair"
+msgstr "Célkereszt mutatása"
+
+#: win32/rsrc/snes9x.rc
+msgid "Show Frame Number"
+msgstr "Képkockaszám mutatása"
+
+#: win32/rsrc/snes9x.rc
+msgid "Show Frame Rate"
+msgstr "Képkockasebesség mutatása"
+
+#: win32/rsrc/snes9x.rc
+msgid "Show Grid"
+msgstr "Rács mutatása"
+
+#: win32/wlanguage.h
+msgid "Show pressed keys:"
+msgstr "Lenyomott billentyűk mutatása:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Show screen"
+msgstr "Képernyő mutatása"
+
+#: win32/rsrc/snes9x.rc
+msgid "Show Screen Outline"
+msgstr "Képernyő körvonalának mutatása"
+
+#: win32/rsrc/snes9x.rc
+msgid "Show Sprites"
+msgstr "Sprite-ok mutatása"
+
+#: win32/rsrc/snes9x.rc
+msgid "Show viewport"
+msgstr "Nézetablak (Viewport) mutatása"
+
+#: win32/rsrc/snes9x.rc
+msgid "Show Window"
+msgstr "Ablak mutatása"
+
+#: win32/rsrc/snes9x.rc
+msgid "Signed (+/-)"
+msgstr "Előjeles (+/-)"
+
+#: win32/wlanguage.h
+msgid "Size"
+msgstr "Méret"
+
+#: win32/rsrc/snes9x.rc
+msgid "Skip at most"
+msgstr "Kihagyás legfeljebb"
+
+#: win32/wlanguage.h
+msgid "Skip frames +:"
+msgstr "Képkocka-kihagyás +:"
+
+#: win32/wlanguage.h
+msgid "Skip frames -:"
+msgstr "Képkocka-kihagyás -:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Skip rendering"
+msgstr "Renderelés kihagyása"
+
+#: win32/wlanguage.h
+msgid "Skip Rendering"
+msgstr "Renderelés kihagyása"
+
+#: win32/rsrc/snes9x.rc
+msgid "Slot +:"
+msgstr "Hely +:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Slot -:"
+msgstr "Hely -:"
+
+#: win32/rsrc/snes9x.rc
+msgid "SNES Image"
+msgstr "SNES kép"
+
+#: win32/rsrc/snes9x.rc
+msgid "SuperSnes9x - Unable to Initialize XAudio2"
+msgstr "SuperSnes9x - Az XAudio2 inicializálása sikertelen"
+
+#: win32/wlanguage.h
+msgid "SuperSnes9x Cheat Error"
+msgstr "SuperSnes9x csaláshiba"
+
+#: win32/wlanguage.h
+msgid "SuperSnes9x Movie File"
+msgstr "SuperSnes9x filmfájl"
+
+#: win32/rsrc/snes9x.rc
+msgid "Socket Port Number"
+msgstr "Szoftveres csatlakozó (Socket) portszáma"
+
+#: win32/rsrc/snes9x.rc
+msgid "Soft Reset"
+msgstr "Szoftveres újraindítás"
+
+#: win32/wlanguage.h
+msgid "Soft reset:"
+msgstr "Szoftveres újraindítás:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Sound Driver:"
+msgstr "Hangillesztő:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Sound Interpolation Type:"
+msgstr "Hanginterpoláció típusa:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Sound Quality"
+msgstr "Hangminőség"
+
+#: win32/rsrc/snes9x.rc
+msgid "Sound Settings"
+msgstr "Hangbeállítások"
+
+#: win32/rsrc/snes9x.rc
+msgid "Source:"
+msgstr "Forrás:"
+
+#: win32/rsrc/snes9x.rc
+msgid "SPC"
+msgstr "SPC"
+
+#: win32/wlanguage.h
+msgid "SPCs"
+msgstr "SPC fájlok"
+
+#: win32/wlanguage.h
+msgid "Speed +:"
+msgstr "Sebesség +:"
+
+#: win32/wlanguage.h
+msgid "Speed -:"
+msgstr "Sebesség -:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Spin1"
+msgstr "Pörgetés1"
+
+#: win32/rsrc/snes9x.rc
+msgid "Spin2"
+msgstr "Pörgetés2"
+
+#: win32/rsrc/snes9x.rc
+msgid "Spin3"
+msgstr "Pörgetés3"
+
+#: win32/rsrc/snes9x.rc
+msgid "Spin4"
+msgstr "Pörgetés4"
+
+#: win32/rsrc/snes9x.rc
+msgid "Sprite Viewer"
+msgstr "Sprite-megjelenítő"
+
+#: win32/rsrc/snes9x.rc
+msgid "Sprite:"
+msgstr "Sprite:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Sprites"
+msgstr "Sprite-ok"
+
+#: win32/wlanguage.h
+msgid "Sprites layer:"
+msgstr "Sprite réteg:"
+
+#: win32/wlanguage.h
+msgid "SRAM"
+msgstr "SRAM"
+
+#: win32/rsrc/snes9x.rc
+msgid "START"
+msgstr "START"
+
+#: win32/rsrc/snes9x.rc
+msgid "Start Game"
+msgstr "Játék indítása"
+
+#: win32/rsrc/snes9x.rc
+msgid "Start Server"
+msgstr "Szerver indítása"
+
+#: win32/rsrc/snes9x.rc
+msgid "Static"
+msgstr "Statikus"
+
+#: win32/rsrc/snes9x.rc
+msgid "Status"
+msgstr "Állapot"
+
+#: win32/rsrc/snes9x.rc
+msgid "Stretch Image"
+msgstr "Kép nyújtása"
+
+#: win32/rsrc/snes9x.rc
+msgid "SuperFX Clock Speed %:"
+msgstr "SuperFX órajel sebessége %:"
+
+#: win32/rsrc/snes9x.rc
+msgid "SuperFX speed:"
+msgstr "SuperFX sebesség:"
+
+#: win32/wlanguage.h
+msgid "SuperScope pause:"
+msgstr "SuperScope szüneteltetése:"
+
+#: win32/wlanguage.h
+msgid "SuperScope turbo:"
+msgstr "SuperScope turbó:"
+
+#: win32/wlanguage.h
+msgid "SuperSnes9x (x64)"
+msgstr "SuperSnes9x (x64)"
+
+#: win32/rsrc/snes9x.rc
+msgid "SuperSnes9x - About"
+msgstr "SuperSnes9x - Névjegy"
+
+#: win32/wlanguage.h
+msgid "SuperSnes9x: DirectSound"
+msgstr "SuperSnes9x: DirectSound"
+
+#: win32/wlanguage.h
+msgid "SuperSnes9x: Information"
+msgstr "SuperSnes9x: Információ"
+
+#: win32/wlanguage.h
+msgid "SuperSnes9x: NetPlay Error"
+msgstr "SuperSnes9x: Hálózati játék hiba"
+
+#: win32/wlanguage.h
+msgid "SuperSnes9x: Sound CPU Question"
+msgstr "SuperSnes9x: Hang CPU kérdés"
+
+#: win32/wlanguage.h
+msgid "SuperSnes9x: WARNING!"
+msgstr "SuperSnes9x: FIGYELMEZTETÉS!"
+
+#: win32/rsrc/snes9x.rc
+msgid "Swap A and B"
+msgstr "A és B felcserélése"
+
+#: win32/wlanguage.h
+msgid "Switch aspect Ratio:"
+msgstr "Képarány váltása:"
+
+#: win32/wlanguage.h
+msgid "Switch controllers:"
+msgstr "Vezérlők váltása:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Sync By Reset"
+msgstr "Szinkronizálás újraindítással"
+
+#: win32/rsrc/snes9x.rc
+msgid "Sync Sound"
+msgstr "Hang szinkronizálása"
+
+#: win32/rsrc/snes9x.rc
+msgid "Sync Using Reset Game"
+msgstr "Szinkronizálás a játék újraindításával"
+
+#: win32/rsrc/snes9x.rc
+msgid "Synchronize with sound core"
+msgstr "Szinkronizálás a hangmaggal"
+
+#: win32/wlanguage.h
+msgid "TempTurbo"
+msgstr "IdeiglenesTurbó"
+
+#: win32/wlanguage.h
+msgid "Text file"
+msgstr "Szöveges fájl"
+
+#: win32/wlanguage.h
+msgid "The movie file is corrupt or in the wrong format."
+msgstr "A filmfájl sérült vagy hibás formátumú."
+
+#: win32/wlanguage.h
+msgid "The movie file was not found or could not be opened."
+msgstr "A filmfájl nem található vagy nem nyitható meg."
+
+#: win32/rsrc/snes9x.rc
+msgid "Tile Addr:"
+msgstr "Csempe címe:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Tile Data:"
+msgstr "Csempe adatai:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Tile Size:"
+msgstr "Csempe mérete:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Tile Viewer"
+msgstr "Csempe-megjelenítő (Tile)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Tilemap"
+msgstr "Csempe-térkép (Tilemap)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Tilemap Viewer"
+msgstr "Csempe-térkép megjelenítő"
+
+#: win32/rsrc/snes9x.rc
+msgid "Tiles"
+msgstr "Csempék"
+
+#: win32/rsrc/snes9x.rc
+msgid "Timeout:"
+msgstr "Időtúllépés (Timeout):"
+
+#: win32/rsrc/snes9x.rc
+msgid "Toggle Achievements Images"
+msgstr "Sikerek képeinek ki-/bekapcsolása"
+
+#: win32/wlanguage.h
+msgid "Toggle backdrop:"
+msgstr "Háttérszín ki-/bekapcsolása:"
+
+#: win32/wlanguage.h
+msgid "Toggle cheats:"
+msgstr "Csalások ki-/bekapcsolása:"
+
+#: win32/wlanguage.h
+msgid "Toggle mute:"
+msgstr "Némítás ki-/bekapcsolása:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Transparency Effects"
+msgstr "Átlátszósági hatások"
+
+#: win32/wlanguage.h
+msgid "Transparency:"
+msgstr "Átlátszóság:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Tree1"
+msgstr "Fa1"
+
+#: win32/wlanguage.h
+msgid "Turbo"
+msgstr "Turbó"
+
+#: win32/wlanguage.h
+msgid "Turbo A mode:"
+msgstr "Turbó A mód:"
+
+#: win32/wlanguage.h
+msgid "Turbo B mode:"
+msgstr "Turbó B mód:"
+
+#: win32/wlanguage.h
+msgid "Turbo Down mode:"
+msgstr "Turbó Le mód:"
+
+#: win32/wlanguage.h
+msgid "Turbo L mode:"
+msgstr "Turbó L mód:"
+
+#: win32/wlanguage.h
+msgid "Turbo Left mode:"
+msgstr "Turbó Balra mód:"
+
+#: win32/wlanguage.h
+msgid "Turbo R mode:"
+msgstr "Turbó R mód:"
+
+#: win32/wlanguage.h
+msgid "Turbo Right mode:"
+msgstr "Turbó Jobbra mód:"
+
+#: win32/wlanguage.h
+msgid "Turbo Select mode:"
+msgstr "Turbó Select mód:"
+
+#: win32/wlanguage.h
+msgid "Turbo Start mode:"
+msgstr "Turbó Start mód:"
+
+#: win32/wlanguage.h
+msgid "Turbo Up mode:"
+msgstr "Turbó Fel mód:"
+
+#: win32/wlanguage.h
+msgid "Turbo X mode:"
+msgstr "Turbó X mód:"
+
+#: win32/wlanguage.h
+msgid "Turbo Y mode:"
+msgstr "Turbó Y mód:"
+
+#: win32/wlanguage.h
+msgid "Uncompressed ROM files"
+msgstr "Tömörítetlen ROM fájlok"
+
+#: win32/wlanguage.h
+msgid "Unrecognized format."
+msgstr "Felismerhetetlen formátum."
+
+#: win32/rsrc/snes9x.rc
+msgid "Unsigned (>=0)"
+msgstr "Előjel nélküli (>=0)"
+
+#: win32/wlanguage.h
+msgid "Unsupported movie version."
+msgstr "Nem támogatott filmverzió."
+
+#: win32/rsrc/snes9x.rc
+msgid "UP"
+msgstr "FEL"
+
+#: win32/rsrc/snes9x.rc
+msgid "UP LEFT"
+msgstr "FEL BALRA"
+
+#: win32/wlanguage.h
+msgid "Up Left"
+msgstr "Fel balra"
+
+#: win32/rsrc/snes9x.rc
+msgid "UP RIGHT"
+msgstr "FEL JOBBRA"
+
+#: win32/wlanguage.h
+msgid "Up Right"
+msgstr "Fel jobbra"
+
+#: win32/rsrc/snes9x.rc
+msgid "Update"
+msgstr "Frissítés"
+
+#: win32/rsrc/snes9x.rc
+msgid "Use CGRAM"
+msgstr "CGRAM használata"
+
+#: win32/rsrc/snes9x.rc
+msgid "Use DirectInput"
+msgstr "DirectInput használata"
+
+#: win32/rsrc/snes9x.rc
+msgid "Use Dual Justifiers"
+msgstr "Kettős Justifier (fénypuska) használata"
+
+#: win32/rsrc/snes9x.rc
+msgid "Use Konami Justifier"
+msgstr "Konami Justifier használata"
+
+#: win32/rsrc/snes9x.rc
+msgid "Use M.A.C.S. Rifle"
+msgstr "M.A.C.S. puska használata"
+
+#: win32/rsrc/snes9x.rc
+msgid "Use Mouse in alternate port"
+msgstr "Egér használata az alternatív porton"
+
+#: win32/rsrc/snes9x.rc
+msgid "Use Multitaps (8-player)"
+msgstr "Multitap használata (8 játékos)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Use Shader"
+msgstr "Shader használata"
+
+#: win32/rsrc/snes9x.rc
+msgid "Use SNES Joypad(s)"
+msgstr "SNES irányítópad(ok) használata"
+
+#: win32/rsrc/snes9x.rc
+msgid "Use SNES Mouse"
+msgstr "SNES egér használata"
+
+#: win32/rsrc/snes9x.rc
+msgid "Use Super Multitap (5-player)"
+msgstr "Super Multitap használata (5 játékos)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Use Super Scope"
+msgstr "Super Scope használata"
+
+#: win32/rsrc/snes9x.rc
+msgid "User Agent: SuperSnes9x/1.63"
+msgstr "User Agent: SuperSnes9x/1.63"
+
+#: win32/rsrc/snes9x.rc
+msgid "Username:"
+msgstr "Felhasználónév:"
+
+#: win32/wlanguage.h
+msgid "Value"
+msgstr "Érték"
+
+#: win32/rsrc/snes9x.rc
+msgid "Value (hex):"
+msgstr "Érték (hexadecimális):"
+
+#: win32/rsrc/snes9x.rc
+msgid "Video"
+msgstr "Videó"
+
+#: win32/rsrc/snes9x.rc
+msgid "Video System:"
+msgstr "Videórendszer:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Volume"
+msgstr "Hangerő"
+
+#: win32/rsrc/snes9x.rc
+msgid "VSync"
+msgstr "Függőleges szinkronizáció (VSync)"
+
+#: win32/wlanguage.h
+msgid "WARNING: You don't have the right ROM loaded!"
+msgstr "FIGYELMEZTETÉS: Nem a megfelelő ROM van betöltve!"
+
+#: win32/rsrc/snes9x.rc
+msgid "Watch"
+msgstr "Figyelés"
+
+#: win32/rsrc/snes9x.rc
+msgid "Welcome Message (MOTD)"
+msgstr "Üdvözlő üzenet (A nap üzenete)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Width:"
+msgstr "Szélesség:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Window Size"
+msgstr "Ablakméret"
+
+#: win32/rsrc/snes9x.rc
+msgid "WOG!"
+msgstr "WOG!"
+
+#: win32/wlanguage.h
+msgid "You have entered an out of range or invalid value for the new value"
+msgstr "Érvénytelen vagy tartományon kívüli értéket adott meg új értékként"
+
+#: win32/wlanguage.h
+msgid "You need a different version of SuperSnes9x to play this movie."
+msgstr "A film lejátszásához a SuperSnes9x egy másik verziójára van szükség."
+
+#: win32/rsrc/snes9x.rc
+msgid "Your password is only used to get an API token.\nIt is never stored."
+msgstr "A jelszava csak egy API token beszerzésére szolgál.\nSoha nem kerül tárolásra."
+
+#: win32/rsrc/snes9x.rc
+msgid "Zoom:"
+msgstr "Nagyítás:"
+
+# === Win32 strings (added by i18n/extract_strings.py) ===
+
+#: win32/CSpriteViewerDlg.cpp
+msgid "Export Selected to PNG"
+msgstr "Kijelöltek exportálása PNG-be"
+
+#: win32/CGBSpriteViewerDlg.cpp
+msgid "Export to PNG"
+msgstr "Exportálás PNG-be"
+
+#: win32/CSpriteViewerDlg.cpp
+msgid "Show All Objects"
+msgstr "Összes objektum mutatása"
+
+#: win32/CSpriteViewerDlg.cpp
+msgid "Show Only Selected Objects"
+msgstr "Csak a kijelölt objektumok mutatása"
+
+#: win32/CSpriteViewerDlg.cpp
+msgid "Toggle Visibility"
+msgstr "Láthatóság ki-/bekapcsolása"
+
+#: win32/wsnes9x.cpp
+msgid "Translations"
+msgstr "Fordítások"
+
+# === Win32 strings (added by i18n/extract_strings.py) ===
+
+#: win32/wsnes9x.cpp
+msgid "Language"
+msgstr "Nyelv"
+
+# === Win32 strings (added by i18n/extract_strings.py) ===
+
+#: qt/src/SoundPanel.ui
+msgid "44100 Hz"
+msgstr "44100 Hz"
+
+#: qt/src/SoundPanel.ui
+msgid "48000 Hz"
+msgstr "48000 Hz"
+
+#: qt/src/DisplayPanel.ui
+msgid "4:3 - Classic display aspect"
+msgstr "4:3 - Klasszikus képernyő-képarány"
+
+#: qt/src/DisplayPanel.ui
+msgid "64:49 - NTSC aspect"
+msgstr "64:49 - NTSC képarány"
+
+#: qt/src/DisplayPanel.ui
+msgid "8:7 - Square pixels"
+msgstr "8:7 - Négyzetes képpontok"
+
+#: qt/src/EmulationPanel.ui
+msgid "<html><head/><body><p>A hack option. Only use this if you are running a third-party hack of a game that was designed for emulators and needs this.</p></body></html>"
+msgstr "<html><head/><body><p>Kompatibilitási módosítás (hack). Csak akkor használja, ha olyan epizód vagy nem hivatalos játékváltozatot futtat, amelyet emulátorokhoz terveztek és ezt igényli.</p></body></html>"
+
+#: qt/src/EmulationPanel.ui
+msgid "<html><head/><body><p>Allows more sprites to be displayed on the screen in an attempt to remove flickering.</p><p>Some games take advantage of this limit and use it to hide glitches, and removing the limit will make those visible.</p></body></html>"
+msgstr "<html><head/><body><p>Lehetővé teszi több sprite megjelenítését a képernyőn a villódzás megszüntetése érdekében.</p><p>Egyes játékok kihasználják ezt a korlátot a grafikai hibák elrejtésére, így a korlát eltávolítása láthatóvá teheti azokat.</p></body></html>"
+
+#: qt/src/EmulationPanel.ui
+msgid "<html><head/><body><p>Alternate sound filters can make the audio more crisp than the authentic gaussian filter.</p><p>The Cubic and Sinc filters provide the best improvement, but they can reveal some noise that would normally be hidden by the hardware.</p></body></html>"
+msgstr "<html><head/><body><p>Az alternatív hangszűrők tisztábbá és élesebbé tehetik a hangot, mint az eredeti Gauss-szűrő.</p><p>A Cubic és Sinc szűrők nyújtják a legnagyobb javulást, de felfedhetnek olyan zajokat is, amelyeket a hardver egyébként elrejtene.</p></body></html>"
+
+#: qt/src/EmulationPanel.ui
+msgid "<html><head/><body><p>Amount of memory to use to enable the rewind function. The amount of time each MB gets you varies based on the complexity of the game. Set to 0 to disable rewind altogether and use less processor time.</p></body></html>"
+msgstr "<html><head/><body><p>A visszatekerési funkció engedélyezéséhez használandó memória mennyisége. Az egy megabájttal nyerhető időtartam a játék összetettségétől függően változik. Állítsa 0-ra a funkció teljes letiltásához és a processzoridő megtakarításához.</p></body></html>"
+
+#: qt/src/EmulationPanel.ui
+msgid "<html><head/><body><p>Change the speed of the SuperFX chip. The SuperFX had some notoriously slow games, and this can be used to attempt to speed them up.</p></body></html>"
+msgstr "<html><head/><body><p>A SuperFX chip sebességének módosítása. A SuperFX chipnek voltak hírhedten lassú játékai, és ez a beállítás használható a gyorsításuk megkísérlésére.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>Choose one of <span style=\" font-style:italic;\">Qt Software, Vulkan, or OpenGL</span>.</p><p>Qt Software will use the CPU to draw the display. Vulkan or OpenGL will use that respective graphics interface to draw the display.</p></body></html>"
+msgstr "<html><head/><body><p>Válasszon a következők közül: <span style=\" font-style:italic;\">Qt Software, Vulkan vagy OpenGL</span>.</p><p>A Qt Software a központi processzort (CPU) használja a kép kirajzolásához. A Vulkan vagy az OpenGL a megfelelő grafikus felületet használja a kép kirajzolásához a videokártyán.</p></body></html>"
+
+#: qt/src/ControllerPanel.ui
+msgid "<html><head/><body><p>Clear or swap sets of bindings between controllers.</p></body></html>"
+msgstr "<html><head/><body><p>Vezérlők gomb-hozzárendelési készleteinek törlése vagy felcserélése.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>Control how much the audio is stretched initially.</p><p><br/></p><p>Unless you know what you're doing, it's best to use the option above this to adjust it automatically.</p></body></html>"
+msgstr "<html><head/><body><p>Annak szabályozása, hogy a hang mennyire legyen megnyújtva kezdetben.</p><p><br/></p><p>Hacsak nem tudja pontosan, mit csinál, a legjobb az e feletti opciót használni az automatikus igazításhoz.</p></body></html>"
+
+#: qt/src/FoldersPanel.ui
+msgid "<html><head/><body><p>Determines where to look for optional BIOS / boot ROM files (Super Game Boy boot ROM, BS-X.bin, etc).</p><p><span style=\" font-style:italic;\">ROM Folder</span> looks next to the loaded ROM.</p><p><span style=\" font-style:italic;\">Config Folder</span> uses a \"bios\" subfolder of the config folder.</p><p><span style=\" font-style:italic;\">Custom</span> uses an explicit path (default: \"Bios\" relative to the working directory).</p></body></html>"
+msgstr "<html><head/><body><p>Meghatározza, hol keresse az opcionális BIOS / indító ROM fájlokat (Super Game Boy boot ROM, BS-X.bin stb.).</p><p>A <span style=\" font-style:italic;\">ROM mappa (ROM Folder)</span> a betöltött ROM mellett keres.</p><p>A <span style=\" font-style:italic;\">Konfigurációs mappa (Config Folder)</span> a konfigurációs mappán belüli \"bios\" almappát használja.</p><p>Az <span style=\" font-style:italic;\">Egyéni (Custom)</span> egy kifejezetten megadott útvonalat használ (alapértelmezett: \"Bios\" a munkakönyvtárhoz képest).</p></body></html>"
+
+#: qt/src/FoldersPanel.ui
+msgid "<html><head/><body><p>Determines where to save these files.</p><p><span style=\" font-style:italic;\">ROM Folder</span> will always save to the same folder as the ROM.</p><p><span style=\" font-style:italic;\">Config Folder</span> will save to a subfolder of the config folder that is shown. If there is a snes9x.conf file next to your executable, SuperSnes9x will operate in portable mode and the config folder will be the folder the executable is in.</p><p><span style=\" font-style:italic;\">Custom</span> allows you to specify exactly where to save these files.</p></body></html>"
+msgstr "<html><head/><body><p>Meghatározza, hová mentse ezeket a fájlokat.</p><p>A <span style=\" font-style:italic;\">ROM mappa (ROM Folder)</span> mindig ugyanabba a mappába ment, ahol a ROM fájl található.</p><p>A <span style=\" font-style:italic;\">Konfigurációs mappa (Config Folder)</span> a megjelenített konfigurációs mappa egyik almappájába ment. Ha a programfájl mellett található egy snes9x.conf fájl, a SuperSnes9x hordozható (portable) módban működik, és a konfigurációs mappa az a mappa lesz, amelyben a végrehajtható fájl található.</p><p>Az <span style=\" font-style:italic;\">Egyéni (Custom)</span> lehetővé teszi, hogy pontosan meghatározza a fájlok mentési útvonalát.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>Erases all emulated sound output and just sends out silence.</p></body></html>"
+msgstr "<html><head/><body><p>Törli az összes emulált hangkimenetet, és helyette tiszta csendet küld ki.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>If after everything, you're still getting pops and crackles in audio, you can increase this value. However, it may cause noticeable distortion.</p></body></html>"
+msgstr "<html><head/><body><p>Ha mindezek után is reccsenéseket vagy pattogást hall a hangban, növelheti ezt az értéket. Ez azonban észrevehető hangtorzulást okozhat.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>Master output volume during normal play. Moving this also drags the per-source SGB sliders so they stay in step.</p></body></html>"
+msgstr "<html><head/><body><p>Fő kimeneti hangerő a normál játék során. Ennek mozgatása a forrásonkénti SGB csúszkákat is mozgatja, így azok szinkronban maradnak.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>Master output volume during turbo and rewind.</p></body></html>"
+msgstr "<html><head/><body><p>Fő kimeneti hangerő turbó mód és visszatekerés közben.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>Mutes sound when using the turbo and rewind functions, which might be annoying to some users.</p></body></html>"
+msgstr "<html><head/><body><p>Elnémítja a hangot a turbó és a visszatekerés funkciók használatakor, ami egyes felhasználók számára zavaró lehet.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>On classic CRT televisions, some areas of the screen were covered by the bezel, so weren't used often in games. This option allows you to show that area, but it will usually be just black bars.</p></body></html>"
+msgstr "<html><head/><body><p>A hagyományos CRT képcsöves tévéken a képernyő bizonyos szélső területeit eltakarta a káva, így a játékokban nem gyakran használták ezeket a részeket. Ez az opció lehetővé teszi a kérdéses terület megjelenítését, de ez általában csak fekete sávként fog látszódni.</p></body></html>"
+
+#: qt/src/EmulationPanel.ui
+msgid "<html><head/><body><p>Original controllers may have had a small pin in the dpad preventing left and right or up and down from being pressed at the same time. This will allow that behavior if you're using a keyboard or device that can press those buttons at the same time. Some games will glitch when this is done.</p></body></html>"
+msgstr "<html><head/><body><p>Az eredeti vezérlőkben egy kis csap lehetett az iránygombban (dpad), ami megakadályozta a bal és jobb, vagy a fel és le gombok egyidejű lenyomását. Ez a beállítás engedélyezi ezt a viselkedést, ha olyan billentyűzetet vagy eszközt használ, amellyel ezek a gombok egyszerre is megnyomhatók. Egyes játékok hibásan működhetnek ennek eredményeként.</p></body></html>"
+
+#: qt/src/EmulationPanel.ui
+msgid "<html><head/><body><p>Override the frame rate of the emulated system. This can be used to run slightly faster or slower than usual, or to match the timer to your exact refresh rate.</p><p><br/></p><p>Set this to 0 to use whatever the emulated system uses.</p></body></html>"
+msgstr "<html><head/><body><p>Az emulált rendszer képkockasebességének felülbírálása. Ez a beállítás használható a játék szokásosnál kicsit gyorsabb vagy lassabb futtatásához, vagy az időzítés pontos hozzáigazításához a monitor saját frissítési gyakoriságához.</p><p><br/></p><p>Állítsa 0 értékre az emulált rendszer eredeti alapértelmezett sebességének használatához.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>Selects the driver to output sound with.</p><p><span style=\" font-style:italic;\">Cubeb: </span>The recommended option.</p><p><span style=\" font-style:italic;\">SDL</span>: If Cubeb doesn't work.</p><p><span style=\" font-style:italic;\">PulseAudio:</span> Unix only. May have less latency.</p></body></html>"
+msgstr "<html><head/><body><p>Kiválasztja a hangillesztőt, amelyen keresztül a hang megszólal.</p><p>A <span style=\" font-style:italic;\">Cubeb: </span>rendszer az ajánlott opció.</p><p>Az <span style=\" font-style:italic;\">SDL</span>: arra az esetre, ha a Cubeb nem működne megfelelően.</p><p>A <span style=\" font-style:italic;\">PulseAudio:</span> csak Unix-alapú rendszerekhez. Kisebb késleltetést (latency) biztosíthat.</p></body></html>"
+
+#: qt/src/FoldersPanel.ui
+msgid "<html><head/><body><p>Setting this to anything other than 0 will save the SRAM (internal game saves) file regularly. If it is set to to 0, it will only save when exiting SuperSnes9x or changing games, and you will lose any progress since the last save if your device crashes.</p></body></html>"
+msgstr "<html><head/><body><p>Ha ezt a 0-tól eltérő értékre állítja, az SRAM-fájl (a játék belső mentései) rendszeresen és rendszeres időközönként elmentésre kerül. Ha értéke 0, a mentés csak a Snes9x-ből való kilépéskor vagy játékváltáskor történik meg; ekkor elveszítheti a legutóbbi mentés óta elért előrehaladását, ha az eszköz hirtelen összeomlik.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>SGB BIOS mix: GB channel volume. Active in SGB1/SGB2 BIOS mode; in BIOS-less mode this mirrors the Regular master, which is what actually scales GB output.</p></body></html>"
+msgstr "<html><head/><body><p>SGB BIOS-miksaus: Game Boy csatorna hangereje. Aktív SGB1/SGB2 BIOS módban; a BIOS nélküli módban ez a normál fő hangerőt tükrözi, ami valójában szabályozza a GB kimenetet.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>SGB BIOS mix: SPC channel volume. Only active in SGB1/SGB2 BIOS mode — BIOS-less GB playback discards SPC output.</p></body></html>"
+msgstr "<html><head/><body><p>SGB BIOS-miksaus: SPC csatorna hangereje. Csak SGB1/SGB2 BIOS módban aktív — a BIOS nélküli GB lejátszás teljesen figyelmen kívül hagyja az SPC kimenetet.</p></body></html>"
+
+#: qt/src/EmulationPanel.ui
+msgid "<html><head/><body><p>Skips rendering the specified amount of frames when using the fast-forward function. The higher this amount, the faster it goes.</p></body></html>"
+msgstr "<html><head/><body><p>Kihagyja a megadott mennyiségű képkocka renderelését a gyors előretekerés funkció használatakor. Minél magasabb ez az érték, annál gyorsabban halad az előretekerés.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>The buffer size for the emulator side of sound playback. Ideally, it should be about two frames worth of audio, or about 32ms at 60Hz. Latency will be half this value.</p></body></html>"
+msgstr "<html><head/><body><p>A pufferméret az emulátor oldalán a hanglejátszáshoz. Ideális esetben körülbelül két képkockányi audiónak kell megfelelnie, azaz kb. 32 ms-nak 60 Hz-en. A késleltetés (latency) ennek az értéknek a fele lesz.</p></body></html>"
+
+#: qt/src/ControllerPanel.ui
+msgid "<html><head/><body><p>The enumerated controller as seen by the SNES. Controller 1 will always be quot;Player 1quot; and so on, no matter what device is assigned to the controller ports.</p></body></html>"
+msgstr "<html><head/><body><p>A sorszámozott vezérlő az eredeti SNES rendszer szerint. Az 1. vezérlő mindig az &quot;1. játékos&quot; lesz, és így tovább, függetlenül attól, hogy milyen fizikai eszköz van a vezérlőportokhoz rendelve.</p></body></html>"
+
+#: qt/src/EmulationPanel.ui
+msgid "<html><head/><body><p>The number of frames between each rewind snapshot. More frames mean rewind can go back further and will rewind faster. </p></body></html>"
+msgstr "<html><head/><body><p>A képkockák száma az egyes visszatekerési pillanatképek között. Több képkocka azt jelenti, hogy a visszatekerés messzebbre tud visszamenni a múltba, és a visszatekerési funkció gyorsabb lesz.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>The output playback rate on your computer. This is <span style=\" font-weight:700;\">not</span> the playback rate of the emulated system.</p><p>You should set this to match your operating system's sound server. It should almost always be 48000Hz.</p></body></html>"
+msgstr "<html><head/><body><p>A kimeneti toistofrekvencia a számítógépén. Ez a frekvencia <span style=\" font-weight:700;\">nem</span> magának az emulált rendszernek a belső lejátszási rátája.</p><p>Ezt az értéket úgy kell beállítania, hogy megfeleljen az operációs rendszere hangkiszolgálójának. Ennek szinte mindig 48000 Hz-nek kell lennie.</p></body></html>"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "<html><head/><body><p>This box lists application shortcuts. There are 4 slots, so you can assign 4 different keys or buttons to one function.</p><p>To set a binding, click a box or highlight it with the keyboard and press Enter/Return. The box will show three dots quot;...quot;. Press the desired key or gamepad button to assign it to that box. The Escape key will clear the box.</p></body></html>"
+msgstr "<html><head/><body><p>Ez a doboz felsorolja az alkalmazás gyorsbillentyűit. 4 hely (slot) áll rendelkezésre, így 4 különböző billentyűt vagy gombot rendelhet egyetlen funkcióhoz.</p><p>A hozzárendelés beállításához kattintson egy dobozra, vagy jelölje ki a billentyűzettel, majd nyomja meg az Enter billentyűt. A doboz három pontot fog mutatni: &quot;...&quot;. Nyomja meg a kívánt billentyűt vagy játékvezérlő gombot a dobozhoz való társításához. Az Escape billentyű kiüríti a dobozt és visszaállítja üresre.</p></body></html>"
+
+#: qt/src/ControllerPanel.ui
+msgid "<html><head/><body><p>This box lists keyboard keys and gamepad buttons mapped to the SNES controller. There are 4 slots, so you can assign 4 different keys or buttons to one SNES button.</p><p>To set a binding, click a box or highlight it with the keyboard and press Enter/Return. The box will show three dots quot;...quot;. Press the desired key or gamepad button to assign it to that box. The Escape key will clear the box.</p></body></html>"
+msgstr "<html><head/><body><p>Ez a doboz felsorolja az SNES vezérlőhöz rendelt billentyűzet-billentyűket és játékvezérlő-gombokat. 4 hely áll rendelkezésre, így 4 különböző billentyűt vagy gombot rendelhet egyetlen SNES gombhoz.</p><p>A hozzárendelés beállításához kattintson egy dobozra, vagy jelölje ki a billentyűzettel, majd nyomja meg az Enter billentyűt. A doboz három pontot fog mutatni: &quot;...&quot;. Nyomja meg a kívánt billentyűt vagy vezérlőgombot a dobozhoz való társításához. Az Escape billentyű teljesen kiüríti a dobozt.</p></body></html>"
+
+#: qt/src/EmulationPanel.ui
+msgid "<html><head/><body><p>This controls how the program runs the emulated content at the correct speed.</p><p><span style=\" font-style:italic;\">Timer</span>: This sets a literal timer and shows emulated frames at the exact frame rate specified, or automatically matches the emulated system. It may not match your display's frame rate, which can cause judders.</p><p><span style=\" font-style:italic;\">Timer with Frameskipping</span>: The same as timer, except if your display has a lower refresh rate than the emulated system it will skip frames to keep up.</p><p><span style=\" font-style:italic;\">Sound Synchronization: </span>Assume the sound engine is outputting the sound at the correct speed and match the video output rate with it. This assumes your refresh rate is fairly close to the emulated system and you have vsync turned on.</p><p><span style=\" font-style:italic;\">None:</span> Don't attempt to slow emulation down. If you turn off vsync, this will run as fast as possible. If your display matches the emulated system's refresh rate closely, this with vsync enabled is generally the smoothest option aside from variable refresh rates with a timer.</p></body></html>"
+msgstr "<html><head/><body><p>Ez a beállítás szabályozza, hogyan futtatja a program az emulált tartalmat a megfelelő sebességgel.</p><p>A <span style=\" font-style:italic;\">Időzítő (Timer)</span> opció: Ez egy szó szerinti időzítőt állít be, és a megadott pontos képkockasebességgel mutatja az emulált képkockákat, vagy automatikusan igazodik az emulált rendszerhez. Előfordulhat, hogy nem egyezik a kijelzője képkockasebességével, ami apróbb rángásokat és akadást (judders) okozhat a képben.</p><p>A <span style=\" font-style:italic;\">Időzítő képkocka-kihagyással</span> opció: Ugyanaz, mint az időzítő, kivéve hogy ha a kijelzője frissítési gyakorisága alacsonyabb, mint az emulált rendszeré, akkor képkockákat hagy ki, hogy tartsa a lépést a játékkal.</p><p>A <span style=\" font-style:italic;\">Hangszinkronizáció</span> opció: Feltételezi, hogy a hangmotor a megfelelő sebességgel adja ki a hangot, és ehhez igazítja a videokimenet sebességét. Ez feltételezi, hogy a frissítési gyakorisága meglehetősen közel van az emulált rendszerhez, és a vsync be van kapcsolva.</p><p>A <span style=\" font-style:italic;\">Nincs</span> opció: Egyáltalán ne kísérelje meg lassítani az emulációt. Ha kikapcsolja a vsync-et, ez a hardver maximális lehetséges sebességével fog futni. Ha a kijelzője szorosan megegyezik az emulált rendszer frissítési gyakoriságával, ez a vsync engedélyezésével általában a legördülékenyebb opció az időzítős, változó frissítési gyakoriságú monitorokon kívül.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>This option adapts <span style=\" font-style:italic;\">maintain aspect ratio</span> and scales the image in steps of integral scale, so game pixels are never spread across the borders of screen pixels.</p></body></html>"
+msgstr "<html><head/><body><p>Ez az opció testreszabja a <span style=\" font-style:italic;\">képarány megtartása</span> funkciót, és a képet egész számú skála (Integral) lépéseiben méretezi át, így a játék képpontjai soha nem terjednek el torz módon a képernyő fizikai képpontjainak határain túl.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>This option affects how <span style=\" font-style:italic;\">maintain aspect ratio </span>works. </p><p><span style=\" font-style:italic;\">4:3 </span>will maintain a ratio where the screen is 1.333 times wider than high.</p><p>64:49 presents an idealized ratio where the display output is perfect, but is affected by NTSC compression.</p><p>1:1 Means pixels will be square. This will squeeze the image horizontally.</p></body></html>"
+msgstr "<html><head/><body><p>Ez az opció befolyásolja, hogyan működik a <span style=\" font-style:italic;\">képarány megtartása</span>. </p><p>A <span style=\" font-style:italic;\">4:3 </span>formátum olyan arányt tart fenn, ahol a képernyő szélessége 1,333-szor nagyobb, mint a magassága.</p><p>A 64:49 formátum egy idealizált arányt mutat be, ahol a kijelző kimenete tökéletes, de befolyásolja a régi NTSC tömörítés.</p><p>Az 1:1 formátum azt jelenti, hogy a képpontok teljesen négyzet alakúak lesznek. Ez a képet vízszintesen keskenyen összenyomja.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>This option causes the audio to be slightly stretched to keep the latency even and to prevent underruns and overruns, which will cause pops and cracks in the audio.</p></body></html>"
+msgstr "<html><head/><body><p>Ez az opció azt eredményezi, hogy a hang némileg megnyúlik, hogy a késleltetés egyenletes maradjon, és megelőzze az adatok hiányát vagy túltöltődését, ami egyébként pattogó és recsegő zajokat okozna a hangban.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>This option determines whether messages show up in the game display:</p><p>Onscreen will show a high resolution overlay when using <span style=\" font-style:italic;\">Vulkan</span> or <span style=\" font-style:italic;\">OpenGL</span>.</p><p>Inscreen will draw in a pixel font to the ingame display.</p><p>Don't display messages will show nothing.</p></body></html>"
+msgstr "<html><head/><body><p>Ez az opció meghatározza, hogy az üzenetek megjelenjenek-e a játék kijelzőjén:</p><p>A <span style=\" font-style:italic;\">Képernyőn (Onscreen)</span> opció egy nagy felbontású átfedést (overlay) mutat, amikor a <span style=\" font-style:italic;\">Vulkan</span> vagy az <span style=\" font-style:italic;\">OpenGL</span> médiaeszközöket használja.</p><p>A <span style=\" font-style:italic;\">Képben (Inscreen)</span> opció pixel fonttal rajzolja ki az üzeneteket közvetlenül a belső játék képernyőjére.</p><p>A „Ne jelenítsen meg üzeneteket” opció egyáltalán nem fog semmit mutatni.</p></body></html>"
+
+#: qt/src/EmulationPanel.ui
+msgid "<html><head/><body><p>This option is explicitly for old AddMusic hacks. If you know you have one of those, you can enable this. Otherwise, leave it unchecked.</p></body></html>"
+msgstr "<html><head/><body><p>Ez az opció kifejezetten a régi és hibás AddMusic hackekhez (hacks) készült. Ha tudja, hogy ilyet futtat, engedélyezheti ezt az opciót. Különben hagyja bejelöletlenül.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>This option keeps the proportions of the emulated display the same no matter how you change the size of the window.</p></body></html>"
+msgstr "<html><head/><body><p>Ez az opció az emulált kijelző arányait egységesen és változatlanul tartja, függetlenül attól, hogyan változtatja meg a programablak méretét.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>This option only affects the size of the font and the icons shown when display messages are set to the <span style=\" font-style:italic;\">Onscreen</span> option.</p></body></html>"
+msgstr "<html><head/><body><p>Ez az opció csak a betűkészlet és az ikonok méretét befolyásolja, amikor a kijelző üzenetek a <span style=\" font-style:italic;\">Képernyőn (Onscreen)</span> opcióra vannak állítva.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>This option only affects the SNES's high-resolution, 512 pixel wide mode. Few games use this. </p><p><span style=\" font-style:italic;\">Output directly</span> will use whatever is output directly, but when the game changes modes, the filtering will get sharper or blurrier and may be distracting.</p><p><span style=\" font-style:italic;\">Merge fields </span>will scale the image down and blend the extra pixels together. This is useful in games like Jurassic Park and Kirby's Dreamland 3, which use it for a transparency effect.</p><p><span style=\" font-style:italic;\">Scale low resolution </span>will double the width of low-resolution screens, so when the game switches between modes there isn't any distracting changes in filtering. This is useful when a game uses the high resolution mode often, like Seiken Densetsu 3.</p></body></html>"
+msgstr "<html><head/><body><p>Ez az opció csak a SNES ritkán használt, 512 képpont széles módját érinti. Kevés játék használja ezt. </p><p>A <span style=\" font-style:italic;\">Közvetlen kimenet</span> opció azt fogja használni, ami közvetlenül kijön, de amikor a játék módot vált, a szűrés élesebbé vagy homályosabbá válik, ami zavaró lehet.</p><p>A <span style=\" font-style:italic;\">Mezők összevonása</span> opció lekicsinyíti a képet, és összemossa a plusz képpontokat. Ez hasznos az olyan játékokban, mint a Jurassic Park és a Kirby's Dreamland 3, amelyek átlátszósági hatás elérésére használják ezt.</p><p>A <span style=\" font-style:italic;\">Matalan felbontás skálázása</span> opció megduplázza az alacsony felbontású képernyők szélességét, így amikor a játék vált a módok között, nincs zavaró ugrás a szűrésben. Ez hasznos, ha egy játék gyakran használja a nagy felbontású módot, mint például a Seiken Densetsu 3.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>This option prevents tearing in the output.</p></body></html>"
+msgstr "<html><head/><body><p>Ez az opció megakadályozza a képtörést vagy kép pirstoutumist (tearing) a megjelenített kimeneten.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>This option stretches the emulated audio output to coincide exactly with your display's refresh rate. It automatically handles the <span style=\" font-style:italic;\">Input Rate</span> option.</p></body></html>"
+msgstr "<html><head/><body><p>Ez az opció megnyújtja az emulált hangkimenetet, hogy az pontosan szinkronba kerüljön a képernyője valós frissítési gyakoriságával. Automatikusan kezeli a <span style=\" font-style:italic;\">Bemeneti ráta</span> opciót.</p></body></html>"
+
+#: qt/src/ControllerPanel.ui
+msgid "<html><head/><body><p>This option will use the SDL library to auto-configure gamepads. It will take the XBox mappings for the left D-pad and analog stick, as well as the the face buttons and L/R shoulder buttons, and assign them to relative locations on the first SNES controller.</p><p><br/></p><p>All gamepads will be assigned to player 1. If you need more players, disable this option and set up the mappings manually.</p></body></html>"
+msgstr "<html><head/><body><p>Ez az opció az SDL könyvtárat használja a játékvezérlők automatikus konfigurálásához. Átveszi az Xbox vezérlő beállításait az iránygombhoz és az analóg karhoz, valamint az elülső gombokhoz és az L/R vállgombokhoz, és hozzárendeli őket a megfelelő relatív helyekhez az első SNES vezérlőn.</p><p><br/></p><p>Minden észlelt játékvezérlő az 1. játékoshoz lesz rendelve. Ha több játékos konfigurálására van szükség, tiltsa le ezt az opciót, és állítsa be a gombokat manuálisan.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>This prevents the GPU from queuing up additional frames in advance, reducing the time it takes for the display to react to your input.</p></body></html>"
+msgstr "<html><head/><body><p>Ez megakadályozza, hogy a grafikus processzor (GPU) előre plusz képkockákat tegyen a sorba, ami lerövidíti azt az időt, amíg a képernyő reagál az irányítási parancsaira (csökkenti a lagot).</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>Turns on a bilinear smoothing filter to smooth out the pixels. This option won't work with a hardware shader enabled.</p></body></html>"
+msgstr "<html><head/><body><p>Bekapcsol egy bilineáris simítószűrőt (bilinear) a képpontok éles széleinek lágyítására. Ez az opció nem fog működni, ha hardveres varjostin (hardware shader) van érvényben.</p></body></html>"
+
+#: qt/src/ControllerPanel.ui
+msgid "<html><head/><body><p>Use this to automatically assign the default keyboard mapping or a detected controller to a set of bindings.</p><p>This uses the XInput controller protocol and maps it as close as possible to a SNES controller.</p></body></html>"
+msgstr "<html><head/><body><p>Használja ezt a billentyűzet alapértelmezett kiosztásának automatikus hozzárendeléséhez, vagy egy észlelt játékvezérlő társításához a gomb-hozzárendelések készletéhez.</p><p>Ez az XInput vezérlőprotokollt használja, és a lehető legközelebb modellezi azt egy eredeti SNES vezérlő elrendezéséhez.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>Uses a hardware shader with <span style=\" font-style:italic;\">Vulkan</span> or <span style=\" font-style:italic;\">OpenGL</span> drivers. These can be either .glslp or .slangp preset files.</p><p>GLSL shaders (.glslp) can be downloaded from:</p><p><a href=\"https://github.com/libretro/glsl-shaders\"><span style=\" text-decoration: underline; color:#2980b9;\">https://github.com/libretro/glsl-shaders</span></a></p><p>Slang shaders (.slangp) can be downloaded from:</p><p><a href=\"https://github.com/libretro/slang-shaders\"><span style=\" text-decoration: underline; color:#2980b9;\">https://github.com/libretro/slang-shaders</span></a></p></body></html>"
+msgstr "<html><head/><body><p>Hardveres varjostint használ a <span style=\" font-style:italic;\">Vulkan</span> vagy <span style=\" font-style:italic;\">OpenGL</span> illesztőprogramokkal együtt. Ezek lehetnek .glslp vagy .slangp formátumú előbeállítás-fájlok.</p><p>A GLSL varjostinok (.glslp) letölthetők az útvonalról:</p><p><a href=\"https://github.com/libretro/glsl-shaders\"><span style=\" text-decoration: underline; color:#2980b9;\">https://github.com/libretro/glsl-shaders</span></a></p><p>És a Slang varjostinok (.slangp) letölthetők az útvonalról:</p><p><a href=\"https://github.com/libretro/slang-shaders\"><span style=\" text-decoration: underline; color:#2980b9;\">https://github.com/libretro/slang-shaders</span></a></p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>When entering fullscreen mode, this option temporarily sets a number of other options to values that make variable refresh rate monitors that use FreeSync or GSync smoother.</p><p>Enables vsync.</p><p>Sets synchronization mode to timer and the frame rate to exactly that of the SNES.</p><p>Sets input rate to 32040Hz.</p></body></html>"
+msgstr "<html><head/><body><p>Teljes képernyős módba lépéskor ez az opció átmenetileg több más beállítást is olyan értékekre állít be, amelyek a FreeSync vagy GSync technológiát használó, változó frissítési gyakoriságú monitorokat gördülékenyebbé és kellemesebbé teszik.</p><p>Amikor is bekapcsolja a függőleges szinkronizációt (vsync).</p><p>És beállítja a szinkronizálási módot időzítőre (timer) és a képkockasebességet pontosan az eredeti SNES eszközével megegyezőre.</p><p>És beállítja a bemeneti rátát 32040 Hz-re.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid "<html><head/><body><p>When using <span style=\" font-style:italic;\">Vulkan</span>, this chooses the GPU you wish to render with.</p></body></html>"
+msgstr "<html><head/><body><p>A <span style=\" font-style:italic;\">Vulkan</span> rendszer használatakor ez az opció kiválasztja azt a grafikus kártyát (GPU), amellyel a feldolgozást és riandorozást el szeretné végezni.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "Adjust input rate to display rate automatically"
+msgstr "Bemeneti ráta automatikus igazítása a kijelző frekvenciájához"
+
+#: qt/src/DisplayPanel.ui
+msgid "Adjust settings for VRR in fullscreen mode"
+msgstr "A VRR beállításainak igazítása teljes képernyős módban"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "All Files (*)"
+msgstr "Minden fájl (*)"
+
+#: qt/src/EmulationPanel.ui
+msgid "Allow opposite D-pad directions simultaneously"
+msgstr "Ellentétes D-pad irányok engedélyezése egyidejűleg"
+
+#: qt/src/EmulationPanel.ui
+msgid "Alternate sound filter:"
+msgstr "Alternatív hangszűrő:"
+
+#: qt/src/ControllerPanel.ui
+msgid "Auto-Assign Gamepad Buttons Using SDL Controller Map"
+msgstr "Játékvezérlő gombjainak automatikus hozzárendelése az SDL vezérlőtérkép segítségével"
+
+#: qt/src/EmulationPanel.ui
+msgid "Auto-FastROM"
+msgstr "Auto-FastROM"
+
+#: qt/src/ControllerPanel.ui
+msgid "Automatically assign a controller's buttons to a slot"
+msgstr "Vezérlő gombjainak automatikus hozzárendelése egy helyre"
+
+#: qt/src/DisplayPanel.ui
+msgid "Bilinear filter"
+msgstr "Bilineáris szűrő"
+
+#: qt/src/ControllerPanel.ui
+msgid "Binding #1"
+msgstr "Hozzárendelés #1"
+
+#: qt/src/ControllerPanel.ui
+msgid "Binding #2"
+msgstr "Hozzárendelés #2"
+
+#: qt/src/ControllerPanel.ui
+msgid "Binding #3"
+msgstr "Hozzárendelés #3"
+
+#: qt/src/ControllerPanel.ui
+msgid "Binding #4"
+msgstr "Hozzárendelés #4"
+
+#: qt/src/ControllerPanel.cpp
+msgid "Binding Set #%1"
+msgstr "Hozzárendelési készlet #%1"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Change Backdrop Color"
+msgstr "Háttérszín módosítása"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Cheats"
+msgstr "Csalások"
+
+#: qt/src/CheatsDialog.cpp
+msgid "cheats.bml was not found."
+msgstr "A cheats.bml nem található."
+
+#: qt/src/CheatsDialog.ui
+msgid "Check Database"
+msgstr "Adatbázis ellenőrzése"
+
+#: qt/src/DisplayPanel.ui
+msgid "Choose a device to render output. If you have no integrated graphics, there will be only one choice."
+msgstr "Válasszon eszközt a kimenet riandorozásához. Ha nincs integrált grafikus kártyája, csak egyetlen választási lehetőség áll majd rendelkezésre."
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Choose a State File"
+msgstr "Válasszon mentési állapotfájlt"
+
+#: qt/src/ControllerPanel.cpp
+msgid "Clear All Controllers"
+msgstr "Összes vezérlő törlése"
+
+#: qt/src/ControllerPanel.cpp
+msgid "Clear Current Controller"
+msgstr "Aktuális vezérlő törlése"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Clear Recent Files"
+msgstr "Legutóbbi fájlok törlése"
+
+#: qt/src/EmuSettingsWindow.ui
+msgid "Click on a setting to find out more info."
+msgstr "Kattintson egy beállításra a további információkért."
+
+#: qt/src/FoldersPanel.ui
+msgid "Config Folder"
+msgstr "Konfigurációs mappa"
+
+#: qt/src/FoldersPanel.cpp
+msgid "Config folder is %1"
+msgstr "A konfigurációs mappa a következő: %1"
+
+#: qt/src/ControllerPanel.cpp
+msgid "Controller %1"
+msgstr "%1. vezérlő"
+
+#: qt/src/ControllerPanel.ui
+msgid "Controller + Multitap"
+msgstr "Vezérlő + Multitap"
+
+#: qt/src/ControllerPanel.ui
+msgid "Controller Ports:"
+msgstr "Vezérlőportok:"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Controllers"
+msgstr "Vezérlők"
+
+#: qt/src/FoldersPanel.ui
+msgid "Custom Folder"
+msgstr "Egyéni mappa"
+
+#: qt/src/FoldersPanel.ui
+msgid "Data Locations"
+msgstr "Adatok helyei"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Decrease Current Save Slot"
+msgstr "Aktuális mentési hely csökkentése"
+
+#: qt/src/ControllerPanel.cpp
+msgid "Default Keyboard"
+msgstr "Alapértelmezett billentyűzet"
+
+#: qt/src/DisplayPanel.ui
+msgid "Device:"
+msgstr "Eszköz:"
+
+#: qt/src/GeneralPanel.ui
+msgid "Disable screensaver"
+msgstr "Képernyővédő letiltása"
+
+#: qt/src/DisplayPanel.ui
+msgid "Display messages:"
+msgstr "Képernyőüzenetek:"
+
+#: qt/src/DisplayPanel.ui
+msgid "Display Output"
+msgstr "Képernyő kimenet"
+
+#: qt/src/DisplayPanel.ui
+msgid "Don't display messages"
+msgstr "Ne jelenítsen meg üzeneteket"
+
+#: qt/src/DisplayPanel.ui
+msgid "Driver:"
+msgstr "Illesztőprogram:"
+
+#: qt/src/ControllerPanel.ui
+msgid "Edit"
+msgstr "Szerkesztés"
+
+#: qt/src/EmulationPanel.ui
+msgid "Emulation Speed"
+msgstr "Emuláció sebessége"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Enable Fast-Forward"
+msgstr "Gyors előretekerés engedélyezése"
+
+#: qt/src/DisplayPanel.ui
+msgid "Enable vsync"
+msgstr "Függőleges szinkronizáció engedélyezése"
+
+#: qt/src/FoldersPanel.ui
+msgid "Exports"
+msgstr "Exportálások"
+
+#: qt/src/EmulationPanel.ui
+msgid "Fast-forward frame skip:"
+msgstr "Képkocka-kihagyás gyors előretekerésnél:"
+
+#: qt/src/SoundPanel.ui
+msgid "Fast-Forward:"
+msgstr "Gyors előretekerés:"
+
+#: qt/src/ControllerPanel.ui
+msgid "Form"
+msgstr "Űrlap"
+
+#: qt/src/EmulationPanel.ui
+msgid "fps"
+msgstr "fps (képkocka másodpercenként)"
+
+#: qt/src/EmulationPanel.ui
+msgid "Frame rate:"
+msgstr "Képkockasebesség:"
+
+#: qt/src/EmulationPanel.ui
+msgid "Frames between steps"
+msgstr "Képkockák a lépések között"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "From File"
+msgstr "Fájlból"
+
+#: qt/src/EmulationPanel.ui
+msgid "Gaussian"
+msgstr "Gauss-féle"
+
+#: qt/src/SoundPanel.ui
+msgid "GB:"
+msgstr "GB:"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Grab Mouse"
+msgstr "Egér elkapása"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Hard Reset"
+msgstr "Hardveres újraindítás"
+
+#: qt/src/EmulationPanel.ui
+msgid "High"
+msgstr "Magas"
+
+#: qt/src/DisplayPanel.ui
+msgid "High-resolution mode:"
+msgstr "Nagy felbontású mód:"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Increase Current Save Slot"
+msgstr "Aktuális mentési hely növelése"
+
+#: qt/src/DisplayPanel.ui
+msgid "Inside the screen - Low resolution"
+msgstr "Képben - Alacsony felbontás"
+
+#: qt/src/CheatsDialog.cpp
+msgid "The cheat you entered was not valid."
+msgstr "A megadott csaláskód nem volt érvényes."
+
+#: qt/src/EmuCanvasOpenGL.cpp
+msgid "The driver isn't using a specialized shader preset right now."
+msgstr "Az illesztőprogram jelenleg nem használ specializált shader előbeállítást."
+
+#: qt/src/EmuMainWindow.cpp
+msgid "The language change will take effect after you restart SuperSnes9x."
+msgstr "A nyelvváltás a SuperSnes9x újraindítása után lép életbe."
+
+#: qt/src/EmuCanvasVulkan.cpp
+msgid "The vulkan display driver hasn't properly loaded."
+msgstr "A vulkan képernyő-illesztőprogram nem töltődött be megfelelően."
+
+#: qt/src/DisplayPanel.ui
+msgid "This affects the rarely used 512-pixels-wide mode used by the SNES.\nFor games like Kirby 3 and Jurassic Park, choose the \"merge fields\" option.\nFor games like Seiken Densetsu 3 and Marvelous, choose the \"scale up\" option.\nOutput directly will cause the screen to change between the two modes and look weird."
+msgstr ""
+"Ez a SNES által használt, ritkán használt 512 képpont széles módot érinti.\nA Kirby 3-hoz és a Jurassic Parkhoz hasonló játékoknál válassza a \"mezők összevonása\" opciót.\nA Seiken Densetsu 3 és a Marvelous típusú játékoknál válassza a \"skálázás fel\" opciót.\nA közvetlen kimenet miatt a képernyő váltakozni fog a két mód között, ami furcsán néz ki."
+
+#: qt/src/EmuCanvasOpenGL.cpp
+msgid "This shader preset doesn't offer any configurable parameters."
+msgstr "Ez a shader előbeállítás nem kínál konfigurálható paramétereket."
+
+#: qt/src/EmulationPanel.ui
+msgid "Timer - Match the frame rate configured below"
+msgstr "Időzítő - Az alább konfigurált képkockasebességhez igazítás"
+
+#: qt/src/EmulationPanel.ui
+msgid "Timer with Frame Skipping - Skip frames if needed"
+msgstr "Időzítő képkocka-kihagyással - Képkockák kihagyása, ha szükséges"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "To File"
+msgstr "Fájlba"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle All Sound Channels"
+msgstr "Összes hangcsatorna ki-/bekapcsolása"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle BG Layer 0"
+msgstr "0. háttérréteg ki-/bekapcsolása"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle BG Layer 1"
+msgstr "1. háttérréteg ki-/bekapcsolása"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle BG Layer 2"
+msgstr "2. háttérréteg ki-/bekapcsolása"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle BG Layer 3"
+msgstr "3. háttérréteg ki-/bekapcsolása"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle Fast-Forward"
+msgstr "Gyors előretekerés ki-/bekapcsolása"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle Fullscreen"
+msgstr "Teljes képernyő ki-/bekapcsolása"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle Sound Channel 1"
+msgstr "1. hangcsatorna ki-/bekapcsolása"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle Sound Channel 2"
+msgstr "2. hangcsatorna ki-/bekapcsolása"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle Sound Channel 3"
+msgstr "3. hangcsatorna ki-/bekapcsolása"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle Sound Channel 4"
+msgstr "4. hangcsatorna ki-/bekapcsolása"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle Sound Channel 5"
+msgstr "5. hangcsatorna ki-/bekapcsolása"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle Sound Channel 6"
+msgstr "6. hangcsatorna ki-/bekapcsolása"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle Sound Channel 7"
+msgstr "7. hangcsatorna ki-/bekapcsolása"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle Sound Channel 8"
+msgstr "8. hangcsatorna ki-/bekapcsolása"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle Sprites"
+msgstr "Sprite-ok ki-/bekapcsolása"
+
+#: qt/src/ControllerPanel.ui
+msgid "Turbo A"
+msgstr "Turbó A"
+
+#: qt/src/ControllerPanel.ui
+msgid "Turbo B"
+msgstr "Turbó B"
+
+#: qt/src/ControllerPanel.ui
+msgid "Turbo L"
+msgstr "Turbó L"
+
+#: qt/src/ControllerPanel.ui
+msgid "Turbo R"
+msgstr "Turbó R"
+
+#: qt/src/ControllerPanel.ui
+msgid "Turbo X"
+msgstr "Turbó X"
+
+#: qt/src/ControllerPanel.ui
+msgid "Turbo Y"
+msgstr "Turbó Y"
+
+#: qt/src/ControllerPanel.ui
+msgid "Two Controllers"
+msgstr "Két vezérlő"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Unable to create a %1 context. Attempting to use %2."
+msgstr "Nem sikerült létrehozni egy %1 környezetet. Kísérlet a következő használatára: %2."
+
+#: qt/src/CheatsDialog.cpp
+msgid "Unable to Open Cheats Database"
+msgstr "Nem sikerült megnyitni a csalásadatbázist"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Unable to Start Display Driver"
+msgstr "Nem sikerült elindítani a képernyő-illesztőprogramot"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Undo Load State"
+msgstr "Állapotbetöltés visszavonása"
+
+#: qt/src/DisplayPanel.ui
+msgid "Use a hardware shader:"
+msgstr "Hardverszintű varjostin használata:"
+
+#: qt/src/DisplayPanel.ui
+msgid "Use a selected .slangp or .glslp shader file. \n.slangp is supported by Vulkan and OpenGL. \n.glslp is supported by OpenGL."
+msgstr "Használjon egy kiválasztott .slangp vagy .glslp varjostinfájlt. \nA .slangp formátumot a Vulkan és az OpenGL is támogatja. \nA .glslp formátumot az OpenGL támogatja."
+
+#: qt/src/EmulationPanel.ui
+msgid "Use a shadow echo buffer"
+msgstr "Árnyékszerű kaikupuffer használata (Shadow echo buffer)"
+
+#: qt/src/DisplayPanel.ui
+msgid "Use integer scaling"
+msgstr "Egész számú skálázás használata"
+
+#: qt/src/ControllerPanel.ui
+msgid "Use SDL to set up the D-pad, face buttons, and L/R. Other buttons may still be configured."
+msgstr "Használja az SDL-t az iránygomb, az elülső gombok és az L/R vállgombok beállításához. Egyéb gombok még konfigurálhatók manuálisan."
+
+#: qt/src/EmuMainWindow.cpp
+msgid "View"
+msgstr "Nézet"
+
+#: qt/src/EmuCanvasVulkan.cpp
+msgid "Vulkan Driver"
+msgstr "Vulkan illesztőprogram"
+
+#: qt/src/DisplayPanel.ui
+msgid "When entering fullscreen mode, temporarily change other settings to use VRR (G-Sync or FreeSync) correctly."
+msgstr "Teljes képernyős módba lépéskor ideiglenesen módosítson más beállításokat a változó frissítési gyakoriság VRR (G-Sync vagy FreeSync) helyes használatához."
+
+#: qt/src/DisplayPanel.ui
+msgid "When scaling up, only use integer multiples of the original height."
+msgstr "Felfelé skálázáskor csak az eredeti magasság egész számú többszöröseit használja."

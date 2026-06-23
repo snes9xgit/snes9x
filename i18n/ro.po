@@ -1,0 +1,5659 @@
+# SuperSnes9x - Romanian (Română) Translation
+# Copyright (C) 2023-2026 SuperSnes9x Team
+# This file is distributed under the same license as the SuperSnes9x package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: SuperSnes9x\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-10-29 23:56+0100\n"
+"PO-Revision-Date: 2026-06-21 07:20+0300\n"
+"Last-Translator: Grok AI (xAI) <grok@x.ai>\n"
+"Language-Team: Romanian / Română\n"
+"Language: ro\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n==1?0:(n==0||(n%100>0&&n%100<20))?1:2);\n"
+"SuperSnes9x-gtk: 1.63\n"
+"X-Generator: Grok AI + comprehensive translation\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+
+#: src/gtk_binding.cpp:248
+msgid "Unknown"
+msgstr "Necunoscut"
+
+#: src/gtk_binding.cpp:257
+msgid "Keyboard {}{}{}{}"
+msgstr "Tastatură {}{}{}{}"
+
+#: src/gtk_binding.cpp:267
+msgid "Axis {} {} {}%"
+msgstr "Axă {} {} {}%"
+
+#: src/gtk_binding.cpp:272
+msgid "Button {}"
+msgstr "Buton {}"
+
+#: src/gtk_binding.cpp:274
+msgid "Joystick {} {}"
+msgstr "Joystick {} {}"
+
+#: src/gtk_binding.cpp:278
+msgid "Unset"
+msgstr "Nesetat"
+
+#: src/gtk_cheat.cpp:24
+msgid "Error"
+msgstr "Eroare"
+
+#: src/gtk_cheat.cpp:60
+msgid "Description"
+msgstr "Descriere"
+
+#: src/gtk_cheat.cpp:66
+msgid "Cheat"
+msgstr "Cheat"
+
+#: src/gtk_cheat.cpp:227 src/gtk_cheat.cpp:355
+msgid "No description"
+msgstr "Fără descriere"
+
+#: src/gtk_cheat.cpp:231 src/gtk_cheat.cpp:360
+msgid "Couldn't find any cheat codes in input."
+msgstr "Nu s-au găsit coduri de cheat în intrare."
+
+#: src/gtk_cheat.cpp:306
+msgid "Couldn't Find Cheats Database"
+msgstr "Nu s-a găsit baza de date de cheat-uri"
+
+#: src/gtk_cheat.cpp:306
+msgid "No Matching Game Found"
+msgstr "Nu s-a găsit niciun joc corespunzător"
+
+#: src/gtk_cheat.cpp:307
+msgid ""
+"The database file <b>cheats.bml</b> was not found. It is normally installed "
+"with SuperSnes9x, but you may also place a custom copy in your configuration or "
+"cheats directory."
+msgstr "Fișierul bazei de date <b>cheats.bml</b> nu a fost găsit. De regulă, acesta se instalează împreună cu SuperSnes9x, dar puteți plasa o copie personalizată în directorul de configurare sau în cel pentru cheat-uri."
+
+#: src/gtk_cheat.cpp:309
+msgid ""
+"No matching game was found in the databases. If you are using a non-official "
+"translation or modified copy, you may be able to find and manually enter "
+"the codes."
+msgstr "Nu a fost găsit niciun joc corespunzător în bazele de date. Dacă folosiți o traducere neoficială sau o copie modificată, s-ar putea să fie nevoie să căutați și să introduceți codurile manual."
+
+#: src/gtk_config.cpp:407
+msgid "Couldn't create config directory: {}\n"
+msgstr "Nu s-a putut crea directorul de configurare: {}\n"
+
+#: src/gtk_netplay.cpp:66
+msgid "Connection Error"
+msgstr "Eroare de conexiune"
+
+#: src/gtk_netplay_dialog.cpp:31
+msgid "frame behind"
+msgid_plural "frames behind"
+msgstr[0] "cadru în urmă"
+msgstr[1] "cadre în urmă"
+msgstr[2] "de cadre în urmă"
+
+#: src/gtk_preferences.cpp:19
+msgid "Same location as current game"
+msgstr "Aceeași locație ca jocul curent"
+
+#: src/gtk_preferences.cpp:110
+msgid "{0:Ld}×{1:Ld} @ {2:.3Lf} Hz"
+msgstr "{0:Ld}×{1:Ld} @ {2:.3Lf} Hz"
+
+#: src/gtk_preferences.cpp:143
+msgid "OpenGL – Use 3D graphics hardware"
+msgstr "OpenGL – Folosește hardware grafic 3D"
+
+#: src/gtk_preferences.cpp:145
+msgid "XVideo – Use hardware video blitter"
+msgstr "XVideo – Folosește blitter video hardware"
+
+#: src/gtk_preferences.cpp:147
+msgid "Vulkan"
+msgstr "Vulkan"
+
+#: src/gtk_preferences.cpp:149
+msgid "None – Use software scaler"
+msgstr "Niciunul – Folosește scaler software"
+
+#: src/gtk_preferences.cpp:179 src/gtk_preferences.cpp:446
+msgid "thread for filtering and scaling"
+msgid_plural "threads for filtering and scaling"
+msgstr[0] "fir de execuție pentru filtrare și scalare"
+msgstr[1] "fire de execuție pentru filtrare și scalare"
+msgstr[2] "de fire de execuție pentru filtrare și scalare"
+
+#: src/gtk_preferences.cpp:236 src/gtk_preferences.cpp:500
+msgid "millisecond"
+msgid_plural "milliseconds"
+msgstr[0] "milisecundă"
+msgstr[1] "milisecunde"
+msgstr[2] "de milisecunde"
+
+#: src/gtk_preferences.cpp:260 src/gtk_preferences.cpp:476
+msgid "second after change"
+msgid_plural "seconds after change"
+msgstr[0] "secundă după modificare"
+msgstr[1] "secunde după modificare"
+msgstr[2] "de secunde după modificare"
+
+#: src/gtk_preferences.cpp:271
+msgid "SuperSnes9x version: "
+msgstr "Versiune SuperSnes9x: "
+
+#: src/gtk_preferences.cpp:272
+msgid "GTK+ port version: "
+msgstr "Versiune port GTK+: "
+
+#: src/gtk_preferences.cpp:274
+msgid "English localization by Brandon Wright"
+msgstr "Localizare engleză de Brandon Wright"
+
+#: src/gtk_preferences.cpp:298
+msgid "Select directory"
+msgstr "Selectează director"
+
+#: src/gtk_preferences.cpp:323
+msgid "{0:.4Lf} Hz"
+msgstr "{0:.4Lf} Hz"
+
+#: src/gtk_preferences.cpp:328
+msgid "{0:Ld} Hz"
+msgstr "{0:Ld} Hz"
+
+#: src/gtk_preferences.cpp:379
+msgid "Select Shader File"
+msgstr "Selectează fișier shader"
+
+#: src/gtk_preferences.cpp:720
+msgid ""
+"Changing the SRAM directory with a game loaded will replace the .srm file in "
+"the selected directory with the SRAM from the running game. If this is not "
+"what you want, click 'cancel'."
+msgstr "Schimbarea directorului SRAM în timp ce un joc este încărcat va înlocui fișierul .srm din directorul selectat cu datele SRAM din jocul care rulează. Dacă nu doriți acest lucru, apăsați pe „Anulează”."
+
+#: src/gtk_preferences.cpp:725
+msgid "Warning: Possible File Overwrite"
+msgstr "Avertisment: Posibilă suprascriere fișier"
+
+#: src/gtk_preferences.cpp:980
+msgid "Current joystick centers have been saved."
+msgstr "Centrele curente ale joystick-ului au fost salvate."
+
+#: src/gtk_preferences.cpp:981
+msgid "Calibration Complete"
+msgstr "Calibrare finalizată"
+
+#: src/gtk_s9x.cpp:206
+msgid "Using rewind buffer of {0}\n"
+msgstr "Se folosește un buffer pentru rewind de {0}\n"
+
+#: src/gtk_s9x.cpp:598
+msgid ""
+"GTK port options:\n"
+"-filter [option]               Use a filter to scale the image.\n"
+"                               [option] is one of: none supereagle 2xsai\n"
+"                               super2xsai hq2x hq3x hq4x 2xbrz 3xbrz 4xbrz epx ntsc\n"
+"\n"
+"-mutesound                     Disables sound output.\n"
+msgstr ""
+"Opțiuni port GTK:\n"
+"-filter [opțiune]              Folosește un filtru pentru scalarea imaginii.\n"
+"                               [opțiune] poate fi: none supereagle 2xsai\n"
+"                               super2xsai hq2x hq3x hq4x 2xbrz 3xbrz 4xbrz epx ntsc\n"
+"\n"
+"-mutesound                     Dezactivează redarea sunetului.\n"
+
+#: src/gtk_s9xwindow.cpp:48 src/snes9x.ui:8405
+msgid "Save States"
+msgstr "Stări salvate"
+
+#: src/gtk_s9xwindow.cpp:57
+msgid "All Files"
+msgstr "Toate fișierele"
+
+#: src/gtk_s9xwindow.cpp:616
+msgid "Couldn't load files."
+msgstr "Nu s-au putut încărca fișierele."
+
+#: src/gtk_s9xwindow.cpp:637
+msgid "Open SNES Movie"
+msgstr "Deschide film SNES"
+
+#: src/gtk_s9xwindow.cpp:642
+msgid "New SNES Movie"
+msgstr "Film SNES nou"
+
+#: src/gtk_s9xwindow.cpp:661
+msgid "SNES Movies"
+msgstr "Filme SNES"
+
+#: src/gtk_s9xwindow.cpp:690
+msgid "Open SNES ROM Image"
+msgstr "Deschide imagine ROM SNES"
+
+#: src/gtk_s9xwindow.cpp:695
+msgid "SNES ROM Images"
+msgstr "Immagini ROM SNES"
+
+#: src/gtk_s9xwindow.cpp:740
+msgid "Couldn't load file: "
+msgstr "Nu s-a putut încărca fișierul: "
+
+#: src/gtk_s9xwindow.cpp:767
+msgid "Load Saved State"
+msgstr "Încarcă stare salvată"
+
+#: src/gtk_s9xwindow.cpp:796
+msgid "The current frame in the movie is <b>{0:Ld}</b>."
+msgstr "Cadrul curent din film este <b>{0:Ld}</b>."
+
+#: src/gtk_s9xwindow.cpp:829
+msgid "Save State"
+msgstr "Salvează stare"
+
+#: src/gtk_s9xwindow.cpp:850
+msgid "Save SPC file..."
+msgstr "Salvează fișier SPC..."
+
+#: src/gtk_s9xwindow.cpp:872
+msgid "Couldn't save SPC file:"
+msgstr "Nu s-a putut salva fișierul SPC:"
+
+#: src/gtk_s9xwindow.cpp:888
+#, c-format
+msgid ""
+"<b>Information for %s</b>\n"
+"\n"
+"<i>Name:</i> %s\n"
+"<i>Speed:</i> %02X/%s\n"
+"<i>Map:</i> %s\n"
+"<i>Type:</i> %02x\n"
+"<i>Contents:</i> %s\n"
+"<i>ROM Size:</i> %s\n"
+"<i>Calculated Size:</i> %d\n"
+"<i>SRAM Size:</i> %s\n"
+"<i>Header Checksum:</i> %04X\n"
+"<i>Checksum Complement:</i> %04X\n"
+"<i>Actual Checksum:</i> %04X\n"
+"<i>Video:</i> %s\n"
+"<i>CRC32:</i> %08X\n"
+"<i>Revision:</i> %s\n"
+"<b><i>%s%s</i></b>"
+msgstr ""
+"<b>Informații despre %s</b>\n"
+"\n"
+"<i>Nume:</i> %s\n"
+"<i>Viteză:</i> %02X/%s\n"
+"<i>Hartă:</i> %s\n"
+"<i>Tip:</i> %02x\n"
+"<i>Conținut:</i> %s\n"
+"<i>Dimensiune ROM:</i> %s\n"
+"<i>Dimensiune calculată:</i> %d\n"
+"<i>Dimensiune SRAM:</i> %s\n"
+"<i>Checksum Header:</i> %04X\n"
+"<i>Complement Checksum:</i> %04X\n"
+"<i>Checksum real:</i> %04X\n"
+"<i>Video:</i> %s\n"
+"<i>CRC32:</i> %08X\n"
+"<i>Revizie:</i> %s\n"
+"<b><i>%s%s</i></b>"
+
+#: src/gtk_s9xwindow.cpp:924
+msgid ""
+"\n"
+"\n"
+"This ROM has been auto-patched with "
+msgstr ""
+"\n"
+"\n"
+"Acest ROM a fost auto-patchuit cu "
+
+#: src/gtk_s9xwindow.cpp:924
+msgid ""
+"\n"
+"\n"
+"This ROM has been modified or damaged"
+msgstr ""
+"\n"
+"\n"
+"Acest ROM a fost modificat sau este deteriorat"
+
+#: src/gtk_s9xwindow.cpp:938
+msgid "File Information"
+msgstr "Informații fișier"
+
+#: src/gtk_shader_parameters.cpp:67
+msgid "Export Shader Preset to:"
+msgstr "Exportă presetare shader către:"
+
+#: src/gtk_shader_parameters.cpp:90
+msgid "Shader Preset"
+msgstr "Presetare shader"
+
+#: src/gtk_shader_parameters.cpp:131
+msgid "Shader Parameters"
+msgstr "Parametri shader"
+
+#: src/snes9x.ui:10
+msgid "About SuperSnes9x"
+msgstr "Despre SuperSnes9x"
+
+#: src/snes9x.ui:283
+msgid "SuperSnes9x Cheats"
+msgstr "Cheat-uri SuperSnes9x"
+
+#: src/snes9x.ui:401
+msgid "Update Cheat"
+msgstr "Actualizează cheat"
+
+#: src/snes9x.ui:416
+msgid "Disable All"
+msgstr "Dezactivează toate"
+
+#: src/snes9x.ui:432
+msgid "Delete All Cheats"
+msgstr "Șterge toate cheat-urile"
+
+#: src/snes9x.ui:447
+msgid "Search Cheat Database"
+msgstr "Caută în baza de date de cheat-uri"
+
+#: src/snes9x.ui:489
+msgid "Code:"
+msgstr "Cod:"
+
+#: src/snes9x.ui:526
+msgid "Description:"
+msgstr "Descriere:"
+
+#: src/snes9x.ui:573
+msgid "Advance to Frame"
+msgstr "Avansează la cadru"
+
+#: src/snes9x.ui:642
+msgid "The current frame in the movie is"
+msgstr "Cadrul curent din film este"
+
+#: src/snes9x.ui:663
+msgid "Fast‑forward to frame"
+msgstr "Avansare rapidă la cadru"
+
+#: src/snes9x.ui:806
+msgid "Black"
+msgstr "Negru"
+
+#: src/snes9x.ui:809
+msgid "Color bars"
+msgstr "Bare de culoare"
+
+#: src/snes9x.ui:812
+msgid "Pixel art patterns"
+msgstr "Modele artă pixel"
+
+#: src/snes9x.ui:815
+msgid "Dithered gradient"
+msgstr "Gradient cu dithering"
+
+#: src/snes9x.ui:818
+msgid "Color bars and patterns"
+msgstr "Bare de culoare și modele"
+
+#: src/snes9x.ui:821
+msgid "Starfield"
+msgstr "Câmp de stele"
+
+#: src/snes9x.ui:824
+msgid "Snow"
+msgstr "Zăpadă"
+
+#: src/snes9x.ui:852 src/snes9x.ui:875
+msgid "12.5%"
+msgstr "12.5%"
+
+#: src/snes9x.ui:855 src/snes9x.ui:878
+msgid "25%"
+msgstr "25%"
+
+#: src/snes9x.ui:858 src/snes9x.ui:881
+msgid "50%"
+msgstr "50%"
+
+#: src/snes9x.ui:861 src/snes9x.ui:884
+msgid "100%"
+msgstr "100%"
+
+#: src/snes9x.ui:872
+msgid "0%"
+msgstr "0%"
+
+#: src/snes9x.ui:895
+msgctxt "filter list"
+msgid "None"
+msgstr "Niciunul"
+
+#: src/snes9x.ui:936
+msgid "8:7 Square pixels"
+msgstr "8:7 Pixeli pătrați"
+
+#: src/snes9x.ui:939
+msgid "8:7 Square pixels, integer multiples"
+msgstr "8:7 Pixeli pătrați, multipli întregi"
+
+#: src/snes9x.ui:942
+msgid "4:3 SNES correct aspect"
+msgstr "4:3 Aspect corect SNES"
+
+#: src/snes9x.ui:945
+msgid "4:3 SNES correct aspect, integer multiples"
+msgstr "4:3 Aspect corect SNES, multipli întregi"
+
+#: src/snes9x.ui:948
+msgid "8*8:7*7 NTSC"
+msgstr "8*8:7*7 NTSC"
+
+#: src/snes9x.ui:951
+msgid "8*8:7*7 NTSC, integer multiples"
+msgstr "8*8:7*7 NTSC, multipli întregi"
+
+#: src/snes9x.ui:968
+msgid "Merge adjacent pairs"
+msgstr "Unește perechi adiacente"
+
+#: src/snes9x.ui:971
+msgid "Output directly"
+msgstr "Ieșire directă"
+
+#: src/snes9x.ui:974
+msgid "Scale low‑resolution screens"
+msgstr "Scalează ecrane cu rezoluție mică"
+
+#: src/snes9x.ui:985 src/snes9x.ui:1023
+msgid "1"
+msgstr "1"
+
+#: src/snes9x.ui:988 src/snes9x.ui:1026
+msgid "2"
+msgstr "2"
+
+#: src/snes9x.ui:991 src/snes9x.ui:1029
+msgid "3"
+msgstr "3"
+
+#: src/snes9x.ui:994 src/snes9x.ui:1032
+msgid "4"
+msgstr "4"
+
+#: src/snes9x.ui:997 src/snes9x.ui:1035
+msgid "5"
+msgstr "5"
+
+#: src/snes9x.ui:1000 src/snes9x.ui:1038
+msgid "1+"
+msgstr "1+"
+
+#: src/snes9x.ui:1003 src/snes9x.ui:1041
+msgid "2+"
+msgstr "2+"
+
+#: src/snes9x.ui:1006 src/snes9x.ui:1044
+msgid "3+"
+msgstr "3+"
+
+#: src/snes9x.ui:1009 src/snes9x.ui:1047
+msgid "4+"
+msgstr "4+"
+
+#: src/snes9x.ui:1012 src/snes9x.ui:1050
+msgid "5+"
+msgstr "5+"
+
+#: src/snes9x.ui:1061
+msgid "Toggle the menu bar"
+msgstr "Comută bara de meniu"
+
+#: src/snes9x.ui:1064
+msgid "Exit fullscreen mode"
+msgstr "Ieșire din modul ecran complet"
+
+#: src/snes9x.ui:1067 src/snes9x.ui:6932
+msgid "Quit SuperSnes9x"
+msgstr "Ieșire din SuperSnes9x"
+
+#: src/snes9x.ui:1078
+msgid "Timer‑based"
+msgstr "Bazat pe temporizator"
+
+#: src/snes9x.ui:1081
+msgid "Timer‑based with automatic frame-skipping"
+msgstr "Bazat pe temporizator cu săritură automată peste cadre"
+
+#: src/snes9x.ui:1084
+msgid "Sound buffer synchronization"
+msgstr "Sincronizare buffer sunet"
+
+#: src/snes9x.ui:1087
+msgid "No throttling, use vsync to control speed"
+msgstr "Fără limitare, folosește vsync pentru control viteză"
+
+#: src/snes9x.ui:1098
+msgid "48,000 Hz"
+msgstr "48,000 Hz"
+
+#: src/snes9x.ui:1101
+msgid "44,100 Hz"
+msgstr "44,100 Hz"
+
+#: src/snes9x.ui:1104
+msgid "32,000 Hz"
+msgstr "32,000 Hz"
+
+#: src/snes9x.ui:1107
+msgid "22,050 Hz"
+msgstr "22,050 Hz"
+
+#: src/snes9x.ui:1110
+msgid "16,000 Hz"
+msgstr "16,000 Hz"
+
+#: src/snes9x.ui:1113
+msgid "11,025 Hz"
+msgstr "11,025 Hz"
+
+#: src/snes9x.ui:1116
+msgid "8,000 Hz"
+msgstr "8,000 Hz"
+
+#: src/snes9x.ui:1119
+msgid "0 Hz"
+msgstr "0 Hz"
+
+#: src/snes9x.ui:1136
+msgid "16‑bit (GL_RGB)"
+msgstr "16‑bit (GL_RGB)"
+
+#: src/snes9x.ui:1139
+msgid "32‑bit (GL_BGRA)"
+msgstr "32‑bit (GL_BGRA)"
+
+#: src/snes9x.ui:1150
+msgid "Nearest"
+msgstr "Cel mai apropiat"
+
+#: src/snes9x.ui:1153
+msgid "Linear"
+msgstr "Liniar"
+
+#: src/snes9x.ui:1156
+msgid "Gaussian (correct)"
+msgstr "Gaussian (corect)"
+
+#: src/snes9x.ui:1159
+msgid "Cubic"
+msgstr "Cubic"
+
+#: src/snes9x.ui:1162
+msgid "Sinc"
+msgstr "Sinc"
+
+#: src/snes9x.ui:1175
+msgid "SuperSnes9x"
+msgstr "SuperSnes9x"
+
+#: src/snes9x.ui:1195
+msgid "_File"
+msgstr "_Fișier"
+
+#: src/snes9x.ui:1202
+msgid "_Open ROM Image…"
+msgstr "_Deschide imagine ROM…"
+
+#: src/snes9x.ui:1216
+msgid "Open Recent"
+msgstr "Deschide recente"
+
+#: src/snes9x.ui:1225
+msgid "Clear Recent Items"
+msgstr "Șterge elemente recente"
+
+#: src/snes9x.ui:1237
+msgid "Open with _NetPlay…"
+msgstr "Deschide cu _NetPlay…"
+
+#: src/snes9x.ui:1240
+msgid "Open a ROM to use with NetPlay"
+msgstr "Deschide un ROM pentru a-l folosi cu NetPlay"
+
+#: src/snes9x.ui:1251
+msgid "Open _MultiCart…"
+msgstr "Deschide _MultiCart…"
+
+#: src/snes9x.ui:1266
+msgid "_Load State"
+msgstr "_Încarcă stare"
+
+#: src/snes9x.ui:1276 src/snes9x.ui:1410
+msgid "Slot _0"
+msgstr "Slot _0"
+
+#: src/snes9x.ui:1285 src/snes9x.ui:1419
+msgid "Slot _1"
+msgstr "Slot _1"
+
+#: src/snes9x.ui:1294 src/snes9x.ui:1428
+msgid "Slot _2"
+msgstr "Slot _2"
+
+#: src/snes9x.ui:1303 src/snes9x.ui:1437
+msgid "Slot _3"
+msgstr "Slot _3"
+
+#: src/snes9x.ui:1312 src/snes9x.ui:1446
+msgid "Slot _4"
+msgstr "Slot _4"
+
+#: src/snes9x.ui:1321 src/snes9x.ui:1455
+msgid "Slot _5"
+msgstr "Slot _5"
+
+#: src/snes9x.ui:1330 src/snes9x.ui:1464
+msgid "Slot _6"
+msgstr "Slot _6"
+
+#: src/snes9x.ui:1339 src/snes9x.ui:1473
+msgid "Slot _7"
+msgstr "Slot _7"
+
+#: src/snes9x.ui:1348 src/snes9x.ui:1482
+msgid "Slot _8"
+msgstr "Slot _8"
+
+#: src/snes9x.ui:1357 src/snes9x.ui:1491
+msgid "Slot _9"
+msgstr "Slot _9"
+
+#: src/snes9x.ui:1372
+msgid "From _File…"
+msgstr "Din _Fișier…"
+
+#: src/snes9x.ui:1387
+msgid "_Undo Load State"
+msgstr "_Anulează încărcarea stării"
+
+#: src/snes9x.ui:1400
+msgid "_Save State"
+msgstr "_Salvează stare"
+
+#: src/snes9x.ui:1506
+msgid "To _File…"
+msgstr "În _Fișier…"
+
+#: src/snes9x.ui:1523
+msgid "Save SPC…"
+msgstr "Salvează SPC…"
+
+#: src/snes9x.ui:1540
+msgid "Show ROM _Info…"
+msgstr "Arată _Info ROM…"
+
+#: src/snes9x.ui:1557
+msgid "gtk-quit"
+msgstr "gtk-quit"
+
+#: src/snes9x.ui:1571
+msgid "_Emulation"
+msgstr "_Emulare"
+
+#: src/snes9x.ui:1578
+msgid "Run / _Continue"
+msgstr "Rulează / _Continuă"
+
+#: src/snes9x.ui:1589
+msgid "_Pause"
+msgstr "_Pauză"
+
+#: src/snes9x.ui:1607
+msgid "Load _Movie…"
+msgstr "Încarcă _film…"
+
+#: src/snes9x.ui:1619
+msgid "R_ecord Movie…"
+msgstr "În_registrează film…"
+
+#: src/snes9x.ui:1631
+msgid "_Stop Recording"
+msgstr "_Oprește înregistrarea"
+
+#: src/snes9x.ui:1643
+msgid "_Jump to Frame…"
+msgstr "_Sari la cadru…"
+
+#: src/snes9x.ui:1661
+msgid "Sy_nc Clients"
+msgstr "Sincro_nizează clienți"
+
+#: src/snes9x.ui:1678
+msgid "Reset"
+msgstr "Resetare"
+
+#: src/snes9x.ui:1690
+msgid "Soft _Reset"
+msgstr "Resetare _soft"
+
+#: src/snes9x.ui:1707
+msgid "_View"
+msgstr "_Vizualizare"
+
+#: src/snes9x.ui:1715
+msgid "_Toggle Menubar"
+msgstr "_Comută bara de meniu"
+
+#: src/snes9x.ui:1732
+msgid "_Change Size"
+msgstr "_Schimbă dimensiune"
+
+#: src/snes9x.ui:1746
+msgid "_1×"
+msgstr "_1×"
+
+#: src/snes9x.ui:1755
+msgid "_2×"
+msgstr "_2×"
+
+#: src/snes9x.ui:1764
+msgid "_3×"
+msgstr "_3×"
+
+#: src/snes9x.ui:1773
+msgid "_4×"
+msgstr "_4×"
+
+#: src/snes9x.ui:1782
+msgid "_5×"
+msgstr "_5×"
+
+#: src/snes9x.ui:1791
+msgid "_6×"
+msgstr "_6×"
+
+#: src/snes9x.ui:1800
+msgid "_7×"
+msgstr "_7×"
+
+#: src/snes9x.ui:1809
+msgid "_8×"
+msgstr "_8×"
+
+#: src/snes9x.ui:1818
+msgid "_9×"
+msgstr "_9×"
+
+#: src/snes9x.ui:1827
+msgid "1_0×"
+msgstr "1_0×"
+
+#: src/snes9x.ui:1844
+msgid "gtk-fullscreen"
+msgstr "gtk-fullscreen"
+
+#: src/snes9x.ui:1858
+msgid "_Options"
+msgstr "_Opțiuni"
+
+#: src/snes9x.ui:1867
+msgid "Controller Ports"
+msgstr "Porturi controller"
+
+#: src/snes9x.ui:1876
+msgid "SNES Port 1"
+msgstr "Port SNES 1"
+
+#: src/snes9x.ui:1886 src/snes9x.ui:1930
+msgid "Joypad"
+msgstr "Joypad"
+
+#: src/snes9x.ui:1895 src/snes9x.ui:1939
+msgid "Mouse"
+msgstr "Mouse"
+
+#: src/snes9x.ui:1905 src/snes9x.ui:1959
+msgid "Superscope"
+msgstr "Superscope"
+
+#: src/snes9x.ui:1920
+msgid "SNES Port 2"
+msgstr "Port SNES 2"
+
+#: src/snes9x.ui:1949
+msgid "Multitap"
+msgstr "Multitap"
+
+#: src/snes9x.ui:1970
+msgctxt "SNES port 2"
+msgid "None"
+msgstr "Niciunul"
+
+#: src/snes9x.ui:1996
+msgid "_Cheats…"
+msgstr "_Cheat-uri…"
+
+#: src/snes9x.ui:2010
+msgid "_Shader Parameters…"
+msgstr "_Parametri shader…"
+
+#: src/snes9x.ui:2026
+msgid "gtk-preferences"
+msgstr "gtk-preferințe"
+
+#: src/snes9x.ui:2068
+msgid "Open Multiple ROM Images (MultiCart)"
+msgstr "Deschide mai multe imagini ROM (MultiCart)"
+
+#: src/snes9x.ui:2131
+msgid "Slot A:"
+msgstr "Slot A:"
+
+#: src/snes9x.ui:2143
+msgid "Select an Image for Slot A"
+msgstr "Selectează o imagine pentru Slotul A"
+
+#: src/snes9x.ui:2167
+msgid "Slot B:"
+msgstr "Slot B:"
+
+#: src/snes9x.ui:2179
+msgid "Select an Image for Slot B"
+msgstr "Selectează o imagine pentru Slotul B"
+
+#: src/snes9x.ui:2211
+msgid "SuperSnes9x NetPlay"
+msgstr "SuperSnes9x NetPlay"
+
+#: src/snes9x.ui:2288
+msgid ""
+"The game chosen will be loaded before connecting. This field can be blank if"
+" the server will send the ROM image"
+msgstr ""
+"Jocul ales va fi încărcat înainte de conectare. Acest câmp poate rămâne gol "
+"dacă serverul trimite imaginea ROM"
+
+#: src/snes9x.ui:2303 src/snes9x.ui:4001 src/snes9x.ui:5116 src/snes9x.ui:5131
+#: src/snes9x.ui:5148 src/snes9x.ui:5165 src/snes9x.ui:5182
+msgid "Browse…"
+msgstr "Răsfoiește…"
+
+#: src/snes9x.ui:2325
+msgid "Clear entry"
+msgstr "Șterge textul introduse"
+
+#: src/snes9x.ui:2345
+msgid "<b>ROM Image</b>"
+msgstr "<b>Imagine ROM</b>"
+
+#: src/snes9x.ui:2374
+msgid "Connect to another computer"
+msgstr "Conectare la un alt calculator"
+
+#: src/snes9x.ui:2378
+msgid ""
+"Connect to another computer that is running SuperSnes9x NetPlay as a server"
+msgstr ""
+"Conectare la un alt calculator pe care rulează un server SuperSnes9x NetPlay"
+
+#: src/snes9x.ui:2398
+msgid "Name or IP address:"
+msgstr "Nume sau adresă IP:"
+
+#: src/snes9x.ui:2410
+msgid "Domain name or internet protocol address of a remote computer"
+msgstr "Numele de domeniu sau adresa IP a unui calculator la distanță"
+
+#: src/snes9x.ui:2426
+msgid "Port:"
+msgstr "Port:"
+
+#: src/snes9x.ui:2438
+msgid "Connect to specified TCP port on remote computer"
+msgstr "Conectare la portul TCP specificat pe calculatorul la distanță"
+
+#: src/snes9x.ui:2463
+msgid "Act as a server"
+msgstr "Acționează ca server"
+
+#: src/snes9x.ui:2467
+msgid ""
+"Host a game on this computer as Player 1, requiring extra throughput to "
+"support multitple users"
+msgstr ""
+"Găzduiește un joc pe acest calculator ca Jucătorul 1, fiind necesară o latime de bandă suplimentară pentru mai mulți utilizatori"
+
+#: src/snes9x.ui:2487
+msgid "<b>Server</b>"
+msgstr "<b>Server</b>"
+
+#: src/snes9x.ui:2517
+msgid "Sync using reset"
+msgstr "Sincronizare prin resetare"
+
+#: src/snes9x.ui:2521
+msgid ""
+"Reset the game when players join instead of transferring potentially "
+"unreliable freeze states"
+msgstr ""
+"Resetează jocul când se alătură jucători, în loc să transfere stări de îngheț potențial nesigure"
+
+#: src/snes9x.ui:2532
+msgid "Send ROM image to clients"
+msgstr "Trimite imaginea ROM către clienți"
+
+#: src/snes9x.ui:2536
+msgid ""
+"Send the running game image to players instead of requiring them to have "
+"their own copies"
+msgstr ""
+"Trimite imaginea jocului activ către jucători în loc să le ceri să aibă propriile copii"
+
+#: src/snes9x.ui:2554
+msgid "Default port:"
+msgstr "Port implicit:"
+
+#: src/snes9x.ui:2566
+msgid "TCP port used as a connection point for remote clients"
+msgstr "Portul TCP utilizat ca punct de conexiune pentru clienții la distanță"
+
+#: src/snes9x.ui:2598
+msgid "Ask server to pause when"
+msgstr "Solicită serverului să pună pauză când"
+
+#: src/snes9x.ui:2652
+msgid "<b>Settings</b>"
+msgstr "<b>Setări</b>"
+
+#: src/snes9x.ui:2680
+msgid "SuperSnes9x Preferences"
+msgstr "Preferințe SuperSnes9x"
+
+#: src/snes9x.ui:2796
+msgid "Use fullscreen on ROM open"
+msgstr "Folosește ecran complet la deschiderea ROM"
+
+#: src/snes9x.ui:2800
+msgid "Go to fullscreen mode immediately after opening a ROM"
+msgstr "Treci imediat la modul ecran complet după deschiderea unui ROM"
+
+#: src/snes9x.ui:2812
+msgid "Show local time"
+msgstr "Arată ora locală"
+
+#: src/snes9x.ui:2827
+msgid "Show frame rate"
+msgstr "Arată rata de cadre"
+
+#: src/snes9x.ui:2842
+msgid "Show pressed keys"
+msgstr "Arată tastele apăsate"
+
+#: src/snes9x.ui:2857
+msgid "Show fast‑forward and pause indicators"
+msgstr "Arată indicatorii pentru avansare rapidă și pauză"
+
+#: src/snes9x.ui:2872
+msgid "Use overscanned height"
+msgstr "Folosește înălțimea de overscan"
+
+#: src/snes9x.ui:2876
+msgid "Use SNES extended height. Will probably cause letterboxing"
+msgstr ""
+"Folosește înălțimea extinsă a SNES. Probabil va cauza bare negre sus și jos (letterboxing)"
+
+#: src/snes9x.ui:2898
+msgid "On‑screen display size:"
+msgstr "Dimensiune afișaj pe ecran:"
+
+#: src/snes9x.ui:2909
+msgid "The size of on‑screen display messages in pixels"
+msgstr "Dimensiunea în pixeli a mesajelor afișate pe ecran"
+
+#: src/snes9x.ui:2940
+msgid "Change fullscreen resolution:"
+msgstr "Schimbă rezoluția pe ecran complet:"
+
+#: src/snes9x.ui:2944
+msgid ""
+"Changes the screen resolution when running SuperSnes9x in fullscreen mode"
+msgstr ""
+"Schimbă rezoluția ecranului atunci când rulați SuperSnes9x în modul ecran complet"
+
+#: src/snes9x.ui:2989
+msgid "Basic Settings"
+msgstr "Setări de bază"
+
+#: src/snes9x.ui:3030
+msgid "Scale image to fit window"
+msgstr "Scalează imaginea pentru a se potrivi în fereastră"
+
+#: src/snes9x.ui:3034
+msgid "Scales the image so no black bars are present"
+msgstr "Scalează imaginea astfel încât să nu existe bare negre"
+
+#: src/snes9x.ui:3054
+msgid "Aspect ratio:"
+msgstr "Raport de aspect:"
+
+#: src/snes9x.ui:3089
+msgid "Maintain aspect ratio"
+msgstr "Menține raportul de aspect"
+
+#: src/snes9x.ui:3093
+msgid "Scales the image as large as possible without distortion"
+msgstr "Scalează imaginea cât mai mult posibil fără a o distorsiona"
+
+#: src/snes9x.ui:3108
+msgid "Allows scaling and filtering to use multiple processors"
+msgstr "Permite scalării și filtrării să folosească mai multe procesoare"
+
+#: src/snes9x.ui:3111
+msgid "Use"
+msgstr "Folosește"
+
+#: src/snes9x.ui:3170
+msgid "High‑resolution effect:"
+msgstr "Efect rezoluție înaltă:"
+
+#: src/snes9x.ui:3213
+msgid "Apply scaling filter:"
+msgstr "Aplică filtru de scalare:"
+
+#: src/snes9x.ui:3281
+msgid "Video preset:"
+msgstr "Presetare video:"
+
+#: src/snes9x.ui:3295
+msgid "Composite"
+msgstr "Compozit"
+
+#: src/snes9x.ui:3309
+msgid "S‑Video"
+msgstr "S-Video"
+
+#: src/snes9x.ui:3323
+msgid "RGB"
+msgstr "RGB"
+
+#: src/snes9x.ui:3337
+msgid "Monochrome"
+msgstr "Monocrom"
+
+#: src/snes9x.ui:3378
+msgid "Artifacts:"
+msgstr "Artefacte:"
+
+#: src/snes9x.ui:3393
+msgid "Sharpness:"
+msgstr "Claritate:"
+
+#: src/snes9x.ui:3408
+msgid "Brightness:"
+msgstr "Luminozitate:"
+
+#: src/snes9x.ui:3423
+msgid "Contrast:"
+msgstr "Contrast:"
+
+#: src/snes9x.ui:3438
+msgid "Saturation:"
+msgstr "Saturație:"
+
+#: src/snes9x.ui:3453
+msgid "Hue:"
+msgstr "Nuanță:"
+
+#: src/snes9x.ui:3654
+msgid "Gamma:"
+msgstr "Gamma:"
+
+#: src/snes9x.ui:3669
+msgid "Fringing:"
+msgstr "Fringing:"
+
+#: src/snes9x.ui:3684
+msgid "Bleed:"
+msgstr "Bleed (Scurgere de culoare):"
+
+#: src/snes9x.ui:3699
+msgid "Resolution:"
+msgstr "Rezoluție:"
+
+#: src/snes9x.ui:3729
+msgid "Merge odd and even fields"
+msgstr "Îmbină câmpurile pare și impare"
+
+#: src/snes9x.ui:3751 src/snes9x.ui:3810
+msgid "Scanline intensity:"
+msgstr "Intensitate scanline-uri:"
+
+#: src/snes9x.ui:3855
+msgid "Scaling"
+msgstr "Scalare"
+
+#: src/snes9x.ui:3897
+msgid "Bilinear‐filter output"
+msgstr "Ieșire filtru bilinear"
+
+#: src/snes9x.ui:3912
+msgid "Use best settings for FreeSync/G‑Sync when in fullscreen"
+msgstr ""
+"Folosește cele mai bune setări pentru FreeSync/G-Sync când ești pe ecran complet"
+
+#: src/snes9x.ui:3933
+msgid "Sync to vertical blank"
+msgstr "Sincronizare la golul vertical (V-Sync)"
+
+#: src/snes9x.ui:3937
+msgid "Sync the image to the vertical retrace to stop tearing"
+msgstr ""
+"Sincronizează imaginea cu cursa inversă pe verticală pentru a opri ruperea imaginii (tearing)"
+
+#: src/snes9x.ui:3949
+msgid "Reduce input lag"
+msgstr "Redu lagul de intrare"
+
+#: src/snes9x.ui:3953
+msgid ""
+"Sync the program with the video output after every displayed frame to reduce"
+" input latency"
+msgstr ""
+"Sincronizează programul cu ieșirea video după fiecare cadru afișat pentru a reduce latența de intrare"
+
+#: src/snes9x.ui:3969
+msgid "Shader:"
+msgstr "Shader:"
+
+#: src/snes9x.ui:4033
+msgid "Force an inverted byte‑ordering"
+msgstr "Forțează o ordine inversată a octeților"
+
+#: src/snes9x.ui:4037
+msgid ""
+"Forces a swapped byte‑ordering for cases where the system’s endian is used "
+"instead of the video card"
+msgstr ""
+"Forțează inversarea ordinii octeților în cazurile în care se folosește endianness-ul sistemului în locul plăcii video"
+
+#: src/snes9x.ui:4061
+msgid "Hardware Acceleration"
+msgstr "Accelerare hardware"
+
+#: src/snes9x.ui:4090
+msgid "Display"
+msgstr "Afișaj"
+
+#: src/snes9x.ui:4143
+msgid "Sound driver:"
+msgstr "Driver sunet:"
+
+#: src/snes9x.ui:4178
+msgid "Automatically adjust input rate to display"
+msgstr "Ajustează automat rata de intrare la cea a afișajului"
+
+#: src/snes9x.ui:4182
+msgid "Sets the correct input rate based on the display’s refresh rate"
+msgstr ""
+"Setează rata de intrare corectă pe baza ratei de împrospătare a afișajului"
+
+#: src/snes9x.ui:4194
+msgid "Dynamic rate control"
+msgstr "Control dinamic al ratei"
+
+#: src/snes9x.ui:4198
+msgid "Smooth out slight hiccups in sound input rate"
+msgstr "Netezește micile întreruperi din rata de intrare a sunetului"
+
+#: src/snes9x.ui:4209
+msgid "Mute sound output"
+msgstr "Dezactivează ieșirea sunetului"
+
+#: src/snes9x.ui:4213
+msgid "Disables output of sound"
+msgstr "Dezactivează complet redarea sunetului"
+
+#: src/snes9x.ui:4225
+msgid "Mute sound when using turbo or rewind"
+msgstr "Dezactivează sunetul când se folosește turbo sau rewind"
+
+#: src/snes9x.ui:4229
+msgid "Disables output of sound when using turbo or rewind"
+msgstr ""
+"Dezactivează redarea sunetului atunci când se folosește modul turbo sau derularea înapoi (rewind)"
+
+#: src/snes9x.ui:4252
+msgid "Playback rate:"
+msgstr "Rată de redare:"
+
+#: src/snes9x.ui:4310
+msgid "Buffer size:"
+msgstr "Dimensiune buffer:"
+
+#: src/snes9x.ui:4324
+msgid "Dynamic rate limit:"
+msgstr "Limită dinamică a ratei:"
+
+#: src/snes9x.ui:4369
+msgid "Input rate:"
+msgstr "Rată de intrare:"
+
+#: src/snes9x.ui:4382
+msgid ""
+"Adjust to produce more or less data. Decrease the rate if experiencing "
+"crackling. Increase the rate if experiencing frame rate stuttering. Best "
+"used with the “Sound buffer synchronization” option."
+msgstr ""
+"Ajustează pentru a produce mai multe sau mai puține date. Scade rata dacă auzi pocnituri. Crește rata dacă imaginea are sacadări. Funcționează cel mai bine împreună cu opțiunea „Sincronizare buffer sunet”."
+
+#: src/snes9x.ui:4432
+msgid "Video rate:"
+msgstr "Rată video:"
+
+#: src/snes9x.ui:4469
+msgid "<b>Sound Settings</b>"
+msgstr "<b>Setări sunet</b>"
+
+#: src/snes9x.ui:4503 src/snes9x.ui:8730
+msgid "Sound"
+msgstr "Sunet"
+
+#: src/snes9x.ui:4561
+msgid "Throttling method:"
+msgstr "Metodă de reglare a vitezei (Throttling):"
+
+#: src/snes9x.ui:4603
+msgid "<b>Speed Control</b>"
+msgstr "<b>Control viteză</b>"
+
+#: src/snes9x.ui:4641
+msgid "Rewind buffer size (MB):"
+msgstr "Dimensiune buffer rewind (MB):"
+
+#: src/snes9x.ui:4683
+msgid "Number of frames between rewind snapshots:"
+msgstr "Număr de cadre între instantaneele (snapshots) de derulare înapoi:"
+
+#: src/snes9x.ui:4724
+msgid "<b>Rewind Settings</b>"
+msgstr "<b>Setări rewind</b>"
+
+#: src/snes9x.ui:4755
+msgid "Allow invalid VRAM access"
+msgstr "Permite acces VRAM invalid"
+
+#: src/snes9x.ui:4759
+msgid ""
+"Allows ROM hacks to write to screen at the wrong time. Only use if you know "
+"your ROM hack expects this"
+msgstr ""
+"Permite hack-urilor de ROM să scrie pe ecran la momentul nepotrivit. Folosiți doar dacă știți că hack-ul dvs. de ROM cere acest lucru"
+
+#: src/snes9x.ui:4769
+msgid "Allow opposing dpad directions"
+msgstr "Permite direcții opuse pe dpad"
+
+#: src/snes9x.ui:4773
+msgid "Let left and right or up and down be pressed at the same time"
+msgstr ""
+"Permite ca tastele stânga-dreapta sau sus-jos să fie apăsate în același timp"
+
+#: src/snes9x.ui:4784
+msgid "Overclock CPU"
+msgstr "Overclock CPU"
+
+#: src/snes9x.ui:4788
+msgid "Reduces slowdown, but has potential to break games"
+msgstr "Reduce încetinirile, dar are potențialul de a deregla funcționarea jocurilor"
+
+#: src/snes9x.ui:4799
+msgid "Remove sprite limit"
+msgstr "Elimină limita de sprite-uri"
+
+#: src/snes9x.ui:4803
+msgid "Reduces flicker, but may cause graphical artifacts"
+msgstr "Reduce sfarâiala (flicker), dar poate provoca artefacte grafice"
+
+#: src/snes9x.ui:4814
+msgid "Redirect echo buffer overflow"
+msgstr "Redirecționează depășirea bufferului de ecou (echo buffer)"
+
+#: src/snes9x.ui:4818
+msgid "Allows old addmusic hacks to work, but will likely hurt other games"
+msgstr ""
+"Permite hack-urilor vechi de tip addmusic să funcționeze, dar probabil va afecta alte jocuri"
+
+#: src/snes9x.ui:4836
+msgid "SuperFX clock speed %:"
+msgstr "Viteză ceas SuperFX %:"
+
+#: src/snes9x.ui:4875
+msgid "Gaussian is the correct behavior for SNES hardware"
+msgstr "Filtrarea Gaussiană este comportamentul corect pentru hardware-ul SNES"
+
+#: src/snes9x.ui:4882
+msgid "Sound filter:"
+msgstr "Filtru sunet:"
+
+#: src/snes9x.ui:4919
+msgid "<b>Hacks</b>"
+msgstr "<b>Hack-uri / Optimizări neoficiale</b>"
+
+#: src/snes9x.ui:4961 src/snes9x.ui:7147
+msgid "Emulation"
+msgstr "Emulare"
+
+#: src/snes9x.ui:5202
+msgid "SRAM:"
+msgstr "SRAM:"
+
+#: src/snes9x.ui:5214
+msgid "Save states:"
+msgstr "Stări salvate:"
+
+#: src/snes9x.ui:5228
+msgid "Cheats:"
+msgstr "Cheat-uri:"
+
+#: src/snes9x.ui:5242
+msgid "Patches:"
+msgstr "Patch-uri:"
+
+#: src/snes9x.ui:5256
+msgid "Exports:"
+msgstr "Exporturi:"
+
+#: src/snes9x.ui:5280
+msgid "<b>Game Data Locations</b>"
+msgstr "<b>Locații date joc</b>"
+
+#: src/snes9x.ui:5313
+msgid "Save SRAM:"
+msgstr "Salvează SRAM:"
+
+#: src/snes9x.ui:5325
+msgid ""
+"Automatically save the game’s SRAM at this interval. Setting this to 0 will "
+"only save when quitting or changing ROMs"
+msgstr ""
+"Salvează automat SRAM-ul jocului la acest interval. Setarea la 0 va salva doar la închiderea jocului sau la schimbarea ROM-ului"
+
+#: src/snes9x.ui:5355
+msgid "<b>Automatic Saving</b>"
+msgstr "<b>Salvare automată</b>"
+
+#: src/snes9x.ui:5392
+msgid "Files"
+msgstr "Fișiere"
+
+#: src/snes9x.ui:5423
+msgid "<b>Joypad:</b>"
+msgstr "<b>Joypad:</b>"
+
+#: src/snes9x.ui:5464
+msgid "_Reset"
+msgstr "_Resetare"
+
+#: src/snes9x.ui:5492
+msgid "Swap with:"
+msgstr "Schimbă cu:"
+
+#: src/snes9x.ui:5520
+msgid "_Swap"
+msgstr "_Schimbă"
+
+#: src/snes9x.ui:5542
+msgid "Use _modifier keys (Ctrl, Shift, Alt) directly"
+msgstr "Folosește tastele _modificatoare (Ctrl, Shift, Alt) în mod direct"
+
+#: src/snes9x.ui:5546
+msgid "Allow using modifier keys as independent keys instead of modifiers"
+msgstr ""
+"Permite utilizarea tastelor modificatoare ca taste independente în loc de modificatori"
+
+#: src/snes9x.ui:5581
+msgid "Up"
+msgstr "Sus"
+
+#: src/snes9x.ui:5593
+msgid "Down"
+msgstr "Jos"
+
+#: src/snes9x.ui:5607
+msgid "Left"
+msgstr "Stânga"
+
+#: src/snes9x.ui:5621
+msgid "Right"
+msgstr "Dreapta"
+
+#: src/snes9x.ui:5635
+msgid "Start"
+msgstr "Start"
+
+#: src/snes9x.ui:5649
+msgid "Select"
+msgstr "Select"
+
+#: src/snes9x.ui:5790 src/snes9x.ui:6020 src/snes9x.ui:6232
+msgid "A"
+msgstr "A"
+
+#: src/snes9x.ui:5802 src/snes9x.ui:6032 src/snes9x.ui:6244
+msgid "B"
+msgstr "B"
+
+#: src/snes9x.ui:5816 src/snes9x.ui:6046 src/snes9x.ui:6258
+msgid "X"
+msgstr "X"
+
+#: src/snes9x.ui:5830 src/snes9x.ui:6060 src/snes9x.ui:6272
+msgid "Y"
+msgstr "Y"
+
+#: src/snes9x.ui:5844 src/snes9x.ui:6074 src/snes9x.ui:6286
+msgid "L"
+msgstr "L"
+
+#: src/snes9x.ui:5858 src/snes9x.ui:6088 src/snes9x.ui:6300
+msgid "R"
+msgstr "R"
+
+#: src/snes9x.ui:5992
+msgid "Buttons"
+msgstr "Butoane"
+
+#: src/snes9x.ui:6433
+msgid "<b>Sticky</b>"
+msgstr "<b>Sticky (Taste lipicioase)</b>"
+
+#: src/snes9x.ui:6449
+msgid "<b>Turbo</b>"
+msgstr "<b>Turbo</b>"
+
+#: src/snes9x.ui:6468
+msgid "Turbo / Sticky Buttons"
+msgstr "Configurare butoane Turbo / Sticky"
+
+#: src/snes9x.ui:6505
+msgid "Set new axis bindings at:"
+msgstr "Setează asocierile pentru axe noi la:"
+
+#: src/snes9x.ui:6517
+msgid ""
+"Changes the amount a joystick should be tilted to register a button press"
+msgstr ""
+"Modifică gradul de înclinare pe care trebuie să îl aibă un joystick pentru a înregistra apăsarea unui buton"
+
+#: src/snes9x.ui:6536
+msgid "percent"
+msgstr "procent"
+
+#: src/snes9x.ui:6553
+msgid "<b>Joystick Axis Threshold</b>"
+msgstr "<b>Prag de sensibilitate axă joystick</b>"
+
+#: src/snes9x.ui:6590
+msgid "Center all axes on all joysticks and press Calibrate."
+msgstr ""
+"Centrați toate axele pe toate joystick-urile și apăsați pe „Calibrează”."
+
+#: src/snes9x.ui:6605
+msgid "Cali_brate"
+msgstr "Cali_brează"
+
+#: src/snes9x.ui:6638
+msgid "<b>Calibration</b>"
+msgstr "<b>Calibrare controler</b>"
+
+#: src/snes9x.ui:6659
+msgid "Joystick Options"
+msgstr "Opțiuni joystick"
+
+#: src/snes9x.ui:6677 src/snes9x.ui:9029
+msgid ""
+"<small>Click an entry and then press the desired keys or joystick button\n"
+"<tt>Escape</tt>: Move to next  <tt>Shift+Escape</tt>: Clear selected</small>"
+msgstr ""
+"<small>Faceți clic pe o intrare și apoi apăsați tastele dorite sau butonul de joystick\n"
+"<tt>Escape</tt>: Mergi la următorul  <tt>Shift+Escape</tt>: Șterge selecția</small>"
+
+#: src/snes9x.ui:6715
+msgid "Joypads"
+msgstr "Joypad-uri"
+
+#: src/snes9x.ui:6742
+msgid "<b>SuperSnes9x Emulator Shortcut Keys</b>"
+msgstr "<b>Taste rapide pentru emulatorul SuperSnes9x</b>"
+
+#: src/snes9x.ui:6793
+msgid "Soft reset"
+msgstr "Resetare soft"
+
+#: src/snes9x.ui:6807
+msgid "Hardware reset"
+msgstr "Resetare hardware"
+
+#: src/snes9x.ui:6821
+msgid "Increase frame time"
+msgstr "Crește timpul cadrului"
+
+#: src/snes9x.ui:6835
+msgid "Decrease frame time"
+msgstr "Scade timpul cadrului"
+
+#: src/snes9x.ui:6849
+msgid "Increase frame rate"
+msgstr "Crește rata de cadre"
+
+#: src/snes9x.ui:6863
+msgid "Decrease frame rate"
+msgstr "Scade rata de cadre"
+
+#: src/snes9x.ui:6877
+msgid "Pause"
+msgstr "Pauză"
+
+#: src/snes9x.ui:6891
+msgid "Toggle turbo"
+msgstr "Comută starea turbo"
+
+#: src/snes9x.ui:6905
+msgid "Enable turbo"
+msgstr "Activează modul turbo"
+
+#: src/snes9x.ui:6920
+msgid "Open ROM"
+msgstr "Deschide ROM"
+
+#: src/snes9x.ui:7179
+msgid "Toggle BG layer 0"
+msgstr "Comută stratul de fundal (BG) 0"
+
+#: src/snes9x.ui:7191
+msgid "Toggle BG layer 1"
+msgstr "Comută stratul de fundal (BG) 1"
+
+#: src/snes9x.ui:7205
+msgid "Toggle BG layer 2"
+msgstr "Comută stratul de fundal (BG) 2"
+
+#: src/snes9x.ui:7219
+msgid "Toggle BG layer 3"
+msgstr "Comută stratul de fundal (BG) 3"
+
+#: src/snes9x.ui:7233
+msgid "Toggle sprites"
+msgstr "Comută stratul de sprite-uri"
+
+#: src/snes9x.ui:7247
+msgid "Toggle forced backdrop color"
+msgstr "Comută forțarea culorii de fundal din spate"
+
+#: src/snes9x.ui:7261
+msgid "Screenshot"
+msgstr "Captură de ecran"
+
+#: src/snes9x.ui:7275
+msgid "Toggle fullscreen"
+msgstr "Comută ecran complet"
+
+#: src/snes9x.ui:7439
+msgid "Graphics"
+msgstr "Grafică"
+
+#: src/snes9x.ui:7476
+msgid "Save current slot"
+msgstr "Salvează în slotul curent"
+
+#: src/snes9x.ui:7509
+msgid "Load current slot"
+msgstr "Încarcă din slotul curent"
+
+#: src/snes9x.ui:7542
+msgid "Increment and save"
+msgstr "Crește slotul și salvează"
+
+#: src/snes9x.ui:7575
+msgid "Decrement and load"
+msgstr "Scade slotul și încarcă"
+
+#: src/snes9x.ui:7608
+msgid "Increment slot"
+msgstr "Crește numărul slotului"
+
+#: src/snes9x.ui:7641
+msgid "Decrement slot"
+msgstr "Scade numărul slotului"
+
+#: src/snes9x.ui:7685
+msgid "<b>Quick save state</b>"
+msgstr "<b>Salvare rapidă stare</b>"
+
+#: src/snes9x.ui:7700
+msgid "<b>Quick load state</b>"
+msgstr "<b>Încărcare rapidă stare</b>"
+
+#: src/snes9x.ui:7715 src/snes9x.ui:7855
+msgid "Slot 0"
+msgstr "Slot 0"
+
+#: src/snes9x.ui:7729 src/snes9x.ui:7871
+msgid "Slot 1"
+msgstr "Slot 1"
+
+#: src/snes9x.ui:7743 src/snes9x.ui:7887
+msgid "Slot 2"
+msgstr "Slot 2"
+
+#: src/snes9x.ui:7757 src/snes9x.ui:7903
+msgid "Slot 3"
+msgstr "Slot 3"
+
+#: src/snes9x.ui:7771 src/snes9x.ui:7919
+msgid "Slot 4"
+msgstr "Slot 4"
+
+#: src/snes9x.ui:7785 src/snes9x.ui:7935
+msgid "Slot 5"
+msgstr "Slot 5"
+
+#: src/snes9x.ui:7799 src/snes9x.ui:7951
+msgid "Slot 6"
+msgstr "Slot 6"
+
+#: src/snes9x.ui:7813 src/snes9x.ui:7967
+msgid "Slot 7"
+msgstr "Slot 7"
+
+#: src/snes9x.ui:7827 src/snes9x.ui:7983
+msgid "Slot 8"
+msgstr "Slot 8"
+
+#: src/snes9x.ui:7841 src/snes9x.ui:7999
+msgid "Slot 9"
+msgstr "Slot 9"
+
+#: src/snes9x.ui:8438
+msgid "Toggle sound channel 0"
+msgstr "Comută canalul de sunet 0"
+
+#: src/snes9x.ui:8450
+msgid "Toggle sound channel 1"
+msgstr "Comută canalul de sunet 1"
+
+#: src/snes9x.ui:8464
+msgid "Toggle sound channel 2"
+msgstr "Comută canalul de sunet 2"
+
+#: src/snes9x.ui:8478
+msgid "Toggle sound channel 3"
+msgstr "Comută canalul de sunet 3"
+
+#: src/snes9x.ui:8492
+msgid "Toggle sound channel 4"
+msgstr "Comută canalul de sunet 4"
+
+#: src/snes9x.ui:8506
+msgid "Toggle sound channel 5"
+msgstr "Comută canalul de sunet 5"
+
+#: src/snes9x.ui:8520
+msgid "Toggle sound channel 6"
+msgstr "Comută canalul de sunet 6"
+
+#: src/snes9x.ui:8534
+msgid "Toggle sound channel 7"
+msgstr "Comută canalul de sunet 7"
+
+#: src/snes9x.ui:8548
+msgid "Toggle all sound channels"
+msgstr "Comută toate canalele de sunet"
+
+#: src/snes9x.ui:8753
+msgid "Seek to frame"
+msgstr "Sari la cadrul"
+
+#: src/snes9x.ui:8768
+msgid "Load Movie"
+msgstr "Încarcă film"
+
+#: src/snes9x.ui:8783
+msgid "Stop movie recording"
+msgstr "Oprește înregistrarea filmului"
+
+#: src/snes9x.ui:8798
+msgid "Begin movie recording"
+msgstr "Începe înregistrarea filmului"
+
+#: src/snes9x.ui:8813
+msgid "Save SPC"
+msgstr "Salvează SPC"
+
+#: src/snes9x.ui:8913
+msgid "Swap controllers 1 & 2"
+msgstr "Schimbă controlerele 1 și 2"
+
+#: src/snes9x.ui:8944
+msgid "Rewind"
+msgstr "Tua înapoi (Rewind)"
+
+#: src/snes9x.ui:8975
+msgid "Capture/release mouse"
+msgstr "Blochează/eliberează cursorul mouse-ului"
+
+#: src/snes9x.ui:9011
+msgid "Misc"
+msgstr "Diverse"
+
+#: src/snes9x.ui:9067
+msgid "Shortcuts"
+msgstr "Scurtături / Taste rapide"
+
+#: src/snes9x.ui:9106
+msgid "Pause emulation when switching away from SuperSnes9x"
+msgstr "Pune pauză la emulare când comutați fereastra de la SuperSnes9x"
+
+#: src/snes9x.ui:9120
+msgid "Force‑enable button and menu icons"
+msgstr "Forțează activarea pictogramelor pentru butoane și meniuri"
+
+#: src/snes9x.ui:9141
+msgid "The <tt>Esc</tt> key should:"
+msgstr "Tasta <tt>Esc</tt> ar trebui să:"
+
+#: src/snes9x.ui:9185
+msgid "Initial background:"
+msgstr "Fundal inițial:"
+
+#: src/snes9x.ui:9226
+msgid "<b>Window Behavior</b>"
+msgstr "<b>Comportament fereastră</b>"
+
+#: src/snes9x.ui:9256
+msgid "Prevent the screensaver from activating"
+msgstr "Împiedică activarea economizorului de ecran (screensaver)"
+
+#: src/snes9x.ui:9276
+msgid "<b>Screensaver</b>"
+msgstr "<b>Economizor de ecran (Screensaver)</b>"
+
+#: src/snes9x.ui:9310
+msgid "UI"
+msgstr "Interfață grafică (UI)"
+
+#: src/snes9x.ui:9344
+msgid ""
+"  SuperSnes9x – A Portable Super Nintendo Entertainment System™ Emulator\n"
+"\n"
+"  Snes9x homepage: http://www.snes9x.com/\n"
+"  SuperSnes9x source code: https://github.com/shanytc/snes9x/\n"
+"\n"
+"  Permission to use, copy, modify and/or distribute SuperSnes9x in both binary\n"
+"  and source form, for non‑commercial purposes, is hereby granted without\n"
+"  fee, providing that this license information and copyright notice appear\n"
+"  with all copies and any derived work.\n"
+"\n"
+"  This software is provided ‘as‑is’, without any express or implied\n"
+"  warranty. In no event shall the authors be held liable for any damages\n"
+"  arising from the use of this software or it’s derivatives.\n"
+"\n"
+"  SuperSnes9x is freeware for PERSONAL USE only. Commercial users should\n"
+"  seek permission of the copyright holders first. Commercial use includes,\n"
+"  but is not limited to, charging money for SuperSnes9x or software derived from\n"
+"  SuperSnes9x, including SuperSnes9x or derivatives in commercial game bundles, and/"
+"or\n"
+"  using SuperSnes9x as a promotion for your commercial product.\n"
+"\n"
+"  The copyright holders request that bug fixes and improvements to the code\n"
+"  should be forwarded to them so everyone can benefit from the "
+"modifications\n"
+"  in future versions.\n"
+"\n"
+"  Super NES and Super Nintendo Entertainment System are trademarks of\n"
+"  Nintendo Co., Limited and its subsidiary companies."
+msgstr ""
+"  SuperSnes9x – Un emulator portabil pentru Super Nintendo Entertainment System™\n"
+"\n"
+"  Pagina oficială Snes9x: http://www.snes9x.com/\n"
+"  Codul sursă SuperSnes9x: https://github.com/shanytc/snes9x/\n"
+"\n"
+"  Permisiunea de a utiliza, copia, modifica și/sau distribui SuperSnes9x atât în format binar,\n"
+"  cât și sub formă de sursă, în scopuri necomerciale, este acordată prin prezenta fără\n"
+"  taxe, cu condiția ca aceste informații de licență și notificarea de copyright să apară\n"
+"  în toate copiile și în orice lucrare derivată.\n"
+"\n"
+"  Acest software este furnizat „ca atare” („as-is”), fără nicio garanție expresă sau implicită.\n"
+"  În niciun caz autorii nu vor fi trași la răspundere pentru eventualele daune\n"
+"  rezultate din utilizarea acestui software sau a derivatelor sale.\n"
+"\n"
+"  SuperSnes9x este freeware doar pentru UZ PERSONAL. Utilizatorii comerciali ar trebui să\n"
+"  solicite mai întâi permisiunea titularilor de drepturi de autor. Utilizarea comercială include,\n"
+"  dar nu se limitează la: perceperea de bani pentru SuperSnes9x sau software derivat din\n"
+"  SuperSnes9x, includerea SuperSnes9x sau a derivatelor în pachete comerciale de jocuri și/sau\n"
+"  utilizarea SuperSnes9x ca promovare pentru produsul dvs. comercial.\n"
+"\n"
+"  Titularii de drepturi de autor solicită ca remedierile de bug-uri și îmbunătățirile aduse codului\n"
+"  să le fie trimise, astfel încât toată lumea să poată beneficia de aceste modificări\n"
+"  în versiunile viitoare.\n"
+"\n"
+"  Super NES și Super Nintendo Entertainment System sunt mărci comerciale ale\n"
+"  Nintendo Co., Limited și ale companiilor sale subsidiare."
+
+# === Win32 strings (added by i18n/extract_strings.py) ===
+#: win32/rsrc/snes9x.rc
+msgid "!= (Not Equal To)"
+msgstr "!= (Diferit de)"
+
+#: win32/wlanguage.h
+msgid "(Not Available)"
+msgstr "(Nu este disponibil)"
+
+#: win32/wlanguage.h
+msgid "(not stored in movie file)"
+msgstr "(nu este stocat în fișierul de film)"
+
+#: win32/rsrc/snes9x.rc
+msgid "(restart required)"
+msgstr "(necesită repornire)"
+
+#: win32/rsrc/snes9x.rc
+msgid "0 (off)"
+msgstr "0 (oprit)"
+
+#: win32/rsrc/snes9x.rc
+msgid "1 byte"
+msgstr "1 octet"
+
+#: win32/rsrc/snes9x.rc
+msgid "1 frame"
+msgstr "1 cadru"
+
+#: win32/rsrc/snes9x.rc
+msgid "10x"
+msgstr "10x"
+
+#: win32/rsrc/snes9x.rc
+msgid "112ms"
+msgstr "112ms"
+
+#: win32/rsrc/snes9x.rc
+msgid "11KHz"
+msgstr "11KHz"
+
+#: win32/rsrc/snes9x.rc
+msgid "128ms"
+msgstr "128ms"
+
+#: win32/rsrc/snes9x.rc
+msgid "144ms"
+msgstr "144ms"
+
+#: win32/rsrc/snes9x.rc
+msgid "160ms"
+msgstr "160ms"
+
+#: win32/rsrc/snes9x.rc
+msgid "16KHz"
+msgstr "16KHz"
+
+#: win32/rsrc/snes9x.rc
+msgid "16ms"
+msgstr "16ms"
+
+#: win32/rsrc/snes9x.rc
+msgid "176ms"
+msgstr "176ms"
+
+#: win32/rsrc/snes9x.rc
+msgid "192ms"
+msgstr "192ms"
+
+#: win32/rsrc/snes9x.rc
+msgid "1x"
+msgstr "1x"
+
+#: win32/rsrc/snes9x.rc
+msgid "2 bytes"
+msgstr "2 octeți"
+
+#: win32/rsrc/snes9x.rc
+msgid "2 frames"
+msgstr "2 cadre"
+
+#: win32/rsrc/snes9x.rc
+msgid "208ms"
+msgstr "208ms"
+
+#: win32/rsrc/snes9x.rc
+msgid "22KHz"
+msgstr "22KHz"
+
+#: win32/rsrc/snes9x.rc
+msgid "2x"
+msgstr "2x"
+
+#: win32/rsrc/snes9x.rc
+msgid "3 bytes"
+msgstr "3 octeți"
+
+#: win32/rsrc/snes9x.rc
+msgid "3 frames"
+msgstr "3 cadre"
+
+#: win32/rsrc/snes9x.rc
+msgid "30KHz"
+msgstr "30KHz"
+
+#: win32/rsrc/snes9x.rc
+msgid "32KHz"
+msgstr "32KHz"
+
+#: win32/rsrc/snes9x.rc
+msgid "32ms"
+msgstr "32ms"
+
+#: win32/rsrc/snes9x.rc
+msgid "35KHz"
+msgstr "35KHz"
+
+#: win32/rsrc/snes9x.rc
+msgid "3x"
+msgstr "3x"
+
+#: win32/rsrc/snes9x.rc
+msgid "4 bytes"
+msgstr "4 octeți"
+
+#: win32/rsrc/snes9x.rc
+msgid "4 frames"
+msgstr "4 cadre"
+
+#: win32/rsrc/snes9x.rc
+msgid "44KHz"
+msgstr "44KHz"
+
+#: win32/rsrc/snes9x.rc
+msgid "48KHz"
+msgstr "48KHz"
+
+#: win32/rsrc/snes9x.rc
+msgid "48ms"
+msgstr "48ms"
+
+#: win32/rsrc/snes9x.rc
+msgid "4x"
+msgstr "4x"
+
+#: win32/rsrc/snes9x.rc
+msgid "5x"
+msgstr "5x"
+
+#: win32/rsrc/snes9x.rc
+msgid "64ms"
+msgstr "64ms"
+
+#: win32/rsrc/snes9x.rc
+msgid "6x"
+msgstr "6x"
+
+#: win32/rsrc/snes9x.rc
+msgid "7x"
+msgstr "7x"
+
+#: win32/rsrc/snes9x.rc
+msgid "80ms"
+msgstr "80ms"
+
+#: win32/rsrc/snes9x.rc
+msgid "8KHz"
+msgstr "8KHz"
+
+#: win32/rsrc/snes9x.rc
+msgid "8x"
+msgstr "8x"
+
+#: win32/rsrc/snes9x.rc
+msgid "96ms"
+msgstr "96ms"
+
+#: win32/rsrc/snes9x.rc
+msgid "9x"
+msgstr "9x"
+
+#: win32/rsrc/snes9x.rc
+msgid "< (Less Than)"
+msgstr "< (Mai mic decât)"
+
+#: win32/wlanguage.h
+msgid "<-- MISMATCH !!!"
+msgstr "<-- NEPOTRIVIRE !!!"
+
+#: win32/rsrc/snes9x.rc
+msgid "<= (Less Than or Equal to)"
+msgstr "<= (Mai mic sau egal cu)"
+
+#: win32/rsrc/snes9x.rc
+msgid "= (Equal To)"
+msgstr "= (Egal cu)"
+
+#: win32/rsrc/snes9x.rc
+msgid "> (Greater Than)"
+msgstr "> (Mai mare decât)"
+
+#: win32/rsrc/snes9x.rc
+msgid ">= (Greater than or Equal To)"
+msgstr ">= (Mai mare sau egal cu)"
+
+#: win32/rsrc/snes9x.rc
+msgid "About"
+msgstr "Despre"
+
+#: win32/rsrc/snes9x.rc
+msgid "Achievement List"
+msgstr "Listă realizări"
+
+#: win32/rsrc/snes9x.rc
+msgid "Act as Server"
+msgstr "Acționează ca server"
+
+#: win32/wlanguage.h
+msgid "Act As Server"
+msgstr "Acționează ca server"
+
+#: win32/rsrc/snes9x.rc
+msgid "Add"
+msgstr "Adaugă"
+
+#: win32/rsrc/snes9x.rc
+msgid "Add Cheat"
+msgstr "Adaugă cheat"
+
+#: win32/rsrc/snes9x.rc
+msgid "Add SuperSnes9x to registry for supported file types"
+msgstr "Adaugă SuperSnes9x în regiștri pentru tipurile de fișiere suportate"
+
+#: win32/rsrc/snes9x.rc
+msgid "Address"
+msgstr "Adresă"
+
+#: win32/rsrc/snes9x.rc
+msgid "Address:"
+msgstr "Adresă:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Adjustments"
+msgstr "Ajustări"
+
+#: win32/wlanguage.h
+msgid "All files"
+msgstr "Toate fișierele"
+
+#: win32/rsrc/snes9x.rc
+msgid "all of SuperSnes9x's settings are stored in this file"
+msgstr "toate setările SuperSnes9x sunt salvate în acest fișier"
+
+#: win32/rsrc/snes9x.rc
+msgid "Allow executable logo override"
+msgstr "Permite suprascrierea logo-ului executabilului"
+
+#: win32/rsrc/snes9x.rc
+msgid "Allow Invalid VRAM Access"
+msgstr "Permite acces VRAM invalid"
+
+#: win32/rsrc/snes9x.rc
+msgid "Allow Left+Rt/Up+Dn"
+msgstr "Permite Stânga+Dreapta/Sus+Jos simultan"
+
+#: win32/rsrc/snes9x.rc
+msgid "APP - Emulator Settings"
+msgstr "APP - Setări emulator"
+
+#: win32/rsrc/snes9x.rc
+msgid "Apply"
+msgstr "Aplică"
+
+#: win32/rsrc/snes9x.rc
+msgid "Apply Adjustments"
+msgstr "Aplică modificările"
+
+#: win32/rsrc/snes9x.rc
+msgid "Apply Cheats"
+msgstr "Aplică cheat-uri"
+
+#: win32/rsrc/snes9x.rc
+msgid "Ask for confirmation when saving/loading"
+msgstr "Cere confirmare la salvare/încărcare"
+
+#: win32/rsrc/snes9x.rc
+msgid "Ask Server to Pause when"
+msgstr "Solicită serverului să pună pauză când"
+
+#: win32/rsrc/snes9x.rc
+msgid "Author Info:"
+msgstr "Informații autor:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Auto Layer Transparency"
+msgstr "Transparență automată straturi"
+
+#: win32/rsrc/snes9x.rc
+msgid "Auto update"
+msgstr "Actualizare automată"
+
+#: win32/rsrc/snes9x.rc
+msgid "Auto-Assign"
+msgstr "Alocare automată"
+
+#: win32/wlanguage.h
+msgid "Auto-Detect"
+msgstr "Detectare automată"
+
+#: win32/rsrc/snes9x.rc
+msgid "Auto-Save S-RAM"
+msgstr "Salvare automată S-RAM"
+
+#: win32/wlanguage.h
+msgid "Autofire"
+msgstr "Foc automat (Autofire)"
+
+#: win32/wlanguage.h
+msgid "Autohold"
+msgstr "Menținere automată (Autohold)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Automatic Input Rate"
+msgstr "Rată automată de intrare"
+
+#: win32/rsrc/snes9x.rc
+msgid "Automatic, skip at most:"
+msgstr "Automat, sari cel mult:"
+
+#: win32/wlanguage.h
+msgid "AVI file"
+msgstr "Fișier AVI"
+
+#: win32/rsrc/snes9x.rc
+msgid "AVI Recording"
+msgstr "Înregistrare AVI"
+
+#: win32/rsrc/snes9x.rc
+msgid "Background Keyboard Hotkeys"
+msgstr "Taste rapide din fundal pentru tastatură"
+
+#: win32/rsrc/snes9x.rc
+msgid "Background:"
+msgstr "Fundal:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Bank +:"
+msgstr "Banc +:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Bank -:"
+msgstr "Banc -:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Bank:"
+msgstr "Banc:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Base Tile Addresses"
+msgstr "Adrese tile de bază"
+
+#: win32/rsrc/snes9x.rc
+msgid "BG1:"
+msgstr "BG1:"
+
+#: win32/rsrc/snes9x.rc
+msgid "BG2:"
+msgstr "BG2:"
+
+#: win32/rsrc/snes9x.rc
+msgid "BG3:"
+msgstr "BG3:"
+
+#: win32/rsrc/snes9x.rc
+msgid "BG4:"
+msgstr "BG4:"
+
+#: win32/rsrc/snes9x.rc
+msgid "BG:"
+msgstr "BG:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Bilinear Filtering"
+msgstr "Filtrare bilineară"
+
+#: win32/rsrc/snes9x.rc
+msgid "Binding"
+msgstr "Asociere"
+
+#: win32/rsrc/snes9x.rc
+msgid "BIOS"
+msgstr "BIOS"
+
+#: win32/wlanguage.h
+msgid "BIOS files"
+msgstr "Fișiere BIOS"
+
+#: win32/rsrc/snes9x.rc
+msgid "BIOS:"
+msgstr "BIOS:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Bit Depth:"
+msgstr "Adâncime biți:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Blend Hi-Res Images"
+msgstr "Îmbină imaginile de înaltă rezoluție"
+
+#: win32/rsrc/snes9x.rc
+msgid ""
+"Blue means already mapped. Pink conflicts with hotkey.\n"
+"Red is reserved by Windows. Escape clears bindings.\n"
+"Press multiple keys for multi-bind. Delete removes last."
+msgstr ""
+"Albastru înseamnă gata asociat. Roz indică conflict cu o tastă rapidă.\n"
+"Roșu este rezervat de Windows. Tasta Escape șterge asocierile.\n"
+"Apăsați taste multiple pentru asocieri multiple. Delete elimină ultima tastă."
+
+#: win32/wlanguage.h
+msgid ""
+"Blue means the hotkey is already mapped.\n"
+"Pink means it conflicts with a game button.\n"
+"Red means it's reserved by Windows.\n"
+"A hotkey can be disabled using Escape."
+msgstr ""
+"Albastru înseamnă că tasta rapidă este deja asociată.\n"
+"Roz înseamnă că este în conflict cu un buton din joc.\n"
+"Roșu înseamnă că este rezervat de Windows.\n"
+"O tastă rapidă poate fi dezactivată folosind Escape."
+
+#: win32/rsrc/snes9x.rc
+msgid ""
+"Blue means the hotkey is already mapped. Pink means it conflicts with a game button. Red means it's reserved by Windows. Escape clears bindings.\n"
+"Press multiple keys for multi-bind. Delete removes last."
+msgstr ""
+"Albastru înseamnă că tasta rapidă este deja mapată. Roz înseamnă că intră în conflict cu un buton din joc. Roșu înseamnă că este rezervat de Windows. Escape șterge mapările.\n"
+"Apăsați mai multe taste pentru multi-bind. Tasta Delete elimină ultima tastă."
+
+#: win32/rsrc/snes9x.rc
+msgid "Browse"
+msgstr "Răsfoiește"
+
+#: win32/rsrc/snes9x.rc
+msgid "Buffer Length"
+msgstr "Lungime buffer"
+
+#: win32/rsrc/snes9x.rc
+msgid "Buffer Length:"
+msgstr "Lungime buffer:"
+
+#: win32/wlanguage.h
+msgid "Can't Open File"
+msgstr "Nu s-a putut deschide fișierul"
+
+#: win32/rsrc/snes9x.rc
+msgid "Cancel"
+msgstr "Anulează"
+
+#: win32/rsrc/snes9x.rc
+msgid "Channel 1"
+msgstr "Canal 1"
+
+#: win32/rsrc/snes9x.rc
+msgid "Channel 2"
+msgstr "Canal 2"
+
+#: win32/rsrc/snes9x.rc
+msgid "Channel 3"
+msgstr "Canal 3"
+
+#: win32/rsrc/snes9x.rc
+msgid "Channel 4"
+msgstr "Canal 4"
+
+#: win32/rsrc/snes9x.rc
+msgid "Channel 5"
+msgstr "Canal 5"
+
+#: win32/rsrc/snes9x.rc
+msgid "Channel 6"
+msgstr "Canal 6"
+
+#: win32/rsrc/snes9x.rc
+msgid "Channel 7"
+msgstr "Canal 7"
+
+#: win32/rsrc/snes9x.rc
+msgid "Channel 8"
+msgstr "Canal 8"
+
+#: win32/rsrc/snes9x.rc
+msgid "Channels"
+msgstr "Canale"
+
+#: win32/rsrc/snes9x.rc
+msgid "Chat"
+msgstr "Chat"
+
+#: win32/rsrc/snes9x.rc
+msgid "Cheat Description:"
+msgstr "Descriere cheat:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Cheat Details"
+msgstr "Detalii cheat"
+
+#: win32/rsrc/snes9x.rc
+msgid "Cheat Entry and Editor"
+msgstr "Introducere și editare cheat-uri"
+
+#: win32/rsrc/snes9x.rc
+msgid "Cheat Search"
+msgstr "Căutare cheat-uri"
+
+#: win32/wlanguage.h
+msgid "Cheats Editor Dialog:"
+msgstr "Fereastră editor cheat-uri:"
+
+#: win32/wlanguage.h
+msgid "Cheats Search Dialog:"
+msgstr "Fereastră căutare cheat-uri:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Choose Logo"
+msgstr "Alege logo"
+
+#: win32/rsrc/snes9x.rc
+msgid "Clear"
+msgstr "Golește"
+
+#: win32/rsrc/snes9x.rc
+msgid "Clear All"
+msgstr "Șterge tot"
+
+#: win32/rsrc/snes9x.rc
+msgid "Clear History"
+msgstr "Șterge istoricul"
+
+#: win32/rsrc/snes9x.rc
+msgid "Clear SRAM"
+msgstr "Șterge SRAM"
+
+#: win32/rsrc/snes9x.rc
+msgid "Clear Watches"
+msgstr "Șterge variabilele monitorizate"
+
+#: win32/rsrc/snes9x.rc
+msgid "Client Settings"
+msgstr "Setări client"
+
+#: win32/wlanguage.h
+msgid "Clipping Windows:"
+msgstr "Finestre de decupare (clipping):"
+
+#: win32/rsrc/snes9x.rc
+msgid "Close"
+msgstr "Închide"
+
+#: win32/wlanguage.h
+msgid "Code"
+msgstr "Cod"
+
+#: win32/rsrc/snes9x.rc
+msgid "Color Correction"
+msgstr "Corecție de culoare"
+
+#: win32/rsrc/snes9x.rc
+msgid "Compare To"
+msgstr "Compară cu"
+
+#: win32/rsrc/snes9x.rc
+msgid "Comparison Type"
+msgstr "Tip de comparație"
+
+#: win32/rsrc/snes9x.rc
+msgid "Config file:"
+msgstr "Fișier de configurare:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Connect"
+msgstr "Conectare"
+
+#: win32/rsrc/snes9x.rc
+msgid "Connect clients to: 127.0.0.1 (localhost) or your LAN IP"
+msgstr "Conectați clienții la: 127.0.0.1 (localhost) sau IP-ul dvs. de rețea locală (LAN)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Connect to Server"
+msgstr "Conectare la server"
+
+#: win32/rsrc/snes9x.rc
+msgid "Controller"
+msgstr "Controler"
+
+#: win32/wlanguage.h
+msgid "Could not open movie file."
+msgstr "Nu s-a putut deschide fișierul de film."
+
+#: win32/rsrc/snes9x.rc
+msgid "CPU Overclock:"
+msgstr "Overclock CPU:"
+
+#: win32/wlanguage.h
+msgid "crc32=%08X, name=%s"
+msgstr "crc32=%08X, nume=%s"
+
+#: win32/wlanguage.h
+msgid "Current ROM:"
+msgstr "ROM curent:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Current ROM: CRC32=Unknown, Name=Unknown"
+msgstr "ROM curent: CRC32=Necunoscut, Nume=Necunoscut"
+
+#: win32/rsrc/snes9x.rc
+msgid "Current Value"
+msgstr "Valoare curentă"
+
+#: win32/rsrc/snes9x.rc
+msgid "Custom ROM Open Dialog"
+msgstr "Fereastră personalizată de deschidere ROM"
+
+#: win32/rsrc/snes9x.rc
+msgid "Custom Screen Mode"
+msgstr "Mod personalizat ecran"
+
+#: win32/rsrc/snes9x.rc
+msgid "Customize Hotkeys"
+msgstr "Personalizare taste rapide"
+
+#: win32/rsrc/snes9x.rc
+msgid "Customize Special Keys"
+msgstr "Personalizare taste speciale"
+
+#: win32/rsrc/snes9x.rc
+msgid "Data Size"
+msgstr "Dimensiune date"
+
+#: win32/rsrc/snes9x.rc
+msgid "Data Type"
+msgstr "Tip de date"
+
+#: win32/rsrc/snes9x.rc
+msgid "DATE"
+msgstr "DATĂ"
+
+#: win32/rsrc/snes9x.rc
+msgid "Defaults"
+msgstr "Valori implicite"
+
+#: win32/rsrc/snes9x.rc
+msgid "Delete"
+msgstr "Șterge"
+
+#: win32/rsrc/snes9x.rc
+msgid "Detect gamepad changes"
+msgstr "Detectează schimbările de gamepad"
+
+#: win32/rsrc/snes9x.rc
+msgid "Dialog"
+msgstr "Fereastră de dialog"
+
+#: win32/rsrc/snes9x.rc
+msgid "Direct3D Shader File"
+msgstr "Fișier shader Direct3D"
+
+#: win32/wlanguage.h
+msgid "Directory"
+msgstr "Director"
+
+#: win32/rsrc/snes9x.rc
+msgid "Directory:"
+msgstr "Director:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Disable Sprite Limit"
+msgstr "Dezactivează limita de sprite-uri"
+
+#: win32/rsrc/snes9x.rc
+msgid "Disconnect"
+msgstr "Deconectare"
+
+#: win32/rsrc/snes9x.rc
+msgid "Disconnect from Server"
+msgstr "Deconectare de la server"
+
+#: win32/rsrc/snes9x.rc
+msgid "Display Configuration"
+msgstr "Configurare afișaj"
+
+#: win32/rsrc/snes9x.rc
+msgid "Display messages inside SNES image"
+msgstr "Afișează mesajele în interiorul imaginii SNES"
+
+#: win32/rsrc/snes9x.rc
+msgid "Display Settings"
+msgstr "Setări afișaj"
+
+#: win32/rsrc/snes9x.rc
+msgid "DN LEFT"
+msgstr "JOS STÂNGA"
+
+#: win32/wlanguage.h
+msgid "Dn Left"
+msgstr "Jos Stânga"
+
+#: win32/rsrc/snes9x.rc
+msgid "DN RIGHT"
+msgstr "JOS DREAPTA"
+
+#: win32/wlanguage.h
+msgid "Dn Right"
+msgstr "Jos Dreapta"
+
+#: win32/rsrc/snes9x.rc
+msgid "DOWN"
+msgstr "JOS"
+
+#: win32/rsrc/snes9x.rc
+msgid "Dummy"
+msgstr "Fictiv"
+
+#: win32/rsrc/snes9x.rc
+msgid "Dynamic Rate Control"
+msgstr "Control dinamic al ratei"
+
+#: win32/rsrc/snes9x.rc
+msgid "Edit Cheat Group"
+msgstr "Editează grup de cheat-uri"
+
+#: win32/rsrc/snes9x.rc
+msgid "Emulate Fullscreen"
+msgstr "Emulează ecran complet"
+
+#: win32/wlanguage.h
+msgid "Emulation Settings"
+msgstr "Setări emulare"
+
+#: win32/rsrc/snes9x.rc
+msgid "Emulator Hacks"
+msgstr "Hack-uri / Optimizări de emulator"
+
+#: win32/rsrc/snes9x.rc
+msgid "Enable"
+msgstr "Activează"
+
+#: win32/rsrc/snes9x.rc
+msgid "Enable All"
+msgstr "Activează tot"
+
+#: win32/rsrc/snes9x.rc
+msgid "Enable Background Input"
+msgstr "Activează controlul în fundal (Background)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Enable Color Correction (accurate SNES colors)"
+msgstr "Activează corecția culorilor (culori SNES fidele)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Enable Triple Buffering"
+msgstr "Activează triplu buffering"
+
+#: win32/rsrc/snes9x.rc
+msgid "Enabled"
+msgstr "Activat"
+
+#: win32/rsrc/snes9x.rc
+msgid "End Kaillera Game"
+msgstr "Termină jocul Kaillera"
+
+#: win32/rsrc/snes9x.rc
+msgid "Enter a Value:"
+msgstr "Introduceți o valoare:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Enter Cheat Code:"
+msgstr "Introduceți codul cheat:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Enter Cheat codes, one line at a time"
+msgstr "Introduceți codurile cheat, câte o linie pe rând"
+
+#: win32/wlanguage.h
+msgid "enter host name"
+msgstr "introduceți numele gazdei"
+
+#: win32/rsrc/snes9x.rc
+msgid "Entered Address"
+msgstr "Adresă introdusă"
+
+#: win32/rsrc/snes9x.rc
+msgid "Entered Value"
+msgstr "Valoare introdusă"
+
+#: win32/wlanguage.h
+msgid "Error Info:"
+msgstr "Informații eroare:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Exit"
+msgstr "Ieșire"
+
+#: win32/rsrc/snes9x.rc
+msgid "Extend Height of SNES Image"
+msgstr "Extinde înălțimea imaginii SNES"
+
+#: win32/wlanguage.h
+msgid "Fast forward:"
+msgstr "Derulare rapidă înainte:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Fast-Forward"
+msgstr "Avansare rapidă"
+
+#: win32/wlanguage.h
+msgid "Fast-forward toggle:"
+msgstr "Comutator avansare rapidă:"
+
+#: win32/rsrc/snes9x.rc
+msgid "File"
+msgstr "Fișier"
+
+#: win32/wlanguage.h
+msgid "File not found."
+msgstr "Fișierul nu a fost găsit."
+
+#: win32/rsrc/snes9x.rc
+msgid "First Sprite:"
+msgstr "Primul sprite:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Fixed, always skip:"
+msgstr "Fix, sari mereu peste:"
+
+#: win32/wlanguage.h
+msgid "Force GD24"
+msgstr "Forțează GD24"
+
+#: win32/wlanguage.h
+msgid "Force Header"
+msgstr "Forțează prezența header-ului"
+
+#: win32/wlanguage.h
+msgid "Force HiROM"
+msgstr "Forțează formatul HiROM"
+
+#: win32/wlanguage.h
+msgid "Force LoROM"
+msgstr "Forțează formatul LoROM"
+
+#: win32/wlanguage.h
+msgid "Force mode 1"
+msgstr "Forțează modul 1"
+
+#: win32/wlanguage.h
+msgid "Force mode 2"
+msgstr "Forțează modul 2"
+
+#: win32/wlanguage.h
+msgid "Force No Header"
+msgstr "Forțează absența header-ului"
+
+#: win32/wlanguage.h
+msgid "Force not interleaved"
+msgstr "Forțează semnal neintercalat"
+
+#: win32/wlanguage.h
+msgid "Force NTSC"
+msgstr "Forțează standardul NTSC"
+
+#: win32/wlanguage.h
+msgid "Force PAL"
+msgstr "Forțează standardul PAL"
+
+#: win32/rsrc/snes9x.rc
+msgid "Frame Advance"
+msgstr "Avans de cadru"
+
+#: win32/rsrc/snes9x.rc
+msgid "Frame Advance mute"
+msgstr "Dezactivează sunetul la avansul de cadru"
+
+#: win32/wlanguage.h
+msgid "Frame advance:"
+msgstr "Tastă avans de cadru:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Frame Skipping:"
+msgstr "Săritură peste cadre (Frame Skip):"
+
+#: win32/rsrc/snes9x.rc
+msgid "frames"
+msgstr "cadre"
+
+#: win32/rsrc/snes9x.rc
+msgid "FRAMES"
+msgstr "CADRE"
+
+#: win32/rsrc/snes9x.rc
+msgid "frames behind"
+msgstr "cadre în urmă"
+
+#: win32/rsrc/snes9x.rc
+msgid "frames in auto-frame rate mode"
+msgstr "cadre în modul automat de rată de cadre"
+
+#: win32/wlanguage.h
+msgid "frames in fast-forward mode"
+msgstr "cadre în modul de avansare rapidă"
+
+#: win32/rsrc/snes9x.rc
+msgid "frames in Turbo mode"
+msgstr "cadre în modul Turbo"
+
+#: win32/rsrc/snes9x.rc
+msgid "Frames:"
+msgstr "Cadre:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Full Screen"
+msgstr "Ecran complet"
+
+#: win32/rsrc/snes9x.rc
+msgid "Fullscreen"
+msgstr "Ecran complet"
+
+#: win32/rsrc/snes9x.rc
+msgid "Fullscreen Display Settings"
+msgstr "Setări afișaj pe ecran complet"
+
+#: win32/rsrc/snes9x.rc
+msgid "Fullscreen on ROM Open"
+msgstr "Treci pe ecran complet la deschiderea ROM"
+
+#: win32/rsrc/snes9x.rc
+msgid "Game Boy Image"
+msgstr "Imagine Game Boy"
+
+#: win32/rsrc/snes9x.rc
+msgid "Game Genie, Pro-Action Replay Codes"
+msgstr "Coduri Game Genie, Pro-Action Replay"
+
+#: win32/rsrc/snes9x.rc
+msgid "GB"
+msgstr "GB"
+
+#: win32/rsrc/snes9x.rc
+msgid "GB Sprite Viewer"
+msgstr "Vizualizator sprite-uri GB"
+
+#: win32/rsrc/snes9x.rc
+msgid "GB Tile Viewer"
+msgstr "Vizualizator tile-uri GB"
+
+#: win32/rsrc/snes9x.rc
+msgid "GB Tilemap Viewer"
+msgstr "Vizualizator tilemap GB"
+
+#: win32/rsrc/snes9x.rc
+msgid "GB-PPU"
+msgstr "GB-PPU"
+
+#: win32/rsrc/snes9x.rc
+msgid "General"
+msgstr "Setări generale"
+
+#: win32/rsrc/snes9x.rc
+msgid "goto"
+msgstr "sari la"
+
+#: win32/wlanguage.h
+msgid "Graphics layer 1:"
+msgstr "Strat grafic 1:"
+
+#: win32/wlanguage.h
+msgid "Graphics layer 2:"
+msgstr "Strat grafic 2:"
+
+#: win32/wlanguage.h
+msgid "Graphics layer 3:"
+msgstr "Strat grafic 3:"
+
+#: win32/wlanguage.h
+msgid "Graphics layer 4:"
+msgstr "Strat grafic 4:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Group"
+msgstr "Grup"
+
+#: win32/rsrc/snes9x.rc
+msgid "Hacks"
+msgstr "Optimizări (Hacks)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Hard Reset (Power Cycle)"
+msgstr "Resetare fizică hard (Oprire/Pornire alimentare)"
+
+#: win32/wlanguage.h
+msgid "Hard reset:"
+msgstr "Tastă resetare fizică hard:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Hardcore Mode"
+msgstr "Mod Hardcore"
+
+#: win32/rsrc/snes9x.rc
+msgid "Header:"
+msgstr "Informații header:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Help"
+msgstr "Ajutor"
+
+#: win32/rsrc/snes9x.rc
+msgid "Hexadecimal"
+msgstr "Hexazecimal"
+
+#: win32/rsrc/snes9x.rc
+msgid "Hi Res:"
+msgstr "Rezoluție înaltă:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Hi-Res AVI Recording"
+msgstr "Înregistrare video AVI la rezoluție înaltă"
+
+#: win32/rsrc/snes9x.rc
+msgid "Hide Menubar"
+msgstr "Ascunde bara de meniuri"
+
+#: win32/rsrc/snes9x.rc
+msgid "Host Game"
+msgstr "Găzduiește joc (Host)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Host Kaillera Server"
+msgstr "Găzduiește server Kaillera"
+
+#: win32/wlanguage.h
+msgid "Hotkey Configuration"
+msgstr "Configurare taste rapide"
+
+#: win32/rsrc/snes9x.rc
+msgid "Icon 1"
+msgstr "Pictogramă 1"
+
+#: win32/rsrc/snes9x.rc
+msgid "Icon 2"
+msgstr "Pictogramă 2"
+
+#: win32/rsrc/snes9x.rc
+msgid "Icon 3"
+msgstr "Pictogramă 3"
+
+#: win32/rsrc/snes9x.rc
+msgid "Icon 4"
+msgstr "Pictogramă 4"
+
+#: win32/rsrc/snes9x.rc
+msgid "Index:"
+msgstr "Index:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Input"
+msgstr "Intrare controler"
+
+#: win32/rsrc/snes9x.rc
+msgid "Input Configuration"
+msgstr "Configurare butoane intrare"
+
+#: win32/rsrc/snes9x.rc
+msgid "Input Rate:"
+msgstr "Rată de intrare audio:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Integer Scaling"
+msgstr "Scalare la multipli întregi (Integer)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Interleave Mode:"
+msgstr "Mod de intercalare:"
+
+#: win32/rsrc/snes9x.rc
+msgid "IP:"
+msgstr "IP:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Join"
+msgstr "Alătură-te"
+
+#: win32/wlanguage.h
+msgid "Joypad #%d"
+msgstr "Joypad #%d"
+
+#: win32/rsrc/snes9x.rc
+msgid "Joypad 1"
+msgstr "Joypad 1"
+
+#: win32/rsrc/snes9x.rc
+msgid "Joypad 2"
+msgstr "Joypad 2"
+
+#: win32/rsrc/snes9x.rc
+msgid "Joypad 3"
+msgstr "Joypad 3"
+
+#: win32/rsrc/snes9x.rc
+msgid "Joypad 4"
+msgstr "Joypad 4"
+
+#: win32/rsrc/snes9x.rc
+msgid "Joypad 5"
+msgstr "Joypad 5"
+
+#: win32/wlanguage.h
+msgid "Joypad swap:"
+msgstr "Inversare pozitii controlere:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Kaillera Netplay"
+msgstr "Joc prin Kaillera"
+
+#: win32/rsrc/snes9x.rc
+msgid "Kaillera Server"
+msgstr "Server Kaillera"
+
+#: win32/rsrc/snes9x.rc
+msgid "Layout:"
+msgstr "Aranjament (Layout):"
+
+#: win32/rsrc/snes9x.rc
+msgid "Leave Game"
+msgstr "Părăsește jocul"
+
+#: win32/rsrc/snes9x.rc
+msgid "LEFT"
+msgstr "STÂNGA"
+
+#: win32/rsrc/snes9x.rc
+msgid "LENGTH"
+msgstr "LUNGIME"
+
+#: win32/rsrc/snes9x.rc
+msgid "Length:"
+msgstr "Lungime:"
+
+#: win32/rsrc/snes9x.rc
+msgid "List1"
+msgstr "Listă1"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load #:"
+msgstr "Încarcă slotul nr. #:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load 0:"
+msgstr "Încarcă slotul 0:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load 1:"
+msgstr "Încarcă slotul 1:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load 2:"
+msgstr "Încarcă slotul 2:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load 3:"
+msgstr "Încarcă slotul 3:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load 4:"
+msgstr "Încarcă slotul 4:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load 5:"
+msgstr "Încarcă slotul 5:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load 6:"
+msgstr "Încarcă slotul 6:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load 7:"
+msgstr "Încarcă slotul 7:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load 8:"
+msgstr "Încarcă slotul 8:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load 9:"
+msgstr "Încarcă slotul 9:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load Dlg:"
+msgstr "Fereastră încărcare:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load File:"
+msgstr "Încarcă fișier:"
+
+#: win32/wlanguage.h
+msgid "Load from file:"
+msgstr "Încarcă din fișierul:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load Game"
+msgstr "Încarcă joc"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load Game Position"
+msgstr "Încarcă poziția de joc"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load MultiCart"
+msgstr "Încarcă MultiCart"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load Watches"
+msgstr "Încarcă variabilele monitorizate"
+
+#: win32/rsrc/snes9x.rc
+msgid "Load with Preview"
+msgstr "Încarcă cu previzualizare"
+
+#: win32/wlanguage.h
+msgid "LOADED FROM MOVIE:"
+msgstr "ÎNCĂRCAT DIN ÎNREGISTRAREA FILMULUI:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Location:"
+msgstr "Locație salvare:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Login"
+msgstr "Autentificare"
+
+#: win32/rsrc/snes9x.rc
+msgid "Maintain Aspect Ratio"
+msgstr "Menține raportul de aspect"
+
+#: win32/rsrc/snes9x.rc
+msgid "Map"
+msgstr "Hartă (Map)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Map Addr:"
+msgstr "Adresă hartă:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Map Size:"
+msgstr "Dimensiune hartă:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Map:"
+msgstr "Hartă:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Mask"
+msgstr "Mască date"
+
+#: win32/rsrc/snes9x.rc
+msgid "Masked Addresses"
+msgstr "Adrese mascate"
+
+#: win32/rsrc/snes9x.rc
+msgid "Master Hotkey"
+msgstr "Tastă rapidă globală"
+
+#: win32/rsrc/snes9x.rc
+msgid "Max Clients:"
+msgstr "Număr maxim clienți:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Maximum Frame Rate Skip"
+msgstr "Săritură maximă peste cadre"
+
+#: win32/rsrc/snes9x.rc
+msgid "MB (set to 0 to disable rewind support)"
+msgstr "MB (setați la 0 pentru a opri suportul de derulare înapoi)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Memory Type:"
+msgstr "Tip de memorie:"
+
+#: win32/wlanguage.h
+msgid "Misc. Recording Settings"
+msgstr "Alte setări pentru înregistrare"
+
+#: win32/rsrc/snes9x.rc
+msgid "Mode:"
+msgstr "Mod:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Movie File"
+msgstr "Fișier de film"
+
+#: win32/wlanguage.h
+msgid "Movie frame count:"
+msgstr "Număr de cadre al filmului:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Movie Play"
+msgstr "Redare film"
+
+#: win32/wlanguage.h
+msgid "Movie read-only:"
+msgstr "Înregistrare în mod doar-citire:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Movie Record"
+msgstr "Înregistrare film"
+
+#: win32/rsrc/snes9x.rc
+msgid "Movie Stop"
+msgstr "Oprire film"
+
+#: win32/wlanguage.h
+msgid "Movie's ROM:"
+msgstr "ROM-ul legat de înregistrare:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Movie's ROM: CRC32=Unknown, Name=Unknown"
+msgstr "ROM-ul filmului: CRC32=Necunoscut, Nume=Necunoscut"
+
+#: win32/wlanguage.h
+msgid "Movies"
+msgstr "Filme"
+
+#: win32/rsrc/snes9x.rc
+msgid "Mute"
+msgstr "Mut"
+
+#: win32/rsrc/snes9x.rc
+msgid "Mute Sound"
+msgstr "Dezactivează sunetul"
+
+#: win32/rsrc/snes9x.rc
+msgid "Mute sound"
+msgstr "Dezactivează sunetul"
+
+#: win32/rsrc/snes9x.rc
+msgid "Netplay"
+msgstr "Joc în rețea (Netplay)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Netplay Options"
+msgstr "Opțiuni Netplay"
+
+#: win32/rsrc/snes9x.rc
+msgid "New Value"
+msgstr "Valoare nouă"
+
+#: win32/rsrc/snes9x.rc
+msgid "No BIOS"
+msgstr "Fără BIOS"
+
+#: win32/wlanguage.h
+msgid "Not a ROM"
+msgstr "Nu este un fișier ROM valid"
+
+#: win32/rsrc/snes9x.rc
+msgid "Not connected."
+msgstr "Neconectat."
+
+#: win32/rsrc/snes9x.rc
+msgid "not found"
+msgstr "nu a fost găsit"
+
+#: win32/wlanguage.h
+msgid "not found!"
+msgstr "nu a fost găsit!"
+
+#: win32/rsrc/snes9x.rc
+msgid "NTSC Filter Scanlines"
+msgstr "Linii de scanare (scanlines) filtru NTSC"
+
+#: win32/rsrc/snes9x.rc
+msgid "OAM1:"
+msgstr "Zona OAM1:"
+
+#: win32/rsrc/snes9x.rc
+msgid "OAM2:"
+msgstr "Zona OAM2:"
+
+#: win32/rsrc/snes9x.rc
+msgid "OK"
+msgstr "OK"
+
+#: win32/rsrc/snes9x.rc
+msgid "On-screen Display Size:"
+msgstr "Dimensiune text mesaje pe ecran (OSD):"
+
+#: win32/rsrc/snes9x.rc
+msgid "Online Servers"
+msgstr "Servere online"
+
+#: win32/rsrc/snes9x.rc
+msgid "Oops File"
+msgstr "Fișier de recuperare după avarie (Oops)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Open MultiCart"
+msgstr "Deschide MultiCart"
+
+#: win32/rsrc/snes9x.rc
+msgid "Open Read-Only"
+msgstr "Deschide în mod doar-citire"
+
+#: win32/rsrc/snes9x.rc
+msgid "OpenGL/Vulkan Shader File"
+msgstr "Fișier shader OpenGL/Vulkan"
+
+#: win32/rsrc/snes9x.rc
+msgid "Options"
+msgstr "Opțiuni"
+
+#: win32/rsrc/snes9x.rc
+msgid "Output Device:"
+msgstr "Dispozitiv fizic de ieșire:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Output Image Processing"
+msgstr "Procesarea imaginii finale de ieșire"
+
+#: win32/rsrc/snes9x.rc
+msgid "Output Method"
+msgstr "API randare grafică ieșire"
+
+#: win32/rsrc/snes9x.rc
+msgid "Override Tilemap"
+msgstr "Suprascrie harta de tile-uri (Tilemap)"
+
+#: win32/wlanguage.h
+msgid "Page %d"
+msgstr "Pagina %d"
+
+#: win32/rsrc/snes9x.rc
+msgid "Palette (click to select offset)"
+msgstr "Paletă de culori (clic pentru a selecta offset-ul)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Palette:"
+msgstr "Paletă:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Parameters"
+msgstr "Parametri"
+
+#: win32/rsrc/snes9x.rc
+msgid "Password:"
+msgstr "Parolă:"
+
+#: win32/wlanguage.h
+msgid "Patch"
+msgstr "Fișier de patch"
+
+#: win32/wlanguage.h
+msgid "Path: %s"
+msgstr "Cale director: %s"
+
+#: win32/rsrc/snes9x.rc
+msgid "Pause When Inactive"
+msgstr "Pune pauză automată când fereastra devine inactivă"
+
+#: win32/wlanguage.h
+msgid "Pause:"
+msgstr "Tastă pauză:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Play Movie"
+msgstr "Redă înregistrare film"
+
+#: win32/rsrc/snes9x.rc
+msgid "Playback Rate"
+msgstr "Frecvență de redare"
+
+#: win32/rsrc/snes9x.rc
+msgid "Playback Rate:"
+msgstr "Frecvență de redare:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Player Name:"
+msgstr "Nume jucător:"
+
+#: win32/wlanguage.h
+msgid "Please enter a host name."
+msgstr "Vă rugăm să introduceți numele calculatorului gazdă."
+
+#: win32/wlanguage.h
+msgid "Please enter a valid value for a search!"
+msgstr "Vă rugăm să introduceți o valoare validă pentru căutare!"
+
+#: win32/rsrc/snes9x.rc
+msgid "Port Number"
+msgstr "Număr port"
+
+#: win32/rsrc/snes9x.rc
+msgid "Port Settings"
+msgstr "Setări porturi rețea"
+
+#: win32/wlanguage.h
+msgid "Press OK to start playing the movie."
+msgstr "Apăsați OK pentru a începe redarea filmului."
+
+#: win32/rsrc/snes9x.rc
+msgid "Preview"
+msgstr "Previzualizare / Screenshot"
+
+#: win32/rsrc/snes9x.rc
+msgid "Previous Value"
+msgstr "Valoare anterioară căutată"
+
+#: win32/rsrc/snes9x.rc
+msgid "Progress1"
+msgstr "Progres1"
+
+#: win32/rsrc/snes9x.rc
+msgid "Publish Online"
+msgstr "Publică online"
+
+#: win32/rsrc/snes9x.rc
+msgid "Publish to master server list"
+msgstr "Publică camera în lista centrală de servere master"
+
+#: win32/wlanguage.h
+msgid "Quit SuperSnes9x:"
+msgstr "Tastă închidere sigură SuperSnes9x:"
+
+#: win32/wlanguage.h
+msgid "Range Error"
+msgstr "Eroare de interval adresă"
+
+#: win32/rsrc/snes9x.rc
+msgid "Rate:"
+msgstr "Rată / Frecvență eșantionare:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Re-record Count:"
+msgstr "Număr de reînregistrări:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Re-sync all Clients Using Freeze File Now"
+msgstr "Resincronizează imediat toți clienții folosind fișierul de îngheț stare"
+
+#: win32/rsrc/snes9x.rc
+msgid "Recent Games"
+msgstr "Jocuri rulate recent"
+
+#: win32/rsrc/snes9x.rc
+msgid "Record Controllers"
+msgstr "Înregistrează comenzile controlerului"
+
+#: win32/rsrc/snes9x.rc
+msgid "Record from now"
+msgstr "Înregistrează din acest moment"
+
+#: win32/rsrc/snes9x.rc
+msgid "Record from reset"
+msgstr "Înregistrează de la resetarea jocului"
+
+#: win32/rsrc/snes9x.rc
+msgid "Record Movie"
+msgstr "Înregistrează film"
+
+#: win32/rsrc/snes9x.rc
+msgid "Record Options"
+msgstr "Opțiuni detaliate înregistrare"
+
+#: win32/rsrc/snes9x.rc
+msgid "Recording Date:"
+msgstr "Dată înregistrare:"
+
+#: win32/wlanguage.h
+msgid "Recording Start"
+msgstr "Pornire înregistrare video"
+
+#: win32/rsrc/snes9x.rc
+msgid "Reduce Input Lag"
+msgstr "Redu lagul de intrare (인풋랙)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Refresh"
+msgstr "Reîmprospătează"
+
+#: win32/rsrc/snes9x.rc
+msgid "Refresh List"
+msgstr "Reîmprospătează lista"
+
+#: win32/rsrc/snes9x.rc
+msgid "Regular"
+msgstr "Standard / Regular"
+
+#: win32/rsrc/snes9x.rc
+msgid "Remove"
+msgstr "Elimină"
+
+#: win32/rsrc/snes9x.rc
+msgid "Remove All"
+msgstr "Elimină tot"
+
+#: win32/rsrc/snes9x.rc
+msgid "RERECORD"
+msgstr "REÎNREGISTRARE"
+
+#: win32/wlanguage.h
+msgid "Reset speed:"
+msgstr "Tastă resetare viteză배속:"
+
+#: win32/rsrc/snes9x.rc
+msgid "RetroAchievements"
+msgstr "Sistem realizări RetroAchievements"
+
+#: win32/rsrc/snes9x.rc
+msgid "RetroAchievements Login"
+msgstr "Autentificare RetroAchievements"
+
+#: win32/rsrc/snes9x.rc
+msgid "Rewind buffer size:"
+msgstr "Dimensiune buffer pentru rewind:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Rewind granularity:"
+msgstr "Granularitate (densitate date) derulare înapoi:"
+
+#: win32/wlanguage.h
+msgid "Rewind:"
+msgstr "Tastă derulare înapoi:"
+
+#: win32/rsrc/snes9x.rc
+msgid "RIGHT"
+msgstr "DREAPTA"
+
+#: win32/wlanguage.h
+msgid "ROM files or archives"
+msgstr "Arhive sau fișiere ROM brute"
+
+#: win32/rsrc/snes9x.rc
+msgid "Rom Info"
+msgstr "Info ROM"
+
+#: win32/rsrc/snes9x.rc
+msgid "ROM Information"
+msgstr "Informații detaliate ROM"
+
+#: win32/rsrc/snes9x.rc
+msgid "ROM:"
+msgstr "Sursă ROM:"
+
+#: win32/wlanguage.h
+msgid "Roms"
+msgstr "Gestionare fișiere ROM"
+
+#: win32/rsrc/snes9x.rc
+msgid "Run Ahead"
+msgstr "Procesare anticipată comenzi (Run Ahead)"
+
+#: win32/rsrc/snes9x.rc
+msgid "s"
+msgstr "sec"
+
+#: win32/rsrc/snes9x.rc
+msgid "S-PPU"
+msgstr "Cip S-PPU 사양"
+
+#: win32/wlanguage.h
+msgid "Satellaview"
+msgstr "Sistem prin satelit Satellaview"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save #:"
+msgstr "Salvează în slotul nr. #:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save 0:"
+msgstr "Salvează în slotul 0:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save 1:"
+msgstr "Salvează în slotul 1:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save 2:"
+msgstr "Salvează în slotul 2:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save 3:"
+msgstr "Salvează în slotul 3:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save 4:"
+msgstr "Salvează în slotul 4:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save 5:"
+msgstr "Salvează în slotul 5:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save 6:"
+msgstr "Salvează în slotul 6:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save 7:"
+msgstr "Salvează în slotul 7:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save 8:"
+msgstr "Salvează în slotul 8:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save 9:"
+msgstr "Salvează în slotul 9:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save Dlg:"
+msgstr "Fereastră salvare:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save File:"
+msgstr "Cale export fișier:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save Game Position"
+msgstr "Salvează poziția curentă de joc"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save Memory Pack"
+msgstr "Salvează pachetul de memorie"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save Other"
+msgstr "Salvează alte date"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save S-RAM Data"
+msgstr "Dump date salvări interne S-RAM"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save Screenshot"
+msgstr "Salvează captura de ecran"
+
+#: win32/wlanguage.h
+msgid "Save screenshot"
+msgstr "Salvează captura de ecran"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save SPC Data"
+msgstr "Dump date audio SPC"
+
+#: win32/wlanguage.h
+msgid "Save to file:"
+msgstr "Salvează în fișierul:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save Watches"
+msgstr "Salvează variabilele monitorizate"
+
+#: win32/rsrc/snes9x.rc
+msgid "Save with Preview"
+msgstr "Salvează cu imagine de previzualizare"
+
+#: win32/wlanguage.h
+msgid "Saves"
+msgstr "Stocare fișiere salvări joc"
+
+#: win32/rsrc/snes9x.rc
+msgid "Screen"
+msgstr "Ecran"
+
+#: win32/wlanguage.h
+msgid "Screenshots"
+msgstr "Gestionare capturi de ecran"
+
+#: win32/rsrc/snes9x.rc
+msgid "Search"
+msgstr "Caută"
+
+#: win32/rsrc/snes9x.rc
+msgid "Search Database"
+msgstr "Caută în baza de date offline"
+
+#: win32/rsrc/snes9x.rc
+msgid "Search for New Cheats"
+msgstr "Caută coduri noi de cheat"
+
+#: win32/rsrc/snes9x.rc
+msgid "seconds after last change (0 disables auto-save)"
+msgstr "secunde după ultima schimbare (0 oprește salvarea automată)"
+
+#: win32/rsrc/snes9x.rc
+msgid "SELECT"
+msgstr "SELECT"
+
+#: win32/rsrc/snes9x.rc
+msgid "Select 0:"
+msgstr "Tastă selectare slot 0:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Select 1:"
+msgstr "Tastă selectare slot 1:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Select 2:"
+msgstr "Tastă selectare slot 2:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Select 3:"
+msgstr "Tastă selectare slot 3:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Select 4:"
+msgstr "Tastă selectare slot 4:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Select 5:"
+msgstr "Tastă selectare slot 5:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Select 6:"
+msgstr "Tastă selectare slot 6:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Select 7:"
+msgstr "Tastă selectare slot 7:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Select 8:"
+msgstr "Tastă selectare slot 8:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Select 9:"
+msgstr "Tastă selectare slot 9:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Select File"
+msgstr "Selectează fișierul țintă"
+
+#: win32/wlanguage.h
+msgid "Select Folder"
+msgstr "Selectează directorul de lucru"
+
+#: win32/wlanguage.h
+msgid "Select Slot 0:"
+msgstr "Selectează slotul de salvare 0:"
+
+#: win32/wlanguage.h
+msgid "Select Slot 1:"
+msgstr "Selectează slotul de salvare 1:"
+
+#: win32/wlanguage.h
+msgid "Select Slot 2:"
+msgstr "Selectează slotul de salvare 2:"
+
+#: win32/wlanguage.h
+msgid "Select Slot 3:"
+msgstr "Selectează slotul de salvare 3:"
+
+#: win32/wlanguage.h
+msgid "Select Slot 4:"
+msgstr "Selectează slotul de salvare 4:"
+
+#: win32/wlanguage.h
+msgid "Select Slot 5:"
+msgstr "Selectează slotul de salvare 5:"
+
+#: win32/wlanguage.h
+msgid "Select Slot 6:"
+msgstr "Selectează slotul de salvare 6:"
+
+#: win32/wlanguage.h
+msgid "Select Slot 7:"
+msgstr "Selectează slotul de salvare 7:"
+
+#: win32/wlanguage.h
+msgid "Select Slot 8:"
+msgstr "Selectează slotul de salvare 8:"
+
+#: win32/wlanguage.h
+msgid "Select Slot 9:"
+msgstr "Selectează slotul de salvare 9:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Send"
+msgstr "Trimite"
+
+#: win32/rsrc/snes9x.rc
+msgid "Send ROM Image to Client on Connect"
+msgstr "Trimite automat fișierul sursă ROM către client la conectare"
+
+#: win32/rsrc/snes9x.rc
+msgid "Send ROM Image to Clients"
+msgstr "Trimite fișierul ROM către calculatoarele clienților"
+
+#: win32/rsrc/snes9x.rc
+msgid "Send ROM Image to Clients Now"
+msgstr "Trimite acum, pe loc, fișierul sursă ROM către toți clienții"
+
+#: win32/rsrc/snes9x.rc
+msgid "Separate Echo Buffer from RAM"
+msgstr "Izolează zona buffer-ului de ecou față de memoria RAM principală"
+
+#: win32/rsrc/snes9x.rc
+msgid "Server Address"
+msgstr "Adresa rețelei serverului țintă"
+
+#: win32/rsrc/snes9x.rc
+msgid "Server is stopped."
+msgstr "Găzduirea serverului de joc a fost oprită."
+
+#: win32/rsrc/snes9x.rc
+msgid "Server Lobby"
+msgstr "Lobby pentru multiplayer ca gazdă"
+
+#: win32/rsrc/snes9x.rc
+msgid "Server Name:"
+msgstr "Numele camerei de server creată:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Server Settings"
+msgstr "Reguli și setări pentru serverul de joc"
+
+#: win32/rsrc/snes9x.rc
+msgid "Set Defaults"
+msgstr "Resetează toate opțiunile la valorile implicite"
+
+#: win32/rsrc/snes9x.rc
+msgid "Set Value"
+msgstr "Alocă valoare fixă în memorie"
+
+#: win32/rsrc/snes9x.rc
+msgid "Settings"
+msgstr "Setări"
+
+#: win32/wlanguage.h
+msgid "SETTINGS NOT IN MOVIE; VERIFY:"
+msgstr "SETĂRILE NU SUNT ÎNREGISTRATE ÎN FILM; VERIFICAȚI INTEGRITATEA:"
+
+#: win32/rsrc/snes9x.rc
+msgid "SGB Mix"
+msgstr "Proporție canale mixer audio SGB"
+
+#: win32/rsrc/snes9x.rc
+msgid "SGB1"
+msgstr "Specificație SGB1"
+
+#: win32/rsrc/snes9x.rc
+msgid "SGB2"
+msgstr "Specificație SGB2"
+
+#: win32/rsrc/snes9x.rc
+msgid "Show Audio Waveform"
+msgstr "Afișează vizual forma de undă audio pe ecran"
+
+#: win32/rsrc/snes9x.rc
+msgid "Show Background"
+msgstr "Afișează stratul de fundal (Background) pe ecran"
+
+#: win32/rsrc/snes9x.rc
+msgid "Show Crosshair"
+msgstr "Afișează ținta/reticulul de ochire pe centrul ecranului"
+
+#: win32/rsrc/snes9x.rc
+msgid "Show Frame Number"
+msgstr "Afișează numărul cadrului curent din cronologie într-un colț"
+
+#: win32/rsrc/snes9x.rc
+msgid "Show Frame Rate"
+msgstr "Afișează rata de cadre în timp real (FPS)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Show Grid"
+msgstr "Afișează grila de ghidaj pentru tile-uri pe ecran"
+
+#: win32/wlanguage.h
+msgid "Show pressed keys:"
+msgstr "Afișează tastele sau butoanele apăsate în timp real:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Show screen"
+msgstr "Activează randarea ferestrei de afișaj"
+
+#: win32/rsrc/snes9x.rc
+msgid "Show Screen Outline"
+msgstr "Afișează linia de contor a ecranului"
+
+#: win32/rsrc/snes9x.rc
+msgid "Show Sprites"
+msgstr "Afișează obiectele grafice de tip sprite"
+
+#: win32/rsrc/snes9x.rc
+msgid "Show viewport"
+msgstr "Afișează zona vizibilă de randare (viewport)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Show Window"
+msgstr "Afișează fereastra principală a programului"
+
+#: win32/rsrc/snes9x.rc
+msgid "Signed (+/-)"
+msgstr "Tip de date cu semn algebraice (+/-)"
+
+#: win32/wlanguage.h
+msgid "Size"
+msgstr "Dimensiune fizică date"
+
+#: win32/rsrc/snes9x.rc
+msgid "Skip at most"
+msgstr "Sari automat peste maximum"
+
+#: win32/wlanguage.h
+msgid "Skip frames +:"
+msgstr "Tastă rapidă: Crește numărul de cadre sărite:"
+
+#: win32/wlanguage.h
+msgid "Skip frames -:"
+msgstr "Tastă rapidă: Scade numărul de cadre sărite:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Skip rendering"
+msgstr "Omite randarea cadrelor video"
+
+#: win32/wlanguage.h
+msgid "Skip Rendering"
+msgstr "Sari peste procesul de desenare video"
+
+#: win32/rsrc/snes9x.rc
+msgid "Slot +:"
+msgstr "Tastă rapidă: Schimbă slotul de salvare cu un pas înainte:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Slot -:"
+msgstr "Tastă rapidă: Schimbă slotul de salvare cu un pas înapoi:"
+
+#: win32/rsrc/snes9x.rc
+msgid "SNES Image"
+msgstr "Imagine cadru la rezoluție nativă SNES"
+
+#: win32/rsrc/snes9x.rc
+msgid "SuperSnes9x - Unable to Initialize XAudio2"
+msgstr "SuperSnes9x - Erorare: Inițializarea modulului XAudio2 a eșuat"
+
+#: win32/wlanguage.h
+msgid "SuperSnes9x Cheat Error"
+msgstr "Eroare la procesarea formatului intern de cheat în SuperSnes9x"
+
+#: win32/wlanguage.h
+msgid "SuperSnes9x Movie File"
+msgstr "Fișier specific SuperSnes9x pentru înregistrări video (.smv)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Socket Port Number"
+msgstr "Număr port socket pentru comunicație"
+
+#: win32/rsrc/snes9x.rc
+msgid "Soft Reset"
+msgstr "Resetare software soft"
+
+#: win32/wlanguage.h
+msgid "Soft reset:"
+msgstr "Tastă rapidă executare resetare soft:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Sound Driver:"
+msgstr "Driver API de sunet conectat la OS:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Sound Interpolation Type:"
+msgstr "Tip de algoritm pentru interpolarea și netezirea sunetului:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Sound Quality"
+msgstr "Calitate/rată eșantionare ieșire audio"
+
+#: win32/rsrc/snes9x.rc
+msgid "Sound Settings"
+msgstr "Setări control sistem sunet"
+
+#: win32/rsrc/snes9x.rc
+msgid "Source:"
+msgstr "Locație sursă sau origine date:"
+
+#: win32/rsrc/snes9x.rc
+msgid "SPC"
+msgstr "Format fișier audio SPC"
+
+#: win32/wlanguage.h
+msgid "SPCs"
+msgstr "Colecție de fișiere SPC exportate"
+
+#: win32/wlanguage.h
+msgid "Speed +:"
+msgstr "Tastă rapidă: Crește viteza / 배속 de rulare a emulatorului (accelerare):"
+
+#: win32/wlanguage.h
+msgid "Speed -:"
+msgstr "Tastă rapidă: Scade viteza / 배속 de rulare a emulatorului (încetinire):"
+
+#: win32/rsrc/snes9x.rc
+msgid "Spin1"
+msgstr "Spin control ajustare gradație 1"
+
+#: win32/rsrc/snes9x.rc
+msgid "Spin2"
+msgstr "Spin control ajustare gradație 2"
+
+#: win32/rsrc/snes9x.rc
+msgid "Spin3"
+msgstr "Spin control ajustare gradație 3"
+
+#: win32/rsrc/snes9x.rc
+msgid "Spin4"
+msgstr "Spin control ajustare gradație 4"
+
+#: win32/rsrc/snes9x.rc
+msgid "Sprite Viewer"
+msgstr "Vizualizator în timp real pentru sprite-uri din VRAM"
+
+#: win32/rsrc/snes9x.rc
+msgid "Sprite:"
+msgstr "Număr unic de identificare al obiectului sprite urmărit:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Sprites"
+msgstr "Grup de elemente grafice de tip sprite pe ecran"
+
+#: win32/wlanguage.h
+msgid "Sprites layer:"
+msgstr "Tastă rapidă pentru comutarea stratului vizibil de sprite-uri:"
+
+#: win32/wlanguage.h
+msgid "SRAM"
+msgstr "Bloc de date SRAM conservat"
+
+#: win32/rsrc/snes9x.rc
+msgid "START"
+msgstr "START"
+
+#: win32/rsrc/snes9x.rc
+msgid "Start Game"
+msgstr "Pornește rularea jocului în camera de multiplayer"
+
+#: win32/rsrc/snes9x.rc
+msgid "Start Server"
+msgstr "Pornește rularea locală a unui server dedicat"
+
+#: win32/rsrc/snes9x.rc
+msgid "Static"
+msgstr "Etichetă text ghid static"
+
+#: win32/rsrc/snes9x.rc
+msgid "Status"
+msgstr "Stare actuală conexiune rețea"
+
+#: win32/rsrc/snes9x.rc
+msgid "Stretch Image"
+msgstr "Întinde forțat imaginea pe toată lățimea ferestrei, ignorând proporțiile"
+
+#: win32/rsrc/snes9x.rc
+msgid "SuperFX Clock Speed %:"
+msgstr "Multiplicator viteză ceas cip suplimentar SuperFX %:"
+
+#: win32/rsrc/snes9x.rc
+msgid "SuperFX speed:"
+msgstr "Viteză de calcul cip suplimentar SuperFX:"
+
+#: win32/wlanguage.h
+msgid "SuperScope pause:"
+msgstr "Buton pauză mapat pentru accesoriul pistol optic SuperScope:"
+
+#: win32/wlanguage.h
+msgid "SuperScope turbo:"
+msgstr "Buton foc continuu / turbo mapat pentru pistolul optic SuperScope:"
+
+#: win32/wlanguage.h
+msgid "SuperSnes9x (x64)"
+msgstr "SuperSnes9x (Versiune nativă pe 64 de biți pentru Windows)"
+
+#: win32/rsrc/snes9x.rc
+msgid "SuperSnes9x - About"
+msgstr "Informații despre creatorii și drepturile SuperSnes9x"
+
+#: win32/wlanguage.h
+msgid "SuperSnes9x: DirectSound"
+msgstr "SuperSnes9x: Gestionare flux audio pe DirectSound"
+
+#: win32/wlanguage.h
+msgid "SuperSnes9x: Information"
+msgstr "SuperSnes9x: Fereastră notificare informații"
+
+#: win32/wlanguage.h
+msgid "SuperSnes9x: NetPlay Error"
+msgstr "SuperSnes9x: Eroare conexiune socket NetPlay de la distanță"
+
+#: win32/wlanguage.h
+msgid "SuperSnes9x: Sound CPU Question"
+msgstr "SuperSnes9x: Întrebare privind sincronizarea unității audio virtuale"
+
+#: win32/wlanguage.h
+msgid "SuperSnes9x: WARNING!"
+msgstr "SuperSnes9x: MESAJ DE AVERTIZARE IMPORTANT!"
+
+#: win32/rsrc/snes9x.rc
+msgid "Swap A and B"
+msgstr "Inversează poziția funcțională a butoanelor fizice A și B"
+
+#: win32/wlanguage.h
+msgid "Switch aspect Ratio:"
+msgstr "Tastă rapidă: Schimbă forțat raportul de aspect al imaginii:"
+
+#: win32/wlanguage.h
+msgid "Switch controllers:"
+msgstr "Tastă rapidă: Schimbă între ele porturile controlerelor:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Sync By Reset"
+msgstr "Sincronizare forțată prin resetarea completă a camerei în caz de erori"
+
+#: win32/rsrc/snes9x.rc
+msgid "Sync Sound"
+msgstr "Sincronizează cadrele video redate cu viteza bufferului de sunet"
+
+#: win32/rsrc/snes9x.rc
+msgid "Sync Using Reset Game"
+msgstr "Sincronizează prin resetarea automată a jocului la intrarea unui client nou"
+
+#: win32/rsrc/snes9x.rc
+msgid "Synchronize with sound core"
+msgstr "Sincronizează frecvența bufferului de sunet cu nucleul audio principal"
+
+#: win32/wlanguage.h
+msgid "TempTurbo"
+msgstr "Viteză turbo temporară activă doar pe durata apăsării tastei (TempTurbo)"
+
+#: win32/wlanguage.h
+msgid "Text file"
+msgstr "Document text standard (.txt)"
+
+#: win32/wlanguage.h
+msgid "The movie file is corrupt or in the wrong format."
+msgstr "Fișierul de înregistrare film este corupt sau are un format vechi nesuportat."
+
+#: win32/wlanguage.h
+msgid "The movie file was not found or could not be opened."
+msgstr "Fișierul de înregistrare film nu a fost găsit sau nu poate fi deschis din lipsă de permisiuni."
+
+#: win32/rsrc/snes9x.rc
+msgid "Tile Addr:"
+msgstr "Adresă sursă în memoria VRAM pentru tile-ul video:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Tile Data:"
+msgstr "Date brute de pixeli conținute în tile-ul respectiv:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Tile Size:"
+msgstr "Dimensiune în pixeli a grilei tile-ului grafic:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Tile Viewer"
+msgstr "Vizualizator în timp real pentru tile-urile din memoria grafică VRAM"
+
+#: win32/rsrc/snes9x.rc
+msgid "Tilemap"
+msgstr "Hartă de tile-uri (Tilemap)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Tilemap Viewer"
+msgstr "Vizualizator în timp real pentru așezarea tilemap-urilor de fundal"
+
+#: win32/rsrc/snes9x.rc
+msgid "Tiles"
+msgstr "Modele de tile-uri grafice"
+
+#: win32/rsrc/snes9x.rc
+msgid "Timeout:"
+msgstr "Timp maxim de așteptare pachet rețea (Timeout):"
+
+#: win32/rsrc/snes9x.rc
+msgid "Toggle Achievements Images"
+msgstr "Comută afișarea iconițelor de tip thumbnail pentru realizările obținute"
+
+#: win32/wlanguage.h
+msgid "Toggle backdrop:"
+msgstr "Tastă rapidă: Comută afișarea culorii de umplere a marginilor (backdrop):"
+
+#: win32/wlanguage.h
+msgid "Toggle cheats:"
+msgstr "Tastă rapidă: Activează / dezactivează global funcționarea listei de cheat-uri active:"
+
+#: win32/wlanguage.h
+msgid "Toggle mute:"
+msgstr "Tastă rapidă: Comută starea de oprire/pornire a volumului master de sunet:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Transparency Effects"
+msgstr "Activează efectele hardware de transparență și amestec alpha (alpha blending)"
+
+#: win32/wlanguage.h
+msgid "Transparency:"
+msgstr "Tastă rapidă pentru comutarea efectelor speciale de transparență:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Tree1"
+msgstr "Control layout vizualizare arborescentă 1"
+
+#: win32/wlanguage.h
+msgid "Turbo"
+msgstr "Mod viteză mărită / Turbo"
+
+#: win32/wlanguage.h
+msgid "Turbo A mode:"
+msgstr "Configurare mod auto-fire turbo pentru butonul A:"
+
+#: win32/wlanguage.h
+msgid "Turbo B mode:"
+msgstr "Configurare mod auto-fire turbo pentru butonul B:"
+
+#: win32/wlanguage.h
+msgid "Turbo Down mode:"
+msgstr "Configurare mod auto-fire turbo pentru butonul Jos:"
+
+#: win32/wlanguage.h
+msgid "Turbo L mode:"
+msgstr "Configurare mod auto-fire turbo pentru tragaciul L:"
+
+#: win32/wlanguage.h
+msgid "Turbo Left mode:"
+msgstr "Configurare mod auto-fire turbo pentru butonul Stânga:"
+
+#: win32/wlanguage.h
+msgid "Turbo R mode:"
+msgstr "Configurare mod auto-fire turbo pentru tragaciul R:"
+
+#: win32/wlanguage.h
+msgid "Turbo Right mode:"
+msgstr "Configurare mod auto-fire turbo pentru butonul Dreapta:"
+
+#: win32/wlanguage.h
+msgid "Turbo Select mode:"
+msgstr "Configurare mod auto-fire turbo pentru butonul Select:"
+
+#: win32/wlanguage.h
+msgid "Turbo Start mode:"
+msgstr "Configurare mod auto-fire turbo pentru butonul Start:"
+
+#: win32/wlanguage.h
+msgid "Turbo Up mode:"
+msgstr "Configurare mod auto-fire turbo pentru butonul Sus:"
+
+#: win32/wlanguage.h
+msgid "Turbo X mode:"
+msgstr "Configurare mod auto-fire turbo pentru butonul X:"
+
+#: win32/wlanguage.h
+msgid "Turbo Y mode:"
+msgstr "Configurare mod auto-fire turbo pentru butonul Y:"
+
+#: win32/wlanguage.h
+msgid "Uncompressed ROM files"
+msgstr "Fișiere ROM brute necomprimate în vreo arhivă"
+
+#: win32/wlanguage.h
+msgid "Unrecognized format."
+msgstr "Structura fișierului are un header necunoscut pe care emulatorul nu îl poate citi."
+
+#: win32/rsrc/snes9x.rc
+msgid "Unsigned (>=0)"
+msgstr "Tip de date fără semn, strict pozitive (>=0)"
+
+#: win32/wlanguage.h
+msgid "Unsupported movie version."
+msgstr "Versiunea structurii acestui fișier de înregistrare film nu este compatibilă cu emulatorul curent."
+
+#: win32/rsrc/snes9x.rc
+msgid "UP"
+msgstr "SUS"
+
+#: win32/rsrc/snes9x.rc
+msgid "UP LEFT"
+msgstr "SUS STÂNGA"
+
+#: win32/wlanguage.h
+msgid "Up Left"
+msgstr "Sus Stânga"
+
+#: win32/rsrc/snes9x.rc
+msgid "UP RIGHT"
+msgstr "SUS DREAPTA"
+
+#: win32/wlanguage.h
+msgid "Up Right"
+msgstr "Sus Dreapta"
+
+#: win32/rsrc/snes9x.rc
+msgid "Update"
+msgstr "Actualizează / Salvează modificările"
+
+#: win32/rsrc/snes9x.rc
+msgid "Use CGRAM"
+msgstr "Folosește sincronizarea directă cu memoria paletei de culori CGRAM"
+
+#: win32/rsrc/snes9x.rc
+msgid "Use DirectInput"
+msgstr "Folosește API-ul DirectInput pentru maparea controlerelor de generație veche"
+
+#: win32/rsrc/snes9x.rc
+msgid "Use Dual Justifiers"
+msgstr "Folosește ambele pistoale virtuale tip Konami Justifier pentru joc în 2 jucători"
+
+#: win32/rsrc/snes9x.rc
+msgid "Use Konami Justifier"
+msgstr "Folosește intrarea de pistol optic tip Konami Justifier"
+
+#: win32/rsrc/snes9x.rc
+msgid "Use M.A.C.S. Rifle"
+msgstr "Folosește intrarea de pușcă militară virtuală tip M.A.C.S. Rifle"
+
+#: win32/rsrc/snes9x.rc
+msgid "Use Mouse in alternate port"
+msgstr "Folosește mouse-ul virtual în portul secundar de controler"
+
+#: win32/rsrc/snes9x.rc
+msgid "Use Multitaps (8-player)"
+msgstr "Folosește adaptorul Multitap dublu (suport pentru maxim 8 jucători simultan)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Use Shader"
+msgstr "Aplică fișierul shader hardware pe imaginea de ieșire"
+
+#: win32/rsrc/snes9x.rc
+msgid "Use SNES Joypad(s)"
+msgstr "Folosește profilul standard de gamepad 가상 SNES cu 16 butoane"
+
+#: win32/rsrc/snes9x.rc
+msgid "Use SNES Mouse"
+msgstr "Folosește mouse-ul standard virtual tip SNES Mouse"
+
+#: win32/rsrc/snes9x.rc
+msgid "Use Super Multitap (5-player)"
+msgstr "Folosește adaptorul clasic Super Multitap (suport pentru maxim 5 jucători)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Use Super Scope"
+msgstr "Folosește accesoriul tip bazooka/pistol optic virtual Super Scope"
+
+#: win32/rsrc/snes9x.rc
+msgid "User Agent: SuperSnes9x/1.63"
+msgstr "Șir de identificare User Agent: SuperSnes9x/1.63"
+
+#: win32/rsrc/snes9x.rc
+msgid "Username:"
+msgstr "Nume de utilizator cont:"
+
+#: win32/wlanguage.h
+msgid "Value"
+msgstr "Valoare fizică conținută la adresă"
+
+#: win32/rsrc/snes9x.rc
+msgid "Value (hex):"
+msgstr "Valoare de modificat (în cod/format hexazecimal):"
+
+#: win32/rsrc/snes9x.rc
+msgid "Video"
+msgstr "Video"
+
+#: win32/rsrc/snes9x.rc
+msgid "Video System:"
+msgstr "Standard sistem video broadcast (Autodetecție NTSC / PAL):"
+
+#: win32/rsrc/snes9x.rc
+msgid "Volume"
+msgstr "Volum master sunet ieșire"
+
+#: win32/rsrc/snes9x.rc
+msgid "VSync"
+msgstr "Activează sincronizarea pe verticală (VSync) contra ruperii imaginii"
+
+#: win32/wlanguage.h
+msgid "WARNING: You don't have the right ROM loaded!"
+msgstr "AVERTISMENT DE SIGURANȚĂ: Versiunea fișierului ROM încărcat nu se potrivește cu cerințele acestui fișier de cheat/înregistrare!"
+
+#: win32/rsrc/snes9x.rc
+msgid "Watch"
+msgstr "Monitorizare valori memorie"
+
+#: win32/rsrc/snes9x.rc
+msgid "Welcome Message (MOTD)"
+msgstr "Mesaj automat de întâmpinare (MOTD) afișat clienților la intrarea în cameră"
+
+#: win32/rsrc/snes9x.rc
+msgid "Width:"
+msgstr "Lățime pixel rezoluție:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Window Size"
+msgstr "Dimensiunea standard a ferestrei emulatorului pe desktop"
+
+#: win32/rsrc/snes9x.rc
+msgid "WOG!"
+msgstr "WOG! Identificator motor procesare evenimente speciale"
+
+#: win32/wlanguage.h
+msgid "You have entered an out of range or invalid value for the new value"
+msgstr "Valoarea pe care încercați să o introduceți depășește limita admisă sau are un format de cod greșit."
+
+#: win32/wlanguage.h
+msgid "You need a different version of SuperSnes9x to play this movie."
+msgstr "Aveți nevoie de o altă versiune specifică de SuperSnes9x pentru a putea reda corect acest fișier de înregistrare film."
+
+#: win32/rsrc/snes9x.rc
+msgid ""
+"Your password is only used to get an API token.\n"
+"It is never stored."
+msgstr ""
+"Parola dvs. este folosită exclusiv o singură dată pentru a obține un token de autentificare securizat de la serverul web API.\n"
+"Aceasta nu este salvată sau stocată niciodată nicăieri, nici local, nici la distanță."
+
+#: win32/rsrc/snes9x.rc
+msgid "Zoom:"
+msgstr "Factor de mărire / Zoom imagine:"
+
+# === Win32 strings (added by i18n/extract_strings.py) ===
+#: win32/CSpriteViewerDlg.cpp
+msgid "Export Selected to PNG"
+msgstr "Exportă sprite-ul selectat ca fișier imagine PNG cu transparență alpha"
+
+#: win32/CGBSpriteViewerDlg.cpp
+msgid "Export to PNG"
+msgstr "Exportă în format imagine PNG fără pierderi de calitate"
+
+#: win32/CSpriteViewerDlg.cpp
+msgid "Show All Objects"
+msgstr "Forțează afișarea pe ecran a tuturor obiectelor grafice din tabelul VRAM"
+
+#: win32/CSpriteViewerDlg.cpp
+msgid "Show Only Selected Objects"
+msgstr "Afișează pe ecran exclusiv elementele selectate manual din tabel"
+
+#: win32/CSpriteViewerDlg.cpp
+msgid "Toggle Visibility"
+msgstr "Comută vizibilitatea pe ecran a elementului sprite selectat"
+
+#: win32/wsnes9x.cpp
+msgid "Translations"
+msgstr "Gestionare module pachete de limbi pentru traduceri"
+
+# === Win32 strings (added by i18n/extract_strings.py) ===
+#: win32/wsnes9x.cpp
+msgid "Language"
+msgstr "Limbă interfață localizată"
+
+# === Win32 strings (added by i18n/extract_strings.py) ===
+#: qt/src/SoundPanel.ui
+msgid "44100 Hz"
+msgstr "44100 Hz"
+
+#: qt/src/SoundPanel.ui
+msgid "48000 Hz"
+msgstr "48000 Hz"
+
+#: qt/src/DisplayPanel.ui
+msgid "4:3 - Classic display aspect"
+msgstr "4:3 - Proporție ecran clasică a televizoarelor cu tub CRT"
+
+#: qt/src/DisplayPanel.ui
+msgid "64:49 - NTSC aspect"
+msgstr "64:49 - Raport de aspect idealizat pentru semnalul NTSC analogic"
+
+#: qt/src/DisplayPanel.ui
+msgid "8:7 - Square pixels"
+msgstr "8:7 - Pixeli pătrați puri unu-la-unu fără nicio deformare la extindere"
+
+#: qt/src/EmulationPanel.ui
+msgid ""
+"<html><head/><body><p>A hack option. Only use this if you are running a "
+"third-party hack of a game that was designed for emulators and needs "
+"this.</p></body></html>"
+msgstr "<html><head/><body><p>O opțiune de modificare a sincronizării. Folosiți această funcție exclusiv dacă rulați un hack neoficial (mod de joc de la terți) care a fost proiectat special pentru a rula doar pe emulatoare de PC și care solicită explicit această alterare de timing pentru a porni.</p></body></html>"
+
+#: qt/src/EmulationPanel.ui
+msgid ""
+"<html><head/><body><p>Allows more sprites to be displayed on the screen in "
+"an attempt to remove flickering.</p><p>Some games take advantage of this "
+"limit and use it to hide glitches, and removing the limit will make those "
+"visible.</p></body></html>"
+msgstr "<html><head/><body><p>Permite eliminarea limitei hardware originale de sprite-uri pe o linie orizontală, reducând fenomenul de clipire/dispariție intermitentă (flickering) a obiectelor când se adună prea multe elemente pe ecran.</p><p>Atenție: Unele jocuri vechi foloseau intenționat această limită fizică pentru a ascunde resturi grafice sau erori de randare de la marginea ecranului. Eliminarea limitei hardware va face ca acele anomalii și glitch-uri să devină vizibile.</p></body></html>"
+
+#: qt/src/EmulationPanel.ui
+msgid ""
+"<html><head/><body><p>Alternate sound filters can make the audio more crisp "
+"than the authentic gaussian filter.</p><p>The Cubic and Sinc filters provide"
+" the best improvement, but they can reveal some noise that would normally be"
+" hidden by the hardware.</p></body></html>"
+msgstr "<html><head/><body><p>Filtrele audio alternative pot face ca sunetul emulat să aibă frecvențe înalte mult mai clare și definite decât filtrul original estompat de tip Gaussian.</p><p>Algoritmii Cubic și Sinc oferă cea mai mare îmbunătățire pe partea de fidelitate înaltă, dar din această cauză pot lăsa să se audă și zgomote de fond sau reziduuri de joasă fidelitate specifice jocurilor pe 8 biți, care în mod normal erau mascate de hardware-ul original al consolei.</p></body></html>"
+
+#: qt/src/EmulationPanel.ui
+msgid ""
+"<html><head/><body><p>Amount of memory to use to enable the rewind function."
+" The amount of time each MB gets you varies based on the complexity of the "
+"game. Set to 0 to disable rewind altogether and use less processor "
+"time.</p></body></html>"
+msgstr "<html><head/><body><p>Specifică cantitatea de memorie RAM pe care emulatorul o va rezerva ca spațiu de stocare cache pentru funcția de derulare înapoi (rewind) în timp real. Timpul stocat per megabyte variază în funcție de complexitatea grafică și calculele jocului. Setați valoarea la 0 pentru a dezactiva complet această funcție, anulând totodată overhead-ul de procesare de pe CPU, ceea ce poate crește performanța emulatorului.</p></body></html>"
+
+#: qt/src/EmulationPanel.ui
+msgid ""
+"<html><head/><body><p>Change the speed of the SuperFX chip. The SuperFX had "
+"some notoriously slow games, and this can be used to attempt to speed them "
+"up.</p></body></html>"
+msgstr "<html><head/><body><p>Modifică frecvența de tact (overclocking) a cipului suplimentar de accelerare 3D / vectori de pe placa jocurilor, numit SuperFX. Unele jocuri originale care foloseau acest cip aveau performanțe foarte scăzute și rulau sacadat din cauza limitărilor fizice din acea epocă; mărirea acestei valori poate îmbunătăți considerabil fluiditatea cadrelor și fluiditatea în acele jocuri, fără a altera viteza de desfășurare a jocului.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid ""
+"<html><head/><body><p>Choose one of <span style=\" font-style:italic;\">Qt "
+"Software, Vulkan, or OpenGL</span>.</p><p>Qt Software will use the CPU to "
+"draw the display. Vulkan or OpenGL will use that respective graphics "
+"interface to draw the display.</p></body></html>"
+msgstr "<html><head/><body><p>Selectează API-ul de randare grafică de ieșire pe care emulatorul îl va folosi pentru a desena fereastra de joc: <span style=\" font-style:italic;\">Qt Software (randare prin software), Vulkan sau OpenGL</span>.</p><p>Opțiunea Qt Software va folosi exclusiv puterea procesorului principal (CPU) pentru a calcula și desena manual fiecare pixel de pe ecran (compatibilitate mare, dar încărcare mare la viteze mari). Opțiunile Vulkan sau OpenGL vor folosi direct accelerarea hardware a plăcii dvs. video (GPU), oferind suport facil pentru shadere complexe și performanță ridicată.</p></body></html>"
+
+#: qt/src/ControllerPanel.ui
+msgid ""
+"<html><head/><body><p>Clear or swap sets of bindings between "
+"controllers.</p></body></html>"
+msgstr "<html><head/><body><p>Șterge definitiv sau inversează complet între ele seturile de taste configurate pentru controlere (de exemplu, între portul de Jucător 1 și Jucător 2).</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid ""
+"<html><head/><body><p>Control how much the audio is stretched "
+"initially.</p><p><br/></p><p>Unless you know what you're doing, it's best to"
+" use the option above this to adjust it automatically.</p></body></html>"
+msgstr "<html><head/><body><p>Controlează manual valoarea inițială de întindere (stretching) aplicată undei audio pentru sincronizare.</p><p><br/></p><p>Cu excepția cazului în care sunteți un utilizator avansat care știe exact cum să regleze manual bufferul, este recomandat să bifați opțiunea de deasupra pentru a lăsa emulatorul să ajusteze automat rata audio în funcție de performanță.</p></body></html>"
+
+#: qt/src/FoldersPanel.ui
+msgid ""
+"<html><head/><body><p>Determines where to look for optional BIOS / boot ROM "
+"files (Super Game Boy boot ROM, BS-X.bin, etc).</p><p><span style=\" font-"
+"style:italic;\">ROM Folder</span> looks next to the loaded ROM.</p><p><span "
+"style=\" font-style:italic;\">Config Folder</span> uses a \"bios\" subfolder"
+" of the config folder.</p><p><span style=\" font-"
+"style:italic;\">Custom</span> uses an explicit path (default: \"Bios\" "
+"relative to the working directory).</p></body></html>"
+msgstr "<html><head/><body><p>Stabilește directorul de unde emulatorul va scana fișierele opționale de BIOS sau boot ROM pentru accesorii (cum ar fi fișierul boot ROM pentru Super Game Boy, imaginea BS-X.bin pentru Satellaview etc.).</p><p><span style=\" font-style:italic;\">Directorul ROM</span> caută fișierele BIOS chiar în folderul unde se află jocul deschis.</p><p><span style=\" font-style:italic;\">Directorul Config</span> caută într-o sub-mapă numită „bios” aflată în interiorul directorului principal de configurare.</p><p><span style=\" font-style:italic;\">Personalizat</span> permite indicarea manuală a unei căi absolute de pe disc (implicit: folderul „Bios” din directorul curent de lucru).</p></body></html>"
+
+#: qt/src/FoldersPanel.ui
+msgid ""
+"<html><head/><body><p>Determines where to save these files.</p><p><span "
+"style=\" font-style:italic;\">ROM Folder</span> will always save to the same"
+" folder as the ROM.</p><p><span style=\" font-style:italic;\">Config "
+"Folder</span> will save to a subfolder of the config folder that is shown. "
+"If there is a supersnes9x.conf file next to your executable, SuperSnes9x will operate "
+"in portable mode and the config folder will be the folder the executable is "
+"in.</p><p><span style=\" font-style:italic;\">Custom</span> allows you to "
+"specify exactly where to save these files.</p></body></html>"
+msgstr "<html><head/><body><p>Stabilește locația fizică pe disc unde vor fi salvate fișierele generate de utilizator (stări salvate rapid, configurări de cheat-uri, salvări interne tip SRAM din joc).</p><p><span style=\" font-style:italic;\">Directorul ROM</span> va scrie datele întotdeauna în același folder în care este stocat fișierul jocului rulează.</p><p><span style=\" font-style:italic;\">Directorul Config</span> va scrie datele într-o sub-mapă din interiorul folderului central de configurare afișat mai jos. De reținut: dacă plasați un fișier de configurare gol cu numele „snes9x.conf” chiar în folderul de bază al executabilului (.exe), SuperSnes9x va intra automat în modul portabil, iar directorul config va deveni folderul curent al aplicației.</p><p><span style=\" font-style:italic;\">Personalizat</span> vă oferă libertatea de a alege un folder dedicat separat (de exemplu, o mapă sincronizată în cloud) pentru a stoca organizat toate aceste fișiere.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid ""
+"<html><head/><body><p>Erases all emulated sound output and just sends out "
+"silence.</p></body></html>"
+msgstr "<html><head/><body><p>Șterge complet orice semnal audio generat de giả lập și trimite către placa de sunet doar date de liniște totală (semnal gol).</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid ""
+"<html><head/><body><p>If after everything, you're still getting pops and "
+"crackles in audio, you can increase this value. However, it may cause "
+"noticeable distortion.</p></body></html>"
+msgstr "<html><head/><body><p>Dacă, după ce ați încercat toate reglajele de sincronizare, sunetul continuă să aibă întreruperi, pocnituri mici sau pârâituri (Pops and Crackles) din cauza desincronizării bufferului, puteți mări această valoare de siguranță. Atenție însă: mărirea excesivă a acestei valori va distorsiona calitatea audio și va produce un efect de ecou sau de sunet modificat artificial sesizabil la redare.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid ""
+"<html><head/><body><p>Master output volume during normal play. Moving this "
+"also drags the per-source SGB sliders so they stay in "
+"step.</p></body></html>"
+msgstr "<html><head/><body><p>Reglează volumul principal total de ieșire (Master Volume) în timpul rulării normale la viteză standard a jocurilor. Tragerea acestui indicator va deplasa automat și glisoarele secundare specifice canalelor Super Game Boy (SGB) pentru a păstra proporția corectă a volumului pe fiecare canal audio.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid ""
+"<html><head/><body><p>Master output volume during turbo and "
+"rewind.</p></body></html>"
+msgstr "<html><head/><body><p>Reglează volumul principal total de ieșire în momentele în care activați funcția de viteză accelerată (turbo) sau funcția de derulare înapoi (rewind).</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid ""
+"<html><head/><body><p>Mutes sound when using the turbo and rewind functions, "
+"which might be annoying to some users.</p></body></html>"
+msgstr "<html><head/><body><p>Dezactivează complet sunetul (Mute) în timp ce rulează funcțiile de turbo sau derulare înapoi, prevenind redarea acelor sunete accelerate distorsionate la viteze mari, care pot fi extrem de deranjante pentru auzul utilizatorilor.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid ""
+"<html><head/><body><p>On classic CRT televisions, some areas of the screen "
+"were covered by the bezel, so weren't used often in games. This option "
+"allows you to show that area, but it will usually be just black "
+"bars.</p></body></html>"
+msgstr "<html><head/><body><p>Pe vechile televizoare cu tub CRT, marginile extreme ale semnalului video erau acoperite fizic de masca de plastic (bezel) a televizorului (fenomen numit overscan). Din acest motiv, majoritatea dezvoltatorilor de jocuri lăsau acele margini goale, fără elemente de UI. Activarea acestei opțiuni va forța emulatorul să afișeze și acele zone marginale ascunse, însă în majoritatea jocurilor ele vor apărea doar ca niște benzi negre adiționale (letterboxing).</p></body></html>"
+
+#: qt/src/EmulationPanel.ui
+msgid ""
+"<html><head/><body><p>Original controllers may have had a small pin in the "
+"dpad preventing left and right or up and down from being pressed at the same"
+" time. This will allow that behavior if you're using a keyboard or device "
+"that can press those buttons at the same time. Some games will glitch when "
+"this is done.</p></body></html>"
+msgstr "<html><head/><body><p>Gamepad-urile originale de consolă aveau în interiorul butonului direcțional (D-pad) un mic pivot central din plastic. Acest element fizic împiedica din fabrică apăsarea simultană a direcțiilor opuse (cum ar fi Stânga+Dreapta sau Sus+Jos). Tastaturile de PC sau controlerele moderne permit trimiterea acestor semnale simultane către emulator. Bifarea acestei opțiuni lasă comenzile opuse să treacă nemodificate spre logica jocului; totuși, rețineți că multe jocuri clasice nu au fost programate să gestioneze aceste comenzi imposibile și pot suferi erori grave, glitch-uri de mișcare sau blocaje de memorie.</p></body></html>"
+
+#: qt/src/EmulationPanel.ui
+msgid ""
+"<html><head/><body><p>Override the frame rate of the emulated system. This "
+"can be used to run slightly faster or slower than usual, or to match the "
+"timer to your exact refresh rate.</p><p><br/></p><p>Set this to 0 to use "
+"whatever the emulated system uses.</p></body></html>"
+msgstr "<html><head/><body><p>Suprascrie rata țintă de cadre pe secundă (frame rate) a nucleului emulat. Aceasta poate fi folosită pentru a rula jocul artificial puțin mai repede sau mai lent, ori pentru a potrivi temporizatorul emulatorului exact cu rata de reîmprospătare a monitorului dvs., eliminând micro-sacadările.</p><p><br/></p><p>Lăsați valoarea la „0” (implicit) pentru ca emulatorul să folosească automat standardul original al jocului rulat (60 FPS pentru formatele NTSC și 50 FPS pentru formatele PAL).</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid ""
+"<html><head/><body><p>Selects the driver to output sound with.</p><p><span "
+"style=\" font-style:italic;\">Cubeb: </span>The recommended "
+"option.</p><p><span style=\" font-style:italic;\">SDL</span>: If Cubeb "
+"doesn't work.</p><p><span style=\" font-style:italic;\">PulseAudio:</span> "
+"Unix only. May have less latency.</p></body></html>"
+msgstr "<html><head/><body><p>Selectează driverul API prin care emulatorul va trimite semnalul de sunet către sistemul de operare.</p><p><span style=\" font-style:italic;\">Cubeb: </span>Este opțiunea modernă cross-platform optimizată și recomandată de dezvoltatori datorită latenței reduse și stabilității bufferului.</p><p><span style=\" font-style:italic;\">SDL</span>: Interfață multimedia clasică; folosiți-o ca soluție de rezervă dacă din motive de conflict hardware sunetul nu funcționează sau pârâie pe modul Cubeb.</p><p><span style=\" font-style:italic;\">PulseAudio:</span> Opțiune vizibilă exclusiv pe sistemele Unix/Linux, oferind o rutare directă în kernel cu o latență foarte mică.</p></body></html>"
+
+#: qt/src/FoldersPanel.ui
+msgid ""
+"<html><head/><body><p>Setting this to anything other than 0 will save the "
+"SRAM (internal game saves) file regularly. If it is set to to 0, it will "
+"only save when exiting SuperSnes9x or changing games, and you will lose any "
+"progress since the last save if your device crashes.</p></body></html>"
+msgstr "<html><head/><body><p>Configurarea acestei valori la un număr de secunde mai mare de 0 va forța emulatorul să scrie periodic pe hard disk datele salvărilor SRAM făcute în meniurile jocurilor. Dacă valoarea este lăsată la 0, datele de salvare din joc vor fi scrise efectiv fizic în fișierul .srm de pe disc doar în momentul în care închideți complet emulatorul sau schimbați jocul. În acest caz, dacă aplicația se blochează brusc, sistemul dă blue screen sau pică curentul în timpul jocului, riscați să pierdeți progresul acumulat de la ultima deschidere.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid ""
+"<html><head/><body><p>SGB BIOS mix: GB channel volume. Active in SGB1/SGB2 "
+"BIOS mode; in BIOS-less mode this mirrors the Regular master, which is what "
+"actually scales GB output.</p></body></html>"
+msgstr "<html><head/><body><p>Mixaj SGB BIOS (SGB BIOS mix): Reglează volumul canalului audio provenit de la nucleul de Game Boy (GB). Această opțiune este activă doar în cazul în care folosiți fișierele originale de BIOS pentru accesoriile SGB1 sau SGB2; în modul fără BIOS (BIOS-less), acest control va urmări în mod sclav setarea volumului Master principal, care se ocupă direct de scalarea ieșirii GB.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid ""
+"<html><head/><body><p>SGB BIOS mix: SPC channel volume. Only active in "
+"SGB1/SGB2 BIOS mode — BIOS-less GB playback discards SPC "
+"output.</p></body></html>"
+msgstr "<html><head/><body><p>Mixaj SGB BIOS (SGB BIOS mix): Reglează volumul canalului SPC de sunet generat de cipul SNES în timpul emulării Super Game Boy. Este activ exclusiv în modul de emulare ce folosește fișierele de BIOS SGB1/SGB2 — redarea fără BIOS ignoră complet ieșirea din acest canal.</p></body></html>"
+
+#: qt/src/EmulationPanel.ui
+msgid ""
+"<html><head/><body><p>This controls how the program runs the emulated "
+"content at the correct speed.</p><p><span style=\" font-"
+"style:italic;\">Timer</span>: This sets a literal timer and shows emulated "
+"frames at the exact frame rate specified, or automatically matches the "
+"emulated system. It may not match your display's frame rate, which can cause"
+" judders.</p><p><span style=\" font-style:italic;\">Timer with "
+"Frameskipping</span>: The same as timer, except if your display has a lower "
+"refresh rate than the emulated system it will skip frames to keep "
+"up.</p><p><span style=\" font-style:italic;\">Sound Synchronization: "
+"</span>Assume the sound engine is outputting the sound at the correct speed "
+"and match the video output rate with it. This assumes your refresh rate is "
+"fairly close to the emulated system and you have vsync turned "
+"on.</p><p><span style=\" font-style:italic;\">None:</span> Don't attempt to "
+"slow emulation down. If you turn off vsync, this will run as fast as "
+"possible. If your display matches the emulated system's refresh rate "
+"closely, this with vsync enabled is generally the smoothest option aside "
+"from variable refresh rates with a timer.</p></body></html>"
+msgstr "<html><head/><body><p>Acest meniu controlează mecanismul prin care emulatorul limitează viteza de execuție a jocului pentru a corespunde vitezei reale a consolei originale, fără a fi accelerat de puterea PC-ului.</p><p><span style=\" font-style:italic;\">Temporizator (Timer)</span>: Setează un ceas intern fix și redă cadrele emulate exact la rata specificată sau adaptată automat la consola originală. Deoarece ceasul intern poate să difere ușor de rata de împrospătare reală a monitorului dvs., pot apărea mici sacadări vizuale fine (judder) la derularea ecranului.</p><p><span style=\" font-style:italic;\">Temporizator cu săritură cadre</span>: Funcționează pe același principiu, dar în cazul în care placa video sau monitorul au o rată mai mică de reîmprospătare sau PC-ul încetinește, aplicația va omite redarea grafică a unor cadre (Frame Skip) pentru ca viteza logicii jocului să rămână cea corectă.</p><p><span style=\" font-style:italic;\">Sincronizare audio: </span>Consideră viteza de redare a bufferului de sunet ca fiind ceasul de referință absolut și obligă cadrele video de ieșire să fie redate în pas cu sunetul. Necesită ca rata de reîmprospătare a monitorului dvs. să fie foarte apropiată de cea a consolei și ca opțiunea de sincronizare pe verticală (vsync) să fie activă pentru o fluiditate maximă.</p><p><span style=\" font-style:italic;\">Niciunul (None)</span>: Elimină orice barieră sau limitare de temporizare. Dacă dezactivați și funcția vsync, jocul va rula la viteze uriașe, consumând maximum din resursele PC-ului. Totuși, dacă monitorul dvs. rulează nativ la o frecvență fixă identică cu cea a consolei (ex. 60Hz), dezactivarea temporizatorului intern și activarea strictă a vsync-ului va oferi cea mai fluidă mișcare de derulare posibilă fără sacadări.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid ""
+"<html><head/><body><p>This option adapts <span style=\" font-"
+"style:italic;\">maintain aspect ratio</span> and scales the image in steps "
+"of integral scale, so game pixels are never spread across the borders of "
+"screen pixels.</p></body></html>"
+msgstr "<html><head/><body><p>Această opțiune extinde funcția de <span style=\" font-style:italic;\">menținere a raportului de aspect</span>, dar forțează scalarea ferestrei de joc exclusiv la multipli întregi ficși (1x, 2x, 3x, 4x, 5x). Astfel, pixelii originali ai jocului se vor suprapune perfect pe rețeaua de pixeli a monitorului modern, eliminând distorsiunile asimetrice sau neclaritățile marginilor ce apar la utilizarea unor rezoluții cu zecimale, păstrând aspectul clasic de pixel art perfect definit.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid ""
+"<html><head/><body><p>This option affects how <span style=\" font-"
+"style:italic;\">maintain aspect ratio </span>works. </p><p><span style=\" "
+"font-style:italic;\">4:3 </span>will maintain a ratio where the screen is "
+"1.333 times wider than high.</p><p>64:49 presents an idealized ratio where "
+"the display output is perfect, but is affected by NTSC "
+"compression.</p><p>1:1 Means pixels will be square. This will squeeze the "
+"image horizontally.</p></body></html>"
+msgstr "<html><head/><body><p>Această opțiune configurează modul exact în care funcționează regula de <span style=\" font-style:italic;\">menținere a raportului de aspect</span>. </p><p><span style=\" font-style:italic;\">Modul 4:3</span>: Menține proporția standard a televizoarelor clasice, unde lățimea imaginii este de 1.333 ori mai mare decât înălțimea, fiind modul cel mai familiar pentru majoritatea jucătorilor.</p><p>Modul 64:49: Oferă raportul matematic idealizat generat de cipul consolei, dar include corecția pentru compresia analogică a semnalului NTSC.</p><p>Modul 1:1: Pixeleii jocului vor fi redați ca pătrate perfecte. Această setare va duce la o comprimare destul de accentuată a imaginii pe orizontală, făcând ecranul să pară îngust.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid ""
+"<html><head/><body><p>This option causes the audio to be slightly stretched "
+"to keep the latency even and to prevent underruns and overruns, which will "
+"cause pops and cracks in the audio.</p></body></html>"
+msgstr "<html><head/><body><p>Această opțiune determină întinderea (stretching) discretă și dinamică a undelor audio emulate pentru a păstra latența stabilă și pentru a preveni golirea sau supraîncărcarea bufferului de date (underruns / overruns). Activarea acesteia elimină complet acele pocnituri, sacadări sau micro-întreruperi enervante din sunet.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid ""
+"<html><head/><body><p>This option determines whether messages show up in the"
+" game display:</p><p>Onscreen will show a high resolution overlay when using"
+" <span style=\" font-style:italic;\">Vulkan</span> or <span style=\" font-"
+"style:italic;\">OpenGL</span>.</p><p>Inscreen will draw in a pixel font to "
+"the ingame display.</p><p>Don't display messages will show "
+"nothing.</p></body></html>"
+msgstr "<html><head/><body><p>Această opțiune stabilește cum vor fi afișate mesajele și notificările de sistem pe ecran (cum ar fi numărul slotului la salvarea rapidă sau notificările turbo):</p><p>Pe ecran (Onscreen): Va genera un text suprapus la rezoluție înaltă, elegant și ușor de citit, atunci când randarea folosește driverele hardware <span style=\" font-style:italic;\">Vulkan</span> sau <span style=\" font-style:italic;\">OpenGL</span>.</p><p>În ecran (Inscreen): Va desena notificările folosind un font de text stilizat din pixeli direct în interiorul bufferului video al jocului.</p><p>Nu afișa mesaje (Don't display messages): Ascunde complet orice mesaj sau notificare de alertă pe ecran.</p></body></html>"
+
+#: qt/src/EmulationPanel.ui
+msgid ""
+"<html><head/><body><p>This option is explicitly for old AddMusic hacks. If "
+"you know you have one of those, you can enable this. Otherwise, leave it "
+"unchecked.</p></body></html>"
+msgstr "<html><head/><body><p>Această funcție este destinată exclusiv rulării hack-urilor de ROM vechi care au fost create folosind instrumente audio de tip AddMusic din generațiile timpurii. Dacă știți că jocul dvs. modificat aparține acelei categorii, puteți bifa opțiunea; altfel, lăsați-o nemarcată, deoarece poate bloca sau opri redarea sunetului în jocurile normale.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid ""
+"<html><head/><body><p>This option keeps the proportions of the emulated "
+"display the same no matter how you change the size of the "
+"window.</p></body></html>"
+msgstr "<html><head/><body><p>Această opțiune forțează emulatorul să păstreze proporțiile geometrice originale ale imaginii intacte, indiferent de modul în care trageți de marginile ferestrei aplicației sau îi schimbați dimensiunea pe desktop.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid ""
+"<html><head/><body><p>This option only affects the size of the font and the "
+"icons shown when display messages are set to the <span style=\" font-"
+"style:italic;\">Onscreen</span> option.</p></body></html>"
+msgstr "<html><head/><body><p>Acest glisor controlează dimensiunea fontului de text și a pictogramelor de avertizare afișate, fiind funcțional doar dacă opțiunea de notificări de mai sus este configurată pe modul <span style=\" font-style:italic;\">Sarcina pe ecran (Onscreen)</span>.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid ""
+"<html><head/><body><p>This option only affects the SNES's high-resolution, "
+"512 pixel wide mode. Few games use this. </p><p><span style=\" font-"
+"style:italic;\">Output directly</span> will use whatever is output directly, "
+"but when the game changes modes, the filtering will get sharper or blurrier "
+"and may be distracting.</p><p><span style=\" font-style:italic;\">Merge "
+"fields </span>will scale the image down and blend the extra pixels together. "
+"This is useful in games like Jurassic Park and Kirby's Dreamland 3, which "
+"use it for a transparency effect.</p><p><span style=\" font-"
+"style:italic;\">Scale low resolution </span>will double the width of low-"
+"resolution screens, so when the game switches between modes there isn't any "
+"distracting changes in filtering. This is useful when a game uses the high "
+"resolution mode often, like Seiken Densetsu 3.</p></body></html>"
+msgstr "<html><head/><body><p>Această setare avansată influențează modul în care emulatorul gestionează modul special de rezoluție extinsă la 512 pixeli pe orizontală al consolei SNES, mod utilizat destul de rar de dezvoltatori.</p><p><span style=\" font-style:italic;\">Ieșire directă (Output directly)</span>: Trimite semnalul video brut exact așa cum iese din logica jocului. În jocurile care schimbă des rezoluția în timpul gameplay-ului, veți observa cum marginile devin brusc foarte clare sau foarte încețoșate, lucru ce poate fi deranjant vizual.</p><p><span style=\" font-style:italic;\">Îmbbinare câmpuri (Merge fields)</span>: Scalează și amestecă pixelii suplimentari generați. Este o setare esențială pentru a reproduce corect efectele de falsă transparență folosite în titluri precum Jurassic Park sau Kirby's Dreamland 3.</p><p><span style=\" font-style:italic;\">Dublare rezoluție mică (Scale low resolution)</span>: Dublează lățimea cadrelor standard din start, astfel încât atunci când jocul face trecerea spre modul de rezoluție înaltă, textura și claritatea imaginii să rămână uniforme, fără modificări de filtrare. Este recomandat pentru jocuri care apelează frecvent la rezoluția înaltă în meniuri sau dialoguri, cum ar fi Seiken Densetsu 3.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid ""
+"<html><head/><body><p>This option prevents tearing in the "
+"output.</p></body></html>"
+msgstr "<html><head/><body><p>Această opțiune previne apariția liniilor de rupere orizontală a imaginii (tearing) la împrospătarea cadrelor video de ieșire.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid ""
+"<html><head/><body><p>This option stretches the emulated audio output to "
+"coincide exactly with your display's refresh rate. It automatically handles "
+"the <span style=\" font-style:italic;\">Input Rate</span> "
+"option.</p></body></html>"
+msgstr "<html><head/><body><p>Această funcție întinde discret frecvența audio emulată pentru a o alinia perfect cu rata fizică de reîmprospătare a monitorului dvs. Atunci când este activată, sistemul va gestiona automat valoarea optimă, dezactivând controlul manual al glisorului <span style=\" font-style:italic;\">Rată de intrare (Input Rate)</span>.</p></body></html>"
+
+#: qt/src/ControllerPanel.ui
+msgid ""
+"<html><head/><body><p>This option will use the SDL library to auto-configure"
+" gamepads. It will take the XBox mappings for the left D-pad and analog "
+"stick, as well as the the face buttons and L/R shoulder buttons, and assign "
+"them to relative locations on the first SNES "
+"controller.</p><p><br/></p><p>All gamepads will be assigned to player 1. If "
+"you need more players, disable this option and set up the mappings "
+"manually.</p></body></html>"
+msgstr "<html><head/><body><p>Această opțiune utilizează biblioteca multimedia SDL pentru a detecta și configura automat gamepad-urile conectate la calculator. Sistemul va prelua maparea standard de tip Xbox (pentru D-pad-ul stâng, stick-urile analogice, butoanele frontale principale și trăgaciul/butoanele L/R de pe umeri) și le va asocia instantaneu pe pozițiile corespondente ale primului controler virtual SNES.</p><p><br/></p><p>Atenție: Toate gamepad-urile detectate vor fi mapate automat pentru Jucătorul 1 (1P). Dacă doriți să configurați o sesiune de joc local în mai mulți jucători (multiplayer la același ecran), dezactivați această opțiune automată și alocați manual butoanele pentru fiecare port de jucător în parte.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid ""
+"<html><head/><body><p>This prevents the GPU from queuing up additional "
+"frames in advance, reducing the time it takes for the display to react to "
+"your input.</p></body></html>"
+msgstr "<html><head/><body><p>Această opțiune blochează placa video (GPU) din a acumula cadre randate în avans în coada de așteptare. Prin reducerea acestei cozi, timpul de răspuns dintre momentul în care apăsați un buton pe controler și reacția vizibilă a jocului pe ecran scade considerabil (optimizare input lag).</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid ""
+"<html><head/><body><p>Turns on a bilinear smoothing filter to smooth out the"
+" pixels. This option won't work with a hardware shader "
+"enabled.</p></body></html>"
+msgstr "<html><head/><body><p>Activează un filtru software de netezire liniară (bilinear filtering) pentru a estompa marginile ascuțite ale pixelilor. Rețineți că acest filtru software nu va avea niciun efect dacă aveți activat un shader hardware personalizat (.slangp / .glslp).</p></body></html>"
+
+#: qt/src/ControllerPanel.ui
+msgid ""
+"<html><head/><body><p>Use this to automatically assign the default keyboard "
+"mapping or a detected controller to a set of bindings.</p><p>This uses the "
+"XInput controller protocol and maps it as close as possible to a SNES "
+"controller.</p></body></html>"
+msgstr "<html><head/><body><p>Folosiți această funcție pentru a încărca instantaneu configurația implicită de taste pentru tastatură sau pentru a aloca automat butoanele unui gamepad detectat direct pe intrările controlerului virtual.</p><p>Mecanismul folosește protocolul standard modern XInput, realizând o mapare a butoanelor cât mai fidelă și ergonomică raportată la designul unui controler SNES real.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid ""
+"<html><head/><body><p>Uses a hardware shader with <span style=\" font-"
+"style:italic;\">Vulkan</span> or <span style=\" font-"
+"style:italic;\">OpenGL</span> drivers. These can be either .glslp or .slangp"
+" preset files.</p><p>GLSL shaders (.glslp) can be downloaded from:</p><p><a "
+"href=\"https://github.com/libretro/glsl-shaders\"><span style=\" text-"
+"decoration: underline; color:#2980b9;\">https://github.com/libretro/glsl-"
+"shaders</span></a></p><p>Slang shaders (.slangp) can be downloaded "
+"from:</p><p><a href=\"https://github.com/libretro/slang-shaders\"><span "
+"style=\" text-decoration: underline; "
+"color:#2980b9;\">https://github.com/libretro/slang-"
+"shaders</span></a></p></body></html>"
+msgstr "<html><head/><body><p>Permite aplicarea de shadere hardware complexe folosind resursele plăcii dvs. video prin intermediul driverelor grafice <span style=\" font-style:italic;\">Vulkan</span> sau <span style=\" font-style:italic;\">OpenGL</span>. Acestea adaugă efecte vizuale deosebite, precum curbura ecranelor CRT vechi, grile de fosfor RGB sau linii de scanare autentice, folosind fișiere preset de tip .glslp sau .slangp.</p><p>Shaderele de tip GLSL (.glslp), compatibile cu driverul OpenGL, pot fi descărcate de la adresa:</p><p><a href=\"https://github.com/libretro/glsl-shaders\"><span style=\" text-decoration: underline; color:#2980b9;\">https://github.com/libretro/glsl-shaders</span></a></p><p>Shaderele moderne de tip Slang (.slangp), ideale pentru Vulkan și OpenGL modern, pot fi descărcate de la adresa:</p><p><a href=\"https://github.com/libretro/slang-shaders\"><span style=\" text-decoration: underline; color:#2980b9;\">https://github.com/libretro/slang-shaders</span></a></p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid ""
+"<html><head/><body><p>When entering fullscreen mode, this option temporarily"
+" sets a number of other options to values that make variable refresh rate "
+"monitors that use FreeSync or GSync smoother.</p><p>Enables "
+"vsync.</p><p>Sets synchronization mode to timer and the frame rate to "
+"exactly that of the SNES.</p><p>Sets input rate to "
+"32040Hz.</p></body></html>"
+msgstr "<html><head/><body><p>La trecerea în modul ecran complet, această opțiune va modifica temporar și automat o serie de setări video secundare, optimizând rularea pentru monitoarele moderne dotate cu tehnologii de rată de reîmprospătare variabilă (VRR) precum AMD FreeSync sau Nvidia G-Sync, oferind o mișcare extrem de fluidă.</p><p>Acest profil activează automat sincronizarea verticală (vsync), forțează modul de sincronizare pe baza temporizatorului intern (timer) blocat la frecvența nativă exactă a consolei SNES și ajustează rata de siguranță a intrării audio la valoarea fixă optimă de 32040Hz.</p></body></html>"
+
+#: qt/src/DisplayPanel.ui
+msgid ""
+"<html><head/><body><p>When using <span style=\" font-"
+"style:italic;\">Vulkan</span>, this chooses the GPU you wish to render "
+"with.</p></body></html>"
+msgstr "<html><head/><body><p>Atunci când randarea grafică folosește driverul modern de performanță <span style=\" font-style:italic;\">Vulkan</span>, această listă vă permite să alegeți placa video fizică (GPU-ul dedicat sau cel integrat în procesor) pe care doriți ca emulatorul să o folosească pentru procesarea imaginii.</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "Adjust input rate to display rate automatically"
+msgstr "Ajustează automat rata de intrare în funcție de rata afișajului"
+
+#: qt/src/DisplayPanel.ui
+msgid "Adjust settings for VRR in fullscreen mode"
+msgstr "Optimizează setările pentru monitoarele VRR (G-Sync / FreeSync) în modul ecran complet"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "All Files (*)"
+msgstr "Toate fișierele (*)"
+
+#: qt/src/EmulationPanel.ui
+msgid "Allow opposite D-pad directions simultaneously"
+msgstr "Permite apăsarea simultană a direcțiilor opuse pe D-pad"
+
+#: qt/src/EmulationPanel.ui
+msgid "Alternate sound filter:"
+msgstr "Filtru de sunet alternativ (Hi-Fi):"
+
+#: qt/src/ControllerPanel.ui
+msgid "Auto-Assign Gamepad Buttons Using SDL Controller Map"
+msgstr "Asociază automat butoanele gamepad-ului folosind baza de date SDL"
+
+#: qt/src/EmulationPanel.ui
+msgid "Auto-FastROM"
+msgstr "Activare automată mod FastROM rapid"
+
+#: qt/src/ControllerPanel.ui
+msgid "Automatically assign a controller's buttons to a slot"
+msgstr "Alocă automat butoanele unui controler detectat într-un slot liber"
+
+#: qt/src/DisplayPanel.ui
+msgid "Bilinear filter"
+msgstr "Filtru bilinear (netezire)"
+
+#: qt/src/ControllerPanel.ui
+msgid "Binding #1"
+msgstr "Asociere #1"
+
+#: qt/src/ControllerPanel.ui
+msgid "Binding #2"
+msgstr "Asociere #2"
+
+#: qt/src/ControllerPanel.ui
+msgid "Binding #3"
+msgstr "Asociere #3"
+
+#: qt/src/ControllerPanel.ui
+msgid "Binding #4"
+msgstr "Asociere #4"
+
+#: qt/src/ControllerPanel.cpp
+msgid "Binding Set #%1"
+msgstr "Grup de asocieri taste #%1"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Change Backdrop Color"
+msgstr "Schimbă culoarea marginii din spatele ferestrei"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Cheats"
+msgstr "Cheat-uri"
+
+#: qt/src/CheatsDialog.cpp
+msgid "cheats.bml was not found."
+msgstr "Fișierul cheats.bml nu a fost găsit."
+
+#: qt/src/CheatsDialog.ui
+msgid "Check Database"
+msgstr "Verifică baza de date"
+
+#: qt/src/DisplayPanel.ui
+msgid ""
+"Choose a device to render output. If you have no integrated graphics, there "
+"will be only one choice."
+msgstr ""
+"Selectați placa video pe care doriți să o folosiți pentru randare. Dacă nu aveți o placă grafică integrată pe procesor, va fi afișată o singură opțiune."
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Choose a State File"
+msgstr "Alegeți un fișier de stare salvată (.sst)"
+
+#: qt/src/ControllerPanel.cpp
+msgid "Clear All Controllers"
+msgstr "Șterge configurațiile tuturor controlerelor"
+
+#: qt/src/ControllerPanel.cpp
+msgid "Clear Current Controller"
+msgstr "Șterge configurația controlerului curent"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Clear Recent Files"
+msgstr "Șterge lista fișierelor deschise recent"
+
+#: qt/src/EmuSettingsWindow.ui
+msgid "Click on a setting to find out more info."
+msgstr "Faceți clic pe o setare pentru a afișa detalii și explicații suplimentare."
+
+#: qt/src/FoldersPanel.ui
+msgid "Config Folder"
+msgstr "Director de configurare"
+
+#: qt/src/FoldersPanel.cpp
+msgid "Config folder is %1"
+msgstr "Directorul principal de configurare este %1"
+
+#: qt/src/ControllerPanel.cpp
+msgid "Controller %1"
+msgstr "Controler port %1"
+
+#: qt/src/ControllerPanel.ui
+msgid "Controller + Multitap"
+msgstr "Controler + Adaptor Multitap"
+
+#: qt/src/ControllerPanel.ui
+msgid "Controller Ports:"
+msgstr "Configurație porturi controler:"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Controllers"
+msgstr "Controlere / Mapare taste"
+
+#: qt/src/FoldersPanel.ui
+msgid "Custom Folder"
+msgstr "Director personalizat"
+
+#: qt/src/FoldersPanel.ui
+msgid "Data Locations"
+msgstr "Locații pentru salvarea datelor"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Decrease Current Save Slot"
+msgstr "Scade numărul slotului de salvare curent"
+
+#: qt/src/ControllerPanel.cpp
+msgid "Default Keyboard"
+msgstr "Configurație implicită tastatură"
+
+#: qt/src/DisplayPanel.ui
+msgid "Device:"
+msgstr "Dispozitiv grafic (GPU):"
+
+#: qt/src/GeneralPanel.ui
+msgid "Disable screensaver"
+msgstr "Dezactivează economizorul de ecran (screensaver) în timpul jocului"
+
+#: qt/src/DisplayPanel.ui
+msgid "Display messages:"
+msgstr "Stil afișare notificări și alerte:"
+
+#: qt/src/DisplayPanel.ui
+msgid "Display Output"
+msgstr "Ieșire afișaj video"
+
+#: qt/src/DisplayPanel.ui
+msgid "Don't display messages"
+msgstr "Nu afișa niciun mesaj de alertă pe ecran"
+
+#: qt/src/DisplayPanel.ui
+msgid "Driver:"
+msgstr "Driver API randare:"
+
+#: qt/src/ControllerPanel.ui
+msgid "Edit"
+msgstr "Editează"
+
+#: qt/src/EmulationPanel.ui
+msgid "Emulation Speed"
+msgstr "Viteză cicluri emulare"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Enable Fast-Forward"
+msgstr "Tastă rapidă activare avansare rapidă"
+
+#: qt/src/DisplayPanel.ui
+msgid "Enable vsync"
+msgstr "Activează sincronizarea verticală (vsync)"
+
+#: qt/src/FoldersPanel.ui
+msgid "Exports"
+msgstr "Fișiere extrase / Exporturi"
+
+#: qt/src/EmulationPanel.ui
+msgid "Fast-forward frame skip:"
+msgstr "Cadre sărite la avansarea rapidă:"
+
+#: qt/src/SoundPanel.ui
+msgid "Fast-Forward:"
+msgstr "Volum la avansarea rapidă:"
+
+#: qt/src/ControllerPanel.ui
+msgid "Form"
+msgstr "Formular interfață"
+
+#: qt/src/EmulationPanel.ui
+msgid "fps"
+msgstr "fps"
+
+#: qt/src/EmulationPanel.ui
+msgid "Frame rate:"
+msgstr "Rată cadre țintă:"
+
+#: qt/src/EmulationPanel.ui
+msgid "Frames between steps"
+msgstr "Interval de cadre între instantanee (snapshots)"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "From File"
+msgstr "Deschide din fișier"
+
+#: qt/src/EmulationPanel.ui
+msgid "Gaussian"
+msgstr "Gaussian (Filtru original estompat)"
+
+#: qt/src/SoundPanel.ui
+msgid "GB:"
+msgstr "Volum Game Boy (GB) la emulare SGB:"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Grab Mouse"
+msgstr "Blochează cursorul mouse-ului în interiorul ferestrei"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Hard Reset"
+msgstr "Resetare completă hardware (Hard Reset)"
+
+#: qt/src/EmulationPanel.ui
+msgid "High"
+msgstr "Calitate Înaltă / Algoritm complex"
+
+#: qt/src/DisplayPanel.ui
+msgid "High-resolution mode:"
+msgstr "Mod de rezoluție extinsă la 512 pixeli (SNES):"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Increase Current Save Slot"
+msgstr "Crește numărul slotului de salvare curent"
+
+#: qt/src/DisplayPanel.ui
+msgid "Inside the screen - Low resolution"
+msgstr "În interiorul imaginii jocului - Rezoluție mică din pixeli thô"
+
+#: qt/src/CheatsDialog.cpp
+msgid "Invalid Cheat"
+msgstr "Codul de cheat introdus are o structură invalidă"
+
+#: qt/src/DisplayPanel.ui
+msgid "Keep the screen at the requested proportions for width and height."
+msgstr "Menține imaginea jocului la proporțiile geometrice corecte de lățime și înălțime."
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Load State"
+msgstr "Încarcă stare rapidă (Load State)"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Load State from Current Slot"
+msgstr "Încarcă starea salvată din slotul curent selectat"
+
+#: qt/src/EmulationPanel.ui
+msgid "Low"
+msgstr "Calitate Scăzută / Consum minim de resurse"
+
+#: qt/src/EmulationPanel.ui
+msgid "MB"
+msgstr "MB"
+
+#: qt/src/DisplayPanel.ui
+msgid "Merge the fields of the high-resolution lines"
+msgstr "Îmbină liniile de semnal ale modului de rezoluție extinsă"
+
+#: qt/src/DisplayPanel.ui
+msgid "Messages"
+msgstr "Mesaje și alerte de sistem"
+
+#: qt/src/ControllerPanel.ui
+msgid "Mouse + Controller"
+msgstr "Configurație Mouse + Controler standard"
+
+#: qt/src/SoundPanel.ui
+msgid "ms"
+msgstr "ms"
+
+#: qt/src/SoundPanel.ui
+msgid "Mute all sound"
+msgstr "Dezactivează complet redarea sunetului în emulator"
+
+#: qt/src/SoundPanel.ui
+msgid "Mute sound during turbo or rewind"
+msgstr "Oprește automat sunetul în timpul modului turbo sau al derulării înapoi"
+
+#: qt/src/CheatsDialog.cpp
+msgid "No cheats for the current game were found in the database."
+msgstr "Nu s-au găsit cheat-uri pentru jocul curent în baza de date offline."
+
+#: qt/src/CheatsDialog.cpp
+msgid "No Cheats Found"
+msgstr "Nu s-au găsit cheat-uri"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "No recent files"
+msgstr "Nu există fișiere deschise recent în istoric"
+
+#: qt/src/EmulationPanel.ui
+msgid "None - Run unthrottled, unless vsync is turned on"
+msgstr "Fără limitare (None) - Rulează la capacitate maximă, excepție făcând cazul în care vsync este pornit"
+
+#: qt/src/ControllerPanel.ui
+msgid "One Controller"
+msgstr "Alocă un singur controler standard pentru acest port"
+
+#: qt/src/DisplayPanel.ui
+msgid "Onscreen - High resolution"
+msgstr "Suprapus pe ecran (Onscreen) - Text clar la rezoluție înaltă"
+
+#: qt/src/DisplayPanel.ui
+msgid "Onscreen display size:"
+msgstr "Dimensiune text notificări suprapuse (Onscreen):"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Open a ROM File"
+msgstr "Deschide un fișier de joc ROM"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Open File"
+msgstr "Deschide fișier"
+
+#: qt/src/FoldersPanel.cpp
+msgid "Open Folder"
+msgstr "Deschide directorul"
+
+#: qt/src/EmuCanvasOpenGL.cpp
+msgid "OpenGL Driver"
+msgstr "Driver OpenGL"
+
+#: qt/src/EmulationPanel.ui
+msgid "Overclock:"
+msgstr "Overclocking procesor 가상 기기:"
+
+#: qt/src/GeneralPanel.ui
+msgid "Overlays"
+msgstr "Interfețe suprapuse (Overlays)"
+
+#: qt/src/FoldersPanel.ui
+msgid "Patches"
+msgstr "Bane de patch-uri (.ips / .bps)"
+
+#: qt/src/GeneralPanel.ui
+msgid "Pause emulation when window is not focused"
+msgstr "Pune pauză automată la joc când fereastra își pierde focusul"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Pause/Continue"
+msgstr "Pauză / Continuare joc"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Power Cycle Console"
+msgstr "Ciclu oprire/pornire alimentare consolă emulată"
+
+#: qt/src/ShaderParametersDialog.cpp
+msgid "Preset name:"
+msgstr "Nume presetare shader:"
+
+#: qt/src/DisplayPanel.ui
+msgid ""
+"Prevent the display driver from getting too far ahead in order to reduce "
+"lag."
+msgstr ""
+"Împiedică driverul plăcii video să acumuleze cadre randate în avans, reducând lagul de control (인풋랙)."
+
+#: qt/src/DisplayPanel.ui
+msgid "pt"
+msgstr "pt"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Load Slot 0"
+msgstr "Încărcare rapidă din Slotul 0"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Load Slot 1"
+msgstr "Încărcare rapidă din Slotul 1"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Load Slot 2"
+msgstr "Încărcare rapidă din Slotul 2"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Load Slot 3"
+msgstr "Încărcare rapidă din Slotul 3"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Load Slot 4"
+msgstr "Încărcare rapidă din Slotul 4"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Load Slot 5"
+msgstr "Încărcare rapidă din Slotul 5"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Load Slot 6"
+msgstr "Încărcare rapidă din Slotul 6"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Load Slot 7"
+msgstr "Încărcare rapidă din Slotul 7"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Load Slot 8"
+msgstr "Încărcare rapidă din Slotul 8"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Load Slot 9"
+msgstr "Încărcare rapidă din Slotul 9"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Save Slot 0"
+msgstr "Salvare rapidă în Slotul 0"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Save Slot 1"
+msgstr "Salvare rapidă în Slotul 1"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Save Slot 2"
+msgstr "Salvare rapidă în Slotul 2"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Save Slot 3"
+msgstr "Salvatare rapidă în Slotul 3"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Save Slot 4"
+msgstr "Salvare rapidă în Slotul 4"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Save Slot 5"
+msgstr "Salvare rapidă în Slotul 5"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Save Slot 6"
+msgstr "Salvare rapidă în Slotul 6"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Save Slot 7"
+msgstr "Salvare rapidă în Slotul 7"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Save Slot 8"
+msgstr "Salvare rapidă în Slotul 8"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quick Save Slot 9"
+msgstr "Salvare rapidă în Slotul 9"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Quit"
+msgstr "Ieșire program"
+
+#: qt/src/SoundPanel.ui
+msgid "Regular:"
+msgstr "Rulare normală (Regular):"
+
+#: qt/src/EmulationPanel.ui
+msgid "Remove the sprite limit"
+msgstr "Elimină limita fizică de sprite-uri pe orizontală"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Reset to Default"
+msgstr "Resetează tastele la valorile din fabrică"
+
+#: qt/src/EmuSettingsWindow.ui
+msgid "Restore all settings on the current page to their default values."
+msgstr "Readuce toate configurările de pe pagina curentă la valorile lor implicite."
+
+#: qt/src/EmuSettingsWindow.ui
+msgid "Restore Defaults"
+msgstr "Restabilește valorile implicite"
+
+#: qt/src/EmulationPanel.ui
+msgid "Rewind buffer size (0 to disable):"
+msgstr "Dimensiune buffer derulare înapoi (0 pentru dezactivare):"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "ROM Files (*.sfc *.smc *.bin *.fig *.msu *.zip)"
+msgstr "Fișiere de joc ROM (*.sfc *.smc *.bin *.fig *.msu *.zip)"
+
+#: qt/src/FoldersPanel.ui
+msgid "ROM Folder"
+msgstr "Directorul fișierului ROM"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Run"
+msgstr "Rulează / Start game"
+
+#: qt/src/ShaderParametersDialog.cpp
+msgid "Save"
+msgstr "Salvează"
+
+#: qt/src/ShaderParametersDialog.cpp
+msgid "Save As"
+msgstr "Salvează ca fișier nou..."
+
+#: qt/src/ShaderParametersDialog.cpp
+msgid "Save Shader Preset As"
+msgstr "Salvează presetarea shader ca..."
+
+#: qt/src/FoldersPanel.ui
+msgid "Save SRAM to disk every:"
+msgstr "Scrie salvările SRAM interne pe disc la fiecare:"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Save State to Current Slot"
+msgstr "Salvează starea curentă a jocului în slotul activ"
+
+#: qt/src/FoldersPanel.ui
+msgid "Save states"
+msgstr "Fișiere de stări salvate (Save State)"
+
+#: qt/src/EmuMainWindow.cpp
+msgid ""
+"Save States (*.sst *.oops *.undo *.0?? *.1?? *.2?? *.3?? *.4?? *.5?? *.6?? "
+"*.7?? *.8?? *.9*)"
+msgstr ""
+"Fișiere stare salvată (*.sst *.oops *.undo *.0?? *.1?? *.2?? *.3?? *.4?? *.5?? *.6?? *.7?? *.8?? *.9*)"
+
+#: qt/src/DisplayPanel.ui
+msgid "Scale normal resolution screens up"
+msgstr "Mărește ecranele cu rezoluție normală standard"
+
+#: qt/src/DisplayPanel.ui
+msgid "Scaling and Aspect Ratio"
+msgstr "Setări pentru Scalare și Raport de aspect"
+
+#: qt/src/FoldersPanel.ui
+msgid "seconds"
+msgstr "secunde"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Seek to Frame"
+msgstr "Sari direct la cadrul specificat"
+
+#: qt/src/DisplayPanel.cpp
+msgid "Select a Folder"
+msgstr "Selectați folderul de stocare"
+
+#: qt/src/DisplayPanel.ui
+msgid "Select the output driver."
+msgstr "Selectați driverul grafic de afișare."
+
+#: qt/src/ControllerPanel.ui
+msgid "Set"
+msgstr "Setează"
+
+#: qt/src/EmulationPanel.ui
+msgid ""
+"Set frame rate to 0 to automatically change based on PAL/NTSC and with "
+"interlacing on and off."
+msgstr ""
+"Setați rata de cadre la 0 pentru a se adapta automat în funcție de standardele PAL/NTSC și starea modului intercalat (interlacing)."
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Set Size"
+msgstr "Setează dimensiunea ferestrei"
+
+#: qt/src/DisplayPanel.cpp
+msgid "Shader Presets (*.slangp *.glslp)"
+msgstr "Presetări de shadere (*.slangp *.glslp)"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Shader Settings"
+msgstr "Setări fișiere Shader"
+
+#: qt/src/GeneralPanel.ui
+msgid "Show fast-forward and pause icons"
+msgstr "Afișează iconițele grafice pentru avansare rapidă și pauză"
+
+#: qt/src/DisplayPanel.ui
+msgid "Show overscan area"
+msgstr "Afișează zona ascunsă de overscan"
+
+#: qt/src/DisplayPanel.ui
+msgid ""
+"Show the areas on the top and bottom of the screen that are normally black "
+"and hidden by the TV. Some games will draw in these areas."
+msgstr ""
+"Forțează afișarea zonelor de la marginea de sus și de jos a ecranului care în mod normal erau negre și mascate de TV-urile CRT. Unele jocuri randau elemente în acele zone ascunse."
+
+#: qt/src/GeneralPanel.ui
+msgid "Show the time"
+msgstr "Afișează ceasul cu ora sistemului"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Slot %1"
+msgstr "Slot de salvare nr. %1"
+
+#: qt/src/DisplayPanel.ui
+msgid "Smooth screen output."
+msgstr "Netezește vizual marginile pixelilor de pe ecran."
+
+#: qt/src/ControllerPanel.ui
+msgid "SNES Controller 1"
+msgstr "Controler SNES portul 1"
+
+#: qt/src/ControllerPanel.ui
+msgid "SNES Controller 2"
+msgstr "Controler SNES portul 2"
+
+#: qt/src/ControllerPanel.ui
+msgid "SNES Controller 3 (Multitap)"
+msgstr "Controler SNES portul 3 (conectat prin Multitap)"
+
+#: qt/src/ControllerPanel.ui
+msgid "SNES Controller 4 (Multitap)"
+msgstr "Controler SNES portul 4 (conectat prin Multitap)"
+
+#: qt/src/ControllerPanel.ui
+msgid "SNES Controller 5 (Multitap)"
+msgstr "Controler SNES portul 5 (conectat prin Multitap)"
+
+#: qt/src/DisplayPanel.ui
+msgid "Software Filters"
+msgstr "Filtre de netezire prin software"
+
+#: qt/src/SoundPanel.ui
+msgid "Sound Output"
+msgstr "Ieșire semnal sunet"
+
+#: qt/src/SoundPanel.ui
+msgid "Sound Stretching"
+msgstr "Algoritm de întindere a undei audio"
+
+#: qt/src/EmulationPanel.ui
+msgid "Sound Synchronization - Wait on the sound buffer"
+msgstr "Sincronizare după sunet - Cadrele video așteaptă bufferul audio"
+
+#: qt/src/SoundPanel.ui
+msgid "SPC:"
+msgstr "SPC:"
+
+#: qt/src/EmulationPanel.ui
+msgid "Speed control method:"
+msgstr "Metodă de control a vitezei jocului:"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Start Recording"
+msgstr "Pornește înregistrarea fișierului de joc"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Stop Recording"
+msgstr "Oprește înregistrarea fișierului"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Super Game Boy (SGB1)"
+msgstr "Accesoriu Super Game Boy (SGB1)"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Super Game Boy 2 (SGB2)"
+msgstr "Accesoriu Super Game Boy 2 (SGB2)"
+
+#: qt/src/EmulationPanel.ui
+msgid "SuperFX clock speed:"
+msgstr "Frecvență ceas cip suplimentar SuperFX:"
+
+#: qt/src/ControllerPanel.ui
+msgid "SuperScope + Controller"
+msgstr "Configurație combinată Pistol SuperScope + Controler"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Swap Controllers 1 and 2"
+msgstr "Schimbă între ele mapările Jucătorului 1 și Jucătorului 2"
+
+#: qt/src/ControllerPanel.ui
+msgid "Swap or clear groups of bindings"
+msgstr "Schimbă locurile sau șterge complet grupuri de taste mapate"
+
+#: qt/src/ControllerPanel.cpp
+msgid "Swap With"
+msgstr "Schimbă locurile cu"
+
+#: qt/src/GeneralPanel.ui
+msgid "Switch to fullscreen after opening a ROM"
+msgstr "Treci automat la modul ecran complet imediat după deschiderea unui ROM"
+
+#: qt/src/DisplayPanel.ui
+msgid "Sync the display to vertical retrace to eliminate tearing."
+msgstr ""
+"Sincronizează reîmprospătarea imaginii direct cu cursa inversă pe verticală (vertical retrace) a ecranului pentru a elimina complet ruperea imaginii."
+
+#: qt/src/CheatsDialog.cpp
+msgid "The cheat you entered was not valid."
+msgstr "Structura sau codul de cheat pe care l-ați introdus nu este valid."
+
+#: qt/src/EmuCanvasOpenGL.cpp
+msgid "The driver isn't using a specialized shader preset right now."
+msgstr "În acest moment driverul nu aplică nicio presetare shader specializată."
+
+#: qt/src/EmuMainWindow.cpp
+msgid "The language change will take effect after you restart SuperSnes9x."
+msgstr "Schimbarea limbii de interfață va deveni activă după ce reporniți emulatorul SuperSnes9x."
+
+#: qt/src/EmuCanvasVulkan.cpp
+msgid "The vulkan display driver hasn't properly loaded."
+msgstr "Driverul de afișare de înaltă performanță Vulkan a întâmpinat o eroare și nu s-a putut încărca."
+
+#: qt/src/DisplayPanel.ui
+msgid ""
+"This affects the rarely used 512-pixels-wide mode used by the SNES.\n"
+"For games like Kirby 3 and Jurassic Park, choose the \"merge fields\" option.\n"
+"For games like Seiken Densetsu 3 and Marvelous, choose the \"scale up\" option.\n"
+"Output directly will cause the screen to change between the two modes and look weird."
+msgstr ""
+"Această setare controlează modul special de randare la 512 pixeli lățime, apelat foarte rar de hardware-ul SNES.\n"
+"Pentru titluri precum Kirby 3 și Jurassic Park, alegeți opțiunea „Îmbbinare câmpuri (merge fields)” pentru a reda corect transparența alpha.\n"
+"Pentru titluri precum Seiken Densetsu 3 și Marvelous, selectați opțiunea „Dublare rezoluție (scale up)” pentru a păstra claritatea textelor.\n"
+"Folosirea opțiunii „Ieșire directă” va face ca ecranul să își schimbe brusc claritatea și textura între cele două moduri, arătând destul de ciudat."
+
+#: qt/src/EmuCanvasOpenGL.cpp
+msgid "This shader preset doesn't offer any configurable parameters."
+msgstr "Această presetare shader nu pune la dispoziție parametri secundari configurabili manual."
+
+#: qt/src/EmulationPanel.ui
+msgid "Timer - Match the frame rate configured below"
+msgstr "Temporizator (Timer) - Limitează viteza strict pe baza ratei de cadre configurate mai jos"
+
+#: qt/src/EmulationPanel.ui
+msgid "Timer with Frame Skipping - Skip frames if needed"
+msgstr "Temporizator cu săritură cadre - Omite redarea cadrelor dacă resursele PC-ului nu mențin viteza nativă"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "To File"
+msgstr "Exportă / Salvează ca fișier pe disc"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle All Sound Channels"
+msgstr "Comută starea tuturor canalelor de sunet (Toate simultan)"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle BG Layer 0"
+msgstr "Comută afișarea stratului de fundal BG 0"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle BG Layer 1"
+msgstr "Comută afișarea stratului de fundal BG 1"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle BG Layer 2"
+msgstr "Comută afișarea stratului de fundal BG 2"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle BG Layer 3"
+msgstr "Comută afișarea stratului de fundal BG 3"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle Fast-Forward"
+msgstr "Comută modul de avansare rapidă (On/Off)"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle Fullscreen"
+msgstr "Comută modul ecran complet (Fullscreen)"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle Sound Channel 1"
+msgstr "Comută canalul de sunet 1"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle Sound Channel 2"
+msgstr "Comută canalul de sunet 2"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle Sound Channel 3"
+msgstr "Comută canalul de sunet 3"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle Sound Channel 4"
+msgstr "Comută canalul de sunet 4"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle Sound Channel 5"
+msgstr "Comută canalul de sunet 5"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle Sound Channel 6"
+msgstr "Comută canalul de sunet 6"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle Sound Channel 7"
+msgstr "Comută canalul de sunet 7"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle Sound Channel 8"
+msgstr "Comută canalul de sunet 8"
+
+#: qt/src/ShortcutsPanel.ui
+msgid "Toggle Sprites"
+msgstr "Comută straturile de sprite-uri"
+
+#: qt/src/ControllerPanel.ui
+msgid "Turbo A"
+msgstr "Buton foc rapid Turbo A"
+
+#: qt/src/ControllerPanel.ui
+msgid "Turbo B"
+msgstr "Buton foc rapid Turbo B"
+
+#: qt/src/ControllerPanel.ui
+msgid "Turbo L"
+msgstr "Buton foc rapid Turbo L"
+
+#: qt/src/ControllerPanel.ui
+msgid "Turbo R"
+msgstr "Buton foc rapid Turbo R"
+
+#: qt/src/ControllerPanel.ui
+msgid "Turbo X"
+msgstr "Buton foc rapid Turbo X"
+
+#: qt/src/ControllerPanel.ui
+msgid "Turbo Y"
+msgstr "Buton foc rapid Turbo Y"
+
+#: qt/src/ControllerPanel.ui
+msgid "Two Controllers"
+msgstr "Alocă două controlere distincte pentru configurare în paralel"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Unable to create a %1 context. Attempting to use %2."
+msgstr "Nu s-a putut inițializa contextul %1 grafic. Se încearcă folosirea soluției de rezervă %2."
+
+#: qt/src/CheatsDialog.cpp
+msgid "Unable to Open Cheats Database"
+msgstr "Nu s-a putut deschide fișierul bazei de date de cheat-uri"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Unable to Start Display Driver"
+msgstr "Nu s-a putut lansa driverul API de randare ecran video"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Undo Load State"
+msgstr "Anulează acțiunea de încărcare rapidă a stării (Undo Load)"
+
+#: qt/src/DisplayPanel.ui
+msgid "Use a hardware shader:"
+msgstr "Folosește un fișier shader hardware personalizat:"
+
+#: qt/src/DisplayPanel.ui
+msgid ""
+"Use a selected .slangp or .glslp shader file. \n"
+".slangp is supported by Vulkan and OpenGL. \n"
+".glslp is supported by OpenGL."
+msgstr ""
+"Folosește fișierul preset shader .slangp sau .glslp selectat. \n"
+".slangp este suportat nativ de Vulkan și OpenGL. \n"
+".glslp este suportat exclusiv de OpenGL."
+
+#: qt/src/EmulationPanel.ui
+msgid "Use a shadow echo buffer"
+msgstr "Folosește un buffer separat izolat de tip shadow echo buffer"
+
+#: qt/src/DisplayPanel.ui
+msgid "Use integer scaling"
+msgstr "Folosește scalarea la multipli întregi (integer scaling)"
+
+#: qt/src/ControllerPanel.ui
+msgid ""
+"Use SDL to set up the D-pad, face buttons, and L/R. Other buttons may still "
+"be configured."
+msgstr ""
+"Folosește biblioteca SDL pentru maparea rapidă a D-pad-ului, butoanelor frontale și trăgacelor L/R. Restul butoanelor speciale pot fi configurate manual în mod independent."
+
+#: qt/src/EmuMainWindow.cpp
+msgid "View"
+msgstr "Vizualizare"
+
+#: qt/src/EmuCanvasVulkan.cpp
+msgid "Vulkan Driver"
+msgstr "Driver modern de performanță Vulkan"
+
+#: qt/src/DisplayPanel.ui
+msgid ""
+"When entering fullscreen mode, temporarily change other settings to use VRR "
+"(G-Sync or FreeSync) correctly."
+msgstr ""
+"La trecerea în ecran complet, adaptează temporar setările de sincronizare pentru a rula corect pe monitoarele VRR (G-Sync sau FreeSync)."
+
+#: qt/src/DisplayPanel.ui
+msgid "When scaling up, only use integer multiples of the original height."
+msgstr "La mărirea ferestrei, folosește strict multipli întregi ai înălțimii originale a cadrelor."

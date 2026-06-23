@@ -9,6 +9,7 @@
 #include <sstream>
 #include "CCheatGroupDialog.h"
 #include "wsnes9x.h"
+#include "wlocale.h"
 #include "../snes9x.h"
 #include "../cheats.h"
 
@@ -24,6 +25,7 @@ INT_PTR CALLBACK CCheatGroupDialog::DlgEditCheatGroup(HWND hDlg, UINT msg, WPARA
     switch (msg)
     {
         case WM_INITDIALOG:
+        	LocalizeDialog(hDlg);
         {
             SetWindowLongPtr(hDlg, GWLP_USERDATA, lParam);
             dlg = (CCheatGroupDialog*)lParam;

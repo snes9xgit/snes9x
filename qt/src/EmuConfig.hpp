@@ -45,6 +45,8 @@ struct EmuConfig
     bool show_pressed_keys;
     bool show_time;
 
+    std::string language;
+
     // Display
     std::string display_driver;
     int display_device_index;

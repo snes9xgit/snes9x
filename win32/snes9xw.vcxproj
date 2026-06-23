@@ -517,6 +517,7 @@
     <ClInclude Include="win32_display.h" />
     <ClInclude Include="win32_sound.h" />
     <ClInclude Include="wlanguage.h" />
+    <ClInclude Include="wlocale.h" />
     <ClInclude Include="wsnes9x.h" />
     <ClInclude Include="retroachievements.h" />
     <ClInclude Include="..\retroachievements.h" />
@@ -755,6 +756,7 @@
     <ClCompile Include="win32.cpp" />
     <ClCompile Include="win32_display.cpp" />
     <ClCompile Include="win32_sound.cpp" />
+    <ClCompile Include="wlocale.cpp" />
     <ClCompile Include="wsnes9x.cpp" />
     <ClCompile Include="_tfwopen.cpp" />
   </ItemGroup>

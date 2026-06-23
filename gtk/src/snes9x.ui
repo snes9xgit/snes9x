@@ -7,7 +7,7 @@
     <property name="width_request">560</property>
     <property name="height_request">448</property>
     <property name="can_focus">False</property>
-    <property name="title" translatable="yes">About Snes9x</property>
+    <property name="title" translatable="yes">About SuperSnes9x</property>
     <property name="type_hint">normal</property>
     <property name="skip_taskbar_hint">True</property>
     <child internal-child="vbox">
@@ -308,7 +308,7 @@
     <property name="can_focus">False</property>
     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
     <property name="border_width">5</property>
-    <property name="title" translatable="yes">Snes9x Cheats</property>
+    <property name="title" translatable="yes">SuperSnes9x Cheats</property>
     <property name="window_position">center-on-parent</property>
     <property name="type_hint">dialog</property>
     <property name="skip_taskbar_hint">True</property>
@@ -1092,7 +1092,7 @@
         <col id="0" translatable="yes">Exit fullscreen mode</col>
       </row>
       <row>
-        <col id="0" translatable="yes">Quit Snes9x</col>
+        <col id="0" translatable="yes">Quit SuperSnes9x</col>
       </row>
     </data>
   </object>
@@ -1200,7 +1200,7 @@
   <object class="GtkWindow" id="main_window">
     <property name="can_focus">False</property>
     <property name="events">GDK_EXPOSURE_MASK | GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | GDK_FOCUS_CHANGE_MASK | GDK_STRUCTURE_MASK | GDK_SUBSTRUCTURE_MASK</property>
-    <property name="title" translatable="yes">Snes9x</property>
+    <property name="title" translatable="yes">SuperSnes9x</property>
     <signal name="window-state-event" handler="main_window_state_event" swapped="no"/>
     <signal name="key-release-event" handler="main_window_key_release_event" swapped="no"/>
     <signal name="key-press-event" handler="main_window_key_press_event" swapped="no"/>
@@ -2284,7 +2284,7 @@
   <object class="GtkDialog" id="netplay_dialog">
     <property name="can_focus">False</property>
     <property name="border_width">5</property>
-    <property name="title" translatable="yes">Snes9x NetPlay</property>
+    <property name="title" translatable="yes">SuperSnes9x NetPlay</property>
     <property name="window_position">center-on-parent</property>
     <property name="type_hint">dialog</property>
     <child internal-child="vbox">
@@ -2451,7 +2451,7 @@
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">False</property>
-                            <property name="tooltip_text" translatable="yes">Connect to another computer that is running Snes9x NetPlay as a server</property>
+                            <property name="tooltip_text" translatable="yes">Connect to another computer that is running SuperSnes9x NetPlay as a server</property>
                             <property name="active">True</property>
                             <property name="draw_indicator">True</property>
                           </object>
@@ -2753,7 +2753,7 @@
   <object class="GtkDialog" id="preferences_window">
     <property name="can_focus">False</property>
     <property name="events">GDK_KEY_PRESS_MASK</property>
-    <property name="title" translatable="yes">Snes9x Preferences</property>
+    <property name="title" translatable="yes">SuperSnes9x Preferences</property>
     <property name="window_position">center</property>
     <property name="default_height">480</property>
     <property name="type_hint">dialog</property>
@@ -3017,7 +3017,7 @@
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">False</property>
-                                    <property name="tooltip_text" translatable="yes">Changes the screen resolution when running Snes9x in fullscreen mode</property>
+                                    <property name="tooltip_text" translatable="yes">Changes the screen resolution when running SuperSnes9x in fullscreen mode</property>
                                     <property name="use_underline">True</property>
                                     <property name="draw_indicator">True</property>
                                   </object>
@@ -7007,7 +7007,7 @@
                         <property name="can_focus">False</property>
                         <property name="xalign">0</property>
                         <property name="xpad">5</property>
-                        <property name="label" translatable="yes">&lt;b&gt;Snes9x Emulator Shortcut Keys&lt;/b&gt;</property>
+                        <property name="label" translatable="yes">&lt;b&gt;SuperSnes9x Emulator Shortcut Keys&lt;/b&gt;</property>
                         <property name="use_markup">True</property>
                       </object>
                       <packing>
@@ -7197,7 +7197,7 @@
                                         <property name="visible">True</property>
                                         <property name="can_focus">False</property>
                                         <property name="xalign">0</property>
-                                        <property name="label" translatable="yes">Quit Snes9x</property>
+                                        <property name="label" translatable="yes">Quit SuperSnes9x</property>
                                       </object>
                                       <packing>
                                         <property name="top_attach">10</property>
@@ -9371,7 +9371,7 @@
                                 <property name="spacing">5</property>
                                 <child>
                                   <object class="GtkCheckButton" id="pause_emulation_on_switch">
-                                    <property name="label" translatable="yes">Pause emulation when switching away from Snes9x</property>
+                                    <property name="label" translatable="yes">Pause emulation when switching away from SuperSnes9x</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">False</property>
@@ -9612,7 +9612,7 @@
     <property name="text" translatable="yes">  Snes9x – A Portable Super Nintendo Entertainment System™ Emulator
 
   Snes9x homepage: http://www.snes9x.com/
-  Snes9x source code: https://github.com/snes9xgit/snes9x/
+  Snes9x source code: https://github.com/shanytc/snes9x/
 
   Permission to use, copy, modify and/or distribute Snes9x in both binary
   and source form, for non‑commercial purposes, is hereby granted without
