@@ -8,6 +8,7 @@ namespace fs = std::filesystem;
 #include "snes9x.h"
 #include "memmap.h"
 #include "apu/apu.h"
+#include "sgb/sgb.h"
 #include "gfx.h"
 #include "snapshot.h"
 #include "controls.h"
@@ -589,6 +590,17 @@ void Snes9xController::SamplesAvailable()
         int samples = S9xGetSampleCount();
         if (data.size() < samples)
             data.resize(samples);
+        // SGB BIOS mode: the host output is paced by the GB sample count, which
+        // runs a few percent off the SPC's native rate. Drive the SPC production
+        // rate (PI controller) to hold its resampler buffer matched to that
+        // cadence -- otherwise it overflows (noise) and the under-drain pitches
+        // it down (bass). Reset the trim outside BIOS mode so a SNES game loaded
+        // afterward isn't left with the SGB rate scaling.
+        if (Settings.SGB_BIOSModeActive && S9xSGBBIOSGBIsReleased())
+            S9xSpcSyncToConsumption();
+        else
+            S9xSpcSyncReset();
+
         S9xMixSamples((uint8_t *)data.data(), samples);
         S9xMixSpcOverGB(data.data(), samples);
         sound_output_function(data.data(), samples);

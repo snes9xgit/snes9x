@@ -115,6 +115,10 @@ struct CMemory
 	bool8	LoadROMWithSGBBIOS (const char *gb_path, const char *bios_path);
 	bool8	LoadROMWithSGBBIOSBytes (const uint8 *gb_bytes, uint32 gb_size,
 	                                  const char *gb_path, const char *bios_path);
+	// Detect+load a Game Boy ROM from a memory buffer, routing it into the
+	// SGB subsystem. Returns 1 = handled (loaded as GB/SGB), 0 = not a GB
+	// ROM, -1 = GB ROM but the load failed.
+	int		LoadGBFromBytes (const uint8 *rom, uint32 size, const char *filename);
     bool8	LoadROMInt (int32);
     bool8   LoadMultiCartMem (const uint8 *, uint32, const uint8 *, uint32, const uint8 *, uint32);
 	bool8	LoadMultiCart (const char *, const char *);
@@ -215,6 +219,10 @@ inline bool S9xInterlaceField()
 void S9xAutoSaveSRAM (void);
 bool8 LoadZip(const char *, uint32 *, uint8 *);
 bool8 S9xSGBBIOSAvailable(uint8 mode, const char *gb_rom_path);
+// Content-sniff a buffer for a Game Boy cart (Nintendo logo at 0x0104, incl.
+// the Sachen scrambled variant). Lets in-memory callers route GB carts away
+// from the SNES/BS-X/Sufami load paths.
+bool S9xRomBytesAreGb(const uint8 *rom, int32 size);
 
 enum s9xwrap_t
 {

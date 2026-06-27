@@ -14,6 +14,7 @@
 #include "display.h"
 #include "conffile.h"
 #include "crosshairs.h"
+#include "sgb/sgb.h"
 #include <stdio.h>
 #include <vector>
 #include <string>
@@ -614,6 +615,36 @@ static void update_variables(void)
     else
         Settings.SeparateEchoBuffer = false;
 
+    // Super Game Boy BIOS preference for .gb/.gbc content. 2 = prefer a real
+    // SNES SGB BIOS in the system dir (SGB2 then SGB1), falling back to the
+    // built-in BIOS-less GB core; 1 = SGB1 only; 0 = always BIOS-less.
+    var.key = "snes9x_sgb_bios";
+    var.value = NULL;
+    Settings.SGB_BIOSPreference = 2;
+    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+    {
+        if (!strcmp(var.value, "off"))
+            Settings.SGB_BIOSPreference = 0;
+        else if (!strcmp(var.value, "sgb1"))
+            Settings.SGB_BIOSPreference = 1;
+        else
+            Settings.SGB_BIOSPreference = 2;
+    }
+
+    // Per-source SGB mix volumes (0..100). Consumed by S9xMixSpcOverGB;
+    // only affect GB/SGB content. Defaults match the desktop frontends.
+    var.key = "snes9x_sgb_mix_volume_spc";
+    var.value = NULL;
+    S9xSGBMixVolumeSPC = 50;
+    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+        S9xSGBMixVolumeSPC = (unsigned int) atoi(var.value);
+
+    var.key = "snes9x_sgb_mix_volume_gb";
+    var.value = NULL;
+    S9xSGBMixVolumeGB = 50;
+    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+        S9xSGBMixVolumeGB = (unsigned int) atoi(var.value);
+
     var.key = "snes9x_blargg";
     var.value = NULL;
 
@@ -760,10 +791,28 @@ void S9xSyncSpeed() {
 
     size_t avail = S9xGetSampleCount();
 
+    // In SGB BIOS mode the host output is paced by the GB sample count, which
+    // runs a few percent off the SPC's native rate. Drive the SPC production
+    // rate (PI controller) to hold its resampler buffer matched to that cadence
+    // -- otherwise it overflows (dropped samples -> noise) and the under-drain
+    // pitches it down (bass). Reset the trim outside BIOS mode so a SNES game
+    // loaded afterward isn't left with the SGB rate scaling. Normal SNES audio
+    // and the pre-release boot splash use the standard SPC path either way.
+    if (Settings.SGB_BIOSModeActive && S9xSGBBIOSGBIsReleased())
+        S9xSpcSyncToConsumption();
+    else
+        S9xSpcSyncReset();
+
     if (audio_buffer.size() < avail)
         audio_buffer.resize(avail);
 
     S9xMixSamples((uint8*)&audio_buffer[0], avail);
+    // Merge the SGB BIOS-mode SPC stream over the GB output (and apply the
+    // SGB mix gains). S9xMixSamples leaves the SPC ring intact in BIOS mode
+    // expecting this second pass; gtk/qt/win32 all call it right after
+    // S9xMixSamples. Without it the SPC (SGB BIOS sound engine) is silent.
+    // No-op outside SGB modes.
+    S9xMixSpcOverGB(&audio_buffer[0], (int)avail);
     audio_batch_cb(&audio_buffer[0], avail >> 1);
 }
 
@@ -771,12 +820,12 @@ void retro_get_system_info(struct retro_system_info *info)
 {
     memset(info,0,sizeof(retro_system_info));
 
-    info->library_name = "Snes9x";
+    info->library_name = "SuperSnes9x";
 #ifndef GIT_VERSION
 #define GIT_VERSION ""
 #endif
     info->library_version = VERSION GIT_VERSION;
-    info->valid_extensions = "smc|sfc|swc|fig|bs";
+    info->valid_extensions = "smc|sfc|swc|fig|bs|st|gb|gbc|dmg|sgb";
     info->need_fullpath = false;
     info->block_extract = false;
 }
@@ -1114,6 +1163,14 @@ bool retro_load_game(const struct retro_game_info *game)
             extract_directory(g_rom_dir, game->path, sizeof(g_rom_dir));
         }
 
+        // Game Boy / Game Boy Color / Super Game Boy content takes priority:
+        // route it straight to LoadROMMem (which hands .gb/.gbc carts to the
+        // SGB subsystem) so the BS-X/Sufami header sniffs below can't grab it.
+        if (S9xRomBytesAreGb((const uint8 *) game->data, (int32) game->size)) {
+            rom_loaded = Memory.LoadROMMem((const uint8_t*)game->data, game->size, g_basename);
+        }
+
+        else
         if (is_SufamiTurbo_Cart((uint8 *) game->data, game->size)) {
             if ((rom_loaded = LoadBIOS(biosrom,"STBIOS.bin",0x40000)))
             rom_loaded = Memory.LoadMultiCartMem((const uint8_t*)game->data, game->size, 0, 0, biosrom, 0x40000);
@@ -1873,9 +1930,13 @@ void* retro_get_memory_data(unsigned type)
 
     switch(type)
     {
+        case RETRO_MEMORY_SNES_GAME_BOY_RAM:
         case RETRO_MEMORY_SNES_SUFAMI_TURBO_A_RAM:
         case RETRO_MEMORY_SAVE_RAM:
-            data = Memory.SRAM;
+            // A loaded GB/SGB cart keeps its battery RAM in the SGB cart, not
+            // in Memory.SRAM — expose that so the frontend persists the .srm.
+            // S9xSGBIsActive() is true in both BIOS and BIOS-less GB modes.
+            data = S9xSGBIsActive() ? (void *) S9xSGBGetSRAM() : (void *) Memory.SRAM;
             break;
         case RETRO_MEMORY_SNES_SUFAMI_TURBO_B_RAM:
             data = Multi.sramB;
@@ -1905,8 +1966,14 @@ size_t retro_get_memory_size(unsigned type)
     size_t size;
 
     switch(type) {
+        case RETRO_MEMORY_SNES_GAME_BOY_RAM:
         case RETRO_MEMORY_SNES_SUFAMI_TURBO_A_RAM:
         case RETRO_MEMORY_SAVE_RAM:
+            if (S9xSGBIsActive())
+            {
+                size = S9xSGBGetSRAMSize();
+                break;
+            }
             size = (unsigned) (Memory.SRAMSize ? (1 << (Memory.SRAMSize + 3)) * 128 : 0);
             if (size > 0x20000)
             size = 0x20000;

@@ -1,0 +1,48 @@
+# Software Information
+display_name = "Nintendo - SNES / SFC / SGB / GB / GBC (SuperSnes9x)"
+categories = "Emulator"
+authors = "Snes9x Team"
+corename = "SuperSnes9x"
+supported_extensions = "smc|sfc|swc|fig|bs|st|gb|gbc|dmg|sgb"
+license = "Non-commercial"
+permissions = ""
+display_version = "1.63"
+
+# Hardware Information
+manufacturer = "Nintendo"
+systemname = "SNES / SFC / SGB / GB / GBC"
+systemid = "super_nes"
+
+# Firmware / BIOS
+firmware_count = 4
+firmware0_desc = "BS-X.bin (BS-X - Sore wa Namae o Nusumareta Machi no Monogatari (Japan) (Rev 1))"
+firmware0_path = "BS-X.bin"
+firmware0_opt = "true"
+firmware1_desc = "STBIOS.bin (Sufami Turbo (Japan))"
+firmware1_path = "STBIOS.bin"
+firmware1_opt = "true"
+firmware2_desc = "sgb.sfc (Super Game Boy BIOS - optional, enables authentic SGB mode for GB/GBC)"
+firmware2_path = "sgb.sfc"
+firmware2_opt = "true"
+firmware3_desc = "sgb2.sfc (Super Game Boy 2 BIOS - optional, preferred SGB mode for GB/GBC)"
+firmware3_path = "sgb2.sfc"
+firmware3_opt = "true"
+notes = "(!) BS-X.bin (md5): fed4d8242cfbed61343d53d48432aced|(!) STBIOS.bin (md5): d3a44ba7d42a74d3ac58cb9c14c6a5ca|(!) Super Game Boy BIOS (sgb.sfc / sgb2.sfc) is optional: without it, GB/GBC content runs on the built-in BIOS-less core. Place it in the system directory.|(!) Game Boy Color content runs in monochrome DMG-compatibility mode (no color hardware emulation)."
+
+# Libretro Features
+savestate = "true"
+savestate_features = "deterministic"
+cheats = "true"
+input_descriptors = "true"
+memory_descriptors = "true"
+libretro_saves = "true"
+core_options = "true"
+core_options_version = "1.3"
+load_subsystem = "true"
+supports_no_game = "false"
+database = "Nintendo - Super Nintendo Entertainment System|Nintendo - Sufami Turbo|Nintendo - Satellaview|Nintendo - Game Boy|Nintendo - Game Boy Color"
+hw_render = "false"
+needs_fullpath = "false"
+disk_control = "false"
+
+description = "SuperSnes9x is a Snes9x-based core extended to also load and run Game Boy (.gb), Super Game Boy (.sgb), and Game Boy Color (.gbc) content via the bundled SGB subsystem, in addition to SNES/SFC, Satellaview and Sufami Turbo. Game Boy and Super Game Boy are fully supported (BIOS or BIOS-less); .gbc runs in monochrome DMG-compatibility mode. Place a real Super Game Boy BIOS (sgb.sfc / sgb2.sfc) in the system directory for authentic SGB sound and borders."

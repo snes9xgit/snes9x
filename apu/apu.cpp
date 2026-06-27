@@ -495,6 +495,54 @@ void S9xSpcResetDrc(void)
     spc::resampler.time_ratio(base_ratio);
 }
 
+// Frame-synchronous SPC rate match for SGB BIOS mode. The host output is paced
+// by the GB sample count, which runs a few percent off the SPC's native rate,
+// so a frontend that drains once per emulated frame sees the SPC resampler
+// buffer drift: overflow -> dropped samples (noise) and under-drain -> pitch
+// drift (bass). S9xSpcAdjustRate's tiny per-call trim only converges when
+// called at audio cadence (win32's drain thread); for the once-per-frame
+// frontends (libretro/gtk/qt) drive spc::drc_scale (production rate) with a PI
+// controller that holds the resampler buffer near half-full, converging in a
+// few frames. Call once per drained frame while in BIOS mode after GB release.
+static double spc_sync_integ = 0.0;
+
+void S9xSpcSyncReset(void)
+{
+    // Clear the integrator and the SGB production trim only. drc_scale is the
+    // SGB-specific rate trim (1.0 == no scaling), so resetting it is correct
+    // for non-SGB audio; deliberately NOT touching time_ratio so the normal
+    // SNES resampler ratio (which may carry a timing hack) is left intact.
+    spc_sync_integ = 0.0;
+    spc::drc_scale = 1.0;
+}
+
+void S9xSpcSyncToConsumption(void)
+{
+    const int cap = spc::resampler.buffer_size;
+    if (cap <= 0) return;
+
+    const double base_ratio = (double)Settings.SoundInputRate /
+                              (double)Settings.SoundPlaybackRate;
+    spc::resampler.time_ratio(base_ratio);
+
+    const int    filled = spc::resampler.space_filled();
+    const int    target = cap / 2;                        // aim half-full: max headroom both ways
+    const double err    = (double)(filled - target) / (double)cap;   // ~[-0.5, +0.5]
+
+    // PI on production rate. drc_scale > 1 slows the SPC (fewer samples);
+    // buffer too full (err > 0) -> raise drc_scale -> drains. The integrator
+    // absorbs the steady-state offset (drc_scale settles ~ native/GB ratio).
+    const double Kp = 0.80, Ki = 0.08, I_CLAMP = 0.40;
+    spc_sync_integ += Ki * err;
+    if (spc_sync_integ >  I_CLAMP) spc_sync_integ =  I_CLAMP;
+    if (spc_sync_integ < -I_CLAMP) spc_sync_integ = -I_CLAMP;
+
+    double scale = 1.0 + Kp * err + spc_sync_integ;
+    if (scale < 0.5) scale = 0.5;
+    if (scale > 1.5) scale = 1.5;
+    spc::drc_scale = scale;
+}
+
 void S9xAudioWaveformEnable(bool enable)
 {
     audiowave::enabled = enable;

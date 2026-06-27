@@ -11,6 +11,7 @@
 #include "common/audio/s9x_sound_driver.hpp"
 #include "snes9x.h"
 #include "apu/apu.h"
+#include "sgb/sgb.h"
 
 #ifdef USE_PORTAUDIO
 #include "common/audio/s9x_sound_driver_portaudio.hpp"
@@ -195,6 +196,17 @@ void S9xSamplesAvailable(void *userdata)
         S9xSGBMixVolumeSPC = clamp_pct(gui_config->sgb_mix_volume_spc);
         S9xSGBMixVolumeGB  = clamp_pct(gui_config->sgb_mix_volume_gb);
     }
+
+    // SGB BIOS mode: the host output is paced by the GB sample count, which
+    // runs a few percent off the SPC's native rate. Drive the SPC production
+    // rate (PI controller) to hold its resampler buffer matched to that cadence
+    // -- otherwise it overflows (dropped samples -> noise) and the under-drain
+    // pitches it down (bass). Reset the trim outside BIOS mode so a SNES game
+    // loaded afterward isn't left with the SGB rate scaling.
+    if (Settings.SGB_BIOSModeActive && S9xSGBBIOSGBIsReleased())
+        S9xSpcSyncToConsumption();
+    else
+        S9xSpcSyncReset();
 
     S9xMixSamples((uint8_t *)temp_buffer.data(), samples);
     S9xMixSpcOverGB(temp_buffer.data(), samples);
