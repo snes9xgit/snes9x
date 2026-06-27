@@ -705,7 +705,7 @@ inline void ExecPpuDot(Ppu &p, Memory &mem)
 			MODE3_SETUP_DOTS + p.mode3_sprite_stall;
 		if (p.mode_clock > pixel_start_dot && p.draw_x < GB_SCREEN_WIDTH)
 		{
-			if (((p.draw_x + p.scx) & 7) == 0)
+			if (p.draw_x == 0 || ((p.draw_x + p.scx) & 7) == 0)
 				p.fetch_scy = p.scy;
 			if (p.cgb || (p.lcdc & 0x01))
 			{
