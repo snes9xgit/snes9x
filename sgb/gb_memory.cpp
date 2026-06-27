@@ -30,6 +30,12 @@ inline bool VramBlocked(const Memory &m)
 	       m.ppu->mode == PpuMode::Transfer && (m.ppu->lcdc & 0x80);
 }
 
+inline bool CramBlocked(const Memory &m)
+{
+	return m.ppu && m.ppu->cgb &&
+	       m.ppu->mode == PpuMode::Transfer && (m.ppu->lcdc & 0x80);
+}
+
 void SetSerialCallback(SerialByteCallback cb) { g_serial_cb = cb; }
 
 void MemReset(Memory &m, bool cgb)
@@ -78,9 +84,9 @@ inline uint32_t WramBankBase(const Memory &m)
 	return 0x1000u;
 }
 
-inline void CgbWritePalette(uint8_t *pal, uint8_t &idx, uint8_t value)
+inline void CgbWritePalette(uint8_t *pal, uint8_t &idx, uint8_t value, bool store)
 {
-	pal[idx & 0x3F] = value;
+	if (store) pal[idx & 0x3F] = value;
 	if (idx & 0x80) idx = static_cast<uint8_t>((idx & 0x80) | ((idx + 1) & 0x3F));
 }
 } // namespace
@@ -342,9 +348,9 @@ static void WriteIO(Memory &m, uint16_t addr, uint8_t value)
 		case 0xFF54: if (m.ppu && m.ppu->cgb) m.hdma4 = value; return;
 		case 0xFF55: if (m.ppu && m.ppu->cgb) HdmaTrigger(m, value); return;
 		case 0xFF68: if (m.ppu && m.ppu->cgb) m.ppu->bcps = value; return;
-		case 0xFF69: if (m.ppu && m.ppu->cgb) CgbWritePalette(m.ppu->bg_pal, m.ppu->bcps, value); return;
+		case 0xFF69: if (m.ppu && m.ppu->cgb) CgbWritePalette(m.ppu->bg_pal, m.ppu->bcps, value, !CramBlocked(m)); return;
 		case 0xFF6A: if (m.ppu && m.ppu->cgb) m.ppu->ocps = value; return;
-		case 0xFF6B: if (m.ppu && m.ppu->cgb) CgbWritePalette(m.ppu->obj_pal, m.ppu->ocps, value); return;
+		case 0xFF6B: if (m.ppu && m.ppu->cgb) CgbWritePalette(m.ppu->obj_pal, m.ppu->ocps, value, !CramBlocked(m)); return;
 		case 0xFF70: if (m.ppu && m.ppu->cgb) m.svbk = value & 0x07; return;
 	}
 	if (addr >= 0xFF10 && addr <= 0xFF3F)
