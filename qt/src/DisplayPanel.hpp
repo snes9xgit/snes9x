@@ -11,6 +11,7 @@ class DisplayPanel :
     void showEvent(QShowEvent *event) override;
     void populateDevices();
     void selectShaderDialog();
+    void updateGBBlendEnabledState();
 
     std::vector<std::pair<int, std::string>> driver_list;
     bool updating = true;

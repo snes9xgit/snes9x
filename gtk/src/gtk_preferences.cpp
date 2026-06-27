@@ -14,6 +14,7 @@
 #include "fmt/format.h"
 #include "snes9x.h"
 #include "gfx.h"
+#include "sgb/sgb.h"
 
 #define SAME_AS_GAME gettext("Same location as current game")
 
@@ -164,6 +165,13 @@ void Snes9xPreferences::connect_signals()
     });
     get_object<Gtk::CheckButton>("multithreading")->signal_toggled().connect([&] {
         enable_widget("num_threads", get_check("multithreading"));
+    });
+    // Game Boy Image: re-grey the dropdowns when Auto is toggled or the mode changes.
+    get_object<Gtk::CheckButton>("gb_frame_blend_auto")->signal_toggled().connect([&] {
+        update_gb_blend_enable_state();
+    });
+    get_object<Gtk::ComboBox>("gb_frame_blend")->signal_changed().connect([&] {
+        update_gb_blend_enable_state();
     });
     // Handle plurals on GtkLabel “threads_for_filtering_and_scaling_label”
     get_object<Gtk::SpinButton>("num_threads")->signal_value_changed().connect([&] {
@@ -339,6 +347,24 @@ void Snes9xPreferences::update_sgb_volume_enable_state()
         set_slider("sgb_mix_volume_gb", config->master_volume_regular);
         suppress_volume_sync = false;
     }
+}
+
+void Snes9xPreferences::update_gb_blend_enable_state()
+{
+    // The Game Boy Image options only apply to an SGB game; grey them out for SNES
+    // titles (or when nothing is loaded). With "Auto Layer Transparency" on, the two
+    // dropdowns are list-driven so they are greyed too; the layer dropdown also needs
+    // blending to be on (mode != Off). Mirrors the win32 and Qt frontends.
+    bool gb_active = Settings.SuperGameBoy || Settings.SGB_BIOSModeActive;
+    bool manual = gb_active && !get_check("gb_frame_blend_auto");
+    bool layer = manual && get_combo("gb_frame_blend") != 0;
+
+    enable_widget("gb_image_frame",             gb_active);
+    enable_widget("gb_frame_blend_auto",        gb_active);
+    enable_widget("gb_frame_blend",             manual);
+    enable_widget("gb_frame_blend_label",       manual);
+    enable_widget("gb_frame_blend_layer",       layer);
+    enable_widget("gb_frame_blend_layer_label", layer);
 }
 
 void Snes9xPreferences::about_dialog()
@@ -517,6 +543,9 @@ void Snes9xPreferences::move_settings_to_dialog()
     set_check("change_display_resolution", config->change_display_resolution);
     set_check("scale_to_fit",              config->scale_to_fit);
     set_check("overscan",                  config->overscan);
+    set_combo("gb_frame_blend",            Settings.GBFrameBlend);
+    set_combo("gb_frame_blend_layer",      Settings.GBFrameBlendLayer);
+    set_check("gb_frame_blend_auto",       Settings.GBFrameBlendAuto);
     set_check("multithreading",            config->multithreading);
     enable_widget("num_threads", get_check("multithreading"));
     set_label("threads_for_filtering_and_scaling_label",
@@ -576,6 +605,7 @@ void Snes9xPreferences::move_settings_to_dialog()
     suppress_volume_sync = false;
     prev_regular_volume = config->master_volume_regular;
     update_sgb_volume_enable_state();
+    update_gb_blend_enable_state();
     if (top_level->get_auto_input_rate() == 0)
     {
         config->auto_input_rate = false;
@@ -714,6 +744,19 @@ void Snes9xPreferences::get_settings_from_dialog()
     config->osd_size                  = get_spin("osd_size");
     config->scale_to_fit              = get_check("scale_to_fit");
     config->overscan                  = get_check("overscan");
+    // Game Boy frame-blend. Settings.GBFrameBlend* is the single stored value (saved
+    // straight to the config file), exactly like win32. When "Auto Layer Transparency"
+    // is on, the per-title table in sgb.cpp picks the mode/layer and overwrites it in
+    // place; reflect that back into the (disabled) dropdowns.
+    Settings.GBFrameBlendAuto         = get_check("gb_frame_blend_auto");
+    Settings.GBFrameBlend             = get_combo("gb_frame_blend");
+    Settings.GBFrameBlendLayer        = get_combo("gb_frame_blend_layer");
+    if (Settings.GBFrameBlendAuto)
+    {
+        S9xSGBApplyAutoBlend();
+        set_combo("gb_frame_blend",       Settings.GBFrameBlend);
+        set_combo("gb_frame_blend_layer", Settings.GBFrameBlendLayer);
+    }
     config->maintain_aspect_ratio     = get_check("maintain_aspect_ratio");
     config->aspect_ratio              = get_combo("aspect_ratio");
     config->scale_method              = get_combo("scale_method_combo");
