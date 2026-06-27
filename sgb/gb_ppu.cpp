@@ -72,7 +72,7 @@ namespace {
 constexpr int32_t MODE2_DOTS        = 80;
 constexpr int32_t MODE3_DOTS        = 172;
 constexpr int32_t MODE0_DOTS        = 204;
-constexpr int32_t MODE3_SETUP_DOTS  = 12;
+constexpr int32_t MODE3_SETUP_DOTS  = GB_MODE3_SETUP_DOTS;
 constexpr int32_t SPRITE_STALL_DOTS = 6;
 constexpr int32_t LINE_DOTS  = MODE2_DOTS + MODE3_DOTS + MODE0_DOTS;  // 456
 constexpr int32_t VISIBLE_LINES = 144;

@@ -33,7 +33,8 @@ inline bool VramBlocked(const Memory &m)
 inline bool CramBlocked(const Memory &m)
 {
 	return m.ppu && m.ppu->cgb &&
-	       m.ppu->mode == PpuMode::Transfer && (m.ppu->lcdc & 0x80);
+	       m.ppu->mode == PpuMode::Transfer && (m.ppu->lcdc & 0x80) &&
+	       m.ppu->mode_clock > GB_MODE3_SETUP_DOTS + m.ppu->mode3_sprite_stall;
 }
 
 void SetSerialCallback(SerialByteCallback cb) { g_serial_cb = cb; }

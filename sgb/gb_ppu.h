@@ -18,6 +18,8 @@ struct Memory;
 constexpr int GB_SCREEN_WIDTH  = 160;
 constexpr int GB_SCREEN_HEIGHT = 144;
 
+constexpr int32_t GB_MODE3_SETUP_DOTS = 12;
+
 enum class PpuMode : uint8_t
 {
 	HBlank     = 0,  // 204-cycle mode 0
