@@ -536,6 +536,7 @@ uint8_t MbcRead(MbcState &s, const std::vector<uint8_t> &rom, const std::vector<
 			case MbcType::HuC1: bank = s.rom_bank ? s.rom_bank : 1; break;
 			case MbcType::HuC3: bank = s.rom_bank; break;
 			case MbcType::TAMA5: bank = s.rom_bank; break;
+			case MbcType::Camera: bank = s.rom_bank ? s.rom_bank : 1; break;
 			case MbcType::MBC2: bank = (s.rom_bank & 0x0F) ? (s.rom_bank & 0x0F) : 1; break;
 			case MbcType::SachenMMC1: bank = SachenBankN(s); break;
 			case MbcType::MMM01:      bank = Mmm01RomBank(s, rom.size()); break;
@@ -610,6 +611,13 @@ uint8_t MbcRead(MbcState &s, const std::vector<uint8_t> &rom, const std::vector<
 				case 8: return s.rtc_select;
 				default: return 0xFF;
 			}
+		}
+
+		if (s.type == MbcType::Camera)
+		{
+			if (s.mbc1_mode) return 0x00;
+			if (!s.ram_enable) return 0xFF;
+			return ReadSram(sram, ((s.ram_bank & 0x0F) * 0x2000u) + (addr - 0xA000u));
 		}
 
 		if (!s.ram_enable && s.type != MbcType::MBC5) return 0xFF;
@@ -943,6 +951,28 @@ void MbcWrite(Cart &c, uint16_t addr, uint8_t value)
 		{
 			s.rom_bank  = value & 0x07;
 			s.mbc1_mode = true;
+		}
+		break;
+
+	case MbcType::Camera:
+		if (addr < 0x2000)
+		{
+			s.ram_enable = ((value & 0x0F) == 0x0A);
+		}
+		else if (addr < 0x4000)
+		{
+			s.rom_bank = value & 0x3F;
+		}
+		else if (addr < 0x6000)
+		{
+			s.mbc1_mode = (value & 0x10) != 0;
+			if (!s.mbc1_mode) s.ram_bank = value & 0x0F;
+		}
+		else if (addr >= 0xA000 && addr < 0xC000)
+		{
+			if (s.mbc1_mode) break;
+			if (!s.ram_enable) break;
+			WriteSram(c, ((s.ram_bank & 0x0F) * 0x2000u) + (addr - 0xA000u), value);
 		}
 		break;
 
