@@ -667,6 +667,7 @@ namespace {
 struct GBAutoBlendEntry { const char *title; GBBlendMode mode; GBBlendLayer layer; };
 const GBAutoBlendEntry kGBAutoBlend[] = {
 	{ "3DPOCKTPOOLBVPP",  GB_BLEND_SIMPLE, GB_BLEND_LAYER_ALL        },  // 3D Pocket Pool — 2-phase multiplex of balls (OBJ) and shadows (BG), so layer must be ALL
+	{ "BOXING",           GB_BLEND_SIMPLE, GB_BLEND_LAYER_ALL        },  // Boxing (Tonkin House) — flickers the HUD (time/round/head) every other frame across BG + window, so layer must be ALL
 	{ "CASTLEVANIA2 BEL", GB_BLEND_SIMPLE, GB_BLEND_LAYER_BACKGROUND },  // Castlevania II: Belmont's Revenge (16-byte title)
 	{ "ZAS",              GB_BLEND_SIMPLE, GB_BLEND_LAYER_BACKGROUND },  // Chikyuu Kaihou Gun ZAS
 	{ "ZELDA",            GB_BLEND_SIMPLE, GB_BLEND_LAYER_ALL        },  // Zelda: Link's Awakening (DX)
