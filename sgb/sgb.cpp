@@ -419,7 +419,7 @@ void Emulator::Reset()
 	impl_->cpu.Reset();
 	MemReset(impl_->mem, impl_->cgb_mode && !Settings.SGB_BIOSModeActive);
 	PpuReset(impl_->ppu);
-	ApuReset(impl_->apu);
+	ApuReset(impl_->apu, impl_->cgb_mode && !Settings.SGB_BIOSModeActive);
 	TimerReset(impl_->timer);
 	JoypadReset(impl_->joypad);
 	PacketReset(impl_->sgb_pkt);

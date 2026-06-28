@@ -410,13 +410,22 @@ void FlushSample(Apu &a)
 // Public API
 // ===================================================================
 
-void ApuReset(Apu &a)
+void ApuReset(Apu &a, bool cgb)
 {
 	a.ch1 = ApuSquare{};
 	a.ch2 = ApuSquare{};
 	a.ch3 = ApuWave{};
 	a.ch4 = ApuNoise{};
 	a.ch4.lfsr = 0x7FFF;
+
+	if (!cgb)
+	{
+		static const uint8_t kDmgWaveRam[16] = {
+			0x84, 0x40, 0x43, 0xAA, 0x2D, 0x78, 0x92, 0x3C,
+			0x60, 0x59, 0x59, 0xB0, 0x34, 0xB8, 0x2F, 0xEC,
+		};
+		std::memcpy(a.ch3.ram, kDmgWaveRam, sizeof a.ch3.ram);
+	}
 
 	a.nr50 = 0;
 	a.nr51 = 0;
