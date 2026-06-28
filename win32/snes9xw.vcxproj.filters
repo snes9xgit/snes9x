@@ -99,6 +99,9 @@
     <ClInclude Include="win32_display.h">
       <Filter>GUI</Filter>
     </ClInclude>
+    <ClInclude Include="win32_webcam.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
     <ClInclude Include="win32_sound.h">
       <Filter>GUI</Filter>
     </ClInclude>
@@ -654,6 +657,9 @@
       <Filter>GUI</Filter>
     </ClCompile>
     <ClCompile Include="win32_display.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="win32_webcam.cpp">
       <Filter>GUI</Filter>
     </ClCompile>
     <ClCompile Include="win32_sound.cpp">

@@ -45,6 +45,7 @@
 #include "CGBTilemapViewerDlg.h"
 #include "CGBSpriteViewerDlg.h"
 #include "debug_viewer_common.h"
+#include "win32_webcam.h"
 
 #include "../snes9x.h"
 #include "../memmap.h"
@@ -4485,6 +4486,14 @@ static void ProcessInput(void)
 /*****************************************************************************/
 void DeinitS9x(void);
 
+static void ApplyGBVideoCamera()
+{
+	if (Settings.GBVideoCamera)
+		GBCameraStart(Settings.GBVideoCameraIndex);
+	else
+		GBCameraStop();
+}
+
 int WINAPI WinMain(
 				   HINSTANCE hInstance,
 				   HINSTANCE hPrevInstance,
@@ -4543,6 +4552,9 @@ int WINAPI WinMain(
 
 	void InitSnes9x (void);
 	InitSnes9x ();
+
+	GBCameraRegister();
+	ApplyGBVideoCamera();
 
 	if(GUI.FullScreen) {
 		GUI.FullScreen = false;
@@ -4862,6 +4874,7 @@ loop_exit:
 	S9xGraphicsDeinit();
 	S9xDeinitAPU();
 	WinDeleteRecentGamesList ();
+	GBCameraStop();
 	DeinitS9x();
 
 	return msg.wParam;
@@ -10401,6 +10414,23 @@ INT_PTR CALLBACK DlgFunky(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
         CreateToolTip(IDC_BLEND_GB_LAYER, hDlg, TEXT("Which Game Boy layer to blend: Background (BG) keeps moving sprites crisp; Window = the window/HUD layer; Sprites = objects only; All blends everything"));
         CreateToolTip(IDC_GB_BLEND_AUTO, hDlg, TEXT("Auto Layer Transparency: pick the blend per game from a built-in list of known flicker-transparency games (off for the rest). Uncheck to set the mode/layer manually for every Game Boy game."));
 
+        SendDlgItemMessage(hDlg, IDC_GB_CAMERA_LIST, CB_RESETCONTENT, 0, 0);
+        {
+            std::vector<std::wstring> camNames;
+            GBCameraEnumerate(camNames);
+            for (size_t ci = 0; ci < camNames.size(); ++ci)
+                SendDlgItemMessageW(hDlg, IDC_GB_CAMERA_LIST, CB_ADDSTRING, 0, (LPARAM)camNames[ci].c_str());
+            int camSel = (int)Settings.GBVideoCameraIndex;
+            if (camSel < 0 || camSel >= (int)camNames.size())
+                camSel = camNames.empty() ? -1 : 0;
+            if (camSel >= 0)
+                SendDlgItemMessage(hDlg, IDC_GB_CAMERA_LIST, CB_SETCURSEL, (WPARAM)camSel, 0);
+            if (Settings.GBVideoCamera)
+                SendDlgItemMessage(hDlg, IDC_GB_ENABLE_CAMERA, BM_SETCHECK, (WPARAM)BST_CHECKED, 0);
+            EnableWindow(GetDlgItem(hDlg, IDC_GB_CAMERA_LIST), Settings.GBVideoCamera && !camNames.empty());
+        }
+        CreateToolTip(IDC_GB_ENABLE_CAMERA, hDlg, TEXT("Feed a connected USB webcam into the Game Boy Camera (Pocket Camera) cartridge's image sensor. With this off (or no camera connected) the in-game viewfinder is blank."));
+
         // The Game Boy Image options only apply to a Game Boy / GBC / SGB game —
         // grey them out for SNES titles (or when nothing is loaded). With Auto on,
         // the two dropdowns are list-driven so they're greyed too; the layer one
@@ -10671,6 +10701,11 @@ INT_PTR CALLBACK DlgFunky(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 			WinRefreshDisplay();
 			break;
 
+		case IDC_GB_ENABLE_CAMERA:
+			EnableWindow(GetDlgItem(hDlg, IDC_GB_CAMERA_LIST),
+				IsDlgButtonChecked(hDlg, IDC_GB_ENABLE_CAMERA) == BST_CHECKED);
+			break;
+
 		case IDC_AUTOFRAME:
 			if(BN_CLICKED==HIWORD(wParam)||BN_DBLCLK==HIWORD(wParam))
 			{
@@ -10877,6 +10912,12 @@ INT_PTR CALLBACK DlgFunky(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 				int lsel = SendDlgItemMessage(hDlg, IDC_BLEND_GB_LAYER, CB_GETCURSEL, 0, 0);
 				Settings.GBFrameBlendLayer = (lsel == CB_ERR) ? GB_BLEND_LAYER_ALL : (uint8)lsel;
 				Settings.GBFrameBlendAuto = (IsDlgButtonChecked(hDlg, IDC_GB_BLEND_AUTO) == BST_CHECKED);
+			}
+			{
+				Settings.GBVideoCamera = (IsDlgButtonChecked(hDlg, IDC_GB_ENABLE_CAMERA) == BST_CHECKED);
+				int csel = SendDlgItemMessage(hDlg, IDC_GB_CAMERA_LIST, CB_GETCURSEL, 0, 0);
+				if (csel != CB_ERR) Settings.GBVideoCameraIndex = (uint8)csel;
+				ApplyGBVideoCamera();
 			}
 
 			index = ComboBox_GetCurSel(GetDlgItem(hDlg,IDC_RESOLUTION));

@@ -54,6 +54,14 @@
 #include "gb_cart.h"
 
 #include <ctime>
+#include <cstring>
+
+static bool (*g_gb_camera_cb)(unsigned char *, int, int) = nullptr;
+
+void S9xGBSetCameraCallback(bool (*cb)(unsigned char *, int, int))
+{
+	g_gb_camera_cb = cb;
+}
 
 namespace SGB {
 
@@ -649,6 +657,43 @@ uint8_t MbcRead(MbcState &s, const std::vector<uint8_t> &rom, const std::vector<
 	return 0xFF;
 }
 
+static void GbCameraCapture(Cart &c)
+{
+	const int W = 128, H = 112;
+	unsigned char src[W * H];
+	if (!(g_gb_camera_cb && g_gb_camera_cb(src, W, H)))
+	{
+		for (int y = 0; y < H; ++y)
+			for (int x = 0; x < W; ++x)
+				src[y * W + x] = static_cast<unsigned char>((x * 255) / (W - 1));
+	}
+
+	static const int bayer[16] = { 0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5 };
+
+	for (int ty = 0; ty < H / 8; ++ty)
+	for (int tx = 0; tx < W / 8; ++tx)
+	{
+		const uint32_t tile_off = 0x100u + static_cast<uint32_t>(ty * (W / 8) + tx) * 16u;
+		for (int row = 0; row < 8; ++row)
+		{
+			uint8_t lo = 0, hi = 0;
+			const int py = ty * 8 + row;
+			for (int col = 0; col < 8; ++col)
+			{
+				const int px = tx * 8 + col;
+				const int v = src[py * W + px];
+				int level = (v * 3 + bayer[(py & 3) * 4 + (px & 3)] * 16) / 255;
+				if (level > 3) level = 3;
+				const int shade = 3 - level;
+				lo |= static_cast<uint8_t>((shade & 1) << (7 - col));
+				hi |= static_cast<uint8_t>(((shade >> 1) & 1) << (7 - col));
+			}
+			WriteSram(c, tile_off + row * 2 + 0, lo);
+			WriteSram(c, tile_off + row * 2 + 1, hi);
+		}
+	}
+}
+
 void MbcWrite(Cart &c, uint16_t addr, uint8_t value)
 {
 	MbcState &s = c.mbc;
@@ -970,7 +1015,16 @@ void MbcWrite(Cart &c, uint16_t addr, uint8_t value)
 		}
 		else if (addr >= 0xA000 && addr < 0xC000)
 		{
-			if (s.mbc1_mode) break;
+			if (s.mbc1_mode)
+			{
+				const uint16_t r = static_cast<uint16_t>((addr - 0xA000u) & 0x7F);
+				if (r < 0x36)
+				{
+					c.camera_regs[r] = value;
+					if (r == 0 && (value & 0x01)) GbCameraCapture(c);
+				}
+				break;
+			}
 			if (!s.ram_enable) break;
 			WriteSram(c, ((s.ram_bank & 0x0F) * 0x2000u) + (addr - 0xA000u), value);
 		}

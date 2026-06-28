@@ -236,6 +236,8 @@ struct SSettings
 	uint8	GBFrameBlend;        // GB frame-blend mode: 0=off, 1=Simple Blend (50/50), 2=LCD Blend (decay)
 	uint8	GBFrameBlendLayer;   // which GB layers to blend: 0=all, 1=background (BG), 2=window, 3=sprites
 	bool8	GBFrameBlendAuto;    // auto-pick GBFrameBlend/Layer from a per-title table at GB load (off for unlisted)
+	bool8	GBVideoCamera;
+	uint8	GBVideoCameraIndex;
 	bool8	SGB_UseBIOS;         // prefer authentic SGB1/SGB2 BIOS mode when a matching BIOS file is found
 	bool8	SGB_BIOSModeActive;  // runtime: the currently-loaded ROM is running on the real SGB BIOS
 	char	SGB_BIOSPath[260];   // runtime: absolute path of the BIOS .sfc in use (empty in BIOS-less mode)
