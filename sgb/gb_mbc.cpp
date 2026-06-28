@@ -63,6 +63,8 @@ void S9xGBSetCameraCallback(bool (*cb)(unsigned char *, int, int))
 	g_gb_camera_cb = cb;
 }
 
+int g_cam_countdown = 0;
+
 namespace SGB {
 
 // TAMA5 reuses existing MbcState fields (it never coexists with the mappers
@@ -623,7 +625,11 @@ uint8_t MbcRead(MbcState &s, const std::vector<uint8_t> &rom, const std::vector<
 
 		if (s.type == MbcType::Camera)
 		{
-			if (s.mbc1_mode) return 0x00;
+			if (s.mbc1_mode)
+			{
+				if ((addr & 0x7F) == 0) return (g_cam_countdown > 0) ? 0x01 : 0x00;
+				return 0x00;
+			}
 			if (!s.ram_enable) return 0xFF;
 			return ReadSram(sram, ((s.ram_bank & 0x0F) * 0x2000u) + (addr - 0xA000u));
 		}
@@ -659,16 +665,13 @@ uint8_t MbcRead(MbcState &s, const std::vector<uint8_t> &rom, const std::vector<
 
 static void GbCameraCapture(Cart &c)
 {
+	const uint8_t *reg = c.camera_regs;
+	const int expo = (reg[2] << 8) | reg[3];
+	g_cam_countdown = 129792 + expo * 64;
 	const int W = 128, H = 112;
 	unsigned char src[W * H];
 	if (!(g_gb_camera_cb && g_gb_camera_cb(src, W, H)))
-	{
-		for (int y = 0; y < H; ++y)
-			for (int x = 0; x < W; ++x)
-				src[y * W + x] = static_cast<unsigned char>((x * 255) / (W - 1));
-	}
-
-	static const int bayer[16] = { 0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5 };
+		std::memset(src, 0x80, sizeof(src));
 
 	for (int ty = 0; ty < H / 8; ++ty)
 	for (int tx = 0; tx < W / 8; ++tx)
@@ -681,10 +684,14 @@ static void GbCameraCapture(Cart &c)
 			for (int col = 0; col < 8; ++col)
 			{
 				const int px = tx * 8 + col;
-				const int v = src[py * W + px];
-				int level = (v * 3 + bayer[(py & 3) * 4 + (px & 3)] * 16) / 255;
-				if (level > 3) level = 3;
-				const int shade = 3 - level;
+				int v = src[py * W + px] * expo / 0x1000;
+				if (v < 0) v = 0; else if (v > 255) v = 255;
+				const int base = ((px & 3) + (py & 3) * 4) * 3 + 6;
+				int shade;
+				if      (v < reg[base + 0]) shade = 3;
+				else if (v < reg[base + 1]) shade = 2;
+				else if (v < reg[base + 2]) shade = 1;
+				else                        shade = 0;
 				lo |= static_cast<uint8_t>((shade & 1) << (7 - col));
 				hi |= static_cast<uint8_t>(((shade >> 1) & 1) << (7 - col));
 			}

@@ -64,6 +64,8 @@
 
 #include <cstring>
 
+extern int g_cam_countdown;
+
 namespace SGB {
 
 namespace {
@@ -829,6 +831,8 @@ void PpuStep(Ppu &p, Memory &mem, int32_t tcycles)
 {
 	if (tcycles <= 0) return;
 	p.t_cycles += tcycles;
+
+	if (::g_cam_countdown > 0) { ::g_cam_countdown -= tcycles; if (::g_cam_countdown < 0) ::g_cam_countdown = 0; }
 
 	// LCD master disable (LCDC bit 7). Real HW parks the PPU in mode 0
 	// with LY=0 until the bit toggles back on. We keep the framebuffer
