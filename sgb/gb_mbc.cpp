@@ -64,6 +64,8 @@ void S9xGBSetCameraCallback(bool (*cb)(unsigned char *, int, int))
 }
 
 int g_cam_countdown = 0;
+uint8_t g_cam_shade[128 * 112] = {0};
+int g_cam_live = 0;
 
 namespace SGB {
 
@@ -671,7 +673,8 @@ static void GbCameraCapture(Cart &c)
 	g_cam_countdown = 129792 + expo * 64;
 	const int W = 128, H = 112;
 	unsigned char src[W * H];
-	if (!(g_gb_camera_cb && g_gb_camera_cb(src, W, H)))
+	const bool have = g_gb_camera_cb && g_gb_camera_cb(src, W, H);
+	if (!have)
 		std::memset(src, 0x80, sizeof(src));
 
 	for (int ty = 0; ty < H / 8; ++ty)
@@ -700,6 +703,16 @@ static void GbCameraCapture(Cart &c)
 			WriteSram(c, tile_off + row * 2 + 1, hi);
 		}
 	}
+
+	static const int bayer[16] = { 0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5 };
+	for (int y = 0; y < H; ++y)
+		for (int x = 0; x < W; ++x)
+		{
+			int level = (src[y * W + x] * 3 + bayer[(y & 3) * 4 + (x & 3)] * 16) / 255;
+			if (level > 3) level = 3;
+			g_cam_shade[y * W + x] = static_cast<uint8_t>(3 - level);
+		}
+	if (have) g_cam_live = 30;
 }
 
 void MbcWrite(Cart &c, uint16_t addr, uint8_t value)

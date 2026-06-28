@@ -65,6 +65,8 @@
 #include <cstring>
 
 extern int g_cam_countdown;
+extern uint8_t g_cam_shade[128 * 112];
+extern int g_cam_live;
 
 namespace SGB {
 
@@ -763,6 +765,22 @@ inline void ExecPpuDot(Ppu &p, Memory &mem)
 			S9xSGBOnPpuHBlank();
 			if (p.ly == VISIBLE_LINES)
 			{
+				if (::g_cam_live > 0)
+				{
+					const int VX = 8, VY = 16;
+					for (int yy = 0; yy < 112; ++yy)
+					{
+						const int sy = VY + yy;
+						if (sy >= GB_SCREEN_HEIGHT) break;
+						for (int xx = 0; xx < 128; ++xx)
+						{
+							const int sx = VX + xx;
+							if (sx < GB_SCREEN_WIDTH)
+								p.framebuffer[sy * GB_SCREEN_WIDTH + sx] = ::g_cam_shade[yy * 128 + xx];
+						}
+					}
+				}
+				if (::g_cam_live > 0) --::g_cam_live;
 				p.mode          = PpuMode::VBlank;
 				p.frame_ready   = true;
 				p.present_hold  = false;
