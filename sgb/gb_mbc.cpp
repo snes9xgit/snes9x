@@ -632,6 +632,7 @@ uint8_t MbcRead(MbcState &s, const std::vector<uint8_t> &rom, const std::vector<
 				if ((addr & 0x7F) == 0) return (g_cam_countdown > 0) ? 0x01 : 0x00;
 				return 0x00;
 			}
+			if ((s.ram_bank & 0x0F) == 0 && addr >= 0xA100 && addr < 0xAF00) g_cam_live = 40;
 			if (g_cam_countdown > 0) return 0x00;
 			if (!s.ram_enable) return 0xFF;
 			return ReadSram(sram, ((s.ram_bank & 0x0F) * 0x2000u) + (addr - 0xA000u));
@@ -713,7 +714,7 @@ static void GbCameraCapture(Cart &c)
 			g_cam_shade[y * W + x] = static_cast<uint8_t>(3 - level);
 		}
 	(void)have;
-	g_cam_live = 30;
+	g_cam_live = 40;
 }
 
 void MbcWrite(Cart &c, uint16_t addr, uint8_t value)
