@@ -27,6 +27,7 @@
 
 #include <algorithm>
 #include <cstring>
+#include <cmath>
 
 namespace SGB {
 
@@ -353,6 +354,17 @@ void FrameSequencerStep(Apu &a)
 	a.frame_seq_step = static_cast<uint8_t>((step + 1) & 7);
 }
 
+// One biquad section, transposed direct-form II. State (z1,z2) is per
+// section per channel; coefficients are shared (a0 pre-normalised to 1).
+inline float Biquad(float x, float b0, float b1, float b2, float a1, float a2,
+                    float &z1, float &z2)
+{
+	const float y = b0 * x + z1;
+	z1 = b1 * x - a1 * y + z2;
+	z2 = b2 * x - a2 * y;
+	return y;
+}
+
 // -------------------------------------------------------------------
 // Ring buffer output — push one stereo sample.
 // -------------------------------------------------------------------
@@ -397,14 +409,58 @@ void FlushSample(Apu &a)
 	const float yr = xr - a.hp_xprev_r + R * a.hp_yprev_r;
 	a.hp_xprev_r = xr; a.hp_yprev_r = yr;
 
-	int32_t fl = static_cast<int32_t>(yl);
-	int32_t fr = static_cast<int32_t>(yr);
+	// Analog-output reconstruction low-pass (see Apu::lp_* in gb_apu.h):
+	// strips the ultrasonic alias the box-filter decimator can't.
+	float fl_f = yl, fr_f = yr;
+	for (int s = 0; s < 2; ++s)
+	{
+		fl_f = Biquad(fl_f, a.lp_b0[s], a.lp_b1[s], a.lp_b2[s], a.lp_a1[s], a.lp_a2[s],
+		              a.lp_z1_l[s], a.lp_z2_l[s]);
+		fr_f = Biquad(fr_f, a.lp_b0[s], a.lp_b1[s], a.lp_b2[s], a.lp_a1[s], a.lp_a2[s],
+		              a.lp_z1_r[s], a.lp_z2_r[s]);
+	}
+
+	int32_t fl = static_cast<int32_t>(fl_f);
+	int32_t fr = static_cast<int32_t>(fr_f);
 	if (fl >  32767) fl =  32767; else if (fl < -32768) fl = -32768;
 	if (fr >  32767) fr =  32767; else if (fr < -32768) fr = -32768;
 	PushSample(a, static_cast<int16_t>(fl), static_cast<int16_t>(fr));
 }
 
 } // anonymous
+
+// Derive the output low-pass coefficients from the current output_rate.
+// 4th-order Butterworth = two RBJ-cookbook biquads at the same corner
+// with the canonical Butterworth section Qs. Called whenever the sample
+// rate changes (and on reset) so the corner tracks 32 kHz / 48 kHz /
+// SGB1-clock output without re-tuning. Corner is held below Nyquist for
+// safety at low output rates.
+static inline void RecomputeLowpass(Apu &a)
+{
+	const double PI  = 3.14159265358979323846;
+	double fs = a.output_rate > 0 ? (double)a.output_rate : 32000.0;
+	double fc = 12000.0;
+	if (fc > fs * 0.45) fc = fs * 0.45;
+	const double Q[2] = { 0.54119610, 1.30656296 };
+	for (int s = 0; s < 2; ++s)
+	{
+		const double w0    = 2.0 * PI * fc / fs;
+		const double c     = std::cos(w0);
+		const double sn    = std::sin(w0);
+		const double alpha = sn / (2.0 * Q[s]);
+		const double b0 = (1.0 - c) * 0.5;
+		const double b1 = (1.0 - c);
+		const double b2 = (1.0 - c) * 0.5;
+		const double a0 = 1.0 + alpha;
+		const double a1 = -2.0 * c;
+		const double a2 = 1.0 - alpha;
+		a.lp_b0[s] = (float)(b0 / a0);
+		a.lp_b1[s] = (float)(b1 / a0);
+		a.lp_b2[s] = (float)(b2 / a0);
+		a.lp_a1[s] = (float)(a1 / a0);
+		a.lp_a2[s] = (float)(a2 / a0);
+	}
+}
 
 // ===================================================================
 // Public API
@@ -451,6 +507,10 @@ void ApuReset(Apu &a, bool cgb, bool post_boot)
 	a.hp_xprev_l = a.hp_yprev_l = 0.0f;
 	a.hp_xprev_r = a.hp_yprev_r = 0.0f;
 
+	a.lp_z1_l[0] = a.lp_z2_l[0] = a.lp_z1_l[1] = a.lp_z2_l[1] = 0.0f;
+	a.lp_z1_r[0] = a.lp_z2_r[0] = a.lp_z1_r[1] = a.lp_z2_r[1] = 0.0f;
+	RecomputeLowpass(a);
+
 	std::memset(a.sample_buf, 0, sizeof a.sample_buf);
 }
 
@@ -467,6 +527,7 @@ static inline void RecomputeSampleRate(Apu &a)
 	// Preserve cps_remainder_acc across rate changes — the running
 	// fractional carry shouldn't reset, otherwise we'd briefly emit
 	// at the integer-only rate until the carry rebuilds.
+	RecomputeLowpass(a);
 }
 
 void ApuSetOutputRate(Apu &a, int32_t rate)

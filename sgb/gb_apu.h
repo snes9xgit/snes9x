@@ -144,6 +144,21 @@ struct Apu
 	// accumulators: reset on Reset, never serialized.
 	float     hp_xprev_l = 0.0f, hp_yprev_l = 0.0f;
 	float     hp_xprev_r = 0.0f, hp_yprev_r = 0.0f;
+
+	// Analog-output reconstruction low-pass: 4th-order Butterworth (two
+	// cascaded biquads, ~12 kHz). The box-filter decimator only gives
+	// first-order (sinc) anti-aliasing, so a channel run far above the
+	// audio band — e.g. CH3 at period=1 (a 65 kHz wave, as Pit Fighter
+	// leaves it during "silence") — folds into an audible ~19 kHz whine.
+	// This removes that ultrasonic alias the way real hardware / Mesen /
+	// SameBoy do, leaving the <10 kHz musical band intact. Coefficients
+	// (lp_b*/lp_a*) are derived from output_rate in RecomputeSampleRate;
+	// state (lp_z*) is transient like the DC blocker — reset on Reset,
+	// never serialized.
+	float     lp_b0[2] = {0,0}, lp_b1[2] = {0,0}, lp_b2[2] = {0,0};
+	float     lp_a1[2] = {0,0}, lp_a2[2] = {0,0};
+	float     lp_z1_l[2] = {0,0}, lp_z2_l[2] = {0,0};
+	float     lp_z1_r[2] = {0,0}, lp_z2_r[2] = {0,0};
 };
 
 void ApuReset(Apu &a, bool cgb, bool post_boot = false);
