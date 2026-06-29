@@ -66,6 +66,7 @@ void S9xGBSetCameraCallback(bool (*cb)(unsigned char *, int, int))
 int g_cam_countdown = 0;
 uint8_t g_cam_shade[128 * 112] = {0};
 int g_cam_live = 0;
+int g_cam_brightness = 0;
 
 namespace SGB {
 
@@ -118,6 +119,7 @@ inline void Tama5SeedRtc(MbcState &s)
 
 void MbcReset(MbcState &s)
 {
+	g_cam_brightness = 0;
 	s.rom_bank   = 1;
 	s.ram_bank   = 0;
 	// HuC1 RAM is always live — its $0000-$1FFF register only routes the
@@ -709,8 +711,8 @@ static void GbCameraCapture(Cart &c)
 	for (int y = 0; y < H; ++y)
 		for (int x = 0; x < W; ++x)
 		{
-			int v = src[y * W + x] * 23 / 16;
-			if (v > 255) v = 255;
+			int v = src[y * W + x] * 23 / 16 + g_cam_brightness;
+			if (v < 0) v = 0; else if (v > 255) v = 255;
 			const int base = ((x & 3) + (y & 3) * 4) * 3 + 6;
 			uint8_t shade;
 			if      (v < reg[base + 0]) shade = 3;

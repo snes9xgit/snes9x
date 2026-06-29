@@ -59,6 +59,7 @@
 
 #include "gb_ppu.h"
 #include "gb_memory.h"
+#include "gb_joypad.h"
 #include "gb_cpu.h"
 #include "sgb.h"
 
@@ -67,6 +68,7 @@
 extern int g_cam_countdown;
 extern uint8_t g_cam_shade[128 * 112];
 extern int g_cam_live;
+extern int g_cam_brightness;
 
 namespace SGB {
 
@@ -776,7 +778,17 @@ inline void ExecPpuDot(Ppu &p, Memory &mem)
 			S9xSGBOnPpuHBlank();
 			if (p.ly == VISIBLE_LINES)
 			{
-				if (::g_cam_live > 0) --::g_cam_live;
+				if (::g_cam_live > 0)
+				{
+					--::g_cam_live;
+					if (mem.joypad)
+					{
+						const Joypad &jp = *mem.joypad;
+						const uint8_t dn = jp.sgb_active ? jp.sgb_pads[0] : jp.dpad;
+						if ((dn & 0x04) == 0 && ::g_cam_brightness <  96) ::g_cam_brightness += 3;
+						if ((dn & 0x08) == 0 && ::g_cam_brightness > -96) ::g_cam_brightness -= 3;
+					}
+				}
 				p.mode          = PpuMode::VBlank;
 				p.frame_ready   = true;
 				p.present_hold  = false;
