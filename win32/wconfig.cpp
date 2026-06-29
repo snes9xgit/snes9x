@@ -776,6 +776,8 @@ void WinRegisterConfigItems()
 	AddUIntC("BlendGBFrames", Settings.GBFrameBlend, 0, "Game Boy frame-blend mode: 0=off, 1=Simple Blend (mix each frame 50/50 with the previous, fixes flicker-based fake transparency e.g. Chikyuu Kaihou Gun ZAS), 2=LCD Blend (slow-decay LCD-style ghosting)");
 	AddUIntC("BlendGBFramesLayer", Settings.GBFrameBlendLayer, 0, "which Game Boy layer the frame-blend applies to: 0=all, 1=background (BG, keeps moving sprites crisp), 2=window, 3=sprites");
 	AddBoolC("BlendGBFramesAuto", Settings.GBFrameBlendAuto, true, "true to auto-pick the GB frame-blend per game from a built-in known-flicker-game table at load (and turn it off for unlisted games); false to apply the manual mode/layer to every GB game");
+	AddBoolC("GBVideoCamera", Settings.GBVideoCamera, false, "true to feed a connected USB webcam into the Game Boy Camera (Pocket Camera) cart's image sensor");
+	AddUIntC("GBVideoCameraIndex", Settings.GBVideoCameraIndex, 0, "index of the selected webcam in the system device list (set via Display Settings > Game Boy Image)");
 #undef CATEGORY
 #define CATEGORY "Display\\Win"
 	AddUIntC("OutputMethod", GUI.outputMethod, 1, "0=DirectDraw, 1=Direct3D, 2=OpenGL");

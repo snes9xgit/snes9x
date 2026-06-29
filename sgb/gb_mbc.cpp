@@ -54,6 +54,19 @@
 #include "gb_cart.h"
 
 #include <ctime>
+#include <cstring>
+
+static bool (*g_gb_camera_cb)(unsigned char *, int, int) = nullptr;
+
+void S9xGBSetCameraCallback(bool (*cb)(unsigned char *, int, int))
+{
+	g_gb_camera_cb = cb;
+}
+
+int g_cam_countdown = 0;
+uint8_t g_cam_shade[128 * 112] = {0};
+int g_cam_live = 0;
+int g_cam_brightness = 0;
 
 namespace SGB {
 
@@ -106,6 +119,7 @@ inline void Tama5SeedRtc(MbcState &s)
 
 void MbcReset(MbcState &s)
 {
+	g_cam_brightness = 0;
 	s.rom_bank   = 1;
 	s.ram_bank   = 0;
 	// HuC1 RAM is always live — its $0000-$1FFF register only routes the
@@ -536,6 +550,7 @@ uint8_t MbcRead(MbcState &s, const std::vector<uint8_t> &rom, const std::vector<
 			case MbcType::HuC1: bank = s.rom_bank ? s.rom_bank : 1; break;
 			case MbcType::HuC3: bank = s.rom_bank; break;
 			case MbcType::TAMA5: bank = s.rom_bank; break;
+			case MbcType::Camera: bank = s.rom_bank ? s.rom_bank : 1; break;
 			case MbcType::MBC2: bank = (s.rom_bank & 0x0F) ? (s.rom_bank & 0x0F) : 1; break;
 			case MbcType::SachenMMC1: bank = SachenBankN(s); break;
 			case MbcType::MMM01:      bank = Mmm01RomBank(s, rom.size()); break;
@@ -612,6 +627,19 @@ uint8_t MbcRead(MbcState &s, const std::vector<uint8_t> &rom, const std::vector<
 			}
 		}
 
+		if (s.type == MbcType::Camera)
+		{
+			if (s.mbc1_mode)
+			{
+				if ((addr & 0x7F) == 0) return (g_cam_countdown > 0) ? 0x01 : 0x00;
+				return 0x00;
+			}
+			if ((s.ram_bank & 0x0F) == 0 && addr >= 0xA100 && addr < 0xAF00) g_cam_live = 40;
+			if (g_cam_countdown > 0) return 0x00;
+			if (!s.ram_enable) return 0xFF;
+			return ReadSram(sram, ((s.ram_bank & 0x0F) * 0x2000u) + (addr - 0xA000u));
+		}
+
 		if (!s.ram_enable && s.type != MbcType::MBC5) return 0xFF;
 
 		// MBC3 RTC select exposes latched RTC values in this window.
@@ -639,6 +667,62 @@ uint8_t MbcRead(MbcState &s, const std::vector<uint8_t> &rom, const std::vector<
 		return ReadSram(sram, (bank * 0x2000u) + (addr - 0xA000u));
 	}
 	return 0xFF;
+}
+
+static void GbCameraCapture(Cart &c)
+{
+	const uint8_t *reg = c.camera_regs;
+	const int expo = (reg[2] << 8) | reg[3];
+	g_cam_countdown = 129792 + expo * 64;
+	if (g_cam_countdown > 200000) g_cam_countdown = 200000;
+	const int W = 128, H = 112;
+	unsigned char src[W * H];
+	const bool have = g_gb_camera_cb && g_gb_camera_cb(src, W, H);
+	if (!have)
+		std::memset(src, 0x80, sizeof(src));
+
+	for (int ty = 0; ty < H / 8; ++ty)
+	for (int tx = 0; tx < W / 8; ++tx)
+	{
+		const uint32_t tile_off = 0x100u + static_cast<uint32_t>(ty * (W / 8) + tx) * 16u;
+		for (int row = 0; row < 8; ++row)
+		{
+			uint8_t lo = 0, hi = 0;
+			const int py = ty * 8 + row;
+			for (int col = 0; col < 8; ++col)
+			{
+				const int px = tx * 8 + col;
+				int v = src[py * W + px] * expo / 0x1000;
+				if (v < 0) v = 0; else if (v > 255) v = 255;
+				const int base = ((px & 3) + (py & 3) * 4) * 3 + 6;
+				int shade;
+				if      (v < reg[base + 0]) shade = 3;
+				else if (v < reg[base + 1]) shade = 2;
+				else if (v < reg[base + 2]) shade = 1;
+				else                        shade = 0;
+				lo |= static_cast<uint8_t>((shade & 1) << (7 - col));
+				hi |= static_cast<uint8_t>(((shade >> 1) & 1) << (7 - col));
+			}
+			WriteSram(c, tile_off + row * 2 + 0, lo);
+			WriteSram(c, tile_off + row * 2 + 1, hi);
+		}
+	}
+
+	for (int y = 0; y < H; ++y)
+		for (int x = 0; x < W; ++x)
+		{
+			int v = src[y * W + x] * 23 / 16 + g_cam_brightness;
+			if (v < 0) v = 0; else if (v > 255) v = 255;
+			const int base = ((x & 3) + (y & 3) * 4) * 3 + 6;
+			uint8_t shade;
+			if      (v < reg[base + 0]) shade = 3;
+			else if (v < reg[base + 1]) shade = 2;
+			else if (v < reg[base + 2]) shade = 1;
+			else                        shade = 0;
+			g_cam_shade[y * W + x] = shade;
+		}
+	(void)have;
+	g_cam_live = 40;
 }
 
 void MbcWrite(Cart &c, uint16_t addr, uint8_t value)
@@ -943,6 +1027,37 @@ void MbcWrite(Cart &c, uint16_t addr, uint8_t value)
 		{
 			s.rom_bank  = value & 0x07;
 			s.mbc1_mode = true;
+		}
+		break;
+
+	case MbcType::Camera:
+		if (addr < 0x2000)
+		{
+			s.ram_enable = ((value & 0x0F) == 0x0A);
+		}
+		else if (addr < 0x4000)
+		{
+			s.rom_bank = value & 0x3F;
+		}
+		else if (addr < 0x6000)
+		{
+			s.mbc1_mode = (value & 0x10) != 0;
+			if (!s.mbc1_mode) s.ram_bank = value & 0x0F;
+		}
+		else if (addr >= 0xA000 && addr < 0xC000)
+		{
+			if (s.mbc1_mode)
+			{
+				const uint16_t r = static_cast<uint16_t>((addr - 0xA000u) & 0x7F);
+				if (r < 0x36)
+				{
+					c.camera_regs[r] = value;
+					if (r == 0 && (value & 0x01)) GbCameraCapture(c);
+				}
+				break;
+			}
+			if (!s.ram_enable) break;
+			WriteSram(c, ((s.ram_bank & 0x0F) * 0x2000u) + (addr - 0xA000u), value);
 		}
 		break;
 

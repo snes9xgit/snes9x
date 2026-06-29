@@ -49,6 +49,7 @@ struct Cart
 	// Duz "2-in-1" MBC3 multicart: $C0 to $0000 unlocks an $A000/$A100 register port whose reg $A3<<1 is the ROM base bank added to every access.
 	bool                  duz_multicart  = false;
 	bool                  sachen_runs_raw = false;
+	uint8_t               camera_regs[0x36] = {0};
 };
 
 bool CartLoad(Cart &c, const uint8_t *data, size_t size, const char *path);
@@ -70,5 +71,7 @@ bool CartLoadBatteryFromPath(Cart &c, const char *path);
 bool SachenBootLogoByte(const Cart &c, uint16_t addr, uint8_t &out);
 
 } // namespace SGB
+
+void S9xGBSetCameraCallback(bool (*cb)(unsigned char *dst, int width, int height));
 
 #endif
