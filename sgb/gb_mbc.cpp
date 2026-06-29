@@ -706,13 +706,18 @@ static void GbCameraCapture(Cart &c)
 		}
 	}
 
-	static const int bayer[16] = { 0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5 };
 	for (int y = 0; y < H; ++y)
 		for (int x = 0; x < W; ++x)
 		{
-			int level = (src[y * W + x] * 3 + bayer[(y & 3) * 4 + (x & 3)] * 16) / 255;
-			if (level > 3) level = 3;
-			g_cam_shade[y * W + x] = static_cast<uint8_t>(3 - level);
+			int v = src[y * W + x] * 23 / 16;
+			if (v > 255) v = 255;
+			const int base = ((x & 3) + (y & 3) * 4) * 3 + 6;
+			uint8_t shade;
+			if      (v < reg[base + 0]) shade = 3;
+			else if (v < reg[base + 1]) shade = 2;
+			else if (v < reg[base + 2]) shade = 1;
+			else                        shade = 0;
+			g_cam_shade[y * W + x] = shade;
 		}
 	(void)have;
 	g_cam_live = 40;
