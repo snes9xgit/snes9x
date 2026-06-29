@@ -410,7 +410,7 @@ void FlushSample(Apu &a)
 // Public API
 // ===================================================================
 
-void ApuReset(Apu &a, bool cgb)
+void ApuReset(Apu &a, bool cgb, bool post_boot)
 {
 	a.ch1 = ApuSquare{};
 	a.ch2 = ApuSquare{};
@@ -430,6 +430,13 @@ void ApuReset(Apu &a, bool cgb)
 	a.nr50 = 0;
 	a.nr51 = 0;
 	a.master_enabled = false;
+
+	if (post_boot)
+	{
+		a.master_enabled = true;
+		a.nr50 = 0x77;
+		a.nr51 = 0xF3;
+	}
 
 	a.frame_seq_timer = FRAME_SEQ_PERIOD;
 	a.frame_seq_step  = 0;

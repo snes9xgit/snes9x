@@ -2829,7 +2829,11 @@ LRESULT CALLBACK WinProc(
 					_tcsncpy(wpath, u8, _MAX_PATH - 1);
 					wpath[_MAX_PATH - 1] = 0;
 					RestoreGUIDisplay();
-					LoadROM(wpath);
+					if (LoadROM(wpath))
+					{
+						S9xReset();
+						ReInitSound();
+					}
 					RestoreSNESDisplay();
 				}
 			}

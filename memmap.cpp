@@ -1870,6 +1870,12 @@ bool8 CMemory::LoadROMWithSGBBIOS (const char *gb_path, const char *bios_path)
     Settings.GameBoyRunMode     = mode;
     Settings.GBClockMultiplier  = 1.0f;
 
+    if (gb_path && *gb_path)
+    {
+        strncpy(Settings.GBRomPath, gb_path, sizeof Settings.GBRomPath - 1);
+        Settings.GBRomPath[sizeof Settings.GBRomPath - 1] = '\0';
+    }
+
     ROMFilename = gb_path;
     S9xInitCheatData();
     return TRUE;
@@ -1928,6 +1934,12 @@ bool8 CMemory::LoadROMWithSGBBIOSBytes (const uint8 *gb_bytes, uint32 gb_size,
     Settings.SGB_BIOSPath[sizeof Settings.SGB_BIOSPath - 1] = 0;
     Settings.GameBoyRunMode     = mode;
     Settings.GBClockMultiplier  = 1.0f;
+
+    if (gb_path && *gb_path)
+    {
+        strncpy(Settings.GBRomPath, gb_path, sizeof Settings.GBRomPath - 1);
+        Settings.GBRomPath[sizeof Settings.GBRomPath - 1] = '\0';
+    }
 
     ROMFilename = gb_path ? gb_path : "GameBoy ROM";
     S9xInitCheatData();

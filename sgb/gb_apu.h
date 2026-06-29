@@ -146,7 +146,7 @@ struct Apu
 	float     hp_xprev_r = 0.0f, hp_yprev_r = 0.0f;
 };
 
-void ApuReset(Apu &a, bool cgb);
+void ApuReset(Apu &a, bool cgb, bool post_boot = false);
 void ApuStep(Apu &a, int32_t tcycles);
 
 uint8_t ApuRead(Apu &a, uint16_t addr, bool cgb);
