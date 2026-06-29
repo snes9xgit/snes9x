@@ -712,7 +712,8 @@ static void GbCameraCapture(Cart &c)
 			if (level > 3) level = 3;
 			g_cam_shade[y * W + x] = static_cast<uint8_t>(3 - level);
 		}
-	if (have) g_cam_live = 30;
+	(void)have;
+	g_cam_live = 30;
 }
 
 void MbcWrite(Cart &c, uint16_t addr, uint8_t value)

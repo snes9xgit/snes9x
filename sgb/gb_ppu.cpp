@@ -574,6 +574,17 @@ void FinalizeScanline(Ppu &p)
 
 	uint8_t *const line = &p.framebuffer[p.ly * GB_SCREEN_WIDTH];
 
+	if (::g_cam_live > 0 && p.ly >= 16 && p.ly < 16 + 112)
+	{
+		const int srow = p.ly - 16;
+		for (int xx = 0; xx < 128; ++xx)
+		{
+			const int sx = 8 + xx;
+			if (sx < GB_SCREEN_WIDTH)
+				line[sx] = ::g_cam_shade[srow * 128 + xx];
+		}
+	}
+
 	std::memcpy(&p.raw_framebuffer[p.ly * GB_SCREEN_WIDTH],
 	            p.scanline_raw, GB_SCREEN_WIDTH);
 	S9xSGBCaptureScanline(line);
@@ -765,21 +776,6 @@ inline void ExecPpuDot(Ppu &p, Memory &mem)
 			S9xSGBOnPpuHBlank();
 			if (p.ly == VISIBLE_LINES)
 			{
-				if (::g_cam_live > 0)
-				{
-					const int VX = 8, VY = 16;
-					for (int yy = 0; yy < 112; ++yy)
-					{
-						const int sy = VY + yy;
-						if (sy >= GB_SCREEN_HEIGHT) break;
-						for (int xx = 0; xx < 128; ++xx)
-						{
-							const int sx = VX + xx;
-							if (sx < GB_SCREEN_WIDTH)
-								p.framebuffer[sy * GB_SCREEN_WIDTH + sx] = ::g_cam_shade[yy * 128 + xx];
-						}
-					}
-				}
 				if (::g_cam_live > 0) --::g_cam_live;
 				p.mode          = PpuMode::VBlank;
 				p.frame_ready   = true;
