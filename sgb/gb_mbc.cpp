@@ -672,6 +672,7 @@ static void GbCameraCapture(Cart &c)
 	const uint8_t *reg = c.camera_regs;
 	const int expo = (reg[2] << 8) | reg[3];
 	g_cam_countdown = 129792 + expo * 64;
+	if (g_cam_countdown > 200000) g_cam_countdown = 200000;
 	const int W = 128, H = 112;
 	unsigned char src[W * H];
 	const bool have = g_gb_camera_cb && g_gb_camera_cb(src, W, H);
