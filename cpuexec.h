@@ -47,6 +47,8 @@ extern uint8			S9xOpLengthsM0X0[256];
 void S9xMainLoop (void);
 void S9xReset (void);
 void S9xSoftReset (void);
+void S9xSGBCaptureSoftResetCheckpoint (void);
+void S9xSGBInvalidateSoftResetCheckpoint (void);
 void S9xDoHEventProcessing (void);
 
 static inline void S9xUnpackStatus (void)

@@ -223,6 +223,7 @@ public:
 	bool    IsHandshakePending() const;
 
 	bool    IsBootHandoffCaptured() const;
+	uint32_t GetPacketCount() const;
 
 	// GB PPU scanline event hooks for SGB row/bank counter advance.
 	void    OnPpuHBlank();
@@ -321,6 +322,7 @@ void S9xSGBOnPpuVBlank(void);
 // BIOS and BIOS-less modes. The frame-blend hook reads it to pair frames
 // correctly across the GB↔SNES refresh-rate beat. See g_gb_vblank_count.
 uint32_t S9xSGBGetGBFrameCount(void);
+uint32_t S9xSGBGetPacketCount(void);
 // Source-layer tag values stored per pixel in the GB layer map (see GBLayerMask).
 enum GBPixelLayer
 {

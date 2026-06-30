@@ -154,6 +154,61 @@ void S9xReset (void)
 	S9xInitCheatData();
 }
 
+static uint8  *sgb_softreset_state       = NULL;
+static uint32  sgb_softreset_state_size  = 0;
+static bool8   sgb_softreset_state_valid = FALSE;
+
+void S9xSGBCaptureSoftResetCheckpoint (void)
+{
+	if (!Settings.SGB_BIOSModeActive)
+		return;
+	uint32 sz = S9xFreezeSize();
+	if (sz == 0)
+		return;
+	if (sgb_softreset_state_size != sz)
+	{
+		delete[] sgb_softreset_state;
+		sgb_softreset_state      = new uint8[sz];
+		sgb_softreset_state_size = sz;
+	}
+	sgb_softreset_state_valid = S9xFreezeGameMem(sgb_softreset_state, sgb_softreset_state_size);
+}
+
+void S9xSGBInvalidateSoftResetCheckpoint (void)
+{
+	sgb_softreset_state_valid = FALSE;
+}
+
+static bool8 S9xSGBRestoreSoftResetCheckpoint (void)
+{
+	if (!sgb_softreset_state_valid)
+		return FALSE;
+
+	size_t  sram_size = S9xSGBGetSRAMSize();
+	uint8  *sram_copy = NULL;
+	if (sram_size > 0)
+	{
+		uint8 *live = S9xSGBGetSRAM();
+		if (live)
+		{
+			sram_copy = new uint8[sram_size];
+			memcpy(sram_copy, live, sram_size);
+		}
+	}
+
+	int result = S9xUnfreezeGameMem(sgb_softreset_state, sgb_softreset_state_size);
+
+	if (sram_copy)
+	{
+		uint8 *live = S9xSGBGetSRAM();
+		if (result == SUCCESS && live && S9xSGBGetSRAMSize() == sram_size)
+			memcpy(live, sram_copy, sram_size);
+		delete[] sram_copy;
+	}
+
+	return (result == SUCCESS) ? TRUE : FALSE;
+}
+
 void S9xSoftReset (void)
 {
 	// GB/GBC/SGB: a soft reset only warm-resets the GB core — the game
@@ -166,7 +221,22 @@ void S9xSoftReset (void)
 	// (BIOS-less mode must also bypass the SNES reset chain: the SNES
 	// is dormant and its stale SPC DSP state crashes on the reset-
 	// vector read — see S9xReset.)
-	if (Settings.SuperGameBoy || Settings.SGB_BIOSModeActive)
+	if (Settings.SGB_BIOSModeActive)
+	{
+		if (S9xSGBRestoreSoftResetCheckpoint())
+		{
+			S9xInitCheatData();
+			return;
+		}
+		if (!S9xSGBSoftReset())
+		{
+			S9xReset();
+			return;
+		}
+		S9xInitCheatData();
+		return;
+	}
+	if (Settings.SuperGameBoy)
 	{
 		if (!S9xSGBSoftReset())
 		{
