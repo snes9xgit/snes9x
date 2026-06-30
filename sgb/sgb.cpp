@@ -1651,6 +1651,12 @@ bool Emulator::IsBootHandoffCaptured() const
 	return impl_->boot_handoff_captured;
 }
 
+uint32_t Emulator::GetPacketCount() const
+{
+	if (!impl_) return 0;
+	return impl_->icd2.packets_received;
+}
+
 // Monotonic count of completed GB frames (bumped at each PPU VBlank entry, in
 // both BIOS and BIOS-less modes). The frame-blend hook samples this once per
 // SNES frame to tell a genuinely new GB frame from a duplicate/skip caused by
@@ -2505,6 +2511,7 @@ void S9xSGBSyncToSnesCycle(int32_t cpu_cycles)
 void S9xSGBOnPpuHBlank(void) { SGB::Instance().OnPpuHBlank(); }
 void S9xSGBOnPpuVBlank(void) { SGB::Instance().OnPpuVBlank(); }
 uint32_t S9xSGBGetGBFrameCount(void) { return SGB::g_gb_vblank_count; }
+uint32_t S9xSGBGetPacketCount(void) { return SGB::Instance().GetPacketCount(); }
 const uint8_t *S9xSGBGetGBLayerMask(void) { return SGB::Instance().GBLayerMask(); }
 void S9xSGBApplyAutoBlend(void) { SGB::Instance().ApplyAutoBlend(); }
 bool S9xSGBIsCgb(void) { return SGB::Instance().IsCgb(); }

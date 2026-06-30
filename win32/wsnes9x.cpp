@@ -4812,6 +4812,29 @@ int WINAPI WinMain(
 			RA_DoFrame();
 #endif
 			GUI.FrameCount++;
+			if (Settings.SGB_BIOSModeActive)
+			{
+				static bool   sgbCpDone  = false;
+				static uint32 sgbCpPkts  = 0;
+				static uint32 sgbCpQuiet = 0;
+				if (!S9xSGBBootHandoffCaptured())
+				{
+					S9xSGBInvalidateSoftResetCheckpoint();
+					sgbCpDone  = false;
+					sgbCpPkts  = S9xSGBGetPacketCount();
+					sgbCpQuiet = 0;
+				}
+				else if (!sgbCpDone)
+				{
+					uint32 pkts = S9xSGBGetPacketCount();
+					if (pkts != sgbCpPkts) { sgbCpPkts = pkts; sgbCpQuiet = 0; }
+					else if (++sgbCpQuiet >= 120)
+					{
+						S9xSGBCaptureSoftResetCheckpoint();
+						sgbCpDone = true;
+					}
+				}
+			}
 			DebugViewers_OnFrame();
 			if (GUI.CursorTimer)
 			{
