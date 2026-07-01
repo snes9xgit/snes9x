@@ -17,7 +17,7 @@ Please check the official [Wiki](https://github.com/snes9xgit/snes9x/wiki) for a
 - Supports GameBoy, GameBoy Color, Super GameBoy (1 and 2)
 - Multi-Language Pack
 
-## Upstrea Nightly builds
+## Upstream Nightly builds
 
 Download _official_ nightly builds from continuous integration:
 
