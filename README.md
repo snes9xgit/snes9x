@@ -7,16 +7,17 @@ Please check the official [Wiki](https://github.com/snes9xgit/snes9x/wiki) for a
 
 ## SuperSnes9x Features:
 - Kaillera Server/Client
-- RetroAchievements
-- S-PPU Sprite/Tile/Tiles viewers
+- RetroAchievements (with Hardcode)
+- PPU Sprite/Tile/Tiles viewers (SNES, GB)
 - Multi-Bind-Controller support
 - SDL Support
-- Run-Ahead Support
-- Color Correction Support
-- Enhanced Cheat Search / Cheat Editor
-- Supports GameBoy, GameBoy Color, Super GameBoy
+- Run-Ahead (Input lag reduction)
+- Color Correction Support / Native CRT Colors
+- Enhanced Cheat Search / Cheat Editor (SNES, GB)
+- Supports GameBoy, GameBoy Color, Super GameBoy (1 and 2)
+- Multi-Language Pack
 
-## Nightly builds
+## Upstrea Nightly builds
 
 Download _official_ nightly builds from continuous integration:
 
