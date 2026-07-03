@@ -87,7 +87,7 @@ bool EmuCanvasVulkan::createContext()
 
 #ifdef _WIN32
     auto hwnd = (HWND)winId();
-    if (!context->init_win32() ||
+    if (!context->init() ||
         !context->create_win32_surface(nullptr, hwnd) ||
         !context->swapchain->create())
     {
@@ -105,7 +105,7 @@ bool EmuCanvasVulkan::createContext()
         auto [scaled_width, scaled_height] = wayland_surface->get_size();
 
         context->swapchain->set_desired_size(scaled_width, scaled_height);
-        if (!context->init_wayland() ||
+        if (!context->init() ||
             !context->create_wayland_surface(display, wayland_surface->child) ||
             !context->swapchain->create())
         {
@@ -119,7 +119,7 @@ bool EmuCanvasVulkan::createContext()
         auto display = iface->display();
         auto xid = (Window)winId();
 
-        if (!context->init_Xlib() ||
+        if (!context->init() ||
             !context->create_Xlib_surface(display, xid) ||
             !context->swapchain->create())
         {

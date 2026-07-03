@@ -141,7 +141,7 @@ int S9xVulkanDisplayDriver::init()
         display = gdk_x11_display_get_xdisplay(drawing_area->get_display()->gobj());
         xid = gdk_x11_window_get_xid(drawing_area->get_window()->gobj());
 
-        if (!context->init_Xlib() ||
+        if (!context->init() ||
             !context->create_Xlib_surface(display, xid) ||
             !context->create_swapchain())
         {

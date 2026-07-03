@@ -62,7 +62,7 @@ bool CVulkan::Initialize(HWND hWnd)
 
     try {
         context = std::make_unique<Vulkan::Context>();
-        if (!context->init_win32())
+        if (!context->init())
             return false;
         if (!context->create_win32_surface(0, hWnd))
             return false;

@@ -22,15 +22,12 @@ class Context
     Context();
     ~Context();
 #ifdef VK_USE_PLATFORM_XLIB_KHR
-    bool init_Xlib();
     bool create_Xlib_surface(Display *dpy, Window xid);
 #endif
 #ifdef VK_USE_PLATFORM_WAYLAND_KHR
-    bool init_wayland();
     bool create_wayland_surface(wl_display *dpy, wl_surface *parent);
 #endif
 #ifdef VK_USE_PLATFORM_WIN32_KHR
-    bool init_win32();
     bool create_win32_surface(HINSTANCE hinstance, HWND hwnd);
 #endif
     bool init();
