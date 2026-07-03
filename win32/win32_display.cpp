@@ -13,6 +13,7 @@
 #include "../ppu.h"
 #include "../font.h"
 #include "../sgb/sgb.h"
+#include <shellapi.h>
 #include "wsnes9x.h"
 #include "win32_display.h"
 #include "CDirect3D.h"
@@ -36,6 +37,8 @@ COpenGL OpenGL;
 CVulkan VulkanDriver;
 SSurface Src = {0};
 extern BYTE *ScreenBufferBlend;
+
+static const TCHAR RENDER_WINDOW_CLASS[] = TEXT("Snes9x: Render Window");
 
 typedef HRESULT (*DWMFLUSHPROC)();
 typedef HRESULT (*DWMISCOMPOSITIONENABLEDPROC)(BOOL *);
@@ -99,6 +102,71 @@ void WinChangeWindowSize(unsigned int newWidth, unsigned int newHeight)
 	S9xDisplayOutput->ChangeRenderSize(newWidth,newHeight);
 }
 
+static LRESULT CALLBACK RenderWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+	switch (uMsg)
+	{
+		case WM_NCHITTEST:
+			return HTTRANSPARENT;
+		case WM_DROPFILES:
+			return SendMessage(GUI.hWnd, uMsg, wParam, lParam);
+		case WM_PAINT:
+		{
+			PAINTSTRUCT ps;
+			BeginPaint(hWnd, &ps);
+			EndPaint(hWnd, &ps);
+			WinRefreshDisplay();
+			return 0;
+		}
+	}
+	return DefWindowProc(hWnd, uMsg, wParam, lParam);
+}
+
+/*  WinRecreateRenderWindow
+(re)creates the child window the display drivers present into.
+Windows stops composing blt-model presents (windowed D3D9/DirectDraw/GDI)
+to a window once a flip-model swapchain (Vulkan) has presented to it,
+so the render window is recreated on every display reset.
+*/
+void WinRecreateRenderWindow(void)
+{
+	static bool classRegistered = false;
+
+	if (GUI.hWndRender)
+	{
+		DestroyWindow(GUI.hWndRender);
+		GUI.hWndRender = NULL;
+	}
+
+	if (!GUI.hWnd)
+		return;
+
+	if (!classRegistered)
+	{
+		WNDCLASSEX wc;
+		memset(&wc, 0, sizeof(wc));
+		wc.cbSize = sizeof(wc);
+		wc.style = CS_OWNDC;
+		wc.lpfnWndProc = RenderWndProc;
+		wc.hInstance = GUI.hInstance;
+		wc.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
+		wc.lpszClassName = RENDER_WINDOW_CLASS;
+		if (!RegisterClassEx(&wc))
+			return;
+		classRegistered = true;
+	}
+
+	RECT rect;
+	GetClientRect(GUI.hWnd, &rect);
+	GUI.hWndRender = CreateWindowEx(0, RENDER_WINDOW_CLASS, NULL,
+		WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS,
+		0, 0, rect.right, rect.bottom,
+		GUI.hWnd, NULL, GUI.hInstance, NULL);
+
+	if (GUI.hWndRender)
+		DragAcceptFiles(GUI.hWndRender, TRUE);
+}
+
 /*  WinDisplayReset
 initializes the currently selected display output and
 reinitializes the core graphics rendering
@@ -111,6 +179,8 @@ bool WinDisplayReset(void)
 	static bool VulkanUsed = false;
 	static bool OpenGLUsed = false;
 	S9xDisplayOutput->DeInitialize();
+	WinRecreateRenderWindow();
+	HWND hWndRender = GUI.hWndRender ? GUI.hWndRender : GUI.hWnd;
 
 	switch(GUI.outputMethod) {
 		default:
@@ -140,7 +210,7 @@ bool WinDisplayReset(void)
 			break;
 	}
 
-	bool initialized = S9xDisplayOutput->Initialize(GUI.hWnd);
+	bool initialized = S9xDisplayOutput->Initialize(hWndRender);
 
 	if (!initialized) {
 		S9xDisplayOutput->DeInitialize();
@@ -164,7 +234,7 @@ bool WinDisplayReset(void)
 		_stprintf(msg, TEXT("Couldn't load selected driver: %s. Trying %s."), oldDriverName, newDriverName);
 		MessageBox(GUI.hWnd, msg, TEXT("Snes9x Display Driver"), MB_OK | MB_ICONERROR);
 
-		initialized = S9xDisplayOutput->Initialize(GUI.hWnd);
+		initialized = S9xDisplayOutput->Initialize(hWndRender);
 	}
 
 	if (initialized) {
@@ -554,14 +624,14 @@ void ToggleFullScreen ()
 		if(GUI.EmulatedFullscreen) {
 			if(GetMenu(GUI.hWnd)!=NULL)
 				SetMenu(GUI.hWnd,NULL);
-			SetWindowLongPtr (GUI.hWnd, GWL_STYLE, WS_POPUP|WS_VISIBLE);
+			SetWindowLongPtr (GUI.hWnd, GWL_STYLE, WS_POPUP|WS_VISIBLE|WS_CLIPCHILDREN|WS_CLIPSIBLINGS);
 			hm = MonitorFromWindow(GUI.hWnd,MONITOR_DEFAULTTONEAREST);
 			mi.cbSize = sizeof(mi);
 			GetMonitorInfo(hm,&mi);
 			SetWindowPos (GUI.hWnd, HWND_TOP, mi.rcMonitor.left, mi.rcMonitor.top, mi.rcMonitor.right - mi.rcMonitor.left, mi.rcMonitor.bottom - mi.rcMonitor.top, SWP_DRAWFRAME|SWP_FRAMECHANGED);
 		} else {
 			SetWindowLongPtr( GUI.hWnd, GWL_STYLE, WS_POPUPWINDOW|WS_CAPTION|
-                   WS_THICKFRAME|WS_VISIBLE|WS_MINIMIZEBOX|WS_MAXIMIZEBOX);
+                   WS_THICKFRAME|WS_VISIBLE|WS_MINIMIZEBOX|WS_MAXIMIZEBOX|WS_CLIPCHILDREN|WS_CLIPSIBLINGS);
 			SetMenu(GUI.hWnd,GUI.hMenu);
 			SetWindowPos (GUI.hWnd, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE|SWP_NOSIZE|SWP_DRAWFRAME|SWP_FRAMECHANGED);
 			RestoreMainWinPos();
@@ -580,7 +650,7 @@ void ToggleFullScreen ()
 		}
 		if(!GUI.FullScreen) {
 			SetWindowLongPtr(GUI.hWnd, GWL_STYLE, WS_POPUPWINDOW|WS_CAPTION|
-                   WS_THICKFRAME|WS_VISIBLE|WS_MINIMIZEBOX|WS_MAXIMIZEBOX);
+                   WS_THICKFRAME|WS_VISIBLE|WS_MINIMIZEBOX|WS_MAXIMIZEBOX|WS_CLIPCHILDREN|WS_CLIPSIBLINGS);
             SetWindowLongPtr(GUI.hWnd, GWL_EXSTYLE, WS_EX_ACCEPTFILES | WS_EX_APPWINDOW);
 			SetMenu(GUI.hWnd,GUI.hMenu);
 			S9xDisplayOutput->SetFullscreen(false);

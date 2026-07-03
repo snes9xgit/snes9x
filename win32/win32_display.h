@@ -28,6 +28,7 @@ void RestoreGUIDisplay ();
 void RestoreSNESDisplay ();
 void WinChangeWindowSize(unsigned int newWidth, unsigned int newHeight);
 bool WinDisplayReset(void);
+void WinRecreateRenderWindow(void);
 void WinDisplayApplyChanges();
 RECT CalculateDisplayRect(unsigned int sourceWidth,unsigned int sourceHeight,
 						  unsigned int displayWidth,unsigned int displayHeight);

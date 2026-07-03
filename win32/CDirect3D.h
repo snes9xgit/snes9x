@@ -37,6 +37,7 @@ class CDirect3D: public IS9xDisplayOutput
 {
 private:
 	bool                  init_done;					//has initialize been called?
+	HWND                  hWnd;							//the render window
 	LPDIRECT3D9           pD3D;
 	LPDIRECT3DDEVICE9     pDevice;
 	LPDIRECT3DTEXTURE9    drawSurface;					//the texture used for all drawing operations
