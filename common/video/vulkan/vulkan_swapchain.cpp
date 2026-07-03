@@ -131,6 +131,9 @@ bool Swapchain::uncreate()
 
 bool Swapchain::create()
 {
+    if (!context.surface)
+        return false;
+
     if (!render_pass)
         create_render_pass();
 

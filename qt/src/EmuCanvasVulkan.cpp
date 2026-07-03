@@ -14,20 +14,21 @@ EmuCanvasVulkan::EmuCanvasVulkan(EmuConfig *config, QWidget *main_window)
     setUpdatesEnabled(false);
     setAutoFillBackground(false);
 
-    if (QGuiApplication::platformName() == "wayland")
-    {
-        main_window->createWinId();
-        window = main_window->windowHandle();
-        return;
-    }
-
     setAttribute(Qt::WA_NoSystemBackground, true);
     setAttribute(Qt::WA_NativeWindow, true);
     setAttribute(Qt::WA_PaintOnScreen, true);
     setAttribute(Qt::WA_OpaquePaintEvent, true);
 
-    createWinId();
-    window = windowHandle();
+    if (QGuiApplication::platformName() == "wayland")
+    {
+        main_window->createWinId();
+        window = main_window->windowHandle();
+    }
+    else
+    {
+        createWinId();
+        window = windowHandle();
+    }
 }
 
 bool EmuCanvasVulkan::initImGui()
@@ -89,7 +90,7 @@ bool EmuCanvasVulkan::createContext()
     auto hwnd = (HWND)winId();
     if (!context->init() ||
         !context->create_win32_surface(nullptr, hwnd) ||
-        !context->swapchain->create())
+        !context->create_swapchain())
     {
         context.reset();
         return false;
@@ -107,7 +108,7 @@ bool EmuCanvasVulkan::createContext()
         context->swapchain->set_desired_size(scaled_width, scaled_height);
         if (!context->init() ||
             !context->create_wayland_surface(display, wayland_surface->child) ||
-            !context->swapchain->create())
+            !context->create_swapchain())
         {
             context.reset();
             return false;
@@ -121,7 +122,7 @@ bool EmuCanvasVulkan::createContext()
 
         if (!context->init() ||
             !context->create_Xlib_surface(display, xid) ||
-            !context->swapchain->create())
+            !context->create_swapchain())
         {
             context.reset();
             return false;
