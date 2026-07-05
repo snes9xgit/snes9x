@@ -110,7 +110,7 @@ static LRESULT CALLBACK RenderWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARA
 	switch (uMsg)
 	{
 		case WM_NCHITTEST:
-			return HTTRANSPARENT;
+			return HTTRANSPARENT; // pass on to parent for mouse/superscope
 		case WM_DROPFILES:
 			return SendMessage(GUI.hWnd, uMsg, wParam, lParam);
 		case WM_PAINT:
@@ -179,8 +179,6 @@ returns true if successful, false otherwise
 bool WinDisplayReset(void)
 {
 	const TCHAR* driverNames[] = { TEXT("DirectDraw"), TEXT("Direct3D"), TEXT("OpenGL"), TEXT("Vulkan") };
-	static bool VulkanUsed = false;
-	static bool OpenGLUsed = false;
 	S9xDisplayOutput->DeInitialize();
 	WinRecreateRenderWindow();
 	HWND hWndRender = g_hWndRender ? g_hWndRender : GUI.hWnd;
@@ -196,19 +194,9 @@ bool WinDisplayReset(void)
 			break;
 #endif
 		case OPENGL:
-			if (VulkanUsed)
-			{
-				MessageBox(GUI.hWnd, TEXT("Changing to OpenGL requires a restart if you've already used Vulkan"), TEXT("Snes9x Display Driver"), MB_OK);
-				break;
-			}
 			S9xDisplayOutput = &OpenGL;
 			break;
 		case VULKAN:
-			if (OpenGLUsed)
-			{
-				MessageBox(GUI.hWnd, TEXT("Changing to Vulkan requires a restart if you've already used OpenGL"), TEXT("Snes9x Display Driver"), MB_OK);
-				break;
-			}
 			S9xDisplayOutput = &VulkanDriver;
 			break;
 	}
@@ -241,10 +229,6 @@ bool WinDisplayReset(void)
 	}
 
 	if (initialized) {
-		if (S9xDisplayOutput == &VulkanDriver)
-			VulkanUsed = true;
-		if (S9xDisplayOutput == &OpenGL)
-			OpenGLUsed = true;
 		S9xGraphicsDeinit();
 		S9xSetWinPixelFormat();
 		S9xGraphicsInit();
