@@ -165,7 +165,6 @@ void DlgSavePos(HWND hDlg, sDialogPos& pos, bool saveSize);
 
 struct sGUI {
     HWND hWnd;
-    HWND hWndRender;
     HMENU hMenu;
     HINSTANCE hInstance;
 

@@ -37,6 +37,7 @@ COpenGL OpenGL;
 CVulkan VulkanDriver;
 SSurface Src = {0};
 extern BYTE *ScreenBufferBlend;
+HWND g_hWndRender = NULL;
 
 static const TCHAR RENDER_WINDOW_CLASS[] = TEXT("Snes9x: Render Window");
 
@@ -99,6 +100,8 @@ void WinRefreshDisplay(void)
 
 void WinChangeWindowSize(unsigned int newWidth, unsigned int newHeight)
 {
+    if (g_hWndRender)
+        MoveWindow(g_hWndRender, 0, 0, newWidth, newHeight, FALSE);
 	S9xDisplayOutput->ChangeRenderSize(newWidth,newHeight);
 }
 
@@ -132,10 +135,10 @@ void WinRecreateRenderWindow(void)
 {
 	static bool classRegistered = false;
 
-	if (GUI.hWndRender)
+	if (g_hWndRender)
 	{
-		DestroyWindow(GUI.hWndRender);
-		GUI.hWndRender = NULL;
+		DestroyWindow(g_hWndRender);
+		g_hWndRender = NULL;
 	}
 
 	if (!GUI.hWnd)
@@ -158,13 +161,13 @@ void WinRecreateRenderWindow(void)
 
 	RECT rect;
 	GetClientRect(GUI.hWnd, &rect);
-	GUI.hWndRender = CreateWindowEx(0, RENDER_WINDOW_CLASS, NULL,
+	g_hWndRender = CreateWindowEx(0, RENDER_WINDOW_CLASS, NULL,
 		WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS,
 		0, 0, rect.right, rect.bottom,
 		GUI.hWnd, NULL, GUI.hInstance, NULL);
 
-	if (GUI.hWndRender)
-		DragAcceptFiles(GUI.hWndRender, TRUE);
+	if (g_hWndRender)
+		DragAcceptFiles(g_hWndRender, TRUE);
 }
 
 /*  WinDisplayReset
@@ -180,7 +183,7 @@ bool WinDisplayReset(void)
 	static bool OpenGLUsed = false;
 	S9xDisplayOutput->DeInitialize();
 	WinRecreateRenderWindow();
-	HWND hWndRender = GUI.hWndRender ? GUI.hWndRender : GUI.hWnd;
+	HWND hWndRender = g_hWndRender ? g_hWndRender : GUI.hWnd;
 
 	switch(GUI.outputMethod) {
 		default:

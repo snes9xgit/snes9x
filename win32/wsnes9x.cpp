@@ -3078,8 +3078,6 @@ LRESULT CALLBACK WinProc(
 		{
 			S9xSetPause(PAUSE_INACTIVE_WINDOW);
 		}
-		if (GUI.hWndRender)
-			MoveWindow(GUI.hWndRender, 0, 0, LOWORD(lParam), HIWORD(lParam), FALSE);
 		WinChangeWindowSize(LOWORD(lParam),HIWORD(lParam));
 		break;
 	case WM_MOVE:
