@@ -462,6 +462,7 @@ void Emulator::Reset()
 	impl_->mem.timer  = &impl_->timer;
 	impl_->mem.joypad = &impl_->joypad;
 	impl_->mem.cart   = &impl_->cart;
+	impl_->mem.cpu    = &impl_->cpu.State();
 
 	impl_->fb.pixels = impl_->ppu.framebuffer;
 	impl_->fb.width  = GB_SCREEN_WIDTH;
@@ -2357,6 +2358,7 @@ bool Emulator::StateLoad(const uint8_t *buffer, size_t size)
 	impl_->mem.timer  = &impl_->timer;
 	impl_->mem.joypad = &impl_->joypad;
 	impl_->mem.cart   = &impl_->cart;
+	impl_->mem.cpu    = &impl_->cpu.State();
 
 	impl_->cart.sram_dirty = false;
 	impl_->ds_extra        = -1;
