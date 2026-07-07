@@ -998,10 +998,74 @@ void PpuWriteReg(Ppu &p, Memory &mem, uint16_t addr, uint8_t value)
 		case 0xFF44: p.ly  = 0; RecomputeStatLine(p, mem); break;
 		case 0xFF45: p.lyc = value; RecomputeStatLine(p, mem); break;
 		case 0xFF47:
+		{
 			p.bgp = value;
 			if (p.mode == PpuMode::Transfer)
 				p.latched_bgp = value;
+			// DMG raster write-time reconstruction. In the per-dot interleave
+			// the CPU trails the PPU by up to kMaxOpcodeTCycles, so by the
+			// time this store reaches us the PPU has already emitted the
+			// pixels the write was aimed at, using the stale palette.
+			// Prehistorik Man's title streams BGP from a WRAM LD (HL),D/E
+			// chain timed so its first write lands in the 2-dot window
+			// before pixel 0 — landing a lag-window late instead exposed the
+			// previous line's blackout palette as a black block on the left
+			// edge. The raw 2-bit indices for the line are still in
+			// scanline_bg_raw, so re-map the lag window's pixels with the
+			// new palette. OBJ pixels keep their OBP colors. cpu->t_cycles
+			// still holds the instruction-start time when the store lands
+			// (cycles are added after Dispatch); +4 puts the effective dot
+			// on the store's actual memory microcycle.
+			if (!p.cgb && mem.cpu && !p.present_hold &&
+			    p.ly < GB_SCREEN_HEIGHT && (p.lcdc & 0x80))
+			{
+				int64_t lag = p.t_cycles - (mem.cpu->t_cycles + 4);
+				if (lag > 0 && lag <= 2 * kMaxOpcodeTCycles)
+				{
+					int x_end = -1;   // one past the last stale pixel
+					if (p.mode == PpuMode::Transfer)
+						x_end = static_cast<int>(p.draw_x);
+					else if (p.mode == PpuMode::HBlank && lag > p.mode_clock)
+					{
+						// Store's dot falls back inside mode 3 — the line's
+						// tail pixels were emitted with the stale palette.
+						x_end = GB_SCREEN_WIDTH;
+						lag  -= p.mode_clock;
+					}
+					if (x_end > 0)
+					{
+						int x0 = x_end - static_cast<int>(lag);
+						if (x0 < 0) x0 = 0;
+						uint8_t *const line = &p.framebuffer[p.ly * GB_SCREEN_WIDTH];
+						const uint8_t *const lay = &p.layer[p.ly * GB_SCREEN_WIDTH];
+						for (int x = x0; x < x_end; ++x)
+						{
+							if (lay[x] == GB_PIXEL_OBJ)
+								continue;
+							const bool hidden = (lay[x] == GB_PIXEL_WINDOW)
+							                        ? !p.show_window : !p.show_bg;
+							line[x] = ApplyPalette(value,
+							                       hidden ? 0 : p.scanline_bg_raw[x]);
+						}
+						// The HBlank back-spill lands AFTER FinalizeScanline
+						// already pushed this line into the SGB ICD2 capture
+						// ring — the SGB BIOS displays the ring, not the
+						// framebuffer, so without a re-push the correction is
+						// invisible in BIOS mode (black band on the RIGHT
+						// edge, mirror of the left-edge bug). Re-capture the
+						// corrected line: sgb_row/bank haven't advanced yet
+						// (that happens at HBlank end), so this overwrites
+						// the same ring slot, and the BIOS can't have drained
+						// this band yet — trailing raster writes arrive
+						// within ~35 dots of HBlank entry. Idempotent memcpy;
+						// no-op in BIOS-less mode and in the harness.
+						if (x_end == GB_SCREEN_WIDTH)
+							S9xSGBCaptureScanline(line);
+					}
+				}
+			}
 			break;
+		}
 		case 0xFF48: p.obp0 = value; break;
 		case 0xFF49: p.obp1 = value; break;
 		case 0xFF4A: p.wy = value;   break;

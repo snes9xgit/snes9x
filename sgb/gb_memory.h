@@ -16,6 +16,7 @@ struct Ppu;
 struct Apu;
 struct Timer;
 struct Joypad;
+struct CpuState;
 
 // GB address space — flat 16-bit. All access goes through this one bus.
 //   0x0000-0x3FFF  ROM bank 0
@@ -36,6 +37,12 @@ struct Memory
 	Apu    *apu    = nullptr;
 	Timer  *timer  = nullptr;
 	Joypad *joypad = nullptr;
+	// CPU clock, for PPU-register write-time reconstruction. In the per-dot
+	// interleave the CPU trails the PPU by up to kMaxOpcodeTCycles, so at the
+	// moment a store reaches PpuWriteReg the PPU has already rendered dots the
+	// write should have affected; cpu->t_cycles gives the store's true dot.
+	// Transient wiring like ppu/apu above — never serialized.
+	const CpuState *cpu = nullptr;
 
 	uint8_t wram[0x8000];
 	uint8_t hram[0x7F];
