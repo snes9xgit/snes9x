@@ -266,20 +266,33 @@ void NoiseClock(ApuNoise &c)
 // Digital level 0..15 a channel is *generating*. Gated on `enabled` only: a
 // channel whose length expired outputs 0 here, but if its DAC is still powered
 // that 0 becomes a non-centre analog level in DacAnalog below.
-uint8_t SquareOutput(const ApuSquare &c)
+uint8_t SquareOutput(const ApuSquare &c, bool above_nyquist = false)
 {
 	if (!c.enabled) return 0;
 	const uint8_t duty = (c.nrx1 >> 6) & 0x03;
+	if (above_nyquist)
+	{
+		static const uint8_t duty_ones[4] = { 1, 2, 4, 6 };
+		return static_cast<uint8_t>((c.env_volume * duty_ones[duty] + 4) / 8);
+	}
 	const uint8_t bit  = DUTY_TABLE[duty][c.duty_pos];
 	return static_cast<uint8_t>(bit * c.env_volume);
 }
 
-uint8_t WaveOutput(const ApuWave &c)
+uint8_t WaveOutput(const ApuWave &c, bool above_nyquist = false)
 {
 	if (!c.enabled) return 0;
 	const uint8_t shift_table[4] = { 4, 0, 1, 2 };
 	const uint8_t shift = shift_table[(c.nr32 >> 5) & 0x03];
-	return static_cast<uint8_t>(c.sample_buf >> shift);
+	uint8_t sample = c.sample_buf;
+	if (above_nyquist)
+	{
+		uint32_t sum = 0;
+		for (int i = 0; i < 16; ++i)
+			sum += (c.ram[i] >> 4) + (c.ram[i] & 0x0F);
+		sample = static_cast<uint8_t>((sum + 16) / 32);
+	}
+	return static_cast<uint8_t>(sample >> shift);
 }
 
 uint8_t NoiseOutput(const ApuNoise &c)
@@ -306,10 +319,13 @@ inline int32_t DacAnalog(bool dac_enabled, uint8_t digital)
 
 void Mix(const Apu &a, int32_t &out_l, int32_t &out_r)
 {
+	const bool ch1_ultra = SquareAboveNyquist(a, a.ch1.freq);
+	const bool ch2_ultra = SquareAboveNyquist(a, a.ch2.freq);
+	const bool ch3_ultra = WaveAboveNyquist(a);
 	const int32_t levels[4] = {
-		DacAnalog(a.ch1.dac_enabled, SquareOutput(a.ch1)),
-		DacAnalog(a.ch2.dac_enabled, SquareOutput(a.ch2)),
-		DacAnalog(a.ch3.dac_enabled, WaveOutput(a.ch3)),
+		DacAnalog(a.ch1.dac_enabled, SquareOutput(a.ch1, ch1_ultra)),
+		DacAnalog(a.ch2.dac_enabled, SquareOutput(a.ch2, ch2_ultra)),
+		DacAnalog(a.ch3.dac_enabled, WaveOutput(a.ch3, ch3_ultra)),
 		DacAnalog(a.ch4.dac_enabled, NoiseOutput(a.ch4))
 	};
 
