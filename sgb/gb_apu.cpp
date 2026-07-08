@@ -71,6 +71,22 @@ inline int32_t WavePeriod(uint16_t freq)
 	return static_cast<int32_t>((2048 - freq) * 2);
 }
 
+inline bool WaveAboveNyquist(const Apu &a)
+{
+	const int32_t denom = 2048 - static_cast<int32_t>(a.ch3.freq);
+	if (denom <= 0) return true;
+	return static_cast<int64_t>(a.clock_hz) >
+	       static_cast<int64_t>(a.output_rate) * 32 * denom;
+}
+
+inline bool SquareAboveNyquist(const Apu &a, uint16_t freq)
+{
+	const int32_t denom = 2048 - static_cast<int32_t>(freq);
+	if (denom <= 0) return true;
+	return static_cast<int64_t>(a.clock_hz) >
+	       static_cast<int64_t>(a.output_rate) * 16 * denom;
+}
+
 inline int32_t NoisePeriod(uint8_t nr43)
 {
 	// divisor: 0 → 8, 1 → 16, 2 → 32, ..., 7 → 112.
@@ -558,6 +574,9 @@ void ApuSetClockHz(Apu &a, int32_t hz)
 // of O(cycles), with the same sample output.
 void ApuStep(Apu &a, int32_t tcycles)
 {
+	const bool ch1_ultra = SquareAboveNyquist(a, a.ch1.freq);
+	const bool ch2_ultra = SquareAboveNyquist(a, a.ch2.freq);
+	const bool ch3_ultra = WaveAboveNyquist(a);
 	while (tcycles > 0)
 	{
 		// Determine the size of the next constant-output chunk. Master
@@ -568,9 +587,9 @@ void ApuStep(Apu &a, int32_t tcycles)
 		if (a.master_enabled)
 		{
 			if (a.frame_seq_timer                   < chunk) chunk = a.frame_seq_timer;
-			if (a.ch1.enabled && a.ch1.freq_timer   < chunk) chunk = a.ch1.freq_timer;
-			if (a.ch2.enabled && a.ch2.freq_timer   < chunk) chunk = a.ch2.freq_timer;
-			if (a.ch3.enabled && a.ch3.freq_timer   < chunk) chunk = a.ch3.freq_timer;
+			if (a.ch1.enabled && !ch1_ultra && a.ch1.freq_timer < chunk) chunk = a.ch1.freq_timer;
+			if (a.ch2.enabled && !ch2_ultra && a.ch2.freq_timer < chunk) chunk = a.ch2.freq_timer;
+			if (a.ch3.enabled && !ch3_ultra && a.ch3.freq_timer < chunk) chunk = a.ch3.freq_timer;
 			if (a.ch4.enabled && a.ch4.freq_timer   < chunk) chunk = a.ch4.freq_timer;
 		}
 		if (chunk < 1) chunk = 1;  // safety against zero-period corner cases
@@ -591,26 +610,26 @@ void ApuStep(Apu &a, int32_t tcycles)
 		if (a.master_enabled)
 		{
 			a.frame_seq_timer -= chunk;
-			if (a.ch1.enabled) a.ch1.freq_timer -= chunk;
-			if (a.ch2.enabled) a.ch2.freq_timer -= chunk;
-			if (a.ch3.enabled) a.ch3.freq_timer -= chunk;
+			if (a.ch1.enabled && !ch1_ultra) a.ch1.freq_timer -= chunk;
+			if (a.ch2.enabled && !ch2_ultra) a.ch2.freq_timer -= chunk;
+			if (a.ch3.enabled && !ch3_ultra) a.ch3.freq_timer -= chunk;
 			if (a.ch4.enabled) a.ch4.freq_timer -= chunk;
 
 			// Handle expiries. Channel periods are positive, so a single
 			// reload per event suffices; for larger skips (e.g. a very
 			// short NR43 divisor), the next loop iteration's chunk math
 			// reconverges.
-			if (a.ch1.enabled && a.ch1.freq_timer <= 0)
+			if (a.ch1.enabled && !ch1_ultra && a.ch1.freq_timer <= 0)
 			{
 				a.ch1.freq_timer += SquarePeriod(a.ch1.freq);
 				a.ch1.duty_pos    = static_cast<uint8_t>((a.ch1.duty_pos + 1) & 7);
 			}
-			if (a.ch2.enabled && a.ch2.freq_timer <= 0)
+			if (a.ch2.enabled && !ch2_ultra && a.ch2.freq_timer <= 0)
 			{
 				a.ch2.freq_timer += SquarePeriod(a.ch2.freq);
 				a.ch2.duty_pos    = static_cast<uint8_t>((a.ch2.duty_pos + 1) & 7);
 			}
-			if (a.ch3.enabled && a.ch3.freq_timer <= 0)
+			if (a.ch3.enabled && !ch3_ultra && a.ch3.freq_timer <= 0)
 			{
 				a.ch3.freq_timer += WavePeriod(a.ch3.freq);
 				a.ch3.pos         = static_cast<uint8_t>((a.ch3.pos + 1) & 0x1F);
