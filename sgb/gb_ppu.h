@@ -155,18 +155,11 @@ struct Ppu
 	// boundary, so it is never observed between dots and is not serialized.
 	bool     lyc_relatch = false;
 
-	// VBlank IRQ latency. Real DMG samples IF on the LAST M-cycle of the
-	// current instruction, so when LY transitions to 144 mid-instruction the
-	// current LDH/CP/JR can still observe LY=144 before IRQ dispatch. Our
-	// CPU runs instructions atomically and checks IF before the next step —
-	// firing IF.VBLANK on the dot LY hits 144 pre-empts the polling LDH that
-	// would have caught LY=144. Defer the IF.VBLANK set by N dots: when LY
-	// transitions, arm this counter; ExecPpuDot decrements it; when it hits
-	// 0, set IF.VBLANK. 24 dots ≈ one LDH+CP — enough for Altered Space's
-	// "wait until LY=$90" busy loop at $078A to capture LY=144 into A.
-	uint8_t  vblank_irq_delay = 0;
+	// CPU t_cycle at which VBlank IF latches (armed at LY=144, fires when the CPU
+	// catches up — a fixed dot defer misfired Sumou Fighter's bank-switched tile copy). 0 = unarmed, transient.
+	int64_t  vblank_irq_at = 0;
 
-	// STAT counterpart of vblank_irq_delay (PPU-originated edges only).
+	// STAT counterpart of the VBlank defer above (PPU-originated edges only).
 	uint8_t  stat_irq_delay = 0;
 
 	// Real panels never display the first frame after LCD enable — hold the prior one.
