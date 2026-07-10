@@ -84,6 +84,10 @@ constexpr int32_t LINE_DOTS  = MODE2_DOTS + MODE3_DOTS + MODE0_DOTS;  // 456
 constexpr int32_t VISIBLE_LINES = 144;
 constexpr int32_t TOTAL_LINES   = 154;
 
+// VBlank IF latches at the LY=144 dot minus this lead: cpu->t_cycles stamps
+// instruction START but DMG samples IF on the LAST M-cycle (-8..-20 all match SameBoy).
+constexpr int64_t GB_VBLANK_IRQ_OFFSET = -12;
+
 inline uint8_t ApplyPalette(uint8_t palette, uint8_t color_idx)
 {
 	// BGP/OBP0/OBP1 are 2-bit mappings packed into 8 bits:
@@ -615,7 +619,7 @@ void PpuReset(Ppu &p)
 	p.mode_clock    = 0;
 	p.window_line   = 0;
 	p.stat_line_high = false;
-	p.vblank_irq_delay = 0;
+	p.vblank_irq_at = 0;
 	p.stat_irq_delay = 0;
 	p.present_hold  = false;
 	p.frame_ready   = false;
@@ -644,12 +648,12 @@ inline void ExecPpuDot(Ppu &p, Memory &mem)
 	p.mode_clock += 1;
 	bool transitioned = false;
 
-	// Deferred VBlank IRQ — see Ppu::vblank_irq_delay for rationale.
-	if (p.vblank_irq_delay > 0)
+	// Deferred VBlank IRQ — latch IF.VBLANK once the CPU catches up to the
+	// LY=144 dot (cycle-precise), see Ppu::vblank_irq_at for rationale.
+	if (p.vblank_irq_at != 0 && mem.cpu && mem.cpu->t_cycles >= p.vblank_irq_at)
 	{
-		--p.vblank_irq_delay;
-		if (p.vblank_irq_delay == 0)
-			mem.if_ = static_cast<uint8_t>(mem.if_ | IRQ_VBLANK);
+		mem.if_ = static_cast<uint8_t>(mem.if_ | IRQ_VBLANK);
+		p.vblank_irq_at = 0;
 	}
 
 	if (p.stat_irq_delay > 0)
@@ -795,7 +799,7 @@ inline void ExecPpuDot(Ppu &p, Memory &mem)
 				p.window_line   = 0;
 				p.window_active = false;
 				p.wy_triggered  = false;
-				p.vblank_irq_delay = 24;
+				p.vblank_irq_at = p.t_cycles + GB_VBLANK_IRQ_OFFSET;
 				S9xSGBOnPpuVBlank();
 			}
 			else
@@ -879,7 +883,7 @@ void PpuStep(Ppu &p, Memory &mem, int32_t tcycles)
 		p.mode_clock     = 0;
 		p.window_line    = 0;
 		p.stat_line_high = false;
-		p.vblank_irq_delay = 0;
+		p.vblank_irq_at = 0;
 		p.stat_irq_delay = 0;
 		p.draw_x         = 0;
 		p.window_active  = false;
