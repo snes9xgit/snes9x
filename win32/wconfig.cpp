@@ -697,6 +697,12 @@ void WinPostLoad(ConfigFile& conf)
     if (Settings.MaxSpriteTilesPerLine != 34 && Settings.MaxSpriteTilesPerLine != 128)
         Settings.MaxSpriteTilesPerLine = 34;
 
+    if (Settings.PF94TimerMinutes < 3 || Settings.PF94TimerMinutes > 18)
+        Settings.PF94TimerMinutes = 6;
+
+    if (Settings.PF94TimerDisplay < 0 || Settings.PF94TimerDisplay > 2)
+        Settings.PF94TimerDisplay = 0;
+
     switch (Settings.OverclockMode)
     {
         default:
@@ -1070,6 +1076,8 @@ void WinRegisterConfigItems()
     AddUIntC("MaxSpriteTilesPerLine", Settings.MaxSpriteTilesPerLine, 34, "Max sprite tiles rendered per line. Default = 34, Unlimited ~= 128");
 	AddUIntC("SuperFXClockMultiplier", Settings.SuperFXClockMultiplier, 100, "SuperFX speed, in percent (default 100)");
     AddBoolC("SeparateEchoBuffer", Settings.SeparateEchoBuffer, false, "Separate echo buffer from APU ram. For old hacks only.");
+    AddUIntC("PowerFest94TimeLimit", Settings.PF94TimerMinutes, 6, "PowerFest '94 event cart session length in minutes (DIP switches, 3-18)");
+    AddUIntC("PowerFest94TimerDisplay", Settings.PF94TimerDisplay, 0, "PowerFest '94 session timer display: 0=none, 1=on screen, 2=window title");
 #undef CATEGORY
 
 #ifdef RETROACHIEVEMENTS_SUPPORT

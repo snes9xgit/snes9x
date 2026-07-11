@@ -429,6 +429,10 @@
 #define IDC_SFX_CLOCK_SPEED_SPIN        3036
 #define IDC_NO_SPRITE_LIMIT             3037
 #define IDC_ALLOW_EXE_ICON              3321
+#define IDC_PF94_TIME                   3322
+#define IDC_PF94_TIME_LABEL             3323
+#define IDC_PF94_TIMER_SHOW             3324
+#define IDC_PF94_TIMER_SHOW_LABEL       3325
 #define IDC_SET_DEFAULTS                3038
 #define IDC_BUTTON_SLOT_1               3039
 #define IDC_BUTTON_EDIT_CHEATGROUP      3039

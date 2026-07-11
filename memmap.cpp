@@ -4102,9 +4102,253 @@ bool8 CMemory::match_id (const char *str)
 	return (strncmp(ROMId, str, strlen(str)) == 0);
 }
 
+SPF94 PF94;
+
+static void PF94MapGameWindow (void)
+{
+	int id = 0;
+	if (PF94.select == 0x09)      id = 1;
+	else if (PF94.select == 0x0c) id = 2;
+	else if (PF94.select == 0x0a) id = 3;
+	if (!PF94.romSize[id])
+		id = 0;
+
+	uint8	*img = Memory.ROM + PF94.romOff[id];
+	uint32	mask = PF94.romSize[id] - 1;
+
+	for (uint32 bank = 0; bank <= 0x1f; bank++)
+	{
+		uint8 *base;
+		if (id == 2)
+			base = img + ((bank << 16) & mask);
+		else
+			base = img + ((bank << 15) & mask) - 0x8000;
+
+		for (uint32 blk = 8; blk <= 15; blk++)
+		{
+			uint32 i = (bank << 4) | blk;
+			Memory.Map[i] = Memory.Map[i + 0x800] = base;
+			Memory.WriteMap[i] = Memory.WriteMap[i + 0x800] = (uint8 *) CMemory::MAP_NONE;
+			Memory.BlockIsROM[i] = Memory.BlockIsROM[i + 0x800] = TRUE;
+			Memory.BlockIsRAM[i] = Memory.BlockIsRAM[i + 0x800] = FALSE;
+		}
+
+		// Mario Kart (HiROM build) carries the board's DSP-1 in the classic
+		// HiROM window $00-$1F:6000-$7FFF; other games leave it unmapped.
+		for (uint32 blk = 6; blk <= 7; blk++)
+		{
+			uint32 i = (bank << 4) | blk;
+			uint8 *m = (uint8 *) (id == 2 ? CMemory::MAP_DSP : CMemory::MAP_NONE);
+			Memory.Map[i] = Memory.Map[i + 0x800] = m;
+			Memory.WriteMap[i] = Memory.WriteMap[i + 0x800] = m;
+			Memory.BlockIsROM[i] = Memory.BlockIsROM[i + 0x800] = FALSE;
+			Memory.BlockIsRAM[i] = Memory.BlockIsRAM[i + 0x800] = FALSE;
+		}
+	}
+
+	Memory.Map[(0x10 << 4) | 6] = Memory.Map[(0x90 << 4) | 6] = (uint8 *) CMemory::MAP_EVENT;
+	Memory.WriteMap[(0x10 << 4) | 6] = Memory.WriteMap[(0x90 << 4) | 6] = (uint8 *) CMemory::MAP_EVENT;
+
+	for (uint32 bank = 0x40; bank <= 0x7d; bank++)
+	{
+		uint8 *base = img + (((bank - 0x40) << 16) & mask);
+		for (uint32 blk = 0; blk <= 15; blk++)
+		{
+			uint32 i = (bank << 4) | blk;
+			Memory.Map[i] = Memory.Map[i + 0x800] = base;
+			Memory.WriteMap[i] = Memory.WriteMap[i + 0x800] = (uint8 *) CMemory::MAP_NONE;
+			Memory.BlockIsROM[i] = Memory.BlockIsROM[i + 0x800] = TRUE;
+			Memory.BlockIsRAM[i] = Memory.BlockIsRAM[i + 0x800] = FALSE;
+		}
+	}
+}
+
+uint8 S9xGetEvent (uint32 Address)
+{
+	if ((Address & 0x7f0000) == 0x100000)
+	{
+		if (PF94.timerOn && (IPPU.TotalEmulatedFrames - PF94.timerStart) >= PF94.timerFrames)
+		{
+			PF94.timerOn = FALSE;
+			PF94.status |= 0x02;
+		}
+		return (PF94.status);
+	}
+	return (0);
+}
+
+void S9xSetEvent (uint8 Byte, uint32 Address)
+{
+	if ((Address & 0x7f0000) == 0x200000)
+	{
+		PF94.select = Byte;
+		if (Byte == 0x09 && !PF94.timerOn && !(PF94.status & 0x02))
+		{
+			PF94.timerOn = TRUE;
+			PF94.timerStart = IPPU.TotalEmulatedFrames;
+		}
+		PF94MapGameWindow();
+
+		// Selecting a game whose ROM wasn't found leaves the program ROM in
+		// the window, so the launch stub's JML would land mid-data. Skip it
+		// and reboot the scoring program from its reset vector instead. That
+		// returns to the start of the session, so clear the timer (disarm +
+		// drop time-over) so the menu's next launch gets a fresh full clock.
+		int id = 0;
+		if (Byte == 0x09)      id = 1;
+		else if (Byte == 0x0c) id = 2;
+		else if (Byte == 0x0a) id = 3;
+		if (id && !PF94.romSize[id])
+		{
+			PF94.select = 0;
+			PF94.status = 0;
+			PF94.timerOn = FALSE;
+			PF94MapGameWindow();
+			S9xSetPCBase(0x008000);
+		}
+	}
+}
+
+void S9xPF94Reset (void)
+{
+	if (!PF94.active)
+		return;
+	PF94.select = 0;
+	PF94.status = 0;
+	PF94.timerOn = FALSE;
+	PF94MapGameWindow();
+}
+
+void S9xPF94PostLoadState (void)
+{
+	if (PF94.active)
+		PF94MapGameWindow();
+}
+
+int S9xPF94TimeRemaining (void)
+{
+	if (!PF94.active)
+		return (-1);
+
+	int fps = Settings.PAL ? 50 : 60;
+
+	if (PF94.status & 0x02)
+		return (0);
+	if (!PF94.timerOn)
+		return (PF94.timerFrames / fps);
+
+	uint32 elapsed = IPPU.TotalEmulatedFrames - PF94.timerStart;
+	if (elapsed >= PF94.timerFrames)
+		return (0);
+	return ((PF94.timerFrames - elapsed + fps - 1) / fps);
+}
+
+static uint32 PF94LoadAuxROM (const std::string &dir, const char *const *names, size_t count, uint8 *dst, uint32 maxSize);
+
+void S9xPF94LoadGames (void)
+{
+	if (!PF94.active)
+		return;
+
+	std::string dir = Memory.ROMFilename;
+	size_t slash = dir.find_last_of("/\\");
+	dir = (slash == std::string::npos) ? "" : dir.substr(0, slash + 1);
+
+	static const char *ll_names[] =
+	{
+		"PowerFest 94 - Super Mario Bros. - The Lost Levels (USA).sfc",
+		"PowerFest 94 - Super Mario Bros. - The Lost Levels (USA).smc",
+		"PowerFest 94 - Super Mario Bros. - The Lost Levels (USA).zip",
+		"lost-levels.bin",
+	};
+	static const char *kart_names[] =
+	{
+		"PowerFest 94 - Super Mario Kart (USA).sfc",
+		"PowerFest 94 - Super Mario Kart (USA).smc",
+		"PowerFest 94 - Super Mario Kart (USA).zip",
+		"mario-kart.bin",
+	};
+	static const char *griffey_names[] =
+	{
+		"PowerFest 94 - Ken Griffey Jr Presents Major League Baseball (USA).sfc",
+		"PowerFest 94 - Ken Griffey Jr Presents Major League Baseball (USA).smc",
+		"PowerFest 94 - Ken Griffey Jr Presents Major League Baseball (USA).zip",
+		"PowerFest 94 - Ken Griffey Jr. Presents Major League Baseball (USA).sfc",
+		"PowerFest 94 - Ken Griffey Jr. Presents Major League Baseball (USA).zip",
+		"ken-griffey.bin",
+	};
+
+	PF94.romOff[1] = 0x400000;
+	PF94.romSize[1] = PF94LoadAuxROM(dir, ll_names, sizeof(ll_names) / sizeof(*ll_names), Memory.ROM + 0x400000, 0x100000);
+	PF94.romOff[2] = 0x600000;
+	PF94.romSize[2] = PF94LoadAuxROM(dir, kart_names, sizeof(kart_names) / sizeof(*kart_names), Memory.ROM + 0x600000, 0x100000);
+	PF94.romOff[3] = 0x700000;
+	PF94.romSize[3] = PF94LoadAuxROM(dir, griffey_names, sizeof(griffey_names) / sizeof(*griffey_names), Memory.ROM + 0x700000, 0x100000);
+
+	if (PF94.romSize[2])
+	{
+		Settings.DSP = 1;
+		DSP0.boundary = 0x7000;
+		DSP0.maptype = M_DSP1_HIROM;
+		SetDSP = &DSP1SetByte;
+		GetDSP = &DSP1GetByte;
+	}
+
+	printf("PowerFest '94 board active: Lost Levels %s, Mario Kart %s, Ken Griffey %s\n",
+		PF94.romSize[1] ? "ok" : "missing",
+		PF94.romSize[2] ? "ok" : "missing",
+		PF94.romSize[3] ? "ok" : "missing");
+}
+
+static uint32 PF94LoadAuxROM (const std::string &dir, const char *const *names, size_t count, uint8 *dst, uint32 maxSize)
+{
+	for (size_t i = 0; i < count; i++)
+	{
+		std::string path = dir + names[i];
+
+		if (splitpath(path.c_str()).ext_is(".zip"))
+		{
+		#ifdef UNZIP_SUPPORT
+			uint32 size = 0;
+			if (LoadZip(path.c_str(), &size, dst))
+			{
+				if ((size % 1024) == 512)
+				{
+					memmove(dst, dst + 512, size - 512);
+					size -= 512;
+				}
+				if (size >= 0x8000 && size <= maxSize && (size & (size - 1)) == 0)
+					return (size);
+			}
+		#endif
+			continue;
+		}
+
+		FILE *fp = fopen(path.c_str(), "rb");
+		if (!fp)
+			continue;
+
+		fseek(fp, 0, SEEK_END);
+		long size = ftell(fp);
+		fseek(fp, (size % 1024) == 512 ? 512 : 0, SEEK_SET);
+		size -= (size % 1024) == 512 ? 512 : 0;
+
+		if (size >= 0x8000 && size <= (long) maxSize && (size & (size - 1)) == 0 &&
+			fread(dst, 1, size, fp) == (size_t) size)
+		{
+			fclose(fp);
+			return ((uint32) size);
+		}
+		fclose(fp);
+	}
+	return (0);
+}
+
 void CMemory::ApplyROMFixes (void)
 {
 	Settings.BlockInvalidVRAMAccess = Settings.BlockInvalidVRAMAccessMaster;
+
+	PF94.active = FALSE;
 
 	if (Settings.DisableGameSpecificHacks)
 		return;
@@ -4162,6 +4406,107 @@ void CMemory::ApplyROMFixes (void)
 	{
 		SNESGameFixes.Uniracers = TRUE;
 		printf("Applied Uniracers hack.\n");
+	}
+
+	// PowerFest '94 - Scoring (the event board's master program ROM), identified
+	// by its board work-RAM clear loop (STA/LDA $30:6000,X). Activates the
+	// MX15001 board: work RAM at $30-$3F:6000-$7FFF, status register $10:6000,
+	// select register $20:6000, session timer, and the game window switched
+	// between the sibling game ROMs found next to this one.
+	static const uint8 pf94_ramclear[13] = { 0xA9, 0x00, 0x00, 0x9F, 0x00, 0x60, 0x30, 0xBF, 0x00, 0x60, 0x30, 0xD0, 0xF3 };
+	if (CalculatedSize == 0x40000 && memcmp(ROM + 0x01F8, pf94_ramclear, 13) == 0)
+	{
+		SRAMSize = 3;
+		SRAMMask = ((1 << (SRAMSize + 3)) * 128) - 1;
+		for (uint32 bank = 0x30; bank <= 0x3f; bank++)
+		{
+			for (uint32 blk = 6; blk <= 7; blk++)
+			{
+				uint32 i = (bank << 4) | blk;
+				Map[i] = Map[i + 0x800] = (uint8 *) MAP_LOROM_SRAM;
+				WriteMap[i] = WriteMap[i + 0x800] = (uint8 *) MAP_LOROM_SRAM;
+				BlockIsRAM[i] = BlockIsRAM[i + 0x800] = TRUE;
+				BlockIsROM[i] = BlockIsROM[i + 0x800] = FALSE;
+			}
+		}
+
+		Map[(0x10 << 4) | 6] = Map[(0x90 << 4) | 6] = (uint8 *) MAP_EVENT;
+		WriteMap[(0x10 << 4) | 6] = WriteMap[(0x90 << 4) | 6] = (uint8 *) MAP_EVENT;
+		Map[(0x20 << 4) | 6] = Map[(0xA0 << 4) | 6] = (uint8 *) MAP_EVENT;
+		WriteMap[(0x20 << 4) | 6] = WriteMap[(0xA0 << 4) | 6] = (uint8 *) MAP_EVENT;
+
+		PF94.active = TRUE;
+		PF94.select = 0;
+		PF94.status = 0;
+		PF94.timerOn = FALSE;
+		int pf94min = (Settings.PF94TimerMinutes >= 3 && Settings.PF94TimerMinutes <= 18) ? Settings.PF94TimerMinutes : 6;
+		PF94.timerFrames = pf94min * 60 * (Settings.PAL ? 50 : 60);
+		PF94.romOff[0] = 0;
+		PF94.romSize[0] = CalculatedSize;
+
+		S9xPF94LoadGames();
+	}
+
+	// PowerFest '94 - Super Mario Bros. - The Lost Levels (event cart sub-ROM),
+	// identified by its per-frame MX15001 status poll (LDA $10:6000 / AND #$02 /
+	// BEQ +4 / JML) so both the 512KB underdump and a complete dump match.
+	// Course clear jumps into the event board's menu/scoring ROM (banks $20+),
+	// which re-enters at the next instruction. Skip the jump.
+	static const uint8 pf94_poll[9] = { 0xAF, 0x00, 0x60, 0x10, 0x29, 0x02, 0xF0, 0x04, 0x5C };
+	if ((CalculatedSize == 0x80000 || CalculatedSize == 0x100000) &&
+		memcmp(ROM + 0x8073, pf94_poll, 9) == 0 &&
+		ROM[0xB094] == 0x5C && ROM[0xB095] == 0x00 && ROM[0xB096] == 0xE0 && ROM[0xB097] == 0x20)
+	{
+		ROM[0xB094] = ROM[0xB095] = ROM[0xB096] = ROM[0xB097] = 0xEA;
+		printf("Applied PowerFest '94 Lost Levels course-clear patch.\n");
+
+		// If the scoring ROM is next to the game ROM, map it into the board's
+		// menu window (banks $20-$3F/$A0-$BF, LoROM layout) like the MX15001
+		// does, so menu-window reads return real chip data.
+		const char *candidates[] =
+		{
+			"PowerFest 94 - Scoring (USA).sfc",
+			"PowerFest 94 - Scoring (USA).smc",
+			"PowerFest '94 - Scoring (USA).sfc",
+			"PowerFest 94 - Scoring.sfc",
+			"scoring.sfc", "scoring.smc", "scoring.bin",
+		};
+
+		std::string dir = ROMFilename;
+		size_t slash = dir.find_last_of("/\\");
+		dir = (slash == std::string::npos) ? "" : dir.substr(0, slash + 1);
+
+		for (size_t i = 0; i < sizeof(candidates) / sizeof(candidates[0]); i++)
+		{
+			std::string path = dir + candidates[i];
+			FILE *fp = fopen(path.c_str(), "rb");
+			if (!fp)
+				continue;
+
+			fseek(fp, 0, SEEK_END);
+			long size = ftell(fp);
+			fseek(fp, (size % 1024) == 512 ? 512 : 0, SEEK_SET);
+			size -= (size % 1024) == 512 ? 512 : 0;
+
+			uint8 *menu = ROM + 0x200000;
+			if (size >= 0x8000 && size <= 0x80000 && (size & (size - 1)) == 0 &&
+				fread(menu, 1, size, fp) == (size_t) size)
+			{
+				for (uint32 bank = 0x20; bank <= 0x3f; bank++)
+				{
+					uint8 *base = menu + (((bank - 0x20) << 15) & (size - 1)) - 0x8000;
+					for (uint32 blk = 8; blk <= 15; blk++)
+					{
+						Map[(bank << 4) | blk] = base;
+						Map[((bank + 0x80) << 4) | blk] = base;
+					}
+				}
+				printf("Mapped PowerFest '94 scoring ROM (%s) into banks $20-$3F.\n", candidates[i]);
+				fclose(fp);
+				break;
+			}
+			fclose(fp);
+		}
 	}
 
 	// Render Position

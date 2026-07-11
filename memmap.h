@@ -51,6 +51,7 @@ struct CMemory
 		MAP_SETA_RISC,
 		MAP_BSX,
 		MAP_SGB_ICD2,
+		MAP_EVENT,
 		MAP_NONE,
 		MAP_LAST
 	};
@@ -223,6 +224,27 @@ bool8 S9xSGBBIOSAvailable(uint8 mode, const char *gb_rom_path);
 // the Sachen scrambled variant). Lets in-memory callers route GB carts away
 // from the SNES/BS-X/Sufami load paths.
 bool S9xRomBytesAreGb(const uint8 *rom, int32 size);
+
+// PowerFest '94 (MX15001) event board: status/select registers, session timer,
+// board work-RAM and the four-image game window. Active only when the scoring
+// (master program) ROM is the loaded cart.
+struct SPF94
+{
+	bool8	active;
+	uint8	select, status;
+	bool8	timerOn;
+	uint32	timerStart, timerFrames;
+	uint32	romOff[4], romSize[4];
+};
+
+extern SPF94 PF94;
+
+uint8 S9xGetEvent (uint32 Address);
+void S9xSetEvent (uint8 Byte, uint32 Address);
+void S9xPF94Reset (void);
+void S9xPF94PostLoadState (void);
+void S9xPF94LoadGames (void);
+int S9xPF94TimeRemaining (void);
 
 enum s9xwrap_t
 {

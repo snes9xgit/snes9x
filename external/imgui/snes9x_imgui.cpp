@@ -16,6 +16,7 @@ void RA_RenderOverlay(int width, int height);
 #include "movie.h"
 #include "gfx.h"
 #include "ppu.h"
+#include "memmap.h"
 #include "cheats.h"
 
 namespace
@@ -283,6 +284,28 @@ bool S9xImGuiDraw(int width, int height)
                               settings.spacing,
                               ImGui::DrawTextAlignment::END,
                               ImGui::DrawTextAlignment::BEGIN);
+    }
+
+    if (Settings.PF94TimerDisplay == 1)
+    {
+        int secs = S9xPF94TimeRemaining();
+        if (secs >= 0)
+        {
+            char string[16];
+            sprintf(string, "%02d:%02d", secs / 60, secs % 60);
+            const float line_h = ImGui::CalcTextSize("0").y;
+            int gap = 0;
+            if (Settings.DisplayFrameRate)
+                gap += (int)(line_h * 2.0f + settings.spacing * 2 + 10);
+            if (Settings.DisplayFrameNumber)
+                gap += (int)(line_h + settings.spacing + 10);
+            ImGui_DrawTextOverlay(string,
+                                  width - settings.spacing,
+                                  settings.spacing + gap,
+                                  settings.spacing,
+                                  ImGui::DrawTextAlignment::END,
+                                  ImGui::DrawTextAlignment::BEGIN);
+        }
     }
 
     if (Settings.DisplayPressedKeys)
