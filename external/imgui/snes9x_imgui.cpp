@@ -286,7 +286,7 @@ bool S9xImGuiDraw(int width, int height)
                               ImGui::DrawTextAlignment::BEGIN);
     }
 
-    if (Settings.PF94TimerDisplay == 1)
+    if (S9xEventTimerDisplay() == 1)
     {
         int secs = S9xPF94TimeRemaining();
         if (secs >= 0)

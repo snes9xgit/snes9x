@@ -703,6 +703,12 @@ void WinPostLoad(ConfigFile& conf)
     if (Settings.PF94TimerDisplay < 0 || Settings.PF94TimerDisplay > 2)
         Settings.PF94TimerDisplay = 0;
 
+    if (Settings.CC92TimerMinutes < 3 || Settings.CC92TimerMinutes > 18)
+        Settings.CC92TimerMinutes = 6;
+
+    if (Settings.CC92TimerDisplay < 0 || Settings.CC92TimerDisplay > 2)
+        Settings.CC92TimerDisplay = 0;
+
     switch (Settings.OverclockMode)
     {
         default:
@@ -1078,6 +1084,8 @@ void WinRegisterConfigItems()
     AddBoolC("SeparateEchoBuffer", Settings.SeparateEchoBuffer, false, "Separate echo buffer from APU ram. For old hacks only.");
     AddUIntC("PowerFest94TimeLimit", Settings.PF94TimerMinutes, 6, "PowerFest '94 event cart session length in minutes (DIP switches, 3-18)");
     AddUIntC("PowerFest94TimerDisplay", Settings.PF94TimerDisplay, 0, "PowerFest '94 session timer display: 0=none, 1=on screen, 2=window title");
+    AddUIntC("CampusChallenge92TimeLimit", Settings.CC92TimerMinutes, 6, "Campus Challenge '92 event cart session length in minutes (DIP switches, 3-18)");
+    AddUIntC("CampusChallenge92TimerDisplay", Settings.CC92TimerDisplay, 0, "Campus Challenge '92 session timer display: 0=none, 1=on screen, 2=window title");
 #undef CATEGORY
 
 #ifdef RETROACHIEVEMENTS_SUPPORT

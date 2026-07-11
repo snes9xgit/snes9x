@@ -777,7 +777,7 @@ void S9xRestoreWindowTitle ()
         _tcscat(buf, TEXT(" [Hardcore]"));
 #endif
 
-    if (PF94.active && Settings.PF94TimerDisplay == 2)
+    if (PF94.active && S9xEventTimerDisplay() == 2)
     {
         int pf94secs = S9xPF94TimeRemaining();
         if (pf94secs >= 0)
@@ -6788,24 +6788,35 @@ INT_PTR CALLBACK DlgEmulatorHacksProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM
         CheckDlgButton(hDlg, IDC_ALLOW_EXE_ICON, GUI.ExeIconRewriteOK);
 
         {
+            // The event-cart rows serve whichever board is loaded; relabel and
+            // bind them to that board's own saved timer settings.
+            const TCHAR *evName = (PF94.board == EVENT_BOARD_CC92) ? TEXT("Campus Challenge '92") : TEXT("PowerFest '94");
+            TCHAR lbl[64];
+            _sntprintf(lbl, 64, TEXT("%s Time Limit:"), evName);
+            SetDlgItemText(hDlg, IDC_PF94_TIME_LABEL, lbl);
+            _sntprintf(lbl, 64, TEXT("%s Timer:"), evName);
+            SetDlgItemText(hDlg, IDC_PF94_TIMER_SHOW_LABEL, lbl);
+
             TCHAR pf94buf[16];
             for (int m = 3; m <= 18; m++)
             {
                 _sntprintf(pf94buf, 16, TEXT("%d minutes"), m);
                 SendDlgItemMessage(hDlg, IDC_PF94_TIME, CB_ADDSTRING, 0, (LPARAM)pf94buf);
             }
-            int pf94min = (Settings.PF94TimerMinutes >= 3 && Settings.PF94TimerMinutes <= 18) ? Settings.PF94TimerMinutes : 6;
-            SendDlgItemMessage(hDlg, IDC_PF94_TIME, CB_SETCURSEL, pf94min - 3, 0);
+            SendDlgItemMessage(hDlg, IDC_PF94_TIME, CB_SETCURSEL, S9xEventTimerMinutes() - 3, 0);
+
+            CreateToolTip(IDC_PF94_TIME, hDlg, (PF94.board == EVENT_BOARD_CC92)
+                ? TEXT("Session length for the Campus Challenge '92 competition\ncart (the board's DIP switches, 3-18 minutes).\nTakes effect immediately, even mid-session.")
+                : TEXT("Session length for the PowerFest '94 competition\ncart (the board's DIP switches, 3-18 minutes).\nTakes effect immediately, even mid-session."));
         }
         ShowWindow(GetDlgItem(hDlg, IDC_PF94_TIME), PF94.active ? SW_SHOW : SW_HIDE);
         ShowWindow(GetDlgItem(hDlg, IDC_PF94_TIME_LABEL), PF94.active ? SW_SHOW : SW_HIDE);
         SendDlgItemMessage(hDlg, IDC_PF94_TIMER_SHOW, CB_ADDSTRING, 0, (LPARAM)TEXT("None"));
         SendDlgItemMessage(hDlg, IDC_PF94_TIMER_SHOW, CB_ADDSTRING, 0, (LPARAM)TEXT("On Screen"));
         SendDlgItemMessage(hDlg, IDC_PF94_TIMER_SHOW, CB_ADDSTRING, 0, (LPARAM)TEXT("Title Screen"));
-        SendDlgItemMessage(hDlg, IDC_PF94_TIMER_SHOW, CB_SETCURSEL, (Settings.PF94TimerDisplay >= 0 && Settings.PF94TimerDisplay <= 2) ? Settings.PF94TimerDisplay : 0, 0);
+        SendDlgItemMessage(hDlg, IDC_PF94_TIMER_SHOW, CB_SETCURSEL, S9xEventTimerDisplay(), 0);
         ShowWindow(GetDlgItem(hDlg, IDC_PF94_TIMER_SHOW), PF94.active ? SW_SHOW : SW_HIDE);
         ShowWindow(GetDlgItem(hDlg, IDC_PF94_TIMER_SHOW_LABEL), PF94.active ? SW_SHOW : SW_HIDE);
-        CreateToolTip(IDC_PF94_TIME, hDlg, TEXT("Session length for the PowerFest '94 competition\ncart (the board's DIP switches, 3-18 minutes).\nTakes effect immediately, even mid-session."));
 
         CreateToolTip(IDC_ALLOW_EXE_ICON, hDlg, TEXT("When checked, choosing a logo also overwrites\nthe icon embedded in the SuperSnes9x .exe on disk,\nso it shows in Explorer, on shortcuts and the\ntaskbar. SuperSnes9x will restart to apply.\nWhen unchecked, only the in-app icon changes."));
 
@@ -6862,10 +6873,22 @@ INT_PTR CALLBACK DlgEmulatorHacksProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM
             Settings.MaxSpriteTilesPerLine = IsDlgButtonChecked(hDlg, IDC_NO_SPRITE_LIMIT) ? 128 : 34;
             GUI.ExeIconRewriteOK = IsDlgButtonChecked(hDlg, IDC_ALLOW_EXE_ICON);
 
-            Settings.PF94TimerMinutes = 3 + (int)SendDlgItemMessage(hDlg, IDC_PF94_TIME, CB_GETCURSEL, 0, 0);
-            if (PF94.active)
-                PF94.timerFrames = Settings.PF94TimerMinutes * 60 * (Settings.PAL ? 50 : 60);
-            Settings.PF94TimerDisplay = (int)SendDlgItemMessage(hDlg, IDC_PF94_TIMER_SHOW, CB_GETCURSEL, 0, 0);
+            {
+                int evmin  = 3 + (int)SendDlgItemMessage(hDlg, IDC_PF94_TIME, CB_GETCURSEL, 0, 0);
+                int evdisp = (int)SendDlgItemMessage(hDlg, IDC_PF94_TIMER_SHOW, CB_GETCURSEL, 0, 0);
+                if (PF94.board == EVENT_BOARD_CC92)
+                {
+                    Settings.CC92TimerMinutes = evmin;
+                    Settings.CC92TimerDisplay = evdisp;
+                }
+                else
+                {
+                    Settings.PF94TimerMinutes = evmin;
+                    Settings.PF94TimerDisplay = evdisp;
+                }
+                if (PF94.active)
+                    PF94.timerFrames = evmin * 60 * (Settings.PAL ? 50 : 60);
+            }
             S9xRestoreWindowTitle();
 
             switch (Settings.OverclockMode)

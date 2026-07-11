@@ -344,6 +344,8 @@ struct SSettings
     int OverclockMode;
     int PF94TimerMinutes;
     int PF94TimerDisplay;
+    int CC92TimerMinutes;
+    int CC92TimerDisplay;
 	int	OneClockCycle;
 	int	OneSlowClockCycle;
 	int	TwoClockCycles;

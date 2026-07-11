@@ -355,7 +355,7 @@ bool8 S9xContinueUpdate(int Width, int Height)
 // do the actual rendering of a frame
 bool8 S9xDeinitUpdate (int Width, int Height)
 {
-	if (PF94.active && Settings.PF94TimerDisplay == 2)
+	if (PF94.active && S9xEventTimerDisplay() == 2)
 	{
 		static int lastShownSecs = -2;
 		int secs = S9xPF94TimeRemaining();
