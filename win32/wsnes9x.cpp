@@ -777,6 +777,17 @@ void S9xRestoreWindowTitle ()
         _tcscat(buf, TEXT(" [Hardcore]"));
 #endif
 
+    if (PF94.active && Settings.PF94TimerDisplay == 2)
+    {
+        int pf94secs = S9xPF94TimeRemaining();
+        if (pf94secs >= 0)
+        {
+            TCHAR tbuf[16];
+            _stprintf(tbuf, TEXT(" (%02d:%02d)"), pf94secs / 60, pf94secs % 60);
+            _tcscat(buf, tbuf);
+        }
+    }
+
 #ifdef KAILLERA_SUPPORT
     if (KailleraServerIsRunning())
     {
@@ -6788,6 +6799,12 @@ INT_PTR CALLBACK DlgEmulatorHacksProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM
         }
         ShowWindow(GetDlgItem(hDlg, IDC_PF94_TIME), PF94.active ? SW_SHOW : SW_HIDE);
         ShowWindow(GetDlgItem(hDlg, IDC_PF94_TIME_LABEL), PF94.active ? SW_SHOW : SW_HIDE);
+        SendDlgItemMessage(hDlg, IDC_PF94_TIMER_SHOW, CB_ADDSTRING, 0, (LPARAM)TEXT("None"));
+        SendDlgItemMessage(hDlg, IDC_PF94_TIMER_SHOW, CB_ADDSTRING, 0, (LPARAM)TEXT("On Screen"));
+        SendDlgItemMessage(hDlg, IDC_PF94_TIMER_SHOW, CB_ADDSTRING, 0, (LPARAM)TEXT("Title Screen"));
+        SendDlgItemMessage(hDlg, IDC_PF94_TIMER_SHOW, CB_SETCURSEL, (Settings.PF94TimerDisplay >= 0 && Settings.PF94TimerDisplay <= 2) ? Settings.PF94TimerDisplay : 0, 0);
+        ShowWindow(GetDlgItem(hDlg, IDC_PF94_TIMER_SHOW), PF94.active ? SW_SHOW : SW_HIDE);
+        ShowWindow(GetDlgItem(hDlg, IDC_PF94_TIMER_SHOW_LABEL), PF94.active ? SW_SHOW : SW_HIDE);
         CreateToolTip(IDC_PF94_TIME, hDlg, TEXT("Session length for the PowerFest '94 competition\ncart (the board's DIP switches, 3-18 minutes).\nTakes effect immediately, even mid-session."));
 
         CreateToolTip(IDC_ALLOW_EXE_ICON, hDlg, TEXT("When checked, choosing a logo also overwrites\nthe icon embedded in the SuperSnes9x .exe on disk,\nso it shows in Explorer, on shortcuts and the\ntaskbar. SuperSnes9x will restart to apply.\nWhen unchecked, only the in-app icon changes."));
@@ -6821,6 +6838,8 @@ INT_PTR CALLBACK DlgEmulatorHacksProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM
             Settings.PF94TimerMinutes = 3 + (int)SendDlgItemMessage(hDlg, IDC_PF94_TIME, CB_GETCURSEL, 0, 0);
             if (PF94.active)
                 PF94.timerFrames = Settings.PF94TimerMinutes * 60 * (Settings.PAL ? 50 : 60);
+            Settings.PF94TimerDisplay = (int)SendDlgItemMessage(hDlg, IDC_PF94_TIMER_SHOW, CB_GETCURSEL, 0, 0);
+            S9xRestoreWindowTitle();
 
             switch (Settings.OverclockMode)
             {
@@ -6863,6 +6882,7 @@ INT_PTR CALLBACK DlgEmulatorHacksProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM
 			CheckDlgButton(hDlg, IDC_NO_SPRITE_LIMIT, false);
 			CheckDlgButton(hDlg, IDC_ALLOW_EXE_ICON, false);
 			SendDlgItemMessage(hDlg, IDC_PF94_TIME, CB_SETCURSEL, 3, 0);
+			SendDlgItemMessage(hDlg, IDC_PF94_TIMER_SHOW, CB_SETCURSEL, 0, 0);
 			break;
         default:
             break;

@@ -4217,6 +4217,24 @@ void S9xPF94PostLoadState (void)
 		PF94MapGameWindow();
 }
 
+int S9xPF94TimeRemaining (void)
+{
+	if (!PF94.active)
+		return (-1);
+
+	int fps = Settings.PAL ? 50 : 60;
+
+	if (PF94.status & 0x02)
+		return (0);
+	if (!PF94.timerOn)
+		return (PF94.timerFrames / fps);
+
+	uint32 elapsed = IPPU.TotalEmulatedFrames - PF94.timerStart;
+	if (elapsed >= PF94.timerFrames)
+		return (0);
+	return ((PF94.timerFrames - elapsed + fps - 1) / fps);
+}
+
 static uint32 PF94LoadAuxROM (const std::string &dir, const char *const *names, size_t count, uint8 *dst, uint32 maxSize);
 
 void S9xPF94LoadGames (void)

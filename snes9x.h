@@ -343,6 +343,7 @@ struct SSettings
 	uint32	SuperFXClockMultiplier;
     int OverclockMode;
     int PF94TimerMinutes;
+    int PF94TimerDisplay;
 	int	OneClockCycle;
 	int	OneSlowClockCycle;
 	int	TwoClockCycles;

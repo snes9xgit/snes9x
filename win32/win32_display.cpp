@@ -11,6 +11,7 @@
 
 #include "../snes9x.h"
 #include "../ppu.h"
+#include "../memmap.h"
 #include "../font.h"
 #include "../sgb/sgb.h"
 #include <shellapi.h>
@@ -354,6 +355,17 @@ bool8 S9xContinueUpdate(int Width, int Height)
 // do the actual rendering of a frame
 bool8 S9xDeinitUpdate (int Width, int Height)
 {
+	if (PF94.active && Settings.PF94TimerDisplay == 2)
+	{
+		static int lastShownSecs = -2;
+		int secs = S9xPF94TimeRemaining();
+		if (secs != lastShownSecs)
+		{
+			lastShownSecs = secs;
+			S9xRestoreWindowTitle();
+		}
+	}
+
     Src.Width = Width;
 	Src.Height = Height;
     Src.Pitch = GFX.Pitch;
