@@ -4188,6 +4188,16 @@ void S9xSetEvent (uint8 Byte, uint32 Address)
 			PF94.timerStart = IPPU.TotalEmulatedFrames;
 		}
 		PF94MapGameWindow();
+
+		// Selecting a game whose ROM wasn't found leaves the program ROM in
+		// the window, so the launch stub's JML would land mid-data. Skip it
+		// and reboot the scoring program from its reset vector instead.
+		int id = 0;
+		if (Byte == 0x09)      id = 1;
+		else if (Byte == 0x0c) id = 2;
+		else if (Byte == 0x0a) id = 3;
+		if (id && !PF94.romSize[id])
+			S9xSetPCBase(0x008000);
 	}
 }
 
