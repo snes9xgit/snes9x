@@ -4104,8 +4104,73 @@ bool8 CMemory::match_id (const char *str)
 
 SPF94 PF94;
 
+// Campus Challenge '92 (EVENT-CC92). All four images are plain LoROM:
+//   $00-$1F:8000-FFFF  selected game (0x09=SMW, 0x05=F-Zero, 0x03=Pilotwings)
+//   $80-$9F:8000-FFFF  menu (Program), always mapped
+//   $20-$3F,$A0-$BF:8000-FFFF  DSP-1 (uPD7725), for Pilotwings
+//   $C0:0000 status read, $E0:0000 select write
+// SRAM ($70-$7D,$F0-$FF:0000-7FFF) is mapped once at detection.
+static void CC92MapGameWindow (void)
+{
+	int id = 0;
+	if (PF94.select == 0x09)      id = 1;
+	else if (PF94.select == 0x05) id = 2;
+	else if (PF94.select == 0x03) id = 3;
+	if (!PF94.romSize[id])
+		id = 0;
+
+	uint8	*game = Memory.ROM + PF94.romOff[id];
+	uint32	gmask = PF94.romSize[id] - 1;
+	uint8	*menu = Memory.ROM + PF94.romOff[0];
+	uint32	mmask = PF94.romSize[0] - 1;
+
+	for (uint32 bank = 0; bank <= 0x1f; bank++)
+	{
+		uint8 *gbase = game + ((bank << 15) & gmask) - 0x8000;
+		uint8 *mbase = menu + ((bank << 15) & mmask) - 0x8000;
+		for (uint32 blk = 8; blk <= 15; blk++)
+		{
+			uint32 lo = (bank << 4) | blk;   // $00-$1F: selected game
+			uint32 hi = lo + 0x800;          // $80-$9F: menu
+			Memory.Map[lo] = gbase;
+			Memory.Map[hi] = mbase;
+			Memory.WriteMap[lo] = Memory.WriteMap[hi] = (uint8 *) CMemory::MAP_NONE;
+			Memory.BlockIsROM[lo] = Memory.BlockIsROM[hi] = TRUE;
+			Memory.BlockIsRAM[lo] = Memory.BlockIsRAM[hi] = FALSE;
+		}
+	}
+
+	// DSP-1 window $20-$3F,$A0-$BF:8000-FFFF (M_DSP1_LOROM_S layout).
+	for (uint32 bank = 0x20; bank <= 0x3f; bank++)
+	{
+		for (uint32 blk = 8; blk <= 15; blk++)
+		{
+			uint32 lo = (bank << 4) | blk;   // $20-$3F
+			uint32 hi = lo + 0x800;          // $A0-$BF
+			Memory.Map[lo] = Memory.Map[hi] = (uint8 *) CMemory::MAP_DSP;
+			Memory.WriteMap[lo] = Memory.WriteMap[hi] = (uint8 *) CMemory::MAP_DSP;
+			Memory.BlockIsROM[lo] = Memory.BlockIsROM[hi] = FALSE;
+			Memory.BlockIsRAM[lo] = Memory.BlockIsRAM[hi] = FALSE;
+		}
+	}
+
+	// MCU registers: status read $C0:0000, select write $E0:0000.
+	Memory.Map[(0xC0 << 4) | 0]      = (uint8 *) CMemory::MAP_EVENT;
+	Memory.WriteMap[(0xC0 << 4) | 0] = (uint8 *) CMemory::MAP_NONE;
+	Memory.BlockIsROM[(0xC0 << 4) | 0] = Memory.BlockIsRAM[(0xC0 << 4) | 0] = FALSE;
+	Memory.Map[(0xE0 << 4) | 0]      = (uint8 *) CMemory::MAP_NONE;
+	Memory.WriteMap[(0xE0 << 4) | 0] = (uint8 *) CMemory::MAP_EVENT;
+	Memory.BlockIsROM[(0xE0 << 4) | 0] = Memory.BlockIsRAM[(0xE0 << 4) | 0] = FALSE;
+}
+
 static void PF94MapGameWindow (void)
 {
+	if (PF94.board == EVENT_BOARD_CC92)
+	{
+		CC92MapGameWindow();
+		return;
+	}
+
 	int id = 0;
 	if (PF94.select == 0x09)      id = 1;
 	else if (PF94.select == 0x0c) id = 2;
@@ -4165,6 +4230,17 @@ static void PF94MapGameWindow (void)
 
 uint8 S9xGetEvent (uint32 Address)
 {
+	// Campus Challenge '92: status register at $C0:0000 (only MAP_EVENT read).
+	if (PF94.board == EVENT_BOARD_CC92)
+	{
+		if (PF94.timerOn && (IPPU.TotalEmulatedFrames - PF94.timerStart) >= PF94.timerFrames)
+		{
+			PF94.timerOn = FALSE;
+			PF94.status |= 0x02;
+		}
+		return (PF94.status);
+	}
+
 	if ((Address & 0x7f0000) == 0x100000)
 	{
 		if (PF94.timerOn && (IPPU.TotalEmulatedFrames - PF94.timerStart) >= PF94.timerFrames)
@@ -4179,6 +4255,20 @@ uint8 S9xGetEvent (uint32 Address)
 
 void S9xSetEvent (uint8 Byte, uint32 Address)
 {
+	// Campus Challenge '92: select register at $E0:0000 (only MAP_EVENT write).
+	// 0x09=SMW (starts the session clock), 0x05=F-Zero, 0x03=Pilotwings.
+	if (PF94.board == EVENT_BOARD_CC92)
+	{
+		PF94.select = Byte;
+		if (Byte == 0x09 && !PF94.timerOn && !(PF94.status & 0x02))
+		{
+			PF94.timerOn = TRUE;
+			PF94.timerStart = IPPU.TotalEmulatedFrames;
+		}
+		PF94MapGameWindow();
+		return;
+	}
+
 	if ((Address & 0x7f0000) == 0x200000)
 	{
 		PF94.select = Byte;
@@ -4243,12 +4333,39 @@ int S9xPF94TimeRemaining (void)
 	return ((PF94.timerFrames - elapsed + fps - 1) / fps);
 }
 
+// The two event carts keep independent timer settings; these return the loaded
+// board's value (PowerFest '94 vs Campus Challenge '92), clamped to valid ranges.
+int S9xEventTimerMinutes (void)
+{
+	int m = (PF94.board == EVENT_BOARD_CC92) ? Settings.CC92TimerMinutes : Settings.PF94TimerMinutes;
+	return (m >= 3 && m <= 18) ? m : 6;
+}
+
+int S9xEventTimerDisplay (void)
+{
+	int d = (PF94.board == EVENT_BOARD_CC92) ? Settings.CC92TimerDisplay : Settings.PF94TimerDisplay;
+	return (d >= 0 && d <= 2) ? d : 0;
+}
+
 static uint32 PF94LoadAuxROM (const std::string &dir, const char *const *names, size_t count, uint8 *dst, uint32 maxSize);
 
 void S9xPF94LoadGames (void)
 {
 	if (!PF94.active)
 		return;
+
+	// Campus Challenge '92 is a single combined image (menu + 3 games already
+	// resident); there are no sibling ROMs to load. Just (re)arm the DSP-1 that
+	// Pilotwings uses, in the LoROM window the board maps it into.
+	if (PF94.board == EVENT_BOARD_CC92)
+	{
+		Settings.DSP = 1;
+		DSP0.boundary = 0xc000;
+		DSP0.maptype = M_DSP1_LOROM_S;
+		SetDSP = &DSP1SetByte;
+		GetDSP = &DSP1GetByte;
+		return;
+	}
 
 	std::string dir = Memory.ROMFilename;
 	size_t slash = dir.find_last_of("/\\");
@@ -4349,6 +4466,7 @@ void CMemory::ApplyROMFixes (void)
 	Settings.BlockInvalidVRAMAccess = Settings.BlockInvalidVRAMAccessMaster;
 
 	PF94.active = FALSE;
+	PF94.board  = EVENT_BOARD_PF94;
 
 	if (Settings.DisableGameSpecificHacks)
 		return;
@@ -4445,6 +4563,53 @@ void CMemory::ApplyROMFixes (void)
 		PF94.romSize[0] = CalculatedSize;
 
 		S9xPF94LoadGames();
+	}
+
+	// Nintendo Campus Challenge '92 (SNES-EVENT board) — the canonical combined
+	// cart image: 256KB menu (Program) + Super Mario World + F-Zero + Pilotwings
+	// (512KB each) = 0x1C0000. Identified by the menu's boot code at offset 0, its
+	// EVENT select write (STA $E00000 @ menu 0x6002), and the SMW segment header at
+	// 0x47FC0. Activates the EVENT-CC92 map: status $C0:0000, select $E0:0000, LoROM
+	// game window $00-$1F, menu forced $80-$9F, DSP-1 $20-$3F/$A0-$BF, board work
+	// RAM $70-$7D,$F0-$FF:0000-7FFF. select 0x09=SMW (starts the clock), 0x05=F-Zero,
+	// 0x03=Pilotwings.
+	static const uint8 cc92_boot[16] = { 0xA9, 0x00, 0x8F, 0x00, 0x00, 0xE0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
+	static const uint8 cc92_reset[16] = { 0x78, 0x18, 0xFB, 0xC2, 0x30, 0xA2, 0xFF, 0x1F, 0x9A, 0xA0, 0x00, 0x00, 0x5A, 0x2B, 0xCA, 0x74 };
+	if (memcmp(ROM, cc92_reset, 16) == 0 &&
+		memcmp(ROM + 0x6000, cc92_boot, 6) == 0 &&
+		memcmp(ROM + 0x47FC0, "SUPER MARIOWORLD", 16) == 0)
+	{
+		// Board work RAM (LoROM SRAM) at $70-$7D,$F0-$FD:0000-7FFF.
+		SRAMSize = 3;
+		SRAMMask = ((1 << (SRAMSize + 3)) * 128) - 1;
+		for (uint32 bank = 0x70; bank <= 0x7d; bank++)
+		{
+			for (uint32 blk = 0; blk <= 7; blk++)
+			{
+				uint32 i = (bank << 4) | blk;
+				Map[i] = Map[i + 0x800] = (uint8 *) MAP_LOROM_SRAM;
+				WriteMap[i] = WriteMap[i + 0x800] = (uint8 *) MAP_LOROM_SRAM;
+				BlockIsRAM[i] = BlockIsRAM[i + 0x800] = TRUE;
+				BlockIsROM[i] = BlockIsROM[i + 0x800] = FALSE;
+			}
+		}
+
+		PF94.active = TRUE;
+		PF94.board  = EVENT_BOARD_CC92;
+		PF94.select = 0;
+		PF94.status = 0;
+		PF94.timerOn = FALSE;
+		int cc92min = (Settings.CC92TimerMinutes >= 3 && Settings.CC92TimerMinutes <= 18) ? Settings.CC92TimerMinutes : 6;
+		PF94.timerFrames = cc92min * 60 * (Settings.PAL ? 50 : 60);
+		PF94.romOff[0] = 0x000000; PF94.romSize[0] = 0x40000;   // menu (Program)
+		PF94.romOff[1] = 0x040000; PF94.romSize[1] = 0x80000;   // Super Mario World
+		PF94.romOff[2] = 0x0C0000; PF94.romSize[2] = 0x80000;   // F-Zero
+		PF94.romOff[3] = 0x140000; PF94.romSize[3] = 0x80000;   // Pilotwings
+
+		S9xPF94LoadGames();   // CC92 branch arms the DSP-1
+		PF94MapGameWindow();  // CC92 branch builds the window / DSP / registers
+
+		printf("Nintendo Campus Challenge '92 board active (menu + SMW + F-Zero + Pilotwings).\n");
 	}
 
 	// PowerFest '94 - Super Mario Bros. - The Lost Levels (event cart sub-ROM),

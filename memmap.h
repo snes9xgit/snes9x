@@ -225,12 +225,19 @@ bool8 S9xSGBBIOSAvailable(uint8 mode, const char *gb_rom_path);
 // from the SNES/BS-X/Sufami load paths.
 bool S9xRomBytesAreGb(const uint8 *rom, int32 size);
 
-// PowerFest '94 (MX15001) event board: status/select registers, session timer,
-// board work-RAM and the four-image game window. Active only when the scoring
-// (master program) ROM is the loaded cart.
+// NEC uPD78214 SNES-EVENT board: status/select registers, session timer,
+// board work-RAM and the four-image game window. Shared by the two known
+// event carts, distinguished by SPF94::board:
+//   EVENT_BOARD_PF94 — PowerFest '94  (status $10:6000, select $20:6000)
+//   EVENT_BOARD_CC92 — Campus Challenge '92 (status $C0:0000, select $E0:0000)
+// Active only when the event cart (master program / combined image) is loaded.
+#define EVENT_BOARD_PF94	0
+#define EVENT_BOARD_CC92	1
+
 struct SPF94
 {
 	bool8	active;
+	uint8	board;
 	uint8	select, status;
 	bool8	timerOn;
 	uint32	timerStart, timerFrames;
@@ -245,6 +252,8 @@ void S9xPF94Reset (void);
 void S9xPF94PostLoadState (void);
 void S9xPF94LoadGames (void);
 int S9xPF94TimeRemaining (void);
+int S9xEventTimerMinutes (void);
+int S9xEventTimerDisplay (void);
 
 enum s9xwrap_t
 {
