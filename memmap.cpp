@@ -4207,6 +4207,63 @@ void S9xPF94PostLoadState (void)
 		PF94MapGameWindow();
 }
 
+static uint32 PF94LoadAuxROM (const std::string &dir, const char *const *names, size_t count, uint8 *dst, uint32 maxSize);
+
+void S9xPF94LoadGames (void)
+{
+	if (!PF94.active)
+		return;
+
+	std::string dir = Memory.ROMFilename;
+	size_t slash = dir.find_last_of("/\\");
+	dir = (slash == std::string::npos) ? "" : dir.substr(0, slash + 1);
+
+	static const char *ll_names[] =
+	{
+		"PowerFest 94 - Super Mario Bros. - The Lost Levels (USA).sfc",
+		"PowerFest 94 - Super Mario Bros. - The Lost Levels (USA).smc",
+		"PowerFest 94 - Super Mario Bros. - The Lost Levels (USA).zip",
+		"lost-levels.bin",
+	};
+	static const char *kart_names[] =
+	{
+		"PowerFest 94 - Super Mario Kart (USA).sfc",
+		"PowerFest 94 - Super Mario Kart (USA).smc",
+		"PowerFest 94 - Super Mario Kart (USA).zip",
+		"mario-kart.bin",
+	};
+	static const char *griffey_names[] =
+	{
+		"PowerFest 94 - Ken Griffey Jr Presents Major League Baseball (USA).sfc",
+		"PowerFest 94 - Ken Griffey Jr Presents Major League Baseball (USA).smc",
+		"PowerFest 94 - Ken Griffey Jr Presents Major League Baseball (USA).zip",
+		"PowerFest 94 - Ken Griffey Jr. Presents Major League Baseball (USA).sfc",
+		"PowerFest 94 - Ken Griffey Jr. Presents Major League Baseball (USA).zip",
+		"ken-griffey.bin",
+	};
+
+	PF94.romOff[1] = 0x400000;
+	PF94.romSize[1] = PF94LoadAuxROM(dir, ll_names, sizeof(ll_names) / sizeof(*ll_names), Memory.ROM + 0x400000, 0x100000);
+	PF94.romOff[2] = 0x600000;
+	PF94.romSize[2] = PF94LoadAuxROM(dir, kart_names, sizeof(kart_names) / sizeof(*kart_names), Memory.ROM + 0x600000, 0x100000);
+	PF94.romOff[3] = 0x700000;
+	PF94.romSize[3] = PF94LoadAuxROM(dir, griffey_names, sizeof(griffey_names) / sizeof(*griffey_names), Memory.ROM + 0x700000, 0x100000);
+
+	if (PF94.romSize[2])
+	{
+		Settings.DSP = 1;
+		DSP0.boundary = 0x7000;
+		DSP0.maptype = M_DSP1_HIROM;
+		SetDSP = &DSP1SetByte;
+		GetDSP = &DSP1GetByte;
+	}
+
+	printf("PowerFest '94 board active: Lost Levels %s, Mario Kart %s, Ken Griffey %s\n",
+		PF94.romSize[1] ? "ok" : "missing",
+		PF94.romSize[2] ? "ok" : "missing",
+		PF94.romSize[3] ? "ok" : "missing");
+}
+
 static uint32 PF94LoadAuxROM (const std::string &dir, const char *const *names, size_t count, uint8 *dst, uint32 maxSize)
 {
 	for (size_t i = 0; i < count; i++)
@@ -4351,54 +4408,7 @@ void CMemory::ApplyROMFixes (void)
 		PF94.romOff[0] = 0;
 		PF94.romSize[0] = CalculatedSize;
 
-		std::string dir = ROMFilename;
-		size_t slash = dir.find_last_of("/\\");
-		dir = (slash == std::string::npos) ? "" : dir.substr(0, slash + 1);
-
-		static const char *ll_names[] =
-		{
-			"PowerFest 94 - Super Mario Bros. - The Lost Levels (USA).sfc",
-			"PowerFest 94 - Super Mario Bros. - The Lost Levels (USA).smc",
-			"PowerFest 94 - Super Mario Bros. - The Lost Levels (USA).zip",
-			"lost-levels.bin",
-		};
-		static const char *kart_names[] =
-		{
-			"PowerFest 94 - Super Mario Kart (USA).sfc",
-			"PowerFest 94 - Super Mario Kart (USA).smc",
-			"PowerFest 94 - Super Mario Kart (USA).zip",
-			"mario-kart.bin",
-		};
-		static const char *griffey_names[] =
-		{
-			"PowerFest 94 - Ken Griffey Jr Presents Major League Baseball (USA).sfc",
-			"PowerFest 94 - Ken Griffey Jr Presents Major League Baseball (USA).smc",
-			"PowerFest 94 - Ken Griffey Jr Presents Major League Baseball (USA).zip",
-			"PowerFest 94 - Ken Griffey Jr. Presents Major League Baseball (USA).sfc",
-			"PowerFest 94 - Ken Griffey Jr. Presents Major League Baseball (USA).zip",
-			"ken-griffey.bin",
-		};
-
-		PF94.romOff[1] = 0x400000;
-		PF94.romSize[1] = PF94LoadAuxROM(dir, ll_names, sizeof(ll_names) / sizeof(*ll_names), ROM + 0x400000, 0x100000);
-		PF94.romOff[2] = 0x600000;
-		PF94.romSize[2] = PF94LoadAuxROM(dir, kart_names, sizeof(kart_names) / sizeof(*kart_names), ROM + 0x600000, 0x100000);
-		PF94.romOff[3] = 0x700000;
-		PF94.romSize[3] = PF94LoadAuxROM(dir, griffey_names, sizeof(griffey_names) / sizeof(*griffey_names), ROM + 0x700000, 0x100000);
-
-		if (PF94.romSize[2])
-		{
-			Settings.DSP = 1;
-			DSP0.boundary = 0x7000;
-			DSP0.maptype = M_DSP1_HIROM;
-			SetDSP = &DSP1SetByte;
-			GetDSP = &DSP1GetByte;
-		}
-
-		printf("PowerFest '94 board active: Lost Levels %s, Mario Kart %s, Ken Griffey %s\n",
-			PF94.romSize[1] ? "ok" : "missing",
-			PF94.romSize[2] ? "ok" : "missing",
-			PF94.romSize[3] ? "ok" : "missing");
+		S9xPF94LoadGames();
 	}
 
 	// PowerFest '94 - Super Mario Bros. - The Lost Levels (event cart sub-ROM),

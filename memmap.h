@@ -243,6 +243,7 @@ uint8 S9xGetEvent (uint32 Address);
 void S9xSetEvent (uint8 Byte, uint32 Address);
 void S9xPF94Reset (void);
 void S9xPF94PostLoadState (void);
+void S9xPF94LoadGames (void);
 
 enum s9xwrap_t
 {
