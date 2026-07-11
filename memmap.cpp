@@ -4110,8 +4110,10 @@ void CMemory::ApplyROMFixes (void)
 		return;
 
 	// APU timing hacks
+	// 3 breaks the menu (snes9xgit/snes9x#563): the CGRAM upload races the
+	// game's own HDMA-disable and the armed CGADD HDMA folds the palette.
 	if (match_na("CIRCUIT USA"))
-		Timings.APUSpeedup = 3;
+		Timings.APUSpeedup = 2;
 
 	S9xAPUTimingSetSpeedup(Timings.APUSpeedup);
 
