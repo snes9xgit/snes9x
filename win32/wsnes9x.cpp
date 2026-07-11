@@ -6776,6 +6776,20 @@ INT_PTR CALLBACK DlgEmulatorHacksProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM
         CheckDlgButton(hDlg, IDC_NO_SPRITE_LIMIT, Settings.MaxSpriteTilesPerLine == 128);
         CheckDlgButton(hDlg, IDC_ALLOW_EXE_ICON, GUI.ExeIconRewriteOK);
 
+        {
+            TCHAR pf94buf[16];
+            for (int m = 3; m <= 18; m++)
+            {
+                _sntprintf(pf94buf, 16, TEXT("%d minutes"), m);
+                SendDlgItemMessage(hDlg, IDC_PF94_TIME, CB_ADDSTRING, 0, (LPARAM)pf94buf);
+            }
+            int pf94min = (Settings.PF94TimerMinutes >= 3 && Settings.PF94TimerMinutes <= 18) ? Settings.PF94TimerMinutes : 6;
+            SendDlgItemMessage(hDlg, IDC_PF94_TIME, CB_SETCURSEL, pf94min - 3, 0);
+        }
+        ShowWindow(GetDlgItem(hDlg, IDC_PF94_TIME), PF94.active ? SW_SHOW : SW_HIDE);
+        ShowWindow(GetDlgItem(hDlg, IDC_PF94_TIME_LABEL), PF94.active ? SW_SHOW : SW_HIDE);
+        CreateToolTip(IDC_PF94_TIME, hDlg, TEXT("Session length for the PowerFest '94 competition\ncart (the board's DIP switches, 3-18 minutes).\nTakes effect immediately, even mid-session."));
+
         CreateToolTip(IDC_ALLOW_EXE_ICON, hDlg, TEXT("When checked, choosing a logo also overwrites\nthe icon embedded in the SuperSnes9x .exe on disk,\nso it shows in Explorer, on shortcuts and the\ntaskbar. SuperSnes9x will restart to apply.\nWhen unchecked, only the in-app icon changes."));
 
         return true;
@@ -6803,6 +6817,10 @@ INT_PTR CALLBACK DlgEmulatorHacksProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM
             Settings.SeparateEchoBuffer = IsDlgButtonChecked(hDlg, IDC_SEPARATE_ECHO_BUFFER);
             Settings.MaxSpriteTilesPerLine = IsDlgButtonChecked(hDlg, IDC_NO_SPRITE_LIMIT) ? 128 : 34;
             GUI.ExeIconRewriteOK = IsDlgButtonChecked(hDlg, IDC_ALLOW_EXE_ICON);
+
+            Settings.PF94TimerMinutes = 3 + (int)SendDlgItemMessage(hDlg, IDC_PF94_TIME, CB_GETCURSEL, 0, 0);
+            if (PF94.active)
+                PF94.timerFrames = Settings.PF94TimerMinutes * 60 * (Settings.PAL ? 50 : 60);
 
             switch (Settings.OverclockMode)
             {
@@ -6844,6 +6862,7 @@ INT_PTR CALLBACK DlgEmulatorHacksProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM
 			CheckDlgButton(hDlg, IDC_SEPARATE_ECHO_BUFFER, false);
 			CheckDlgButton(hDlg, IDC_NO_SPRITE_LIMIT, false);
 			CheckDlgButton(hDlg, IDC_ALLOW_EXE_ICON, false);
+			SendDlgItemMessage(hDlg, IDC_PF94_TIME, CB_SETCURSEL, 3, 0);
 			break;
         default:
             break;

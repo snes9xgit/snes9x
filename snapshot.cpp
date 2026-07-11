@@ -975,6 +975,18 @@ static FreezeData	SnapMSU1[] =
 };
 
 #undef STRUCT
+#define STRUCT	struct SPF94
+
+static FreezeData	SnapPF94[] =
+{
+	INT_ENTRY(12, select),
+	INT_ENTRY(12, status),
+	INT_ENTRY(12, timerOn),
+	INT_ENTRY(12, timerStart),
+	INT_ENTRY(12, timerFrames)
+};
+
+#undef STRUCT
 #define STRUCT	struct SnapshotScreenshotInfo
 
 static FreezeData	SnapScreenshot[] =
@@ -1310,6 +1322,9 @@ void S9xFreezeToStream (STREAM stream)
 	if (Settings.MSU1)
 		FreezeStruct(stream, "MSU", &MSU1, SnapMSU1, COUNT(SnapMSU1));
 
+	if (PF94.active)
+		FreezeStruct(stream, "PF9", &PF94, SnapPF94, COUNT(SnapPF94));
+
 	// SGB BIOS mode: piggyback the GB/SGB blob inside the SNES snapshot.
 	// The blob is self-versioning ("SGB!" magic + version + size); we just
 	// hand the raw bytes to FreezeBlock. Without this, BIOS-mode loads
@@ -1428,6 +1443,7 @@ int S9xUnfreezeFromStream (STREAM stream)
 	uint8	*local_rtc_data      = NULL;
 	uint8	*local_bsx_data      = NULL;
 	uint8	*local_msu1_data     = NULL;
+	uint8	*local_pf94_data     = NULL;
 	uint8	*local_gbe_data      = NULL;
 	int		local_gbe_size       = 0;
 	uint8	*local_screenshot    = NULL;
@@ -1570,6 +1586,8 @@ int S9xUnfreezeFromStream (STREAM stream)
 		result = UnfreezeStructCopy(stream, "MSU", &local_msu1_data, SnapMSU1, COUNT(SnapMSU1), version);
 		if (result != SUCCESS && Settings.MSU1)
 			break;
+
+		UnfreezeStructCopy(stream, "PF9", &local_pf94_data, SnapPF94, COUNT(SnapPF94), version);
 
 		// Optional GB/SGB blob — present iff the snapshot was taken in
 		// BIOS mode (Settings.SGB_BIOSModeActive). Old snapshots and
@@ -1747,6 +1765,9 @@ int S9xUnfreezeFromStream (STREAM stream)
 		if (local_msu1_data)
 			UnfreezeStructFromCopy(&MSU1, SnapMSU1, COUNT(SnapMSU1), local_msu1_data, version);
 
+		if (local_pf94_data)
+			UnfreezeStructFromCopy(&PF94, SnapPF94, COUNT(SnapPF94), local_pf94_data, version);
+
 		// Restore the GB/SGB state if the snapshot was taken in BIOS
 		// mode. Without this, the SNES side is rewound to save time but
 		// the GB stays at its current runtime state — packet handshake
@@ -1851,6 +1872,9 @@ int S9xUnfreezeFromStream (STREAM stream)
 		if (local_msu1_data)
 			S9xMSU1PostLoadState();
 
+		if (local_pf94_data)
+			S9xPF94PostLoadState();
+
 		if (local_movie_data)
 		{
 			// restore last displayed pad_read status
@@ -1943,6 +1967,7 @@ int S9xUnfreezeFromStream (STREAM stream)
 	if (local_bsx_data)			delete [] local_bsx_data;
 	if (local_screenshot)		delete [] local_screenshot;
 	if (local_movie_data)		delete [] local_movie_data;
+	if (local_pf94_data)		delete [] local_pf94_data;
 	if (local_gbe_data)			delete [] local_gbe_data;
 
 	return (result);
@@ -1999,6 +2024,7 @@ int S9xUnfreezeScreenshotFromStream(STREAM stream, uint16 **image_buffer, int &w
     SkipBlockWithName(stream, "CLK");
     SkipBlockWithName(stream, "BSX");
     SkipBlockWithName(stream, "MSU");
+    SkipBlockWithName(stream, "PF9");
     // GBE — optional SGB BIOS-mode GB/SGB state blob (see S9xFreezeToStream).
     // Sits between MSU and SHO when present; absent on non-SGB snapshots and
     // on BIOS-less mode. SkipBlockWithName rewinds on mismatch, so it's safe

@@ -115,6 +115,7 @@ void S9xReset (void)
 	memset(Memory.FillRAM, 0, 0x8000);
 
 	S9xResetBSX();
+	S9xPF94Reset();
 	S9xResetCPU();
 	S9xResetPPU();
 	S9xResetDMA();
@@ -253,6 +254,8 @@ void S9xSoftReset (void)
 
 	if (Settings.BS)
 		S9xResetBSX();
+
+	S9xPF94Reset();
 
 	S9xSoftResetCPU();
 	S9xSoftResetPPU();

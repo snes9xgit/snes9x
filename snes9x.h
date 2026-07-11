@@ -342,6 +342,7 @@ struct SSettings
     bool8   SeparateEchoBuffer;
 	uint32	SuperFXClockMultiplier;
     int OverclockMode;
+    int PF94TimerMinutes;
 	int	OneClockCycle;
 	int	OneSlowClockCycle;
 	int	TwoClockCycles;
