@@ -4191,13 +4191,21 @@ void S9xSetEvent (uint8 Byte, uint32 Address)
 
 		// Selecting a game whose ROM wasn't found leaves the program ROM in
 		// the window, so the launch stub's JML would land mid-data. Skip it
-		// and reboot the scoring program from its reset vector instead.
+		// and reboot the scoring program from its reset vector instead. That
+		// returns to the start of the session, so clear the timer (disarm +
+		// drop time-over) so the menu's next launch gets a fresh full clock.
 		int id = 0;
 		if (Byte == 0x09)      id = 1;
 		else if (Byte == 0x0c) id = 2;
 		else if (Byte == 0x0a) id = 3;
 		if (id && !PF94.romSize[id])
+		{
+			PF94.select = 0;
+			PF94.status = 0;
+			PF94.timerOn = FALSE;
+			PF94MapGameWindow();
 			S9xSetPCBase(0x008000);
+		}
 	}
 }
 
