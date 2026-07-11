@@ -6809,6 +6809,33 @@ INT_PTR CALLBACK DlgEmulatorHacksProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM
 
         CreateToolTip(IDC_ALLOW_EXE_ICON, hDlg, TEXT("When checked, choosing a logo also overwrites\nthe icon embedded in the SuperSnes9x .exe on disk,\nso it shows in Explorer, on shortcuts and the\ntaskbar. SuperSnes9x will restart to apply.\nWhen unchecked, only the in-app icon changes."));
 
+        // The two PowerFest '94 rows only show when that board is loaded.
+        // When they're hidden, collapse the space they'd occupy: move the
+        // bottom buttons up and shrink the dialog by their combined height
+        // (36 dialog units = the two 18-unit rows added to the layout).
+        if (!PF94.active)
+        {
+            RECT dlu = { 0, 0, 0, 36 };
+            MapDialogRect(hDlg, &dlu);
+            int dy = dlu.bottom;
+
+            const int buttons[] = { IDOK, IDCANCEL, IDC_SET_DEFAULTS };
+            for (int i = 0; i < 3; i++)
+            {
+                HWND h = GetDlgItem(hDlg, buttons[i]);
+                RECT rc;
+                GetWindowRect(h, &rc);
+                POINT p = { rc.left, rc.top };
+                ScreenToClient(hDlg, &p);
+                SetWindowPos(h, NULL, p.x, p.y - dy, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
+            }
+
+            RECT wr;
+            GetWindowRect(hDlg, &wr);
+            SetWindowPos(hDlg, NULL, 0, 0, wr.right - wr.left, wr.bottom - wr.top - dy,
+                         SWP_NOMOVE | SWP_NOZORDER);
+        }
+
         return true;
         break;
 
