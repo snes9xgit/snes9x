@@ -2698,6 +2698,24 @@ void CMemory::InitROM (void)
 
 	ParseSNESHeader(RomHeader);
 
+	// NFL Football (Europe) (Proto) - Sculptured Software, board SHVC-4PV5B-01
+	// (LoROM, 256Kbit battery SRAM, PAL-only). The proto ships a junk internal
+	// header, so auto-detection maps it LoROM with a garbage SRAM size; the game
+	// reads open bus / wrapped save RAM and runs off the rails - glitched menus,
+	// black in-game, crashes. Pin the real board: 32KB SRAM + PAL region.
+	static const uint8	nfl_boot[16] =
+		{ 0x5C, 0x92, 0x81, 0x81, 0x78, 0x18, 0xFB, 0xD8, 0x5C, 0x0C, 0x80, 0x80, 0xC2, 0x30, 0x5C, 0x78 };
+	if (CalculatedSize == 0x200000 &&
+		memcmp(ROM, nfl_boot, sizeof(nfl_boot)) == 0 &&
+		memcmp(ROM + 0x7FC0, "SDEBUG1", 7) == 0)
+	{
+		ROMType   = 0x00;
+		ROMSpeed  = 0x20;
+		ROMSize   = 0x0B;
+		SRAMSize  = 5;
+		ROMRegion = 2;
+	}
+
 	//// Detect and initialize chips
 	//// detection codes are compatible with NSRT
 
