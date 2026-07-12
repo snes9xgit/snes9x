@@ -1750,6 +1750,15 @@ uint8 S9xGetCPU (uint16 Address)
 				return ((byte & 0x80) | (OpenBus & 0x70) | Model->_5A22);
 
 			case 0x4211: // TIMEUP
+				// The main loop only latches CPU.IRQLine at opcode boundaries, so a $4211 read landing after the
+				// H/V-timer trigger cycle but before that boundary would miss the IRQ; latch it here as hardware would
+				// (Traverse: Starlight & Prairie polls $4210 as a 16-bit read and waits on this flag in bit 15).
+				if (!CPU.IRQLine && Timings.NextIRQTimer != 0x0fffffff &&
+					CPU.Cycles >= Timings.NextIRQTimer)
+				{
+					S9xUpdateIRQPositions(false);
+					CPU.IRQLine = TRUE;
+				}
 				byte = 0;
 				if (CPU.IRQLine)
 				{
