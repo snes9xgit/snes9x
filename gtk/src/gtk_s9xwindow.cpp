@@ -27,6 +27,8 @@
 #include "gtk_control.h"
 #include "gtk_cheat.h"
 #include "gtk_netplay.h"
+#include "gtk_retroachievements.h"
+#include "retroachievements.h"
 #include "gtk_s9xwindow.h"
 
 #include "fmt/format.h"
@@ -167,10 +169,16 @@ void Snes9xWindow::connect_signals()
 
     get_object<Gtk::MenuItem>("reset_item")->signal_activate().connect([&] {
         S9xSoftReset();
+#ifdef RETROACHIEVEMENTS_SUPPORT
+        RA_OnReset();
+#endif
     });
 
     get_object<Gtk::MenuItem>("hard_reset_item")->signal_activate().connect([&] {
         S9xReset();
+#ifdef RETROACHIEVEMENTS_SUPPORT
+        RA_OnReset();
+#endif
     });
 
     auto reload_with_bios_pref = [&](uint8_t pref) {
@@ -209,6 +217,10 @@ void Snes9xWindow::connect_signals()
     {
         std::string name = "load_state_" + std::to_string(i);
         get_object<Gtk::MenuItem>(name.c_str())->signal_activate().connect([i] {
+#ifdef RETROACHIEVEMENTS_SUPPORT
+            if (!RA_WarnDisableHardcore(_("Loading save states")))
+                return;
+#endif
             S9xQuickLoadSlot(i);
         });
         name = "save_state_" + std::to_string(i);
@@ -291,6 +303,60 @@ void Snes9xWindow::connect_signals()
     get_object<Gtk::MenuItem>("open_multicart_item")->signal_activate().connect([&] {
         open_multicart_dialog();
     });
+
+#ifdef RETROACHIEVEMENTS_SUPPORT
+    get_object<Gtk::CheckMenuItem>("ra_enabled_item")->set_active(gui_config->ra_enabled);
+    get_object<Gtk::CheckMenuItem>("ra_enabled_item")->signal_toggled().connect([this] {
+        bool checked = get_object<Gtk::CheckMenuItem>("ra_enabled_item")->get_active();
+        gui_config->ra_enabled = checked;
+        gui_config->save_config_file();
+        RA_SetEnabled(checked);
+        if (checked)
+        {
+            RA_Gtk_RegisterCallbacks();
+            RA_Init();
+            RA_SetHardcoreEnabled(gui_config->ra_hardcore_mode);
+            RA_AttemptLogin(gui_config->ra_username.c_str(), gui_config->ra_api_token.c_str());
+            if (gui_config->rom_loaded)
+                RA_OnLoadROM();
+        }
+        else
+        {
+            RA_Shutdown();
+        }
+    });
+
+    get_object<Gtk::MenuItem>("ra_login_item")->signal_activate().connect([this] {
+        RA_Gtk_RegisterCallbacks();
+        RA_Init();
+        if (RA_IsLoggedIn())
+        {
+            RA_Logout();
+            get_object<Gtk::MenuItem>("ra_login_item")->set_label(_("_Login..."));
+        }
+        else
+        {
+            RA_ShowLoginDialog();
+        }
+    });
+
+    get_object<Gtk::CheckMenuItem>("ra_hardcore_item")->set_active(gui_config->ra_hardcore_mode);
+    get_object<Gtk::CheckMenuItem>("ra_hardcore_item")->signal_toggled().connect([this] {
+        bool checked = get_object<Gtk::CheckMenuItem>("ra_hardcore_item")->get_active();
+        gui_config->ra_hardcore_mode = checked;
+        RA_SetHardcoreEnabled(checked);
+    });
+
+    get_object<Gtk::MenuItem>("ra_achievement_list_item")->signal_activate().connect([] {
+        RA_ShowAchievementList();
+    });
+
+    // Stored credentials imply we auto-login at startup; reflect that in the label.
+    if (!gui_config->ra_username.empty() && !gui_config->ra_api_token.empty())
+        get_object<Gtk::MenuItem>("ra_login_item")->set_label(_("_Logout"));
+#else
+    get_object<Gtk::Widget>("retroachievements_menu_item")->hide();
+#endif
 }
 
 bool Snes9xWindow::button_press(GdkEventButton *event)
@@ -753,7 +819,18 @@ void Snes9xWindow::load_state_dialog()
     dialog.hide();
     if (result == Gtk::RESPONSE_ACCEPT)
     {
-        S9xLoadState(dialog.get_filename());
+#ifdef RETROACHIEVEMENTS_SUPPORT
+        if (!RA_WarnDisableHardcore(_("Loading save states")))
+        {
+            unpause_from_focus_change();
+            return;
+        }
+#endif
+        std::string filename = dialog.get_filename();
+        S9xLoadState(filename.c_str());
+#ifdef RETROACHIEVEMENTS_SUPPORT
+        RA_OnLoadState(filename.c_str());
+#endif
     }
 
     unpause_from_focus_change();
@@ -813,7 +890,13 @@ void Snes9xWindow::save_state_dialog()
     dialog.hide();
 
     if (result == GTK_RESPONSE_ACCEPT)
-        S9xSaveState(dialog.get_filename());
+    {
+        std::string filename = dialog.get_filename();
+        S9xSaveState(filename.c_str());
+#ifdef RETROACHIEVEMENTS_SUPPORT
+        RA_OnSaveState(filename.c_str());
+#endif
+    }
 
     unpause_from_focus_change();
 }

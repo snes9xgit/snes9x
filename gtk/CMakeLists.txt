@@ -153,6 +153,54 @@ list(APPEND SOURCES ../external/imgui/imgui.cpp
 ../external/imgui/snes9x_imgui.cpp)
 list(APPEND INCLUDES ../external/imgui)
 
+# RetroAchievements support (shared core + rcheevos + GTK platform layer).
+# Mirrors qt/CMakeLists.txt so both frontends share the same core + config keys.
+pkg_check_modules(CURL REQUIRED libcurl)
+list(APPEND ARGS ${CURL_CFLAGS})
+list(APPEND LIBS ${CURL_LIBRARIES})
+list(APPEND DEFINES RETROACHIEVEMENTS_SUPPORT RC_DISABLE_LUA RC_CLIENT_SUPPORTS_HASH)
+list(APPEND INCLUDES ../external/rcheevos/include ../external/stb)
+# The RA core badge decoder needs the stb_image implementation TU. USE_SLANG
+# already compiles it (for Vulkan); only add it here when that path is off.
+if(NOT USE_SLANG)
+    list(APPEND SOURCES ../external/stb/stb_image_implementation.cpp)
+endif()
+list(APPEND SOURCES
+    src/gtk_retroachievements.cpp
+    src/gtk_retroachievements.h
+    ../retroachievements.cpp
+    ../external/rcheevos/src/rc_client.c
+    ../external/rcheevos/src/rc_compat.c
+    ../external/rcheevos/src/rc_util.c
+    ../external/rcheevos/src/rc_version.c
+    ../external/rcheevos/src/rcheevos/alloc.c
+    ../external/rcheevos/src/rcheevos/condition.c
+    ../external/rcheevos/src/rcheevos/condset.c
+    ../external/rcheevos/src/rcheevos/consoleinfo.c
+    ../external/rcheevos/src/rcheevos/format.c
+    ../external/rcheevos/src/rcheevos/lboard.c
+    ../external/rcheevos/src/rcheevos/memref.c
+    ../external/rcheevos/src/rcheevos/operand.c
+    ../external/rcheevos/src/rcheevos/rc_validate.c
+    ../external/rcheevos/src/rcheevos/richpresence.c
+    ../external/rcheevos/src/rcheevos/runtime.c
+    ../external/rcheevos/src/rcheevos/runtime_progress.c
+    ../external/rcheevos/src/rcheevos/trigger.c
+    ../external/rcheevos/src/rcheevos/value.c
+    ../external/rcheevos/src/rapi/rc_api_common.c
+    ../external/rcheevos/src/rapi/rc_api_editor.c
+    ../external/rcheevos/src/rapi/rc_api_info.c
+    ../external/rcheevos/src/rapi/rc_api_runtime.c
+    ../external/rcheevos/src/rapi/rc_api_user.c
+    ../external/rcheevos/src/rhash/hash.c
+    ../external/rcheevos/src/rhash/hash_disc.c
+    ../external/rcheevos/src/rhash/hash_encrypted.c
+    ../external/rcheevos/src/rhash/hash_rom.c
+    ../external/rcheevos/src/rhash/hash_zip.c
+    ../external/rcheevos/src/rhash/aes.c
+    ../external/rcheevos/src/rhash/cdreader.c
+    ../external/rcheevos/src/rhash/md5.c)
+
 if(USE_WAYLAND)
     pkg_check_modules(WAYLAND REQUIRED wayland-client wayland-egl)
     list(APPEND DEFINES "USE_WAYLAND")
