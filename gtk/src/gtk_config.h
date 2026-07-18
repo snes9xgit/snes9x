@@ -118,6 +118,13 @@ class Snes9xConfig
     bool netplay_activated;
     bool netplay_server_up;
 
+    /* RetroAchievements */
+    bool ra_enabled;
+    bool ra_hardcore_mode;
+    std::string ra_username;
+    std::string ra_api_token;
+    std::string ra_emulator_name;
+
     /* Operational */
     std::vector<std::string> sound_drivers;
     std::vector<std::string> display_drivers;

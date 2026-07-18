@@ -150,6 +150,11 @@ int Snes9xConfig::load_defaults()
     netplay_last_rom.clear();
     netplay_last_host.clear();
     netplay_last_port = 6096;
+    ra_enabled = false;
+    ra_hardcore_mode = false;
+    ra_username.clear();
+    ra_api_token.clear();
+    ra_emulator_name = "SuperSnes9x";
     modal_dialogs = true;
     current_save_slot = 0;
     S9xCheatsEnable();
@@ -327,6 +332,15 @@ int Snes9xConfig::save_config_file()
     outint("LastUsedPort", netplay_last_port);
     outstring("LastUsedROM", netplay_last_rom);
     outstring("LastUsedHost", netplay_last_host);
+
+    // Key names match the win32 (wconfig.cpp) and Qt (EmuConfig.cpp) configs so a
+    // shared install reads/writes the same RetroAchievements credentials.
+    section = "RetroAchievements";
+    outbool("Enabled", ra_enabled);
+    outbool("HardcoreMode", ra_hardcore_mode);
+    outstring("Username", ra_username);
+    outstring("ApiToken", ra_api_token);
+    outstring("EmulatorName", ra_emulator_name);
 
     section = "Behavior";
     outbool("PauseEmulationWhenFocusLost", pause_emulation_on_switch);
@@ -560,6 +574,13 @@ int Snes9xConfig::load_config_file()
     instr("LastUsedROM", netplay_last_rom);
     instr("LastUsedHost", netplay_last_host);
 
+    section = "RetroAchievements";
+    inbool("Enabled", ra_enabled);
+    inbool("HardcoreMode", ra_hardcore_mode);
+    instr("Username", ra_username);
+    instr("ApiToken", ra_api_token);
+    instr("EmulatorName", ra_emulator_name);
+
     section = "Behavior";
     inbool("PauseEmulationWhenFocusLost", pause_emulation_on_switch);
     inint("DefaultESCKeyBehavior", default_esc_behavior);
@@ -664,6 +685,10 @@ int Snes9xConfig::load_config_file()
 
     if (default_esc_behavior != ESC_TOGGLE_MENUBAR)
         fullscreen = false;
+
+    // The RA-registered emulator name must be non-empty (drives the User-Agent).
+    if (ra_emulator_name.empty())
+        ra_emulator_name = "SuperSnes9x";
 
 #ifdef USE_HQ2X
     if (scale_method >= NUM_FILTERS)

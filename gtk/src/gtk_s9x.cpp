@@ -14,6 +14,8 @@
 #include "gtk_sound.h"
 #include "gtk_display.h"
 #include "gtk_netplay.h"
+#include "gtk_retroachievements.h"
+#include "retroachievements.h"
 #include "statemanager.h"
 #include "background_particles.h"
 #include "snes9x.h"
@@ -125,6 +127,17 @@ int main(int argc, char *argv[])
     gui_config->rebind_keys();
     top_level->update_accelerators();
 
+#ifdef RETROACHIEVEMENTS_SUPPORT
+    if (gui_config->ra_enabled)
+    {
+        RA_Gtk_RegisterCallbacks();
+        RA_Init();
+        RA_SetEnabled(true);
+        RA_SetHardcoreEnabled(gui_config->ra_hardcore_mode);
+        RA_AttemptLogin(gui_config->ra_username.c_str(), gui_config->ra_api_token.c_str());
+    }
+#endif
+
     Settings.Paused = true;
     S9xNoROMLoaded();
 
@@ -156,6 +169,9 @@ int S9xOpenROM(const char *rom_filename)
     if (gui_config->rom_loaded)
     {
         S9xAutoSaveSRAM();
+#ifdef RETROACHIEVEMENTS_SUPPORT
+        RA_OnCloseROM();
+#endif
     }
 
     S9xNetplayDisconnect();
@@ -208,6 +224,10 @@ void S9xROMLoaded()
     gui_config->rom_loaded = true;
     top_level->configure_widgets();
 
+#ifdef RETROACHIEVEMENTS_SUPPORT
+    RA_OnLoadROM();
+#endif
+
     if (gui_config->full_screen_on_open)
     {
         Settings.Paused = false;
@@ -219,6 +239,9 @@ void S9xROMLoaded()
 
 void S9xNoROMLoaded()
 {
+#ifdef RETROACHIEVEMENTS_SUPPORT
+    RA_OnCloseROM();
+#endif
     S9xSoundStop();
     gui_config->rom_loaded = false;
     S9xDisplayRefresh();
@@ -329,6 +352,10 @@ static void game_loop()
             Settings.Mute &= ~0x80;
 
         S9xMainLoop();
+
+#ifdef RETROACHIEVEMENTS_SUPPORT
+        RA_DoFrame();
+#endif
 
         S9xNetplayPop();
     }
@@ -587,6 +614,10 @@ static void check_pointer_timer()
 void S9xExit()
 {
     gui_config->save_config_file();
+
+#ifdef RETROACHIEVEMENTS_SUPPORT
+    RA_Shutdown();
+#endif
 
     top_level->leave_fullscreen_mode();
 
