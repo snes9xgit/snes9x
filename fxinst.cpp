@@ -11,6 +11,15 @@
 // Set this define if you wish the plot instruction to check for y-pos limits (I don't think it's nessecary)
 #define CHECK_LIMITS
 
+// Cycle-accurate GSU timing state (see fxinst.h)
+uint32	g_gsuCycles    = 0;
+uint32	g_gsuCacheMask = 0;
+uint32	g_gsuCostCache = 1;
+uint32	g_gsuCostMem   = 5;
+uint32	g_gsuCostFmult = 7;
+uint32	g_gsuCostMult  = 2;
+uint8	g_gsuCycleMode = 1;
+
 
 /*
  Codes used:
@@ -393,6 +402,7 @@ static void fx_with_r15 (void)
 
 // 30-3b - stw (rn) - store word
 #define FX_STW(reg) \
+	FX_CYC(g_gsuCostMem << 1); \
 	GSU.vLastRamAdr = GSU.avReg[reg]; \
 	RAM(GSU.avReg[reg]) = (uint8) SREG; \
 	RAM(GSU.avReg[reg] ^ 1) = (uint8) (SREG >> 8); \
@@ -461,6 +471,7 @@ static void fx_stw_r11 (void)
 
 // 30-3b (ALT1) - stb (rn) - store byte
 #define FX_STB(reg) \
+	FX_CYC(g_gsuCostMem); \
 	GSU.vLastRamAdr = GSU.avReg[reg]; \
 	RAM(GSU.avReg[reg]) = (uint8) SREG; \
 	CLRFLAGS; \
@@ -564,6 +575,7 @@ static void fx_alt3 (void)
 
 // 40-4b - ldw (rn) - load word from RAM
 #define FX_LDW(reg) \
+	FX_CYC(g_gsuCostMem << 1); \
 	uint32	v; \
 	GSU.vLastRamAdr = GSU.avReg[reg]; \
 	v = (uint32) RAM(GSU.avReg[reg]); \
@@ -635,6 +647,7 @@ static void fx_ldw_r11 (void)
 
 // 40-4b (ALT1) - ldb (rn) - load byte
 #define FX_LDB(reg) \
+	FX_CYC(g_gsuCostMem); \
 	uint32	v; \
 	GSU.vLastRamAdr = GSU.avReg[reg]; \
 	v = (uint32) RAM(GSU.avReg[reg]); \
@@ -706,6 +719,7 @@ static void fx_ldb_r11 (void)
 // 4c - plot - plot pixel with R1, R2 as x, y and the color register as the color
 static void fx_plot_2bit (void)
 {
+	FX_CYC(((g_gsuCostMem << 1) >> 3) + 1);
 	uint32	x = USEX8(R1);
 	uint32	y = USEX8(R2);
 	uint8	*a;
@@ -745,6 +759,7 @@ static void fx_plot_2bit (void)
 // 4c (ALT1) - rpix - read color of the pixel with R1, R2 as x, y
 static void fx_rpix_2bit (void)
 {
+	FX_CYC(g_gsuCostMem << 1);
 	uint32	x = USEX8(R1);
 	uint32	y = USEX8(R2);
 	uint8	*a;
@@ -770,6 +785,7 @@ static void fx_rpix_2bit (void)
 // 4c - plot - plot pixel with R1, R2 as x, y and the color register as the color
 static void fx_plot_4bit (void)
 {
+	FX_CYC(((g_gsuCostMem << 2) >> 3) + 1);
 	uint32	x = USEX8(R1);
 	uint32	y = USEX8(R2);
 	uint8	*a;
@@ -819,6 +835,7 @@ static void fx_plot_4bit (void)
 // 4c (ALT1) - rpix - read color of the pixel with R1, R2 as x, y
 static void fx_rpix_4bit (void)
 {
+	FX_CYC(g_gsuCostMem << 2);
 	uint32	x = USEX8(R1);
 	uint32	y = USEX8(R2);
 	uint8	*a;
@@ -846,6 +863,7 @@ static void fx_rpix_4bit (void)
 // 4c - plot - plot pixel with R1, R2 as x, y and the color register as the color
 static void fx_plot_8bit (void)
 {
+	FX_CYC(g_gsuCostMem + 1);
 	uint32	x = USEX8(R1);
 	uint32	y = USEX8(R2);
 	uint8	*a;
@@ -917,6 +935,7 @@ static void fx_plot_8bit (void)
 // 4c (ALT1) - rpix - read color of the pixel with R1, R2 as x, y
 static void fx_rpix_8bit (void)
 {
+	FX_CYC(g_gsuCostMem << 3);
 	uint32	x = USEX8(R1);
 	uint32	y = USEX8(R2);
 	uint8	*a;
@@ -2112,6 +2131,7 @@ static void fx_bic_i15 (void)
 
 // 80-8f - mult rn - 8 bit to 16 bit signed multiply, register * register
 #define FX_MULT(reg) \
+	FX_CYC(g_gsuCostMult); \
 	uint32	v = (uint32) (SEX8(SREG) * SEX8(GSU.avReg[reg])); \
 	R15++; \
 	DREG = v; \
@@ -2202,6 +2222,7 @@ static void fx_mult_r15 (void)
 
 // 80-8f (ALT1) - umult rn - 8 bit to 16 bit unsigned multiply, register * register
 #define FX_UMULT(reg) \
+	FX_CYC(g_gsuCostMult); \
 	uint32	v = USEX8(SREG) * USEX8(GSU.avReg[reg]); \
 	R15++; \
 	DREG = v; \
@@ -2292,6 +2313,7 @@ static void fx_umult_r15 (void)
 
 // 80-8f (ALT2) - mult #n - 8 bit to 16 bit signed multiply, register * immediate
 #define FX_MULT_I(imm) \
+	FX_CYC(g_gsuCostMult); \
 	uint32	v = (uint32) (SEX8(SREG) * ((int32) imm)); \
 	R15++; \
 	DREG = v; \
@@ -2382,6 +2404,7 @@ static void fx_mult_i15 (void)
 
 // 80-8f (ALT3) - umult #n - 8 bit to 16 bit unsigned multiply, register * immediate
 #define FX_UMULT_I(imm) \
+	FX_CYC(g_gsuCostMult); \
 	uint32	v = USEX8(SREG) * ((uint32) imm); \
 	R15++; \
 	DREG = v; \
@@ -2473,6 +2496,7 @@ static void fx_umult_i15 (void)
 // 90 - sbk - store word to last accessed RAM address
 static void fx_sbk (void)
 {
+	FX_CYC(g_gsuCostMem << 1);
 	RAM(GSU.vLastRamAdr) = (uint8) SREG;
 	RAM(GSU.vLastRamAdr ^ 1) = (uint8) (SREG >> 8);
 	CLRFLAGS;
@@ -2651,6 +2675,7 @@ static void fx_lob (void)
 // 9f - fmult - 16 bit to 32 bit signed multiplication, upper 16 bits only
 static void fx_fmult (void)
 {
+	FX_CYC(g_gsuCostFmult);
 	uint32	v;
 	uint32	c = (uint32) (SEX16(SREG) * SEX16(R6));
 	v = c >> 16;
@@ -2666,6 +2691,7 @@ static void fx_fmult (void)
 // 9f (ALT1) - lmult - 16 bit to 32 bit signed multiplication
 static void fx_lmult (void)
 {
+	FX_CYC(g_gsuCostFmult);
 	uint32	v;
 	uint32	c = (uint32) (SEX16(SREG) * SEX16(R6));
 	R4 = c;
@@ -2772,6 +2798,7 @@ static void fx_ibt_r15 (void)
 
 // a0-af (ALT1) - lms rn, (yy) - load word from RAM (short address)
 #define FX_LMS(reg) \
+	FX_CYC(g_gsuCostMem << 1); \
 	GSU.vLastRamAdr = ((uint32) PIPE) << 1; \
 	R15++; \
 	FETCHPIPE; \
@@ -2865,6 +2892,7 @@ static void fx_lms_r15 (void)
 // XXX: If rn == r15, is the value of r15 before or after the extra byte is read ?
 #define FX_SMS(reg) \
 	uint32	v = GSU.avReg[reg]; \
+	FX_CYC(g_gsuCostMem << 1); \
 	GSU.vLastRamAdr = ((uint32) PIPE) << 1; \
 	R15++; \
 	FETCHPIPE; \
@@ -3619,6 +3647,8 @@ static void fx_dec_r14 (void)
 static void fx_getb (void)
 {
 	uint32	v;
+
+	FX_CYC(g_gsuCostMem);
 #ifndef FX_DO_ROMBUFFER
 	v = (uint32) ROM(R14);
 #else
@@ -3634,6 +3664,8 @@ static void fx_getb (void)
 static void fx_getbh (void)
 {
 	uint32	v;
+
+	FX_CYC(g_gsuCostMem);
 #ifndef FX_DO_ROMBUFFER
 	uint32	c = (uint32) ROM(R14);
 #else
@@ -3650,6 +3682,8 @@ static void fx_getbh (void)
 static void fx_getbl (void)
 {
 	uint32	v;
+
+	FX_CYC(g_gsuCostMem);
 #ifndef FX_DO_ROMBUFFER
 	uint32	c = (uint32) ROM(R14);
 #else
@@ -3666,6 +3700,8 @@ static void fx_getbl (void)
 static void fx_getbs (void)
 {
 	uint32	v;
+
+	FX_CYC(g_gsuCostMem);
 #ifndef FX_DO_ROMBUFFER
 	int8	c;
 	c = ROM(R14);
@@ -3774,6 +3810,7 @@ static void fx_iwt_r15 (void)
 
 // f0-ff (ALT1) - lm rn, (xx) - load word from RAM
 #define FX_LM(reg) \
+	FX_CYC(g_gsuCostMem << 1); \
 	GSU.vLastRamAdr = PIPE; \
 	R15++; \
 	FETCHPIPE; \
@@ -3870,6 +3907,7 @@ static void fx_lm_r15 (void)
 // XXX: If rn == r15, is the value of r15 before or after the extra bytes are read ?
 #define FX_SM(reg) \
 	uint32	v = GSU.avReg[reg]; \
+	FX_CYC(g_gsuCostMem << 1); \
 	GSU.vLastRamAdr = PIPE; \
 	R15++; \
 	FETCHPIPE; \
@@ -3965,6 +4003,17 @@ static void fx_sm_r15 (void)
 
 uint32 fx_run (uint32 nInstructions)
 {
+	if (g_gsuCycleMode)
+	{
+		// nInstructions is a master-cycle budget in this mode; each FX_STEP
+		// accrues its real cost into g_gsuCycles (fetch source, memory ops).
+		g_gsuCycles = 0;
+		while (TF(G) && g_gsuCycles < nInstructions)
+			FX_STEP;
+
+		return (0);
+	}
+
 	GSU.vCounter = nInstructions;
 	while (TF(G) && (GSU.vCounter-- > 0))
 		FX_STEP;
