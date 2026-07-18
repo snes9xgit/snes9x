@@ -204,6 +204,23 @@ struct FxRegs_s
 
 extern struct FxRegs_s	GSU;
 
+// Cycle-accurate GSU timing (costs in SNES master-clock cycles, derived from
+// Mesen2's GSU model). When g_gsuCycleMode is set (default), fx_run() consumes
+// a master-cycle budget instead of a flat instruction count: cached fetches
+// cost 1 (2 at 10MHz), uncached fetches and RAM/ROM data accesses 5 (6),
+// 16-byte cache-line fills 16x that, multiplies per CFGR MS0. This makes the
+// GSU's throughput distribution match hardware: cache-hot loops run at full
+// clock while plot/RAM/ROM-heavy work is paced by real access latency.
+extern uint32	g_gsuCycles;		// cycles consumed in the current fx_run
+extern uint32	g_gsuCacheMask;		// cache lines treated as loaded (timing only)
+extern uint32	g_gsuCostCache;		// fetch, cache hit:      CLSR ? 1 : 2
+extern uint32	g_gsuCostMem;		// fetch/data, uncached:  CLSR ? 5 : 6
+extern uint32	g_gsuCostFmult;		// fmult/lmult: (MS0 ? 3 : 7) * (CLSR ? 1 : 2)
+extern uint32	g_gsuCostMult;		// mult/umult:   MS0 ? 1 : 2
+extern uint8	g_gsuCycleMode;		// 1 = cycle budget (default), 0 = legacy
+
+#define FX_CYC(n)	{ g_gsuCycles += (uint32) (n); }
+
 // GSU registers
 #define GSU_R0			0x000
 #define GSU_R1			0x002
@@ -289,12 +306,25 @@ extern struct FxRegs_s	GSU;
 // Access data in the current program bank
 #define PRGBANK(idx)	GSU.pvPrgBank[USEX16(idx)]
 
-// Update pipe from ROM
-#if 0
-#define FETCHPIPE		{ PIPE = PRGBANK(R15); GSU.vPipeAdr = (GSU.vPrgBankReg << 16) + R15; }
-#else
-#define FETCHPIPE		{ PIPE = PRGBANK(R15); }
-#endif
+// Update pipe from ROM, charging the per-byte fetch cost: 1 cycle from the
+// GSU cache (with a one-time 16-byte line-fill charge), 5-6 from ROM/RAM.
+#define FETCHPIPE \
+{ \
+	PIPE = PRGBANK(R15); \
+	uint32 _fca = USEX16(R15 - GSU.vCacheBaseReg); \
+	if (GSU.bCacheActive && _fca < 512) \
+	{ \
+		uint32 _flb = 1U << (_fca >> 4); \
+		if (!(g_gsuCacheMask & _flb)) \
+		{ \
+			g_gsuCacheMask |= _flb; \
+			g_gsuCycles += g_gsuCostMem << 4; \
+		} \
+		g_gsuCycles += g_gsuCostCache; \
+	} \
+	else \
+		g_gsuCycles += g_gsuCostMem; \
+}
 
 // ABS
 #define ABS(x)			((x) < 0 ? -(x) : (x))
