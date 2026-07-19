@@ -178,9 +178,11 @@ else to configure.
 
 Booted with the real KROM 1.00: OSD boot screen + progress bar, full
 self-test, attraction menu with title bitmaps for both carts, game launch
-via the per-game menu — Super Mario Kart (HiROM + DSP-1, slot 0) and Super
-Donkey Kong (4MB HiROM, slot 1) reach gameplay/attract. Boot needs three
-pieces beyond the obvious ports, all discovered against the real BIOS:
+via the per-game menu — Super Mario Kart (HiROM + DSP-1, slot 0), Super
+Donkey Kong (4MB HiROM, slot 1) and Star Fox (GSU socket, 3D rendering
+verified through the control-select Arwing) reach gameplay/attract. Boot
+needs three pieces beyond the obvious ports, all discovered against the
+real BIOS:
 
 - INT1 must fire when the SNES strobes the joypads: the KROM's ISR streams
   menu bulk data (title bitmaps etc.) through [84h-87h] one word per SNES
@@ -192,10 +194,17 @@ pieces beyond the obvious ports, all discovered against the real BIOS:
 - Emulation must keep running while the SNES executes garbage mid-remap —
   the KROM's reset pulse restores order (matches fullsnes's crash notes).
 
+The GSU socket stages the selected image into a dedicated 12MB SuperFX
+view (linear at +0, doubled-32K at +0x800000 — the multi-cart file can't
+be rearranged in place the way Map_SuperFXLoROMMap does), maps the GSU-1
+board layout, and gives the chip the cart's own 32K work RAM beyond the
+shared save SRAM. Related trap fixed along the way: the libretro port left
+`Settings.SuperFXClockMultiplier` at 0 when the frontend didn't answer the
+overclock option, which gave the GSU a zero-cycle budget and hung every
+SuperFX title.
+
 ## Known gaps
 
-- Star Fox: the GSU mapping mode falls back to plain LoROM (see the
-  follow-up note in the tracker) — selecting it will misbehave.
 - Savestates don't capture the supervisor board (Z180/RTC/OSD) yet.
 - OSD sprite commands (3/C/D/B) are accepted but not rendered; zoom is
   rendered, blink/shading are not.

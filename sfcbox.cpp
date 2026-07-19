@@ -954,9 +954,16 @@ void S9xSFCBoxEndScanline (void)
 	// One Z180 PC sample per second under tracing: enough to spot where
 	// the KROM spins without drowning the interesting one-shot events.
 	if (TraceEnabled() && CPU.V_Counter == 0 && SFCBox.RTC.FrameAccum == 0)
+	{
 		printf("[box] Z180 PC=%04X (phys %05X) held=%d 80W=%02X 81W=%02X halted=%d IFF=%d\n",
 			   HD64180.PC, HD64180_TranslateAddr(HD64180.PC), SFCBox.SNESHeld,
 			   SFCBox.Port80W, SFCBox.Port81W, HD64180.Halted, HD64180.IFF1);
+		if (Settings.SuperFX)
+			printf("[gsu] SFR=%02X%02X PBR=%02X ROMBR=%02X SCMR=%02X CLSR=%02X\n",
+				   Memory.FillRAM[0x3031], Memory.FillRAM[0x3030],
+				   Memory.FillRAM[0x3034], Memory.FillRAM[0x3036],
+				   Memory.FillRAM[0x303a], Memory.FillRAM[0x3039]);
+	}
 
 	// PHI cycles for one SNES scanline (H_Max master clocks)
 	const int64	master = Settings.PAL ? 21281370 : 21477272;

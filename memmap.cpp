@@ -2416,6 +2416,45 @@ bool8 CMemory::LoadBSCart ()
 // 8K DSP-1 program dump if the cart carries the chip. The PSS-61 (slot 0)
 // image may be followed by a PSS-62/63/64 (slot 1) image in the same file.
 
+// Dedicated SuperFX ROM view for the box's GSU socket (Star Fox). fxemu
+// wants the image linear at +0 (GSU banks 40h+) and the doubled-32K layout
+// at +0x800000 (GSU banks 00h-3Fh). The multi-game image can't be
+// rearranged in place the way Map_SuperFXLoROMMap does — a PSS-61+63 file
+// is 9.5MB and overlaps +0x800000 — so the selected image is staged into
+// this buffer when the KROM programs the GSU mapping.
+static uint8	*SFCBoxFXRom = NULL;
+static uint32	SFCBoxFXRomOffset = ~0u;
+
+static bool8 SFCBoxStageGSU (uint32 off, uint32 size)
+{
+	if (!SFCBoxFXRom)
+	{
+		SFCBoxFXRom = (uint8 *) malloc(0xC00000);
+		if (!SFCBoxFXRom)
+			return (FALSE);
+	}
+
+	if (SFCBoxFXRomOffset == off)
+		return (TRUE);
+
+	uint32	mask = size - 1;
+
+	memset(SFCBoxFXRom, 0xff, 0x800000);
+	memcpy(SFCBoxFXRom, Memory.ROM + off, size);
+
+	// The doubled layout Map_SuperFXLoROMMap builds, but mirrored by the
+	// image size instead of reading past it.
+	for (uint32 c = 0; c < 64; c++)
+	{
+		const uint8	*src = Memory.ROM + off + ((c * 0x8000) & mask);
+		memcpy(SFCBoxFXRom + 0x800000 + c * 0x10000,           src, 0x8000);
+		memcpy(SFCBoxFXRom + 0x800000 + c * 0x10000 + 0x8000,  src, 0x8000);
+	}
+
+	SFCBoxFXRomOffset = off;
+	return (TRUE);
+}
+
 static bool8 SFCBoxValidGROM (const uint8 *grom, uint32 avail)
 {
 	if (avail < 0x8000 || grom[0] < 1 || grom[0] > 8 || grom[1] != 0x05)
@@ -2476,6 +2515,7 @@ static uint32 SFCBoxParseSlot (int slot, uint32 base, uint32 avail)
 bool8 CMemory::LoadSFCBox (int32 ROMfillSize)
 {
 	memset(&SFCBox, 0, sizeof(SFCBox));
+	SFCBoxFXRomOffset = ~0u;	// new image: invalidate the staged GSU view
 
 	uint32	total = SFCBoxParseSlot(0, 0, (uint32) ROMfillSize);
 	if (!total || !SFCBox.RomSize[0][0])
@@ -5452,8 +5492,14 @@ void S9xSFCBoxRemap (void)
 	// the reset state before the helper ever ran.
 	bool8	hirom = (mapmode == 3) || (mapmode == 0 && (r0 & 0x80));
 
+	bool8	gsu = FALSE;
 	if (mapmode == 1)
-		printf("SFC-Box: GSU (Star Fox) mapping selected - not implemented yet, mapping plain LoROM.\n");
+	{
+		if (size && SFCBoxStageGSU(off, size))
+			gsu = TRUE;
+		else
+			printf("SFC-Box: GSU socket empty (or staging failed); mapping plain LoROM.\n");
+	}
 
 	if (!size)
 	{
@@ -5469,7 +5515,72 @@ void S9xSFCBoxRemap (void)
 	Memory.Map_Initialize();
 	Memory.map_System();
 
-	if (hirom)
+	if (gsu)
+	{
+		// GSU-1 board layout (cf. Map_SuperFXLoROMMap), pointed at the
+		// staged view. The 32K work RAM is the cart's own chip (IC21 on
+		// the PSS-61) — kept beyond the 128K shared save SRAM so Star Fox
+		// can't scribble over other games' saves.
+		uint8	*gsuram = Memory.SRAM + 0x20000;
+		uint32	mask = size - 1;
+
+		for (uint32 bank = 0; bank < 0x40; bank++)
+		{
+			uint8	*base = SFCBoxFXRom + ((bank << 15) & mask) - 0x8000;
+			for (uint32 blk = 8; blk <= 15; blk++)
+			{
+				uint32	p = (bank << 4) | blk;
+				Memory.Map[p] = Memory.Map[p + 0x800] = base;
+				Memory.BlockIsROM[p] = Memory.BlockIsROM[p + 0x800] = TRUE;
+				Memory.BlockIsRAM[p] = Memory.BlockIsRAM[p + 0x800] = FALSE;
+			}
+		}
+
+		for (uint32 bank = 0x40; bank <= 0x5f; bank++)
+		{
+			uint8	*base = SFCBoxFXRom + (((bank - 0x40) << 16) & mask);
+			for (uint32 blk = 0; blk <= 15; blk++)
+			{
+				uint32	p = (bank << 4) | blk;
+				Memory.Map[p] = Memory.Map[p + 0x800] = base;
+				Memory.BlockIsROM[p] = Memory.BlockIsROM[p + 0x800] = TRUE;
+				Memory.BlockIsRAM[p] = Memory.BlockIsRAM[p + 0x800] = FALSE;
+			}
+		}
+
+		Memory.map_space(0x00, 0x3f, 0x6000, 0x7fff, gsuram - 0x6000);
+		Memory.map_space(0x80, 0xbf, 0x6000, 0x7fff, gsuram - 0x6000);
+		Memory.map_space(0x70, 0x70, 0x0000, 0xffff, gsuram);
+		Memory.map_space(0x71, 0x71, 0x0000, 0xffff, gsuram + 0x10000);
+		Memory.map_space(0xf0, 0xf0, 0x0000, 0xffff, gsuram);
+		Memory.map_space(0xf1, 0xf1, 0x0000, 0xffff, gsuram + 0x10000);
+
+		SuperFX.pvRom = SFCBoxFXRom;
+		SuperFX.nRomBanks = size >> 15;
+		SuperFX.pvRam = gsuram;
+		SuperFX.nRamBanks = 1;
+		if (!Settings.SuperFX)
+			S9xInitSuperFX();
+		Settings.SuperFX = TRUE;
+		S9xResetSuperFX();		// rebuilds the GSU bank tables from pvRom
+	}
+	else if (Settings.SuperFX)
+	{
+		// Leaving the GSU socket: disarm and restore the Init() defaults.
+		Settings.SuperFX = FALSE;
+		CPU.IRQExternal = FALSE;
+		SuperFX.pvRom = Memory.ROM;
+		SuperFX.nRomBanks = (2 * 1024 * 1024) / (32 * 1024);
+		SuperFX.pvRam = Memory.SRAM;
+		SuperFX.nRamBanks = 2;
+	}
+
+	if (gsu)
+	{
+		// ROM/RAM windows are all placed; skip the LoROM/HiROM/DSP/SRAM
+		// branches below (the KROM never combines them with GSU mode).
+	}
+	else if (hirom)
 	{
 		Memory.map_hirom_offset(0x00, 0x3f, 0x8000, 0xffff, size, off);
 		Memory.map_hirom_offset(0x40, 0x7d, 0x0000, 0xffff, size, off);
@@ -5484,8 +5595,10 @@ void S9xSFCBoxRemap (void)
 		Memory.map_lorom_offset(0xc0, 0xff, 0x0000, 0xffff, size, off);
 	}
 
-	// DSP-1 window (Mario Kart: HiROM layout on real carts)
-	if ((r0 & 0x20) && Settings.DSP)
+	// DSP-1 window (Mario Kart: HiROM layout on real carts). The KROM's
+	// socket probe can leave the DSP bit set alongside GSU mode — the
+	// window would clobber the GSU program banks, so gate it out.
+	if (!gsu && (r0 & 0x20) && Settings.DSP)
 	{
 		if (hirom)
 		{
@@ -5501,8 +5614,9 @@ void S9xSFCBoxRemap (void)
 	}
 
 	// Shared 128K SRAM: [C1h] picks a 32K-aligned base and a 2K/8K/32K
-	// window size; the MAP_SFCBOX_SRAM handler applies both.
-	if (r0 & 0x08)
+	// window size; the MAP_SFCBOX_SRAM handler applies both. In GSU mode
+	// banks 70/71 belong to the cart's own work RAM instead.
+	if (!gsu && (r0 & 0x08))
 	{
 		static const uint32	window[4] = { 0x800, 0x2000, 0x2000, 0x8000 };
 
