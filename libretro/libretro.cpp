@@ -324,11 +324,14 @@ static void update_variables(void)
     var.key = "snes9x_overclock_superfx";
     var.value = NULL;
 
-    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var))
-    {
-        int freq = atoi(var.value);
-        Settings.SuperFXClockMultiplier = freq;
-    }
+    // Frontends that don't answer this variable (minimal harnesses) must
+    // still leave the GSU with its real-time budget: a multiplier of 0
+    // makes FxEmulate() run zero cycles and SuperFX games hang with the
+    // GO flag stuck set.
+    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value && atoi(var.value) > 0)
+        Settings.SuperFXClockMultiplier = atoi(var.value);
+    else
+        Settings.SuperFXClockMultiplier = 100;
 
     var.key = "snes9x_up_down_allowed";
     var.value = NULL;
