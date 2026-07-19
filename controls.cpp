@@ -20,6 +20,7 @@
 #include "crosshairs.h"
 #include "movie.h"
 #include "display.h"
+#include "sfcbox.h"
 #ifdef NETPLAY_SUPPORT
 #include "netplay.h"
 #endif
@@ -2818,6 +2819,12 @@ void S9xSetJoypadLatch (bool latch)
 		// 1 written, 'plug in' new controllers now
 		curcontrollers[0] = newcontrollers[0];
 		curcontrollers[1] = newcontrollers[1];
+
+		// SFC-Box: the supervisor's INT1 fires when the SNES strobes the
+		// pads — the KROM's ISR uses it to stream the next word through
+		// the [84h-87h] latches during menu bulk transfers.
+		if (Settings.SFCBox)
+			S9xSFCBoxJoypadAccessed();
 	}
 
 	if (latch && !FLAG_LATCH)
@@ -2923,6 +2930,21 @@ uint8 S9xReadJOYSERn (int n)
 	assert(n == 0 || n == 1);
 
 	uint8	bits = (OpenBus & ~3) | ((n == 1) ? 0x1c : 0);
+
+	// SFC-Box manual mode: the supervisor's [84h-87h] latches replace the
+	// real pads (demo playback / KROM->SNES bulk transfers).
+	uint16	boxbits;
+	if (Settings.SFCBox && S9xSFCBoxJoypadOverride(n, &boxbits))
+	{
+		if (FLAG_LATCH)
+			return (bits | ((boxbits & 0x8000) ? 1 : 0));
+		if (read_idx[n][0] >= 16)
+		{
+			IncreaseReadIdxPost(read_idx[n][0]);
+			return (bits | 1);
+		}
+		return (bits | ((boxbits & (0x8000 >> IncreaseReadIdxPost(read_idx[n][0]))) ? 1 : 0));
+	}
 
 	if (FLAG_LATCH)
 	{
@@ -3076,6 +3098,15 @@ void S9xDoAutoJoypad (void)
 
 	for (int n = 0; n < 2; n++)
 	{
+		uint16	boxbits;
+		if (Settings.SFCBox && S9xSFCBoxJoypadOverride(n, &boxbits))
+		{
+			read_idx[n][0] = 16;
+			WRITE_WORD(Memory.FillRAM + 0x4218 + n * 2, boxbits);
+			WRITE_WORD(Memory.FillRAM + 0x421c + n * 2, 0);
+			continue;
+		}
+
 		switch (i = curcontrollers[n])
 		{
 			case MP5:

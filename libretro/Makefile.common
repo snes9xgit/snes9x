@@ -35,6 +35,7 @@ SOURCES_CXX := $(CORE_DIR)/apu/apu.cpp \
 				 $(CORE_DIR)/fxemu.cpp \
 				 $(CORE_DIR)/gfx.cpp \
 				 $(CORE_DIR)/globals.cpp \
+				 $(CORE_DIR)/hd64180.cpp \
 				 $(CORE_DIR)/memmap.cpp \
 				 $(CORE_DIR)/obc1.cpp \
 				 $(CORE_DIR)/msu1.cpp \
@@ -49,6 +50,7 @@ SOURCES_CXX := $(CORE_DIR)/apu/apu.cpp \
 				 $(CORE_DIR)/seta010.cpp \
 				 $(CORE_DIR)/seta011.cpp \
 				 $(CORE_DIR)/seta018.cpp \
+				 $(CORE_DIR)/sfcbox.cpp \
 				 $(CORE_DIR)/sgb/sgb.cpp \
 				 $(CORE_DIR)/sgb/sgb_packet.cpp \
 				 $(CORE_DIR)/sgb/sgb_state.cpp \

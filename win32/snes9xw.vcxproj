@@ -346,6 +346,8 @@
     <ClInclude Include="..\apu\bapu\snes\snes.hpp" />
     <CustomBuild Include="..\bsx.h" />
     <CustomBuild Include="..\c4.h" />
+    <CustomBuild Include="..\hd64180.h" />
+    <CustomBuild Include="..\sfcbox.h" />
     <CustomBuild Include="..\cheats.h" />
     <CustomBuild Include="..\conffile.h" />
     <CustomBuild Include="..\controls.h" />
@@ -644,6 +646,7 @@
     <ClCompile Include="..\jma\lzmadec.cpp" />
     <ClCompile Include="..\jma\s9x-jma.cpp" />
     <ClCompile Include="..\jma\winout.cpp" />
+    <ClCompile Include="..\hd64180.cpp" />
     <ClCompile Include="..\loadzip.cpp" />
     <ClCompile Include="..\memmap.cpp" />
     <ClCompile Include="..\movie.cpp" />
@@ -661,6 +664,7 @@
     <ClCompile Include="..\seta010.cpp" />
     <ClCompile Include="..\seta011.cpp" />
     <ClCompile Include="..\seta018.cpp" />
+    <ClCompile Include="..\sfcbox.cpp" />
     <ClCompile Include="..\common\video\opengl\shaders\glsl.cpp" />
     <ClCompile Include="..\common\video\opengl\shaders\shader_helpers.cpp" />
     <ClCompile Include="..\common\video\opengl\shaders\slang.cpp" />
