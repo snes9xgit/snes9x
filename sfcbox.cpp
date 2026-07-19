@@ -788,19 +788,33 @@ bool8 S9xSFCBoxSaveNVRAM (void)
 
 static bool8 LoadBIOSFile (const char *name, uint8 *dest, uint32 size, uint32 minsize)
 {
-	// BIOS dir first, then next to the ROM.
-	std::string	path = S9xGetDirectory(BIOS_DIR) + SLASH_STR + name;
-	FILE		*fp = fopen(path.c_str(), "rb");
+	// Probe order: the port's configured BIOS folder, then the ROM's own
+	// directory, then the conventional BIOS/ folder inside or beside the
+	// ROM folder (games in Roms/, BIOS files in a sibling BIOS/), then
+	// whatever directory ROMFilename carries (libretro passes only the
+	// basename to the loader, so it may have none).
+	std::string	romdir = S9xGetDirectory(ROMFILENAME_DIR);
+	std::string	dirs[5];
+	int			ndirs = 0;
 
-	if (!fp)
+	dirs[ndirs++] = S9xGetDirectory(BIOS_DIR);
+	if (!romdir.empty())
 	{
-		std::string	dir = Memory.ROMFilename;
-		size_t		slash = dir.find_last_of("/\\");
-		if (slash != std::string::npos)
-		{
-			path = dir.substr(0, slash + 1) + name;
-			fp = fopen(path.c_str(), "rb");
-		}
+		dirs[ndirs++] = romdir;
+		dirs[ndirs++] = romdir + SLASH_STR + "BIOS";
+		dirs[ndirs++] = romdir + SLASH_STR + ".." + SLASH_STR + "BIOS";
+	}
+
+	std::string	fromname = Memory.ROMFilename;
+	size_t		slash = fromname.find_last_of("/\\");
+	if (slash != std::string::npos)
+		dirs[ndirs++] = fromname.substr(0, slash);
+
+	FILE	*fp = NULL;
+	for (int i = 0; i < ndirs && !fp; i++)
+	{
+		std::string	path = dirs[i] + SLASH_STR + name;
+		fp = fopen(path.c_str(), "rb");
 	}
 
 	if (!fp)

@@ -1469,15 +1469,22 @@ bool8 CMemory::LoadROMMem (const uint8 *source, uint32 sourceSize, const char* o
     }
     Settings.GBRomPath[0] = '\0';
 
+    // LoadROMInt only ever needs one retry (the interleave-detection
+    // flip-flop); bound the loop so a deterministic failure — e.g. an
+    // SFC-Box image without its KROM BIOS — reports instead of spinning.
+    int retries = 0;
     do
     {
         memset(ROM,0, MAX_ROM_SIZE);
         memset(&Multi, 0,sizeof(Multi));
         memcpy(ROM,source,sourceSize);
-    }
-    while(!LoadROMInt(sourceSize));
 
-    return TRUE;
+        if (LoadROMInt(sourceSize))
+            return TRUE;
+    }
+    while (++retries < 3);
+
+    return FALSE;
 }
 
 // Case-insensitive ASCII extension match. Used to route .gb/.gbc ROMs
@@ -1765,6 +1772,9 @@ bool8 CMemory::LoadROM (const char *filename)
 
     int32 totalFileSize;
 
+    // Bounded for the same reason as LoadROMMem: one interleave retry is
+    // legitimate, endless identical failures are not.
+    int retries = 0;
     do
     {
         memset(ROM,0, MAX_ROM_SIZE);
@@ -1785,10 +1795,13 @@ bool8 CMemory::LoadROM (const char *filename)
         }
 
         CheckForAnyPatch(filename, HeaderCount != 0, totalFileSize);
-    }
-    while(!LoadROMInt(totalFileSize));
 
-    return TRUE;
+        if (LoadROMInt(totalFileSize))
+            return TRUE;
+    }
+    while (++retries < 3);
+
+    return FALSE;
 }
 
 // P1 — BIOS-mode load. Runs the real SGB1/SGB2 SNES-side BIOS on the 65816
