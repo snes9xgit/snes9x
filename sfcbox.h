@@ -55,6 +55,7 @@ struct SSFCBoxOSD		// Fujitsu MB90082
 	uint8	FillMode;
 	uint8	CharColor, BgColor;
 	uint8	DisplayEnable, ColorMode;
+	uint8	ExtSync;		// Screen Control 1 IE bit: 1 = genlock to the SNES video
 	uint8	LineCtrl[SFCBOX_OSD_H];	// bit0 BK solid, bit1 zoomY, bit2 zoomX, bit3 BC bg shown
 	uint8	UnderColor;
 	uint8	XOfs, YOfs;

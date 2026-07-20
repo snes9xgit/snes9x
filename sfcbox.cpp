@@ -274,6 +274,9 @@ static void OSDCommand (uint8 cmd, uint16 param)
 {
 	struct SSFCBoxOSD	*o = &SFCBox.OSD;
 
+	if (TraceEnabled() && cmd != 0x2)
+		printf("SFC-Box: OSD cmd %X param %03X\n", cmd, param);
+
 	switch (cmd)
 	{
 		case 0x0:	// Preset VRAM address
@@ -321,6 +324,7 @@ static void OSDCommand (uint8 cmd, uint16 param)
 		case 0x4:	// Screen control 1
 			o->DisplayEnable = param & 1;
 			o->ColorMode = (param >> 5) & 1;
+			o->ExtSync = (param >> 9) & 1;
 			break;
 
 		case 0x6:	// Line control
@@ -382,7 +386,29 @@ void S9xSFCBoxRenderOSD (uint16 *screen, int pitch, int width, int height)
 {
 	struct SSFCBoxOSD	*o = &SFCBox.OSD;
 
-	if (!SFCBox.Active || !o->DisplayEnable || !o->FontLoaded)
+	if (!SFCBox.Active || !o->FontLoaded)
+		return;
+
+	// In internal-sync mode (Screen Control 1 IE=0) the MB90082 generates
+	// the whole picture itself and floods the raster with the under color
+	// ("shown only in INTERNAL sync mode" — fullsnes); the KROM uses that
+	// for the blue supervisor screens NO$SNS shows. In external-sync mode
+	// it genlocks to the SNES video and the plane outside the characters
+	// stays transparent. snes9x traditionally superimposes in both modes,
+	// so the raster can be turned off (win32 Hacks dialog, default on).
+	if (Settings.SFCBoxOSDBackdrop && !o->ExtSync)
+	{
+		uint16	uc = BUILD_PIXEL(osd_r5[o->UnderColor], osd_g5[o->UnderColor], osd_b5[o->UnderColor]);
+
+		for (int py = 0; py < height; py++)
+		{
+			uint16	*line = screen + py * pitch;
+			for (int px = 0; px < width; px++)
+				line[px] = uc;
+		}
+	}
+
+	if (!o->DisplayEnable)	// DC=0: backdrop only, no character plane
 		return;
 
 	// A 12-dot OSD cell spans ~8 SNES pixels; 18 OSD lines map 1:1. The
@@ -790,7 +816,7 @@ bool8 S9xSFCBoxSaveNVRAM (void)
 // pointers, socket tables, OSD font) is re-derived at ROM load and is
 // deliberately NOT part of the state.
 
-#define SFCBOX_STATE_VERSION	1
+#define SFCBOX_STATE_VERSION	2
 
 struct SSFCBoxSaveState
 {
@@ -818,6 +844,7 @@ struct SSFCBoxSaveState
 	uint8	OSDDisplayEnable, OSDColorMode;
 	uint8	OSDLineCtrl[SFCBOX_OSD_H];
 	uint8	OSDUnderColor, OSDXOfs, OSDYOfs;
+	uint8	OSDExtSync;
 };
 
 size_t S9xSFCBoxStateSize (void)
@@ -871,6 +898,7 @@ void S9xSFCBoxStateSave (uint8 *buf)
 	memcpy(s->OSDLineCtrl, SFCBox.OSD.LineCtrl, sizeof(s->OSDLineCtrl));
 	s->OSDUnderColor = SFCBox.OSD.UnderColor;
 	s->OSDXOfs = SFCBox.OSD.XOfs;			s->OSDYOfs = SFCBox.OSD.YOfs;
+	s->OSDExtSync = SFCBox.OSD.ExtSync;
 }
 
 bool8 S9xSFCBoxStateLoad (const uint8 *buf, size_t size)
@@ -921,6 +949,7 @@ bool8 S9xSFCBoxStateLoad (const uint8 *buf, size_t size)
 	memcpy(SFCBox.OSD.LineCtrl, s->OSDLineCtrl, sizeof(s->OSDLineCtrl));
 	SFCBox.OSD.UnderColor = s->OSDUnderColor;
 	SFCBox.OSD.XOfs = s->OSDXOfs;			SFCBox.OSD.YOfs = s->OSDYOfs;
+	SFCBox.OSD.ExtSync = s->OSDExtSync;
 
 	// The Z180's interrupt lines are level state we just restored; make
 	// sure the core's view matches the board's.
