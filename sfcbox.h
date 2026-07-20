@@ -55,6 +55,7 @@ struct SSFCBoxOSD		// Fujitsu MB90082
 	uint8	FillMode;
 	uint8	CharColor, BgColor;
 	uint8	DisplayEnable, ColorMode;
+	uint8	ExtSync;		// Screen Control 1 IE bit: 1 = genlock to the SNES video
 	uint8	LineCtrl[SFCBOX_OSD_H];	// bit0 BK solid, bit1 zoomY, bit2 zoomX, bit3 BC bg shown
 	uint8	UnderColor;
 	uint8	XOfs, YOfs;
@@ -140,6 +141,7 @@ bool8	S9xSFCBoxJoypadOverride (int pad, uint16 *value);
 void	S9xSFCBoxJoypadAccessed (void);
 uint8	S9xGetSFCBoxSRAM (uint32 address);
 void	S9xSetSFCBoxSRAM (uint8 byte, uint32 address);
+bool8	S9xSFCBoxOSDHires (void);		// character plane visible: double lores frames first
 void	S9xSFCBoxRenderOSD (uint16 *screen, int pitch, int width, int height);
 
 // Front panel

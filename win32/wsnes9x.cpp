@@ -59,6 +59,7 @@
 #include "kaillera_server.h"
 #include "../apu/apu.h"
 #include "../sgb/sgb.h"
+#include "../sfcbox.h"
 #include "../movie.h"
 #include "../crosshairs.h"
 #include "../controls.h"
@@ -6755,6 +6756,10 @@ INT_PTR CALLBACK DlgAboutProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 	}
 }
 
+// Combobox rows follow the physical panel left-to-right; values are the
+// port 80h bit the position grounds (the relay-off position is omitted).
+static const uint8 sfcbox_keyswitch_map[5] = { 4, 0, 1, 2, 3 };
+
 INT_PTR CALLBACK DlgEmulatorHacksProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 {
     UDACCEL accel = { 0, 10 };
@@ -6786,6 +6791,22 @@ INT_PTR CALLBACK DlgEmulatorHacksProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM
         CheckDlgButton(hDlg, IDC_SEPARATE_ECHO_BUFFER, Settings.SeparateEchoBuffer);
         CheckDlgButton(hDlg, IDC_NO_SPRITE_LIMIT, Settings.MaxSpriteTilesPerLine == 128);
         CheckDlgButton(hDlg, IDC_ALLOW_EXE_ICON, GUI.ExeIconRewriteOK);
+        CheckDlgButton(hDlg, IDC_SFCBOX_OSD_BACKDROP, Settings.SFCBoxOSDBackdrop);
+        CreateToolTip(IDC_SFCBOX_OSD_BACKDROP, hDlg, TEXT("Draw the Super Famicom Box supervisor screens over the\nMB90082 OSD chip's solid background raster (the blue\nstartup screen NO$SNS shows) instead of superimposing\nthe text on the SNES video output. Takes effect immediately."));
+
+        {
+            static const TCHAR *kspos[5] = { TEXT("1 (Options)"), TEXT("OFF"), TEXT("ON (Play)"), TEXT("2"), TEXT("3 (Self-Test)") };
+            int kssel = 2;
+            for (int i = 0; i < 5; i++)
+            {
+                SendDlgItemMessage(hDlg, IDC_SFCBOX_KEYSWITCH, CB_ADDSTRING, 0, (LPARAM)kspos[i]);
+                if (sfcbox_keyswitch_map[i] == SFCBox.Keyswitch)
+                    kssel = i;
+            }
+            SendDlgItemMessage(hDlg, IDC_SFCBOX_KEYSWITCH, CB_SETCURSEL, kssel, 0);
+        }
+        CreateToolTip(IDC_SFCBOX_KEYSWITCH, hDlg, TEXT("The Super Famicom Box front-panel keyswitch.\n\"1\" opens the attendant setup menus (counters, clock,\nmachine check), \"3\" the self-test; OFF/ON/\"2\" are play\nmodes. The supervisor polls it live - takes effect on OK,\nno reset needed."));
+        CreateToolTip(IDC_SFCBOX_COIN, hDlg, TEXT("Drop a 100-yen coin into the box (closes the coin switch\nfor ~60ms). Play time per coin is set in the attendant\nmenus; the coin registers as soon as emulation resumes."));
 
         {
             // The event-cart rows serve whichever board is loaded; relabel and
@@ -6820,20 +6841,31 @@ INT_PTR CALLBACK DlgEmulatorHacksProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM
 
         CreateToolTip(IDC_ALLOW_EXE_ICON, hDlg, TEXT("When checked, choosing a logo also overwrites\nthe icon embedded in the SuperSnes9x .exe on disk,\nso it shows in Explorer, on shortcuts and the\ntaskbar. SuperSnes9x will restart to apply.\nWhen unchecked, only the in-app icon changes."));
 
-        // The two PowerFest '94 rows only show when that board is loaded.
-        // When they're hidden, collapse the space they'd occupy: move the
-        // bottom buttons up and shrink the dialog by their combined height
-        // (36 dialog units = the two 18-unit rows added to the layout).
-        if (!PF94.active)
+        // The SFC-Box rows only show when a Super Famicom Box is loaded
+        // (checkbox + keyswitch/coin row = 30 units), the two PowerFest
+        // '94 rows only when that board is loaded (36 units). When a group
+        // is hidden, collapse the space it'd occupy: everything below it
+        // slides up by its height and the dialog shrinks by the total.
         {
-            RECT dlu = { 0, 0, 0, 36 };
+            const int boxrows[] = { IDC_SFCBOX_OSD_BACKDROP, IDC_SFCBOX_KEYSWITCH_LABEL,
+                                    IDC_SFCBOX_KEYSWITCH, IDC_SFCBOX_COIN };
+            for (int i = 0; i < 4; i++)
+                ShowWindow(GetDlgItem(hDlg, boxrows[i]), SFCBox.Active ? SW_SHOW : SW_HIDE);
+        }
+        {
+            RECT dlu = { 0, SFCBox.Active ? 0 : 30, 0, PF94.active ? 0 : 36 };
+            dlu.bottom += dlu.top;
             MapDialogRect(hDlg, &dlu);
-            int dy = dlu.bottom;
 
-            const int buttons[] = { IDOK, IDCANCEL, IDC_SET_DEFAULTS };
-            for (int i = 0; i < 3; i++)
+            const int rows[] = { IDC_PF94_TIME_LABEL, IDC_PF94_TIME,
+                                 IDC_PF94_TIMER_SHOW_LABEL, IDC_PF94_TIMER_SHOW,
+                                 IDOK, IDCANCEL, IDC_SET_DEFAULTS };
+            for (int i = 0; i < 7; i++)
             {
-                HWND h = GetDlgItem(hDlg, buttons[i]);
+                int dy = (i < 4) ? dlu.top : dlu.bottom;
+                if (!dy)
+                    continue;
+                HWND h = GetDlgItem(hDlg, rows[i]);
                 RECT rc;
                 GetWindowRect(h, &rc);
                 POINT p = { rc.left, rc.top };
@@ -6841,10 +6873,13 @@ INT_PTR CALLBACK DlgEmulatorHacksProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM
                 SetWindowPos(h, NULL, p.x, p.y - dy, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
             }
 
-            RECT wr;
-            GetWindowRect(hDlg, &wr);
-            SetWindowPos(hDlg, NULL, 0, 0, wr.right - wr.left, wr.bottom - wr.top - dy,
-                         SWP_NOMOVE | SWP_NOZORDER);
+            if (dlu.bottom)
+            {
+                RECT wr;
+                GetWindowRect(hDlg, &wr);
+                SetWindowPos(hDlg, NULL, 0, 0, wr.right - wr.left, wr.bottom - wr.top - dlu.bottom,
+                             SWP_NOMOVE | SWP_NOZORDER);
+            }
         }
 
         return true;
@@ -6872,6 +6907,14 @@ INT_PTR CALLBACK DlgEmulatorHacksProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM
             Settings.SeparateEchoBuffer = IsDlgButtonChecked(hDlg, IDC_SEPARATE_ECHO_BUFFER);
             Settings.MaxSpriteTilesPerLine = IsDlgButtonChecked(hDlg, IDC_NO_SPRITE_LIMIT) ? 128 : 34;
             GUI.ExeIconRewriteOK = IsDlgButtonChecked(hDlg, IDC_ALLOW_EXE_ICON);
+            Settings.SFCBoxOSDBackdrop = IsDlgButtonChecked(hDlg, IDC_SFCBOX_OSD_BACKDROP);
+
+            if (SFCBox.Active)
+            {
+                int kssel = (int)SendDlgItemMessage(hDlg, IDC_SFCBOX_KEYSWITCH, CB_GETCURSEL, 0, 0);
+                if (kssel >= 0 && kssel < 5)
+                    SFCBox.Keyswitch = sfcbox_keyswitch_map[kssel];  // the KROM polls it live
+            }
 
             {
                 int evmin  = 3 + (int)SendDlgItemMessage(hDlg, IDC_PF94_TIME, CB_GETCURSEL, 0, 0);
@@ -6931,9 +6974,17 @@ INT_PTR CALLBACK DlgEmulatorHacksProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM
 			CheckDlgButton(hDlg, IDC_SEPARATE_ECHO_BUFFER, false);
 			CheckDlgButton(hDlg, IDC_NO_SPRITE_LIMIT, false);
 			CheckDlgButton(hDlg, IDC_ALLOW_EXE_ICON, false);
+			CheckDlgButton(hDlg, IDC_SFCBOX_OSD_BACKDROP, true);
+			SendDlgItemMessage(hDlg, IDC_SFCBOX_KEYSWITCH, CB_SETCURSEL, 2, 0);
 			SendDlgItemMessage(hDlg, IDC_PF94_TIME, CB_SETCURSEL, 3, 0);
 			SendDlgItemMessage(hDlg, IDC_PF94_TIMER_SHOW, CB_SETCURSEL, 0, 0);
 			break;
+
+        case IDC_SFCBOX_COIN:
+            if (SFCBox.Active)
+                S9xSFCBoxInsertCoin();
+            break;
+
         default:
             break;
         }

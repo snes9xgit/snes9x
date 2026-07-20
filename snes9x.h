@@ -347,6 +347,7 @@ struct SSettings
     int PF94TimerDisplay;
     int CC92TimerMinutes;
     int CC92TimerDisplay;
+    bool8   SFCBoxOSDBackdrop;
 	int	OneClockCycle;
 	int	OneSlowClockCycle;
 	int	TwoClockCycles;

@@ -274,6 +274,9 @@ static void OSDCommand (uint8 cmd, uint16 param)
 {
 	struct SSFCBoxOSD	*o = &SFCBox.OSD;
 
+	if (TraceEnabled() && cmd != 0x2)
+		printf("SFC-Box: OSD cmd %X param %03X\n", cmd, param);
+
 	switch (cmd)
 	{
 		case 0x0:	// Preset VRAM address
@@ -285,8 +288,13 @@ static void OSDCommand (uint8 cmd, uint16 param)
 			break;
 
 		case 0x1:	// Select color
+			// On the SFC-Box chip the per-character background color rides
+			// in bits 9-7 (fullsnes's "Dn Unknown Color?") — the KROM sets
+			// it to yellow (param 300h) for the solid B-button icon on the
+			// attendant menus. Bits 2-0 (Bn, grayscale line/border tint)
+			// are always 0 in the KROM and aren't captured.
 			o->CharColor = (param >> 4) & 7;
-			o->BgColor = param & 7;
+			o->BgColor = (param >> 7) & 7;
 			break;
 
 		case 0x2:	// Write character
@@ -321,6 +329,7 @@ static void OSDCommand (uint8 cmd, uint16 param)
 		case 0x4:	// Screen control 1
 			o->DisplayEnable = param & 1;
 			o->ColorMode = (param >> 5) & 1;
+			o->ExtSync = (param >> 9) & 1;
 			break;
 
 		case 0x6:	// Line control
@@ -366,28 +375,61 @@ static const uint8	osd_r5[8] = { 0, 0, 0, 0, 31, 31, 31, 31 };
 static const uint8	osd_g5[8] = { 0, 0, 31, 31, 0, 0, 31, 31 };
 static const uint8	osd_b5[8] = { 0, 31, 0, 31, 0, 31, 0, 31 };
 
-// Glyph dot lookup: 256 chars x 18 rows x 2 bytes; byte0 = dots 0-7 (MSB
-// leftmost), byte1 bits 3-0 = dots 8-11 (verified against the KROM boot
-// text: the right-side third of every glyph lives in the LOW nibble).
+// Glyph dot lookup: 256 chars x 18 rows x 2 bytes. Each row is a
+// little-endian 16-bit word holding the 12 dots left-aligned at bit 11:
+// byte1's LOW nibble is the left third (dots 0-3), byte0 the right two
+// thirds (dots 4-11). Decoding byte0 as the left side instead rotates
+// every glyph 4 columns with wraparound — centered katakana survive
+// that (which is how it slipped through the boot screen), but ASCII
+// gains stray right-edge columns ("Slave" -> "Slavee", 'O' -> 'D').
 static inline int OSDGlyphDot (uint8 ch, int row, int dot)
 {
 	const uint8	*g = SFCBox.OSD.Font + (uint32) ch * 36 + row * 2;
 
-	if (dot < 8)
-		return ((g[0] >> (7 - dot)) & 1);
-	return ((g[1] >> (11 - dot)) & 1);
+	return ((((uint16) g[1] << 8) | g[0]) >> (11 - dot)) & 1;
+}
+
+// True while the character plane is visible: the caller doubles a lores
+// frame first so the 12-dot cells render at 16 output pixels.
+bool8 S9xSFCBoxOSDHires (void)
+{
+	return (SFCBox.Active && SFCBox.OSD.DisplayEnable && SFCBox.OSD.FontLoaded) ? TRUE : FALSE;
 }
 
 void S9xSFCBoxRenderOSD (uint16 *screen, int pitch, int width, int height)
 {
 	struct SSFCBoxOSD	*o = &SFCBox.OSD;
 
-	if (!SFCBox.Active || !o->DisplayEnable || !o->FontLoaded)
+	if (!SFCBox.Active || !o->FontLoaded)
 		return;
 
-	// A 12-dot OSD cell spans ~8 SNES pixels; 18 OSD lines map 1:1. The
-	// full grid is 192x216 SNES pixels, centered in the frame; hires
-	// (512-wide) frames double the horizontal scale.
+	// In internal-sync mode (Screen Control 1 IE=0) the MB90082 generates
+	// the whole picture itself and floods the raster with the under color
+	// ("shown only in INTERNAL sync mode" — fullsnes); the KROM uses that
+	// for the blue supervisor screens NO$SNS shows. In external-sync mode
+	// it genlocks to the SNES video and the plane outside the characters
+	// stays transparent. snes9x traditionally superimposes in both modes,
+	// so the raster can be turned off (win32 Hacks dialog, default on).
+	if (Settings.SFCBoxOSDBackdrop && !o->ExtSync)
+	{
+		uint16	uc = BUILD_PIXEL(osd_r5[o->UnderColor], osd_g5[o->UnderColor], osd_b5[o->UnderColor]);
+
+		for (int py = 0; py < height; py++)
+		{
+			uint16	*line = screen + py * pitch;
+			for (int px = 0; px < width; px++)
+				line[px] = uc;
+		}
+	}
+
+	if (!o->DisplayEnable)	// DC=0: backdrop only, no character plane
+		return;
+
+	// Cell geometry: 8 output pixels per cell on a lores frame, 16 on a
+	// hires (512-wide) one. S9xEndScreenRefresh doubles a lores frame
+	// whenever the character plane is visible (S9xSFCBoxOSDHires), so
+	// glyphs normally get 16 px per 12-dot cell and no dot column is
+	// lost. 18 OSD lines map 1:1 vertically; the grid is centered.
 	int	xscale = (width >= 512) ? 2 : 1;
 	int	xbase = (width - 192 * xscale) / 2;
 	int	ybase = (height > 216) ? (height - 216) / 2 : 0;
@@ -416,7 +458,14 @@ void S9xSFCBoxRenderOSD (uint16 *screen, int pitch, int width, int height)
 				uint8	attr = o->VRAMColor[row][col];
 				uint8	cc = o->ColorMode ? (attr & 7) : 7;
 				uint8	bc = o->ColorMode ? ((attr >> 3) & 7) : 0;
-				bool8	solid = ((attr & 0x40) || (lc & 1)) ? TRUE : FALSE;
+				// An AT-flagged character (cmd 2 bit9) always gets a solid
+				// 12x18 cell in its own background color (the B-button
+				// icon: black glyph on yellow). A BC-flagged line (cmd 6
+				// bit6) shows a line-wide background shaped by the BK type
+				// (cmd 6 bit9): full cells when solid, else a thin
+				// caption-style border hugging the strokes.
+				bool8	bgshow = ((attr & 0x40) || (lc & 8)) ? TRUE : FALSE;
+				bool8	bgsolid = ((attr & 0x40) || (lc & 1)) ? TRUE : FALSE;
 
 				for (int px = 0; px < cellw; px++)
 				{
@@ -424,19 +473,31 @@ void S9xSFCBoxRenderOSD (uint16 *screen, int pitch, int width, int height)
 					if (x < 0 || x >= width)
 						continue;
 
-					// Each output pixel covers 1.5 OSD dots; OR the pair so
-					// single-dot strokes (dakuten, シ vs ン) survive the
-					// downscale the way they do on an analog display.
-					int	gx = px / (xscale * zoomx);
-					int	d0 = gx * 3 / 2;
-					int	d1 = (gx * 3 + 1) / 2;
-					if (d0 > 11)	d0 = 11;
+					// Cells narrower than the 12-dot glyph OR adjacent
+					// dot pairs so single-dot strokes (dakuten, シ vs ン)
+					// survive the squeeze; from 12 px/cell up every dot
+					// column owns at least one pixel and a plain nearest
+					// lookup keeps the strokes crisp.
+					int	d0 = px * 12 / cellw;
+					int	d1 = (cellw < 12) ? (px * 12 + cellw / 2) / cellw : d0;
 					if (d1 > 11)	d1 = 11;
 
-					if (OSDGlyphDot(ch, grow, d0) || OSDGlyphDot(ch, grow, d1))
+					if (OSDGlyphDot(ch, grow, d0) || (d1 != d0 && OSDGlyphDot(ch, grow, d1)))
 						line[x] = BUILD_PIXEL(osd_r5[cc], osd_g5[cc], osd_b5[cc]);
-					else if (solid)
-						line[x] = BUILD_PIXEL(osd_r5[bc], osd_g5[bc], osd_b5[bc]);
+					else if (bgshow)
+					{
+						bool8	bg = bgsolid;
+						for (int r = grow - 1; r <= grow + 1 && !bg; r++)
+						{
+							if (r < 0 || r > 17)
+								continue;
+							for (int d = d0 - 1; d <= d1 + 1 && !bg; d++)
+								if (d >= 0 && d <= 11 && OSDGlyphDot(ch, r, d))
+									bg = TRUE;
+						}
+						if (bg)
+							line[x] = BUILD_PIXEL(osd_r5[bc], osd_g5[bc], osd_b5[bc]);
+					}
 				}
 			}
 		}
@@ -790,7 +851,7 @@ bool8 S9xSFCBoxSaveNVRAM (void)
 // pointers, socket tables, OSD font) is re-derived at ROM load and is
 // deliberately NOT part of the state.
 
-#define SFCBOX_STATE_VERSION	1
+#define SFCBOX_STATE_VERSION	2
 
 struct SSFCBoxSaveState
 {
@@ -818,6 +879,7 @@ struct SSFCBoxSaveState
 	uint8	OSDDisplayEnable, OSDColorMode;
 	uint8	OSDLineCtrl[SFCBOX_OSD_H];
 	uint8	OSDUnderColor, OSDXOfs, OSDYOfs;
+	uint8	OSDExtSync;
 };
 
 size_t S9xSFCBoxStateSize (void)
@@ -871,6 +933,7 @@ void S9xSFCBoxStateSave (uint8 *buf)
 	memcpy(s->OSDLineCtrl, SFCBox.OSD.LineCtrl, sizeof(s->OSDLineCtrl));
 	s->OSDUnderColor = SFCBox.OSD.UnderColor;
 	s->OSDXOfs = SFCBox.OSD.XOfs;			s->OSDYOfs = SFCBox.OSD.YOfs;
+	s->OSDExtSync = SFCBox.OSD.ExtSync;
 }
 
 bool8 S9xSFCBoxStateLoad (const uint8 *buf, size_t size)
@@ -921,6 +984,7 @@ bool8 S9xSFCBoxStateLoad (const uint8 *buf, size_t size)
 	memcpy(SFCBox.OSD.LineCtrl, s->OSDLineCtrl, sizeof(s->OSDLineCtrl));
 	SFCBox.OSD.UnderColor = s->OSDUnderColor;
 	SFCBox.OSD.XOfs = s->OSDXOfs;			SFCBox.OSD.YOfs = s->OSDYOfs;
+	SFCBox.OSD.ExtSync = s->OSDExtSync;
 
 	// The Z180's interrupt lines are level state we just restored; make
 	// sure the core's view matches the board's.
