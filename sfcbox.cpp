@@ -784,6 +784,160 @@ bool8 S9xSFCBoxSaveNVRAM (void)
 }
 
 // ---------------------------------------------------------------------------
+// Savestates. The dynamic supervisor state (Z180 core + board latches +
+// battery WRAM + RTC + OSD plane) travels as one packed POD mirror inside
+// a magic/version/size-guarded blob. Loader-owned data (KROM, GROM
+// pointers, socket tables, OSD font) is re-derived at ROM load and is
+// deliberately NOT part of the state.
+
+#define SFCBOX_STATE_VERSION	1
+
+struct SSFCBoxSaveState
+{
+	struct SHD64180		Z180;
+
+	uint8	WRAM[SFCBOX_WRAM_SIZE];
+	uint8	Port80W, Port81W, MapReg0, MapReg1;
+	uint8	Keyswitch, ResetButton, TVGameButton;
+	int32	CoinCycles;
+	uint8	WRIOOut, SNESHeld, PendingSNESReset, WRAMUnlock;
+	int32	LastVCounter;
+	uint8	JoyCtrl, JoyData[4], JoyInject[4], JoyReady;
+	int32	JoyShiftPos[2];
+	uint8	Int1Line, VBlankToggle;
+	int32	WatchdogCycles;
+	int64	CycleRemainder;
+
+	struct SSFCBoxRTC	RTC;
+
+	uint8	OSDPendingCmd;
+	uint8	OSDVRAMChar[SFCBOX_OSD_H][SFCBOX_OSD_W];
+	uint8	OSDVRAMColor[SFCBOX_OSD_H][SFCBOX_OSD_W];
+	uint8	OSDCursorX, OSDCursorY, OSDFillMode;
+	uint8	OSDCharColor, OSDBgColor;
+	uint8	OSDDisplayEnable, OSDColorMode;
+	uint8	OSDLineCtrl[SFCBOX_OSD_H];
+	uint8	OSDUnderColor, OSDXOfs, OSDYOfs;
+};
+
+size_t S9xSFCBoxStateSize (void)
+{
+	return (8 + sizeof(struct SSFCBoxSaveState));
+}
+
+void S9xSFCBoxStateSave (uint8 *buf)
+{
+	memcpy(buf, "BOX!", 4);
+	buf[4] = SFCBOX_STATE_VERSION;
+	buf[5] = 0;
+	buf[6] = (uint8) (sizeof(struct SSFCBoxSaveState) & 0xff);
+	buf[7] = (uint8) ((sizeof(struct SSFCBoxSaveState) >> 8) & 0xff);
+
+	struct SSFCBoxSaveState	*s = (struct SSFCBoxSaveState *) (buf + 8);
+	memset(s, 0, sizeof(*s));
+
+	s->Z180 = HD64180;
+
+	memcpy(s->WRAM, SFCBox.WRAM, SFCBOX_WRAM_SIZE);
+	s->Port80W = SFCBox.Port80W;			s->Port81W = SFCBox.Port81W;
+	s->MapReg0 = SFCBox.MapReg0;			s->MapReg1 = SFCBox.MapReg1;
+	s->Keyswitch = SFCBox.Keyswitch;
+	s->ResetButton = SFCBox.ResetButton;	s->TVGameButton = SFCBox.TVGameButton;
+	s->CoinCycles = SFCBox.CoinCycles;
+	s->WRIOOut = SFCBox.WRIOOut;
+	s->SNESHeld = SFCBox.SNESHeld;			s->PendingSNESReset = SFCBox.PendingSNESReset;
+	s->WRAMUnlock = SFCBox.WRAMUnlock;
+	s->LastVCounter = SFCBox.LastVCounter;
+	s->JoyCtrl = SFCBox.JoyCtrl;
+	memcpy(s->JoyData, SFCBox.JoyData, 4);
+	memcpy(s->JoyInject, SFCBox.JoyInject, 4);
+	s->JoyReady = SFCBox.JoyReady;
+	s->JoyShiftPos[0] = SFCBox.JoyShiftPos[0];
+	s->JoyShiftPos[1] = SFCBox.JoyShiftPos[1];
+	s->Int1Line = SFCBox.Int1Line;			s->VBlankToggle = SFCBox.VBlankToggle;
+	s->WatchdogCycles = SFCBox.WatchdogCycles;
+	s->CycleRemainder = (int64) SFCBox.CycleRemainder;
+
+	s->RTC = SFCBox.RTC;
+
+	s->OSDPendingCmd = SFCBox.OSD.PendingCmd;
+	memcpy(s->OSDVRAMChar, SFCBox.OSD.VRAMChar, sizeof(s->OSDVRAMChar));
+	memcpy(s->OSDVRAMColor, SFCBox.OSD.VRAMColor, sizeof(s->OSDVRAMColor));
+	s->OSDCursorX = SFCBox.OSD.CursorX;		s->OSDCursorY = SFCBox.OSD.CursorY;
+	s->OSDFillMode = SFCBox.OSD.FillMode;
+	s->OSDCharColor = SFCBox.OSD.CharColor;	s->OSDBgColor = SFCBox.OSD.BgColor;
+	s->OSDDisplayEnable = SFCBox.OSD.DisplayEnable;
+	s->OSDColorMode = SFCBox.OSD.ColorMode;
+	memcpy(s->OSDLineCtrl, SFCBox.OSD.LineCtrl, sizeof(s->OSDLineCtrl));
+	s->OSDUnderColor = SFCBox.OSD.UnderColor;
+	s->OSDXOfs = SFCBox.OSD.XOfs;			s->OSDYOfs = SFCBox.OSD.YOfs;
+}
+
+bool8 S9xSFCBoxStateLoad (const uint8 *buf, size_t size)
+{
+	if (size < 8 + sizeof(struct SSFCBoxSaveState) ||
+		memcmp(buf, "BOX!", 4) != 0 ||
+		buf[4] != SFCBOX_STATE_VERSION ||
+		(buf[6] | (buf[7] << 8)) != (int) sizeof(struct SSFCBoxSaveState))
+	{
+		printf("SFC-Box: incompatible supervisor state in snapshot; power-cycling the board instead.\n");
+		return (FALSE);
+	}
+
+	const struct SSFCBoxSaveState	*s = (const struct SSFCBoxSaveState *) (buf + 8);
+
+	HD64180 = s->Z180;
+
+	memcpy(SFCBox.WRAM, s->WRAM, SFCBOX_WRAM_SIZE);
+	SFCBox.Port80W = s->Port80W;			SFCBox.Port81W = s->Port81W;
+	SFCBox.MapReg0 = s->MapReg0;			SFCBox.MapReg1 = s->MapReg1;
+	SFCBox.Keyswitch = s->Keyswitch;
+	SFCBox.ResetButton = s->ResetButton;	SFCBox.TVGameButton = s->TVGameButton;
+	SFCBox.CoinCycles = s->CoinCycles;
+	SFCBox.WRIOOut = s->WRIOOut;
+	SFCBox.SNESHeld = s->SNESHeld;			SFCBox.PendingSNESReset = s->PendingSNESReset;
+	SFCBox.WRAMUnlock = s->WRAMUnlock;
+	SFCBox.LastVCounter = s->LastVCounter;
+	SFCBox.JoyCtrl = s->JoyCtrl;
+	memcpy(SFCBox.JoyData, s->JoyData, 4);
+	memcpy(SFCBox.JoyInject, s->JoyInject, 4);
+	SFCBox.JoyReady = s->JoyReady;
+	SFCBox.JoyShiftPos[0] = s->JoyShiftPos[0];
+	SFCBox.JoyShiftPos[1] = s->JoyShiftPos[1];
+	SFCBox.Int1Line = s->Int1Line;			SFCBox.VBlankToggle = s->VBlankToggle;
+	SFCBox.WatchdogCycles = s->WatchdogCycles;
+	SFCBox.CycleRemainder = s->CycleRemainder;
+
+	SFCBox.RTC = s->RTC;
+
+	SFCBox.OSD.PendingCmd = s->OSDPendingCmd;
+	memcpy(SFCBox.OSD.VRAMChar, s->OSDVRAMChar, sizeof(s->OSDVRAMChar));
+	memcpy(SFCBox.OSD.VRAMColor, s->OSDVRAMColor, sizeof(s->OSDVRAMColor));
+	SFCBox.OSD.CursorX = s->OSDCursorX;		SFCBox.OSD.CursorY = s->OSDCursorY;
+	SFCBox.OSD.FillMode = s->OSDFillMode;
+	SFCBox.OSD.CharColor = s->OSDCharColor;	SFCBox.OSD.BgColor = s->OSDBgColor;
+	SFCBox.OSD.DisplayEnable = s->OSDDisplayEnable;
+	SFCBox.OSD.ColorMode = s->OSDColorMode;
+	memcpy(SFCBox.OSD.LineCtrl, s->OSDLineCtrl, sizeof(s->OSDLineCtrl));
+	SFCBox.OSD.UnderColor = s->OSDUnderColor;
+	SFCBox.OSD.XOfs = s->OSDXOfs;			SFCBox.OSD.YOfs = s->OSDYOfs;
+
+	// The Z180's interrupt lines are level state we just restored; make
+	// sure the core's view matches the board's.
+	HD64180_SetINT1(SFCBox.Int1Line ? TRUE : FALSE);
+	HD64180_SetINT0(SFCBox.CoinCycles > 0);
+
+	return (TRUE);
+}
+
+void S9xSFCBoxPostLoadState (void)
+{
+	// Rebuild the SNES-visible map from the restored mapping registers
+	// (stages the GSU view and re-arms/disarms the SuperFX as needed).
+	S9xSFCBoxRemap();
+}
+
+// ---------------------------------------------------------------------------
 // BIOS loading
 
 static bool8 LoadBIOSFile (const char *name, uint8 *dest, uint32 size, uint32 minsize)

@@ -149,6 +149,15 @@ void	S9xSFCBoxInsertCoin (void);
 bool8	S9xSFCBoxLoadNVRAM (void);
 bool8	S9xSFCBoxSaveNVRAM (void);
 
+// Savestates: opaque versioned blob (Z180 + supervisor board), embedded in
+// the snapshot as the "BOX" block. PostLoadState rebuilds the SNES map from
+// the restored mapping registers — it must run BEFORE the FillRAM and GSU
+// restores (its FxReset clears the GSU register space).
+size_t	S9xSFCBoxStateSize (void);
+void	S9xSFCBoxStateSave (uint8 *buf);
+bool8	S9xSFCBoxStateLoad (const uint8 *buf, size_t size);
+void	S9xSFCBoxPostLoadState (void);
+
 // Rebuilds the SNES memory map from MapReg0/MapReg1 (memmap.cpp)
 void	S9xSFCBoxRemap (void);
 

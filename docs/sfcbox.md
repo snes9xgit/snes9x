@@ -203,9 +203,16 @@ shared save SRAM. Related trap fixed along the way: the libretro port left
 overclock option, which gave the GSU a zero-cycle budget and hung every
 SuperFX title.
 
+Savestates capture the full supervisor board as an opaque versioned "BOX"
+block (Z180 core, board latches, battery WRAM, RTC, OSD plane); on load
+the SNES map is rebuilt from the restored mapping registers before the
+FillRAM/GSU blocks land (order matters: the remap's FxReset clears the GSU
+register space). Verified: menu states resume the live KROM conversation
+(game launch works from a cold-loaded menu), and GSU-mode states resume
+Star Fox mid-render.
+
 ## Known gaps
 
-- Savestates don't capture the supervisor board (Z180/RTC/OSD) yet.
 - OSD sprite commands (3/C/D/B) are accepted but not rendered; zoom is
   rendered, blink/shading are not.
 - RTC time-set writes bump digit counters per-field (no cross-field carry);

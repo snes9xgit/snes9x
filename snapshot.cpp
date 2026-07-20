@@ -19,6 +19,7 @@
 #include "display.h"
 #include "language.h"
 #include "sgb/sgb.h"
+#include "sfcbox.h"
 #include "gfx.h"
 
 #ifndef min
@@ -1325,6 +1326,18 @@ void S9xFreezeToStream (STREAM stream)
 	if (PF94.active)
 		FreezeStruct(stream, "PF9", &PF94, SnapPF94, COUNT(SnapPF94));
 
+	// SFC-Box: the supervisor board (Z180 + latches + battery WRAM + RTC +
+	// OSD plane) as a self-versioned opaque blob, same approach as the
+	// SGB "GBE" blob below.
+	if (Settings.SFCBox)
+	{
+		const size_t	box_size = S9xSFCBoxStateSize();
+		uint8			*box_buf = new uint8[box_size];
+		S9xSFCBoxStateSave(box_buf);
+		FreezeBlock(stream, "BOX", box_buf, (int) box_size);
+		delete [] box_buf;
+	}
+
 	// SGB BIOS mode: piggyback the GB/SGB blob inside the SNES snapshot.
 	// The blob is self-versioning ("SGB!" magic + version + size); we just
 	// hand the raw bytes to FreezeBlock. Without this, BIOS-mode loads
@@ -1444,6 +1457,8 @@ int S9xUnfreezeFromStream (STREAM stream)
 	uint8	*local_bsx_data      = NULL;
 	uint8	*local_msu1_data     = NULL;
 	uint8	*local_pf94_data     = NULL;
+	uint8	*local_box_data      = NULL;
+	int		local_box_size       = 0;
 	uint8	*local_gbe_data      = NULL;
 	int		local_gbe_size       = 0;
 	uint8	*local_screenshot    = NULL;
@@ -1589,6 +1604,24 @@ int S9xUnfreezeFromStream (STREAM stream)
 
 		UnfreezeStructCopy(stream, "PF9", &local_pf94_data, SnapPF94, COUNT(SnapPF94), version);
 
+		// Optional SFC-Box supervisor blob (present iff saved with the
+		// box active). Same peek-and-branch as the GBE blob below.
+		{
+			int box_block_len = 0;
+			if (CheckBlockName(stream, "BOX", box_block_len) && box_block_len > 0)
+			{
+				local_box_data = new uint8[box_block_len];
+				result = UnfreezeBlock(stream, "BOX", local_box_data, box_block_len);
+				if (result != SUCCESS)
+				{
+					delete [] local_box_data;
+					local_box_data = NULL;
+					break;
+				}
+				local_box_size = box_block_len;
+			}
+		}
+
 		// Optional GB/SGB blob — present iff the snapshot was taken in
 		// BIOS mode (Settings.SGB_BIOSModeActive). Old snapshots and
 		// non-SGB SNES games omit it. CheckBlockName peeks without
@@ -1677,6 +1710,17 @@ int S9xUnfreezeFromStream (STREAM stream)
 
 		if (local_sram)
 			memcpy(Memory.SRAM, local_sram, Memory.SRAM_SIZE);
+
+		// SFC-Box: restore the supervisor BEFORE the FillRAM and GSU
+		// restores below — the remap in PostLoadState re-arms the SuperFX
+		// (its FxReset clears the GSU register space at FillRAM+$3000 and
+		// rebuilds the bank tables from the staged ROM view), and the
+		// FillRAM + SFX blocks must then land on top of that.
+		if (Settings.SFCBox && local_box_data)
+		{
+			if (S9xSFCBoxStateLoad(local_box_data, (size_t) local_box_size))
+				S9xSFCBoxPostLoadState();
+		}
 
 		if (local_fillram)
 			memcpy(Memory.FillRAM, local_fillram, 0x8000);
@@ -1968,6 +2012,7 @@ int S9xUnfreezeFromStream (STREAM stream)
 	if (local_screenshot)		delete [] local_screenshot;
 	if (local_movie_data)		delete [] local_movie_data;
 	if (local_pf94_data)		delete [] local_pf94_data;
+	if (local_box_data)			delete [] local_box_data;
 	if (local_gbe_data)			delete [] local_gbe_data;
 
 	return (result);
