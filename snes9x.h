@@ -229,6 +229,7 @@ struct SSettings
 	bool8	BS;
 	bool8	BSXItself;
 	bool8	BSXBootup;
+	bool8	SFCBox;              // Super Famicom Box (hotel unit) cart loaded, KROM supervisor active
 	bool8	MSU1;
 	bool8	SuperGameBoy;        // active when a .gb/.gbc ROM is loaded
 	uint8	GameBoyRunMode;      // 0=DMG, 1=SGB1, 2=SGB2

@@ -170,6 +170,11 @@ inline uint8 S9xGetByte (uint32 Address)
 			addCyclesInMemoryAccess;
 			return (byte);
 
+		case CMemory::MAP_SFCBOX_SRAM:
+			byte = S9xGetSFCBoxSRAM(Address);
+			addCyclesInMemoryAccess;
+			return (byte);
+
 		case CMemory::MAP_NONE:
 		default:
 			byte = OpenBus;
@@ -350,6 +355,13 @@ inline uint16 S9xGetWord (uint32 Address, enum s9xwrap_t w = WRAP_NONE)
 			addCyclesInMemoryAccess;
 			return (word);
 
+		case CMemory::MAP_SFCBOX_SRAM:
+			word  = S9xGetSFCBoxSRAM(Address);
+			addCyclesInMemoryAccess;
+			word |= S9xGetSFCBoxSRAM(Address + 1) << 8;
+			addCyclesInMemoryAccess;
+			return (word);
+
 		case CMemory::MAP_NONE:
 		default:
 			word = OpenBus | (OpenBus << 8);
@@ -466,6 +478,11 @@ inline void S9xSetByte (uint8 Byte, uint32 Address)
 
 		case CMemory::MAP_EVENT:
 			S9xSetEvent(Byte, Address);
+			addCyclesInMemoryAccess;
+			return;
+
+		case CMemory::MAP_SFCBOX_SRAM:
+			S9xSetSFCBoxSRAM(Byte, Address);
 			addCyclesInMemoryAccess;
 			return;
 
@@ -779,6 +796,23 @@ inline void S9xSetWord (uint16 Word, uint32 Address, enum s9xwrap_t w = WRAP_NON
 				S9xSetEvent((uint8) Word, Address);
 				addCyclesInMemoryAccess;
 				S9xSetEvent(Word >> 8, Address + 1);
+				addCyclesInMemoryAccess;
+			}
+			return;
+
+		case CMemory::MAP_SFCBOX_SRAM:
+			if (o)
+			{
+				S9xSetSFCBoxSRAM(Word >> 8, Address + 1);
+				addCyclesInMemoryAccess;
+				S9xSetSFCBoxSRAM((uint8) Word, Address);
+				addCyclesInMemoryAccess;
+			}
+			else
+			{
+				S9xSetSFCBoxSRAM((uint8) Word, Address);
+				addCyclesInMemoryAccess;
+				S9xSetSFCBoxSRAM(Word >> 8, Address + 1);
 				addCyclesInMemoryAccess;
 			}
 			return;

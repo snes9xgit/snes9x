@@ -52,6 +52,7 @@ struct CMemory
 		MAP_BSX,
 		MAP_SGB_ICD2,
 		MAP_EVENT,
+		MAP_SFCBOX_SRAM,
 		MAP_NONE,
 		MAP_LAST
 	};
@@ -126,6 +127,7 @@ struct CMemory
     bool8	LoadMultiCartInt ();
 	bool8	LoadSufamiTurbo ();
 	bool8	LoadBSCart ();
+	bool8	LoadSFCBox (int32);
 	bool8	LoadGNEXT ();
 	bool8	LoadSRAM (const char *);
 	bool8	SaveSRAM (const char *);
@@ -248,6 +250,10 @@ extern SPF94 PF94;
 
 uint8 S9xGetEvent (uint32 Address);
 void S9xSetEvent (uint8 Byte, uint32 Address);
+
+// Super Famicom Box shared-SRAM window (sfcbox.cpp)
+uint8 S9xGetSFCBoxSRAM (uint32 Address);
+void S9xSetSFCBoxSRAM (uint8 Byte, uint32 Address);
 void S9xPF94Reset (void);
 void S9xPF94PostLoadState (void);
 void S9xPF94LoadGames (void);

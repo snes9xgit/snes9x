@@ -15,6 +15,7 @@
 #include "ppu.h"
 #include "gfx.h"
 #include "sgb/sgb.h"
+#include "sfcbox.h"
 #ifdef DEBUGGER
 #include "debug.h"
 #include "missing.h"
@@ -125,6 +126,27 @@ void S9xMainLoop (void)
 
 	for (;;)
 	{
+		if (Settings.SFCBox)
+		{
+			// The KROM released the reset line: reboot the SNES side at an
+			// instruction boundary (the mapping registers already point at
+			// whatever the KROM selected).
+			if (S9xSFCBoxPendingReset())
+				S9xSFCBoxApplySNESReset();
+
+			// Held in reset: skip opcode execution but keep the H/V event
+			// machinery running so the Z180, APU and frame pacing advance.
+			if (S9xSFCBoxSNESHeld())
+			{
+				CPU.Cycles = CPU.NextEvent;
+				while (CPU.Cycles >= CPU.NextEvent)
+					S9xDoHEventProcessing();
+				if (CPU.Flags & SCAN_KEYS_FLAG)
+					break;
+				continue;
+			}
+		}
+
 		if (CPU.NMIPending)
 		{
 			#ifdef DEBUGGER
@@ -407,6 +429,11 @@ void S9xDoHEventProcessing (void)
 			// have no ICD2 traffic.
 			if (Settings.SGB_BIOSModeActive && S9xSGBBIOSGBIsReleased())
 				S9xSGBSyncToSnesCycle(CPU.Cycles);
+
+			// SFC-Box: the supervisor HD64180 runs its slice of every
+			// scanline whether or not the SNES itself is executing.
+			if (Settings.SFCBox)
+				S9xSFCBoxEndScanline();
 
 			S9xAPUEndScanline();
 			CPU.Cycles -= Timings.H_Max;

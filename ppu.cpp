@@ -15,6 +15,7 @@
 #include "controls.h"
 #include "movie.h"
 #include "display.h"
+#include "sfcbox.h"
 #ifdef NETPLAY_SUPPORT
 #include "netplay.h"
 #endif
@@ -1498,6 +1499,8 @@ void S9xSetCPU (uint8 Byte, uint16 Address)
 				else
 					S9xTryGunLatch((Byte & 0x80) ? true : false);
 				Memory.FillRAM[0x4201] = Memory.FillRAM[0x4213] = Byte;
+				if (Settings.SFCBox)
+					S9xSFCBoxSetWRIO(Byte);	// serial link to the KROM
 				break;
 
 			case 0x4202: // WRMPYA
@@ -1773,6 +1776,8 @@ uint8 S9xGetCPU (uint16 Address)
 				return (REGISTER_4212() | (OpenBus & 0x3e));
 
 			case 0x4213: // RDIO
+				if (Settings.SFCBox)
+					return (S9xSFCBoxGetRDIO());	// KROM drives bits 1/2/5
 				return (Memory.FillRAM[0x4213]);
 
 			case 0x4214: // RDDIVL

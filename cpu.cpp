@@ -14,6 +14,7 @@
 #include "snapshot.h"
 #include "cheats.h"
 #include "sgb/sgb.h"
+#include "sfcbox.h"
 #ifdef DEBUGGER
 #include "debug.h"
 #endif
@@ -156,6 +157,11 @@ void S9xReset (void)
 	if (Settings.SuperGameBoy || Settings.SGB_BIOSModeActive)
 		S9xSGBReset();
 
+	// SFC-Box: a hard reset power-cycles the supervisor board too; the
+	// freshly-reset KROM immediately holds the SNES until it's ready.
+	if (Settings.SFCBox)
+		S9xSFCBoxPowerOn();
+
 	S9xInitCheatData();
 }
 
@@ -251,6 +257,13 @@ void S9xSoftReset (void)
 		S9xInitCheatData();
 		return;
 	}
+
+	// SFC-Box: a soft reset restarts the CURRENT GAME — the L+R+Select+
+	// Start joypad-combo semantics, where the KROM just pulses the SNES
+	// reset line with the mapping intact. The supervisor board keeps
+	// running untouched, so the plain SNES-side reset below is exactly
+	// right. (A full box restart — the front-panel button — is the hard
+	// reset, S9xReset.)
 
 	S9xResetSaveTimer(FALSE);
 

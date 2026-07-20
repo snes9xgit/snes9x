@@ -14,6 +14,7 @@
 #include "screenshot.h"
 #include "display.h"
 #include "sgb/sgb.h"   // S9xSGBOverlayBiosBorder — runs after FLUSH_REDRAW
+#include "sfcbox.h"    // S9xSFCBoxRenderOSD — MB90082 overlay plane
                         // so the BIOS-mode custom-border overlay isn't
                         // clobbered by the PPU's final blit.
 
@@ -494,6 +495,12 @@ void S9xEndScreenRefresh (void)
 		// No-op until both halves of CHR_TRN + PCT_TRN have arrived.
 		if (Settings.SGB_BIOSModeActive)
 			S9xSGBOverlayBiosBorder(GFX.Screen, GFX.RealPPL);
+
+		// SFC-Box: the MB90082 superimposes its character plane on the
+		// composite output — draw it over the finished SNES frame (and
+		// over the black frames while the SNES sits in reset).
+		if (Settings.SFCBox)
+			S9xSFCBoxRenderOSD(GFX.Screen, GFX.RealPPL, IPPU.RenderedScreenWidth, IPPU.RenderedScreenHeight);
 
 		S9xBlendGameBoyFrames();
 

@@ -39,6 +39,7 @@
 #include "display.h"
 #include "sha256.h"
 #include "snapshot.h"
+#include "sfcbox.h"
 
 #ifndef SET_UI_COLOR
 #define SET_UI_COLOR(r, g, b) ;
@@ -1468,15 +1469,22 @@ bool8 CMemory::LoadROMMem (const uint8 *source, uint32 sourceSize, const char* o
     }
     Settings.GBRomPath[0] = '\0';
 
+    // LoadROMInt only ever needs one retry (the interleave-detection
+    // flip-flop); bound the loop so a deterministic failure — e.g. an
+    // SFC-Box image without its KROM BIOS — reports instead of spinning.
+    int retries = 0;
     do
     {
         memset(ROM,0, MAX_ROM_SIZE);
         memset(&Multi, 0,sizeof(Multi));
         memcpy(ROM,source,sourceSize);
-    }
-    while(!LoadROMInt(sourceSize));
 
-    return TRUE;
+        if (LoadROMInt(sourceSize))
+            return TRUE;
+    }
+    while (++retries < 3);
+
+    return FALSE;
 }
 
 // Case-insensitive ASCII extension match. Used to route .gb/.gbc ROMs
@@ -1764,6 +1772,9 @@ bool8 CMemory::LoadROM (const char *filename)
 
     int32 totalFileSize;
 
+    // Bounded for the same reason as LoadROMMem: one interleave retry is
+    // legitimate, endless identical failures are not.
+    int retries = 0;
     do
     {
         memset(ROM,0, MAX_ROM_SIZE);
@@ -1784,10 +1795,13 @@ bool8 CMemory::LoadROM (const char *filename)
         }
 
         CheckForAnyPatch(filename, HeaderCount != 0, totalFileSize);
-    }
-    while(!LoadROMInt(totalFileSize));
 
-    return TRUE;
+        if (LoadROMInt(totalFileSize))
+            return TRUE;
+    }
+    while (++retries < 3);
+
+    return FALSE;
 }
 
 // P1 — BIOS-mode load. Runs the real SGB1/SGB2 SNES-side BIOS on the 65816
@@ -1953,6 +1967,21 @@ bool8 CMemory::LoadROMInt (int32 ROMfillSize)
 
 	CalculatedSize = 0;
 	ExtendedFormat = NOPE;
+
+	// Super Famicom Box cart images (GROM directory + ROMs) must divert
+	// before scoring: a GROM's checksum bytes sit where the reset vector
+	// would be, so the interleave heuristics would scramble the image.
+	if (ROMfillSize >= 0x28000 &&
+		ROM[0] >= 1 && ROM[0] <= 8 && ROM[1] == 0x05)
+	{
+		uint32	sum = 0;
+		for (int32 i = 0; i < 0x7ffc; i++)
+			sum += ROM[i];
+		uint16	chk = ROM[0x7ffc] | (ROM[0x7ffd] << 8);
+		uint16	cmp = ROM[0x7ffe] | (ROM[0x7fff] << 8);
+		if ((uint16) sum == chk && (uint16) (chk ^ 0xffff) == cmp)
+			return (LoadSFCBox(ROMfillSize));
+	}
 
 	int	hi_score, lo_score;
 	int score_headered;
@@ -2381,6 +2410,231 @@ bool8 CMemory::LoadBSCart ()
 	return (TRUE);
 }
 
+// ---------------------------------------------------------------------------
+// Super Famicom Box (docs/sfcbox.md). Images use the fullsnes/no$sns merged
+// format: 32K GROM directory, that cart's ROMs in directory order, then an
+// 8K DSP-1 program dump if the cart carries the chip. The PSS-61 (slot 0)
+// image may be followed by a PSS-62/63/64 (slot 1) image in the same file.
+
+// Dedicated SuperFX ROM view for the box's GSU socket (Star Fox). fxemu
+// wants the image linear at +0 (GSU banks 40h+) and the doubled-32K layout
+// at +0x800000 (GSU banks 00h-3Fh). The multi-game image can't be
+// rearranged in place the way Map_SuperFXLoROMMap does — a PSS-61+63 file
+// is 9.5MB and overlaps +0x800000 — so the selected image is staged into
+// this buffer when the KROM programs the GSU mapping.
+static uint8	*SFCBoxFXRom = NULL;
+static uint32	SFCBoxFXRomOffset = ~0u;
+
+static bool8 SFCBoxStageGSU (uint32 off, uint32 size)
+{
+	if (!SFCBoxFXRom)
+	{
+		SFCBoxFXRom = (uint8 *) malloc(0xC00000);
+		if (!SFCBoxFXRom)
+			return (FALSE);
+	}
+
+	if (SFCBoxFXRomOffset == off)
+		return (TRUE);
+
+	uint32	mask = size - 1;
+
+	memset(SFCBoxFXRom, 0xff, 0x800000);
+	memcpy(SFCBoxFXRom, Memory.ROM + off, size);
+
+	// The doubled layout Map_SuperFXLoROMMap builds, but mirrored by the
+	// image size instead of reading past it.
+	for (uint32 c = 0; c < 64; c++)
+	{
+		const uint8	*src = Memory.ROM + off + ((c * 0x8000) & mask);
+		memcpy(SFCBoxFXRom + 0x800000 + c * 0x10000,           src, 0x8000);
+		memcpy(SFCBoxFXRom + 0x800000 + c * 0x10000 + 0x8000,  src, 0x8000);
+	}
+
+	SFCBoxFXRomOffset = off;
+	return (TRUE);
+}
+
+static bool8 SFCBoxValidGROM (const uint8 *grom, uint32 avail)
+{
+	if (avail < 0x8000 || grom[0] < 1 || grom[0] > 8 || grom[1] != 0x05)
+		return (FALSE);
+
+	uint32	sum = 0;
+	for (uint32 i = 0; i < 0x7ffc; i++)
+		sum += grom[i];
+
+	uint16	chk = grom[0x7ffc] | (grom[0x7ffd] << 8);
+	uint16	cmp = grom[0x7ffe] | (grom[0x7fff] << 8);
+	return ((uint16) sum == chk && (uint16) (chk ^ 0xffff) == cmp);
+}
+
+// Walk one cart's GROM directory, filling the socket table; returns the
+// image length in bytes (0 = malformed).
+static uint32 SFCBoxParseSlot (int slot, uint32 base, uint32 avail)
+{
+	const uint8	*grom = Memory.ROM + base;
+	uint32		nroms = grom[0];
+	uint32		dir = grom[8] | (grom[9] << 8);
+
+	if (dir + nroms * 3 > 0x8000)
+		return (0);
+
+	uint32	off = 0x8000;	// ROMs follow the 32K GROM
+
+	for (uint32 i = 0; i < nroms; i++)
+	{
+		uint32	block = (uint32) (grom[dir + i * 2] | (grom[dir + i * 2 + 1] << 8)) * 0x1000;
+		uint8	socket = grom[dir + nroms * 2 + i] & 3;
+
+		if (block + 0x30 > 0x8000)
+			return (0);
+
+		uint32	p0 = grom[block] | (grom[block + 1] << 8);
+		if (block + p0 + 0x2b > 0x8000)
+			return (0);
+
+		uint32	size = (uint32) grom[block + p0 + 0x19] * 0x20000;	// 128K units
+		if (!size || base + off + size > avail)
+			return (0);
+
+		SFCBox.RomOffset[slot][socket] = base + off;
+		SFCBox.RomSize[slot][socket] = size;
+		off += size;
+	}
+
+	SFCBox.SlotChipset[slot] = grom[4];
+	if (grom[4] & 0x02)		// trailing DSP-1 program dump
+		off += 0x2000;
+
+	SFCBox.GROM[slot] = Memory.ROM + base;
+	SFCBox.SlotPresent[slot] = TRUE;
+	return (off);
+}
+
+bool8 CMemory::LoadSFCBox (int32 ROMfillSize)
+{
+	memset(&SFCBox, 0, sizeof(SFCBox));
+	SFCBoxFXRomOffset = ~0u;	// new image: invalidate the staged GSU view
+
+	uint32	total = SFCBoxParseSlot(0, 0, (uint32) ROMfillSize);
+	if (!total || !SFCBox.RomSize[0][0])
+	{
+		printf("SFC-Box: unrecognized GROM directory in slot 0 image.\n");
+		return (FALSE);
+	}
+
+	// A second cart appended? (also probe +0x800 for images whose DSP dump
+	// kept the 10K padded layout)
+	if ((uint32) ROMfillSize >= total + 0x8000)
+	{
+		uint32	candidates[2] = { total, total + 0x800 };
+		bool8	found = FALSE;
+
+		for (int i = 0; i < 2 && !found; i++)
+		{
+			if (candidates[i] + 0x8000 <= (uint32) ROMfillSize &&
+				SFCBoxValidGROM(ROM + candidates[i], ROMfillSize - candidates[i]))
+				found = SFCBoxParseSlot(1, candidates[i], (uint32) ROMfillSize) != 0;
+		}
+
+		if (!found)
+			printf("SFC-Box: trailing data after the slot 0 image is not a valid second cart; ignoring it.\n");
+	}
+
+	if (!S9xSFCBoxLoadKROM())
+		return (FALSE);
+
+	//// Identity
+	LoROM = TRUE;
+	HiROM = FALSE;
+	ExtendedFormat = NOPE;
+	strcpy(ROMName, "SUPER FAMICOM BOX");
+	memset(ROMId, 0, 5);
+	CompanyId = 0x01;
+	ROMType = 0;
+	ROMSpeed = 0x20;
+	ROMRegion = 0;					// Japan, NTSC
+	CalculatedSize = ((ROMfillSize + 0x1fff) / 0x2000) * 0x2000;
+	ROMSize = 1;
+	while (((uint32) 1024 << ROMSize) < CalculatedSize)
+		ROMSize++;
+	SRAMSize = 7;					// the PSS-61's shared 128K chip
+	SRAMMask = 0x1ffff;
+
+	//// Chip settings (the InitROM preamble we bypass)
+	Settings.SuperFX = FALSE;
+	Settings.DSP = 0;
+	Settings.SA1 = FALSE;
+	Settings.C4 = FALSE;
+	Settings.SDD1 = FALSE;
+	Settings.SPC7110 = FALSE;
+	Settings.SPC7110RTC = FALSE;
+	Settings.OBC1 = FALSE;
+	Settings.SETA = 0;
+	Settings.SRTC = FALSE;
+	Settings.MSU1 = FALSE;
+	S9xInitBSX();					// clears Settings.BS
+	Settings.SFCBox = TRUE;
+
+	// DSP-1 (Mario Kart) is HLE'd; armed when a cart carries the chip and
+	// windowed in/out by the mapping registers.
+	if ((SFCBox.SlotChipset[0] | SFCBox.SlotChipset[1]) & 0x02)
+	{
+		Settings.DSP = 1;
+		SetDSP = &DSP1SetByte;
+		GetDSP = &DSP1GetByte;
+	}
+
+	Checksum_Calculate();
+	ROMChecksum = CalculatedChecksum;
+	ROMComplementChecksum = ROMChecksum ^ 0xffff;
+	ROMCRC32 = caCRC32(ROM, CalculatedSize);
+	sha256sum(ROM, CalculatedSize, ROMSHA256);
+
+	//// NTSC-only timing
+	Settings.PAL = FALSE;
+	Settings.FrameTime = Settings.FrameTimeNTSC;
+	ROMFramesPerSecond = 60;
+
+	Timings.H_Max_Master = SNES_CYCLES_PER_SCANLINE;
+	Timings.H_Max        = Timings.H_Max_Master;
+	Timings.HBlankStart  = SNES_HBLANK_START_HC;
+	Timings.HBlankEnd    = SNES_HBLANK_END_HC;
+	Timings.HDMAInit     = SNES_HDMA_INIT_HC;
+	Timings.HDMAStart    = SNES_HDMA_START_HC;
+	Timings.RenderPos    = SNES_RENDER_START_HC;
+	Timings.V_Max_Master = SNES_MAX_NTSC_VCOUNTER;
+	Timings.V_Max        = Timings.V_Max_Master;
+	Timings.DMACPUSync   = 18;
+	Timings.NMIDMADelay  = 24;
+	Timings.IRQTriggerCycles = 14;
+	Timings.APUSpeedup = 0;
+	S9xAPUTimingSetSpeedup(Timings.APUSpeedup);
+
+	IPPU.TotalEmulatedFrames = 0;
+
+	memset(&SNESGameFixes, 0, sizeof(SNESGameFixes));
+	SNESGameFixes.SRAMInitialValue = 0x60;
+
+	// Initial map; S9xReset() below powers the supervisor on, which remaps
+	// again from the registers' reset state.
+	Map_Initialize();
+	S9xSFCBoxRemap();
+
+	sprintf(String, "\"SUPER FAMICOM BOX\" slot0%s, %s, %s, CRC32:%08X",
+			SFCBox.SlotPresent[1] ? " + slot1" : " only",
+			Size(), Settings.DSP ? "DSP1" : "no DSP", ROMCRC32);
+	S9xMessage(S9X_INFO, S9X_ROM_INFO, String);
+
+	S9xReset();
+
+	S9xDeleteCheats();
+	S9xLoadCheatFile(S9xGetFilename(".cht", CHEAT_DIR).c_str());
+
+	return (TRUE);
+}
+
 bool8 CMemory::LoadGNEXT ()
 {
 	Multi.sramA = SRAM;
@@ -2536,6 +2790,9 @@ bool8 CMemory::SaveSRAM (const char *filename)
 		else                          sav += ".sav";
 		S9xSGBSaveBatteryToPath(sav.c_str());
 	}
+
+	if (Settings.SFCBox)
+		S9xSFCBoxSaveNVRAM();	// KROM battery RAM rides along with the .srm
 
 	if (Settings.SuperFX && ROMType < 0x15) // doesn't have SRAM
 		return (TRUE);
@@ -2693,6 +2950,11 @@ void CMemory::InitROM (void)
 		RomHeader += 0x400000;
 	if (HiROM)
 		RomHeader += 0x8000;
+
+	// A regular ROM load supersedes any active SFC-Box session (the box
+	// path bypasses InitROM entirely, so this never undoes its own load).
+	Settings.SFCBox = FALSE;
+	S9xSFCBoxDeactivate();
 
 	S9xInitBSX(); // Set BS header before parsing
 
@@ -5204,4 +5466,176 @@ void CMemory::CheckForAnyPatch(const char *rom_filename, bool8 header, int32 &ro
 
     if (try_patch_type_sequence(PATCH_DIR))
         return;
+}
+
+// ---------------------------------------------------------------------------
+// Super Famicom Box: rebuild the SNES-visible map from the supervisor's
+// mapping registers ([C0h]/[C1h] on the KROM bus). Runs at board power-on
+// and on every register write — the KROM remaps live, SNES running or not
+// (real hardware does the same; the SNES executes garbage until the KROM
+// pulses its reset line).
+
+void S9xSFCBoxRemap (void)
+{
+	if (!Settings.SFCBox)
+		return;
+
+	uint8	r0 = SFCBox.MapReg0, r1 = SFCBox.MapReg1;
+	int		slot = (r0 >> 2) & 1;
+	int		socket = r0 & 3;
+	int		mapmode = r1 & 3;	// 0=reserved, 1=GSU, 2=LoROM, 3=HiROM
+
+	uint32	off = SFCBox.RomOffset[slot][socket];
+	uint32	size = SFCBox.RomSize[slot][socket];
+
+	// C1's map-mode field is what the GROM helper programs; C0 bit7 covers
+	// the reset state before the helper ever ran.
+	bool8	hirom = (mapmode == 3) || (mapmode == 0 && (r0 & 0x80));
+
+	bool8	gsu = FALSE;
+	if (mapmode == 1)
+	{
+		if (size && SFCBoxStageGSU(off, size))
+			gsu = TRUE;
+		else
+			printf("SFC-Box: GSU socket empty (or staging failed); mapping plain LoROM.\n");
+	}
+
+	if (!size)
+	{
+		// Unpopulated socket: point the window at the menu ROM so fetches
+		// see something coherent instead of open bus.
+		off = SFCBox.RomOffset[0][0];
+		size = SFCBox.RomSize[0][0];
+		hirom = FALSE;
+		if (!size)
+			return;
+	}
+
+	Memory.Map_Initialize();
+	Memory.map_System();
+
+	if (gsu)
+	{
+		// GSU-1 board layout (cf. Map_SuperFXLoROMMap), pointed at the
+		// staged view. The 32K work RAM is the cart's own chip (IC21 on
+		// the PSS-61) — kept beyond the 128K shared save SRAM so Star Fox
+		// can't scribble over other games' saves.
+		uint8	*gsuram = Memory.SRAM + 0x20000;
+		uint32	mask = size - 1;
+
+		for (uint32 bank = 0; bank < 0x40; bank++)
+		{
+			uint8	*base = SFCBoxFXRom + ((bank << 15) & mask) - 0x8000;
+			for (uint32 blk = 8; blk <= 15; blk++)
+			{
+				uint32	p = (bank << 4) | blk;
+				Memory.Map[p] = Memory.Map[p + 0x800] = base;
+				Memory.BlockIsROM[p] = Memory.BlockIsROM[p + 0x800] = TRUE;
+				Memory.BlockIsRAM[p] = Memory.BlockIsRAM[p + 0x800] = FALSE;
+			}
+		}
+
+		for (uint32 bank = 0x40; bank <= 0x5f; bank++)
+		{
+			uint8	*base = SFCBoxFXRom + (((bank - 0x40) << 16) & mask);
+			for (uint32 blk = 0; blk <= 15; blk++)
+			{
+				uint32	p = (bank << 4) | blk;
+				Memory.Map[p] = Memory.Map[p + 0x800] = base;
+				Memory.BlockIsROM[p] = Memory.BlockIsROM[p + 0x800] = TRUE;
+				Memory.BlockIsRAM[p] = Memory.BlockIsRAM[p + 0x800] = FALSE;
+			}
+		}
+
+		Memory.map_space(0x00, 0x3f, 0x6000, 0x7fff, gsuram - 0x6000);
+		Memory.map_space(0x80, 0xbf, 0x6000, 0x7fff, gsuram - 0x6000);
+		Memory.map_space(0x70, 0x70, 0x0000, 0xffff, gsuram);
+		Memory.map_space(0x71, 0x71, 0x0000, 0xffff, gsuram + 0x10000);
+		Memory.map_space(0xf0, 0xf0, 0x0000, 0xffff, gsuram);
+		Memory.map_space(0xf1, 0xf1, 0x0000, 0xffff, gsuram + 0x10000);
+
+		SuperFX.pvRom = SFCBoxFXRom;
+		SuperFX.nRomBanks = size >> 15;
+		SuperFX.pvRam = gsuram;
+		SuperFX.nRamBanks = 1;
+		if (!Settings.SuperFX)
+			S9xInitSuperFX();
+		Settings.SuperFX = TRUE;
+		S9xResetSuperFX();		// rebuilds the GSU bank tables from pvRom
+	}
+	else if (Settings.SuperFX)
+	{
+		// Leaving the GSU socket: disarm and restore the Init() defaults.
+		Settings.SuperFX = FALSE;
+		CPU.IRQExternal = FALSE;
+		SuperFX.pvRom = Memory.ROM;
+		SuperFX.nRomBanks = (2 * 1024 * 1024) / (32 * 1024);
+		SuperFX.pvRam = Memory.SRAM;
+		SuperFX.nRamBanks = 2;
+	}
+
+	if (gsu)
+	{
+		// ROM/RAM windows are all placed; skip the LoROM/HiROM/DSP/SRAM
+		// branches below (the KROM never combines them with GSU mode).
+	}
+	else if (hirom)
+	{
+		Memory.map_hirom_offset(0x00, 0x3f, 0x8000, 0xffff, size, off);
+		Memory.map_hirom_offset(0x40, 0x7d, 0x0000, 0xffff, size, off);
+		Memory.map_hirom_offset(0x80, 0xbf, 0x8000, 0xffff, size, off);
+		Memory.map_hirom_offset(0xc0, 0xff, 0x0000, 0xffff, size, off);
+	}
+	else
+	{
+		Memory.map_lorom_offset(0x00, 0x3f, 0x8000, 0xffff, size, off);
+		Memory.map_lorom_offset(0x40, 0x7f, 0x0000, 0xffff, size, off);
+		Memory.map_lorom_offset(0x80, 0xbf, 0x8000, 0xffff, size, off);
+		Memory.map_lorom_offset(0xc0, 0xff, 0x0000, 0xffff, size, off);
+	}
+
+	// DSP-1 window (Mario Kart: HiROM layout on real carts). The KROM's
+	// socket probe can leave the DSP bit set alongside GSU mode — the
+	// window would clobber the GSU program banks, so gate it out.
+	if (!gsu && (r0 & 0x20) && Settings.DSP)
+	{
+		if (hirom)
+		{
+			DSP0.boundary = 0x7000;
+			DSP0.maptype = M_DSP1_HIROM;
+		}
+		else
+		{
+			DSP0.boundary = 0xc000;
+			DSP0.maptype = M_DSP1_LOROM_S;
+		}
+		Memory.map_DSP();
+	}
+
+	// Shared 128K SRAM: [C1h] picks a 32K-aligned base and a 2K/8K/32K
+	// window size; the MAP_SFCBOX_SRAM handler applies both. In GSU mode
+	// banks 70/71 belong to the cart's own work RAM instead.
+	if (!gsu && (r0 & 0x08))
+	{
+		static const uint32	window[4] = { 0x800, 0x2000, 0x2000, 0x8000 };
+
+		SFCBox.SRAMWindowMask = window[(r1 >> 6) & 3] - 1;
+		SFCBox.SRAMWindowBase = (uint32) ((r1 >> 2) & 3) * 0x8000;
+		SFCBox.SRAMHiROM = hirom;
+
+		if (hirom)
+		{
+			Memory.map_index(0x20, 0x3f, 0x6000, 0x7fff, CMemory::MAP_SFCBOX_SRAM, CMemory::MAP_TYPE_RAM);
+			Memory.map_index(0xa0, 0xbf, 0x6000, 0x7fff, CMemory::MAP_SFCBOX_SRAM, CMemory::MAP_TYPE_RAM);
+		}
+		else
+		{
+			Memory.map_index(0x70, 0x7d, 0x0000, 0x7fff, CMemory::MAP_SFCBOX_SRAM, CMemory::MAP_TYPE_RAM);
+			Memory.map_index(0xf0, 0xff, 0x0000, 0x7fff, CMemory::MAP_SFCBOX_SRAM, CMemory::MAP_TYPE_RAM);
+		}
+	}
+
+	Memory.map_WRAM();
+	Memory.map_WriteProtectROM();
 }
