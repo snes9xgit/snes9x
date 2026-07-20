@@ -258,14 +258,12 @@ void S9xSoftReset (void)
 		return;
 	}
 
-	// SFC-Box: only the KROM's own reset line performs a bare SNES reset
-	// (InternalReset). A user-initiated soft reset is the front-panel
-	// button — that restarts the whole box, KROM included.
-	if (Settings.SFCBox && !SFCBox.InternalReset)
-	{
-		S9xReset();
-		return;
-	}
+	// SFC-Box: a soft reset restarts the CURRENT GAME — the L+R+Select+
+	// Start joypad-combo semantics, where the KROM just pulses the SNES
+	// reset line with the mapping intact. The supervisor board keeps
+	// running untouched, so the plain SNES-side reset below is exactly
+	// right. (A full box restart — the front-panel button — is the hard
+	// reset, S9xReset.)
 
 	S9xResetSaveTimer(FALSE);
 

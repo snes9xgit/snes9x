@@ -914,9 +914,7 @@ bool8 S9xSFCBoxPendingReset (void)
 void S9xSFCBoxApplySNESReset (void)
 {
 	SFCBox.PendingSNESReset = FALSE;
-	SFCBox.InternalReset = TRUE;
 	S9xSoftReset();
-	SFCBox.InternalReset = FALSE;
 }
 
 void S9xSFCBoxEndScanline (void)

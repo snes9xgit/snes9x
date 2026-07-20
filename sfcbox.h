@@ -92,7 +92,6 @@ struct SSFCBox
 	uint8	WRIOOut;					// last $4201 write
 	bool8	SNESHeld;					// reset line low: SNES frozen
 	bool8	PendingSNESReset;			// rising edge seen, soft-reset at a safe point
-	bool8	InternalReset;				// guards S9xSoftReset recursion
 
 	// KROM WRAM save-area write protect ([A0h].W bit7) and the SRAM
 	// window the mapping registers currently grant the SNES
