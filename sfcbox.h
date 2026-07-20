@@ -141,6 +141,7 @@ bool8	S9xSFCBoxJoypadOverride (int pad, uint16 *value);
 void	S9xSFCBoxJoypadAccessed (void);
 uint8	S9xGetSFCBoxSRAM (uint32 address);
 void	S9xSetSFCBoxSRAM (uint8 byte, uint32 address);
+bool8	S9xSFCBoxOSDHires (void);		// character plane visible: double lores frames first
 void	S9xSFCBoxRenderOSD (uint16 *screen, int pitch, int width, int height);
 
 // Front panel

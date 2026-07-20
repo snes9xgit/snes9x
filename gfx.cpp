@@ -500,7 +500,23 @@ void S9xEndScreenRefresh (void)
 		// composite output — draw it over the finished SNES frame (and
 		// over the black frames while the SNES sits in reset).
 		if (Settings.SFCBox)
+		{
+			// The 12-dot OSD cells lose stroke columns when squeezed into
+			// 8 SNES pixels; while the character plane is visible, double
+			// a lores frame in place (as hires games do) so every cell
+			// gets 16 output pixels and each dot column survives.
+			if (S9xSFCBoxOSDHires() && IPPU.RenderedScreenWidth <= 256)
+			{
+				for (int y = 0; y < IPPU.RenderedScreenHeight; y++)
+				{
+					uint16	*line = GFX.Screen + y * GFX.RealPPL;
+					for (int x = IPPU.RenderedScreenWidth - 1; x >= 0; x--)
+						line[x * 2] = line[x * 2 + 1] = line[x];
+				}
+				IPPU.RenderedScreenWidth *= 2;
+			}
 			S9xSFCBoxRenderOSD(GFX.Screen, GFX.RealPPL, IPPU.RenderedScreenWidth, IPPU.RenderedScreenHeight);
+		}
 
 		S9xBlendGameBoyFrames();
 
