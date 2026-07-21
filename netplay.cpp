@@ -578,26 +578,30 @@ bool8 S9xNPLoadROMDialog (const char *rom_name)
 
 bool8 S9xNPLoadROM (uint32 len)
 {
-    uint8 *data = new uint8 [len];
+    if (len == 0 || len > PATH_MAX)
+    {
+        S9xNPSetError ("Length error in ROM name received from server.");
+        S9xNPDisconnect ();
+        return (FALSE);
+    }
+
+    std::vector<uint8> data(len);
 
     S9xNPSetAction ("Receiving ROM name...");
-    if (!S9xNPGetData (NetPlay.Socket, data, len))
+    if (!S9xNPGetData (NetPlay.Socket, data.data(), len) || data.back() != 0)
     {
         S9xNPSetError ("Error while receiving ROM name.");
-        delete[] data;
         S9xNPDisconnect ();
         return (FALSE);
     }
 
     S9xNPSetAction ("Opening LoadROM dialog...");
-    if (!S9xNPLoadROMDialog ((char *) data))
+    if (!S9xNPLoadROMDialog ((char *) data.data()))
     {
         S9xNPSetError ("Disconnected from NetPlay server because you are playing a different game!");
-        delete[] data;
         S9xNPDisconnect ();
         return (FALSE);
     }
-    delete[] data;
     return (TRUE);
 }
 
