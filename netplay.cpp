@@ -646,14 +646,23 @@ bool8 S9xNPGetROMImage (uint32 len)
 #endif
     S9xNPSetAction ("Receiving ROM filename...");
     uint32 filename_len = len - Memory.CalculatedSize - 5;
-    if (filename_len > PATH_MAX ||
-        !S9xNPGetData (NetPlay.Socket, (uint8 *) Memory.ROMFilename.c_str(), filename_len))
+    if (filename_len == 0 || filename_len > PATH_MAX)
     {
         S9xNPSetError ("Error while receiving ROM filename from server.");
         S9xNPDisconnect ();
         Settings.StopEmulation = TRUE;
         return (FALSE);
     }
+    std::vector<uint8> filename(filename_len);
+    if (!S9xNPGetData (NetPlay.Socket, filename.data(), filename_len) ||
+        filename.back() != 0)
+    {
+        S9xNPSetError ("Error while receiving ROM filename from server.");
+        S9xNPDisconnect ();
+        Settings.StopEmulation = TRUE;
+        return (FALSE);
+    }
+    Memory.ROMFilename.assign((char *) filename.data());
     Memory.InitROM ();
     S9xReset ();
     S9xNPResetJoypadReadPos ();
