@@ -389,6 +389,260 @@ static inline int OSDGlyphDot (uint8 ch, int row, int dot)
 	return ((((uint16) g[1] << 8) | g[0]) >> (11 - dot)) & 1;
 }
 
+// ---------------------------------------------------------------------------
+// OSD English translation (win32 Hacks option, Settings.SFCBoxOSDEnglish).
+//
+// A view-layer substitution: the KROM runs untouched (checksums, self-test
+// and savestates stay authentic) and known Japanese phrases are swapped for
+// English in a shadow copy of the OSD text grid just before rendering.
+// Patterns are the raw cell bytes (JIS X 0201 katakana, this font's
+// precomposed dakuten range 80h-9Fh, kanji at E0h-FFh, icons below 20h).
+// In both pattern and replacement, 0x01 is a wildcard: it captures one
+// source cell (digits, Ok/NG, counters) and re-emits it, attribute intact.
+// A pattern 0x20 matches either a space or a transparent 0xFF cell.
+// Entries apply in table order, longest/most-specific first, repeatedly
+// per row, so composed rows ("...、Bデケッテイ、Aデトリヤメ") translate piecewise
+// and unknown rows simply stay Japanese.
+
+struct SOSDXlat
+{
+	const char	*jp, *en;
+};
+
+static const struct SOSDXlat	osd_xlat[] =
+{
+	// Boot screen
+	{ "\xCF\xBC\xDD\x20\xA6\x20\xBC\xAE\xB7\xB6\x20\xBC\xC3\xB2\xCF\xBD", "Initializing machine" },
+	{ "\xBC\x96\xD7\xB8\x20\xB5\xCF\xC1\xB8\xC0\xDE\xBB\xB2", "Please wait a moment" },
+
+	// Date/time fields (clock first: it embeds the shorter date pattern)
+	{ "'\x01\x01\xF2\x01\x01\xF3\x01\x01\xF4\x01\x01\xF5\x01\x01\xF6", "'\x01\x01-\x01\x01-\x01\x01 \x01\x01:\x01\x01" },
+	{ "'\x01\x01\xF2\x01\x01\xF3\x01\x01\xF4\xB6\xD7\x20\xB9\xDE\xDD\xBB\xDE\xB2\x20\xCF\x92", "From '\x01\x01-\x01\x01-\x01\x01 to now" },
+	{ "'\x01\x01\xF2\x01\x01\xF3\x01\x01\xF4\x20\xB6\xD7", "From '\x01\x01-\x01\x01-\x01\x01" },
+	{ "'\x01\x01\xF2\x01\x01\xF3\x01\x01\xF4\x20\xCF\x92", "To '\x01\x01-\x01\x01-\x01\x01" },
+
+	// Navigation bars ("[SELECT]で▶を移動して、Bで決定、Aで取りやめ" etc.)
+	{ "\x1E\x1F\x92\x19\xA6\xB2\x94\xB3\xBC\xC3\xA4", "SELECT:move " },
+	{ "\x1D\x1C\x92\x16\xA6\xB2\x94\xB3\xBC\xC3\xA4", "L/R:move " },
+	{ "\x1D\x1C\x92\x16\xA6\xB2\x94\xB3\xA4", "L/R:move " },
+	{ "\x1E\x1F\x92\xA4\xBD\xB3\xC1\xA6\xCD\xDD\xBA\xB3", "SELECT:edit " },
+	{ "\x1E\x1F\x92\xCD\xDD\xBA\xB3\xA4", "SEL:change " },
+	{ "B\x92\xB9\xAF\xC3\xB2", "B:OK" },
+	{ "\xA4" "A\x92\xCD\xDD\xBA\xB3\xC4\xD8\xD4\xD2", " A:cancel" },
+	{ "\xA4" "A\x92\xC4\xD8\xD4\xD2", " A:cancel" },
+	{ "A\x92\xCD\xDD\xBA\xB3\xC4\xD8\xD4\xD2", "A:cancel" },
+	{ "A\x92\xC4\xD8\xD4\xD2", "A:cancel" },
+
+	// Menu titles and items (composites before their parts)
+	{ "\xBE\xAF\xC3\xB2\xA6\xBC\xAE\xB7\xB6\xBD\xD9", "Reset Settings" },
+	{ "\xD8\xAE\xB3\xB7\xDD\xCE\xB3\xBC\xB7\xBE\xAF\xC3\xB2", "Billing Method" },
+	{ "\xB7\xCE\xDD\xBE\xAF\xC3\xB2", "Basic Settings" },
+	{ "\xC4\xB8\xBC\xAD\xBE\xAF\xC3\xB2", "Special Settings" },
+	{ "\xB5\xDD\xBE\xB2\x20\xBE\xAF\xC3\xB2", "Audio Settings" },
+	{ "\xF5\xB0\xBE\xAF\xC3\xB2", "Time Setting" },
+	{ "\xB9\xDE\x2D\xD1\x20\xB2\xC1\xD7\xDD\x20\xB2\xDA\xB6\xB4", "Reorder Game List" },
+	{ "\xB9\xDE\x2D\xD1\xB6\xB3\xDD\xC4", "Game Count" },
+	{ "\xC1\xAA\xAF\xB8\xB9\xAF\xB6\x20\xB8\xD8\xB1\x20\x20\x20\xB9\xAF\xB6", "Results  Clear  View" },
+	{ "\xC1\xAA\xAF\xB8\xB9\xAF\xB6", "Check Results" },
+	{ "\xCF\xBC\xDD\xC1\xAA\xAF\xB8", "Machine Check" },
+	{ "\xBE\xD9\xCC\xC1\xAA\xAF\xB8", "Self Check" },
+	{ "\xBF\xB3\xC1\x20\xC9\x20\xBC\xDE\xAE\xB3\xCE\xB3", "Device Info" },
+	{ "\xC4\xB9\xB2\xA6\xB1\xDC\xBE\xD9", "Set Clock" },
+	{ "\xE6\xC9\xD2\xC6\xAD\x2D\xCD\xD3\x94\xD9", "Back" },
+	{ "\xB6\xB3\xDD\xC4\xB8\xD8\xB1", "Count clear" },
+	{ "\xB8\xD8\xB1\x20\xBC\xCF\xBD\xB6?", "Clear OK?" },
+	{ "\xB2\xDD\xBD\xC4\x2D\xD9", "SETUP" },
+	{ "\xC4\xC9\xBE\xC2\xBF\xDE\xB8\x20\xCE\xB3\xCE\xB3", " Connection" },
+	{ "\xBD\x99\xC3\xC9\x20\x92\xD3\xB6\xDE\x20\x92\xC0\x20\xB1\xC4\xC6", "After All Demos" },
+	{ "\xC0\xD2\xBC\xC6\xB1\xBF\x99\xD9\xF5\xB0", "Trial Play Time" },
+
+	// Settings leaf pages (2-3-x / 2-4-x / 2-5)
+	{ "TV\xC4\x01\x01\x01\x01\x01\x92\x20\xBE\xC2\xBF\xDE\xB8", "TV link: \x01\x01\x01\x01\x01" },
+	{ "\xBE\xC2\xBF\xDE\xB8\xCE\xB3\xB2\xC1\xD7\xDD", "Connections" },
+	{ "\xB1\xDD\xC3\xC5\xC0\xDD\xBC\x20\xBE\xC2\xBF\xDE\xB8", "antenna jack" },
+	{ "\x97\x92\xB5\x20\xC0\xDD\xBC\x20\xBE\xC2\xBF\xDE\xB8", "video jack" },
+	{ "AV\xBE\xC2\xBF\xDE\xB8\xC9\xF5\xCA\xB4\xD7\x99\xCF\xBE\xDD!", "Not usable with AV out!" },
+	{ "\x92\xD3\xF5\xC9\x20\xB5\xDD\xBE\xB2", "Demo audio" },
+	{ "\xBF\xB3\xBB\xF5\x8D\x22\x9C\xAF\x22", "Operation beep" },
+	{ "\xBA\xB2\xDD\xC0\xB2\xD1\xB1\xAF\x9D\xB1\xD7\x2D\xD1", "Coin time-up alarm" },
+	{ "\xE6\xC9\xD2\xC6\xAD\x2D\xC6\xD3\x94\xD9", "Back" },
+	{ "\xD1\xD8\xAE\xB3\x92\x01\x01\xF6\xB0\xB1\xBF\x99\xD9", "Free play: \x01\x01 min" },
+	{ "\xBD\xB3\xC1\xC9\xCA\xDD\xB2", "Range" },
+	{ "\x01\x01\xF6\xB0\x5C\x01\x01\xF6\xB0", "\x01\x01\x5C\x01\x01 min" },
+	{ "00\x92\x20\xC0\xD2\xBC\xC6\x20\xB1\xBF\x99\xC5\xB8\x20\xC5\xD8\xCF\xBD", "00 disables trial play" },
+	{ "\xB5\x2D\x9D\xC6\xDD\xB8\xDE\x92\xD3", "Opening demo" },
+	{ "\xB5\x2D\x9D\xC6\xDD\xB8\xDE", "Opening" },
+	{ "\xBB\xB2\xC0\xDE\xB2", "Max " },
+	{ "\xB9\xDE\x2D\xD1\x92\xD3", "Game demo" },
+	{ "\xB9\xDE\x2D\xD1\x20\xB2\xC1\xD7\xDD", "Game list" },
+	{ "\xB9\xDE\x2D\xD1\xB2\xC1\xD7\xDD", "Game list" },
+	{ "\xCB\xAE\xB3\xBC\xDE", "for" },
+	{ "\xBC\xDE\x94\xB3\xB2\xDA\xB6\xB4", "Auto" },
+	{ "\xB2\xDA\xB6\xB4\xC5\xB2", "No reorder" },
+	{ "\xB2\xDA\xB6\xB4\xD9", "Reorder" },
+	{ "\xBE\xAF\xC3\xB2\xB2\xC1\xD7\xDD", "Options" },
+	{ "\xBE\xAF\xC3\xB2\xA6\xBC\xAE\xB7\xB6", "Reset settings:" },
+	{ "\xBD\x99\xC3\xC9\xBE\xAF\xC3\xB2\xB6\xDE\xA4\xBC\xAE\xB7\xBC\xDE\xAE\xB3\xC0\xB2\xC6", "All settings return to" },
+	{ "\xD3\x94\xD8\xCF\xBD!!", "defaults!!" },
+	{ "\xB7\xAC\xDD\xBE\xD9\xBC\xCF\xBC\xC0", "Cancelled" },
+	{ "\xB9\xAF\xC3\xB2\xBC\xCF\xBC\xC0", "Saved" },
+	{ "\xBA\xB2\xDD\x20\x31\xCF\xB2\x20\x92\x20\xB1\xBF\x99\xD9\x20\xF5\xB0", "Play time per coin" },
+
+	// Machine-check test pages (3-2..3-6) and the coin-mode extras
+	{ "\xB7\x2D\x20\xBD\xB2\xAF\xC1\x9F\xBC\xDE\xBC\xAE\xDD\xA6\x20" "OFF" "\xC6\xBC\xC3\xED\xBB\xB2", "Set the keyswitch to OFF" },
+	{ "RESET\xBD\xB2\xAF\xC1\x92\xEB\xE5", "RESET switch: abort" },
+	{ "\xBA\xDD\xC4\xDB\x2D\xD7\x9A\xC0\xDD\x92\xEB\xE5", "Pad button: abort" },
+	{ "\xBA\xB2\xDD\xA6\xB2\xDA\xC3\xB8\xC0\xDE\xBB\xB2", "Please insert a coin" },
+	{ "\xBA\xB2\xDD\x20\xBB\x2D\x97\xBD\x20\x9A\xC0\xDD", "Coin Service Button" },
+	{ "\xA6\xEA\xBC\xC3\xB8\xC0\xDE\xBB\xB2", ": press" },
+	{ "\x9F\xBC\xDE\xBC\xAE\xDD", " position" },
+	{ "\xBC\xDE\xAE\xB3\xC0\xB2", "State" },
+	{ "\xBC\xAD\xB3\xD8\xAE\xB3", "end" },
+	{ "\xC9\xBA\xD8\xF5\xB0", "Time left" },
+	{ "\x01\x01\xF5\xB0\x01\x01\xF6\x01\x01\xF7", "\x01\x01h\x01\x01m\x01\x01s" },
+	{ "\xB5\x2D\xD9\xB8\xD8\xB1", "Clear all" },
+	{ "\xB6\xB8\xC3\xB2", "Set" },
+	{ "\xC2\xB2\xB6", "Add" },
+	{ "\xC2\xB7\xDE", "Next" },
+	{ "\x83\x0D", " yen" },
+	{ "\xBA\xB2\xDD\x20\xC0\xB2\xD1\xB1\xAF\x9D\x20\xB9\xB2\xBA\xB8", "Coin time warning" },
+	{ "\xB9\xB2\xBA\xB8", "warning" },
+
+	{ "\x80\xA0", "On" },
+	{ "\x8B\x86", "Off" },
+	{ "\xB4\xD7\x2D", "Err" },
+	{ "\xF7", "s" },
+	{ "\x01\x01\xF6", "\x01\x01 min" },
+
+	// Billing methods and hardware names
+	{ "\xCE\xB3\xBC\xB7\xB2\xC1\xD7\xDD", "Methods" },
+	{ "\xBC\xAD\xB3\xC1\xAD\xB3\xB6\xDD\xD8", "Central" },
+	{ "\xB7\x2D\xB6\xB7\xDD", "Key" },
+	{ "\xBA\xB2\xDD\xB6\xB7\xDD", "Coin" },
+	{ "\xD1\xD8\xAE\xB3", "Free" },
+	{ "\xB9\xDE\xDD\xBB\xDE\xB2", "Current" },
+	{ "\xCE\xB3\xBC\xB7", "" },
+	{ "\xBA\xDD\xC4\xDB\x2D\xD7", "Controller " },
+	{ "\x9D\xAF\xBC\xAD\xBD\xB2\xAF\xC1", "Push Switches" },
+	{ "\xB7\x2D\xBD\xB2\xAF\xC1", "Keyswitch" },
+	{ "\xBA\xB2\xDD\x9A\xAF\xB8\xBD", "Coin Box" },
+	{ "\x96\x2D\xBC\xDE\xAE\xDD", " version" },
+	{ "\xCA\xDE\x2D\xBC\xDE\xAE\xDD", " version" },
+	{ "\xBA\xDE\xB3\xB9\xB2", "Total" },
+	{ "\xB6\xB3\xDD\xC4", " count" },
+
+	// Short leftovers (kept last so composites above win)
+	{ "\xBD\xD9", "Yes" },
+	{ "\xBC\xC5\xB2", "No" },
+	{ "\xB9\xAF\xB6", "Result" },
+	{ "\xB8\xD8\xB1", "Clear" },
+	{ "\xBE\xAF\xC3\xB2", "Settings" },
+	{ "\xBE\xC2\xBF\xDE\xB8", "Connect" },
+	{ "\xBD\xB2\xAF\xC1", " switch" },
+	{ "\xBA\xB2\xDD", "Coin" },
+	{ "\xB7\x2D", "Key" },
+	{ "\xA4", " " },
+};
+
+static inline int OSDXlatBlank (uint8 c)
+{
+	return (c == 0xff || c == 0x20);
+}
+
+// Translate one 24-cell row in place (chars + attrs travel together).
+static void OSDTranslateRow (uint8 *ch, uint8 *at)
+{
+	uint8	wch[64], wat[64];
+	int		len = SFCBOX_OSD_W;
+
+	memcpy(wch, ch, len);
+	memcpy(wat, at, len);
+
+	for (size_t e = 0; e < sizeof(osd_xlat) / sizeof(osd_xlat[0]); e++)
+	{
+		const uint8	*jp = (const uint8 *) osd_xlat[e].jp;
+		const uint8	*en = (const uint8 *) osd_xlat[e].en;
+		int			jlen = (int) strlen(osd_xlat[e].jp);
+		int			elen = (int) strlen(osd_xlat[e].en);
+
+		for (int pos = 0; pos + jlen <= len; pos++)
+		{
+			int	ok = 1;
+			for (int i = 0; i < jlen && ok; i++)
+			{
+				uint8	p = jp[i], c = wch[pos + i];
+				if (p == 0x01)			continue;
+				if (p == 0x20)			ok = OSDXlatBlank(c);
+				else					ok = (c == p);
+			}
+			if (!ok)
+				continue;
+
+			// Splice: prefix + replacement + suffix into a scratch row.
+			uint8	nch[64], nat[64];
+			int		n = 0, cap = 0;
+			uint8	base = wat[pos];
+
+			memcpy(nch, wch, pos);				memcpy(nat, wat, pos);
+			n = pos;
+			for (int i = 0; i < elen; i++)
+			{
+				if (en[i] == 0x01)
+				{	// re-emit the next captured wildcard cell
+					while (cap < jlen && jp[cap] != 0x01) cap++;
+					nch[n] = wch[pos + cap];	nat[n] = wat[pos + cap];
+					cap++;
+				}
+				else
+				{
+					nch[n] = (en[i] == 0x20) ? 0xff : en[i];
+					nat[n] = base;
+				}
+				n++;
+			}
+			memcpy(nch + n, wch + pos + jlen, len - pos - jlen);
+			memcpy(nat + n, wat + pos + jlen, len - pos - jlen);
+			int	newlen = n + len - pos - jlen;
+
+			memcpy(wch, nch, newlen);	memcpy(wat, nat, newlen);
+			len = newlen;
+			pos = n - 1;				// resume scanning after the splice
+		}
+	}
+
+	// Squeeze back into 24 cells: shrink the longest blank runs first so
+	// right-aligned result columns keep their rough position.
+	while (len > SFCBOX_OSD_W)
+	{
+		int	best = -1, bestlen = 1;
+		for (int i = 0; i < len; )
+		{
+			if (OSDXlatBlank(wch[i]))
+			{
+				int	j = i;
+				while (j < len && OSDXlatBlank(wch[j])) j++;
+				if (j - i > bestlen) { bestlen = j - i; best = i; }
+				i = j;
+			}
+			else
+				i++;
+		}
+		if (best < 0)
+			break;			// no compressible run left: truncate
+		memmove(wch + best, wch + best + 1, len - best - 1);
+		memmove(wat + best, wat + best + 1, len - best - 1);
+		len--;
+	}
+
+	if (len > SFCBOX_OSD_W)
+		len = SFCBOX_OSD_W;
+	memset(wch + len, 0xff, SFCBOX_OSD_W - len);
+	memset(wat + len, 0, SFCBOX_OSD_W - len);
+
+	memcpy(ch, wch, SFCBOX_OSD_W);
+	memcpy(at, wat, SFCBOX_OSD_W);
+}
+
 // True while the character plane is visible: the caller doubles a lores
 // frame first so the 12-dot cells render at 16 output pixels.
 bool8 S9xSFCBoxOSDHires (void)
@@ -425,6 +679,23 @@ void S9xSFCBoxRenderOSD (uint16 *screen, int pitch, int width, int height)
 	if (!o->DisplayEnable)	// DC=0: backdrop only, no character plane
 		return;
 
+
+	// English view-layer: translate a shadow copy of the text grid; the
+	// real VRAM (and savestates) keep the KROM's Japanese untouched.
+	uint8	xch[SFCBOX_OSD_H][SFCBOX_OSD_W], xat[SFCBOX_OSD_H][SFCBOX_OSD_W];
+	const uint8	(*vch)[SFCBOX_OSD_W] = o->VRAMChar;
+	const uint8	(*vat)[SFCBOX_OSD_W] = o->VRAMColor;
+
+	if (Settings.SFCBoxOSDEnglish)
+	{
+		memcpy(xch, o->VRAMChar, sizeof(xch));
+		memcpy(xat, o->VRAMColor, sizeof(xat));
+		for (int r = 0; r < SFCBOX_OSD_H; r++)
+			OSDTranslateRow(xch[r], xat[r]);
+		vch = xch;
+		vat = xat;
+	}
+
 	// Cell geometry: 8 output pixels per cell on a lores frame, 16 on a
 	// hires (512-wide) one. S9xEndScreenRefresh doubles a lores frame
 	// whenever the character plane is visible (S9xSFCBoxOSDHires), so
@@ -451,11 +722,11 @@ void S9xSFCBoxRenderOSD (uint16 *screen, int pitch, int width, int height)
 
 			for (int col = 0; col < SFCBOX_OSD_W; col++)
 			{
-				uint8	ch = o->VRAMChar[row][col];
+				uint8	ch = vch[row][col];
 				if (ch == 0xff)		// transparent space
 					continue;
 
-				uint8	attr = o->VRAMColor[row][col];
+				uint8	attr = vat[row][col];
 				uint8	cc = o->ColorMode ? (attr & 7) : 7;
 				uint8	bc = o->ColorMode ? ((attr >> 3) & 7) : 0;
 				// An AT-flagged character (cmd 2 bit9) always gets a solid
