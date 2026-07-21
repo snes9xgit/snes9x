@@ -437,6 +437,8 @@
 #define IDC_SFCBOX_KEYSWITCH            3327
 #define IDC_SFCBOX_KEYSWITCH_LABEL      3328
 #define IDC_SFCBOX_COIN                 3329
+#define IDC_SFCBOX_OSD_LANGUAGE         3330
+#define IDC_SFCBOX_OSD_LANGUAGE_LABEL   3331
 #define IDC_SET_DEFAULTS                3038
 #define IDC_BUTTON_SLOT_1               3039
 #define IDC_BUTTON_EDIT_CHEATGROUP      3039

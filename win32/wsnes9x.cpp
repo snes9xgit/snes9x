@@ -6793,6 +6793,10 @@ INT_PTR CALLBACK DlgEmulatorHacksProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM
         CheckDlgButton(hDlg, IDC_ALLOW_EXE_ICON, GUI.ExeIconRewriteOK);
         CheckDlgButton(hDlg, IDC_SFCBOX_OSD_BACKDROP, Settings.SFCBoxOSDBackdrop);
         CreateToolTip(IDC_SFCBOX_OSD_BACKDROP, hDlg, TEXT("Draw the Super Famicom Box supervisor screens over the\nMB90082 OSD chip's solid background raster (the blue\nstartup screen NO$SNS shows) instead of superimposing\nthe text on the SNES video output. Takes effect immediately."));
+        SendDlgItemMessage(hDlg, IDC_SFCBOX_OSD_LANGUAGE, CB_ADDSTRING, 0, (LPARAM)TEXT("Japanese"));
+        SendDlgItemMessage(hDlg, IDC_SFCBOX_OSD_LANGUAGE, CB_ADDSTRING, 0, (LPARAM)TEXT("English"));
+        SendDlgItemMessage(hDlg, IDC_SFCBOX_OSD_LANGUAGE, CB_SETCURSEL, Settings.SFCBoxOSDEnglish ? 1 : 0, 0);
+        CreateToolTip(IDC_SFCBOX_OSD_LANGUAGE, hDlg, TEXT("Language of the supervisor screens (boot, attendant\nmenus, self-test). English is a render-time translation\nonly - the KROM firmware, its checksums and savestates\nstay untouched. Takes effect immediately."));
 
         {
             static const TCHAR *kspos[5] = { TEXT("1 (Options)"), TEXT("OFF"), TEXT("ON (Play)"), TEXT("2"), TEXT("3 (Self-Test)") };
@@ -6847,13 +6851,14 @@ INT_PTR CALLBACK DlgEmulatorHacksProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM
         // is hidden, collapse the space it'd occupy: everything below it
         // slides up by its height and the dialog shrinks by the total.
         {
-            const int boxrows[] = { IDC_SFCBOX_OSD_BACKDROP, IDC_SFCBOX_KEYSWITCH_LABEL,
+            const int boxrows[] = { IDC_SFCBOX_OSD_BACKDROP, IDC_SFCBOX_OSD_LANGUAGE_LABEL,
+                                    IDC_SFCBOX_OSD_LANGUAGE, IDC_SFCBOX_KEYSWITCH_LABEL,
                                     IDC_SFCBOX_KEYSWITCH, IDC_SFCBOX_COIN };
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < 6; i++)
                 ShowWindow(GetDlgItem(hDlg, boxrows[i]), SFCBox.Active ? SW_SHOW : SW_HIDE);
         }
         {
-            RECT dlu = { 0, SFCBox.Active ? 0 : 30, 0, PF94.active ? 0 : 36 };
+            RECT dlu = { 0, SFCBox.Active ? 0 : 48, 0, PF94.active ? 0 : 36 };
             dlu.bottom += dlu.top;
             MapDialogRect(hDlg, &dlu);
 
@@ -6908,6 +6913,7 @@ INT_PTR CALLBACK DlgEmulatorHacksProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM
             Settings.MaxSpriteTilesPerLine = IsDlgButtonChecked(hDlg, IDC_NO_SPRITE_LIMIT) ? 128 : 34;
             GUI.ExeIconRewriteOK = IsDlgButtonChecked(hDlg, IDC_ALLOW_EXE_ICON);
             Settings.SFCBoxOSDBackdrop = IsDlgButtonChecked(hDlg, IDC_SFCBOX_OSD_BACKDROP);
+            Settings.SFCBoxOSDEnglish = (SendDlgItemMessage(hDlg, IDC_SFCBOX_OSD_LANGUAGE, CB_GETCURSEL, 0, 0) == 1);
 
             if (SFCBox.Active)
             {
@@ -6975,6 +6981,7 @@ INT_PTR CALLBACK DlgEmulatorHacksProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM
 			CheckDlgButton(hDlg, IDC_NO_SPRITE_LIMIT, false);
 			CheckDlgButton(hDlg, IDC_ALLOW_EXE_ICON, false);
 			CheckDlgButton(hDlg, IDC_SFCBOX_OSD_BACKDROP, true);
+			SendDlgItemMessage(hDlg, IDC_SFCBOX_OSD_LANGUAGE, CB_SETCURSEL, 0, 0);
 			SendDlgItemMessage(hDlg, IDC_SFCBOX_KEYSWITCH, CB_SETCURSEL, 2, 0);
 			SendDlgItemMessage(hDlg, IDC_PF94_TIME, CB_SETCURSEL, 3, 0);
 			SendDlgItemMessage(hDlg, IDC_PF94_TIMER_SHOW, CB_SETCURSEL, 0, 0);
