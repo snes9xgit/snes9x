@@ -1813,8 +1813,9 @@ void WinShowCheatEditorDialog()
 static int g_hotplugTicksRemaining = 0;
 
 // Grey (or enable) the submenu inside `parent` that contains `containedCmd`.
-// Used to keep the S-PPU viewers usable only for SNES ROMs and the GB-PPU
-// viewers only for GB/GBC/SGB games.
+// Used to keep the S-PPU viewers usable whenever the 65816/S-PPU are running
+// (SNES ROMs and SGB BIOS mode) and the GB-PPU viewers only for GB/GBC/SGB
+// games.
 static void GbSetSubmenuEnabled(HMENU parent, UINT containedCmd, bool enabled)
 {
 	if (!parent) return;
@@ -1917,10 +1918,14 @@ LRESULT CALLBACK WinProc(
 	case WM_INITMENUPOPUP:
 	{
 		HMENU hPopup = (HMENU)wParam;
-		bool romLoaded = !Settings.StopEmulation;
-		bool gbActive  = Settings.SuperGameBoy || Settings.SGB_BIOSModeActive;
-		GbSetSubmenuEnabled(hPopup, ID_DEBUG_VRAM_VIEWER,    romLoaded && !gbActive);  // S-PPU
-		GbSetSubmenuEnabled(hPopup, ID_DEBUG_GB_TILE_VIEWER, romLoaded &&  gbActive);  // GB-PPU
+		bool romLoaded  = !Settings.StopEmulation;
+		bool gbActive   = Settings.SuperGameBoy || Settings.SGB_BIOSModeActive;
+		// SGB BIOS mode runs the real 65816/S-PPU (border + GB screen tiles),
+		// so the S-PPU viewers stay live there; only the BIOS-less GB path
+		// bypasses the SNES side entirely.
+		bool snesActive = !Settings.SuperGameBoy || Settings.SGB_BIOSModeActive;
+		GbSetSubmenuEnabled(hPopup, ID_DEBUG_VRAM_VIEWER,    romLoaded && snesActive); // S-PPU
+		GbSetSubmenuEnabled(hPopup, ID_DEBUG_GB_TILE_VIEWER, romLoaded && gbActive);   // GB-PPU
 		return DefWindowProc(hWnd, uMsg, wParam, lParam);
 	}
 	case WM_DEVICECHANGE:
