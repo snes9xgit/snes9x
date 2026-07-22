@@ -168,7 +168,7 @@ void S9xWinScanJoypads();
 
 constexpr int MAX_SWITCHABLE_HOTKEY_DIALOG_ITEMS = 18;
 constexpr int MAX_SWITCHABLE_HOTKEY_DIALOG_PAGES = 5;
-constexpr int HOTKEY_TAB_SFCBOX = 4;   // tab only inserted while SFCBox.Active
+constexpr int HOTKEY_TAB_SFCBOX = 4;
 constexpr int HOTKEY_TAB_EMULATION  = 0;
 constexpr int HOTKEY_TAB_SAVESTATES = 1;
 constexpr int HOTKEY_TAB_TURBO      = 2;
@@ -12106,8 +12106,8 @@ static hotkey_dialog_item hotkey_dialog_items[MAX_SWITCHABLE_HOTKEY_DIALOG_PAGES
         { &CustomKeys.CheatSearchDialog, &CustomKeysExtra.CheatSearchDialog, HOTKEYS_CHEAT_SEARCH_DIALOG },
         { NULL, NULL, _T("") },
     },
-    // Tab 4: SFC Box front-panel controls. The tab itself is only inserted
-    // into the tab control while a Super Famicom Box cart/BIOS is loaded.
+    // Tab 4: SFC Box front-panel controls. Always visible; the hotkeys
+    // themselves only act while a Super Famicom Box cart/BIOS is loaded.
     {
         { &CustomKeys.InsertCoin,         &CustomKeysExtra.InsertCoin,         HOTKEYS_INSERT_COIN },
         { &CustomKeys.SFCBoxKeyswitch[0], &CustomKeysExtra.SFCBoxKeyswitch[0], HOTKEYS_KEYSWITCH_1 },
@@ -12292,11 +12292,6 @@ INT_PTR CALLBACK DlgHotkeyConfig(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPar
 			};
 			for (i = 0; i < MAX_SWITCHABLE_HOTKEY_DIALOG_PAGES; i++)
 			{
-				// The SFC Box front-panel page only exists while a Super
-				// Famicom Box cart/BIOS is loaded. It's the last page, so
-				// skipping it keeps tab indices == page indices.
-				if (i == HOTKEY_TAB_SFCBOX && !SFCBox.Active)
-					continue;
 				tie.pszText = tabTexts[i];
 				TabCtrl_InsertItem(hTabs, i, &tie);
 			}
