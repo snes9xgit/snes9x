@@ -10266,6 +10266,61 @@ static bool AudioWaveIsMuted(int src)
     }
 }
 
+// Solo state, DAW semantics: while any solo is engaged, only soloed tracks
+// stay audible; mute still wins over solo on the same track. Viewer-only
+// state — cleared when the window closes so nothing stays silently soloed.
+static uint8 g_wave_solo_spc     = 0;      // V1-8 solo bits
+static uint8 g_wave_solo_gb      = 0;      // CH1-4 solo bits
+static bool  g_wave_solo_spc_grp = false;  // SPC group solo (all voices)
+static bool  g_wave_solo_gb_grp  = false;  // GB group solo (all channels)
+
+static bool AudioWaveIsSoloed(int src)
+{
+    switch (src)
+    {
+        case 0:  return g_wave_solo_spc_grp;
+        case 1:  return g_wave_solo_gb_grp;
+        case 2:  return false;
+        default:
+            if (src >= 7) return (g_wave_solo_spc >> (src - 7)) & 1;
+            return (g_wave_solo_gb >> (src - 3)) & 1;
+    }
+}
+
+// Compose user mute masks with the solo set into the masks the cores get.
+static void AudioWaveEffectiveMasks(uint8 *outSpc, uint8 *outGb)
+{
+    const uint8 spcSolo = g_wave_solo_spc | (g_wave_solo_spc_grp ? 0xFF : 0);
+    const uint8 gbSolo  = (uint8)((g_wave_solo_gb | (g_wave_solo_gb_grp ? 0x0F : 0)) & 0x0F);
+    const bool  anySolo = (spcSolo | gbSolo) != 0;
+    *outSpc = (uint8)GUI.SoundChannelEnable & (anySolo ? spcSolo : 0xFF);
+    *outGb  = (uint8)GUI.GBChannelEnable    & (anySolo ? gbSolo  : 0x0F);
+}
+
+static void AudioWaveApplyAudibility(void)
+{
+    uint8 effSpc, effGb;
+    AudioWaveEffectiveMasks(&effSpc, &effGb);
+    S9xSetSoundControl(effSpc);
+    S9xSGBSetSoundChannelMask(effGb);
+}
+
+// Whether the track actually reaches the output right now (mute + solo).
+static bool AudioWaveIsAudible(int src)
+{
+    uint8 effSpc, effGb;
+    AudioWaveEffectiveMasks(&effSpc, &effGb);
+    switch (src)
+    {
+        case 0:  return effSpc != 0;
+        case 1:  return effGb != 0;
+        case 2:  return !GUI.Mute;
+        default:
+            if (src >= 7) return (effSpc >> (src - 7)) & 1;
+            return (effGb >> (src - 3)) & 1;
+    }
+}
+
 static void AudioWaveToggleMute(int src)
 {
     static uint8 savedSpc = 255;   // group mute keeps the per-member pattern
@@ -10280,7 +10335,6 @@ static void AudioWaveToggleMute(int src)
             }
             else
                 GUI.SoundChannelEnable = savedSpc ? savedSpc : 255;
-            S9xSetSoundControl((uint8)GUI.SoundChannelEnable);
             break;
         case 1:
             if (GUI.GBChannelEnable & 0x0F)
@@ -10290,30 +10344,54 @@ static void AudioWaveToggleMute(int src)
             }
             else
                 GUI.GBChannelEnable = savedGb ? savedGb : 0x0F;
-            S9xSGBSetSoundChannelMask((uint8)GUI.GBChannelEnable);
             break;
         case 2:
             GUI.Mute = !GUI.Mute;
             S9xSetSoundMute(GUI.Mute);
-            break;
+            return;
         default:
             if (src >= 7)
-            {
                 GUI.SoundChannelEnable ^= 1 << (src - 7);
-                S9xSetSoundControl((uint8)GUI.SoundChannelEnable);
-            }
             else
-            {
                 GUI.GBChannelEnable ^= 1 << (src - 3);
-                S9xSGBSetSoundChannelMask((uint8)GUI.GBChannelEnable);
-            }
             break;
     }
+    AudioWaveApplyAudibility();
 }
 
-// M-button rect inside a row (right side of the header, vertically centered)
-// — shared by the renderer and the click hit test.
+static void AudioWaveToggleSolo(int src)
+{
+    switch (src)
+    {
+        case 0:  g_wave_solo_spc_grp = !g_wave_solo_spc_grp; break;
+        case 1:  g_wave_solo_gb_grp  = !g_wave_solo_gb_grp;  break;
+        case 2:  return;   // MIX is the master bus — nothing to solo against
+        default:
+            if (src >= 7) g_wave_solo_spc ^= 1 << (src - 7);
+            else          g_wave_solo_gb  ^= 1 << (src - 3);
+            break;
+    }
+    AudioWaveApplyAudibility();
+}
+
+static void AudioWaveClearSolo(void)
+{
+    g_wave_solo_spc = g_wave_solo_gb = 0;
+    g_wave_solo_spc_grp = g_wave_solo_gb_grp = false;
+    AudioWaveApplyAudibility();
+}
+
+// M/S button rects inside a row (right side of the header, vertically
+// centered) — shared by the renderer and the click hit test.
 static RECT AudioWaveMuteRect(const RECT &row)
+{
+    const int cy = (row.top + row.bottom) / 2;
+    RECT r = { row.left + kWaveHeaderW - 58, cy - 9,
+               row.left + kWaveHeaderW - 36, cy + 9 };
+    return r;
+}
+
+static RECT AudioWaveSoloRect(const RECT &row)
 {
     const int cy = (row.top + row.bottom) / 2;
     RECT r = { row.left + kWaveHeaderW - 32, cy - 9,
@@ -10326,7 +10404,9 @@ static void DrawWaveTrackRow(HDC hdc, const RECT &r, int src, bool isGroup,
                              const TCHAR *info, int sample_rate, bool show_xaxis)
 {
     const WaveTrackInfo &ti = kWaveTracks[src];
-    const bool muted = AudioWaveIsMuted(src);
+    const bool userMuted = AudioWaveIsMuted(src);
+    const bool soloed    = AudioWaveIsSoloed(src);
+    const bool audible   = AudioWaveIsAudible(src);
 
     // --- header strip ---
     RECT hd = { r.left, r.top, r.left + kWaveHeaderW, r.bottom };
@@ -10341,33 +10421,75 @@ static void DrawWaveTrackRow(HDC hdc, const RECT &r, int src, bool isGroup,
 
     SetBkMode(hdc, TRANSPARENT);
     const int cy = (hd.top + hd.bottom) / 2;
-    TCHAR name[32];
-    if (isGroup)
-        _stprintf(name, TEXT("%s %s"),
-                  expanded ? TEXT("\x25BE") : TEXT("\x25B8"), ti.name);
-    else
-        _stprintf(name, TEXT("%s"), ti.name);
-    SetTextColor(hdc, muted ? RGB(130, 130, 135) : RGB(225, 225, 228));
-    TextOut(hdc, hd.left + 12, cy - 8, name, lstrlen(name));
 
-    // [M]ute button — filled blue when engaged, dark outline otherwise.
+    // Disclosure icon on group rows: filled triangle in the track color,
+    // pointing right when closed, down when open.
+    if (isGroup)
+    {
+        POINT tri[3];
+        const int ix = hd.left + 10;
+        if (expanded)
+        {
+            tri[0].x = ix;      tri[0].y = cy - 3;
+            tri[1].x = ix + 10; tri[1].y = cy - 3;
+            tri[2].x = ix + 5;  tri[2].y = cy + 4;
+        }
+        else
+        {
+            tri[0].x = ix + 2;  tri[0].y = cy - 5;
+            tri[1].x = ix + 2;  tri[1].y = cy + 5;
+            tri[2].x = ix + 9;  tri[2].y = cy;
+        }
+        HBRUSH tb = CreateSolidBrush(WaveTint(ti.color, 30));
+        HPEN   tp = CreatePen(PS_SOLID, 1, WaveTint(ti.color, 30));
+        HBRUSH oldBr = (HBRUSH)SelectObject(hdc, tb);
+        HPEN   oldPn = (HPEN)SelectObject(hdc, tp);
+        Polygon(hdc, tri, 3);
+        SelectObject(hdc, oldBr);
+        SelectObject(hdc, oldPn);
+        DeleteObject(tb);
+        DeleteObject(tp);
+    }
+
+    SetTextColor(hdc, !audible ? RGB(130, 130, 135) : RGB(225, 225, 228));
+    TextOut(hdc, hd.left + (isGroup ? 26 : 30), cy - 8,
+            ti.name, lstrlen(ti.name));
+
+    // [M]ute button — filled blue when engaged, dark otherwise.
     RECT mb = AudioWaveMuteRect(r);
-    hbr = CreateSolidBrush(muted ? RGB(96, 150, 250) : RGB(52, 52, 56));
+    hbr = CreateSolidBrush(userMuted ? RGB(96, 150, 250) : RGB(52, 52, 56));
     FillRect(hdc, &mb, hbr);
     DeleteObject(hbr);
-    HBRUSH frame = CreateSolidBrush(muted ? RGB(140, 180, 255) : RGB(80, 80, 86));
+    HBRUSH frame = CreateSolidBrush(userMuted ? RGB(140, 180, 255) : RGB(80, 80, 86));
     FrameRect(hdc, &mb, frame);
     DeleteObject(frame);
-    SetTextColor(hdc, muted ? RGB(20, 30, 60) : RGB(150, 150, 156));
+    SetTextColor(hdc, userMuted ? RGB(20, 30, 60) : RGB(150, 150, 156));
     TextOut(hdc, (mb.left + mb.right) / 2 - 4, (mb.top + mb.bottom) / 2 - 8,
             TEXT("M"), 1);
 
-    // --- waveform lane ---
+    // [S]olo button — filled yellow when engaged, Logic-style. The MIX row
+    // is the master bus, so it has no solo.
+    if (src != 2)
+    {
+        RECT sb = AudioWaveSoloRect(r);
+        hbr = CreateSolidBrush(soloed ? RGB(230, 192, 62) : RGB(52, 52, 56));
+        FillRect(hdc, &sb, hbr);
+        DeleteObject(hbr);
+        frame = CreateSolidBrush(soloed ? RGB(250, 220, 120) : RGB(80, 80, 86));
+        FrameRect(hdc, &sb, frame);
+        DeleteObject(frame);
+        SetTextColor(hdc, soloed ? RGB(60, 45, 10) : RGB(150, 150, 156));
+        TextOut(hdc, (sb.left + sb.right) / 2 - 4, (sb.top + sb.bottom) / 2 - 8,
+                TEXT("S"), 1);
+    }
+
+    // --- waveform lane --- (dimmed when the track doesn't reach the
+    // output, whether by its own mute or by someone else's solo)
     RECT lane = { hd.right, r.top, r.right, r.bottom };
     const int xAxisH = show_xaxis ? 16 : 0;
-    const COLORREF cBg     = WaveShade(ti.color, muted ? 14 : 28);
-    const COLORREF cWave   = muted ? WaveShade(ti.color, 52) : WaveTint(ti.color, 55);
-    const COLORREF cCenter = WaveShade(ti.color, muted ? 24 : 44);
+    const COLORREF cBg     = WaveShade(ti.color, !audible ? 14 : 28);
+    const COLORREF cWave   = !audible ? WaveShade(ti.color, 52) : WaveTint(ti.color, 55);
+    const COLORREF cCenter = WaveShade(ti.color, !audible ? 24 : 44);
 
     RECT laneBody = { lane.left, lane.top, lane.right, lane.bottom - xAxisH };
     hbr = CreateSolidBrush(cBg);
@@ -10415,10 +10537,10 @@ static void DrawWaveTrackRow(HDC hdc, const RECT &r, int src, bool isGroup,
     // clip-label style info text, top-left of the lane
     if (info && info[0])
     {
-        SetTextColor(hdc, WaveTint(ti.color, muted ? 25 : 70));
+        SetTextColor(hdc, WaveTint(ti.color, !audible ? 25 : 70));
         TextOut(hdc, lane.left + 6, lane.top + 2, info, lstrlen(info));
     }
-    if (muted)
+    if (userMuted)
     {
         SetTextColor(hdc, WaveTint(ti.color, 40));
         TextOut(hdc, lane.right - 52, lane.top + 2, TEXT("muted"), 5);
@@ -10478,6 +10600,20 @@ static int AudioWaveBuildOrder(int order[15])
 {
     const bool gbCore  = Settings.SuperGameBoy || Settings.SGB_BIOSModeActive;
     const bool spcCore = !Settings.SuperGameBoy;
+    // Solos on tracks that just left the layout (ROM swap while the viewer
+    // is open) would silently suppress the remaining core — drop them.
+    if (!gbCore && (g_wave_solo_gb || g_wave_solo_gb_grp))
+    {
+        g_wave_solo_gb = 0;
+        g_wave_solo_gb_grp = false;
+        AudioWaveApplyAudibility();
+    }
+    if (!spcCore && (g_wave_solo_spc || g_wave_solo_spc_grp))
+    {
+        g_wave_solo_spc = 0;
+        g_wave_solo_spc_grp = false;
+        AudioWaveApplyAudibility();
+    }
     int n = 0;
     if (spcCore)
     {
@@ -10527,6 +10663,13 @@ LRESULT CALLBACK AudioWaveProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             if (PtInRect(&mb, pt))
             {
                 AudioWaveToggleMute(src);
+                InvalidateRect(hwnd, NULL, FALSE);
+                return 0;
+            }
+            RECT sb = AudioWaveSoloRect(row);
+            if (src != 2 && PtInRect(&sb, pt))
+            {
+                AudioWaveToggleSolo(src);
                 InvalidateRect(hwnd, NULL, FALSE);
                 return 0;
             }
@@ -10664,6 +10807,9 @@ LRESULT CALLBACK AudioWaveProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
         case WM_DESTROY:
             KillTimer(hwnd, 1);
             S9xAudioWaveformEnable(false);
+            // Drop any engaged solos — with the viewer gone there would be
+            // no UI left to unsolo, leaving channels silently suppressed.
+            AudioWaveClearSolo();
             g_audiowave_hwnd = NULL;
             return 0;
     }
@@ -15325,13 +15471,13 @@ void S9xToggleSoundChannel (int c)
     else
 		GUI.SoundChannelEnable ^= 1 << c;
 
-	S9xSetSoundControl(GUI.SoundChannelEnable);
 	// Channels 1-4 double as the GB APU's CH1-CH4 (pulse A, pulse B, wave,
 	// noise) so the menu also works for GB/SGB games. The waveform viewer
 	// can retarget GUI.GBChannelEnable independently; the menu is the blunt
-	// tool and re-syncs it to the SPC low bits.
+	// tool and re-syncs it to the SPC low bits. Pushing goes through the
+	// composite apply so an engaged viewer solo stays respected.
 	GUI.GBChannelEnable = GUI.SoundChannelEnable & 0x0F;
-	S9xSGBSetSoundChannelMask((uint8)GUI.GBChannelEnable);
+	AudioWaveApplyAudibility();
 }
 
 bool S9xPollButton(uint32 id, bool *pressed){
