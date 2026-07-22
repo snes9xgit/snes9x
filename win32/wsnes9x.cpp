@@ -10616,8 +10616,18 @@ static void DrawWaveTrackRow(HDC hdc, const RECT &r, int src, bool isGroup,
             }
             peakNorm = pk / 32768.0;
         }
-        HPEN penWave = CreatePen(PS_SOLID, 1, cWave);
-        oldPen = (HPEN)SelectObject(hdc, penWave);
+        // One vertical min/max segment per pixel column, bridged to the
+        // previous column's span so steep slopes read as a continuous
+        // trace instead of disconnected dashes, and submitted as a single
+        // PolyPolyline — thousands of MoveToEx/LineTo round-trips per row
+        // were a visible chunk of the frame budget at high refresh rates.
+        // GUI-thread-only path, so the scratch buffers persist to keep
+        // their capacity across paints.
+        static std::vector<POINT> pts;
+        static std::vector<DWORD> cnts;
+        pts.resize((size_t)W * 2);
+        cnts.assign((size_t)W, 2);
+        int prevMin = 0, prevMax = 0;
         for (int i = 0; i < W; ++i)
         {
             int s0 = (i * n) / W;
@@ -10637,9 +10647,21 @@ static void DrawWaveTrackRow(HDC hdc, const RECT &r, int src, bool isGroup,
             int yMin = midY - (int)(vHi * (Hh - 4) / 2);
             int yMax = midY - (int)(vLo * (Hh - 4) / 2);
             if (yMax <= yMin) yMax = yMin + 1;
-            MoveToEx(hdc, lane.left + i, yMin, NULL);
-            LineTo  (hdc, lane.left + i, yMax);
+            if (i > 0)
+            {
+                if (yMin > prevMax) yMin = prevMax;
+                if (yMax < prevMin) yMax = prevMin;
+            }
+            prevMin = yMin;
+            prevMax = yMax;
+            pts[(size_t)i * 2 + 0].x = lane.left + i;
+            pts[(size_t)i * 2 + 0].y = yMin;
+            pts[(size_t)i * 2 + 1].x = lane.left + i;
+            pts[(size_t)i * 2 + 1].y = yMax;
         }
+        HPEN penWave = CreatePen(PS_SOLID, 1, cWave);
+        oldPen = (HPEN)SelectObject(hdc, penWave);
+        PolyPolyline(hdc, pts.data(), cnts.data(), W);
         SelectObject(hdc, oldPen);
         DeleteObject(penWave);
     }
@@ -10701,6 +10723,16 @@ static const UINT kAudioWaveRefreshIdBase = 0x9100;
 // it expands the per-voice (V1-8) / per-channel (CH1-4) breakdown beneath.
 static bool g_audiowave_spc_open = false;
 static bool g_audiowave_gb_open  = false;
+
+// Offscreen backbuffer, cached across paints (recreated on resize,
+// released on close). A fresh CreateCompatibleBitmap per WM_PAINT is a
+// multi-MB allocation every tick, which at high refresh rates competes
+// with emulation on the GUI thread.
+static HDC     g_wave_backdc  = NULL;
+static HBITMAP g_wave_backbmp = NULL;
+static HBITMAP g_wave_backold = NULL;
+static int     g_wave_backw   = 0;
+static int     g_wave_backh   = 0;
 
 // Close behavior, driven by the footer checkbox: by default closing the
 // viewer restores the all-on channel defaults (mutes/solos are treated as
@@ -10777,7 +10809,8 @@ LRESULT CALLBACK AudioWaveProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             SetTimer(hwnd, 1, g_audiowave_refresh_ms, NULL);
             return 0;
         case WM_TIMER:
-            InvalidateRect(hwnd, NULL, FALSE);
+            if (!IsIconic(hwnd))
+                InvalidateRect(hwnd, NULL, FALSE);
             return 0;
         case WM_LBUTTONDOWN:
         {
@@ -10895,9 +10928,26 @@ LRESULT CALLBACK AudioWaveProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             GetClientRect(hwnd, &cr);
             const int cw = cr.right - cr.left;
             const int ch = cr.bottom - cr.top;
-            HDC hdc = CreateCompatibleDC(hdcWnd);
-            HBITMAP memBmp = CreateCompatibleBitmap(hdcWnd, cw, ch);
-            HBITMAP oldBmp = (HBITMAP)SelectObject(hdc, memBmp);
+            if (cw <= 0 || ch <= 0)
+            {
+                EndPaint(hwnd, &ps);
+                return 0;
+            }
+            if (!g_wave_backdc)
+                g_wave_backdc = CreateCompatibleDC(hdcWnd);
+            if (!g_wave_backbmp || cw != g_wave_backw || ch != g_wave_backh)
+            {
+                if (g_wave_backbmp)
+                {
+                    SelectObject(g_wave_backdc, g_wave_backold);
+                    DeleteObject(g_wave_backbmp);
+                }
+                g_wave_backbmp = CreateCompatibleBitmap(hdcWnd, cw, ch);
+                g_wave_backold = (HBITMAP)SelectObject(g_wave_backdc, g_wave_backbmp);
+                g_wave_backw = cw;
+                g_wave_backh = ch;
+            }
+            HDC hdc = g_wave_backdc;
             int order[15];
             const int nPanels = AudioWaveBuildOrder(order);
             const int chPanels = ch - kWaveFooterH;
@@ -11026,9 +11076,6 @@ LRESULT CALLBACK AudioWaveProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                 DeleteObject(ap);
             }
             BitBlt(hdcWnd, 0, 0, cw, ch, hdc, 0, 0, SRCCOPY);
-            SelectObject(hdc, oldBmp);
-            DeleteObject(memBmp);
-            DeleteDC(hdc);
             EndPaint(hwnd, &ps);
             return 0;
         }
@@ -11038,6 +11085,19 @@ LRESULT CALLBACK AudioWaveProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
         case WM_DESTROY:
             KillTimer(hwnd, 1);
             S9xAudioWaveformEnable(false);
+            if (g_wave_backdc)
+            {
+                if (g_wave_backbmp)
+                {
+                    SelectObject(g_wave_backdc, g_wave_backold);
+                    DeleteObject(g_wave_backbmp);
+                }
+                DeleteDC(g_wave_backdc);
+                g_wave_backdc  = NULL;
+                g_wave_backbmp = NULL;
+                g_wave_backold = NULL;
+                g_wave_backw = g_wave_backh = 0;
+            }
             if (g_audiowave_reset_on_close)
             {
                 // Default: mutes and solos were listening experiments —
