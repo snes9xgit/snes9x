@@ -5396,6 +5396,11 @@ static void CheckMenuStates ()
 	mii.fState = (S9xMovieActive () && !Settings.StopEmulation) ? MFS_ENABLED : MFS_DISABLED;
     SetMenuItemInfo (GUI.hMenu, ID_FILE_MOVIE_STOP, FALSE, &mii);
 
+	// Channels 1-4 drive both SPC voices 1-4 and the GB APU's CH1-CH4.
+	// In BIOS-less GB mode the SPC isn't running, so 5-8 control nothing —
+	// grey them there. In SGB BIOS mode they still gate SPC voices 5-8.
+	{
+	const UINT spcAbsent = (Settings.SuperGameBoy && !Settings.SGB_BIOSModeActive) ? MFS_DISABLED : 0;
 	mii.fState = (GUI.SoundChannelEnable & (1 << 0)) ? MFS_CHECKED : MFS_UNCHECKED;
     SetMenuItemInfo (GUI.hMenu, ID_CHANNELS_CHANNEL1, FALSE, &mii);
 	mii.fState = (GUI.SoundChannelEnable & (1 << 1)) ? MFS_CHECKED : MFS_UNCHECKED;
@@ -5404,14 +5409,15 @@ static void CheckMenuStates ()
     SetMenuItemInfo (GUI.hMenu, ID_CHANNELS_CHANNEL3, FALSE, &mii);
 	mii.fState = (GUI.SoundChannelEnable & (1 << 3)) ? MFS_CHECKED : MFS_UNCHECKED;
     SetMenuItemInfo (GUI.hMenu, ID_CHANNELS_CHANNEL4, FALSE, &mii);
-	mii.fState = (GUI.SoundChannelEnable & (1 << 4)) ? MFS_CHECKED : MFS_UNCHECKED;
+	mii.fState = ((GUI.SoundChannelEnable & (1 << 4)) ? MFS_CHECKED : MFS_UNCHECKED) | spcAbsent;
     SetMenuItemInfo (GUI.hMenu, ID_CHANNELS_CHANNEL5, FALSE, &mii);
-	mii.fState = (GUI.SoundChannelEnable & (1 << 5)) ? MFS_CHECKED : MFS_UNCHECKED;
+	mii.fState = ((GUI.SoundChannelEnable & (1 << 5)) ? MFS_CHECKED : MFS_UNCHECKED) | spcAbsent;
     SetMenuItemInfo (GUI.hMenu, ID_CHANNELS_CHANNEL6, FALSE, &mii);
-	mii.fState = (GUI.SoundChannelEnable & (1 << 6)) ? MFS_CHECKED : MFS_UNCHECKED;
+	mii.fState = ((GUI.SoundChannelEnable & (1 << 6)) ? MFS_CHECKED : MFS_UNCHECKED) | spcAbsent;
     SetMenuItemInfo (GUI.hMenu, ID_CHANNELS_CHANNEL7, FALSE, &mii);
-	mii.fState = (GUI.SoundChannelEnable & (1 << 7)) ? MFS_CHECKED : MFS_UNCHECKED;
+	mii.fState = ((GUI.SoundChannelEnable & (1 << 7)) ? MFS_CHECKED : MFS_UNCHECKED) | spcAbsent;
     SetMenuItemInfo (GUI.hMenu, ID_CHANNELS_CHANNEL8, FALSE, &mii);
+	}
 
 	mii.fState = GUI.BackgroundInput ? MFS_CHECKED : MFS_UNCHECKED;
 	SetMenuItemInfo (GUI.hMenu, ID_EMULATION_BACKGROUNDINPUT, FALSE, &mii);
@@ -10287,7 +10293,7 @@ static void DrawWaveformPanel(HDC hdc, const RECT &r, const TCHAR *label,
     HPEN penBox = CreatePen(PS_SOLID, 1, RGB(220, 220, 220));
     oldPen = (HPEN)SelectObject(hdc, penBox);
     HBRUSH oldBrush = (HBRUSH)SelectObject(hdc, GetStockObject(NULL_BRUSH));
-    const int lblW = 52, lblH = 18;
+    const int lblW = 68, lblH = 18;
     Rectangle(hdc, axisLeft, axisTop, axisLeft + lblW, axisTop + lblH);
     SelectObject(hdc, oldBrush);
     SelectObject(hdc, oldPen);
@@ -10330,6 +10336,37 @@ static const AudioWaveRefreshOpt kAudioWaveRefreshOpts[] = {
 static const int kAudioWaveRefreshCount = sizeof(kAudioWaveRefreshOpts) / sizeof(kAudioWaveRefreshOpts[0]);
 static const UINT kAudioWaveRefreshIdBase = 0x9100;
 
+// Grouped-channel state: the SPC and GB panels are group headers (each is
+// already the mix of its members). Collapsed shows just the header; clicking
+// it expands the per-voice (V1-8) / per-channel (CH1-4) breakdown beneath.
+static bool g_audiowave_spc_open = false;
+static bool g_audiowave_gb_open  = false;
+
+// Build the top-to-bottom panel list for the current core/expansion state.
+// Sources: 0=SPC, 1=GB, 2=MIX, 3..6=GB CH1-4, 7..14=SPC voices V1-V8.
+// Dead cores are dropped entirely (no SPC group in BIOS-less GB, no GB
+// group for SNES-only games); the final MIX always sits at the bottom.
+static int AudioWaveBuildOrder(int order[15])
+{
+    const bool gbCore  = Settings.SuperGameBoy || Settings.SGB_BIOSModeActive;
+    const bool spcCore = !Settings.SuperGameBoy;
+    int n = 0;
+    if (spcCore)
+    {
+        order[n++] = 0;
+        if (g_audiowave_spc_open)
+            for (int v = 7; v <= 14; ++v) order[n++] = v;
+    }
+    if (gbCore)
+    {
+        order[n++] = 1;
+        if (g_audiowave_gb_open)
+            for (int c = 3; c <= 6; ++c) order[n++] = c;
+    }
+    order[n++] = 2;
+    return n;
+}
+
 LRESULT CALLBACK AudioWaveProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     switch (msg)
@@ -10340,6 +10377,29 @@ LRESULT CALLBACK AudioWaveProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
         case WM_TIMER:
             InvalidateRect(hwnd, NULL, FALSE);
             return 0;
+        case WM_LBUTTONDOWN:
+        {
+            int order[15];
+            const int nPanels = AudioWaveBuildOrder(order);
+            RECT cr;
+            GetClientRect(hwnd, &cr);
+            const int hTotal = cr.bottom - cr.top;
+            if (hTotal <= 0 || nPanels <= 0) return 0;
+            const int hPanel = hTotal / nPanels;
+            if (hPanel <= 0) return 0;
+            int idx = (int)(short)HIWORD(lp) / hPanel;
+            if (idx < 0) idx = 0;
+            if (idx >= nPanels) idx = nPanels - 1;
+            const int src = order[idx];
+            if (src == 0)
+                g_audiowave_spc_open = !g_audiowave_spc_open;
+            else if (src == 1)
+                g_audiowave_gb_open = !g_audiowave_gb_open;
+            else
+                return 0;
+            InvalidateRect(hwnd, NULL, FALSE);
+            return 0;
+        }
         case WM_CONTEXTMENU:
         {
             HMENU menu = CreatePopupMenu();
@@ -10382,10 +10442,19 @@ LRESULT CALLBACK AudioWaveProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             HDC hdc = CreateCompatibleDC(hdcWnd);
             HBITMAP memBmp = CreateCompatibleBitmap(hdcWnd, cw, ch);
             HBITMAP oldBmp = (HBITMAP)SelectObject(hdc, memBmp);
-            int H = ch / 3;
+            int order[15];
+            const int nPanels = AudioWaveBuildOrder(order);
+            int H = ch / nPanels;
             short buf[kAudioWaveFrames * 2];
 
-            const TCHAR *labels[3] = { TEXT("SPC"), TEXT("GB"), TEXT("MIX") };
+            // Group headers carry a [+]/[-] expansion hint.
+            const TCHAR *labels[15] = {
+                g_audiowave_spc_open ? TEXT("SPC [-]") : TEXT("SPC [+]"),
+                g_audiowave_gb_open  ? TEXT("GB [-]")  : TEXT("GB [+]"),
+                TEXT("MIX"),
+                TEXT("CH1"), TEXT("CH2"), TEXT("CH3"), TEXT("CH4"),
+                TEXT("V1"), TEXT("V2"), TEXT("V3"), TEXT("V4"),
+                TEXT("V5"), TEXT("V6"), TEXT("V7"), TEXT("V8") };
             int sr = S9xAudioWaveformSampleRate();
             const int32_t gb_rate = S9xSGBGetAudioRate();
             const double spc_ratio = S9xSpcGetTimeRatio();
@@ -10403,23 +10472,52 @@ LRESULT CALLBACK AudioWaveProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                 fps_last_tick = now_tick;
             }
 
-            TCHAR rateTxt[3][96];
+            TCHAR rateTxt[15][96];
             const double refresh_hz = (g_audiowave_refresh_ms > 0) ? (1000.0 / g_audiowave_refresh_ms) : 0.0;
             _stprintf(rateTxt[0], TEXT("GB %d  emu %.1f fps"), gb_rate, fps_measured);
             _stprintf(rateTxt[1], TEXT("SPC %.0f Hz (ratio %.5f)"), spc_eff_hz, spc_ratio);
             _stprintf(rateTxt[2], TEXT("refresh %.0f Hz  (right-click to change)"), refresh_hz);
-            static int sticky_min[3] = {0, 0, 0};
-            static int sticky_max[3] = {0, 0, 0};
-            for (int s = 0; s < 3; ++s)
+            _stprintf(rateTxt[3], TEXT("pulse A (sweep)"));
+            _stprintf(rateTxt[4], TEXT("pulse B"));
+            _stprintf(rateTxt[5], TEXT("wave"));
+            _stprintf(rateTxt[6], TEXT("noise"));
+            for (int i = 7; i < 15; ++i)
+                rateTxt[i][0] = 0;
+            static int sticky_min[15] = {0};
+            static int sticky_max[15] = {0};
+            for (int d = 0; d < nPanels; ++d)
             {
-                int n = S9xAudioWaveformSnapshot(s, buf, kAudioWaveFrames);
+                const int s = order[d];
+                int n;
+                if (s < 3)
+                {
+                    n = S9xAudioWaveformSnapshot(s, buf, kAudioWaveFrames);
+                }
+                else if (s >= 7)
+                {
+                    // SPC voice rings live in apu.cpp as streams 3..10.
+                    n = S9xAudioWaveformSnapshot(s - 4, buf, kAudioWaveFrames);
+                }
+                else
+                {
+                    // GB channel rings are mono — expand in place to the
+                    // stereo layout DrawWaveformPanel expects.
+                    short mono[kAudioWaveFrames];
+                    n = S9xSGBGetChannelWaveform(s - 3, mono, kAudioWaveFrames);
+                    for (int i = 0; i < n; ++i)
+                    {
+                        buf[i * 2 + 0] = mono[i];
+                        buf[i * 2 + 1] = mono[i];
+                    }
+                }
                 RECT panel;
                 panel.left   = 0;
                 panel.right  = cw;
-                panel.top    = s * H;
-                panel.bottom = (s == 2) ? ch : ((s + 1) * H);
-                DrawWaveformPanel(hdc, panel, labels[s], buf, n, sr,
-                                  &sticky_min[s], &sticky_max[s], s == 2);
+                panel.top    = d * H;
+                panel.bottom = (d == nPanels - 1) ? ch : ((d + 1) * H);
+                DrawWaveformPanel(hdc, panel, labels[s], buf, n,
+                                  (s < 3) ? sr : (s >= 7 ? 32000 : (int)gb_rate),
+                                  &sticky_min[s], &sticky_max[s], d == nPanels - 1);
                 if (rateTxt[s][0])
                 {
                     SetTextColor(hdc, RGB(160, 200, 180));
@@ -10472,9 +10570,10 @@ static void ToggleAudioWaveform(HINSTANCE hInst, HWND parent)
 
     S9xAudioWaveformEnable(true);
     g_audiowave_hwnd = CreateWindowEx(
-        0, kAudioWaveClass, TEXT("Audio Waveform: SPC / GB / MIX"),
+        0, kAudioWaveClass,
+        TEXT("Audio Waveform  (click SPC/GB to expand channels)"),
         WS_OVERLAPPEDWINDOW,
-        CW_USEDEFAULT, CW_USEDEFAULT, 800, 480,
+        CW_USEDEFAULT, CW_USEDEFAULT, 800, 560,
         parent, NULL, hInst, NULL);
     if (g_audiowave_hwnd)
         ShowWindow(g_audiowave_hwnd, SW_SHOW);
@@ -15101,6 +15200,9 @@ void S9xToggleSoundChannel (int c)
 		GUI.SoundChannelEnable ^= 1 << c;
 
 	S9xSetSoundControl(GUI.SoundChannelEnable);
+	// Channels 1-4 double as the GB APU's CH1-CH4 (pulse A, pulse B, wave,
+	// noise) so the menu also works for GB/SGB games.
+	S9xSGBSetSoundChannelMask(GUI.SoundChannelEnable & 0x0F);
 }
 
 bool S9xPollButton(uint32 id, bool *pressed){

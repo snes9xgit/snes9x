@@ -2592,6 +2592,21 @@ void S9xSGBClearSamples(void)
 	SGB::Instance().ClearAudio();
 }
 
+void S9xSGBSetSoundChannelMask(uint8_t mask)
+{
+	SGB::ApuSetHostChannelMask(mask);
+}
+
+void S9xSGBSetWaveCaptureEnabled(bool enabled)
+{
+	SGB::ApuSetWaveCaptureEnabled(enabled);
+}
+
+int32_t S9xSGBGetChannelWaveform(int32_t channel, int16_t *out, int32_t max_samples)
+{
+	return SGB::ApuGetChannelWaveform(channel, out, max_samples);
+}
+
 void S9xSGBSetAudioRate(int32_t rate_hz)
 {
 	SGB::Instance().SetAudioRate(rate_hz);
