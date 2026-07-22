@@ -6843,7 +6843,7 @@ INT_PTR CALLBACK DlgEmulatorHacksProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM
         SendDlgItemMessage(hDlg, IDC_SFCBOX_OSD_LANGUAGE, CB_ADDSTRING, 0, (LPARAM)TEXT("Japanese"));
         SendDlgItemMessage(hDlg, IDC_SFCBOX_OSD_LANGUAGE, CB_ADDSTRING, 0, (LPARAM)TEXT("English"));
         SendDlgItemMessage(hDlg, IDC_SFCBOX_OSD_LANGUAGE, CB_SETCURSEL, Settings.SFCBoxOSDEnglish ? 1 : 0, 0);
-        CreateToolTip(IDC_SFCBOX_OSD_LANGUAGE, hDlg, TEXT("Language of the supervisor screens (boot, attendant\nmenus, self-test). English is a render-time translation\nonly - the KROM firmware, its checksums and savestates\nstay untouched. Takes effect immediately."));
+        CreateToolTip(IDC_SFCBOX_OSD_LANGUAGE, hDlg, TEXT("Translates the BIOS on-screen text to English: boot,\nattendant menus, self-test, coin/time messages. Game\ntext and the game-select menus are drawn by the games\nthemselves and stay Japanese. Takes effect immediately."));
 
         {
             static const TCHAR *kspos[5] = { TEXT("1 (Options)"), TEXT("OFF"), TEXT("ON (Play)"), TEXT("2"), TEXT("3 (Self-Test)") };
