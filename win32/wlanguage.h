@@ -148,11 +148,13 @@ Nintendo is a trademark.")
 #define HOTKEYS_CHEAT_EDITOR_DIALOG TEXT("Cheats Editor Dialog:")
 #define HOTKEYS_CHEAT_SEARCH_DIALOG TEXT("Cheats Search Dialog:")
 #define HOTKEYS_INSERT_COIN TEXT("Insert Coin:")
-#define HOTKEYS_KEYSWITCH_1 TEXT("Keyswitch 1 (Options):")
-#define HOTKEYS_KEYSWITCH_OFF TEXT("Keyswitch OFF:")
-#define HOTKEYS_KEYSWITCH_ON TEXT("Keyswitch ON (Play):")
-#define HOTKEYS_KEYSWITCH_2 TEXT("Keyswitch 2:")
-#define HOTKEYS_KEYSWITCH_3 TEXT("Keyswitch 3 (Self-Test):")
+// Keep these short enough for the 72-DLU IDC_LABEL_HK* statics: longer text
+// word-wraps and the clipped second line shows as pixel garbage under the label.
+#define HOTKEYS_KEYSWITCH_1 TEXT("Key Switch 1:")
+#define HOTKEYS_KEYSWITCH_OFF TEXT("Key Switch OFF:")
+#define HOTKEYS_KEYSWITCH_ON TEXT("Key Switch ON:")
+#define HOTKEYS_KEYSWITCH_2 TEXT("Key Switch 2:")
+#define HOTKEYS_KEYSWITCH_3 TEXT("Key Switch 3:")
 
 // gaming buttons and axes
 #define GAMEDEVICE_JOYNUMPREFIX "(J%x)" // don't change this
