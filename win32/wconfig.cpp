@@ -101,6 +101,7 @@ void WinSetDefaultValues ()
 	WinDeleteRecentGamesList ();
 
 	GUI.SoundChannelEnable=255;
+	GUI.GBChannelEnable=0x0F;
 
 	// Tracing options
 	Settings.TraceDMA =	false;

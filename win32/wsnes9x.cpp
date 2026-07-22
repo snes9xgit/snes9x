@@ -10209,53 +10209,186 @@ void UpdateModeComboBox(HWND hComboBox)
 static const TCHAR kAudioWaveClass[] = TEXT("Snes9xAudioWaveform");
 static const int   kAudioWaveFrames  = 4800;
 
-static void DrawWaveformPanel(HDC hdc, const RECT &r, const TCHAR *label,
-                              const short *lr, int n, int sample_rate,
-                              int *sticky_min, int *sticky_max, bool show_xaxis)
+// ---------------------------------------------------------------------------
+// Logic-Pro-style track rows: a dark header strip on the left (color tab,
+// track name, [M]ute button) and a colored waveform lane on the right. Each
+// group (SPC / GB / MIX) and each member (V1-8 / CH1-4) has its own color.
+// ---------------------------------------------------------------------------
+
+static const int kWaveHeaderW = 118;
+
+struct WaveTrackInfo { const TCHAR *name; COLORREF color; };
+static const WaveTrackInfo kWaveTracks[15] = {
+    { TEXT("SPC"), RGB( 91, 124, 235) },
+    { TEXT("GB"),  RGB(166, 168,  60) },
+    { TEXT("MIX"), RGB(148, 156, 172) },
+    { TEXT("CH1"), RGB(102, 187, 106) },
+    { TEXT("CH2"), RGB( 38, 166, 154) },
+    { TEXT("CH3"), RGB(212, 177,   6) },
+    { TEXT("CH4"), RGB(239, 112,  67) },
+    { TEXT("V1"),  RGB( 91, 141, 239) },
+    { TEXT("V2"),  RGB( 79, 195, 247) },
+    { TEXT("V3"),  RGB( 77, 208, 165) },
+    { TEXT("V4"),  RGB(139, 195,  74) },
+    { TEXT("V5"),  RGB(212, 196,  65) },
+    { TEXT("V6"),  RGB(240, 154,  62) },
+    { TEXT("V7"),  RGB(229, 100, 110) },
+    { TEXT("V8"),  RGB(176, 106, 212) },
+};
+
+static COLORREF WaveShade(COLORREF c, int pct)   // scale toward black
 {
-    FillRect(hdc, &r, (HBRUSH)GetStockObject(BLACK_BRUSH));
+    return RGB(GetRValue(c) * pct / 100, GetGValue(c) * pct / 100,
+               GetBValue(c) * pct / 100);
+}
 
-    const int yAxisW   = 56;
-    const int xAxisH   = show_xaxis ? 18 : 0;
-    const int axisLeft = r.left + 6;
-    const int axisRight = r.right - yAxisW;
-    const int axisTop  = r.top + 4;
-    const int axisBot  = r.bottom - 4 - xAxisH;
-    const int W = axisRight - axisLeft;
-    const int H = axisBot - axisTop;
-    const int midY = (axisTop + axisBot) / 2;
+static COLORREF WaveTint(COLORREF c, int pct)    // blend toward white
+{
+    const int r = GetRValue(c), g = GetGValue(c), b = GetBValue(c);
+    return RGB(r + (255 - r) * pct / 100, g + (255 - g) * pct / 100,
+               b + (255 - b) * pct / 100);
+}
 
-    int peak = 0;
-    for (int s = 0; s < n; ++s)
+// Mute state per viewer source. SPC voices ride GUI.SoundChannelEnable
+// (shared with the Sound > Channels menu); GB channels have their own
+// GUI.GBChannelEnable so muting CH2 here doesn't silence SPC voice 2;
+// MIX maps to the master mute.
+static bool AudioWaveIsMuted(int src)
+{
+    switch (src)
     {
-        int v = ((int)lr[s * 2] + (int)lr[s * 2 + 1]) / 2;
-        if (sticky_min && v < *sticky_min) *sticky_min = v;
-        if (sticky_max && v > *sticky_max) *sticky_max = v;
-        int av = v < 0 ? -v : v;
-        if (av > peak) peak = av;
+        case 0:  return (GUI.SoundChannelEnable & 0xFF) == 0;
+        case 1:  return (GUI.GBChannelEnable & 0x0F) == 0;
+        case 2:  return GUI.Mute;
+        default:
+            if (src >= 7) return !(GUI.SoundChannelEnable & (1 << (src - 7)));
+            return !(GUI.GBChannelEnable & (1 << (src - 3)));
     }
-    int show_min = sticky_min ? *sticky_min : 0;
-    int show_max = sticky_max ? *sticky_max : 0;
+}
 
-    const int amps[7] = { -30000, -20000, -10000, 0, 10000, 20000, 30000 };
-    HPEN penGrid = CreatePen(PS_SOLID, 1, RGB(40, 40, 40));
-    HPEN oldPen = (HPEN)SelectObject(hdc, penGrid);
-    for (int i = 0; i < 7; ++i)
+static void AudioWaveToggleMute(int src)
+{
+    static uint8 savedSpc = 255;   // group mute keeps the per-member pattern
+    static uint8 savedGb  = 0x0F;
+    switch (src)
     {
-        int y = midY - (amps[i] * H / 2) / 32768;
-        MoveToEx(hdc, axisLeft, y, NULL); LineTo(hdc, axisRight, y);
+        case 0:
+            if (GUI.SoundChannelEnable & 0xFF)
+            {
+                savedSpc = (uint8)GUI.SoundChannelEnable;
+                GUI.SoundChannelEnable = 0;
+            }
+            else
+                GUI.SoundChannelEnable = savedSpc ? savedSpc : 255;
+            S9xSetSoundControl((uint8)GUI.SoundChannelEnable);
+            break;
+        case 1:
+            if (GUI.GBChannelEnable & 0x0F)
+            {
+                savedGb = (uint8)GUI.GBChannelEnable;
+                GUI.GBChannelEnable = 0;
+            }
+            else
+                GUI.GBChannelEnable = savedGb ? savedGb : 0x0F;
+            S9xSGBSetSoundChannelMask((uint8)GUI.GBChannelEnable);
+            break;
+        case 2:
+            GUI.Mute = !GUI.Mute;
+            S9xSetSoundMute(GUI.Mute);
+            break;
+        default:
+            if (src >= 7)
+            {
+                GUI.SoundChannelEnable ^= 1 << (src - 7);
+                S9xSetSoundControl((uint8)GUI.SoundChannelEnable);
+            }
+            else
+            {
+                GUI.GBChannelEnable ^= 1 << (src - 3);
+                S9xSGBSetSoundChannelMask((uint8)GUI.GBChannelEnable);
+            }
+            break;
     }
-    for (int i = 1; i < 7; ++i)
-    {
-        int x = axisLeft + (W * i) / 7;
-        MoveToEx(hdc, x, axisTop, NULL); LineTo(hdc, x, axisBot);
-    }
+}
+
+// M-button rect inside a row (right side of the header, vertically centered)
+// — shared by the renderer and the click hit test.
+static RECT AudioWaveMuteRect(const RECT &row)
+{
+    const int cy = (row.top + row.bottom) / 2;
+    RECT r = { row.left + kWaveHeaderW - 32, cy - 9,
+               row.left + kWaveHeaderW - 10, cy + 9 };
+    return r;
+}
+
+static void DrawWaveTrackRow(HDC hdc, const RECT &r, int src, bool isGroup,
+                             bool expanded, const short *lr, int n,
+                             const TCHAR *info, int sample_rate, bool show_xaxis)
+{
+    const WaveTrackInfo &ti = kWaveTracks[src];
+    const bool muted = AudioWaveIsMuted(src);
+
+    // --- header strip ---
+    RECT hd = { r.left, r.top, r.left + kWaveHeaderW, r.bottom };
+    HBRUSH hbr = CreateSolidBrush(isGroup ? RGB(56, 56, 60) : RGB(40, 40, 44));
+    FillRect(hdc, &hd, hbr);
+    DeleteObject(hbr);
+
+    RECT tab = { hd.left, hd.top, hd.left + 5, hd.bottom };
+    hbr = CreateSolidBrush(ti.color);
+    FillRect(hdc, &tab, hbr);
+    DeleteObject(hbr);
+
+    SetBkMode(hdc, TRANSPARENT);
+    const int cy = (hd.top + hd.bottom) / 2;
+    TCHAR name[32];
+    if (isGroup)
+        _stprintf(name, TEXT("%s %s"),
+                  expanded ? TEXT("\x25BE") : TEXT("\x25B8"), ti.name);
+    else
+        _stprintf(name, TEXT("%s"), ti.name);
+    SetTextColor(hdc, muted ? RGB(130, 130, 135) : RGB(225, 225, 228));
+    TextOut(hdc, hd.left + 12, cy - 8, name, lstrlen(name));
+
+    // [M]ute button — filled blue when engaged, dark outline otherwise.
+    RECT mb = AudioWaveMuteRect(r);
+    hbr = CreateSolidBrush(muted ? RGB(96, 150, 250) : RGB(52, 52, 56));
+    FillRect(hdc, &mb, hbr);
+    DeleteObject(hbr);
+    HBRUSH frame = CreateSolidBrush(muted ? RGB(140, 180, 255) : RGB(80, 80, 86));
+    FrameRect(hdc, &mb, frame);
+    DeleteObject(frame);
+    SetTextColor(hdc, muted ? RGB(20, 30, 60) : RGB(150, 150, 156));
+    TextOut(hdc, (mb.left + mb.right) / 2 - 4, (mb.top + mb.bottom) / 2 - 8,
+            TEXT("M"), 1);
+
+    // --- waveform lane ---
+    RECT lane = { hd.right, r.top, r.right, r.bottom };
+    const int xAxisH = show_xaxis ? 16 : 0;
+    const COLORREF cBg     = WaveShade(ti.color, muted ? 14 : 28);
+    const COLORREF cWave   = muted ? WaveShade(ti.color, 52) : WaveTint(ti.color, 55);
+    const COLORREF cCenter = WaveShade(ti.color, muted ? 24 : 44);
+
+    RECT laneBody = { lane.left, lane.top, lane.right, lane.bottom - xAxisH };
+    hbr = CreateSolidBrush(cBg);
+    FillRect(hdc, &laneBody, hbr);
+    DeleteObject(hbr);
+
+    const int top  = laneBody.top;
+    const int bot  = laneBody.bottom;
+    const int midY = (top + bot) / 2;
+    const int W    = lane.right - lane.left;
+    const int Hh   = bot - top;
+
+    HPEN penCenter = CreatePen(PS_SOLID, 1, cCenter);
+    HPEN oldPen = (HPEN)SelectObject(hdc, penCenter);
+    MoveToEx(hdc, lane.left, midY, NULL); LineTo(hdc, lane.right, midY);
     SelectObject(hdc, oldPen);
-    DeleteObject(penGrid);
+    DeleteObject(penCenter);
 
-    if (n > 1)
+    if (n > 1 && W > 0 && Hh > 4)
     {
-        HPEN penWave = CreatePen(PS_SOLID, 1, RGB(122, 240, 195));
+        HPEN penWave = CreatePen(PS_SOLID, 1, cWave);
         oldPen = (HPEN)SelectObject(hdc, penWave);
         for (int i = 0; i < W; ++i)
         {
@@ -10269,57 +10402,52 @@ static void DrawWaveformPanel(HDC hdc, const RECT &r, const TCHAR *label,
                 if (v < mn) mn = v;
                 if (v > mx) mx = v;
             }
-            int yMin = midY - (mx * H / 2) / 32768;
-            int yMax = midY - (mn * H / 2) / 32768;
-            MoveToEx(hdc, axisLeft + i, yMin, NULL);
-            LineTo  (hdc, axisLeft + i, yMax);
+            int yMin = midY - (mx * (Hh - 4) / 2) / 32768;
+            int yMax = midY - (mn * (Hh - 4) / 2) / 32768;
+            if (yMax <= yMin) yMax = yMin + 1;
+            MoveToEx(hdc, lane.left + i, yMin, NULL);
+            LineTo  (hdc, lane.left + i, yMax);
         }
         SelectObject(hdc, oldPen);
         DeleteObject(penWave);
     }
 
-    SetBkMode(hdc, TRANSPARENT);
-    SetTextColor(hdc, RGB(190, 190, 190));
-    TCHAR txt[64];
-    for (int i = 0; i < 7; ++i)
+    // clip-label style info text, top-left of the lane
+    if (info && info[0])
     {
-        int y = midY - (amps[i] * H / 2) / 32768;
-        _stprintf(txt, TEXT("%d"), amps[i]);
-        TextOut(hdc, axisRight + 6, y - 7, txt, lstrlen(txt));
+        SetTextColor(hdc, WaveTint(ti.color, muted ? 25 : 70));
+        TextOut(hdc, lane.left + 6, lane.top + 2, info, lstrlen(info));
     }
-    SetTextColor(hdc, RGB(220, 220, 220));
-    TextOut(hdc, axisRight + 6, axisTop - 4, TEXT("smpl"), 4);
-
-    HPEN penBox = CreatePen(PS_SOLID, 1, RGB(220, 220, 220));
-    oldPen = (HPEN)SelectObject(hdc, penBox);
-    HBRUSH oldBrush = (HBRUSH)SelectObject(hdc, GetStockObject(NULL_BRUSH));
-    const int lblW = 68, lblH = 18;
-    Rectangle(hdc, axisLeft, axisTop, axisLeft + lblW, axisTop + lblH);
-    SelectObject(hdc, oldBrush);
-    SelectObject(hdc, oldPen);
-    DeleteObject(penBox);
-    SetTextColor(hdc, RGB(230, 230, 230));
-    TextOut(hdc, axisLeft + 6, axisTop + 2, label, lstrlen(label));
-
-    SetTextColor(hdc, RGB(160, 200, 180));
-    _stprintf(txt, TEXT("peak %d  min %d  max %d"), peak, show_min, show_max);
-    TextOut(hdc, axisLeft + lblW + 12, axisTop + 2, txt, lstrlen(txt));
+    if (muted)
+    {
+        SetTextColor(hdc, WaveTint(ti.color, 40));
+        TextOut(hdc, lane.right - 52, lane.top + 2, TEXT("muted"), 5);
+    }
 
     if (show_xaxis)
     {
-        SetTextColor(hdc, RGB(190, 190, 190));
+        RECT ax = { lane.left, bot, lane.right, lane.bottom };
+        hbr = CreateSolidBrush(RGB(18, 18, 20));
+        FillRect(hdc, &ax, hbr);
+        DeleteObject(hbr);
+        SetTextColor(hdc, RGB(140, 140, 145));
+        TCHAR txt[32];
         double secPerSpan = sample_rate > 0 ? ((double)n / sample_rate) : 0.0;
         for (int i = 1; i < 7; ++i)
         {
-            int x = axisLeft + (W * i) / 7;
-            double tMs = secPerSpan * 1000.0 * i / 7.0;
-            _stprintf(txt, TEXT("%.0f ms"), tMs);
-            TextOut(hdc, x - 22, axisBot + 3, txt, lstrlen(txt));
+            int x = lane.left + (W * i) / 7;
+            _stprintf(txt, TEXT("%.0f ms"), secPerSpan * 1000.0 * i / 7.0);
+            TextOut(hdc, x - 22, bot + 1, txt, lstrlen(txt));
         }
-        SetTextColor(hdc, RGB(220, 220, 220));
-        TextOut(hdc, axisLeft - 2, axisBot + 3, TEXT("0"), 1);
-        TextOut(hdc, axisRight - 16, axisBot + 3, TEXT("smpl"), 4);
+        TextOut(hdc, lane.left + 2, bot + 1, TEXT("0"), 1);
     }
+
+    // row separator
+    HPEN penSep = CreatePen(PS_SOLID, 1, RGB(20, 20, 22));
+    oldPen = (HPEN)SelectObject(hdc, penSep);
+    MoveToEx(hdc, r.left, r.bottom - 1, NULL); LineTo(hdc, r.right, r.bottom - 1);
+    SelectObject(hdc, oldPen);
+    DeleteObject(penSep);
 }
 
 static UINT g_audiowave_refresh_ms = 100;
@@ -10387,10 +10515,22 @@ LRESULT CALLBACK AudioWaveProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             if (hTotal <= 0 || nPanels <= 0) return 0;
             const int hPanel = hTotal / nPanels;
             if (hPanel <= 0) return 0;
-            int idx = (int)(short)HIWORD(lp) / hPanel;
+            POINT pt = { (int)(short)LOWORD(lp), (int)(short)HIWORD(lp) };
+            int idx = pt.y / hPanel;
             if (idx < 0) idx = 0;
             if (idx >= nPanels) idx = nPanels - 1;
             const int src = order[idx];
+
+            RECT row = { 0, idx * hPanel, cr.right,
+                         (idx == nPanels - 1) ? hTotal : (idx + 1) * hPanel };
+            RECT mb = AudioWaveMuteRect(row);
+            if (PtInRect(&mb, pt))
+            {
+                AudioWaveToggleMute(src);
+                InvalidateRect(hwnd, NULL, FALSE);
+                return 0;
+            }
+            // anywhere else on a group row toggles its expansion
             if (src == 0)
                 g_audiowave_spc_open = !g_audiowave_spc_open;
             else if (src == 1)
@@ -10447,14 +10587,6 @@ LRESULT CALLBACK AudioWaveProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             int H = ch / nPanels;
             short buf[kAudioWaveFrames * 2];
 
-            // Group headers carry a [+]/[-] expansion hint.
-            const TCHAR *labels[15] = {
-                g_audiowave_spc_open ? TEXT("SPC [-]") : TEXT("SPC [+]"),
-                g_audiowave_gb_open  ? TEXT("GB [-]")  : TEXT("GB [+]"),
-                TEXT("MIX"),
-                TEXT("CH1"), TEXT("CH2"), TEXT("CH3"), TEXT("CH4"),
-                TEXT("V1"), TEXT("V2"), TEXT("V3"), TEXT("V4"),
-                TEXT("V5"), TEXT("V6"), TEXT("V7"), TEXT("V8") };
             int sr = S9xAudioWaveformSampleRate();
             const int32_t gb_rate = S9xSGBGetAudioRate();
             const double spc_ratio = S9xSpcGetTimeRatio();
@@ -10483,8 +10615,6 @@ LRESULT CALLBACK AudioWaveProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             _stprintf(rateTxt[6], TEXT("noise"));
             for (int i = 7; i < 15; ++i)
                 rateTxt[i][0] = 0;
-            static int sticky_min[15] = {0};
-            static int sticky_max[15] = {0};
             for (int d = 0; d < nPanels; ++d)
             {
                 const int s = order[d];
@@ -10501,7 +10631,7 @@ LRESULT CALLBACK AudioWaveProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                 else
                 {
                     // GB channel rings are mono — expand in place to the
-                    // stereo layout DrawWaveformPanel expects.
+                    // stereo layout DrawWaveTrackRow expects.
                     short mono[kAudioWaveFrames];
                     n = S9xSGBGetChannelWaveform(s - 3, mono, kAudioWaveFrames);
                     for (int i = 0; i < n; ++i)
@@ -10515,15 +10645,11 @@ LRESULT CALLBACK AudioWaveProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                 panel.right  = cw;
                 panel.top    = d * H;
                 panel.bottom = (d == nPanels - 1) ? ch : ((d + 1) * H);
-                DrawWaveformPanel(hdc, panel, labels[s], buf, n,
-                                  (s < 3) ? sr : (s >= 7 ? 32000 : (int)gb_rate),
-                                  &sticky_min[s], &sticky_max[s], d == nPanels - 1);
-                if (rateTxt[s][0])
-                {
-                    SetTextColor(hdc, RGB(160, 200, 180));
-                    SetBkMode(hdc, TRANSPARENT);
-                    TextOut(hdc, panel.right - 290, panel.top + 2, rateTxt[s], lstrlen(rateTxt[s]));
-                }
+                DrawWaveTrackRow(hdc, panel, s, s == 0 || s == 1,
+                                 s == 0 ? g_audiowave_spc_open : g_audiowave_gb_open,
+                                 buf, n, rateTxt[s],
+                                 (s < 3) ? sr : (s >= 7 ? 32000 : (int)gb_rate),
+                                 d == nPanels - 1);
             }
             BitBlt(hdcWnd, 0, 0, cw, ch, hdc, 0, 0, SRCCOPY);
             SelectObject(hdc, oldBmp);
@@ -15201,8 +15327,11 @@ void S9xToggleSoundChannel (int c)
 
 	S9xSetSoundControl(GUI.SoundChannelEnable);
 	// Channels 1-4 double as the GB APU's CH1-CH4 (pulse A, pulse B, wave,
-	// noise) so the menu also works for GB/SGB games.
-	S9xSGBSetSoundChannelMask(GUI.SoundChannelEnable & 0x0F);
+	// noise) so the menu also works for GB/SGB games. The waveform viewer
+	// can retarget GUI.GBChannelEnable independently; the menu is the blunt
+	// tool and re-syncs it to the SPC low bits.
+	GUI.GBChannelEnable = GUI.SoundChannelEnable & 0x0F;
+	S9xSGBSetSoundChannelMask((uint8)GUI.GBChannelEnable);
 }
 
 bool S9xPollButton(uint32 id, bool *pressed){
