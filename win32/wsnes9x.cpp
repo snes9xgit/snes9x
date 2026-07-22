@@ -76,6 +76,7 @@
 #include <string>
 #include <algorithm>
 #include <set>
+#include <cmath>
 
 #ifdef DEBUGGER
 #include "../debug.h"
@@ -10436,6 +10437,60 @@ static RECT AudioWaveSoloRect(const RECT &row)
     return r;
 }
 
+// Vertical scale for the waveform lanes, picked in the footer selectbox.
+// Chip output is often a small fraction of full scale, so linear rendering
+// leaves near-flat traces; these modes trade amplitude truth for
+// visibility in different ways.
+enum AudioWaveScale
+{
+    kWaveScaleLin = 0,   // true amplitude
+    kWaveScaleX2,        // fixed gains, clipped at the lane edge
+    kWaveScaleX4,
+    kWaveScaleX8,
+    kWaveScaleX16,
+    kWaveScaleAuto,      // normalize each lane to its own visible peak
+    kWaveScaleLog,       // dB mapping with a -60 dB floor (Audacity-style)
+    kWaveScaleSqrt,      // gentler perceptual boost than log
+};
+static const TCHAR *const kAudioWaveScaleLabels[] = {
+    TEXT("linear"), TEXT("2x"), TEXT("4x"), TEXT("8x"),
+    TEXT("16x"), TEXT("auto-fit"), TEXT("log dB"), TEXT("sqrt"),
+};
+static const int  kAudioWaveScaleCount  = sizeof(kAudioWaveScaleLabels) / sizeof(kAudioWaveScaleLabels[0]);
+static const UINT kAudioWaveScaleIdBase = 0x9200;
+static int g_audiowave_scale = kWaveScaleLin;
+
+// Map one normalized magnitude (0..1) into lane space under the current
+// mode. Every mode is monotonic, so mapping just the min/max envelope
+// endpoints of each pixel column stays valid.
+static double AudioWaveScaleAmp(double a, double peak)
+{
+    switch (g_audiowave_scale)
+    {
+        default:
+        case kWaveScaleLin:
+            return a;
+        case kWaveScaleX2:
+        case kWaveScaleX4:
+        case kWaveScaleX8:
+        case kWaveScaleX16:
+        {
+            const double v = a * (double)(1 << (g_audiowave_scale - kWaveScaleLin));
+            return v > 1.0 ? 1.0 : v;
+        }
+        case kWaveScaleAuto:
+            return peak > 0.0 ? a / peak : 0.0;
+        case kWaveScaleLog:
+        {
+            if (a <= 0.0) return 0.0;
+            const double v = 1.0 + (20.0 * log10(a)) / 60.0;
+            return v < 0.0 ? 0.0 : v;
+        }
+        case kWaveScaleSqrt:
+            return sqrt(a);
+    }
+}
+
 static void DrawWaveTrackRow(HDC hdc, const RECT &r, int src, bool isGroup,
                              bool expanded, const short *lr, int n,
                              const TCHAR *info, int sample_rate, bool show_xaxis)
@@ -10547,6 +10602,20 @@ static void DrawWaveTrackRow(HDC hdc, const RECT &r, int src, bool isGroup,
 
     if (n > 1 && W > 0 && Hh > 4)
     {
+        // auto-fit normalizes to this lane's visible peak; the 1%-FS floor
+        // keeps idle noise from being blown up into a full-height smear
+        double peakNorm = 1.0;
+        if (g_audiowave_scale == kWaveScaleAuto)
+        {
+            int pk = 328;
+            for (int s = 0; s < n; ++s)
+            {
+                int v = ((int)lr[s * 2] + (int)lr[s * 2 + 1]) / 2;
+                if (v < 0) v = -v;
+                if (v > pk) pk = v;
+            }
+            peakNorm = pk / 32768.0;
+        }
         HPEN penWave = CreatePen(PS_SOLID, 1, cWave);
         oldPen = (HPEN)SelectObject(hdc, penWave);
         for (int i = 0; i < W; ++i)
@@ -10561,8 +10630,12 @@ static void DrawWaveTrackRow(HDC hdc, const RECT &r, int src, bool isGroup,
                 if (v < mn) mn = v;
                 if (v > mx) mx = v;
             }
-            int yMin = midY - (mx * (Hh - 4) / 2) / 32768;
-            int yMax = midY - (mn * (Hh - 4) / 2) / 32768;
+            const double vHi = mx >= 0 ?  AudioWaveScaleAmp( mx / 32768.0, peakNorm)
+                                       : -AudioWaveScaleAmp(-mx / 32768.0, peakNorm);
+            const double vLo = mn >= 0 ?  AudioWaveScaleAmp( mn / 32768.0, peakNorm)
+                                       : -AudioWaveScaleAmp(-mn / 32768.0, peakNorm);
+            int yMin = midY - (int)(vHi * (Hh - 4) / 2);
+            int yMax = midY - (int)(vLo * (Hh - 4) / 2);
             if (yMax <= yMin) yMax = yMin + 1;
             MoveToEx(hdc, lane.left + i, yMin, NULL);
             LineTo  (hdc, lane.left + i, yMax);
@@ -10636,13 +10709,24 @@ static bool g_audiowave_gb_open  = false;
 // keeps reflecting them once the viewer (and its solo overlay) is gone.
 static bool g_audiowave_reset_on_close = true;
 
-// Footer strip at the bottom of the client area hosting the checkbox.
-static const int kWaveFooterH = 20;
+// Footer strip at the bottom of the client area hosting the checkbox and
+// the zoom selectbox, both vertically centered in it.
+static const int kWaveFooterH = 28;
 
 static RECT AudioWaveResetBoxRect(const RECT &client)
 {
-    RECT r = { 8, client.bottom - kWaveFooterH + 3,
-               21, client.bottom - 4 };
+    RECT r = { 8, client.bottom - kWaveFooterH + 7,
+               21, client.bottom - 8 };
+    return r;
+}
+
+// Zoom selectbox in the footer, to the right of the reset-on-close label.
+// Clicking it pops the scale-mode list (opening upward, since the box sits
+// on the window's bottom edge).
+static RECT AudioWaveScaleBoxRect(const RECT &client)
+{
+    RECT r = { 240, client.bottom - kWaveFooterH + 6,
+               324, client.bottom - 6 };
     return r;
 }
 
@@ -10704,7 +10788,31 @@ LRESULT CALLBACK AudioWaveProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             POINT pt = { (int)(short)LOWORD(lp), (int)(short)HIWORD(lp) };
             if (pt.y >= cr.bottom - kWaveFooterH)
             {
-                // footer: the checkbox and its label toggle reset-on-close
+                // footer: the zoom selectbox pops the scale-mode list
+                RECT zb = AudioWaveScaleBoxRect(cr);
+                if (PtInRect(&zb, pt))
+                {
+                    HMENU menu = CreatePopupMenu();
+                    if (!menu) return 0;
+                    for (int i = 0; i < kAudioWaveScaleCount; ++i)
+                        AppendMenu(menu,
+                                   MF_STRING | (i == g_audiowave_scale ? MF_CHECKED : 0),
+                                   kAudioWaveScaleIdBase + i, kAudioWaveScaleLabels[i]);
+                    POINT sp = { zb.left, zb.top };
+                    ClientToScreen(hwnd, &sp);
+                    UINT sel = TrackPopupMenu(menu,
+                                              TPM_RETURNCMD | TPM_BOTTOMALIGN | TPM_LEFTALIGN,
+                                              sp.x, sp.y, 0, hwnd, NULL);
+                    DestroyMenu(menu);
+                    if (sel >= kAudioWaveScaleIdBase &&
+                        sel < kAudioWaveScaleIdBase + (UINT)kAudioWaveScaleCount)
+                    {
+                        g_audiowave_scale = (int)(sel - kAudioWaveScaleIdBase);
+                        InvalidateRect(hwnd, NULL, FALSE);
+                    }
+                    return 0;
+                }
+                // the checkbox and its label toggle reset-on-close
                 RECT cb = AudioWaveResetBoxRect(cr);
                 if (pt.x >= cb.left && pt.x <= cb.right + 130)
                 {
@@ -10887,8 +10995,35 @@ LRESULT CALLBACK AudioWaveProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                 }
                 SetBkMode(hdc, TRANSPARENT);
                 SetTextColor(hdc, RGB(150, 150, 156));
-                TextOut(hdc, cb.right + 6, chPanels + 2,
+                TextOut(hdc, cb.right + 6, chPanels + 6,
                         TEXT("reset channels on close"), 23);
+
+                // zoom selectbox: current scale mode + dropdown arrow
+                TextOut(hdc, 204, chPanels + 6, TEXT("zoom"), 4);
+                RECT zb = AudioWaveScaleBoxRect(cr);
+                fbr = CreateSolidBrush(RGB(52, 52, 56));
+                FillRect(hdc, &zb, fbr);
+                DeleteObject(fbr);
+                fbr = CreateSolidBrush(RGB(80, 80, 86));
+                FrameRect(hdc, &zb, fbr);
+                DeleteObject(fbr);
+                SetTextColor(hdc, RGB(200, 200, 205));
+                TextOut(hdc, zb.left + 6, chPanels + 6,
+                        kAudioWaveScaleLabels[g_audiowave_scale],
+                        lstrlen(kAudioWaveScaleLabels[g_audiowave_scale]));
+                const int acy = (zb.top + zb.bottom) / 2;
+                POINT arr[3] = { { zb.right - 15, acy - 2 },
+                                 { zb.right - 7,  acy - 2 },
+                                 { zb.right - 11, acy + 3 } };
+                HBRUSH ab  = CreateSolidBrush(RGB(150, 150, 156));
+                HPEN   ap  = CreatePen(PS_SOLID, 1, RGB(150, 150, 156));
+                HBRUSH oab = (HBRUSH)SelectObject(hdc, ab);
+                HPEN   oap = (HPEN)SelectObject(hdc, ap);
+                Polygon(hdc, arr, 3);
+                SelectObject(hdc, oab);
+                SelectObject(hdc, oap);
+                DeleteObject(ab);
+                DeleteObject(ap);
             }
             BitBlt(hdcWnd, 0, 0, cw, ch, hdc, 0, 0, SRCCOPY);
             SelectObject(hdc, oldBmp);
