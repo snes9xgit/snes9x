@@ -156,6 +156,10 @@ public:
 	// Consume pending audio samples. Returns the count written
 	// (stereo frames — each frame stores L, R into out[2*i], out[2*i+1]).
 	int32_t DrainAudio(int16_t *out, int32_t max_samples);
+
+	// Discard all pending audio samples without playing them. Consumer-side
+	// (moves tail to head), so it is as thread-safe as DrainAudio.
+	void    ClearAudio();
 	int32_t GetAudioSampleRate() const;
 
 	// Diagnostics: GB clock_hz and cycles_per_sample as currently
@@ -399,6 +403,7 @@ void S9xSGBOverlayBiosBorder(uint16_t *dest, uint32_t pitch_pixels);
 // × 2), returning the number actually drained.
 int32_t S9xSGBGetSampleCount(void);
 int32_t S9xSGBDrainSamples(int16_t *dest, int32_t count_int16s);
+void    S9xSGBClearSamples(void);
 void    S9xSGBSetAudioRate(int32_t rate_hz);
 int32_t S9xSGBGetAudioRate(void);
 

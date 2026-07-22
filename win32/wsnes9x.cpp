@@ -4728,6 +4728,12 @@ int WINAPI WinMain(
 			if(GUI.FrameAdvanceJustPressed)
 				GUI.FrameAdvanceJustPressed--;
 
+			// Frame Advance mute extends to fast-forward. Full mute (not a
+			// volume cut) so the mixers discard samples as they're produced
+			// instead of banking a turbo backlog that replays on release.
+			if (!Settings.Paused && !Settings.ForcedPause)
+				S9xSetSoundMute(GUI.Mute || (Settings.TurboMode && GUI.FAMute));
+
 			ProcessInput();
 
 			if (GUI.rewindBufferSize

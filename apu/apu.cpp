@@ -267,7 +267,24 @@ bool8 S9xMixSamples(uint8 *dest, int sample_count)
         if (Settings.Mute)
         {
             memset(out, 0, sample_count << 1);
+            // Discard the GB APU's pending output too — the SNES path gets
+            // this via S9xClearSamples, but the GB ring would otherwise back
+            // up while muted (frame-advance mute, mute toggle) and burst out
+            // the stale audio on unmute.
+            S9xSGBClearSamples();
             S9xClearSamples();
+            // Feed the zeroed buffer to the waveform viewers so they flat-
+            // line while muted instead of freezing on stale audio. buf_mix
+            // in BIOS mode is pushed by the host after its SPC merge, which
+            // also sees this zeroed buffer.
+            if (audiowave::enabled)
+            {
+                audiowave::push(audiowave::buf_gb, audiowave::wpos_gb,
+                                out, sample_count / 2);
+                if (!mix_spc_under_gb)
+                    audiowave::push(audiowave::buf_mix, audiowave::wpos_mix,
+                                    out, sample_count / 2);
+            }
             CaptureLastOut(out, sample_count);
             return true;
         }

@@ -1162,6 +1162,11 @@ void Emulator::RunFrame()
 	// authentic 59.73 Hz, so APU sample production drifts from the host's
 	// fixed-rate drain; lock production to the drain by steering the APU's
 	// effective clock until the ring buffer fill holds at its setpoint.
+	// While muted the host discards the ring instead of draining it at the
+	// playback rate, so the fill level carries no rate signal — skip the
+	// controller update rather than winding up the integrator.
+	if (Settings.Mute)
+		return;
 	const uint32_t head = impl_->apu.sample_head;
 	const uint32_t tail = impl_->apu.sample_tail;
 	const uint32_t fill = (head >= tail) ? (head - tail)
@@ -1872,6 +1877,15 @@ int32_t Emulator::DrainAudio(int16_t *out, int32_t max_samples)
 	return ApuDrain(impl_->apu, out, max_samples);
 }
 
+void Emulator::ClearAudio()
+{
+	impl_->apu.sample_tail = impl_->apu.sample_head;
+	// The fill level just became meaningless — restart the rate controller
+	// from neutral rather than letting a wound-up integrator (e.g. after a
+	// fast-forward burst) skew the APU clock while it unwinds.
+	impl_->drc_integ = 0.0;
+}
+
 int32_t Emulator::GetAudioSampleRate() const
 {
 	return impl_->apu.output_rate;
@@ -2571,6 +2585,11 @@ int32_t S9xSGBDrainSamples(int16_t *dest, int32_t count_int16s)
 	const int32_t frames = count_int16s / 2;
 	const int32_t got    = SGB::Instance().DrainAudio(dest, frames);
 	return got * 2;
+}
+
+void S9xSGBClearSamples(void)
+{
+	SGB::Instance().ClearAudio();
 }
 
 void S9xSGBSetAudioRate(int32_t rate_hz)

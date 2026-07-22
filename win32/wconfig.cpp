@@ -923,7 +923,7 @@ void WinRegisterConfigItems()
 #define	CATEGORY "Sound\\Win"
 	AddUIntC("SoundDriver", GUI.SoundDriver, 4, "4=XAudio2 (recommended), 8=WaveOut");
 	AddUIntC("BufferSize", GUI.SoundBufferSize, 64, "sound buffer size in ms - determines the internal and output sound buffer sizes. actual mixing is done every SoundBufferSize/4 samples");
-	AddBoolC("MuteFrameAdvance", GUI.FAMute, false, "true to prevent Snes9x from outputting sound when the Frame Advance command is in use");
+	AddBoolC("MuteFrameAdvance", GUI.FAMute, false, "true to prevent Snes9x from outputting sound when the Frame Advance command or fast-forward is in use");
 	AddUIntC("VolumeRegular", GUI.VolumeRegular, 100, "volume during regular play (percentage between 0 and 100)");
 	AddUIntC("VolumeTurbo", GUI.VolumeTurbo, 100, "volume during turbo mode (percentage between 0 and 100)");
 	AddUIntC("VolumeSGBMixSPC", S9xSGBMixVolumeSPC, 50, "SGB BIOS mix: SPC channel volume (percentage between 0 and 100, only active when a .gb/.gbc ROM is loaded in SGB BIOS mode)");
