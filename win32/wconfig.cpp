@@ -1044,6 +1044,9 @@ void WinRegisterConfigItems()
     ADD(AspectRatio);
     ADD(CheatEditorDialog);
     ADD(CheatSearchDialog);
+    ADD(InsertCoin);
+	ADDN(SFCBoxKeyswitch[0],SFCBoxKeyswitch1); ADDN(SFCBoxKeyswitch[1],SFCBoxKeyswitchOFF); ADDN(SFCBoxKeyswitch[2],SFCBoxKeyswitchON);
+	ADDN(SFCBoxKeyswitch[3],SFCBoxKeyswitch2); ADDN(SFCBoxKeyswitch[4],SFCBoxKeyswitch3);
 #undef ADD
 #undef ADDN
 
@@ -1073,6 +1076,9 @@ void WinRegisterConfigItems()
 	ADDXALL(AspectRatio);
 	ADDXALL(CheatEditorDialog);
 	ADDXALL(CheatSearchDialog);
+	ADDXALL(InsertCoin);
+	ADDXALLN(SFCBoxKeyswitch[0],SFCBoxKeyswitch1); ADDXALLN(SFCBoxKeyswitch[1],SFCBoxKeyswitchOFF); ADDXALLN(SFCBoxKeyswitch[2],SFCBoxKeyswitchON);
+	ADDXALLN(SFCBoxKeyswitch[3],SFCBoxKeyswitch2); ADDXALLN(SFCBoxKeyswitch[4],SFCBoxKeyswitch3);
 #undef ADDX
 #undef ADDXN
 #undef ADDXALL

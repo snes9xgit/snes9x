@@ -167,7 +167,8 @@ void S9xWinScanJoypads();
 #define WM_CHEATS_ADDED (WM_APP + 1)
 
 constexpr int MAX_SWITCHABLE_HOTKEY_DIALOG_ITEMS = 18;
-constexpr int MAX_SWITCHABLE_HOTKEY_DIALOG_PAGES = 4;
+constexpr int MAX_SWITCHABLE_HOTKEY_DIALOG_PAGES = 5;
+constexpr int HOTKEY_TAB_SFCBOX = 4;   // tab only inserted while SFCBox.Active
 constexpr int HOTKEY_TAB_EMULATION  = 0;
 constexpr int HOTKEY_TAB_SAVESTATES = 1;
 constexpr int HOTKEY_TAB_TURBO      = 2;
@@ -877,6 +878,12 @@ static void WinRequestScreenshot()
 		S9xDoScreenshot(IPPU.RenderedScreenWidth, IPPU.RenderedScreenHeight);
 }
 
+// SFC-Box keyswitch rows follow the physical panel left-to-right; values are
+// the port 80h bit the position grounds (the relay-off position is omitted).
+// Shared by the keyswitch hotkeys below and the Hacks dialog combobox.
+static const uint8 sfcbox_keyswitch_map[5] = { 4, 0, 1, 2, 3 };
+static const char *sfcbox_keyswitch_names[5] = { "1 (Options)", "OFF", "ON (Play)", "2", "3 (Self-Test)" };
+
 int HandleKeyMessage(WPARAM wParam, LPARAM lParam)
 {
 	auto MatchesAnyBinding = [](WPARAM wParam, WORD primary, const WORD* extra) -> bool {
@@ -1196,6 +1203,33 @@ int HandleKeyMessage(WPARAM wParam, LPARAM lParam)
 					WINPROC_TURBOMODE_OFF);
 			}
 			hitHotKey = true;
+		}
+		if(HKmatch(InsertCoin))
+		{
+			// SFC-Box front-panel coin switch; only meaningful while a
+			// Super Famicom Box cart is running the KROM supervisor.
+			if (SFCBox.Active)
+			{
+				S9xSFCBoxInsertCoin();
+				S9xMessage(S9X_INFO, S9X_INFO, "Coin inserted");
+			}
+			hitHotKey = true;
+		}
+		for (int ksp = 0; ksp < 5; ksp++)
+		{
+			// SFC-Box rotary keyswitch positions (panel order 1/OFF/ON/2/3);
+			// the KROM polls the switch live, no reset needed.
+			if(HKmatch(SFCBoxKeyswitch[ksp]))
+			{
+				if (SFCBox.Active)
+				{
+					char msg[48];
+					SFCBox.Keyswitch = sfcbox_keyswitch_map[ksp];
+					snprintf(msg, sizeof(msg), "SFC-Box keyswitch: %s", sfcbox_keyswitch_names[ksp]);
+					S9xMessage(S9X_INFO, S9X_INFO, msg);
+				}
+				hitHotKey = true;
+			}
 		}
 		if(HKmatch(ShowPressed))
 		{
@@ -6773,10 +6807,6 @@ INT_PTR CALLBACK DlgAboutProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 	}
 }
 
-// Combobox rows follow the physical panel left-to-right; values are the
-// port 80h bit the position grounds (the relay-off position is omitted).
-static const uint8 sfcbox_keyswitch_map[5] = { 4, 0, 1, 2, 3 };
-
 INT_PTR CALLBACK DlgEmulatorHacksProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 {
     UDACCEL accel = { 0, 10 };
@@ -12076,6 +12106,20 @@ static hotkey_dialog_item hotkey_dialog_items[MAX_SWITCHABLE_HOTKEY_DIALOG_PAGES
         { &CustomKeys.CheatSearchDialog, &CustomKeysExtra.CheatSearchDialog, HOTKEYS_CHEAT_SEARCH_DIALOG },
         { NULL, NULL, _T("") },
     },
+    // Tab 4: SFC Box front-panel controls. The tab itself is only inserted
+    // into the tab control while a Super Famicom Box cart/BIOS is loaded.
+    {
+        { &CustomKeys.InsertCoin,         &CustomKeysExtra.InsertCoin,         HOTKEYS_INSERT_COIN },
+        { &CustomKeys.SFCBoxKeyswitch[0], &CustomKeysExtra.SFCBoxKeyswitch[0], HOTKEYS_KEYSWITCH_1 },
+        { &CustomKeys.SFCBoxKeyswitch[1], &CustomKeysExtra.SFCBoxKeyswitch[1], HOTKEYS_KEYSWITCH_OFF },
+        { &CustomKeys.SFCBoxKeyswitch[2], &CustomKeysExtra.SFCBoxKeyswitch[2], HOTKEYS_KEYSWITCH_ON },
+        { &CustomKeys.SFCBoxKeyswitch[3], &CustomKeysExtra.SFCBoxKeyswitch[3], HOTKEYS_KEYSWITCH_2 },
+        { &CustomKeys.SFCBoxKeyswitch[4], &CustomKeysExtra.SFCBoxKeyswitch[4], HOTKEYS_KEYSWITCH_3 },
+        { NULL, NULL, _T("") }, { NULL, NULL, _T("") }, { NULL, NULL, _T("") },
+        { NULL, NULL, _T("") }, { NULL, NULL, _T("") }, { NULL, NULL, _T("") },
+        { NULL, NULL, _T("") }, { NULL, NULL, _T("") }, { NULL, NULL, _T("") },
+        { NULL, NULL, _T("") }, { NULL, NULL, _T("") }, { NULL, NULL, _T("") },
+    },
 };
 
 // Save States dedicated controls + their labels. Visible only on the Save States tab.
@@ -12243,10 +12287,16 @@ INT_PTR CALLBACK DlgHotkeyConfig(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPar
 			TCITEM tie = {};
 			tie.mask = TCIF_TEXT;
 			static TCHAR tabTexts[][24] = {
-				TEXT("Emulation"), TEXT("States"), TEXT("Turbo"), TEXT("Display && Tools")
+				TEXT("Emulation"), TEXT("States"), TEXT("Turbo"), TEXT("Display && Tools"),
+				TEXT("SFC Box")
 			};
 			for (i = 0; i < MAX_SWITCHABLE_HOTKEY_DIALOG_PAGES; i++)
 			{
+				// The SFC Box front-panel page only exists while a Super
+				// Famicom Box cart/BIOS is loaded. It's the last page, so
+				// skipping it keeps tab indices == page indices.
+				if (i == HOTKEY_TAB_SFCBOX && !SFCBox.Active)
+					continue;
 				tie.pszText = tabTexts[i];
 				TabCtrl_InsertItem(hTabs, i, &tie);
 			}

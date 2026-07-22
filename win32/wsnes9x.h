@@ -416,6 +416,8 @@ struct SCustomKeys {
     SCustomKey CheatEditorDialog;
     SCustomKey CheatSearchDialog;
 	SCustomKey MasterHotkey;
+	SCustomKey InsertCoin;           // SFC-Box front-panel coin switch
+	SCustomKey SFCBoxKeyswitch[5];   // rotary positions, panel order 1/OFF/ON/2/3
 };
 
 struct SCustomKeyExtra {
@@ -471,6 +473,8 @@ struct SCustomKeysExtra {
 	SCustomKeyExtra AspectRatio;
 	SCustomKeyExtra CheatEditorDialog;
 	SCustomKeyExtra CheatSearchDialog;
+	SCustomKeyExtra InsertCoin;
+	SCustomKeyExtra SFCBoxKeyswitch[5];
 };
 
 struct SJoypad {
