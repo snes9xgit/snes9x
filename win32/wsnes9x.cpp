@@ -526,6 +526,7 @@ void RestoreGUIDisplay ();
 void RestoreSNESDisplay ();
 void CheckDirectoryIsWritable (const char *filename);
 static void CheckMenuStates ();
+static void AudioWaveEffectiveMasks (uint8 *outSpc, uint8 *outGb);
 static int  ClampLogoIndex (int n);
 static void ApplyLogoIcon  (HWND hWnd, HINSTANCE hInst, int n);
 static bool SetExeFileIcon (int logoIndex);
@@ -5433,23 +5434,29 @@ static void CheckMenuStates ()
 	// Channels 1-4 drive both SPC voices 1-4 and the GB APU's CH1-CH4.
 	// In BIOS-less GB mode the SPC isn't running, so 5-8 control nothing —
 	// grey them there. In SGB BIOS mode they still gate SPC voices 5-8.
+	// Checkmarks show the EFFECTIVE state — the user mask composed with any
+	// waveform-viewer solo — so soloing V3 leaves only Channel 3 checked.
 	{
-	const UINT spcAbsent = (Settings.SuperGameBoy && !Settings.SGB_BIOSModeActive) ? MFS_DISABLED : 0;
-	mii.fState = (GUI.SoundChannelEnable & (1 << 0)) ? MFS_CHECKED : MFS_UNCHECKED;
+	uint8 effSpc, effGb;
+	AudioWaveEffectiveMasks(&effSpc, &effGb);
+	const bool gbOnly = Settings.SuperGameBoy && !Settings.SGB_BIOSModeActive;
+	const UINT spcAbsent = gbOnly ? MFS_DISABLED : 0;
+	const uint8 lowBits = gbOnly ? effGb : effSpc;
+	mii.fState = (lowBits & (1 << 0)) ? MFS_CHECKED : MFS_UNCHECKED;
     SetMenuItemInfo (GUI.hMenu, ID_CHANNELS_CHANNEL1, FALSE, &mii);
-	mii.fState = (GUI.SoundChannelEnable & (1 << 1)) ? MFS_CHECKED : MFS_UNCHECKED;
+	mii.fState = (lowBits & (1 << 1)) ? MFS_CHECKED : MFS_UNCHECKED;
     SetMenuItemInfo (GUI.hMenu, ID_CHANNELS_CHANNEL2, FALSE, &mii);
-	mii.fState = (GUI.SoundChannelEnable & (1 << 2)) ? MFS_CHECKED : MFS_UNCHECKED;
+	mii.fState = (lowBits & (1 << 2)) ? MFS_CHECKED : MFS_UNCHECKED;
     SetMenuItemInfo (GUI.hMenu, ID_CHANNELS_CHANNEL3, FALSE, &mii);
-	mii.fState = (GUI.SoundChannelEnable & (1 << 3)) ? MFS_CHECKED : MFS_UNCHECKED;
+	mii.fState = (lowBits & (1 << 3)) ? MFS_CHECKED : MFS_UNCHECKED;
     SetMenuItemInfo (GUI.hMenu, ID_CHANNELS_CHANNEL4, FALSE, &mii);
-	mii.fState = ((GUI.SoundChannelEnable & (1 << 4)) ? MFS_CHECKED : MFS_UNCHECKED) | spcAbsent;
+	mii.fState = ((effSpc & (1 << 4)) ? MFS_CHECKED : MFS_UNCHECKED) | spcAbsent;
     SetMenuItemInfo (GUI.hMenu, ID_CHANNELS_CHANNEL5, FALSE, &mii);
-	mii.fState = ((GUI.SoundChannelEnable & (1 << 5)) ? MFS_CHECKED : MFS_UNCHECKED) | spcAbsent;
+	mii.fState = ((effSpc & (1 << 5)) ? MFS_CHECKED : MFS_UNCHECKED) | spcAbsent;
     SetMenuItemInfo (GUI.hMenu, ID_CHANNELS_CHANNEL6, FALSE, &mii);
-	mii.fState = ((GUI.SoundChannelEnable & (1 << 6)) ? MFS_CHECKED : MFS_UNCHECKED) | spcAbsent;
+	mii.fState = ((effSpc & (1 << 6)) ? MFS_CHECKED : MFS_UNCHECKED) | spcAbsent;
     SetMenuItemInfo (GUI.hMenu, ID_CHANNELS_CHANNEL7, FALSE, &mii);
-	mii.fState = ((GUI.SoundChannelEnable & (1 << 7)) ? MFS_CHECKED : MFS_UNCHECKED) | spcAbsent;
+	mii.fState = ((effSpc & (1 << 7)) ? MFS_CHECKED : MFS_UNCHECKED) | spcAbsent;
     SetMenuItemInfo (GUI.hMenu, ID_CHANNELS_CHANNEL8, FALSE, &mii);
 	}
 
@@ -10622,6 +10629,23 @@ static const UINT kAudioWaveRefreshIdBase = 0x9100;
 static bool g_audiowave_spc_open = false;
 static bool g_audiowave_gb_open  = false;
 
+// Close behavior, driven by the footer checkbox: by default closing the
+// viewer restores the all-on channel defaults (mutes/solos are treated as
+// listening experiments). Unchecked, the audible state is kept — engaged
+// solos are baked into the plain channel masks on close so Sound > Channels
+// keeps reflecting them once the viewer (and its solo overlay) is gone.
+static bool g_audiowave_reset_on_close = true;
+
+// Footer strip at the bottom of the client area hosting the checkbox.
+static const int kWaveFooterH = 20;
+
+static RECT AudioWaveResetBoxRect(const RECT &client)
+{
+    RECT r = { 8, client.bottom - kWaveFooterH + 3,
+               21, client.bottom - 4 };
+    return r;
+}
+
 // Build the top-to-bottom panel list for the current core/expansion state.
 // Sources: 0=SPC, 1=GB, 2=MIX, 3..6=GB CH1-4, 7..14=SPC voices V1-V8.
 // Dead cores are dropped entirely (no SPC group in BIOS-less GB, no GB
@@ -10677,11 +10701,22 @@ LRESULT CALLBACK AudioWaveProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             const int nPanels = AudioWaveBuildOrder(order);
             RECT cr;
             GetClientRect(hwnd, &cr);
-            const int hTotal = cr.bottom - cr.top;
+            POINT pt = { (int)(short)LOWORD(lp), (int)(short)HIWORD(lp) };
+            if (pt.y >= cr.bottom - kWaveFooterH)
+            {
+                // footer: the checkbox and its label toggle reset-on-close
+                RECT cb = AudioWaveResetBoxRect(cr);
+                if (pt.x >= cb.left && pt.x <= cb.right + 130)
+                {
+                    g_audiowave_reset_on_close = !g_audiowave_reset_on_close;
+                    InvalidateRect(hwnd, NULL, FALSE);
+                }
+                return 0;
+            }
+            const int hTotal = cr.bottom - cr.top - kWaveFooterH;
             if (hTotal <= 0 || nPanels <= 0) return 0;
             const int hPanel = hTotal / nPanels;
             if (hPanel <= 0) return 0;
-            POINT pt = { (int)(short)LOWORD(lp), (int)(short)HIWORD(lp) };
             int idx = pt.y / hPanel;
             if (idx < 0) idx = 0;
             if (idx >= nPanels) idx = nPanels - 1;
@@ -10757,7 +10792,8 @@ LRESULT CALLBACK AudioWaveProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             HBITMAP oldBmp = (HBITMAP)SelectObject(hdc, memBmp);
             int order[15];
             const int nPanels = AudioWaveBuildOrder(order);
-            int H = ch / nPanels;
+            const int chPanels = ch - kWaveFooterH;
+            int H = chPanels / nPanels;
             short buf[kAudioWaveFrames * 2];
 
             int sr = S9xAudioWaveformSampleRate();
@@ -10817,12 +10853,42 @@ LRESULT CALLBACK AudioWaveProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                 panel.left   = 0;
                 panel.right  = cw;
                 panel.top    = d * H;
-                panel.bottom = (d == nPanels - 1) ? ch : ((d + 1) * H);
+                panel.bottom = (d == nPanels - 1) ? chPanels : ((d + 1) * H);
                 DrawWaveTrackRow(hdc, panel, s, s == 0 || s == 1,
                                  s == 0 ? g_audiowave_spc_open : g_audiowave_gb_open,
                                  buf, n, rateTxt[s],
                                  (s < 3) ? sr : (s >= 7 ? 32000 : (int)gb_rate),
                                  d == nPanels - 1);
+            }
+
+            // Footer strip: the reset-on-close checkbox.
+            {
+                RECT ft = { 0, chPanels, cw, ch };
+                HBRUSH fbr = CreateSolidBrush(RGB(28, 28, 30));
+                FillRect(hdc, &ft, fbr);
+                DeleteObject(fbr);
+
+                RECT cb = AudioWaveResetBoxRect(cr);
+                fbr = CreateSolidBrush(g_audiowave_reset_on_close ? RGB(96, 150, 250) : RGB(52, 52, 56));
+                FillRect(hdc, &cb, fbr);
+                DeleteObject(fbr);
+                fbr = CreateSolidBrush(g_audiowave_reset_on_close ? RGB(140, 180, 255) : RGB(80, 80, 86));
+                FrameRect(hdc, &cb, fbr);
+                DeleteObject(fbr);
+                if (g_audiowave_reset_on_close)
+                {
+                    HPEN tick = CreatePen(PS_SOLID, 2, RGB(20, 30, 60));
+                    HPEN oldp = (HPEN)SelectObject(hdc, tick);
+                    MoveToEx(hdc, cb.left + 3, (cb.top + cb.bottom) / 2, NULL);
+                    LineTo(hdc, cb.left + 5, cb.bottom - 3);
+                    LineTo(hdc, cb.right - 3, cb.top + 2);
+                    SelectObject(hdc, oldp);
+                    DeleteObject(tick);
+                }
+                SetBkMode(hdc, TRANSPARENT);
+                SetTextColor(hdc, RGB(150, 150, 156));
+                TextOut(hdc, cb.right + 6, chPanels + 2,
+                        TEXT("reset channels on close"), 23);
             }
             BitBlt(hdcWnd, 0, 0, cw, ch, hdc, 0, 0, SRCCOPY);
             SelectObject(hdc, oldBmp);
@@ -10837,9 +10903,29 @@ LRESULT CALLBACK AudioWaveProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
         case WM_DESTROY:
             KillTimer(hwnd, 1);
             S9xAudioWaveformEnable(false);
-            // Drop any engaged solos — with the viewer gone there would be
-            // no UI left to unsolo, leaving channels silently suppressed.
-            AudioWaveClearSolo();
+            if (g_audiowave_reset_on_close)
+            {
+                // Default: mutes and solos were listening experiments —
+                // restore the all-on state Sound > Channels starts with.
+                g_wave_solo_spc = g_wave_solo_gb = 0;
+                g_wave_solo_spc_grp = g_wave_solo_gb_grp = false;
+                GUI.SoundChannelEnable = 255;
+                GUI.GBChannelEnable    = 0x0F;
+                AudioWaveApplyAudibility();
+            }
+            else
+            {
+                // Keep what's audible right now: bake engaged solos into the
+                // plain channel masks (there is no UI left to unsolo once the
+                // viewer is gone), so Sound > Channels keeps showing them.
+                uint8 effSpc, effGb;
+                AudioWaveEffectiveMasks(&effSpc, &effGb);
+                GUI.SoundChannelEnable = effSpc;
+                GUI.GBChannelEnable    = effGb;
+                g_wave_solo_spc = g_wave_solo_gb = 0;
+                g_wave_solo_spc_grp = g_wave_solo_gb_grp = false;
+                AudioWaveApplyAudibility();
+            }
             g_audiowave_hwnd = NULL;
             return 0;
     }
@@ -15512,7 +15598,12 @@ const char * S9xStringInput(const char *msg)
 void S9xToggleSoundChannel (int c)
 {
 	if (c == 8)
+	{
 		GUI.SoundChannelEnable = 255;
+		// Enable All means audibly all-on: drop any engaged viewer solo
+		// too, or the solo mask would keep everything else silent.
+		AudioWaveClearSolo();
+	}
     else
 		GUI.SoundChannelEnable ^= 1 << c;
 
