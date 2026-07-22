@@ -81,6 +81,9 @@
     <ClInclude Include="..\gfx.h">
       <Filter>s9x-source</Filter>
     </ClInclude>
+    <ClInclude Include="..\hd64180.h">
+      <Filter>s9x-source</Filter>
+    </ClInclude>
     <ClInclude Include="..\language.h">
       <Filter>s9x-source</Filter>
     </ClInclude>
@@ -127,6 +130,9 @@
       <Filter>s9x-source</Filter>
     </ClInclude>
     <ClInclude Include="..\seta.h">
+      <Filter>s9x-source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sfcbox.h">
       <Filter>s9x-source</Filter>
     </ClInclude>
     <ClInclude Include="..\snapshot.h">
@@ -263,6 +269,9 @@
     <ClCompile Include="..\globals.cpp">
       <Filter>s9x-source</Filter>
     </ClCompile>
+    <ClCompile Include="..\hd64180.cpp">
+      <Filter>s9x-source</Filter>
+    </ClCompile>
     <ClCompile Include="..\loadzip.cpp">
       <Filter>s9x-source</Filter>
     </ClCompile>
@@ -309,6 +318,9 @@
       <Filter>s9x-source</Filter>
     </ClCompile>
     <ClCompile Include="..\seta018.cpp">
+      <Filter>s9x-source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sfcbox.cpp">
       <Filter>s9x-source</Filter>
     </ClCompile>
     <ClCompile Include="..\snapshot.cpp">

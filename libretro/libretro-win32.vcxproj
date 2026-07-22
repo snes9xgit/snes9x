@@ -224,6 +224,7 @@
     <ClInclude Include="..\fxinst.h" />
     <ClInclude Include="..\getset.h" />
     <ClInclude Include="..\gfx.h" />
+    <ClInclude Include="..\hd64180.h" />
     <ClInclude Include="..\language.h" />
     <ClInclude Include="..\memmap.h" />
     <ClInclude Include="..\messages.h" />
@@ -241,6 +242,7 @@
     <ClInclude Include="..\sdd1.h" />
     <ClInclude Include="..\sdd1emu.h" />
     <ClInclude Include="..\seta.h" />
+    <ClInclude Include="..\sfcbox.h" />
     <ClInclude Include="..\sha256.h" />
     <ClInclude Include="..\snapshot.h" />
     <ClInclude Include="..\snes9x.h" />
@@ -299,6 +301,7 @@
     <ClCompile Include="..\fxinst.cpp" />
     <ClCompile Include="..\gfx.cpp" />
     <ClCompile Include="..\globals.cpp" />
+    <ClCompile Include="..\hd64180.cpp" />
     <ClCompile Include="..\loadzip.cpp" />
     <ClCompile Include="..\memmap.cpp" />
     <ClCompile Include="..\movie.cpp" />
@@ -316,6 +319,7 @@
     <ClCompile Include="..\seta010.cpp" />
     <ClCompile Include="..\seta011.cpp" />
     <ClCompile Include="..\seta018.cpp" />
+    <ClCompile Include="..\sfcbox.cpp" />
     <ClCompile Include="..\sha256.cpp" />
     <ClCompile Include="..\snapshot.cpp" />
     <ClCompile Include="..\snes9x.cpp" />
