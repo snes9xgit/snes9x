@@ -456,6 +456,13 @@ static const struct SOSDXlat	osd_xlat[] =
 	{ "\xBD\x99\xC3\xC9\x20\x92\xD3\xB6\xDE\x20\x92\xC0\x20\xB1\xC4\xC6", "After All Demos" },
 	{ "\xC0\xD2\xBC\xC6\xB1\xBF\x99\xD9\xF5\xB0", "Trial Play Time" },
 
+	// 2-3-2 edit page. The value cells ((1)GAME / (2)TV) are literal ASCII
+	// from the KROM; ジョウタイニナル follows them. The 2-4-2 line at the
+	// bottom is the KROM's own cross-reference, covered by the entry above.
+	{ "\xBD\x99\xC3\xC9\x20\xB9\xDE\x2D\xD1\x92\xD3\xB6\xDE\x20\x92\xC0\x20\xB1\xC4\xC6", "After all game demos" },
+	{ "\xBC\xDE\xAE\xB3\xC0\xB2\xC6\xC5\xD9", "mode" },
+	{ "\xD3\x2D\x94\xB2\xC1\xD7\xDD", "Modes" },
+
 	// Settings leaf pages (2-3-x / 2-4-x / 2-5)
 	{ "TV\xC4\x01\x01\x01\x01\x01\x92\x20\xBE\xC2\xBF\xDE\xB8", "TV link: \x01\x01\x01\x01\x01" },
 	{ "\xBE\xC2\xBF\xDE\xB8\xCE\xB3\xB2\xC1\xD7\xDD", "Connections" },
@@ -494,6 +501,15 @@ static const struct SOSDXlat	osd_xlat[] =
 	{ "\xBA\xDD\xC4\xDB\x2D\xD7\x9A\xC0\xDD\x92\xEB\xE5", "Pad button: abort" },
 	{ "\xBA\xB2\xDD\xA6\xB2\xDA\xC3\xB8\xC0\xDE\xBB\xB2", "Please insert a coin" },
 	{ "\xBA\xB2\xDD\x20\xBB\x2D\x97\xBD\x20\x9A\xC0\xDD", "Coin Service Button" },
+
+	// Coin Service Button sub-screens. The Yes/No columns and the KROM's
+	// option cursor sit at fixed cells, so the English spans keep the
+	// original widths exactly ("Clear time&coin?" = 16 cells, "Back  "
+	// padded to 6). Must precede the ノコリ時間/コイン/スル fragments.
+	{ "\xC9\xBA\xD8\xF5\xB0\x0C\xBA\xB2\xDD\xA6\xB8\xD8\xB1\xBD\xD9\x3F", "Clear time&coin?" },
+	{ "\xBA\xB2\xDD\xC9\xBF\xB3\xB9\xB2", "Coin total" },
+	{ "\xBF\xB3\xB9\xB2\xA6\xB8\xD8\xB1\xBD\xD9", "Clear total" },
+	{ "\xCF\xB4\xC6\xD3\x94\xD9", "Back  " },
 	{ "\xA6\xEA\xBC\xC3\xB8\xC0\xDE\xBB\xB2", ": press" },
 	{ "\x9F\xBC\xDE\xBC\xAE\xDD", " position" },
 	{ "\xBC\xDE\xAE\xB3\xC0\xB2", "State" },
@@ -506,6 +522,7 @@ static const struct SOSDXlat	osd_xlat[] =
 	{ "\xC2\xB7\xDE", "Next" },
 	{ "\x83\x0D", " yen" },
 	{ "\xBA\xB2\xDD\x20\xC0\xB2\xD1\xB1\xAF\x9D\x20\xB9\xB2\xBA\xB8", "Coin time warning" },
+	{ "\xBA\xB2\xDD\xC0\xB2\xD1\xB1\xAF\x9D\xB9\xB2\xBA\xB8", "Coin time warning" },
 	{ "\xB9\xB2\xBA\xB8", "warning" },
 
 	// Coin-mode guest messages (time-up overlay, final-minute warning and
@@ -524,6 +541,38 @@ static const struct SOSDXlat	osd_xlat[] =
 	{ "\x80\x8A\x01\x01\xF7\x93\x87", "Time left \x01\x01s" },
 	{ "\x80\x8A\x01\x01\xF6\x01\x01\xF7", "Left \x01\x01m\x01\x01s" },
 	{ "\x80\x8A\x01\x01\xF7", "Left \x01\x01s" },
+
+	// Over-an-hour countdowns (enough coins banked): あと 1時間19分(です).
+	// 時=F5h 間=B0h; the KROM pads a space after あと in the hour form.
+	{ "\x80\x8A\x20\x01\xF5\xB0\x01\x01\xF6\x93\x87", "Time left \x01h\x01\x01m" },
+	{ "\x80\x8A\x20\x01\xF5\xB0\x01\xF6\x93\x87", "Time left \x01h\x01m" },
+	{ "\x80\x8A\x20\x01\xF5\xB0\x93\x87", "Time left \x01h" },
+	{ "\x80\x8A\x20\x01\xF5\xB0\x01\x01\xF6", "Left \x01h\x01\x01m" },
+	{ "\x80\x8A\x20\x01\xF5\xB0\x01\xF6", "Left \x01h\x01m" },
+	{ "\x80\x8A\x20\x01\xF5\xB0", "Left \x01h" },
+	// Bare hour+minutes (insert-coin screen credit readout: 1時間 2分,
+	// minutes space-padded to two cells like the あと rows above)
+	{ "\x01\xF5\xB0\x01\x01\xF6", "\x01h\x01\x01 min" },
+
+	// Game-demo overlay (attract cycle and the game submenu's "watch the
+	// demo" option). The title row above these is already ASCII. The
+	// coin-mode attract rows advertise the per-coin play time (digits
+	// dynamic, 1- and 2-digit variants).
+	{ "\x92\xD3\xDD\xBD\xC4\xDA\x2D\xBC\xAE\xDD\xEB\x93\x87", "Demo in progress" },
+	{ "\x9A\xC0\xDD\xA9\xEA\x87\x8A\x92\xD3\xA9\xEB\xE5\x86\x8F\x87", "Press A button to stop" },
+	{ "\x31\xBA\xB2\xDD\x93\x01\x01\xF6\x9D\xDA\xB2", "1 coin: \x01\x01 min play" },
+	{ "\x31\xBA\xB2\xDD\x93\x01\xF6\x9D\xDA\xB2", "1 coin: \x01 min play" },
+	{ "\xBA\xDD\xC4\xDB\x2D\xD7\x2D\x8D\x9A\xC0\xDD\xA9\xEA\x86\x89\xED\x85\x81", "Press controller button" },
+
+	// Keyswitch guard, e.g. when the key returns to ON while coin billing
+	// wants it OFF: キーがONに / なっています (two rows, one sentence) and
+	// キーをOFFにして下さい. が=90h っ=A3h; the mirror ON/OFF forms are
+	// included for the opposite billing mode.
+	{ "\xB7\x2D\x90\x4F\x4E\x8C", "Key is ON" },
+	{ "\xB7\x2D\x90\x4F\x46\x46\x8C", "Key is OFF" },
+	{ "\x8B\xA3\x89\x81\x8F\x87", "" },
+	{ "\xB7\x2D\xA9\x4F\x46\x46\x8C\x86\x89\xED\x85\x81", "Turn the key to OFF" },
+	{ "\xB7\x2D\xA9\x4F\x4E\x8C\x86\x89\xED\x85\x81", "Turn the key to ON" },
 
 	{ "\x80\xA0", "On" },
 	{ "\x8B\x86", "Off" },
