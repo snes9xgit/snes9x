@@ -7,6 +7,7 @@
 #include "IS9xSoundOutput.h"
 #include "../snes9x.h"
 #include "../apu/apu.h"
+#include "../sgb/sgb.h"
 #include "wsnes9x.h"
 #include "CXAudio2.h"
 #include "CWaveOut.h"
@@ -98,6 +99,21 @@ called by the sound core to process generated samples
 */
 void S9xSoundCallback(void *data)
 {
+	// Fast-forward release in GB/SGB modes: turbo banks the GB ring and the
+	// SPC resampler full and winds up their rate controllers, which then
+	// play back sped-up ("screechy") while they re-converge. Drop the
+	// backlog and reset the controllers so playback resumes at normal
+	// speed immediately.
+	static bool wasTurbo = false;
+	if (wasTurbo && !Settings.TurboMode &&
+	    (Settings.SuperGameBoy || Settings.SGB_BIOSModeActive))
+	{
+		S9xSGBClearSamples();
+		S9xClearSamples();
+		S9xSpcResetDrc();
+	}
+	wasTurbo = Settings.TurboMode != FALSE;
+
 	// only try to change volume if we actually need to switch it
 	double current_volume = ((Settings.TurboMode || Settings.Rewinding) ? GUI.VolumeTurbo : GUI.VolumeRegular) / 100.;
 	if (last_volume != current_volume) {

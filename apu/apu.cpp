@@ -72,6 +72,12 @@ static int16_t buf_mix[CAPTURE_FRAMES * 2];
 static int     wpos_spc = 0;
 static int     wpos_gb  = 0;
 static int     wpos_mix = 0;
+// Per-voice SPC scope rings (streams 3..10), fed by SPC_DSP::voice_output
+// at the DSP's native 32 kHz — each voice's post-envelope, post-volume
+// contribution, so a menu-disabled voice reads flat.
+static int16_t buf_voice[8][CAPTURE_FRAMES * 2];
+static int     wpos_voice[8];
+static int16_t voice_pending_l[8];
 
 inline void push(int16_t *ring, int &wpos, const int16_t *src, int frames)
 {
@@ -102,7 +108,14 @@ int snapshot(int stream, short *out_lr, int max_frames)
         case 0: ring = buf_spc; wpos = wpos_spc; break;
         case 1: ring = buf_gb;  wpos = wpos_gb;  break;
         case 2: ring = buf_mix; wpos = wpos_mix; break;
-        default: return 0;
+        default:
+            if (stream >= 3 && stream <= 10)
+            {
+                ring = buf_voice[stream - 3];
+                wpos = wpos_voice[stream - 3];
+                break;
+            }
+            return 0;
     }
     int n = (max_frames < CAPTURE_FRAMES) ? max_frames : CAPTURE_FRAMES;
     int start = (wpos - n + CAPTURE_FRAMES) % CAPTURE_FRAMES;
@@ -267,7 +280,24 @@ bool8 S9xMixSamples(uint8 *dest, int sample_count)
         if (Settings.Mute)
         {
             memset(out, 0, sample_count << 1);
+            // Discard the GB APU's pending output too — the SNES path gets
+            // this via S9xClearSamples, but the GB ring would otherwise back
+            // up while muted (frame-advance mute, mute toggle) and burst out
+            // the stale audio on unmute.
+            S9xSGBClearSamples();
             S9xClearSamples();
+            // Feed the zeroed buffer to the waveform viewers so they flat-
+            // line while muted instead of freezing on stale audio. buf_mix
+            // in BIOS mode is pushed by the host after its SPC merge, which
+            // also sees this zeroed buffer.
+            if (audiowave::enabled)
+            {
+                audiowave::push(audiowave::buf_gb, audiowave::wpos_gb,
+                                out, sample_count / 2);
+                if (!mix_spc_under_gb)
+                    audiowave::push(audiowave::buf_mix, audiowave::wpos_mix,
+                                    out, sample_count / 2);
+            }
             CaptureLastOut(out, sample_count);
             return true;
         }
@@ -551,10 +581,33 @@ void S9xAudioWaveformEnable(bool enable)
         memset(audiowave::buf_spc, 0, sizeof audiowave::buf_spc);
         memset(audiowave::buf_gb,  0, sizeof audiowave::buf_gb);
         memset(audiowave::buf_mix, 0, sizeof audiowave::buf_mix);
+        memset(audiowave::buf_voice, 0, sizeof audiowave::buf_voice);
+        memset(audiowave::wpos_voice, 0, sizeof audiowave::wpos_voice);
+        memset(audiowave::voice_pending_l, 0, sizeof audiowave::voice_pending_l);
         audiowave::wpos_spc = 0;
         audiowave::wpos_gb  = 0;
         audiowave::wpos_mix = 0;
     }
+    // The GB APU keeps its own per-channel scope rings for the viewer's
+    // CH1-CH4 panels — capture in lockstep with the host rings.
+    S9xSGBSetWaveCaptureEnabled(enable);
+}
+
+void S9xAudioWaveformPushVoice(int voice, int ch, int amp)
+{
+    if (!audiowave::enabled || voice < 0 || voice > 7)
+        return;
+    // amp can just exceed int16 (t_output ±32767 × vol -128 >> 7); the DSP
+    // clamps only the summed main_out, so clamp the tap here.
+    if (amp >  32767) amp =  32767;
+    if (amp < -32768) amp = -32768;
+    if (ch == 0)
+    {
+        audiowave::voice_pending_l[voice] = (int16_t)amp;
+        return;
+    }
+    int16_t lr[2] = { audiowave::voice_pending_l[voice], (int16_t)amp };
+    audiowave::push(audiowave::buf_voice[voice], audiowave::wpos_voice[voice], lr, 1);
 }
 
 int S9xAudioWaveformSnapshot(int stream, short *out_lr, int max_frames)

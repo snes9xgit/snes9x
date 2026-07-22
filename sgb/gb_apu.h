@@ -179,6 +179,21 @@ void ApuSetOutputRate(Apu &a, int32_t rate);
 // run mode (DMG/SGB2 = 4.194 MHz, SGB1 = 4.295 MHz). Idempotent.
 void ApuSetClockHz(Apu &a, int32_t hz);
 
+// Host-side channel enable mask, bits 0..3 = CH1..CH4 (pulse A, pulse B,
+// wave, noise). UI policy, not emulation state: never serialized and
+// survives reset. Disabled channels are dropped at the mixer only —
+// register, length, envelope and PCM state keep running untouched.
+void    ApuSetHostChannelMask(uint8_t mask);
+uint8_t ApuGetHostChannelMask();
+
+// Per-channel waveform capture for the host's audio-waveform viewer.
+// While enabled, each emitted output sample also logs the four raw
+// post-DAC channel levels (box-filtered, pre panning/volume) into mono
+// rings. GetChannelWaveform copies the newest `max_samples` (oldest
+// first) for channel 0..3 and returns the count. Host UI state only.
+void    ApuSetWaveCaptureEnabled(bool enabled);
+int     ApuGetChannelWaveform(int channel, int16_t *out, int max_samples);
+
 } // namespace SGB
 
 #endif

@@ -156,6 +156,10 @@ public:
 	// Consume pending audio samples. Returns the count written
 	// (stereo frames — each frame stores L, R into out[2*i], out[2*i+1]).
 	int32_t DrainAudio(int16_t *out, int32_t max_samples);
+
+	// Discard all pending audio samples without playing them. Consumer-side
+	// (moves tail to head), so it is as thread-safe as DrainAudio.
+	void    ClearAudio();
 	int32_t GetAudioSampleRate() const;
 
 	// Diagnostics: GB clock_hz and cycles_per_sample as currently
@@ -399,6 +403,15 @@ void S9xSGBOverlayBiosBorder(uint16_t *dest, uint32_t pitch_pixels);
 // × 2), returning the number actually drained.
 int32_t S9xSGBGetSampleCount(void);
 int32_t S9xSGBDrainSamples(int16_t *dest, int32_t count_int16s);
+void    S9xSGBClearSamples(void);
+// Host UI channel toggles (Sound > Channels): bits 0..3 enable GB
+// CH1..CH4 (pulse A, pulse B, wave, noise). Not emulation state.
+void    S9xSGBSetSoundChannelMask(uint8_t mask);
+// Per-channel scope capture for the audio-waveform viewer. Enable while
+// the window is open; GetChannelWaveform copies the newest mono samples
+// (oldest first) for GB channel 0..3 and returns the count.
+void    S9xSGBSetWaveCaptureEnabled(bool enabled);
+int32_t S9xSGBGetChannelWaveform(int32_t channel, int16_t *out, int32_t max_samples);
 void    S9xSGBSetAudioRate(int32_t rate_hz);
 int32_t S9xSGBGetAudioRate(void);
 

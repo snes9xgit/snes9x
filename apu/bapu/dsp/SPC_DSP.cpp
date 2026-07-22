@@ -864,6 +864,9 @@ inline void SPC_DSP::voice_output( voice_t const* v, int ch )
 	int amp = (m.t_output * (int8_t) VREG(v->regs,voll + ch)) >> 7;
 	amp *= ((stereo_switch & (1 << (v->voice_number + ch * voice_count))) ? 1 : 0);
 
+	// Per-voice scope tap for the audio-waveform viewer (no-op unless open).
+	S9xAudioWaveformPushVoice( v->voice_number, ch, amp );
+
 	// Add to output total
 	m.t_main_out [ch] += amp;
 	CLAMP16( m.t_main_out [ch] );

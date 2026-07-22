@@ -1,5 +1,11 @@
 #include "../snes/snes.hpp"
 
+// Per-voice scope capture for the host audio-waveform viewer (apu/apu.cpp).
+// Declared at global scope here because SPC_DSP.cpp is textually included
+// inside namespace SNES below — a declaration in that file would become
+// SNES::S9xAudioWaveformPushVoice and fail to link.
+void S9xAudioWaveformPushVoice(int voice, int ch, int amp);
+
 #define DSP_CPP
 namespace SNES {
 

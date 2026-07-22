@@ -251,6 +251,9 @@ struct sGUI {
 	int  ValidControllerOptions;
 	bool SuperScopeCrosshairVisible;
 	int  SoundChannelEnable;
+	int  GBChannelEnable;    // GB APU CH1-4 mask (bits 0..3) — independent of
+	                         // SoundChannelEnable so the waveform viewer can
+	                         // mute GB channels without touching SPC voices
 	bool BackgroundInput;
     bool BackgroundKeyHotkeys;
 	bool AllowMultipleBindings;
@@ -413,6 +416,8 @@ struct SCustomKeys {
     SCustomKey CheatEditorDialog;
     SCustomKey CheatSearchDialog;
 	SCustomKey MasterHotkey;
+	SCustomKey InsertCoin;           // SFC-Box front-panel coin switch
+	SCustomKey SFCBoxKeyswitch[5];   // rotary positions, panel order 1/OFF/ON/2/3
 };
 
 struct SCustomKeyExtra {
@@ -468,6 +473,8 @@ struct SCustomKeysExtra {
 	SCustomKeyExtra AspectRatio;
 	SCustomKeyExtra CheatEditorDialog;
 	SCustomKeyExtra CheatSearchDialog;
+	SCustomKeyExtra InsertCoin;
+	SCustomKeyExtra SFCBoxKeyswitch[5];
 };
 
 struct SJoypad {

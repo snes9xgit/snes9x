@@ -167,7 +167,8 @@ void S9xWinScanJoypads();
 #define WM_CHEATS_ADDED (WM_APP + 1)
 
 constexpr int MAX_SWITCHABLE_HOTKEY_DIALOG_ITEMS = 18;
-constexpr int MAX_SWITCHABLE_HOTKEY_DIALOG_PAGES = 4;
+constexpr int MAX_SWITCHABLE_HOTKEY_DIALOG_PAGES = 5;
+constexpr int HOTKEY_TAB_SFCBOX = 4;
 constexpr int HOTKEY_TAB_EMULATION  = 0;
 constexpr int HOTKEY_TAB_SAVESTATES = 1;
 constexpr int HOTKEY_TAB_TURBO      = 2;
@@ -877,6 +878,12 @@ static void WinRequestScreenshot()
 		S9xDoScreenshot(IPPU.RenderedScreenWidth, IPPU.RenderedScreenHeight);
 }
 
+// SFC-Box keyswitch rows follow the physical panel left-to-right; values are
+// the port 80h bit the position grounds (the relay-off position is omitted).
+// Shared by the keyswitch hotkeys below and the Hacks dialog combobox.
+static const uint8 sfcbox_keyswitch_map[5] = { 4, 0, 1, 2, 3 };
+static const char *sfcbox_keyswitch_names[5] = { "1 (Options)", "OFF", "ON (Play)", "2", "3 (Self-Test)" };
+
 int HandleKeyMessage(WPARAM wParam, LPARAM lParam)
 {
 	auto MatchesAnyBinding = [](WPARAM wParam, WORD primary, const WORD* extra) -> bool {
@@ -1196,6 +1203,33 @@ int HandleKeyMessage(WPARAM wParam, LPARAM lParam)
 					WINPROC_TURBOMODE_OFF);
 			}
 			hitHotKey = true;
+		}
+		if(HKmatch(InsertCoin))
+		{
+			// SFC-Box front-panel coin switch; only meaningful while a
+			// Super Famicom Box cart is running the KROM supervisor.
+			if (SFCBox.Active)
+			{
+				S9xSFCBoxInsertCoin();
+				S9xMessage(S9X_INFO, S9X_INFO, "Coin inserted");
+			}
+			hitHotKey = true;
+		}
+		for (int ksp = 0; ksp < 5; ksp++)
+		{
+			// SFC-Box rotary keyswitch positions (panel order 1/OFF/ON/2/3);
+			// the KROM polls the switch live, no reset needed.
+			if(HKmatch(SFCBoxKeyswitch[ksp]))
+			{
+				if (SFCBox.Active)
+				{
+					char msg[48];
+					SFCBox.Keyswitch = sfcbox_keyswitch_map[ksp];
+					snprintf(msg, sizeof(msg), "SFC-Box keyswitch: %s", sfcbox_keyswitch_names[ksp]);
+					S9xMessage(S9X_INFO, S9X_INFO, msg);
+				}
+				hitHotKey = true;
+			}
 		}
 		if(HKmatch(ShowPressed))
 		{
@@ -1813,8 +1847,9 @@ void WinShowCheatEditorDialog()
 static int g_hotplugTicksRemaining = 0;
 
 // Grey (or enable) the submenu inside `parent` that contains `containedCmd`.
-// Used to keep the S-PPU viewers usable only for SNES ROMs and the GB-PPU
-// viewers only for GB/GBC/SGB games.
+// Used to keep the S-PPU viewers usable whenever the 65816/S-PPU are running
+// (SNES ROMs and SGB BIOS mode) and the GB-PPU viewers only for GB/GBC/SGB
+// games.
 static void GbSetSubmenuEnabled(HMENU parent, UINT containedCmd, bool enabled)
 {
 	if (!parent) return;
@@ -1917,10 +1952,14 @@ LRESULT CALLBACK WinProc(
 	case WM_INITMENUPOPUP:
 	{
 		HMENU hPopup = (HMENU)wParam;
-		bool romLoaded = !Settings.StopEmulation;
-		bool gbActive  = Settings.SuperGameBoy || Settings.SGB_BIOSModeActive;
-		GbSetSubmenuEnabled(hPopup, ID_DEBUG_VRAM_VIEWER,    romLoaded && !gbActive);  // S-PPU
-		GbSetSubmenuEnabled(hPopup, ID_DEBUG_GB_TILE_VIEWER, romLoaded &&  gbActive);  // GB-PPU
+		bool romLoaded  = !Settings.StopEmulation;
+		bool gbActive   = Settings.SuperGameBoy || Settings.SGB_BIOSModeActive;
+		// SGB BIOS mode runs the real 65816/S-PPU (border + GB screen tiles),
+		// so the S-PPU viewers stay live there; only the BIOS-less GB path
+		// bypasses the SNES side entirely.
+		bool snesActive = !Settings.SuperGameBoy || Settings.SGB_BIOSModeActive;
+		GbSetSubmenuEnabled(hPopup, ID_DEBUG_VRAM_VIEWER,    romLoaded && snesActive); // S-PPU
+		GbSetSubmenuEnabled(hPopup, ID_DEBUG_GB_TILE_VIEWER, romLoaded && gbActive);   // GB-PPU
 		return DefWindowProc(hWnd, uMsg, wParam, lParam);
 	}
 	case WM_DEVICECHANGE:
@@ -4723,6 +4762,12 @@ int WINAPI WinMain(
 			if(GUI.FrameAdvanceJustPressed)
 				GUI.FrameAdvanceJustPressed--;
 
+			// Frame Advance mute extends to fast-forward. Full mute (not a
+			// volume cut) so the mixers discard samples as they're produced
+			// instead of banking a turbo backlog that replays on release.
+			if (!Settings.Paused && !Settings.ForcedPause)
+				S9xSetSoundMute(GUI.Mute || (Settings.TurboMode && GUI.FAMute));
+
 			ProcessInput();
 
 			if (GUI.rewindBufferSize
@@ -5385,6 +5430,11 @@ static void CheckMenuStates ()
 	mii.fState = (S9xMovieActive () && !Settings.StopEmulation) ? MFS_ENABLED : MFS_DISABLED;
     SetMenuItemInfo (GUI.hMenu, ID_FILE_MOVIE_STOP, FALSE, &mii);
 
+	// Channels 1-4 drive both SPC voices 1-4 and the GB APU's CH1-CH4.
+	// In BIOS-less GB mode the SPC isn't running, so 5-8 control nothing —
+	// grey them there. In SGB BIOS mode they still gate SPC voices 5-8.
+	{
+	const UINT spcAbsent = (Settings.SuperGameBoy && !Settings.SGB_BIOSModeActive) ? MFS_DISABLED : 0;
 	mii.fState = (GUI.SoundChannelEnable & (1 << 0)) ? MFS_CHECKED : MFS_UNCHECKED;
     SetMenuItemInfo (GUI.hMenu, ID_CHANNELS_CHANNEL1, FALSE, &mii);
 	mii.fState = (GUI.SoundChannelEnable & (1 << 1)) ? MFS_CHECKED : MFS_UNCHECKED;
@@ -5393,14 +5443,15 @@ static void CheckMenuStates ()
     SetMenuItemInfo (GUI.hMenu, ID_CHANNELS_CHANNEL3, FALSE, &mii);
 	mii.fState = (GUI.SoundChannelEnable & (1 << 3)) ? MFS_CHECKED : MFS_UNCHECKED;
     SetMenuItemInfo (GUI.hMenu, ID_CHANNELS_CHANNEL4, FALSE, &mii);
-	mii.fState = (GUI.SoundChannelEnable & (1 << 4)) ? MFS_CHECKED : MFS_UNCHECKED;
+	mii.fState = ((GUI.SoundChannelEnable & (1 << 4)) ? MFS_CHECKED : MFS_UNCHECKED) | spcAbsent;
     SetMenuItemInfo (GUI.hMenu, ID_CHANNELS_CHANNEL5, FALSE, &mii);
-	mii.fState = (GUI.SoundChannelEnable & (1 << 5)) ? MFS_CHECKED : MFS_UNCHECKED;
+	mii.fState = ((GUI.SoundChannelEnable & (1 << 5)) ? MFS_CHECKED : MFS_UNCHECKED) | spcAbsent;
     SetMenuItemInfo (GUI.hMenu, ID_CHANNELS_CHANNEL6, FALSE, &mii);
-	mii.fState = (GUI.SoundChannelEnable & (1 << 6)) ? MFS_CHECKED : MFS_UNCHECKED;
+	mii.fState = ((GUI.SoundChannelEnable & (1 << 6)) ? MFS_CHECKED : MFS_UNCHECKED) | spcAbsent;
     SetMenuItemInfo (GUI.hMenu, ID_CHANNELS_CHANNEL7, FALSE, &mii);
-	mii.fState = (GUI.SoundChannelEnable & (1 << 7)) ? MFS_CHECKED : MFS_UNCHECKED;
+	mii.fState = ((GUI.SoundChannelEnable & (1 << 7)) ? MFS_CHECKED : MFS_UNCHECKED) | spcAbsent;
     SetMenuItemInfo (GUI.hMenu, ID_CHANNELS_CHANNEL8, FALSE, &mii);
+	}
 
 	mii.fState = GUI.BackgroundInput ? MFS_CHECKED : MFS_UNCHECKED;
 	SetMenuItemInfo (GUI.hMenu, ID_EMULATION_BACKGROUNDINPUT, FALSE, &mii);
@@ -6755,10 +6806,6 @@ INT_PTR CALLBACK DlgAboutProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 	default:return false;
 	}
 }
-
-// Combobox rows follow the physical panel left-to-right; values are the
-// port 80h bit the position grounds (the relay-off position is omitted).
-static const uint8 sfcbox_keyswitch_map[5] = { 4, 0, 1, 2, 3 };
 
 INT_PTR CALLBACK DlgEmulatorHacksProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 {
@@ -10192,53 +10239,308 @@ void UpdateModeComboBox(HWND hComboBox)
 static const TCHAR kAudioWaveClass[] = TEXT("Snes9xAudioWaveform");
 static const int   kAudioWaveFrames  = 4800;
 
-static void DrawWaveformPanel(HDC hdc, const RECT &r, const TCHAR *label,
-                              const short *lr, int n, int sample_rate,
-                              int *sticky_min, int *sticky_max, bool show_xaxis)
+// ---------------------------------------------------------------------------
+// Logic-Pro-style track rows: a dark header strip on the left (color tab,
+// track name, [M]ute button) and a colored waveform lane on the right. Each
+// group (SPC / GB / MIX) and each member (V1-8 / CH1-4) has its own color.
+// ---------------------------------------------------------------------------
+
+static const int kWaveHeaderW = 118;
+
+struct WaveTrackInfo { const TCHAR *name; COLORREF color; };
+static const WaveTrackInfo kWaveTracks[15] = {
+    { TEXT("SPC"), RGB( 91, 124, 235) },
+    { TEXT("GB"),  RGB(166, 168,  60) },
+    { TEXT("MIX"), RGB(148, 156, 172) },
+    { TEXT("CH1"), RGB(102, 187, 106) },
+    { TEXT("CH2"), RGB( 38, 166, 154) },
+    { TEXT("CH3"), RGB(212, 177,   6) },
+    { TEXT("CH4"), RGB(239, 112,  67) },
+    { TEXT("V1"),  RGB( 91, 141, 239) },
+    { TEXT("V2"),  RGB( 79, 195, 247) },
+    { TEXT("V3"),  RGB( 77, 208, 165) },
+    { TEXT("V4"),  RGB(139, 195,  74) },
+    { TEXT("V5"),  RGB(212, 196,  65) },
+    { TEXT("V6"),  RGB(240, 154,  62) },
+    { TEXT("V7"),  RGB(229, 100, 110) },
+    { TEXT("V8"),  RGB(176, 106, 212) },
+};
+
+static COLORREF WaveShade(COLORREF c, int pct)   // scale toward black
 {
-    FillRect(hdc, &r, (HBRUSH)GetStockObject(BLACK_BRUSH));
+    return RGB(GetRValue(c) * pct / 100, GetGValue(c) * pct / 100,
+               GetBValue(c) * pct / 100);
+}
 
-    const int yAxisW   = 56;
-    const int xAxisH   = show_xaxis ? 18 : 0;
-    const int axisLeft = r.left + 6;
-    const int axisRight = r.right - yAxisW;
-    const int axisTop  = r.top + 4;
-    const int axisBot  = r.bottom - 4 - xAxisH;
-    const int W = axisRight - axisLeft;
-    const int H = axisBot - axisTop;
-    const int midY = (axisTop + axisBot) / 2;
+static COLORREF WaveTint(COLORREF c, int pct)    // blend toward white
+{
+    const int r = GetRValue(c), g = GetGValue(c), b = GetBValue(c);
+    return RGB(r + (255 - r) * pct / 100, g + (255 - g) * pct / 100,
+               b + (255 - b) * pct / 100);
+}
 
-    int peak = 0;
-    for (int s = 0; s < n; ++s)
+// Mute state per viewer source. SPC voices ride GUI.SoundChannelEnable
+// (shared with the Sound > Channels menu); GB channels have their own
+// GUI.GBChannelEnable so muting CH2 here doesn't silence SPC voice 2;
+// MIX maps to the master mute.
+static bool AudioWaveIsMuted(int src)
+{
+    switch (src)
     {
-        int v = ((int)lr[s * 2] + (int)lr[s * 2 + 1]) / 2;
-        if (sticky_min && v < *sticky_min) *sticky_min = v;
-        if (sticky_max && v > *sticky_max) *sticky_max = v;
-        int av = v < 0 ? -v : v;
-        if (av > peak) peak = av;
+        case 0:  return (GUI.SoundChannelEnable & 0xFF) == 0;
+        case 1:  return (GUI.GBChannelEnable & 0x0F) == 0;
+        case 2:  return GUI.Mute;
+        default:
+            if (src >= 7) return !(GUI.SoundChannelEnable & (1 << (src - 7)));
+            return !(GUI.GBChannelEnable & (1 << (src - 3)));
     }
-    int show_min = sticky_min ? *sticky_min : 0;
-    int show_max = sticky_max ? *sticky_max : 0;
+}
 
-    const int amps[7] = { -30000, -20000, -10000, 0, 10000, 20000, 30000 };
-    HPEN penGrid = CreatePen(PS_SOLID, 1, RGB(40, 40, 40));
-    HPEN oldPen = (HPEN)SelectObject(hdc, penGrid);
-    for (int i = 0; i < 7; ++i)
+// Solo state, DAW semantics: while any solo is engaged, only soloed tracks
+// stay audible; mute still wins over solo on the same track. Viewer-only
+// state — cleared when the window closes so nothing stays silently soloed.
+static uint8 g_wave_solo_spc     = 0;      // V1-8 solo bits
+static uint8 g_wave_solo_gb      = 0;      // CH1-4 solo bits
+static bool  g_wave_solo_spc_grp = false;  // SPC group solo (all voices)
+static bool  g_wave_solo_gb_grp  = false;  // GB group solo (all channels)
+
+static bool AudioWaveIsSoloed(int src)
+{
+    switch (src)
     {
-        int y = midY - (amps[i] * H / 2) / 32768;
-        MoveToEx(hdc, axisLeft, y, NULL); LineTo(hdc, axisRight, y);
+        case 0:  return g_wave_solo_spc_grp;
+        case 1:  return g_wave_solo_gb_grp;
+        case 2:  return false;
+        default:
+            if (src >= 7) return (g_wave_solo_spc >> (src - 7)) & 1;
+            return (g_wave_solo_gb >> (src - 3)) & 1;
     }
-    for (int i = 1; i < 7; ++i)
+}
+
+// Compose user mute masks with the solo set into the masks the cores get.
+static void AudioWaveEffectiveMasks(uint8 *outSpc, uint8 *outGb)
+{
+    const uint8 spcSolo = g_wave_solo_spc | (g_wave_solo_spc_grp ? 0xFF : 0);
+    const uint8 gbSolo  = (uint8)((g_wave_solo_gb | (g_wave_solo_gb_grp ? 0x0F : 0)) & 0x0F);
+    const bool  anySolo = (spcSolo | gbSolo) != 0;
+    *outSpc = (uint8)GUI.SoundChannelEnable & (anySolo ? spcSolo : 0xFF);
+    *outGb  = (uint8)GUI.GBChannelEnable    & (anySolo ? gbSolo  : 0x0F);
+}
+
+static void AudioWaveApplyAudibility(void)
+{
+    uint8 effSpc, effGb;
+    AudioWaveEffectiveMasks(&effSpc, &effGb);
+    S9xSetSoundControl(effSpc);
+    S9xSGBSetSoundChannelMask(effGb);
+}
+
+// Whether the track actually reaches the output right now (mute + solo).
+static bool AudioWaveIsAudible(int src)
+{
+    uint8 effSpc, effGb;
+    AudioWaveEffectiveMasks(&effSpc, &effGb);
+    switch (src)
     {
-        int x = axisLeft + (W * i) / 7;
-        MoveToEx(hdc, x, axisTop, NULL); LineTo(hdc, x, axisBot);
+        case 0:  return effSpc != 0;
+        case 1:  return effGb != 0;
+        case 2:  return !GUI.Mute;
+        default:
+            if (src >= 7) return (effSpc >> (src - 7)) & 1;
+            return (effGb >> (src - 3)) & 1;
     }
+}
+
+static void AudioWaveToggleMute(int src)
+{
+    static uint8 savedSpc = 255;   // group mute keeps the per-member pattern
+    static uint8 savedGb  = 0x0F;
+    switch (src)
+    {
+        case 0:
+            if (GUI.SoundChannelEnable & 0xFF)
+            {
+                savedSpc = (uint8)GUI.SoundChannelEnable;
+                GUI.SoundChannelEnable = 0;
+            }
+            else
+                GUI.SoundChannelEnable = savedSpc ? savedSpc : 255;
+            break;
+        case 1:
+            if (GUI.GBChannelEnable & 0x0F)
+            {
+                savedGb = (uint8)GUI.GBChannelEnable;
+                GUI.GBChannelEnable = 0;
+            }
+            else
+                GUI.GBChannelEnable = savedGb ? savedGb : 0x0F;
+            break;
+        case 2:
+            GUI.Mute = !GUI.Mute;
+            S9xSetSoundMute(GUI.Mute);
+            return;
+        default:
+            if (src >= 7)
+                GUI.SoundChannelEnable ^= 1 << (src - 7);
+            else
+                GUI.GBChannelEnable ^= 1 << (src - 3);
+            break;
+    }
+    AudioWaveApplyAudibility();
+}
+
+static void AudioWaveToggleSolo(int src)
+{
+    switch (src)
+    {
+        case 0:  g_wave_solo_spc_grp = !g_wave_solo_spc_grp; break;
+        case 1:  g_wave_solo_gb_grp  = !g_wave_solo_gb_grp;  break;
+        case 2:  return;   // MIX is the master bus — nothing to solo against
+        default:
+            if (src >= 7) g_wave_solo_spc ^= 1 << (src - 7);
+            else          g_wave_solo_gb  ^= 1 << (src - 3);
+            break;
+    }
+    AudioWaveApplyAudibility();
+}
+
+static void AudioWaveClearSolo(void)
+{
+    g_wave_solo_spc = g_wave_solo_gb = 0;
+    g_wave_solo_spc_grp = g_wave_solo_gb_grp = false;
+    AudioWaveApplyAudibility();
+}
+
+// M/S button rects inside a row (right side of the header, vertically
+// centered) — shared by the renderer and the click hit test.
+static RECT AudioWaveMuteRect(const RECT &row)
+{
+    const int cy = (row.top + row.bottom) / 2;
+    RECT r = { row.left + kWaveHeaderW - 58, cy - 9,
+               row.left + kWaveHeaderW - 36, cy + 9 };
+    return r;
+}
+
+static RECT AudioWaveSoloRect(const RECT &row)
+{
+    const int cy = (row.top + row.bottom) / 2;
+    RECT r = { row.left + kWaveHeaderW - 32, cy - 9,
+               row.left + kWaveHeaderW - 10, cy + 9 };
+    return r;
+}
+
+static void DrawWaveTrackRow(HDC hdc, const RECT &r, int src, bool isGroup,
+                             bool expanded, const short *lr, int n,
+                             const TCHAR *info, int sample_rate, bool show_xaxis)
+{
+    const WaveTrackInfo &ti = kWaveTracks[src];
+    const bool userMuted = AudioWaveIsMuted(src);
+    const bool soloed    = AudioWaveIsSoloed(src);
+    const bool audible   = AudioWaveIsAudible(src);
+
+    // --- header strip ---
+    RECT hd = { r.left, r.top, r.left + kWaveHeaderW, r.bottom };
+    HBRUSH hbr = CreateSolidBrush(isGroup ? RGB(56, 56, 60) : RGB(40, 40, 44));
+    FillRect(hdc, &hd, hbr);
+    DeleteObject(hbr);
+
+    RECT tab = { hd.left, hd.top, hd.left + 5, hd.bottom };
+    hbr = CreateSolidBrush(ti.color);
+    FillRect(hdc, &tab, hbr);
+    DeleteObject(hbr);
+
+    SetBkMode(hdc, TRANSPARENT);
+    const int cy = (hd.top + hd.bottom) / 2;
+
+    // Disclosure icon on group rows: filled triangle in the track color,
+    // pointing right when closed, down when open.
+    if (isGroup)
+    {
+        POINT tri[3];
+        const int ix = hd.left + 10;
+        if (expanded)
+        {
+            tri[0].x = ix;      tri[0].y = cy - 3;
+            tri[1].x = ix + 10; tri[1].y = cy - 3;
+            tri[2].x = ix + 5;  tri[2].y = cy + 4;
+        }
+        else
+        {
+            tri[0].x = ix + 2;  tri[0].y = cy - 5;
+            tri[1].x = ix + 2;  tri[1].y = cy + 5;
+            tri[2].x = ix + 9;  tri[2].y = cy;
+        }
+        HBRUSH tb = CreateSolidBrush(WaveTint(ti.color, 30));
+        HPEN   tp = CreatePen(PS_SOLID, 1, WaveTint(ti.color, 30));
+        HBRUSH oldBr = (HBRUSH)SelectObject(hdc, tb);
+        HPEN   oldPn = (HPEN)SelectObject(hdc, tp);
+        Polygon(hdc, tri, 3);
+        SelectObject(hdc, oldBr);
+        SelectObject(hdc, oldPn);
+        DeleteObject(tb);
+        DeleteObject(tp);
+    }
+
+    SetTextColor(hdc, !audible ? RGB(130, 130, 135) : RGB(225, 225, 228));
+    TextOut(hdc, hd.left + (isGroup ? 26 : 30), cy - 8,
+            ti.name, lstrlen(ti.name));
+
+    // [M]ute button — filled blue when engaged, dark otherwise.
+    RECT mb = AudioWaveMuteRect(r);
+    hbr = CreateSolidBrush(userMuted ? RGB(96, 150, 250) : RGB(52, 52, 56));
+    FillRect(hdc, &mb, hbr);
+    DeleteObject(hbr);
+    HBRUSH frame = CreateSolidBrush(userMuted ? RGB(140, 180, 255) : RGB(80, 80, 86));
+    FrameRect(hdc, &mb, frame);
+    DeleteObject(frame);
+    SetTextColor(hdc, userMuted ? RGB(20, 30, 60) : RGB(150, 150, 156));
+    TextOut(hdc, (mb.left + mb.right) / 2 - 4, (mb.top + mb.bottom) / 2 - 8,
+            TEXT("M"), 1);
+
+    // [S]olo button — filled yellow when engaged, Logic-style. The MIX row
+    // is the master bus, so it has no solo.
+    if (src != 2)
+    {
+        RECT sb = AudioWaveSoloRect(r);
+        hbr = CreateSolidBrush(soloed ? RGB(230, 192, 62) : RGB(52, 52, 56));
+        FillRect(hdc, &sb, hbr);
+        DeleteObject(hbr);
+        frame = CreateSolidBrush(soloed ? RGB(250, 220, 120) : RGB(80, 80, 86));
+        FrameRect(hdc, &sb, frame);
+        DeleteObject(frame);
+        SetTextColor(hdc, soloed ? RGB(60, 45, 10) : RGB(150, 150, 156));
+        TextOut(hdc, (sb.left + sb.right) / 2 - 4, (sb.top + sb.bottom) / 2 - 8,
+                TEXT("S"), 1);
+    }
+
+    // --- waveform lane --- (dimmed when the track doesn't reach the
+    // output, whether by its own mute or by someone else's solo)
+    RECT lane = { hd.right, r.top, r.right, r.bottom };
+    const int xAxisH = show_xaxis ? 16 : 0;
+    const COLORREF cBg     = WaveShade(ti.color, !audible ? 14 : 28);
+    const COLORREF cWave   = !audible ? WaveShade(ti.color, 52) : WaveTint(ti.color, 55);
+    const COLORREF cCenter = WaveShade(ti.color, !audible ? 24 : 44);
+
+    RECT laneBody = { lane.left, lane.top, lane.right, lane.bottom - xAxisH };
+    hbr = CreateSolidBrush(cBg);
+    FillRect(hdc, &laneBody, hbr);
+    DeleteObject(hbr);
+
+    const int top  = laneBody.top;
+    const int bot  = laneBody.bottom;
+    const int midY = (top + bot) / 2;
+    const int W    = lane.right - lane.left;
+    const int Hh   = bot - top;
+
+    HPEN penCenter = CreatePen(PS_SOLID, 1, cCenter);
+    HPEN oldPen = (HPEN)SelectObject(hdc, penCenter);
+    MoveToEx(hdc, lane.left, midY, NULL); LineTo(hdc, lane.right, midY);
     SelectObject(hdc, oldPen);
-    DeleteObject(penGrid);
+    DeleteObject(penCenter);
 
-    if (n > 1)
+    if (n > 1 && W > 0 && Hh > 4)
     {
-        HPEN penWave = CreatePen(PS_SOLID, 1, RGB(122, 240, 195));
+        HPEN penWave = CreatePen(PS_SOLID, 1, cWave);
         oldPen = (HPEN)SelectObject(hdc, penWave);
         for (int i = 0; i < W; ++i)
         {
@@ -10252,57 +10554,52 @@ static void DrawWaveformPanel(HDC hdc, const RECT &r, const TCHAR *label,
                 if (v < mn) mn = v;
                 if (v > mx) mx = v;
             }
-            int yMin = midY - (mx * H / 2) / 32768;
-            int yMax = midY - (mn * H / 2) / 32768;
-            MoveToEx(hdc, axisLeft + i, yMin, NULL);
-            LineTo  (hdc, axisLeft + i, yMax);
+            int yMin = midY - (mx * (Hh - 4) / 2) / 32768;
+            int yMax = midY - (mn * (Hh - 4) / 2) / 32768;
+            if (yMax <= yMin) yMax = yMin + 1;
+            MoveToEx(hdc, lane.left + i, yMin, NULL);
+            LineTo  (hdc, lane.left + i, yMax);
         }
         SelectObject(hdc, oldPen);
         DeleteObject(penWave);
     }
 
-    SetBkMode(hdc, TRANSPARENT);
-    SetTextColor(hdc, RGB(190, 190, 190));
-    TCHAR txt[64];
-    for (int i = 0; i < 7; ++i)
+    // clip-label style info text, top-left of the lane
+    if (info && info[0])
     {
-        int y = midY - (amps[i] * H / 2) / 32768;
-        _stprintf(txt, TEXT("%d"), amps[i]);
-        TextOut(hdc, axisRight + 6, y - 7, txt, lstrlen(txt));
+        SetTextColor(hdc, WaveTint(ti.color, !audible ? 25 : 70));
+        TextOut(hdc, lane.left + 6, lane.top + 2, info, lstrlen(info));
     }
-    SetTextColor(hdc, RGB(220, 220, 220));
-    TextOut(hdc, axisRight + 6, axisTop - 4, TEXT("smpl"), 4);
-
-    HPEN penBox = CreatePen(PS_SOLID, 1, RGB(220, 220, 220));
-    oldPen = (HPEN)SelectObject(hdc, penBox);
-    HBRUSH oldBrush = (HBRUSH)SelectObject(hdc, GetStockObject(NULL_BRUSH));
-    const int lblW = 52, lblH = 18;
-    Rectangle(hdc, axisLeft, axisTop, axisLeft + lblW, axisTop + lblH);
-    SelectObject(hdc, oldBrush);
-    SelectObject(hdc, oldPen);
-    DeleteObject(penBox);
-    SetTextColor(hdc, RGB(230, 230, 230));
-    TextOut(hdc, axisLeft + 6, axisTop + 2, label, lstrlen(label));
-
-    SetTextColor(hdc, RGB(160, 200, 180));
-    _stprintf(txt, TEXT("peak %d  min %d  max %d"), peak, show_min, show_max);
-    TextOut(hdc, axisLeft + lblW + 12, axisTop + 2, txt, lstrlen(txt));
+    if (userMuted)
+    {
+        SetTextColor(hdc, WaveTint(ti.color, 40));
+        TextOut(hdc, lane.right - 52, lane.top + 2, TEXT("muted"), 5);
+    }
 
     if (show_xaxis)
     {
-        SetTextColor(hdc, RGB(190, 190, 190));
+        RECT ax = { lane.left, bot, lane.right, lane.bottom };
+        hbr = CreateSolidBrush(RGB(18, 18, 20));
+        FillRect(hdc, &ax, hbr);
+        DeleteObject(hbr);
+        SetTextColor(hdc, RGB(140, 140, 145));
+        TCHAR txt[32];
         double secPerSpan = sample_rate > 0 ? ((double)n / sample_rate) : 0.0;
         for (int i = 1; i < 7; ++i)
         {
-            int x = axisLeft + (W * i) / 7;
-            double tMs = secPerSpan * 1000.0 * i / 7.0;
-            _stprintf(txt, TEXT("%.0f ms"), tMs);
-            TextOut(hdc, x - 22, axisBot + 3, txt, lstrlen(txt));
+            int x = lane.left + (W * i) / 7;
+            _stprintf(txt, TEXT("%.0f ms"), secPerSpan * 1000.0 * i / 7.0);
+            TextOut(hdc, x - 22, bot + 1, txt, lstrlen(txt));
         }
-        SetTextColor(hdc, RGB(220, 220, 220));
-        TextOut(hdc, axisLeft - 2, axisBot + 3, TEXT("0"), 1);
-        TextOut(hdc, axisRight - 16, axisBot + 3, TEXT("smpl"), 4);
+        TextOut(hdc, lane.left + 2, bot + 1, TEXT("0"), 1);
     }
+
+    // row separator
+    HPEN penSep = CreatePen(PS_SOLID, 1, RGB(20, 20, 22));
+    oldPen = (HPEN)SelectObject(hdc, penSep);
+    MoveToEx(hdc, r.left, r.bottom - 1, NULL); LineTo(hdc, r.right, r.bottom - 1);
+    SelectObject(hdc, oldPen);
+    DeleteObject(penSep);
 }
 
 static UINT g_audiowave_refresh_ms = 100;
@@ -10319,6 +10616,51 @@ static const AudioWaveRefreshOpt kAudioWaveRefreshOpts[] = {
 static const int kAudioWaveRefreshCount = sizeof(kAudioWaveRefreshOpts) / sizeof(kAudioWaveRefreshOpts[0]);
 static const UINT kAudioWaveRefreshIdBase = 0x9100;
 
+// Grouped-channel state: the SPC and GB panels are group headers (each is
+// already the mix of its members). Collapsed shows just the header; clicking
+// it expands the per-voice (V1-8) / per-channel (CH1-4) breakdown beneath.
+static bool g_audiowave_spc_open = false;
+static bool g_audiowave_gb_open  = false;
+
+// Build the top-to-bottom panel list for the current core/expansion state.
+// Sources: 0=SPC, 1=GB, 2=MIX, 3..6=GB CH1-4, 7..14=SPC voices V1-V8.
+// Dead cores are dropped entirely (no SPC group in BIOS-less GB, no GB
+// group for SNES-only games); the final MIX always sits at the bottom.
+static int AudioWaveBuildOrder(int order[15])
+{
+    const bool gbCore  = Settings.SuperGameBoy || Settings.SGB_BIOSModeActive;
+    const bool spcCore = !Settings.SuperGameBoy;
+    // Solos on tracks that just left the layout (ROM swap while the viewer
+    // is open) would silently suppress the remaining core — drop them.
+    if (!gbCore && (g_wave_solo_gb || g_wave_solo_gb_grp))
+    {
+        g_wave_solo_gb = 0;
+        g_wave_solo_gb_grp = false;
+        AudioWaveApplyAudibility();
+    }
+    if (!spcCore && (g_wave_solo_spc || g_wave_solo_spc_grp))
+    {
+        g_wave_solo_spc = 0;
+        g_wave_solo_spc_grp = false;
+        AudioWaveApplyAudibility();
+    }
+    int n = 0;
+    if (spcCore)
+    {
+        order[n++] = 0;
+        if (g_audiowave_spc_open)
+            for (int v = 7; v <= 14; ++v) order[n++] = v;
+    }
+    if (gbCore)
+    {
+        order[n++] = 1;
+        if (g_audiowave_gb_open)
+            for (int c = 3; c <= 6; ++c) order[n++] = c;
+    }
+    order[n++] = 2;
+    return n;
+}
+
 LRESULT CALLBACK AudioWaveProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     switch (msg)
@@ -10329,6 +10671,48 @@ LRESULT CALLBACK AudioWaveProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
         case WM_TIMER:
             InvalidateRect(hwnd, NULL, FALSE);
             return 0;
+        case WM_LBUTTONDOWN:
+        {
+            int order[15];
+            const int nPanels = AudioWaveBuildOrder(order);
+            RECT cr;
+            GetClientRect(hwnd, &cr);
+            const int hTotal = cr.bottom - cr.top;
+            if (hTotal <= 0 || nPanels <= 0) return 0;
+            const int hPanel = hTotal / nPanels;
+            if (hPanel <= 0) return 0;
+            POINT pt = { (int)(short)LOWORD(lp), (int)(short)HIWORD(lp) };
+            int idx = pt.y / hPanel;
+            if (idx < 0) idx = 0;
+            if (idx >= nPanels) idx = nPanels - 1;
+            const int src = order[idx];
+
+            RECT row = { 0, idx * hPanel, cr.right,
+                         (idx == nPanels - 1) ? hTotal : (idx + 1) * hPanel };
+            RECT mb = AudioWaveMuteRect(row);
+            if (PtInRect(&mb, pt))
+            {
+                AudioWaveToggleMute(src);
+                InvalidateRect(hwnd, NULL, FALSE);
+                return 0;
+            }
+            RECT sb = AudioWaveSoloRect(row);
+            if (src != 2 && PtInRect(&sb, pt))
+            {
+                AudioWaveToggleSolo(src);
+                InvalidateRect(hwnd, NULL, FALSE);
+                return 0;
+            }
+            // anywhere else on a group row toggles its expansion
+            if (src == 0)
+                g_audiowave_spc_open = !g_audiowave_spc_open;
+            else if (src == 1)
+                g_audiowave_gb_open = !g_audiowave_gb_open;
+            else
+                return 0;
+            InvalidateRect(hwnd, NULL, FALSE);
+            return 0;
+        }
         case WM_CONTEXTMENU:
         {
             HMENU menu = CreatePopupMenu();
@@ -10371,10 +10755,11 @@ LRESULT CALLBACK AudioWaveProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             HDC hdc = CreateCompatibleDC(hdcWnd);
             HBITMAP memBmp = CreateCompatibleBitmap(hdcWnd, cw, ch);
             HBITMAP oldBmp = (HBITMAP)SelectObject(hdc, memBmp);
-            int H = ch / 3;
+            int order[15];
+            const int nPanels = AudioWaveBuildOrder(order);
+            int H = ch / nPanels;
             short buf[kAudioWaveFrames * 2];
 
-            const TCHAR *labels[3] = { TEXT("SPC"), TEXT("GB"), TEXT("MIX") };
             int sr = S9xAudioWaveformSampleRate();
             const int32_t gb_rate = S9xSGBGetAudioRate();
             const double spc_ratio = S9xSpcGetTimeRatio();
@@ -10392,29 +10777,52 @@ LRESULT CALLBACK AudioWaveProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                 fps_last_tick = now_tick;
             }
 
-            TCHAR rateTxt[3][96];
+            TCHAR rateTxt[15][96];
             const double refresh_hz = (g_audiowave_refresh_ms > 0) ? (1000.0 / g_audiowave_refresh_ms) : 0.0;
             _stprintf(rateTxt[0], TEXT("GB %d  emu %.1f fps"), gb_rate, fps_measured);
             _stprintf(rateTxt[1], TEXT("SPC %.0f Hz (ratio %.5f)"), spc_eff_hz, spc_ratio);
             _stprintf(rateTxt[2], TEXT("refresh %.0f Hz  (right-click to change)"), refresh_hz);
-            static int sticky_min[3] = {0, 0, 0};
-            static int sticky_max[3] = {0, 0, 0};
-            for (int s = 0; s < 3; ++s)
+            _stprintf(rateTxt[3], TEXT("pulse A (sweep)"));
+            _stprintf(rateTxt[4], TEXT("pulse B"));
+            _stprintf(rateTxt[5], TEXT("wave"));
+            _stprintf(rateTxt[6], TEXT("noise"));
+            for (int i = 7; i < 15; ++i)
+                rateTxt[i][0] = 0;
+            for (int d = 0; d < nPanels; ++d)
             {
-                int n = S9xAudioWaveformSnapshot(s, buf, kAudioWaveFrames);
+                const int s = order[d];
+                int n;
+                if (s < 3)
+                {
+                    n = S9xAudioWaveformSnapshot(s, buf, kAudioWaveFrames);
+                }
+                else if (s >= 7)
+                {
+                    // SPC voice rings live in apu.cpp as streams 3..10.
+                    n = S9xAudioWaveformSnapshot(s - 4, buf, kAudioWaveFrames);
+                }
+                else
+                {
+                    // GB channel rings are mono — expand in place to the
+                    // stereo layout DrawWaveTrackRow expects.
+                    short mono[kAudioWaveFrames];
+                    n = S9xSGBGetChannelWaveform(s - 3, mono, kAudioWaveFrames);
+                    for (int i = 0; i < n; ++i)
+                    {
+                        buf[i * 2 + 0] = mono[i];
+                        buf[i * 2 + 1] = mono[i];
+                    }
+                }
                 RECT panel;
                 panel.left   = 0;
                 panel.right  = cw;
-                panel.top    = s * H;
-                panel.bottom = (s == 2) ? ch : ((s + 1) * H);
-                DrawWaveformPanel(hdc, panel, labels[s], buf, n, sr,
-                                  &sticky_min[s], &sticky_max[s], s == 2);
-                if (rateTxt[s][0])
-                {
-                    SetTextColor(hdc, RGB(160, 200, 180));
-                    SetBkMode(hdc, TRANSPARENT);
-                    TextOut(hdc, panel.right - 290, panel.top + 2, rateTxt[s], lstrlen(rateTxt[s]));
-                }
+                panel.top    = d * H;
+                panel.bottom = (d == nPanels - 1) ? ch : ((d + 1) * H);
+                DrawWaveTrackRow(hdc, panel, s, s == 0 || s == 1,
+                                 s == 0 ? g_audiowave_spc_open : g_audiowave_gb_open,
+                                 buf, n, rateTxt[s],
+                                 (s < 3) ? sr : (s >= 7 ? 32000 : (int)gb_rate),
+                                 d == nPanels - 1);
             }
             BitBlt(hdcWnd, 0, 0, cw, ch, hdc, 0, 0, SRCCOPY);
             SelectObject(hdc, oldBmp);
@@ -10429,6 +10837,9 @@ LRESULT CALLBACK AudioWaveProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
         case WM_DESTROY:
             KillTimer(hwnd, 1);
             S9xAudioWaveformEnable(false);
+            // Drop any engaged solos — with the viewer gone there would be
+            // no UI left to unsolo, leaving channels silently suppressed.
+            AudioWaveClearSolo();
             g_audiowave_hwnd = NULL;
             return 0;
     }
@@ -10461,9 +10872,10 @@ static void ToggleAudioWaveform(HINSTANCE hInst, HWND parent)
 
     S9xAudioWaveformEnable(true);
     g_audiowave_hwnd = CreateWindowEx(
-        0, kAudioWaveClass, TEXT("Audio Waveform: SPC / GB / MIX"),
+        0, kAudioWaveClass,
+        TEXT("Audio Waveform  (click SPC/GB to expand channels)"),
         WS_OVERLAPPEDWINDOW,
-        CW_USEDEFAULT, CW_USEDEFAULT, 800, 480,
+        CW_USEDEFAULT, CW_USEDEFAULT, 800, 560,
         parent, NULL, hInst, NULL);
     if (g_audiowave_hwnd)
         ShowWindow(g_audiowave_hwnd, SW_SHOW);
@@ -11694,6 +12106,20 @@ static hotkey_dialog_item hotkey_dialog_items[MAX_SWITCHABLE_HOTKEY_DIALOG_PAGES
         { &CustomKeys.CheatSearchDialog, &CustomKeysExtra.CheatSearchDialog, HOTKEYS_CHEAT_SEARCH_DIALOG },
         { NULL, NULL, _T("") },
     },
+    // Tab 4: SFC Box front-panel controls. Always visible; the hotkeys
+    // themselves only act while a Super Famicom Box cart/BIOS is loaded.
+    {
+        { &CustomKeys.InsertCoin,         &CustomKeysExtra.InsertCoin,         HOTKEYS_INSERT_COIN },
+        { &CustomKeys.SFCBoxKeyswitch[0], &CustomKeysExtra.SFCBoxKeyswitch[0], HOTKEYS_KEYSWITCH_1 },
+        { &CustomKeys.SFCBoxKeyswitch[1], &CustomKeysExtra.SFCBoxKeyswitch[1], HOTKEYS_KEYSWITCH_OFF },
+        { &CustomKeys.SFCBoxKeyswitch[2], &CustomKeysExtra.SFCBoxKeyswitch[2], HOTKEYS_KEYSWITCH_ON },
+        { &CustomKeys.SFCBoxKeyswitch[3], &CustomKeysExtra.SFCBoxKeyswitch[3], HOTKEYS_KEYSWITCH_2 },
+        { &CustomKeys.SFCBoxKeyswitch[4], &CustomKeysExtra.SFCBoxKeyswitch[4], HOTKEYS_KEYSWITCH_3 },
+        { NULL, NULL, _T("") }, { NULL, NULL, _T("") }, { NULL, NULL, _T("") },
+        { NULL, NULL, _T("") }, { NULL, NULL, _T("") }, { NULL, NULL, _T("") },
+        { NULL, NULL, _T("") }, { NULL, NULL, _T("") }, { NULL, NULL, _T("") },
+        { NULL, NULL, _T("") }, { NULL, NULL, _T("") }, { NULL, NULL, _T("") },
+    },
 };
 
 // Save States dedicated controls + their labels. Visible only on the Save States tab.
@@ -11861,7 +12287,8 @@ INT_PTR CALLBACK DlgHotkeyConfig(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPar
 			TCITEM tie = {};
 			tie.mask = TCIF_TEXT;
 			static TCHAR tabTexts[][24] = {
-				TEXT("Emulation"), TEXT("States"), TEXT("Turbo"), TEXT("Display && Tools")
+				TEXT("Emulation"), TEXT("States"), TEXT("Turbo"), TEXT("Display && Tools"),
+				TEXT("SFC Box")
 			};
 			for (i = 0; i < MAX_SWITCHABLE_HOTKEY_DIALOG_PAGES; i++)
 			{
@@ -15089,7 +15516,13 @@ void S9xToggleSoundChannel (int c)
     else
 		GUI.SoundChannelEnable ^= 1 << c;
 
-	S9xSetSoundControl(GUI.SoundChannelEnable);
+	// Channels 1-4 double as the GB APU's CH1-CH4 (pulse A, pulse B, wave,
+	// noise) so the menu also works for GB/SGB games. The waveform viewer
+	// can retarget GUI.GBChannelEnable independently; the menu is the blunt
+	// tool and re-syncs it to the SPC low bits. Pushing goes through the
+	// composite apply so an engaged viewer solo stays respected.
+	GUI.GBChannelEnable = GUI.SoundChannelEnable & 0x0F;
+	AudioWaveApplyAudibility();
 }
 
 bool S9xPollButton(uint32 id, bool *pressed){

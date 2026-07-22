@@ -147,6 +147,12 @@ Nintendo is a trademark.")
 #define HOTKEYS_SWITCH_ASPECT_RATIO TEXT("Switch aspect Ratio:")
 #define HOTKEYS_CHEAT_EDITOR_DIALOG TEXT("Cheats Editor Dialog:")
 #define HOTKEYS_CHEAT_SEARCH_DIALOG TEXT("Cheats Search Dialog:")
+#define HOTKEYS_INSERT_COIN TEXT("Insert Coin:")
+#define HOTKEYS_KEYSWITCH_1 TEXT("Keyswitch 1 (Options):")
+#define HOTKEYS_KEYSWITCH_OFF TEXT("Keyswitch OFF:")
+#define HOTKEYS_KEYSWITCH_ON TEXT("Keyswitch ON (Play):")
+#define HOTKEYS_KEYSWITCH_2 TEXT("Keyswitch 2:")
+#define HOTKEYS_KEYSWITCH_3 TEXT("Keyswitch 3 (Self-Test):")
 
 // gaming buttons and axes
 #define GAMEDEVICE_JOYNUMPREFIX "(J%x)" // don't change this

@@ -317,7 +317,23 @@ inline int32_t DacAnalog(bool dac_enabled, uint8_t digital)
 // Mixer — produces int16 stereo from the four channel outputs.
 // -------------------------------------------------------------------
 
-void Mix(const Apu &a, int32_t &out_l, int32_t &out_r)
+// Host UI channel mask (Sound > Channels). File-scope rather than an Apu
+// member so savestate load can't clobber the user's toggles. The public
+// accessors live below, outside this anonymous namespace.
+uint8_t g_host_channel_mask = 0x0F;
+
+// Per-channel waveform capture for the host's audio-waveform viewer.
+// Host UI state (never serialized), same lifecycle as the audiowave rings
+// in apu.cpp: only filled while the viewer window has capture enabled.
+// Channel levels are integrated per T-cycle chunk exactly like the main
+// mix accumulator, so the scope view is box-filtered, not aliased.
+constexpr int CH_CAPTURE_FRAMES = 9600;
+bool    g_wave_capture = false;
+int32_t g_ch_accum[4]  = {0, 0, 0, 0};
+int16_t g_ch_wave[4][CH_CAPTURE_FRAMES];
+int     g_ch_wpos = 0;
+
+void Mix(const Apu &a, int32_t &out_l, int32_t &out_r, int32_t *ch_out = nullptr)
 {
 	const bool ch1_ultra = SquareAboveNyquist(a, a.ch1.freq);
 	const bool ch2_ultra = SquareAboveNyquist(a, a.ch2.freq);
@@ -332,6 +348,13 @@ void Mix(const Apu &a, int32_t &out_l, int32_t &out_r)
 	int32_t l = 0, r = 0;
 	for (int ch = 0; ch < 4; ++ch)
 	{
+		// Viewer taps the raw post-DAC level (pre panning/volume) so a
+		// channel's activity is visible even when NR51 pans it away;
+		// menu-disabled channels read flat, matching what they contribute.
+		if (ch_out)
+			ch_out[ch] = (g_host_channel_mask & (1 << ch)) ? levels[ch] : 0;
+		if (!(g_host_channel_mask & (1 << ch)))
+			continue;
 		const int32_t lvl = levels[ch];
 		if (a.nr51 & (1 << ch))       r += lvl;
 		if (a.nr51 & (1 << (ch + 4))) l += lvl;
@@ -425,6 +448,25 @@ void FlushSample(Apu &a)
 		avg_l = a.sample_accum_l / static_cast<int32_t>(a.sample_accum_cnt);
 		avg_r = a.sample_accum_r / static_cast<int32_t>(a.sample_accum_cnt);
 	}
+
+	if (g_wave_capture)
+	{
+		// Per-channel scope sample, same box-filter window as the mix.
+		// DacAnalog levels span ±15; ×2048 puts full scale at ±30720 on
+		// the viewer's int16 axis.
+		const int32_t cnt = (a.sample_accum_cnt > 0)
+			? static_cast<int32_t>(a.sample_accum_cnt) : 1;
+		for (int ch = 0; ch < 4; ++ch)
+		{
+			int32_t v = (g_ch_accum[ch] / cnt) * 2048;
+			if (v >  32767) v =  32767;
+			if (v < -32768) v = -32768;
+			g_ch_wave[ch][g_ch_wpos] = static_cast<int16_t>(v);
+			g_ch_accum[ch] = 0;
+		}
+		g_ch_wpos = (g_ch_wpos + 1) % CH_CAPTURE_FRAMES;
+	}
+
 	a.sample_accum_l   = 0;
 	a.sample_accum_r   = 0;
 	a.sample_accum_cnt = 0;
@@ -460,6 +502,38 @@ void FlushSample(Apu &a)
 }
 
 } // anonymous
+
+void ApuSetHostChannelMask(uint8_t mask)
+{
+	g_host_channel_mask = mask & 0x0F;
+}
+
+uint8_t ApuGetHostChannelMask()
+{
+	return g_host_channel_mask;
+}
+
+void ApuSetWaveCaptureEnabled(bool enabled)
+{
+	if (enabled && !g_wave_capture)
+	{
+		std::memset(g_ch_wave, 0, sizeof g_ch_wave);
+		for (int ch = 0; ch < 4; ++ch) g_ch_accum[ch] = 0;
+		g_ch_wpos = 0;
+	}
+	g_wave_capture = enabled;
+}
+
+int ApuGetChannelWaveform(int channel, int16_t *out, int max_samples)
+{
+	if (channel < 0 || channel > 3 || !out || max_samples <= 0) return 0;
+	const int n = (max_samples < CH_CAPTURE_FRAMES) ? max_samples
+	                                                : CH_CAPTURE_FRAMES;
+	const int start = (g_ch_wpos - n + CH_CAPTURE_FRAMES) % CH_CAPTURE_FRAMES;
+	for (int i = 0; i < n; ++i)
+		out[i] = g_ch_wave[channel][(start + i) % CH_CAPTURE_FRAMES];
+	return n;
+}
 
 // Derive the output low-pass coefficients from the current output_rate.
 // 4th-order Butterworth = two RBJ-cookbook biquads at the same corner
@@ -613,10 +687,13 @@ void ApuStep(Apu &a, int32_t tcycles)
 		// Integrate channel output × chunk into the sample accumulator.
 		if (a.master_enabled)
 		{
-			int32_t l, r;
-			Mix(a, l, r);
+			int32_t l, r, chlv[4];
+			Mix(a, l, r, g_wave_capture ? chlv : nullptr);
 			a.sample_accum_l   += l * chunk;
 			a.sample_accum_r   += r * chunk;
+			if (g_wave_capture)
+				for (int ch = 0; ch < 4; ++ch)
+					g_ch_accum[ch] += chlv[ch] * chunk;
 		}
 		a.sample_accum_cnt += static_cast<uint32_t>(chunk);
 
