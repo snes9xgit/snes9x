@@ -100,6 +100,8 @@ msgid "frame behind"
 msgid_plural "frames behind"
 msgstr[0] "פריים מאחור"
 msgstr[1] "פריימים מאחור"
+msgstr[2] "פריימים מאחור"
+msgstr[3] "פריימים מאחור"
 
 #: src/gtk_preferences.cpp:19
 msgid "Same location as current game"
@@ -130,18 +132,24 @@ msgid "thread for filtering and scaling"
 msgid_plural "threads for filtering and scaling"
 msgstr[0] "תהליכון עבור סינון ושינוי גודל"
 msgstr[1] "תהליכונים עבור סינון ושינוי גודל"
+msgstr[2] "תהליכונים עבור סינון ושינוי גודל"
+msgstr[3] "תהליכונים עבור סינון ושינוי גודל"
 
 #: src/gtk_preferences.cpp:236 src/gtk_preferences.cpp:500
 msgid "millisecond"
 msgid_plural "milliseconds"
 msgstr[0] "מילישנייה"
 msgstr[1] "מילישניות"
+msgstr[2] "מילישניות"
+msgstr[3] "מילישניות"
 
 #: src/gtk_preferences.cpp:260 src/gtk_preferences.cpp:476
 msgid "second after change"
 msgid_plural "seconds after change"
 msgstr[0] "שנייה לאחר השינוי"
 msgstr[1] "שניות לאחר השינוי"
+msgstr[2] "שניות לאחר השינוי"
+msgstr[3] "שניות לאחר השינוי"
 
 #: src/gtk_preferences.cpp:271
 msgid "SuperSnes9x version: "
@@ -2981,10 +2989,6 @@ msgstr "אורך:"
 #: win32/rsrc/snes9x.rc
 msgid "List1"
 msgstr "רשימה1"
-
-#: win32/rsrc/snes9x.rc
-msgid "Save States"
-msgstr "מצבים שמורים"
 
 #: win32/rsrc/snes9x.rc
 msgid "Load 0:"

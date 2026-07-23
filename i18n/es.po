@@ -2740,15 +2740,6 @@ msgstr ""
 #~ "24-bit (GL_RGB)\n"
 #~ "32-bit (GL_BGRA)"
 
-#~ msgid "1x"
-#~ msgstr "1x"
-
-#~ msgid "2x"
-#~ msgstr "2x"
-
-#~ msgid "3x"
-#~ msgstr "3x"
-
 #~ msgid ""
 #~ "48000 hz\n"
 #~ "44100 hz\n"
@@ -2767,12 +2758,6 @@ msgstr ""
 #~ "11025 hz\n"
 #~ "8000 hz\n"
 #~ "0 hz"
-
-#~ msgid "4x"
-#~ msgstr "4x"
-
-#~ msgid "5x"
-#~ msgstr "5x"
 
 #~ msgid ""
 #~ "8:7 Square pixels\n"

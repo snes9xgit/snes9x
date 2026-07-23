@@ -1654,15 +1654,6 @@ msgstr ""
 #~ msgid "Error"
 #~ msgstr "Erro"
 
-#~ msgid "Description"
-#~ msgstr "Descrição"
-
-#~ msgid "Cheat"
-#~ msgstr "Trapaça"
-
-#~ msgid "No description"
-#~ msgstr "Sem descrição"
-
 #~ msgid "Couldn't find any cheat codes in input."
 #~ msgstr "Não pôde achar quaisquer códigos de trapaça na entrada."
 
@@ -1724,9 +1715,6 @@ msgstr ""
 
 #~ msgid "Warning: Possible File Overwrite"
 #~ msgstr "Aviso: possível sobrescrição do arquivo"
-
-#~ msgid "Select Folder"
-#~ msgstr "Selecionar Pasta"
 
 #~ msgid "HQ2x"
 #~ msgstr "HQ2x"
@@ -1800,9 +1788,6 @@ msgstr ""
 #~ msgid "The current frame in the movie is <b>%d</b>."
 #~ msgstr "O frame atual no filme é <b>%d</b>."
 
-#~ msgid "Save State"
-#~ msgstr "Save State"
-
 #~ msgid "Save SPC file..."
 #~ msgstr "Salvar o arquivo SPC..."
 
@@ -1875,9 +1860,6 @@ msgstr ""
 
 #~ msgid "Shader Preset"
 #~ msgstr "Pré-definição do Shader"
-
-#~ msgid "Shader Parameters"
-#~ msgstr "Parâmetros do Shader"
 
 #~ msgid "Open SNES ROM Image"
 #~ msgstr "Abrir Imagem da ROM do SNES"

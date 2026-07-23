@@ -565,7 +565,7 @@ msgid "No throttling, use vsync to control speed"
 msgstr "بدون محدودسازی، استفاده از vsync برای کنترل سرعت"
 
 #: src/snes9x.ui:1098
-msg0 "48,000 Hz"
+msgid "48,000 Hz"
 msgstr "۴۸,۰۰۰ هرتز"
 
 #: src/snes9x.ui:1101

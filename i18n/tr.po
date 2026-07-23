@@ -5351,10 +5351,6 @@ msgid "Unable to Start Display Driver"
 msgstr "Video ekran çizim sürücüsü başlatılamadı"
 
 #: qt/src/EmuMainWindow.cpp
-msgid "Unable to Start Display Driver"
-msgstr "Video ekran çizim sürücüsü başlatılamadı"
-
-#: qt/src/EmuMainWindow.cpp
 msgid "Undo Load State"
 msgstr "Durum yükleme işlemini geri al (Undo Load)"
 
