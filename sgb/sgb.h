@@ -404,6 +404,12 @@ void S9xSGBOverlayBiosBorder(uint16_t *dest, uint32_t pitch_pixels);
 int32_t S9xSGBGetSampleCount(void);
 int32_t S9xSGBDrainSamples(int16_t *dest, int32_t count_int16s);
 void    S9xSGBClearSamples(void);
+// Host-ring I/O meters in stereo frames (PushSample / ApuDrain sides).
+void    S9xSGBGetAudioRingStats(uint32_t *pushed, uint32_t *dropped, uint32_t *drained);
+// Cumulative emulated SNES / GB cycles fed through the BIOS-mode slaving.
+void    S9xSGBGetCycleMeters(uint64_t *snes, uint64_t *gb);
+// Call when the H-event wraps CPU.Cycles (-= H_Max) to keep sync deltas continuous.
+void    S9xSGBNotifyScanlineWrap(int32_t h_max);
 // Host UI channel toggles (Sound > Channels): bits 0..3 enable GB
 // CH1..CH4 (pulse A, pulse B, wave, noise). Not emulation state.
 void    S9xSGBSetSoundChannelMask(uint8_t mask);

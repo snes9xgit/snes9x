@@ -414,6 +414,22 @@ bool Emulator::SoftReset()
 	return true;
 }
 
+// The frame-locked RunFrame runs exactly one 70224-T-cycle GB frame per
+// SNES frame, so nominal APU sample production per host frame is
+// 70224*rate/clock against a fixed rate/SNES_FPS drain — the steady-state
+// DRC correction is known a priori per run mode (SGB1's fast clock needs
+// about -1.7%, everything else about +0.6%). Seed the integrator there
+// instead of zero: at 5e-5/frame it would otherwise crawl to the
+// operating point through a minute-plus of audible ring-bottom underruns
+// after every reset or wind-up.
+static double DrcSteadyStateCorr(bool cgb_mode, RunMode m)
+{
+	constexpr double SNES_FPS = 60.09881389744051;
+	const double base_hz = (!cgb_mode && m == RunMode::SGB)
+	                     ? 21477272.727272 / 5.0 : 4194304.0;
+	return 70224.0 * SNES_FPS / base_hz - 1.0;
+}
+
 void Emulator::Reset()
 {
 	impl_->cpu.Reset();
@@ -432,7 +448,7 @@ void Emulator::Reset()
 	impl_->handoff_frames        = 0;
 	impl_->ds_extra              = -1;
 	impl_->apu_ds_rem            = 0;
-	impl_->drc_integ             = 0.0;
+	impl_->drc_integ             = DrcSteadyStateCorr(impl_->cgb_mode, impl_->run_mode);
 	std::memset(&impl_->icd2, 0, sizeof impl_->icd2);
 	// 4-bank LCD ring starts at $00 (matches Mesen2 SuperGameboy::Reset).
 	// $7000-$700F latch buffer starts as $FF so reads before the first
@@ -1093,6 +1109,9 @@ void Emulator::SetRunMode(RunMode m)
 	// at the right pitch in every mode.
 	const int32_t clock = (m == RunMode::SGB) ? 4295455 : 4194304;
 	ApuSetClockHz(impl_->apu, clock);
+	// The DRC operating point moved with the clock (SGB1 vs the rest is a
+	// 2.4% swing) — jump the integrator there instead of tracking across.
+	impl_->drc_integ = DrcSteadyStateCorr(impl_->cgb_mode, m);
 }
 RunMode Emulator::GetRunMode() const { return impl_->run_mode; }
 
@@ -1150,9 +1169,15 @@ void Emulator::RunFrame()
 	}
 
 	// Undershoot case (SGB2/DMG budgets fall ~0.95 lines short of VBlank): keep
-	// stepping single scanlines until the frame completes.
+	// stepping single scanlines until the frame completes. Only while the
+	// LCD is on — with it off the PPU parks in HBlank and frame_ready can
+	// never latch, so an unguarded loop burns a SECOND full frame of
+	// cycles every host frame for the whole fade/transition: the game runs
+	// 2x fast and the APU floods its ring (dropped samples = crackle) and
+	// winds the DRC integrator to its rail, which then took minutes of
+	// audible ring-bottom underruns to unwind.
 	int32_t safety = 70224;
-	while (!impl_->ppu.frame_ready && safety > 0)
+	while (!impl_->ppu.frame_ready && safety > 0 && (impl_->ppu.lcdc & 0x80))
 	{
 		RunCycles(456);
 		safety -= 456;
@@ -1881,9 +1906,10 @@ void Emulator::ClearAudio()
 {
 	impl_->apu.sample_tail = impl_->apu.sample_head;
 	// The fill level just became meaningless — restart the rate controller
-	// from neutral rather than letting a wound-up integrator (e.g. after a
-	// fast-forward burst) skew the APU clock while it unwinds.
-	impl_->drc_integ = 0.0;
+	// from the mode's known operating point rather than letting a wound-up
+	// integrator (e.g. after a fast-forward burst) skew the APU clock
+	// while it unwinds.
+	impl_->drc_integ = DrcSteadyStateCorr(impl_->cgb_mode, impl_->run_mode);
 }
 
 int32_t Emulator::GetAudioSampleRate() const
@@ -2377,7 +2403,7 @@ bool Emulator::StateLoad(const uint8_t *buffer, size_t size)
 	impl_->cart.sram_dirty = false;
 	impl_->ds_extra        = -1;
 	impl_->apu_ds_rem      = 0;
-	impl_->drc_integ       = 0.0;
+	impl_->drc_integ       = DrcSteadyStateCorr(impl_->cgb_mode, impl_->run_mode);
 
 	// Reset only the sub-sample integration accumulator. The ring buffer
 	// is not serialized but also not wiped — it stays at its current
@@ -2451,6 +2477,16 @@ void S9xSGBResetClockSync(void)
 	g_sync_anchor      = 0;
 }
 
+// Wall-rate meters for the viewer: emulated SNES / GB cycles.
+static uint64_t g_snes_cycle_meter = 0;
+static uint64_t g_gb_cycle_meter   = 0;
+
+void S9xSGBGetCycleMeters(uint64_t *snes, uint64_t *gb)
+{
+	if (snes) *snes = g_snes_cycle_meter;
+	if (gb)   *gb   = g_gb_cycle_meter;
+}
+
 void S9xSGBTickSnes(int snes_master_cycles)
 {
 	if (snes_master_cycles <= 0) return;
@@ -2481,14 +2517,24 @@ void S9xSGBTickSnes(int snes_master_cycles)
 	else
 	{
 		// 64-bit math to avoid overflow: ratio = 4194304 / 21477272.
-		// gb_cycles = accum * 4194304 / 21477272.
-		const int64_t scaled = static_cast<int64_t>(g_snes_cycle_accum) * 4194304;
+		// gb_cycles = accum * gb_hz / 21477272. The ratio must use the
+		// same clock ApuSetClockHz was given for the current run mode:
+		// SGB1 clocks the GB from SNES master/5 (4.2955 MHz), while
+		// SGB2/DMG use the authentic 4.194304 MHz crystal. Slaving at
+		// DMG rate with the APU divisor set for SGB1 under-produced
+		// audio by a chronic 2.4% — the ring could never fill, so the
+		// host padded the shortfall with silence gaps (crackle) at any
+		// honest emulation speed.
+		const int64_t gb_hz =
+			(SGB::Instance().GetRunMode() == SGB::RunMode::SGB) ? 4295455 : 4194304;
+		const int64_t scaled = static_cast<int64_t>(g_snes_cycle_accum) * gb_hz;
 		gb_cycles = static_cast<int32_t>(scaled / 21477272);
 		if (gb_cycles > 0)
 		{
 			// Subtract back the SNES-cycle equivalent of what we ran.
-			const int64_t consumed = (static_cast<int64_t>(gb_cycles) * 21477272) / 4194304;
+			const int64_t consumed = (static_cast<int64_t>(gb_cycles) * 21477272) / gb_hz;
 			g_snes_cycle_accum -= static_cast<int32_t>(consumed);
+			g_gb_cycle_meter += (uint64_t)gb_cycles;
 			SGB::Instance().RunCycles(gb_cycles);
 		}
 	}
@@ -2504,16 +2550,20 @@ void S9xSGBSetHMax(int32_t h_max)
 	if (h_max > 0) g_h_max = h_max;
 }
 
+// Called at each H-event wrap (CPU.Cycles -= H_Max) so anchor-relative
+// deltas stay continuous even across multi-scanline gaps (DMA bursts);
+// the old add-one-H_Max-back guess silently dropped those cycles.
+void S9xSGBNotifyScanlineWrap(int32_t h_max)
+{
+	g_sync_anchor -= h_max;
+}
+
 void S9xSGBSyncToSnesCycle(int32_t cpu_cycles)
 {
 	int32_t delta = cpu_cycles - g_sync_anchor;
-	// Scanline wrap: snes9x's H-event subtracts H_Max from CPU.Cycles,
-	// so a legitimate forward step across the wrap appears as a large
-	// negative delta. Adding H_Max back recovers the real delta, as
-	// long as we sync at least once per scanline (trivially true given
-	// per-opcode sync points).
-	if (delta < 0) delta += g_h_max;
+	if (delta < 0) delta = 0;   // defensive: anchor reset races only
 	g_sync_anchor = cpu_cycles;
+	if (delta > 0) g_snes_cycle_meter += (uint64_t)delta;
 	// GB is held in reset (control bit 7 = 0) — advance the anchor but
 	// do NOT step the GB core. Otherwise a BIOS write of $6003=$01
 	// (reset line held low) still lets the GB progress, which breaks
@@ -2590,6 +2640,17 @@ int32_t S9xSGBDrainSamples(int16_t *dest, int32_t count_int16s)
 void S9xSGBClearSamples(void)
 {
 	SGB::Instance().ClearAudio();
+}
+
+// GB host-ring I/O meters (stereo frames), for the viewer's rate line.
+void S9xSGBGetAudioRingStats(uint32_t *pushed, uint32_t *dropped, uint32_t *drained)
+{
+	const SGB::Emulator::Impl *impl = SGB::Instance().DebugImpl();
+	if (!impl) return;
+	const SGB::Apu &a = impl->apu;
+	if (pushed)  *pushed  = a.dbg_ring_pushed;
+	if (dropped) *dropped = a.dbg_ring_dropped;
+	if (drained) *drained = a.dbg_ring_drained;
 }
 
 void S9xSGBSetSoundChannelMask(uint8_t mask)

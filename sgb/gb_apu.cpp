@@ -432,11 +432,13 @@ void PushSample(Apu &a, int16_t l, int16_t r)
 	{
 		// Buffer full — drop. In practice snes9x's audio thread should
 		// drain in time; overruns indicate an unconsumed stream.
+		a.dbg_ring_dropped++;
 		return;
 	}
 	a.sample_buf[a.sample_head * 2 + 0] = l;
 	a.sample_buf[a.sample_head * 2 + 1] = r;
 	a.sample_head = next;
+	a.dbg_ring_pushed++;
 }
 
 // Emit one integrated sample to the ring buffer, reset accumulator.
@@ -777,6 +779,7 @@ int32_t ApuDrain(Apu &a, int16_t *out, int32_t max_samples)
 		a.sample_tail    = (a.sample_tail + 1) % APU_SAMPLE_BUF_SIZE;
 		++got;
 	}
+	a.dbg_ring_drained += got;
 	return got;
 }
 
