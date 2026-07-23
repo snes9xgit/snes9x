@@ -10437,6 +10437,12 @@ static RECT AudioWaveSoloRect(const RECT &row)
     return r;
 }
 
+// Logic-style L/R level meters, one smoothed peak per track side.
+static float g_wave_meter[15][2];
+static float g_wave_peak[15][2];
+static DWORD g_wave_peak_tick[15][2];
+static DWORD g_wave_meter_tick = 0;
+
 // Logic-style record-arm [R], left of [M].
 static RECT AudioWaveRecRect(const RECT &row)
 {
@@ -10583,7 +10589,7 @@ static const TCHAR *const kAudioWaveScaleLabels[] = {
 };
 static const int  kAudioWaveScaleCount  = sizeof(kAudioWaveScaleLabels) / sizeof(kAudioWaveScaleLabels[0]);
 static const UINT kAudioWaveScaleIdBase = 0x9200;
-static int g_audiowave_scale = kWaveScaleLin;
+static int g_audiowave_scale = kWaveScaleSqrt;
 
 // Map one normalized magnitude (0..1) into lane space under the current
 // mode. Every mode is monotonic, so mapping just the min/max envelope
@@ -10806,6 +10812,81 @@ static void DrawWaveTrackRow(HDC hdc, const RECT &r, int src, bool isGroup,
         DeleteObject(penWave);
     }
 
+    // Logic-style L/R meter under the buttons: -48..0 dB, green to -12,
+    // yellow to -3, red above, 1 s peak-hold ticks.
+    if (r.bottom - r.top >= 46)
+    {
+        const DWORD now = GetTickCount();
+        float dtf = (now - g_wave_meter_tick) / 1000.0f;
+        if (dtf < 0.0f || dtf > 1.0f) dtf = 0.1f;
+        const float decay = (float)pow(0.5, dtf / 0.15);   // 150 ms half-life
+
+        int pk[2] = { 0, 0 };
+        const int nw = (n > 1200) ? 1200 : n;
+        for (int i = n - nw; i < n; ++i)
+        {
+            for (int chn = 0; chn < 2; ++chn)
+            {
+                int v = lr[i * 2 + chn];
+                if (v < 0) v = -v;
+                if (v > pk[chn]) pk[chn] = v;
+            }
+        }
+        const int mx0 = hd.left + 8, mx1 = hd.right - 8;
+        const int mw  = mx1 - mx0;
+        for (int chn = 0; chn < 2; ++chn)
+        {
+            float lvl = 0.0f;
+            if (pk[chn] > 0)
+            {
+                const float db = 20.0f * (float)log10(pk[chn] / 32768.0);
+                lvl = (db + 48.0f) / 48.0f;
+                if (lvl < 0.0f) lvl = 0.0f;
+                if (lvl > 1.0f) lvl = 1.0f;
+            }
+            float &m = g_wave_meter[src][chn];
+            m = (lvl > m) ? lvl : m * decay;
+            if (lvl >= g_wave_peak[src][chn] ||
+                now - g_wave_peak_tick[src][chn] > 1000)
+            {
+                g_wave_peak[src][chn] = lvl;
+                g_wave_peak_tick[src][chn] = now;
+            }
+            const int y0 = cy + 13 + chn * 4;
+            RECT groove = { mx0, y0, mx1, y0 + 3 };
+            HBRUSH gb = CreateSolidBrush(RGB(30, 30, 32));
+            FillRect(hdc, &groove, gb);
+            DeleteObject(gb);
+            static const struct { float to; COLORREF c; } kSeg[3] = {
+                { 0.75f,   RGB( 80, 200,  90) },
+                { 0.9375f, RGB(220, 200,  70) },
+                { 1.0f,    RGB(230,  80,  70) },
+            };
+            float from = 0.0f;
+            for (int sg = 0; sg < 3 && from < m; ++sg)
+            {
+                const float to = (m < kSeg[sg].to) ? m : kSeg[sg].to;
+                if (to > from)
+                {
+                    RECT fr2 = { mx0 + (int)(from * mw), y0,
+                                 mx0 + (int)(to * mw), y0 + 3 };
+                    HBRUSH sb2 = CreateSolidBrush(kSeg[sg].c);
+                    FillRect(hdc, &fr2, sb2);
+                    DeleteObject(sb2);
+                }
+                from = kSeg[sg].to;
+            }
+            if (g_wave_peak[src][chn] > 0.01f)
+            {
+                const int px = mx0 + (int)(g_wave_peak[src][chn] * (mw - 2));
+                RECT pr = { px, y0, px + 2, y0 + 3 };
+                HBRUSH pb = CreateSolidBrush(RGB(220, 220, 224));
+                FillRect(hdc, &pr, pb);
+                DeleteObject(pb);
+            }
+        }
+    }
+
     // clip-label style info text, top-left of the lane
     if (info && info[0])
     {
@@ -10852,7 +10933,7 @@ static void DrawWaveTrackRow(HDC hdc, const RECT &r, int src, bool isGroup,
     DeleteObject(penSep);
 }
 
-static UINT g_audiowave_refresh_ms = 100;
+static UINT g_audiowave_refresh_ms = 50;
 
 struct AudioWaveRefreshOpt { UINT ms; int hz; const TCHAR *label; };
 static const AudioWaveRefreshOpt kAudioWaveRefreshOpts[] = {
@@ -11251,6 +11332,7 @@ LRESULT CALLBACK AudioWaveProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                                  (s < 3) ? sr : (s >= 7 ? 32000 : (int)gb_rate),
                                  d == nPanels - 1);
             }
+            g_wave_meter_tick = GetTickCount();   // shared meter-decay clock
 
             // Footer strip: the reset-on-close checkbox.
             {
