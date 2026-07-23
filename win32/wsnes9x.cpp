@@ -517,6 +517,12 @@ TCHAR g_saveMenuItemStrings[NUM_SAVE_BANKS * SAVE_SLOTS_PER_BANK][20];
 
 StateManager stateMan;
 
+// Content-time frame counter for the rewind ring: ++ once per emulated frame,
+// rewound to the snapshot's tag by pops. Lets the paused reverse frame advance
+// know exactly how many hidden frames to replay past the popped snapshot.
+static uint32 rewindContentFrame = 0;
+static bool   reverseFrameAdvance = false;
+
 std::vector<dMode> dm;
 /*****************************************************************************/
 /* WinProc                                                                   */
@@ -857,6 +863,32 @@ static inline bool MatchesHotkeyBinding(WORD key, int modifiers, SCustomKey *pri
 		for (int i = 0; i < MAX_EXTRA_BINDS; i++) {
 			if (extra->extra[i].key != 0 && extra->extra[i].key != VK_ESCAPE
 				&& key == extra->extra[i].key && modifiers == extra->extra[i].modifiers)
+				return true;
+		}
+	}
+	return false;
+}
+
+// Held-style hotkeys (Rewind/FastForward/ScopePause) must disengage when their
+// chord breaks in ANY order: releasing the modifier first leaves the main key's
+// key-up unmatched by MatchesHotkeyBinding (modifiers no longer down), sticking
+// the mode on. Match the released key against the binding's key OR its modifiers.
+static inline bool HotkeyChordBroken(WORD key, SCustomKey *primary, SCustomKeyExtra *extra)
+{
+	auto broken = [key](WORD bkey, int bmods) {
+		if (bkey == 0 || bkey == VK_ESCAPE)
+			return false;
+		if (key == bkey)
+			return true;
+		return (key == VK_MENU    && (bmods & CUSTKEY_ALT_MASK))  ||
+		       (key == VK_CONTROL && (bmods & CUSTKEY_CTRL_MASK)) ||
+		       (key == VK_SHIFT   && (bmods & CUSTKEY_SHIFT_MASK));
+	};
+	if (broken(primary->key, primary->modifiers))
+		return true;
+	if (GUI.AllowMultipleHotkeyBindings) {
+		for (int i = 0; i < MAX_EXTRA_BINDS; i++) {
+			if (broken(extra->extra[i].key, extra->extra[i].modifiers))
 				return true;
 		}
 	}
@@ -1425,9 +1457,36 @@ int HandleKeyMessage(WPARAM wParam, LPARAM lParam)
 		}
         if(HKmatch(Rewind))
 		{
-            if(!Settings.Rewinding)
-                S9xMessage (S9X_INFO, 0, GUI.rewindBufferSize?WINPROC_REWINDING_TEXT:WINPROC_REWINDING_DISABLED);
-            Settings.Rewinding = true;
+			bool rewindAllowed = GUI.rewindBufferSize != 0
+#ifdef NETPLAY_SUPPORT
+				&& !Settings.NetPlay
+#endif
+#ifdef RETROACHIEVEMENTS_SUPPORT
+				&& !RA_IsHardcoreModeActive()
+#endif
+				;
+			if (Settings.Paused && !Settings.StopEmulation && rewindAllowed)
+			{
+				// Paused: reverse frame advance — step exactly one frame back,
+				// regardless of the snapshot granularity. Rides the regular
+				// frame-advance machinery to run/render the stepped frame.
+				static DWORD lastRevTime = 0;
+				if ((timeGetTime() - lastRevTime) > 20)
+				{
+					lastRevTime = timeGetTime();
+					reverseFrameAdvance = true;
+					Settings.FrameAdvance = true;
+					GUI.FrameAdvanceJustPressed = 2;
+					// kick the main thread out of GetMessage (just in case)
+					SendMessage(GUI.hWnd, WM_NULL, 0, 0);
+				}
+			}
+			else
+			{
+				if(!Settings.Rewinding)
+					S9xMessage (S9X_INFO, 0, GUI.rewindBufferSize?WINPROC_REWINDING_TEXT:WINPROC_REWINDING_DISABLED);
+				Settings.Rewinding = true;
+			}
 			hitHotKey = true;
         }
 
@@ -2006,17 +2065,10 @@ LRESULT CALLBACK WinProc(
 	        break;
 		}
 
+	case WM_SYSKEYUP:
 	case WM_KEYUP:
 	case WM_CUSTKEYUP:
 		{
-			int modifiers = 0;
-			if((GetAsyncKeyState(VK_MENU) & 0x8000) || wParam == VK_MENU)
-				modifiers |= CUSTKEY_ALT_MASK;
-			if((GetAsyncKeyState(VK_CONTROL) & 0x8000) || wParam == VK_CONTROL)
-				modifiers |= CUSTKEY_CTRL_MASK;
-			if((GetAsyncKeyState(VK_SHIFT) & 0x8000) || wParam == VK_SHIFT)
-				modifiers |= CUSTKEY_SHIFT_MASK;
-
 			// Master hotkey key-up: reset hold timer
 			// (the static vars are in HandleKeyMessage, so we reset via a sentinel call)
 			if (GUI.MasterHotkeyEnabled && CustomKeys.MasterHotkey.key != 0
@@ -2026,15 +2078,15 @@ LRESULT CALLBACK WinProc(
 				MasterHotkeyResetTimer();
 			}
 
-			if(HKmatch(FastForward))
+			if(HotkeyChordBroken((WORD)wParam, &CustomKeys.FastForward, &CustomKeysExtra.FastForward))
 			{
 				Settings.TurboMode = FALSE;
 			}
-			if(HKmatch(ScopePause))
+			if(HotkeyChordBroken((WORD)wParam, &CustomKeys.ScopePause, &CustomKeysExtra.ScopePause))
 			{
 				GUI.superscope_pause = 0;
 			}
-            if(HKmatch(Rewind))
+            if(HotkeyChordBroken((WORD)wParam, &CustomKeys.Rewind, &CustomKeysExtra.Rewind))
 		    {
                 Settings.Rewinding = false;
             }
@@ -4780,12 +4832,49 @@ int WINAPI WinMain(
 				&& !RA_IsHardcoreModeActive()
 #endif
 				) {
-				if (Settings.Rewinding) {
-					Settings.Rewinding = stateMan.pop();
+				if (reverseFrameAdvance) {
+					reverseFrameAdvance = false;
+					// Reverse frame advance: pop back to the nearest snapshot at
+					// or before the previous frame, replay the gap hidden, and
+					// let the frame-advance frame below render the target.
+					uint32 target = rewindContentFrame >= 2 ? rewindContentFrame - 2 : 0;
+					uint32 tag = 0, reached = 0;
+					bool popped = false;
+					int ok;
+					while ((ok = stateMan.pop(&tag)) != 0 && tag > target) {
+						reached = tag;
+						popped = true;
+					}
+					if (ok) {
+						rewindContentFrame = tag;
+						if (target > tag) {
+							S9xSetSamplesAvailableCallback(NULL, NULL);
+							while (rewindContentFrame < target) {
+								stateMan.push(rewindContentFrame);
+								IPPU.RenderThisFrame = FALSE;
+								S9xMainLoop();
+								rewindContentFrame++;
+							}
+							S9xSetSamplesAvailableCallback(S9xSoundCallback, NULL);
+							IPPU.RenderThisFrame = TRUE;
+						}
+						stateMan.push(rewindContentFrame);
+					}
+					else if (popped) {
+						// Ring ran dry mid-search: settle on the oldest state.
+						rewindContentFrame = reached;
+						stateMan.push(reached);
+					}
+				}
+				else if (Settings.Rewinding) {
+					uint32 tag;
+					Settings.Rewinding = stateMan.pop(&tag);
+					if (Settings.Rewinding)
+						rewindContentFrame = tag;
 				}
 				else {
 					if (IPPU.TotalEmulatedFrames % GUI.rewindGranularity == 0)
-						stateMan.push();
+						stateMan.push(rewindContentFrame);
 				}
 			}
 
@@ -4871,6 +4960,7 @@ int WINAPI WinMain(
 			RA_DoFrame();
 #endif
 			GUI.FrameCount++;
+			rewindContentFrame++;
 			if (Settings.SGB_BIOSModeActive)
 			{
 				static bool   sgbCpDone  = false;
