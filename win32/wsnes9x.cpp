@@ -13419,6 +13419,23 @@ static LRESULT CALLBACK CheatEditSubclassProc(HWND hWnd, UINT msg, WPARAM wParam
 	return DefSubclassProc(hWnd, msg, wParam, lParam);
 }
 
+// Warn when a GB Game Genie code's verify byte doesn't match the loaded ROM.
+static void CheatWarnROMMismatch(HWND hDlg, const std::string &code)
+{
+	uint32 addr;
+	uint8 expected, found;
+	if (!S9xGBGameGenieMismatch(code, addr, expected, found))
+		return;
+
+	TCHAR warn[320];
+	_stprintf(warn, TEXT("This Game Genie code doesn't match the loaded ROM:\n")
+	                TEXT("it expects byte %02X at %04X, but this ROM has %02X.\n\n")
+	                TEXT("The code was made for a different revision of the game and\n")
+	                TEXT("will have no effect here. It may work on another dump."),
+	          expected, addr, found);
+	MessageBox(hDlg, warn, TEXT("Cheat doesn't match this ROM"), MB_OK | MB_ICONWARNING);
+}
+
 INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	static bool internal_change;
@@ -13832,7 +13849,8 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 							lvia.cchTextMax = CHEAT_SIZE;
 							SendDlgItemMessageA(hDlg, IDC_CHEAT_LIST, LVM_GETITEMA, 0, (LPARAM)&lvia);
 
-							// replace value byte in each entry: XXXXXX:YY or XXXXXX:CC?YY ('=' also accepted)
+							// replace value byte in each entry: XXXX:YY or XXXX?CC:YY —
+							// the value always follows the last ':' or '='.
 							std::string result;
 							char *ctx = NULL;
 							char *token = strtok_s(code, "+", &ctx);
@@ -13841,18 +13859,9 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 								if (!result.empty())
 									result += "+";
 								std::string entry(token);
-								size_t qmark = entry.find('?');
-								if (qmark != std::string::npos)
-								{
-									// conditional: replace after '?'
-									entry = entry.substr(0, qmark + 1) + new_val;
-								}
-								else
-								{
-									size_t eq = entry.find_first_of(":=");
-									if (eq != std::string::npos)
-										entry = entry.substr(0, eq + 1) + new_val;
-								}
+								size_t sep = entry.find_last_of(":=");
+								if (sep != std::string::npos)
+									entry = entry.substr(0, sep + 1) + new_val;
 								result += entry;
 								token = strtok_s(NULL, "+", &ctx);
 							}
@@ -13927,6 +13936,7 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 
 					if(!valid_cheat.empty())
 					{
+						CheatWarnROMMismatch(hDlg, temp);
 						std::string descUtf8 = WideToUtf8(tempDesc.c_str());
 						int core_idx = S9xAddCheatGroup(descUtf8, valid_cheat);
 						if (core_idx < 0)
@@ -13973,6 +13983,7 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 
 					if(!valid_cheat.empty())
 					{
+						CheatWarnROMMismatch(hDlg, codeUtf8);
 						LVITEM lvi;
 
 						memset(&lvi, 0, sizeof(LVITEM));

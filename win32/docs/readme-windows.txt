@@ -307,8 +307,9 @@ Pro-Action Reply (PAR). Many existing Game Genie and PAR codes can be found via
 Internet.
 
 Snes9x supports both Game Genie and PAR, as well as the standard raw format:
-xxxxxx:bb or xxxxxx:cc?bb ('=' is also accepted in place of ':'). Also you can
-create your own cheat codes with the cheat search tool.
+xxxxxx:bb, or xxxxxx?cc:bb with a compare byte ('=' forms like xxxxxx=bb are
+also accepted). Also you can create your own cheat codes with the cheat search
+tool.
 Cheats are saved in .cht files and are automatically loaded the next time a game
 with the same filename is loaded.
 

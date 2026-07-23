@@ -96,6 +96,7 @@ int S9xImportCheatsFromDatabase(const std::string &filename);
 void S9xCheatsDisable(void);
 void S9xCheatsEnable(void);
 std::string S9xCheatValidate(const std::string &cheat);
+bool S9xGBGameGenieMismatch(const std::string &code, uint32_t &address, uint8_t &expected, uint8_t &found);
 
 uint32_t S9xCheatFlatToSNES(uint32_t flat_addr);
 bool S9xCheatsGBMode(void);

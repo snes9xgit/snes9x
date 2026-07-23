@@ -13,7 +13,8 @@
 
 bool S9xCheatsGBMode(void)
 {
-    return Settings.SuperGameBoy && !Settings.SGB_BIOSModeActive;
+    // BIOS mode included: cheats target the GB game, not the SGB BIOS's own RAM.
+    return Settings.SuperGameBoy || Settings.SGB_BIOSModeActive;
 }
 
 static inline uint8 S9xGetByteFree(uint32 Address)
@@ -583,12 +584,10 @@ static bool S9xGBGameSharkToRaw(const std::string &code, uint32 &address, uint8 
 
 // GB Game Genie ABC-DEF[-GHI]: value = AB, address = (F^$F)CDE,
 // compare = GI rotated right 2 then XOR $BA (H is a check digit).
-// ROM patches: bank-0 addresses patch one site; banked addresses
-// (0x4000-0x7FFF) expand to every 16K bank, filtered by the compare
-// byte when present.
-static bool S9xGBGameGenieToCheats(const std::string &code, std::vector<SCheat> &cheats)
+static bool S9xGBGameGenieDecode(const std::string &code, uint8 &value,
+                                 uint32 &address, bool &has_compare, uint8 &compare)
 {
-    bool has_compare = false;
+    has_compare = false;
 
     if (code.length() == 11 && code[3] == '-' && code[7] == '-' &&
         is_all_hex(code.substr(0, 3)) && is_all_hex(code.substr(4, 3)) &&
@@ -604,10 +603,10 @@ static bool S9xGBGameGenieToCheats(const std::string &code, std::vector<SCheat> 
         return ch - 'A' + 10;
     };
 
-    uint8  value = (hex(code[0]) << 4) | hex(code[1]);
-    uint32 address = (hex(code[2]) << 8) | (hex(code[4]) << 4) | hex(code[5]) |
-                     ((hex(code[6]) ^ 0xF) << 12);
-    uint8  compare = 0;
+    value = (hex(code[0]) << 4) | hex(code[1]);
+    address = (hex(code[2]) << 8) | (hex(code[4]) << 4) | hex(code[5]) |
+              ((hex(code[6]) ^ 0xF) << 12);
+    compare = 0;
 
     if (address >= 0x8000)
         return false;
@@ -618,6 +617,21 @@ static bool S9xGBGameGenieToCheats(const std::string &code, std::vector<SCheat> 
         compare = ((compare >> 2) | (compare << 6)) & 0xFF;
         compare ^= 0xBA;
     }
+
+    return true;
+}
+
+// ROM patches: bank-0 addresses patch one site; banked addresses
+// (0x4000-0x7FFF) expand to every 16K bank, filtered by the compare
+// byte when present.
+static bool S9xGBGameGenieToCheats(const std::string &code, std::vector<SCheat> &cheats)
+{
+    uint8  value, compare;
+    uint32 address;
+    bool   has_compare;
+
+    if (!S9xGBGameGenieDecode(code, value, address, has_compare, compare))
+        return false;
 
     unsigned int rom_size = 0;
     const unsigned char *rom = S9xSGBCheatROMPtr(&rom_size);
@@ -679,6 +693,10 @@ SCheat S9xTextToCheat(const std::string &text)
     else if (!S9xCheatsGBMode() && S9xProActionReplayToRaw(text, c.address, c.byte))
     {
         byte = c.byte;
+    }
+    else if (sscanf(text.c_str(), "%x ? %x : %x", &c.address, &cond_byte, &byte) == 3)
+    {
+        c.conditional = true;
     }
     else if (sscanf(text.c_str(), "%x : %x ? %x", &c.address, &cond_byte, &byte) == 3)
     {
@@ -793,11 +811,18 @@ int S9xModifyCheatGroup(uint32 num, const std::string &name, const std::string &
 std::string S9xCheatToText(const SCheat &c)
 {
     char output[256]{};
+    uint32 addr = c.address;
+    bool gb = S9xCheatsGBMode();
+
+    // GB bank-0 ROM patches drop the internal 0x01000000 flag: the bare
+    // address parses back to the same patch and matches decoder sites.
+    if (gb && (addr & 0x01000000) && (addr & 0xFFFFFF) < 0x4000)
+        addr &= 0xFFFFFF;
 
     if (c.conditional)
-        sprintf(output, "%06x:%02x?%02x", c.address, c.cond_byte, c.byte);
+        sprintf(output, gb ? "%04x?%02x:%02x" : "%06x?%02x:%02x", addr, c.cond_byte, c.byte);
     else
-        sprintf(output, "%06x:%02x", c.address, c.byte);
+        sprintf(output, gb ? "%04x:%02x" : "%06x:%02x", addr, c.byte);
 
     return std::string(output);
 }
@@ -814,6 +839,58 @@ std::string S9xCheatGroupToText(const SCheatGroup &g)
     }
 
     return text;
+}
+
+// A GB Game Genie verify byte that doesn't match the loaded ROM means the
+// code was made for a different revision of the game and will silently do
+// nothing. Reports the first mismatching code part.
+bool S9xGBGameGenieMismatch(const std::string &code, uint32 &address, uint8 &expected, uint8 &found)
+{
+    if (!S9xCheatsGBMode())
+        return false;
+
+    unsigned int rom_size = 0;
+    const unsigned char *rom = S9xSGBCheatROMPtr(&rom_size);
+    if (!rom || !rom_size)
+        return false;
+
+    for (const auto &part : split_string(code, '+'))
+    {
+        uint8  value, compare;
+        uint32 addr;
+        bool   has_compare;
+
+        if (!S9xGBGameGenieDecode(part, value, addr, has_compare, compare) || !has_compare)
+            continue;
+
+        if (addr < 0x4000)
+        {
+            if (addr < rom_size && rom[addr] != compare)
+            {
+                address = addr; expected = compare; found = rom[addr];
+                return true;
+            }
+        }
+        else
+        {
+            bool matched = false;
+            for (uint32 bank = 0; bank * 0x4000 + 0x4000 <= rom_size; bank++)
+                if (rom[bank * 0x4000 + (addr - 0x4000)] == compare)
+                {
+                    matched = true;
+                    break;
+                }
+            if (!matched)
+            {
+                // no bank matches; report bank 1's byte as the example
+                address = addr; expected = compare;
+                found = addr < rom_size ? rom[addr] : 0;
+                return true;
+            }
+        }
+    }
+
+    return false;
 }
 
 std::string S9xCheatValidate(const std::string &code_string)
