@@ -13832,7 +13832,7 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 							lvia.cchTextMax = CHEAT_SIZE;
 							SendDlgItemMessageA(hDlg, IDC_CHEAT_LIST, LVM_GETITEMA, 0, (LPARAM)&lvia);
 
-							// replace value byte in each entry: XXXXXX=YY or XXXXXX=CC?YY
+							// replace value byte in each entry: XXXXXX:YY or XXXXXX:CC?YY ('=' also accepted)
 							std::string result;
 							char *ctx = NULL;
 							char *token = strtok_s(code, "+", &ctx);
@@ -13849,7 +13849,7 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 								}
 								else
 								{
-									size_t eq = entry.find('=');
+									size_t eq = entry.find_first_of(":=");
 									if (eq != std::string::npos)
 										entry = entry.substr(0, eq + 1) + new_val;
 								}
@@ -15074,7 +15074,7 @@ INT_PTR CALLBACK DlgCheatSearch(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 							{
 								if (byteIndex > 0)
 									code_string += '+';
-								snprintf(code, 10, "%x=%x", address + byteIndex, (curVal >> (8 * byteIndex)) & 0xFF);
+								snprintf(code, 10, "%x:%x", address + byteIndex, (curVal >> (8 * byteIndex)) & 0xFF);
 								code_string += code;
 							}
 
@@ -15720,7 +15720,7 @@ INT_PTR CALLBACK DlgCheatSearchAdd(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lP
 						{
 							if (byteIndex > 0)
 								code_string += '+';
-							snprintf(code, 10, "%x=%x", new_cheat->address + byteIndex, (new_cheat->new_val >> (8 * byteIndex)) & 0xFF);
+							snprintf(code, 10, "%x:%x", new_cheat->address + byteIndex, (new_cheat->new_val >> (8 * byteIndex)) & 0xFF);
 							code_string += code;
 						}
 

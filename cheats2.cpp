@@ -680,6 +680,10 @@ SCheat S9xTextToCheat(const std::string &text)
     {
         byte = c.byte;
     }
+    else if (sscanf(text.c_str(), "%x : %x ? %x", &c.address, &cond_byte, &byte) == 3)
+    {
+        c.conditional = true;
+    }
     else if (sscanf(text.c_str(), "%x = %x ? %x", &c.address, &cond_byte, &byte) == 3)
     {
         c.conditional = true;
@@ -791,9 +795,9 @@ std::string S9xCheatToText(const SCheat &c)
     char output[256]{};
 
     if (c.conditional)
-        sprintf(output, "%06x=%02x?%02x", c.address, c.cond_byte, c.byte);
+        sprintf(output, "%06x:%02x?%02x", c.address, c.cond_byte, c.byte);
     else
-        sprintf(output, "%06x=%02x", c.address, c.byte);
+        sprintf(output, "%06x:%02x", c.address, c.byte);
 
     return std::string(output);
 }
@@ -912,7 +916,7 @@ static bool8 S9xLoadCheatFileClassic(const std::string &filename)
 
         std::string name((const char *)&data[8], 20);
         char code[32]{};
-        sprintf(code, "%x=%x", c.address, c.byte);
+        sprintf(code, "%x:%x", c.address, c.byte);
         std::string cheat(code);
         S9xAddCheatGroup(name, cheat);
 

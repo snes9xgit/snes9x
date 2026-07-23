@@ -307,8 +307,8 @@ Pro-Action Reply (PAR). Many existing Game Genie and PAR codes can be found via
 Internet.
 
 Snes9x supports both Game Genie and PAR, as well as the standard raw format:
-xxxxxx=bb or xxxxxx=cc?bb. Also you can create your own cheat codes with the
-cheat search tool.
+xxxxxx:bb or xxxxxx:cc?bb ('=' is also accepted in place of ':'). Also you can
+create your own cheat codes with the cheat search tool.
 Cheats are saved in .cht files and are automatically loaded the next time a game
 with the same filename is loaded.
 
@@ -335,8 +335,8 @@ box is empty or contains an invalid code. The cheat code is always translated
 into an address and value pair and displayed in the cheat list as such.
 
 It is also possible to enter cheats as an address and value pair. Type in a
-code of the form 'address=value' in the 'Enter Cheat Code' box, with both
-address and value in hexadecimal.
+code of the form 'address:value' (or 'address=value') in the 'Enter Cheat Code'
+box, with both address and value in hexadecimal.
 
 Double-clicking on an cheat line from the list in the dialog or clicking on the
 'En' column toggles an individual cheat on and off. All cheats can be switched
