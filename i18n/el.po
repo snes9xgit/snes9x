@@ -3007,7 +3007,7 @@ msgstr "Φόρτωση 3:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Load 4:"
-msg        "Φόρτωση 4:"
+msgstr "Φόρτωση 4:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Load 5:"

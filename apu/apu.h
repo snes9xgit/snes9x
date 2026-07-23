@@ -63,7 +63,14 @@ void S9xAudioWaveformPushVoice(int voice, int ch, int amp);
 // PullSpc: reads up to count words (int16) from spc::resampler output. Returns actual read.
 // SpcOutAvail: returns spc::resampler.avail() in output words.
 int  S9xPullSpcOutput(int16_t *dst, int count);
-int  S9xSpcOutAvailable(void);
+int  S9xSpcOutAvailable(void);        // output words after ratio conversion
+int  S9xSpcSpaceFilled(void);         // input words buffered (same units as capacity)
+int  S9xSpcResamplerCapacity(void);   // spc::resampler.buffer_size in input words
+long S9xSpcDroppedSamples(void);      // words discarded at push (full buffer) — overflow crackle
+void S9xSpcIoMeters(unsigned int *pushed, unsigned int *consumed); // input words in/out
+long S9xApuScanlineMeter(void);       // cumulative emulated scanlines (nominal 15.75k/s)
+// Recorder tap on the audiowave rings: frames since *cursor (-1 latches to now).
+int  S9xAudioWaveformReadNew(int stream, int *cursor, short *out_lr, int max_frames);
 void S9xAudioWaveformPushMix(const int16_t *src, int frames);
 
 // Host-side post-mix step for SGB BIOS mode. Call this on the buffer
@@ -81,12 +88,25 @@ void S9xMixSpcOverGB(int16_t *dest, int sample_count);
 extern unsigned int S9xSGBMixVolumeSPC;
 extern unsigned int S9xSGBMixVolumeGB;
 
+// Splice-health counters for the GB/SPC mix path, surfaced by the
+// waveform viewer. gb_pad: output samples zero-filled because the GB
+// ring came up short mid-block; spc_short: samples the SPC layer missed
+// because its resampler ran dry mid-block. Numbers that keep climbing
+// while audio is playing correspond to audible gaps/crackle.
+extern volatile long S9xSGBMixGBPadSamples;
+extern volatile long S9xSGBMixSPCShortSamples;
+
 // Adaptive rate control hooks for the SGB BIOS-released mix mode drain
 // thread. Each call observes the stream's own buffer fill level and biases
 // its rate to keep it near target, decoupling GB and SPC pitch drift.
-void   S9xSpcAdjustRate(double drc_factor);
+// max_dev = trim authority (clamp half-width around 1.0) the caller
+// grants: 0.04 when a sound-sync throttle can pace real overspeed,
+// 0.30 when none is available and resampling the surplus is the only
+// non-crackling option.
+void   S9xSpcAdjustRate(double max_dev);
 void   S9xSpcResetDrc(void);
 double S9xSpcGetTimeRatio(void);
+double S9xSpcGetDrcScale(void);   // current production-rate trim (1.0 = untrimmed)
 // PI rate-match for once-per-frame frontends in SGB BIOS mode (libretro/gtk/qt).
 // Drives spc::drc_scale to hold the SPC resampler buffer near half-full so it
 // stays locked to the GB-paced consumption. S9xSpcSyncReset clears the

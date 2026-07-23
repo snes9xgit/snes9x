@@ -1,4 +1,4 @@
-SuperSnes9x# SOME DESCRIPTIVE TITLE.
+# SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
@@ -856,7 +856,7 @@ msgid "Multitap"
 msgstr "মাল্টিট্যাপ"
 
 #: src/snes9x.ui:1970
-msg2 "SNES port 2"
+msgctxt "SNES port 2"
 msgid "None"
 msgstr "কিছুই না"
 

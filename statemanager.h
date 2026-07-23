@@ -18,18 +18,21 @@ private:
     size_t bottom_ptr;
     size_t state_size;
     size_t real_state_size;
+    uint32_t top_tag;
     bool init_done;
     bool first_pop;
-    
+
     void reassign_bottom();
-    void generate_delta(const void *data);
+    void generate_delta(const void *data, uint32_t old_tag);
     void deallocate();
 public:
     StateManager();
     ~StateManager();
     bool init(size_t buffer_size);
-    int pop();
-    bool push();
+    // Snapshots carry a caller-defined frame tag; pop() reports the tag of
+    // the state it restored (exact frame bookkeeping across granularity).
+    int pop(uint32_t *tag = 0);
+    bool push(uint32_t tag = 0);
 };
 
 #endif // STATEMANAGER_H

@@ -4989,4 +4989,4 @@ msgstr "快捷熱鍵：一鍵光速即時存檔至第 5 號槽位進度"
 
 #: qt/src/ShortcutsPanel.ui
 msgid "Quick Save Slot 6"
-msgstr "快捷熱鍵：一鍵光速即時存檔至第 I encountered an error doing what you asked. Could you try again?
+msgstr "快捷熱鍵：一鍵光速即時存檔至第 6 號槽位進度"

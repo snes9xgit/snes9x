@@ -95,7 +95,6 @@ msgstr "Lỗi kết nối"
 msgid "frame behind"
 msgid_plural "frames behind"
 msgstr[0] "khung hình bị trễ"
-msgstr[1] "khung hình bị trễ"
 
 #: src/gtk_preferences.cpp:19
 msgid "Same location as current game"
@@ -125,19 +124,16 @@ msgstr "Không – Sử dụng bộ thu phóng phần mềm"
 msgid "thread for filtering and scaling"
 msgid_plural "threads for filtering and scaling"
 msgstr[0] "luồng để lọc và thu phóng"
-msgstr[1] "luồng để lọc và thu phóng"
 
 #: src/gtk_preferences.cpp:236 src/gtk_preferences.cpp:500
 msgid "millisecond"
 msgid_plural "milliseconds"
 msgstr[0] "lâng giây (ms)"
-msgstr[1] "mili giây (ms)"
 
 #: src/gtk_preferences.cpp:260 src/gtk_preferences.cpp:476
 msgid "second after change"
 msgid_plural "seconds after change"
 msgstr[0] "giây sau khi thay đổi"
-msgstr[1] "giây sau khi thay đổi"
 
 #: src/gtk_preferences.cpp:271
 msgid "SuperSnes9x version: "
@@ -183,7 +179,7 @@ msgid "Current joystick centers have been saved."
 msgstr "Tọa độ trung tâm hiện tại của cần điều khiển đã được lưu."
 
 #: src/gtk_preferences.cpp:981
-msg1 "Calibration Complete"
+msgid "Calibration Complete"
 msgstr "Hiệu chỉnh hoàn tất"
 
 #: src/gtk_s9x.cpp:206

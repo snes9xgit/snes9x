@@ -437,6 +437,10 @@ void S9xDoHEventProcessing (void)
 
 			S9xAPUEndScanline();
 			CPU.Cycles -= Timings.H_Max;
+			// Keep the SGB sync anchor continuous across the wrap so
+			// multi-scanline deltas (DMA bursts) aren't discarded.
+			if (Settings.SGB_BIOSModeActive)
+				S9xSGBNotifyScanlineWrap(Timings.H_Max);
 			if (Timings.NMITriggerPos != 0xffff)
 				Timings.NMITriggerPos -= Timings.H_Max;
 			if (Timings.NextIRQTimer != 0x0fffffff)

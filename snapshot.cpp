@@ -1810,7 +1810,12 @@ int S9xUnfreezeFromStream (STREAM stream)
 			UnfreezeStructFromCopy(&MSU1, SnapMSU1, COUNT(SnapMSU1), local_msu1_data, version);
 
 		if (local_pf94_data)
+		{
 			UnfreezeStructFromCopy(&PF94, SnapPF94, COUNT(SnapPF94), local_pf94_data, version);
+			// Remap the event-board game window before S9xSetPCBase below:
+			// the S9xReset() above put the menu back in the window.
+			S9xPF94PostLoadState();
+		}
 
 		// Restore the GB/SGB state if the snapshot was taken in BIOS
 		// mode. Without this, the SNES side is rewound to save time but
@@ -1915,9 +1920,6 @@ int S9xUnfreezeFromStream (STREAM stream)
 
 		if (local_msu1_data)
 			S9xMSU1PostLoadState();
-
-		if (local_pf94_data)
-			S9xPF94PostLoadState();
 
 		if (local_movie_data)
 		{

@@ -472,7 +472,7 @@ msgid "0%"
 msgstr "0%"
 
 #: src/snes9x.ui:895
-msg0 "None"
+msgid "None"
 msgstr "بلا"
 
 #: src/snes9x.ui:936

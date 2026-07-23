@@ -98,7 +98,6 @@ msgstr "연결 오류"
 msgid "frame behind"
 msgid_plural "frames behind"
 msgstr[0] "프레임 지연"
-msgstr[1] "프레임 지연"
 
 #: src/gtk_preferences.cpp:19
 msgid "Same location as current game"
@@ -128,19 +127,16 @@ msgstr "없음 – 소프트웨어 스케일러 사용"
 msgid "thread for filtering and scaling"
 msgid_plural "threads for filtering and scaling"
 msgstr[0] "필터링 및 스케일링을 위한 스레드"
-msgstr[1] "필터링 및 스케일링을 위한 스레드"
 
 #: src/gtk_preferences.cpp:236 src/gtk_preferences.cpp:500
 msgid "millisecond"
 msgid_plural "milliseconds"
 msgstr[0] "밀리초"
-msgstr[1] "밀리초"
 
 #: src/gtk_preferences.cpp:260 src/gtk_preferences.cpp:476
 msgid "second after change"
 msgid_plural "seconds after change"
 msgstr[0] "변경 후 초"
-msgstr[1] "변경 후 초"
 
 #: src/gtk_preferences.cpp:271
 msgid "SuperSnes9x version: "
@@ -4883,4 +4879,4 @@ msgstr "고해상도 온스크린 오버레이(Onscreen 자막) 자막 안내 �
 
 #: qt/src/EmuMainWindow.cpp
 msgid "Open a ROM File"
-msgstr "가상 기기 에뮬레이션 기동을 시작하기 위해 컴퓨터 드라이브 하드디스크 스토리지 내의 게임 ROM 파일 소스Sorry, something went wrong. Please try your request again.
+msgstr "ROM 파일 열기"

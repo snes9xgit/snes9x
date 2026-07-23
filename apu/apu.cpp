@@ -304,7 +304,10 @@ bool8 S9xMixSamples(uint8 *dest, int sample_count)
 
         const int32_t got = S9xSGBDrainSamples(out, sample_count);
         if (got < sample_count)
+        {
+            S9xSGBMixGBPadSamples += sample_count - got;
             memset(out + got, 0, (sample_count - got) << 1);
+        }
 
         if (audiowave::enabled)
             audiowave::push(audiowave::buf_gb, audiowave::wpos_gb,
@@ -408,6 +411,9 @@ void S9xAudioWaveformPushMix(const int16_t *src, int frames)
 unsigned int S9xSGBMixVolumeSPC = 50;
 unsigned int S9xSGBMixVolumeGB  = 50;
 
+volatile long S9xSGBMixGBPadSamples    = 0;
+volatile long S9xSGBMixSPCShortSamples = 0;
+
 void S9xMixSpcOverGB(int16_t *dest, int sample_count)
 {
     if (!dest || sample_count <= 0) return;
@@ -438,19 +444,28 @@ void S9xMixSpcOverGB(int16_t *dest, int sample_count)
     const int gb_gain_eff  = (GB_GAIN_Q8  * (int)vol_gb_pct)  / 100;
     const int spc_gain_eff = (SPC_GAIN_Q8 * (int)vol_spc_pct) / 100;
 
+    // Overlay in <=2048-word chunks so blocks larger than the stack
+    // buffer still get full SPC coverage — a single capped pull cut the
+    // SPC layer at word 2048 of every block, a block-rate chop.
     int16_t spc_buf[2048];
-    int cap = (sample_count < 2048) ? sample_count : 2048;
-    int n = S9xPullSpcOutput(spc_buf, cap);
     int i = 0;
-    for (; i < n; ++i)
+    while (i < sample_count)
     {
-        int32_t gb    = ((int32_t)dest[i]    * gb_gain_eff)  >> 8;
-        int32_t spc   = ((int32_t)spc_buf[i] * spc_gain_eff) >> 8;
-        int32_t mixed = gb + spc;
-        if (mixed >  32767) mixed =  32767;
-        if (mixed < -32768) mixed = -32768;
-        dest[i] = (int16_t)mixed;
+        const int chunk = ((sample_count - i) < 2048) ? (sample_count - i) : 2048;
+        const int n = S9xPullSpcOutput(spc_buf, chunk);
+        for (int k = 0; k < n; ++k, ++i)
+        {
+            int32_t gb    = ((int32_t)dest[i]    * gb_gain_eff)  >> 8;
+            int32_t spc   = ((int32_t)spc_buf[k] * spc_gain_eff) >> 8;
+            int32_t mixed = gb + spc;
+            if (mixed >  32767) mixed =  32767;
+            if (mixed < -32768) mixed = -32768;
+            dest[i] = (int16_t)mixed;
+        }
+        if (n < chunk) break;   // resampler dry — the tail stays GB-only
     }
+    if (i < sample_count && S9xSGBBootHandoffCaptured())
+        S9xSGBMixSPCShortSamples += sample_count - i;
     for (; i < sample_count; ++i)
     {
         int32_t gb = ((int32_t)dest[i] * gb_gain_eff) >> 8;
@@ -488,6 +503,26 @@ int S9xSpcOutAvailable(void)
     return spc::resampler.avail();
 }
 
+int S9xSpcSpaceFilled(void)
+{
+    // Input-side fill in the same units as S9xSpcResamplerCapacity —
+    // avail() is post-ratio output words and must not be compared
+    // against buffer_size.
+    return spc::resampler.space_filled();
+}
+
+long S9xSpcDroppedSamples(void)
+{
+    return (long)spc::resampler.dropped;
+}
+
+// Input-side I/O meters in words, for the viewer's rate line.
+void S9xSpcIoMeters(unsigned int *pushed, unsigned int *consumed)
+{
+    if (pushed)   *pushed   = spc::resampler.pushed;
+    if (consumed) *consumed = spc::resampler.consumed;
+}
+
 int S9xSpcResamplerCapacity(void)
 {
     return spc::resampler.buffer_size;
@@ -498,7 +533,7 @@ double S9xSpcGetTimeRatio(void)
     return spc::resampler.r_step;
 }
 
-void S9xSpcAdjustRate(double /*drc_factor*/)
+void S9xSpcAdjustRate(double max_dev)
 {
     const int buffer_size = spc::resampler.buffer_size;
     if (buffer_size <= 0) return;
@@ -507,14 +542,33 @@ void S9xSpcAdjustRate(double /*drc_factor*/)
                               (double)Settings.SoundPlaybackRate;
     spc::resampler.time_ratio(base_ratio);
 
-    const int target = buffer_size / 4;
+    // Aim half-full, not quarter-full: the win32 drain thread pulls whole
+    // device blocks back-to-back, and a quarter-cap cushion (~6 ms at
+    // typical sizes) is shallower than one block — every pull bottomed
+    // the buffer and any jitter landed as a mid-block SPC dropout.
+    const int target = buffer_size / 2;
     const int delta  = spc::resampler.space_filled() - target;
     double trim = (double)delta * 0.001 / (double)buffer_size;
     if (trim >  0.0005) trim =  0.0005;
     if (trim < -0.0005) trim = -0.0005;
     spc::drc_scale += trim;
-    if (spc::drc_scale > 1.30) spc::drc_scale = 1.30;
-    if (spc::drc_scale < 0.70) spc::drc_scale = 0.70;
+    // max_dev is the trim authority the CALLER grants, and it must match
+    // whether a pacing throttle exists. When sync-to-sound can engage,
+    // keep it narrow (0.04): absorbing more would hide genuine emulator
+    // overspeed from the throttle, which watches for a rising buffer.
+    // When no throttle is available (non-100% speed disables sound
+    // sync), grant it wide (0.30): silently resampling the surplus is
+    // then the only alternative to a pinned buffer dropping samples as
+    // crackle.
+    if (max_dev < 0.005) max_dev = 0.005;
+    if (max_dev > 0.50)  max_dev = 0.50;
+    if (spc::drc_scale > 1.0 + max_dev) spc::drc_scale = 1.0 + max_dev;
+    if (spc::drc_scale < 1.0 - max_dev) spc::drc_scale = 1.0 - max_dev;
+}
+
+double S9xSpcGetDrcScale(void)
+{
+    return spc::drc_scale;
 }
 
 void S9xSpcResetDrc(void)
@@ -613,6 +667,41 @@ void S9xAudioWaveformPushVoice(int voice, int ch, int amp)
 int S9xAudioWaveformSnapshot(int stream, short *out_lr, int max_frames)
 {
     return audiowave::snapshot(stream, out_lr, max_frames);
+}
+
+// Recorder tap: frames written since *cursor; *cursor = -1 latches to now.
+int S9xAudioWaveformReadNew(int stream, int *cursor, short *out_lr, int max_frames)
+{
+    if (!cursor || !out_lr || max_frames <= 0) return 0;
+    int16_t *ring;
+    int      wpos;
+    switch (stream)
+    {
+        case 0: ring = audiowave::buf_spc; wpos = audiowave::wpos_spc; break;
+        case 1: ring = audiowave::buf_gb;  wpos = audiowave::wpos_gb;  break;
+        case 2: ring = audiowave::buf_mix; wpos = audiowave::wpos_mix; break;
+        default:
+            if (stream >= 3 && stream <= 10)
+            {
+                ring = audiowave::buf_voice[stream - 3];
+                wpos = audiowave::wpos_voice[stream - 3];
+                break;
+            }
+            return 0;
+    }
+    const int cap = audiowave::CAPTURE_FRAMES;
+    int c = *cursor;
+    if (c < 0 || c >= cap) { *cursor = wpos; return 0; }
+    int avail = (wpos - c + cap) % cap;
+    if (avail > max_frames) avail = max_frames;
+    for (int i = 0; i < avail; ++i)
+    {
+        const int idx = (c + i) % cap;
+        out_lr[i * 2 + 0] = ring[idx * 2 + 0];
+        out_lr[i * 2 + 1] = ring[idx * 2 + 1];
+    }
+    *cursor = (c + avail) % cap;
+    return avail;
 }
 
 int S9xAudioWaveformSampleRate(void)
@@ -792,8 +881,12 @@ void S9xAPUExecute(void)
     S9xAPUSetReferenceTime(CPU.Cycles);
 }
 
+static uint32 g_apu_scanline_meter = 0;
+long S9xApuScanlineMeter(void) { return (long)g_apu_scanline_meter; }
+
 void S9xAPUEndScanline(void)
 {
+    g_apu_scanline_meter++;
     S9xAPUExecute();
     SNES::dsp.synchronize();
 

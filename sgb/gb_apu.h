@@ -159,6 +159,25 @@ struct Apu
 	float     lp_a1[2] = {0,0}, lp_a2[2] = {0,0};
 	float     lp_z1_l[2] = {0,0}, lp_z2_l[2] = {0,0};
 	float     lp_z1_r[2] = {0,0}, lp_z2_r[2] = {0,0};
+
+	// --- Debugger instrumentation (NOT serialized in savestates) ---
+	// Kept in the top-level Apu (never inside the per-channel structs, which
+	// are blob-serialized by sizeof) so adding them can't break GB savestate
+	// compatibility. Surfaced by S9xSGBGetApuState for the Win32 APU panel and
+	// used to diagnose digitized-voice playback (e.g. a sample cut short by a
+	// length-counter underflow vs. a stream that simply stops being fed).
+	uint32_t  dbg_trigger_count[4] = {0, 0, 0, 0}; // CH1..CH4 NRx4 bit-7 kicks
+	uint32_t  dbg_wave_ram_writes  = 0;            // writes to $FF30-$FF3F
+	uint32_t  dbg_ch3_len_disable  = 0;            // CH3 off via length underflow
+	uint32_t  dbg_ch3_dac_disable  = 0;            // CH3 off via DAC clear (NR30 b7)
+	uint32_t  dbg_nr50_writes      = 0;            // writes to $FF24 — PCM-via-NR50 voice rate
+	uint32_t  dbg_nr51_writes      = 0;            // writes to $FF25 (panning)
+	uint32_t  dbg_pcm_silent       = 0;            // NR50 writes while carrier output == 0
+	                                               // (proves the DAC-bias "half voice" bug)
+	// Host-ring I/O meters, in stereo frames.
+	uint32_t  dbg_ring_pushed  = 0;
+	uint32_t  dbg_ring_dropped = 0;
+	uint32_t  dbg_ring_drained = 0;
 };
 
 void ApuReset(Apu &a, bool cgb, bool post_boot = false);
@@ -193,6 +212,8 @@ uint8_t ApuGetHostChannelMask();
 // first) for channel 0..3 and returns the count. Host UI state only.
 void    ApuSetWaveCaptureEnabled(bool enabled);
 int     ApuGetChannelWaveform(int channel, int16_t *out, int max_samples);
+// Recorder tap: samples since *cursor; *cursor = -1 latches to now.
+int     ApuReadChannelWaveformNew(int channel, int *cursor, int16_t *out, int max_samples);
 
 } // namespace SGB
 

@@ -4591,8 +4591,13 @@ void S9xPF94Reset (void)
 
 void S9xPF94PostLoadState (void)
 {
-	if (PF94.active)
-		PF94MapGameWindow();
+	if (!PF94.active)
+		return;
+	// The frame counter isn't in the snapshot; a cross-session load can leave
+	// timerStart in the future (instant time-over). Rebase to the live counter.
+	if (PF94.timerOn && PF94.timerStart > IPPU.TotalEmulatedFrames)
+		PF94.timerStart = IPPU.TotalEmulatedFrames;
+	PF94MapGameWindow();
 }
 
 int S9xPF94TimeRemaining (void)

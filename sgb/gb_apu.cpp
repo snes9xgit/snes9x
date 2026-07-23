@@ -432,11 +432,13 @@ void PushSample(Apu &a, int16_t l, int16_t r)
 	{
 		// Buffer full — drop. In practice snes9x's audio thread should
 		// drain in time; overruns indicate an unconsumed stream.
+		a.dbg_ring_dropped++;
 		return;
 	}
 	a.sample_buf[a.sample_head * 2 + 0] = l;
 	a.sample_buf[a.sample_head * 2 + 1] = r;
 	a.sample_head = next;
+	a.dbg_ring_pushed++;
 }
 
 // Emit one integrated sample to the ring buffer, reset accumulator.
@@ -533,6 +535,23 @@ int ApuGetChannelWaveform(int channel, int16_t *out, int max_samples)
 	for (int i = 0; i < n; ++i)
 		out[i] = g_ch_wave[channel][(start + i) % CH_CAPTURE_FRAMES];
 	return n;
+}
+
+// Cursor-based tap for the viewer's recorder: copies samples written
+// since *cursor. Pass *cursor = -1 to latch onto the current position.
+int ApuReadChannelWaveformNew(int channel, int *cursor, int16_t *out, int max_samples)
+{
+	if (channel < 0 || channel > 3 || !out || !cursor || max_samples <= 0) return 0;
+	const int cap = CH_CAPTURE_FRAMES;
+	const int w = g_ch_wpos;
+	int c = *cursor;
+	if (c < 0 || c >= cap) { *cursor = w; return 0; }
+	int avail = (w - c + cap) % cap;
+	if (avail > max_samples) avail = max_samples;
+	for (int i = 0; i < avail; ++i)
+		out[i] = g_ch_wave[channel][(c + i) % cap];
+	*cursor = (c + avail) % cap;
+	return avail;
 }
 
 // Derive the output low-pass coefficients from the current output_rate.
@@ -777,6 +796,7 @@ int32_t ApuDrain(Apu &a, int16_t *out, int32_t max_samples)
 		a.sample_tail    = (a.sample_tail + 1) % APU_SAMPLE_BUF_SIZE;
 		++got;
 	}
+	a.dbg_ring_drained += got;
 	return got;
 }
 

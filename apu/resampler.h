@@ -33,6 +33,11 @@ class Resampler
     float r_frac;
     int   r_left[4], r_right[4];
 
+    // I/O meters in input words: pushed/dropped at push, consumed at read.
+    unsigned int dropped = 0;
+    unsigned int pushed = 0;
+    unsigned int consumed = 0;
+
     static inline int16_t short_clamp(int n)
     {
         return (int16_t)(((int16_t)n != n) ? (n >> 31) ^ 0x7fff : n);
@@ -136,6 +141,7 @@ class Resampler
             memcpy(dst + first_block_size, buffer, (num_samples - first_block_size) * 2);
 
         start = (start + num_samples) % buffer_size;
+        consumed += num_samples;
 
         return true;
     }
@@ -147,13 +153,19 @@ class Resampler
             buffer[end] = l;
             buffer[end + 1] = r;
             end = (end + 2) % buffer_size;
+            pushed += 2;
         }
+        else
+            dropped += 2;
     }
 
     inline bool push(int16_t *src, int num_samples)
     {
         if (space_empty() < num_samples)
+        {
+            dropped += num_samples;
             return false;
+        }
 
         int first_block_size = min(num_samples, buffer_size - end);
 
@@ -212,6 +224,7 @@ class Resampler
                 r_frac -= 1.0;
 
                 start += 2;
+                consumed += 2;
                 if (start >= buffer_size)
                     start -= buffer_size;
             }

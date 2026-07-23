@@ -191,6 +191,39 @@ DWORD WINAPI CXAudio2::AudioDrainThreadProc(LPVOID param)
 		}
 		if (self->drainShutdown) break;
 
+		// The device queue is the jitter buffer: while it still holds
+		// cushion, wait until BOTH streams can cover a full block instead
+		// of pushing one with holes (S9xMixSamples zero-fills a GB
+		// shortfall and MixSpcOverGB hard-cuts the SPC layer when its
+		// resampler runs dry — either lands as an audible gap mid-music
+		// whenever the emu thread hiccups for a frame or two).
+		// SPC threshold is half a block: its rate trim steers the fill
+		// toward a setpoint of its own, and demanding a full block here
+		// would fight that controller; a GB shortfall means hard zeros
+		// so the GB side does require the full block.
+		if ((S9xGetSampleCount()  < (int)self->singleBufferSamples ||
+		     S9xSpcOutAvailable() < (int)self->singleBufferSamples / 2) &&
+		    self->bufferCount > 1)
+		{
+			Sleep(1);
+			continue;
+		}
+
+		// The SPC stream has no other rate steering while this thread
+		// owns the mix: ProcessSound's S9xSpcAdjustRate call is gated to
+		// this thread's id but ProcessSound is only ever invoked from the
+		// emu thread, so in BIOS-released mode it early-returns before
+		// reaching it. Untrimmed, the SPC resampler drifts with the
+		// emu-vs-device clock skew until it runs dry (SOUND jingles cut
+		// mid-block) or overflows — a minutes-period crackle cycle. Trim
+		// it here, at the audio cadence the controller was tuned for.
+		// Authority: narrow when the sync-to-sound throttle can pace real
+		// overspeed away; wide when it can't (non-100% speed disables
+		// sound sync), where silently resampling the surplus beats a
+		// pinned buffer dropping samples as crackle.
+		S9xSpcAdjustRate((Settings.SoundSync && GUI.AllowSoundSync &&
+		                  !Settings.TurboMode) ? 0.04 : 0.30);
+
 		uint8 *curBuffer = self->soundBuffer + self->writeOffset;
 		S9xMixSamples(curBuffer, self->singleBufferSamples);
 		MixSpcOverGB(curBuffer, self->singleBufferSamples);
@@ -550,19 +583,28 @@ static void MixSpcOverGB(uint8 *dest, int sample_words)
     const int gb_gain_eff  = (GB_GAIN_Q8  * (int)vol_gb_pct)  / 100;
     const int spc_gain_eff = (SPC_GAIN_Q8 * (int)vol_spc_pct) / 100;
 
+    // Overlay in <=2048-word chunks so blocks larger than the stack
+    // buffer still get full SPC coverage — a single capped pull cut the
+    // SPC layer at word 2048 of every block, a block-rate chop.
     int16_t spc_buf[2048];
-    int cap = (sample_words < 2048) ? sample_words : 2048;
-    int n = S9xPullSpcOutput(spc_buf, cap);
     int i = 0;
-    for (; i < n; ++i)
+    while (i < sample_words)
     {
-        int32_t gb    = ((int32_t)out16[i]   * gb_gain_eff)  >> 8;
-        int32_t spc   = ((int32_t)spc_buf[i] * spc_gain_eff) >> 8;
-        int32_t mixed = gb + spc;
-        if (mixed >  32767) mixed =  32767;
-        if (mixed < -32768) mixed = -32768;
-        out16[i] = (int16_t)mixed;
+        const int chunk = ((sample_words - i) < 2048) ? (sample_words - i) : 2048;
+        const int n = S9xPullSpcOutput(spc_buf, chunk);
+        for (int k = 0; k < n; ++k, ++i)
+        {
+            int32_t gb    = ((int32_t)out16[i]   * gb_gain_eff)  >> 8;
+            int32_t spc   = ((int32_t)spc_buf[k] * spc_gain_eff) >> 8;
+            int32_t mixed = gb + spc;
+            if (mixed >  32767) mixed =  32767;
+            if (mixed < -32768) mixed = -32768;
+            out16[i] = (int16_t)mixed;
+        }
+        if (n < chunk) break;   // resampler dry — the tail stays GB-only
     }
+    if (i < sample_words && S9xSGBBootHandoffCaptured())
+        InterlockedExchangeAdd(&S9xSGBMixSPCShortSamples, sample_words - i);
     for (; i < sample_words; ++i)
     {
         int32_t gb = ((int32_t)out16[i] * gb_gain_eff) >> 8;
@@ -595,6 +637,36 @@ void CXAudio2::ProcessSound()
 	if (Settings.SGB_BIOSModeActive && S9xSGBBIOSGBIsReleased() &&
 	    drainThread != NULL && GetCurrentThreadId() != drainThreadId)
 	{
+		// The drain thread owns mixing in this mode, but this call is also
+		// where the emu thread normally receives its sync-to-sound throttle
+		// (the SoundSync wait further down). Bypassing it entirely lets the
+		// SNES — and the GB it drives one frame per frame — free-run at
+		// vsync/timer speed; the surplus samples can only be dropped (the
+		// GB DRC rails at its clamp, the ring pins, pushes drop), which is
+		// audible as crackle. Recreate the throttle here: block while the
+		// SPC resampler is congested — the drain thread consumes it at
+		// wall rate and OnBufferEnd signals the event per block.
+		// Pace the emu thread off the GB ring. It is the one stream with
+		// no rate trim of its own, so its fill is a pure emu-vs-device
+		// speed error, and holding it at a setpoint doubles as the
+		// jitter cushion the drain thread needs (untended it rode at
+		// zero-to-one block, so any emu hiccup became a padded block).
+		// Pacing off the SPC buffer was wrong twice over: its trim
+		// absorbed genuine overspeed until railing (settling the emu ~4%
+		// fast and slowly pinning the GB ring into push-drops), and it
+		// livelocked against the drain thread's wait-for-GB.
+		if (Settings.SoundSync && !Settings.TurboMode && !Settings.Mute &&
+		    initDone && GUI.AllowSoundSync)
+		{
+			const int setpoint = ((int)(singleBufferSamples * 2) > 4096)
+			                   ? (int)(singleBufferSamples * 2) : 4096;
+			while (S9xGetSampleCount() > setpoint)
+			{
+				ResetEvent(GUI.SoundSyncEvent);
+				if (WaitForSingleObject(GUI.SoundSyncEvent, 40) != WAIT_OBJECT_0)
+					break;
+			}
+		}
 		return;
 	}
 
@@ -611,7 +683,8 @@ void CXAudio2::ProcessSound()
 
 	if (Settings.SGB_BIOSModeActive && S9xSGBBIOSGBIsReleased())
 	{
-		S9xSpcAdjustRate(1.0);
+		S9xSpcAdjustRate((Settings.SoundSync && GUI.AllowSoundSync &&
+		                  !Settings.TurboMode) ? 0.04 : 0.30);
 	}
 	else
 	{

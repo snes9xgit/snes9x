@@ -76,6 +76,7 @@
 #include <string>
 #include <algorithm>
 #include <set>
+#include <cmath>
 
 #ifdef DEBUGGER
 #include "../debug.h"
@@ -516,6 +517,12 @@ TCHAR g_saveMenuItemStrings[NUM_SAVE_BANKS * SAVE_SLOTS_PER_BANK][20];
 
 StateManager stateMan;
 
+// Content-time frame counter for the rewind ring: ++ once per emulated frame,
+// rewound to the snapshot's tag by pops. Lets the paused reverse frame advance
+// know exactly how many hidden frames to replay past the popped snapshot.
+static uint32 rewindContentFrame = 0;
+static bool   reverseFrameAdvance = false;
+
 std::vector<dMode> dm;
 /*****************************************************************************/
 /* WinProc                                                                   */
@@ -526,6 +533,7 @@ void RestoreGUIDisplay ();
 void RestoreSNESDisplay ();
 void CheckDirectoryIsWritable (const char *filename);
 static void CheckMenuStates ();
+static void AudioWaveEffectiveMasks (uint8 *outSpc, uint8 *outGb);
 static int  ClampLogoIndex (int n);
 static void ApplyLogoIcon  (HWND hWnd, HINSTANCE hInst, int n);
 static bool SetExeFileIcon (int logoIndex);
@@ -855,6 +863,32 @@ static inline bool MatchesHotkeyBinding(WORD key, int modifiers, SCustomKey *pri
 		for (int i = 0; i < MAX_EXTRA_BINDS; i++) {
 			if (extra->extra[i].key != 0 && extra->extra[i].key != VK_ESCAPE
 				&& key == extra->extra[i].key && modifiers == extra->extra[i].modifiers)
+				return true;
+		}
+	}
+	return false;
+}
+
+// Held-style hotkeys (Rewind/FastForward/ScopePause) must disengage when their
+// chord breaks in ANY order: releasing the modifier first leaves the main key's
+// key-up unmatched by MatchesHotkeyBinding (modifiers no longer down), sticking
+// the mode on. Match the released key against the binding's key OR its modifiers.
+static inline bool HotkeyChordBroken(WORD key, SCustomKey *primary, SCustomKeyExtra *extra)
+{
+	auto broken = [key](WORD bkey, int bmods) {
+		if (bkey == 0 || bkey == VK_ESCAPE)
+			return false;
+		if (key == bkey)
+			return true;
+		return (key == VK_MENU    && (bmods & CUSTKEY_ALT_MASK))  ||
+		       (key == VK_CONTROL && (bmods & CUSTKEY_CTRL_MASK)) ||
+		       (key == VK_SHIFT   && (bmods & CUSTKEY_SHIFT_MASK));
+	};
+	if (broken(primary->key, primary->modifiers))
+		return true;
+	if (GUI.AllowMultipleHotkeyBindings) {
+		for (int i = 0; i < MAX_EXTRA_BINDS; i++) {
+			if (broken(extra->extra[i].key, extra->extra[i].modifiers))
 				return true;
 		}
 	}
@@ -1423,9 +1457,36 @@ int HandleKeyMessage(WPARAM wParam, LPARAM lParam)
 		}
         if(HKmatch(Rewind))
 		{
-            if(!Settings.Rewinding)
-                S9xMessage (S9X_INFO, 0, GUI.rewindBufferSize?WINPROC_REWINDING_TEXT:WINPROC_REWINDING_DISABLED);
-            Settings.Rewinding = true;
+			bool rewindAllowed = GUI.rewindBufferSize != 0
+#ifdef NETPLAY_SUPPORT
+				&& !Settings.NetPlay
+#endif
+#ifdef RETROACHIEVEMENTS_SUPPORT
+				&& !RA_IsHardcoreModeActive()
+#endif
+				;
+			if (Settings.Paused && !Settings.StopEmulation && rewindAllowed)
+			{
+				// Paused: reverse frame advance — step exactly one frame back,
+				// regardless of the snapshot granularity. Rides the regular
+				// frame-advance machinery to run/render the stepped frame.
+				static DWORD lastRevTime = 0;
+				if ((timeGetTime() - lastRevTime) > 20)
+				{
+					lastRevTime = timeGetTime();
+					reverseFrameAdvance = true;
+					Settings.FrameAdvance = true;
+					GUI.FrameAdvanceJustPressed = 2;
+					// kick the main thread out of GetMessage (just in case)
+					SendMessage(GUI.hWnd, WM_NULL, 0, 0);
+				}
+			}
+			else
+			{
+				if(!Settings.Rewinding)
+					S9xMessage (S9X_INFO, 0, GUI.rewindBufferSize?WINPROC_REWINDING_TEXT:WINPROC_REWINDING_DISABLED);
+				Settings.Rewinding = true;
+			}
 			hitHotKey = true;
         }
 
@@ -2004,17 +2065,10 @@ LRESULT CALLBACK WinProc(
 	        break;
 		}
 
+	case WM_SYSKEYUP:
 	case WM_KEYUP:
 	case WM_CUSTKEYUP:
 		{
-			int modifiers = 0;
-			if((GetAsyncKeyState(VK_MENU) & 0x8000) || wParam == VK_MENU)
-				modifiers |= CUSTKEY_ALT_MASK;
-			if((GetAsyncKeyState(VK_CONTROL) & 0x8000) || wParam == VK_CONTROL)
-				modifiers |= CUSTKEY_CTRL_MASK;
-			if((GetAsyncKeyState(VK_SHIFT) & 0x8000) || wParam == VK_SHIFT)
-				modifiers |= CUSTKEY_SHIFT_MASK;
-
 			// Master hotkey key-up: reset hold timer
 			// (the static vars are in HandleKeyMessage, so we reset via a sentinel call)
 			if (GUI.MasterHotkeyEnabled && CustomKeys.MasterHotkey.key != 0
@@ -2024,15 +2078,15 @@ LRESULT CALLBACK WinProc(
 				MasterHotkeyResetTimer();
 			}
 
-			if(HKmatch(FastForward))
+			if(HotkeyChordBroken((WORD)wParam, &CustomKeys.FastForward, &CustomKeysExtra.FastForward))
 			{
 				Settings.TurboMode = FALSE;
 			}
-			if(HKmatch(ScopePause))
+			if(HotkeyChordBroken((WORD)wParam, &CustomKeys.ScopePause, &CustomKeysExtra.ScopePause))
 			{
 				GUI.superscope_pause = 0;
 			}
-            if(HKmatch(Rewind))
+            if(HotkeyChordBroken((WORD)wParam, &CustomKeys.Rewind, &CustomKeysExtra.Rewind))
 		    {
                 Settings.Rewinding = false;
             }
@@ -4778,12 +4832,49 @@ int WINAPI WinMain(
 				&& !RA_IsHardcoreModeActive()
 #endif
 				) {
-				if (Settings.Rewinding) {
-					Settings.Rewinding = stateMan.pop();
+				if (reverseFrameAdvance) {
+					reverseFrameAdvance = false;
+					// Reverse frame advance: pop back to the nearest snapshot at
+					// or before the previous frame, replay the gap hidden, and
+					// let the frame-advance frame below render the target.
+					uint32 target = rewindContentFrame >= 2 ? rewindContentFrame - 2 : 0;
+					uint32 tag = 0, reached = 0;
+					bool popped = false;
+					int ok;
+					while ((ok = stateMan.pop(&tag)) != 0 && tag > target) {
+						reached = tag;
+						popped = true;
+					}
+					if (ok) {
+						rewindContentFrame = tag;
+						if (target > tag) {
+							S9xSetSamplesAvailableCallback(NULL, NULL);
+							while (rewindContentFrame < target) {
+								stateMan.push(rewindContentFrame);
+								IPPU.RenderThisFrame = FALSE;
+								S9xMainLoop();
+								rewindContentFrame++;
+							}
+							S9xSetSamplesAvailableCallback(S9xSoundCallback, NULL);
+							IPPU.RenderThisFrame = TRUE;
+						}
+						stateMan.push(rewindContentFrame);
+					}
+					else if (popped) {
+						// Ring ran dry mid-search: settle on the oldest state.
+						rewindContentFrame = reached;
+						stateMan.push(reached);
+					}
+				}
+				else if (Settings.Rewinding) {
+					uint32 tag;
+					Settings.Rewinding = stateMan.pop(&tag);
+					if (Settings.Rewinding)
+						rewindContentFrame = tag;
 				}
 				else {
 					if (IPPU.TotalEmulatedFrames % GUI.rewindGranularity == 0)
-						stateMan.push();
+						stateMan.push(rewindContentFrame);
 				}
 			}
 
@@ -4869,6 +4960,7 @@ int WINAPI WinMain(
 			RA_DoFrame();
 #endif
 			GUI.FrameCount++;
+			rewindContentFrame++;
 			if (Settings.SGB_BIOSModeActive)
 			{
 				static bool   sgbCpDone  = false;
@@ -5433,23 +5525,29 @@ static void CheckMenuStates ()
 	// Channels 1-4 drive both SPC voices 1-4 and the GB APU's CH1-CH4.
 	// In BIOS-less GB mode the SPC isn't running, so 5-8 control nothing —
 	// grey them there. In SGB BIOS mode they still gate SPC voices 5-8.
+	// Checkmarks show the EFFECTIVE state — the user mask composed with any
+	// waveform-viewer solo — so soloing V3 leaves only Channel 3 checked.
 	{
-	const UINT spcAbsent = (Settings.SuperGameBoy && !Settings.SGB_BIOSModeActive) ? MFS_DISABLED : 0;
-	mii.fState = (GUI.SoundChannelEnable & (1 << 0)) ? MFS_CHECKED : MFS_UNCHECKED;
+	uint8 effSpc, effGb;
+	AudioWaveEffectiveMasks(&effSpc, &effGb);
+	const bool gbOnly = Settings.SuperGameBoy && !Settings.SGB_BIOSModeActive;
+	const UINT spcAbsent = gbOnly ? MFS_DISABLED : 0;
+	const uint8 lowBits = gbOnly ? effGb : effSpc;
+	mii.fState = (lowBits & (1 << 0)) ? MFS_CHECKED : MFS_UNCHECKED;
     SetMenuItemInfo (GUI.hMenu, ID_CHANNELS_CHANNEL1, FALSE, &mii);
-	mii.fState = (GUI.SoundChannelEnable & (1 << 1)) ? MFS_CHECKED : MFS_UNCHECKED;
+	mii.fState = (lowBits & (1 << 1)) ? MFS_CHECKED : MFS_UNCHECKED;
     SetMenuItemInfo (GUI.hMenu, ID_CHANNELS_CHANNEL2, FALSE, &mii);
-	mii.fState = (GUI.SoundChannelEnable & (1 << 2)) ? MFS_CHECKED : MFS_UNCHECKED;
+	mii.fState = (lowBits & (1 << 2)) ? MFS_CHECKED : MFS_UNCHECKED;
     SetMenuItemInfo (GUI.hMenu, ID_CHANNELS_CHANNEL3, FALSE, &mii);
-	mii.fState = (GUI.SoundChannelEnable & (1 << 3)) ? MFS_CHECKED : MFS_UNCHECKED;
+	mii.fState = (lowBits & (1 << 3)) ? MFS_CHECKED : MFS_UNCHECKED;
     SetMenuItemInfo (GUI.hMenu, ID_CHANNELS_CHANNEL4, FALSE, &mii);
-	mii.fState = ((GUI.SoundChannelEnable & (1 << 4)) ? MFS_CHECKED : MFS_UNCHECKED) | spcAbsent;
+	mii.fState = ((effSpc & (1 << 4)) ? MFS_CHECKED : MFS_UNCHECKED) | spcAbsent;
     SetMenuItemInfo (GUI.hMenu, ID_CHANNELS_CHANNEL5, FALSE, &mii);
-	mii.fState = ((GUI.SoundChannelEnable & (1 << 5)) ? MFS_CHECKED : MFS_UNCHECKED) | spcAbsent;
+	mii.fState = ((effSpc & (1 << 5)) ? MFS_CHECKED : MFS_UNCHECKED) | spcAbsent;
     SetMenuItemInfo (GUI.hMenu, ID_CHANNELS_CHANNEL6, FALSE, &mii);
-	mii.fState = ((GUI.SoundChannelEnable & (1 << 6)) ? MFS_CHECKED : MFS_UNCHECKED) | spcAbsent;
+	mii.fState = ((effSpc & (1 << 6)) ? MFS_CHECKED : MFS_UNCHECKED) | spcAbsent;
     SetMenuItemInfo (GUI.hMenu, ID_CHANNELS_CHANNEL7, FALSE, &mii);
-	mii.fState = ((GUI.SoundChannelEnable & (1 << 7)) ? MFS_CHECKED : MFS_UNCHECKED) | spcAbsent;
+	mii.fState = ((effSpc & (1 << 7)) ? MFS_CHECKED : MFS_UNCHECKED) | spcAbsent;
     SetMenuItemInfo (GUI.hMenu, ID_CHANNELS_CHANNEL8, FALSE, &mii);
 	}
 
@@ -6843,7 +6941,7 @@ INT_PTR CALLBACK DlgEmulatorHacksProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM
         SendDlgItemMessage(hDlg, IDC_SFCBOX_OSD_LANGUAGE, CB_ADDSTRING, 0, (LPARAM)TEXT("Japanese"));
         SendDlgItemMessage(hDlg, IDC_SFCBOX_OSD_LANGUAGE, CB_ADDSTRING, 0, (LPARAM)TEXT("English"));
         SendDlgItemMessage(hDlg, IDC_SFCBOX_OSD_LANGUAGE, CB_SETCURSEL, Settings.SFCBoxOSDEnglish ? 1 : 0, 0);
-        CreateToolTip(IDC_SFCBOX_OSD_LANGUAGE, hDlg, TEXT("Language of the supervisor screens (boot, attendant\nmenus, self-test). English is a render-time translation\nonly - the KROM firmware, its checksums and savestates\nstay untouched. Takes effect immediately."));
+        CreateToolTip(IDC_SFCBOX_OSD_LANGUAGE, hDlg, TEXT("Translates the BIOS on-screen text to English: boot,\nattendant menus, self-test, coin/time messages. Game\ntext and the game-select menus are drawn by the games\nthemselves and stay Japanese. Takes effect immediately."));
 
         {
             static const TCHAR *kspos[5] = { TEXT("1 (Options)"), TEXT("OFF"), TEXT("ON (Play)"), TEXT("2"), TEXT("3 (Self-Test)") };
@@ -10245,7 +10343,7 @@ static const int   kAudioWaveFrames  = 4800;
 // group (SPC / GB / MIX) and each member (V1-8 / CH1-4) has its own color.
 // ---------------------------------------------------------------------------
 
-static const int kWaveHeaderW = 118;
+static const int kWaveHeaderW = 144;
 
 struct WaveTrackInfo { const TCHAR *name; COLORREF color; };
 static const WaveTrackInfo kWaveTracks[15] = {
@@ -10429,6 +10527,191 @@ static RECT AudioWaveSoloRect(const RECT &row)
     return r;
 }
 
+// Logic-style L/R level meters, one smoothed peak per track side.
+static float g_wave_meter[15][2];
+static float g_wave_peak[15][2];
+static DWORD g_wave_peak_tick[15][2];
+static DWORD g_wave_meter_tick = 0;
+
+// Logic-style record-arm [R], left of [M].
+static RECT AudioWaveRecRect(const RECT &row)
+{
+    const int cy = (row.top + row.bottom) / 2;
+    RECT r = { row.left + kWaveHeaderW - 84, cy - 9,
+               row.left + kWaveHeaderW - 62, cy + 9 };
+    return r;
+}
+
+// One-track recorder: raw PCM streams to a temp file while armed;
+// stopping prompts for a .wav destination.
+static int    g_wave_rec_src    = -1;
+static FILE  *g_wave_rec_file   = NULL;
+static uint32 g_wave_rec_frames = 0;
+static DWORD  g_wave_rec_tick0  = 0;
+static int    g_wave_rec_cursor = -1;
+static TCHAR  g_wave_rec_tmp[MAX_PATH];
+
+static int AudioWaveRecRate(int src)
+{
+    if (src < 3)  return Settings.SoundPlaybackRate;
+    if (src >= 7) return 32000;
+    return (int)S9xSGBGetAudioRate();
+}
+
+static int AudioWaveRecChans(int src)
+{
+    return (src >= 3 && src <= 6) ? 1 : 2;
+}
+
+static void AudioWaveRecPump(void)
+{
+    if (g_wave_rec_src < 0 || !g_wave_rec_file) return;
+    short buf[4096 * 2];
+    for (;;)
+    {
+        int n;
+        if (g_wave_rec_src >= 3 && g_wave_rec_src <= 6)
+            n = S9xSGBReadChannelWaveformNew(g_wave_rec_src - 3, &g_wave_rec_cursor, buf, 4096);
+        else
+            n = S9xAudioWaveformReadNew(g_wave_rec_src < 3 ? g_wave_rec_src : g_wave_rec_src - 4,
+                                        &g_wave_rec_cursor, buf, 4096);
+        if (n <= 0) break;
+        fwrite(buf, AudioWaveRecChans(g_wave_rec_src) * sizeof(short), n, g_wave_rec_file);
+        g_wave_rec_frames += n;
+        if (n < 4096) break;
+    }
+}
+
+static void AudioWaveRecStart(HWND hwnd, int src)
+{
+    TCHAR dir[MAX_PATH];
+    GetTempPath(MAX_PATH, dir);
+    if (!GetTempFileName(dir, TEXT("s9x"), 0, g_wave_rec_tmp)) return;
+    g_wave_rec_file = _tfopen(g_wave_rec_tmp, TEXT("wb"));
+    if (!g_wave_rec_file) return;
+    g_wave_rec_src    = src;
+    g_wave_rec_frames = 0;
+    g_wave_rec_cursor = -1;
+    g_wave_rec_tick0  = GetTickCount();
+    AudioWaveRecPump();   // latches the cursor
+    SetTimer(hwnd, 2, 50, NULL);
+}
+
+static void AudioWaveRecAbort(HWND hwnd)
+{
+    if (g_wave_rec_src < 0) return;
+    KillTimer(hwnd, 2);
+    if (g_wave_rec_file) fclose(g_wave_rec_file);
+    g_wave_rec_file = NULL;
+    DeleteFile(g_wave_rec_tmp);
+    g_wave_rec_src = -1;
+}
+
+static void AudioWaveRecStop(HWND hwnd)
+{
+    if (g_wave_rec_src < 0) return;
+    KillTimer(hwnd, 2);
+    AudioWaveRecPump();
+    fclose(g_wave_rec_file);
+    g_wave_rec_file = NULL;
+    const int src   = g_wave_rec_src;
+    const int rate  = AudioWaveRecRate(src);
+    const int chans = AudioWaveRecChans(src);
+    g_wave_rec_src = -1;
+
+    TCHAR path[MAX_PATH];
+    _stprintf(path, TEXT("%s.wav"), kWaveTracks[src].name);
+    OPENFILENAME ofn = {};
+    ofn.lStructSize = sizeof(ofn);
+    ofn.hwndOwner   = hwnd;
+    ofn.lpstrFilter = TEXT("WAV audio (*.wav)\0*.wav\0\0");
+    ofn.lpstrFile   = path;
+    ofn.nMaxFile    = MAX_PATH;
+    ofn.lpstrDefExt = TEXT("wav");
+    ofn.Flags       = OFN_OVERWRITEPROMPT | OFN_PATHMUSTEXIST;
+    if (GetSaveFileName(&ofn))
+    {
+        FILE *in  = _tfopen(g_wave_rec_tmp, TEXT("rb"));
+        FILE *out = _tfopen(path, TEXT("wb"));
+        if (in && out)
+        {
+            const uint32 data_bytes = g_wave_rec_frames * chans * 2;
+            const uint32 byte_rate  = (uint32)rate * chans * 2;
+            const uint16 block      = (uint16)(chans * 2);
+            const uint16 bits = 16, fmt = 1, nch = (uint16)chans;
+            const uint32 riff_sz = 36 + data_bytes, fmt_sz = 16;
+            fwrite("RIFF", 1, 4, out); fwrite(&riff_sz, 4, 1, out);
+            fwrite("WAVE", 1, 4, out); fwrite("fmt ", 1, 4, out);
+            fwrite(&fmt_sz, 4, 1, out); fwrite(&fmt, 2, 1, out);
+            fwrite(&nch, 2, 1, out);
+            fwrite(&rate, 4, 1, out); fwrite(&byte_rate, 4, 1, out);
+            fwrite(&block, 2, 1, out); fwrite(&bits, 2, 1, out);
+            fwrite("data", 1, 4, out); fwrite(&data_bytes, 4, 1, out);
+            char cbuf[16384];
+            size_t got;
+            while ((got = fread(cbuf, 1, sizeof(cbuf), in)) > 0)
+                fwrite(cbuf, 1, got, out);
+        }
+        if (in)  fclose(in);
+        if (out) fclose(out);
+    }
+    DeleteFile(g_wave_rec_tmp);
+}
+
+// Vertical scale for the waveform lanes, picked in the footer selectbox.
+// Chip output is often a small fraction of full scale, so linear rendering
+// leaves near-flat traces; these modes trade amplitude truth for
+// visibility in different ways.
+enum AudioWaveScale
+{
+    kWaveScaleLin = 0,   // true amplitude
+    kWaveScaleX2,        // fixed gains, clipped at the lane edge
+    kWaveScaleX4,
+    kWaveScaleX8,
+    kWaveScaleX16,
+    kWaveScaleAuto,      // normalize each lane to its own visible peak
+    kWaveScaleLog,       // dB mapping with a -60 dB floor (Audacity-style)
+    kWaveScaleSqrt,      // gentler perceptual boost than log
+};
+static const TCHAR *const kAudioWaveScaleLabels[] = {
+    TEXT("linear"), TEXT("2x"), TEXT("4x"), TEXT("8x"),
+    TEXT("16x"), TEXT("auto-fit"), TEXT("log dB"), TEXT("sqrt"),
+};
+static const int  kAudioWaveScaleCount  = sizeof(kAudioWaveScaleLabels) / sizeof(kAudioWaveScaleLabels[0]);
+static const UINT kAudioWaveScaleIdBase = 0x9200;
+static int g_audiowave_scale = kWaveScaleSqrt;
+
+// Map one normalized magnitude (0..1) into lane space under the current
+// mode. Every mode is monotonic, so mapping just the min/max envelope
+// endpoints of each pixel column stays valid.
+static double AudioWaveScaleAmp(double a, double peak)
+{
+    switch (g_audiowave_scale)
+    {
+        default:
+        case kWaveScaleLin:
+            return a;
+        case kWaveScaleX2:
+        case kWaveScaleX4:
+        case kWaveScaleX8:
+        case kWaveScaleX16:
+        {
+            const double v = a * (double)(1 << (g_audiowave_scale - kWaveScaleLin));
+            return v > 1.0 ? 1.0 : v;
+        }
+        case kWaveScaleAuto:
+            return peak > 0.0 ? a / peak : 0.0;
+        case kWaveScaleLog:
+        {
+            if (a <= 0.0) return 0.0;
+            const double v = 1.0 + (20.0 * log10(a)) / 60.0;
+            return v < 0.0 ? 0.0 : v;
+        }
+        case kWaveScaleSqrt:
+            return sqrt(a);
+    }
+}
+
 static void DrawWaveTrackRow(HDC hdc, const RECT &r, int src, bool isGroup,
                              bool expanded, const short *lr, int n,
                              const TCHAR *info, int sample_rate, bool show_xaxis)
@@ -10485,6 +10768,21 @@ static void DrawWaveTrackRow(HDC hdc, const RECT &r, int src, bool isGroup,
     TextOut(hdc, hd.left + (isGroup ? 26 : 30), cy - 8,
             ti.name, lstrlen(ti.name));
 
+    // [R]ecord-arm button, Logic-style: solid red while recording.
+    {
+        const bool recThis = (g_wave_rec_src == src);
+        RECT rb = AudioWaveRecRect(r);
+        HBRUSH rbr = CreateSolidBrush(recThis ? RGB(200, 40, 40) : RGB(52, 52, 56));
+        FillRect(hdc, &rb, rbr);
+        DeleteObject(rbr);
+        rbr = CreateSolidBrush(recThis ? RGB(240, 90, 90) : RGB(80, 80, 86));
+        FrameRect(hdc, &rb, rbr);
+        DeleteObject(rbr);
+        SetTextColor(hdc, recThis ? RGB(255, 255, 255) : RGB(150, 150, 156));
+        TextOut(hdc, (rb.left + rb.right) / 2 - 4, (rb.top + rb.bottom) / 2 - 8,
+                TEXT("R"), 1);
+    }
+
     // [M]ute button — filled blue when engaged, dark otherwise.
     RECT mb = AudioWaveMuteRect(r);
     hbr = CreateSolidBrush(userMuted ? RGB(96, 150, 250) : RGB(52, 52, 56));
@@ -10540,8 +10838,32 @@ static void DrawWaveTrackRow(HDC hdc, const RECT &r, int src, bool isGroup,
 
     if (n > 1 && W > 0 && Hh > 4)
     {
-        HPEN penWave = CreatePen(PS_SOLID, 1, cWave);
-        oldPen = (HPEN)SelectObject(hdc, penWave);
+        // auto-fit normalizes to this lane's visible peak; the 1%-FS floor
+        // keeps idle noise from being blown up into a full-height smear
+        double peakNorm = 1.0;
+        if (g_audiowave_scale == kWaveScaleAuto)
+        {
+            int pk = 328;
+            for (int s = 0; s < n; ++s)
+            {
+                int v = ((int)lr[s * 2] + (int)lr[s * 2 + 1]) / 2;
+                if (v < 0) v = -v;
+                if (v > pk) pk = v;
+            }
+            peakNorm = pk / 32768.0;
+        }
+        // One vertical min/max segment per pixel column, bridged to the
+        // previous column's span so steep slopes read as a continuous
+        // trace instead of disconnected dashes, and submitted as a single
+        // PolyPolyline — thousands of MoveToEx/LineTo round-trips per row
+        // were a visible chunk of the frame budget at high refresh rates.
+        // GUI-thread-only path, so the scratch buffers persist to keep
+        // their capacity across paints.
+        static std::vector<POINT> pts;
+        static std::vector<DWORD> cnts;
+        pts.resize((size_t)W * 2);
+        cnts.assign((size_t)W, 2);
+        int prevMin = 0, prevMax = 0;
         for (int i = 0; i < W; ++i)
         {
             int s0 = (i * n) / W;
@@ -10554,14 +10876,105 @@ static void DrawWaveTrackRow(HDC hdc, const RECT &r, int src, bool isGroup,
                 if (v < mn) mn = v;
                 if (v > mx) mx = v;
             }
-            int yMin = midY - (mx * (Hh - 4) / 2) / 32768;
-            int yMax = midY - (mn * (Hh - 4) / 2) / 32768;
+            const double vHi = mx >= 0 ?  AudioWaveScaleAmp( mx / 32768.0, peakNorm)
+                                       : -AudioWaveScaleAmp(-mx / 32768.0, peakNorm);
+            const double vLo = mn >= 0 ?  AudioWaveScaleAmp( mn / 32768.0, peakNorm)
+                                       : -AudioWaveScaleAmp(-mn / 32768.0, peakNorm);
+            int yMin = midY - (int)(vHi * (Hh - 4) / 2);
+            int yMax = midY - (int)(vLo * (Hh - 4) / 2);
             if (yMax <= yMin) yMax = yMin + 1;
-            MoveToEx(hdc, lane.left + i, yMin, NULL);
-            LineTo  (hdc, lane.left + i, yMax);
+            if (i > 0)
+            {
+                if (yMin > prevMax) yMin = prevMax;
+                if (yMax < prevMin) yMax = prevMin;
+            }
+            prevMin = yMin;
+            prevMax = yMax;
+            pts[(size_t)i * 2 + 0].x = lane.left + i;
+            pts[(size_t)i * 2 + 0].y = yMin;
+            pts[(size_t)i * 2 + 1].x = lane.left + i;
+            pts[(size_t)i * 2 + 1].y = yMax;
         }
+        HPEN penWave = CreatePen(PS_SOLID, 1, cWave);
+        oldPen = (HPEN)SelectObject(hdc, penWave);
+        PolyPolyline(hdc, pts.data(), cnts.data(), W);
         SelectObject(hdc, oldPen);
         DeleteObject(penWave);
+    }
+
+    // Logic-style L/R meter under the buttons: -48..0 dB, green to -12,
+    // yellow to -3, red above, 1 s peak-hold ticks.
+    if (r.bottom - r.top >= 46)
+    {
+        const DWORD now = GetTickCount();
+        float dtf = (now - g_wave_meter_tick) / 1000.0f;
+        if (dtf < 0.0f || dtf > 1.0f) dtf = 0.1f;
+        const float decay = (float)pow(0.5, dtf / 0.15);   // 150 ms half-life
+
+        int pk[2] = { 0, 0 };
+        const int nw = (n > 1200) ? 1200 : n;
+        for (int i = n - nw; i < n; ++i)
+        {
+            for (int chn = 0; chn < 2; ++chn)
+            {
+                int v = lr[i * 2 + chn];
+                if (v < 0) v = -v;
+                if (v > pk[chn]) pk[chn] = v;
+            }
+        }
+        const int mx0 = hd.left + 8, mx1 = hd.right - 8;
+        const int mw  = mx1 - mx0;
+        for (int chn = 0; chn < 2; ++chn)
+        {
+            float lvl = 0.0f;
+            if (pk[chn] > 0)
+            {
+                const float db = 20.0f * (float)log10(pk[chn] / 32768.0);
+                lvl = (db + 48.0f) / 48.0f;
+                if (lvl < 0.0f) lvl = 0.0f;
+                if (lvl > 1.0f) lvl = 1.0f;
+            }
+            float &m = g_wave_meter[src][chn];
+            m = (lvl > m) ? lvl : m * decay;
+            if (lvl >= g_wave_peak[src][chn] ||
+                now - g_wave_peak_tick[src][chn] > 1000)
+            {
+                g_wave_peak[src][chn] = lvl;
+                g_wave_peak_tick[src][chn] = now;
+            }
+            const int y0 = cy + 13 + chn * 4;
+            RECT groove = { mx0, y0, mx1, y0 + 3 };
+            HBRUSH gb = CreateSolidBrush(RGB(30, 30, 32));
+            FillRect(hdc, &groove, gb);
+            DeleteObject(gb);
+            static const struct { float to; COLORREF c; } kSeg[3] = {
+                { 0.75f,   RGB( 80, 200,  90) },
+                { 0.9375f, RGB(220, 200,  70) },
+                { 1.0f,    RGB(230,  80,  70) },
+            };
+            float from = 0.0f;
+            for (int sg = 0; sg < 3 && from < m; ++sg)
+            {
+                const float to = (m < kSeg[sg].to) ? m : kSeg[sg].to;
+                if (to > from)
+                {
+                    RECT fr2 = { mx0 + (int)(from * mw), y0,
+                                 mx0 + (int)(to * mw), y0 + 3 };
+                    HBRUSH sb2 = CreateSolidBrush(kSeg[sg].c);
+                    FillRect(hdc, &fr2, sb2);
+                    DeleteObject(sb2);
+                }
+                from = kSeg[sg].to;
+            }
+            if (g_wave_peak[src][chn] > 0.01f)
+            {
+                const int px = mx0 + (int)(g_wave_peak[src][chn] * (mw - 2));
+                RECT pr = { px, y0, px + 2, y0 + 3 };
+                HBRUSH pb = CreateSolidBrush(RGB(220, 220, 224));
+                FillRect(hdc, &pr, pb);
+                DeleteObject(pb);
+            }
+        }
     }
 
     // clip-label style info text, top-left of the lane
@@ -10574,6 +10987,14 @@ static void DrawWaveTrackRow(HDC hdc, const RECT &r, int src, bool isGroup,
     {
         SetTextColor(hdc, WaveTint(ti.color, 40));
         TextOut(hdc, lane.right - 52, lane.top + 2, TEXT("muted"), 5);
+    }
+    if (g_wave_rec_src == src)
+    {
+        const DWORD s = (GetTickCount() - g_wave_rec_tick0) / 1000;
+        TCHAR rec[32];
+        _stprintf(rec, TEXT("REC %u:%02u"), s / 60, s % 60);
+        SetTextColor(hdc, RGB(235, 80, 80));
+        TextOut(hdc, lane.right - 140, lane.top + 2, rec, lstrlen(rec));
     }
 
     if (show_xaxis)
@@ -10602,16 +11023,16 @@ static void DrawWaveTrackRow(HDC hdc, const RECT &r, int src, bool isGroup,
     DeleteObject(penSep);
 }
 
-static UINT g_audiowave_refresh_ms = 100;
+static UINT g_audiowave_refresh_ms = 50;
 
-struct AudioWaveRefreshOpt { UINT ms; const TCHAR *label; };
+struct AudioWaveRefreshOpt { UINT ms; int hz; const TCHAR *label; };
 static const AudioWaveRefreshOpt kAudioWaveRefreshOpts[] = {
-    { 500, TEXT("2 Hz (500 ms)") },
-    { 200, TEXT("5 Hz (200 ms)") },
-    { 100, TEXT("10 Hz (100 ms)") },
-    {  50, TEXT("20 Hz (50 ms)") },
-    {  33, TEXT("30 Hz (33 ms)") },
-    {  16, TEXT("60 Hz (16 ms)") },
+    { 500,  2, TEXT("2 Hz (500 ms)") },
+    { 200,  5, TEXT("5 Hz (200 ms)") },
+    { 100, 10, TEXT("10 Hz (100 ms)") },
+    {  50, 20, TEXT("20 Hz (50 ms)") },
+    {  33, 30, TEXT("30 Hz (33 ms)") },
+    {  16, 60, TEXT("60 Hz (16 ms)") },
 };
 static const int kAudioWaveRefreshCount = sizeof(kAudioWaveRefreshOpts) / sizeof(kAudioWaveRefreshOpts[0]);
 static const UINT kAudioWaveRefreshIdBase = 0x9100;
@@ -10621,6 +11042,62 @@ static const UINT kAudioWaveRefreshIdBase = 0x9100;
 // it expands the per-voice (V1-8) / per-channel (CH1-4) breakdown beneath.
 static bool g_audiowave_spc_open = false;
 static bool g_audiowave_gb_open  = false;
+
+// Offscreen backbuffer, cached across paints (recreated on resize,
+// released on close). A fresh CreateCompatibleBitmap per WM_PAINT is a
+// multi-MB allocation every tick, which at high refresh rates competes
+// with emulation on the GUI thread.
+static HDC     g_wave_backdc  = NULL;
+static HBITMAP g_wave_backbmp = NULL;
+static HBITMAP g_wave_backold = NULL;
+static int     g_wave_backw   = 0;
+static int     g_wave_backh   = 0;
+
+// Close behavior, driven by the footer checkbox: by default closing the
+// viewer restores the all-on channel defaults (mutes/solos are treated as
+// listening experiments). Unchecked, the audible state is kept — engaged
+// solos are baked into the plain channel masks on close so Sound > Channels
+// keeps reflecting them once the viewer (and its solo overlay) is gone.
+static bool g_audiowave_reset_on_close = true;
+
+// Footer checkbox: show the per-row diagnostic stats (rates, fills,
+// counters) or just the basic labels.
+static bool g_audiowave_nerd_stats = false;
+
+// Footer strip at the bottom of the client area hosting the checkbox and
+// the zoom selectbox, both vertically centered in it.
+static const int kWaveFooterH = 28;
+
+static RECT AudioWaveResetBoxRect(const RECT &client)
+{
+    RECT r = { 8, client.bottom - kWaveFooterH + 7,
+               21, client.bottom - 8 };
+    return r;
+}
+
+// Zoom selectbox in the footer, to the right of the reset-on-close label.
+// Clicking it pops the scale-mode list (opening upward, since the box sits
+// on the window's bottom edge).
+static RECT AudioWaveScaleBoxRect(const RECT &client)
+{
+    RECT r = { 240, client.bottom - kWaveFooterH + 6,
+               324, client.bottom - 6 };
+    return r;
+}
+
+static RECT AudioWaveRateBoxRect(const RECT &client)
+{
+    RECT r = { 368, client.bottom - kWaveFooterH + 6,
+               436, client.bottom - 6 };
+    return r;
+}
+
+static RECT AudioWaveNerdBoxRect(const RECT &client)
+{
+    RECT r = { 452, client.bottom - kWaveFooterH + 7,
+               465, client.bottom - 8 };
+    return r;
+}
 
 // Build the top-to-bottom panel list for the current core/expansion state.
 // Sources: 0=SPC, 1=GB, 2=MIX, 3..6=GB CH1-4, 7..14=SPC voices V1-V8.
@@ -10669,7 +11146,14 @@ LRESULT CALLBACK AudioWaveProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             SetTimer(hwnd, 1, g_audiowave_refresh_ms, NULL);
             return 0;
         case WM_TIMER:
-            InvalidateRect(hwnd, NULL, FALSE);
+            if (wp == 2)
+            {
+                AudioWaveRecPump();
+                InvalidateRect(hwnd, NULL, FALSE);   // keep REC timer fresh
+                return 0;
+            }
+            if (!IsIconic(hwnd))
+                InvalidateRect(hwnd, NULL, FALSE);
             return 0;
         case WM_LBUTTONDOWN:
         {
@@ -10677,11 +11161,79 @@ LRESULT CALLBACK AudioWaveProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             const int nPanels = AudioWaveBuildOrder(order);
             RECT cr;
             GetClientRect(hwnd, &cr);
-            const int hTotal = cr.bottom - cr.top;
+            POINT pt = { (int)(short)LOWORD(lp), (int)(short)HIWORD(lp) };
+            if (pt.y >= cr.bottom - kWaveFooterH)
+            {
+                RECT rb = AudioWaveRateBoxRect(cr);
+                if (PtInRect(&rb, pt))
+                {
+                    HMENU menu = CreatePopupMenu();
+                    if (!menu) return 0;
+                    for (int i = 0; i < kAudioWaveRefreshCount; ++i)
+                        AppendMenu(menu,
+                                   MF_STRING | (kAudioWaveRefreshOpts[i].ms == g_audiowave_refresh_ms ? MF_CHECKED : 0),
+                                   kAudioWaveRefreshIdBase + i, kAudioWaveRefreshOpts[i].label);
+                    POINT sp = { rb.left, rb.top };
+                    ClientToScreen(hwnd, &sp);
+                    UINT sel = TrackPopupMenu(menu,
+                                              TPM_RETURNCMD | TPM_BOTTOMALIGN | TPM_LEFTALIGN,
+                                              sp.x, sp.y, 0, hwnd, NULL);
+                    DestroyMenu(menu);
+                    if (sel >= kAudioWaveRefreshIdBase &&
+                        sel < kAudioWaveRefreshIdBase + (UINT)kAudioWaveRefreshCount)
+                    {
+                        g_audiowave_refresh_ms = kAudioWaveRefreshOpts[sel - kAudioWaveRefreshIdBase].ms;
+                        KillTimer(hwnd, 1);
+                        SetTimer(hwnd, 1, g_audiowave_refresh_ms, NULL);
+                        InvalidateRect(hwnd, NULL, FALSE);
+                    }
+                    return 0;
+                }
+                RECT nb = AudioWaveNerdBoxRect(cr);
+                if (pt.x >= nb.left && pt.x <= nb.right + 108 &&
+                    pt.y >= nb.top - 2 && pt.y <= nb.bottom + 2)
+                {
+                    g_audiowave_nerd_stats = !g_audiowave_nerd_stats;
+                    InvalidateRect(hwnd, NULL, FALSE);
+                    return 0;
+                }
+                // footer: the zoom selectbox pops the scale-mode list
+                RECT zb = AudioWaveScaleBoxRect(cr);
+                if (PtInRect(&zb, pt))
+                {
+                    HMENU menu = CreatePopupMenu();
+                    if (!menu) return 0;
+                    for (int i = 0; i < kAudioWaveScaleCount; ++i)
+                        AppendMenu(menu,
+                                   MF_STRING | (i == g_audiowave_scale ? MF_CHECKED : 0),
+                                   kAudioWaveScaleIdBase + i, kAudioWaveScaleLabels[i]);
+                    POINT sp = { zb.left, zb.top };
+                    ClientToScreen(hwnd, &sp);
+                    UINT sel = TrackPopupMenu(menu,
+                                              TPM_RETURNCMD | TPM_BOTTOMALIGN | TPM_LEFTALIGN,
+                                              sp.x, sp.y, 0, hwnd, NULL);
+                    DestroyMenu(menu);
+                    if (sel >= kAudioWaveScaleIdBase &&
+                        sel < kAudioWaveScaleIdBase + (UINT)kAudioWaveScaleCount)
+                    {
+                        g_audiowave_scale = (int)(sel - kAudioWaveScaleIdBase);
+                        InvalidateRect(hwnd, NULL, FALSE);
+                    }
+                    return 0;
+                }
+                // the checkbox and its label toggle reset-on-close
+                RECT cb = AudioWaveResetBoxRect(cr);
+                if (pt.x >= cb.left && pt.x <= cb.right + 130)
+                {
+                    g_audiowave_reset_on_close = !g_audiowave_reset_on_close;
+                    InvalidateRect(hwnd, NULL, FALSE);
+                }
+                return 0;
+            }
+            const int hTotal = cr.bottom - cr.top - kWaveFooterH;
             if (hTotal <= 0 || nPanels <= 0) return 0;
             const int hPanel = hTotal / nPanels;
             if (hPanel <= 0) return 0;
-            POINT pt = { (int)(short)LOWORD(lp), (int)(short)HIWORD(lp) };
             int idx = pt.y / hPanel;
             if (idx < 0) idx = 0;
             if (idx >= nPanels) idx = nPanels - 1;
@@ -10689,6 +11241,17 @@ LRESULT CALLBACK AudioWaveProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 
             RECT row = { 0, idx * hPanel, cr.right,
                          (idx == nPanels - 1) ? hTotal : (idx + 1) * hPanel };
+            RECT rcb = AudioWaveRecRect(row);
+            if (PtInRect(&rcb, pt))
+            {
+                // one track at a time; clicking the armed one stops+saves
+                if (g_wave_rec_src == src)
+                    AudioWaveRecStop(hwnd);
+                else if (g_wave_rec_src < 0)
+                    AudioWaveRecStart(hwnd, src);
+                InvalidateRect(hwnd, NULL, FALSE);
+                return 0;
+            }
             RECT mb = AudioWaveMuteRect(row);
             if (PtInRect(&mb, pt))
             {
@@ -10713,35 +11276,6 @@ LRESULT CALLBACK AudioWaveProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             InvalidateRect(hwnd, NULL, FALSE);
             return 0;
         }
-        case WM_CONTEXTMENU:
-        {
-            HMENU menu = CreatePopupMenu();
-            if (!menu) return 0;
-            for (int i = 0; i < kAudioWaveRefreshCount; ++i)
-            {
-                UINT flags = MF_STRING;
-                if (kAudioWaveRefreshOpts[i].ms == g_audiowave_refresh_ms)
-                    flags |= MF_CHECKED;
-                AppendMenu(menu, flags, kAudioWaveRefreshIdBase + i, kAudioWaveRefreshOpts[i].label);
-            }
-            POINT pt = { (int)(short)LOWORD(lp), (int)(short)HIWORD(lp) };
-            if (pt.x == -1 && pt.y == -1)
-            {
-                RECT rc; GetWindowRect(hwnd, &rc);
-                pt.x = rc.left + 8; pt.y = rc.top + 8;
-            }
-            UINT sel = TrackPopupMenu(menu, TPM_RETURNCMD | TPM_RIGHTBUTTON,
-                                      pt.x, pt.y, 0, hwnd, NULL);
-            DestroyMenu(menu);
-            if (sel >= kAudioWaveRefreshIdBase &&
-                sel < kAudioWaveRefreshIdBase + (UINT)kAudioWaveRefreshCount)
-            {
-                g_audiowave_refresh_ms = kAudioWaveRefreshOpts[sel - kAudioWaveRefreshIdBase].ms;
-                KillTimer(hwnd, 1);
-                SetTimer(hwnd, 1, g_audiowave_refresh_ms, NULL);
-            }
-            return 0;
-        }
         case WM_ERASEBKGND:
             return 1;
         case WM_PAINT:
@@ -10752,12 +11286,30 @@ LRESULT CALLBACK AudioWaveProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             GetClientRect(hwnd, &cr);
             const int cw = cr.right - cr.left;
             const int ch = cr.bottom - cr.top;
-            HDC hdc = CreateCompatibleDC(hdcWnd);
-            HBITMAP memBmp = CreateCompatibleBitmap(hdcWnd, cw, ch);
-            HBITMAP oldBmp = (HBITMAP)SelectObject(hdc, memBmp);
+            if (cw <= 0 || ch <= 0)
+            {
+                EndPaint(hwnd, &ps);
+                return 0;
+            }
+            if (!g_wave_backdc)
+                g_wave_backdc = CreateCompatibleDC(hdcWnd);
+            if (!g_wave_backbmp || cw != g_wave_backw || ch != g_wave_backh)
+            {
+                if (g_wave_backbmp)
+                {
+                    SelectObject(g_wave_backdc, g_wave_backold);
+                    DeleteObject(g_wave_backbmp);
+                }
+                g_wave_backbmp = CreateCompatibleBitmap(hdcWnd, cw, ch);
+                g_wave_backold = (HBITMAP)SelectObject(g_wave_backdc, g_wave_backbmp);
+                g_wave_backw = cw;
+                g_wave_backh = ch;
+            }
+            HDC hdc = g_wave_backdc;
             int order[15];
             const int nPanels = AudioWaveBuildOrder(order);
-            int H = ch / nPanels;
+            const int chPanels = ch - kWaveFooterH;
+            int H = chPanels / nPanels;
             short buf[kAudioWaveFrames * 2];
 
             int sr = S9xAudioWaveformSampleRate();
@@ -10768,20 +11320,66 @@ LRESULT CALLBACK AudioWaveProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             static DWORD fps_last_tick = 0;
             static uint32 fps_last_frames = 0;
             static double fps_measured = 0.0;
+            // Ring I/O rates (frames/s), remeasured on the same cadence.
+            static uint32 io_gb_p0 = 0, io_gb_d0 = 0, io_gb_r0 = 0;
+            static unsigned int io_sp0 = 0, io_sc0 = 0;
+            static uint64 cyc_sn0 = 0, cyc_gb0 = 0;
+            static long ln0 = 0;
+            static double r_gbin = 0, r_gbout = 0, r_gbdrop = 0, r_spcin = 0, r_spcout = 0;
+            static double r_snesM = 0, r_gbM = 0, r_lines = 0;
             DWORD now_tick = GetTickCount();
             if (now_tick - fps_last_tick >= 500)
             {
                 uint32 frames_delta = IPPU.TotalEmulatedFrames - fps_last_frames;
                 fps_measured = frames_delta * 1000.0 / (now_tick - fps_last_tick);
+                uint32 gp = 0, gd = 0, gr = 0;
+                unsigned int sp = 0, sc = 0;
+                S9xSGBGetAudioRingStats(&gp, &gd, &gr);
+                S9xSpcIoMeters(&sp, &sc);
+                const double dt = (now_tick - fps_last_tick) / 1000.0;
+                r_gbin   = (gp - io_gb_p0) / dt;
+                r_gbdrop = (gd - io_gb_d0) / dt;
+                r_gbout  = (gr - io_gb_r0) / dt;
+                r_spcin  = (sp - io_sp0) / 2.0 / dt;
+                r_spcout = (sc - io_sc0) / 2.0 / dt;
+                io_gb_p0 = gp; io_gb_d0 = gd; io_gb_r0 = gr;
+                io_sp0 = sp; io_sc0 = sc;
+                uint64 csn = 0, cgb = 0;
+                S9xSGBGetCycleMeters(&csn, &cgb);
+                r_snesM = (csn - cyc_sn0) / dt / 1e6;
+                r_gbM   = (cgb - cyc_gb0) / dt / 1e6;
+                cyc_sn0 = csn; cyc_gb0 = cgb;
+                const long ln = S9xApuScanlineMeter();
+                r_lines = (ln - ln0) / dt / 1000.0;
+                ln0 = ln;
                 fps_last_frames = IPPU.TotalEmulatedFrames;
                 fps_last_tick = now_tick;
             }
 
             TCHAR rateTxt[15][96];
-            const double refresh_hz = (g_audiowave_refresh_ms > 0) ? (1000.0 / g_audiowave_refresh_ms) : 0.0;
-            _stprintf(rateTxt[0], TEXT("GB %d  emu %.1f fps"), gb_rate, fps_measured);
-            _stprintf(rateTxt[1], TEXT("SPC %.0f Hz (ratio %.5f)"), spc_eff_hz, spc_ratio);
-            _stprintf(rateTxt[2], TEXT("refresh %.0f Hz  (right-click to change)"), refresh_hz);
+            // Nerd stats: I/O rates in frames/s (nominal SPC 32k, GB 48k),
+            // snes 21.48M / gb 4.30M / ln 15.75k, splice counters, fills, trim.
+            if (g_audiowave_nerd_stats)
+            {
+                _stprintf(rateTxt[0], TEXT("SPC %.0f Hz (ratio %.5f)  emu %.1f fps  shown %u/%d  |  in %.1fk out %.1fk"),
+                          spc_eff_hz, spc_ratio, fps_measured,
+                          IPPU.DisplayedRenderedFrameCount, Memory.ROMFramesPerSecond,
+                          r_spcin / 1000.0, r_spcout / 1000.0);
+                _stprintf(rateTxt[1], TEXT("GB %d Hz  |  in %.1fk out %.1fk drop %.0f/s  |  snes %.2fM  gb %.2fM  ln %.1fk"),
+                          gb_rate, r_gbin / 1000.0, r_gbout / 1000.0, r_gbdrop,
+                          r_snesM, r_gbM, r_lines);
+                _stprintf(rateTxt[2], TEXT("gbPad %ld  spcShort %ld  spcDrop %ld  |  gbFill %d  spcFill %d/%d  xS %.3f"),
+                          S9xSGBMixGBPadSamples, S9xSGBMixSPCShortSamples,
+                          S9xSpcDroppedSamples(),
+                          S9xGetSampleCount(), S9xSpcSpaceFilled(), S9xSpcResamplerCapacity(),
+                          S9xSpcGetDrcScale());
+            }
+            else
+            {
+                _stprintf(rateTxt[0], TEXT("SPC %.0f Hz"), spc_eff_hz);
+                _stprintf(rateTxt[1], TEXT("GB %d Hz"), gb_rate);
+                rateTxt[2][0] = 0;
+            }
             _stprintf(rateTxt[3], TEXT("pulse A (sweep)"));
             _stprintf(rateTxt[4], TEXT("pulse B"));
             _stprintf(rateTxt[5], TEXT("wave"));
@@ -10817,17 +11415,118 @@ LRESULT CALLBACK AudioWaveProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                 panel.left   = 0;
                 panel.right  = cw;
                 panel.top    = d * H;
-                panel.bottom = (d == nPanels - 1) ? ch : ((d + 1) * H);
+                panel.bottom = (d == nPanels - 1) ? chPanels : ((d + 1) * H);
                 DrawWaveTrackRow(hdc, panel, s, s == 0 || s == 1,
                                  s == 0 ? g_audiowave_spc_open : g_audiowave_gb_open,
                                  buf, n, rateTxt[s],
                                  (s < 3) ? sr : (s >= 7 ? 32000 : (int)gb_rate),
                                  d == nPanels - 1);
             }
+            g_wave_meter_tick = GetTickCount();   // shared meter-decay clock
+
+            // Footer strip: the reset-on-close checkbox.
+            {
+                RECT ft = { 0, chPanels, cw, ch };
+                HBRUSH fbr = CreateSolidBrush(RGB(28, 28, 30));
+                FillRect(hdc, &ft, fbr);
+                DeleteObject(fbr);
+
+                RECT cb = AudioWaveResetBoxRect(cr);
+                fbr = CreateSolidBrush(g_audiowave_reset_on_close ? RGB(96, 150, 250) : RGB(52, 52, 56));
+                FillRect(hdc, &cb, fbr);
+                DeleteObject(fbr);
+                fbr = CreateSolidBrush(g_audiowave_reset_on_close ? RGB(140, 180, 255) : RGB(80, 80, 86));
+                FrameRect(hdc, &cb, fbr);
+                DeleteObject(fbr);
+                if (g_audiowave_reset_on_close)
+                {
+                    HPEN tick = CreatePen(PS_SOLID, 2, RGB(20, 30, 60));
+                    HPEN oldp = (HPEN)SelectObject(hdc, tick);
+                    MoveToEx(hdc, cb.left + 3, (cb.top + cb.bottom) / 2, NULL);
+                    LineTo(hdc, cb.left + 5, cb.bottom - 3);
+                    LineTo(hdc, cb.right - 3, cb.top + 2);
+                    SelectObject(hdc, oldp);
+                    DeleteObject(tick);
+                }
+                SetBkMode(hdc, TRANSPARENT);
+                SetTextColor(hdc, RGB(150, 150, 156));
+                TextOut(hdc, cb.right + 6, chPanels + 6,
+                        TEXT("reset channels on close"), 23);
+
+                // zoom selectbox: current scale mode + dropdown arrow
+                TextOut(hdc, 204, chPanels + 6, TEXT("zoom"), 4);
+                RECT zb = AudioWaveScaleBoxRect(cr);
+                fbr = CreateSolidBrush(RGB(52, 52, 56));
+                FillRect(hdc, &zb, fbr);
+                DeleteObject(fbr);
+                fbr = CreateSolidBrush(RGB(80, 80, 86));
+                FrameRect(hdc, &zb, fbr);
+                DeleteObject(fbr);
+                SetTextColor(hdc, RGB(200, 200, 205));
+                TextOut(hdc, zb.left + 6, chPanels + 6,
+                        kAudioWaveScaleLabels[g_audiowave_scale],
+                        lstrlen(kAudioWaveScaleLabels[g_audiowave_scale]));
+                const int acy = (zb.top + zb.bottom) / 2;
+                POINT arr[3] = { { zb.right - 15, acy - 2 },
+                                 { zb.right - 7,  acy - 2 },
+                                 { zb.right - 11, acy + 3 } };
+                HBRUSH ab  = CreateSolidBrush(RGB(150, 150, 156));
+                HPEN   ap  = CreatePen(PS_SOLID, 1, RGB(150, 150, 156));
+                HBRUSH oab = (HBRUSH)SelectObject(hdc, ab);
+                HPEN   oap = (HPEN)SelectObject(hdc, ap);
+                Polygon(hdc, arr, 3);
+
+                // rate selectbox: current refresh Hz + dropdown arrow
+                SetTextColor(hdc, RGB(150, 150, 156));
+                TextOut(hdc, 336, chPanels + 6, TEXT("rate"), 4);
+                RECT rb = AudioWaveRateBoxRect(cr);
+                fbr = CreateSolidBrush(RGB(52, 52, 56));
+                FillRect(hdc, &rb, fbr);
+                DeleteObject(fbr);
+                fbr = CreateSolidBrush(RGB(80, 80, 86));
+                FrameRect(hdc, &rb, fbr);
+                DeleteObject(fbr);
+                int curHz = 10;
+                for (int i = 0; i < kAudioWaveRefreshCount; ++i)
+                    if (kAudioWaveRefreshOpts[i].ms == g_audiowave_refresh_ms)
+                        curHz = kAudioWaveRefreshOpts[i].hz;
+                TCHAR hzTxt[16];
+                _stprintf(hzTxt, TEXT("%d Hz"), curHz);
+                SetTextColor(hdc, RGB(200, 200, 205));
+                TextOut(hdc, rb.left + 6, chPanels + 6, hzTxt, lstrlen(hzTxt));
+                const int rcy = (rb.top + rb.bottom) / 2;
+                POINT arr2[3] = { { rb.right - 15, rcy - 2 },
+                                  { rb.right - 7,  rcy - 2 },
+                                  { rb.right - 11, rcy + 3 } };
+                Polygon(hdc, arr2, 3);
+                SelectObject(hdc, oab);
+                SelectObject(hdc, oap);
+                DeleteObject(ab);
+                DeleteObject(ap);
+
+                // stats-for-nerds checkbox
+                RECT nb = AudioWaveNerdBoxRect(cr);
+                fbr = CreateSolidBrush(g_audiowave_nerd_stats ? RGB(96, 150, 250) : RGB(52, 52, 56));
+                FillRect(hdc, &nb, fbr);
+                DeleteObject(fbr);
+                fbr = CreateSolidBrush(g_audiowave_nerd_stats ? RGB(140, 180, 255) : RGB(80, 80, 86));
+                FrameRect(hdc, &nb, fbr);
+                DeleteObject(fbr);
+                if (g_audiowave_nerd_stats)
+                {
+                    HPEN tick = CreatePen(PS_SOLID, 2, RGB(20, 30, 60));
+                    HPEN oldp = (HPEN)SelectObject(hdc, tick);
+                    MoveToEx(hdc, nb.left + 3, (nb.top + nb.bottom) / 2, NULL);
+                    LineTo(hdc, nb.left + 5, nb.bottom - 3);
+                    LineTo(hdc, nb.right - 3, nb.top + 2);
+                    SelectObject(hdc, oldp);
+                    DeleteObject(tick);
+                }
+                SetTextColor(hdc, RGB(150, 150, 156));
+                TextOut(hdc, nb.right + 6, chPanels + 6,
+                        TEXT("stats for nerds"), 15);
+            }
             BitBlt(hdcWnd, 0, 0, cw, ch, hdc, 0, 0, SRCCOPY);
-            SelectObject(hdc, oldBmp);
-            DeleteObject(memBmp);
-            DeleteDC(hdc);
             EndPaint(hwnd, &ps);
             return 0;
         }
@@ -10836,10 +11535,44 @@ LRESULT CALLBACK AudioWaveProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             return 0;
         case WM_DESTROY:
             KillTimer(hwnd, 1);
+            AudioWaveRecAbort(hwnd);
             S9xAudioWaveformEnable(false);
-            // Drop any engaged solos — with the viewer gone there would be
-            // no UI left to unsolo, leaving channels silently suppressed.
-            AudioWaveClearSolo();
+            if (g_wave_backdc)
+            {
+                if (g_wave_backbmp)
+                {
+                    SelectObject(g_wave_backdc, g_wave_backold);
+                    DeleteObject(g_wave_backbmp);
+                }
+                DeleteDC(g_wave_backdc);
+                g_wave_backdc  = NULL;
+                g_wave_backbmp = NULL;
+                g_wave_backold = NULL;
+                g_wave_backw = g_wave_backh = 0;
+            }
+            if (g_audiowave_reset_on_close)
+            {
+                // Default: mutes and solos were listening experiments —
+                // restore the all-on state Sound > Channels starts with.
+                g_wave_solo_spc = g_wave_solo_gb = 0;
+                g_wave_solo_spc_grp = g_wave_solo_gb_grp = false;
+                GUI.SoundChannelEnable = 255;
+                GUI.GBChannelEnable    = 0x0F;
+                AudioWaveApplyAudibility();
+            }
+            else
+            {
+                // Keep what's audible right now: bake engaged solos into the
+                // plain channel masks (there is no UI left to unsolo once the
+                // viewer is gone), so Sound > Channels keeps showing them.
+                uint8 effSpc, effGb;
+                AudioWaveEffectiveMasks(&effSpc, &effGb);
+                GUI.SoundChannelEnable = effSpc;
+                GUI.GBChannelEnable    = effGb;
+                g_wave_solo_spc = g_wave_solo_gb = 0;
+                g_wave_solo_spc_grp = g_wave_solo_gb_grp = false;
+                AudioWaveApplyAudibility();
+            }
             g_audiowave_hwnd = NULL;
             return 0;
     }
@@ -10871,6 +11604,10 @@ static void ToggleAudioWaveform(HINSTANCE hInst, HWND parent)
     }
 
     S9xAudioWaveformEnable(true);
+    // Fresh splice-health counts per viewer session — the diagnostic
+    // question is "is it climbing right now", not the lifetime total.
+    S9xSGBMixGBPadSamples    = 0;
+    S9xSGBMixSPCShortSamples = 0;
     g_audiowave_hwnd = CreateWindowEx(
         0, kAudioWaveClass,
         TEXT("Audio Waveform  (click SPC/GB to expand channels)"),
@@ -12682,6 +13419,23 @@ static LRESULT CALLBACK CheatEditSubclassProc(HWND hWnd, UINT msg, WPARAM wParam
 	return DefSubclassProc(hWnd, msg, wParam, lParam);
 }
 
+// Warn when a GB Game Genie code's verify byte doesn't match the loaded ROM.
+static void CheatWarnROMMismatch(HWND hDlg, const std::string &code)
+{
+	uint32 addr;
+	uint8 expected, found;
+	if (!S9xGBGameGenieMismatch(code, addr, expected, found))
+		return;
+
+	TCHAR warn[320];
+	_stprintf(warn, TEXT("This Game Genie code doesn't match the loaded ROM:\n")
+	                TEXT("it expects byte %02X at %04X, but this ROM has %02X.\n\n")
+	                TEXT("The code was made for a different revision of the game and\n")
+	                TEXT("will have no effect here. It may work on another dump."),
+	          expected, addr, found);
+	MessageBox(hDlg, warn, TEXT("Cheat doesn't match this ROM"), MB_OK | MB_ICONWARNING);
+}
+
 INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	static bool internal_change;
@@ -13095,7 +13849,8 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 							lvia.cchTextMax = CHEAT_SIZE;
 							SendDlgItemMessageA(hDlg, IDC_CHEAT_LIST, LVM_GETITEMA, 0, (LPARAM)&lvia);
 
-							// replace value byte in each entry: XXXXXX=YY or XXXXXX=CC?YY
+							// replace value byte in each entry: XXXX:YY or XXXX?CC:YY —
+							// the value always follows the last ':' or '='.
 							std::string result;
 							char *ctx = NULL;
 							char *token = strtok_s(code, "+", &ctx);
@@ -13104,18 +13859,9 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 								if (!result.empty())
 									result += "+";
 								std::string entry(token);
-								size_t qmark = entry.find('?');
-								if (qmark != std::string::npos)
-								{
-									// conditional: replace after '?'
-									entry = entry.substr(0, qmark + 1) + new_val;
-								}
-								else
-								{
-									size_t eq = entry.find('=');
-									if (eq != std::string::npos)
-										entry = entry.substr(0, eq + 1) + new_val;
-								}
+								size_t sep = entry.find_last_of(":=");
+								if (sep != std::string::npos)
+									entry = entry.substr(0, sep + 1) + new_val;
 								result += entry;
 								token = strtok_s(NULL, "+", &ctx);
 							}
@@ -13190,6 +13936,7 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 
 					if(!valid_cheat.empty())
 					{
+						CheatWarnROMMismatch(hDlg, temp);
 						std::string descUtf8 = WideToUtf8(tempDesc.c_str());
 						int core_idx = S9xAddCheatGroup(descUtf8, valid_cheat);
 						if (core_idx < 0)
@@ -13236,6 +13983,7 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 
 					if(!valid_cheat.empty())
 					{
+						CheatWarnROMMismatch(hDlg, codeUtf8);
 						LVITEM lvi;
 
 						memset(&lvi, 0, sizeof(LVITEM));
@@ -14337,7 +15085,7 @@ INT_PTR CALLBACK DlgCheatSearch(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 							{
 								if (byteIndex > 0)
 									code_string += '+';
-								snprintf(code, 10, "%x=%x", address + byteIndex, (curVal >> (8 * byteIndex)) & 0xFF);
+								snprintf(code, 10, "%x:%x", address + byteIndex, (curVal >> (8 * byteIndex)) & 0xFF);
 								code_string += code;
 							}
 
@@ -14983,7 +15731,7 @@ INT_PTR CALLBACK DlgCheatSearchAdd(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lP
 						{
 							if (byteIndex > 0)
 								code_string += '+';
-							snprintf(code, 10, "%x=%x", new_cheat->address + byteIndex, (new_cheat->new_val >> (8 * byteIndex)) & 0xFF);
+							snprintf(code, 10, "%x:%x", new_cheat->address + byteIndex, (new_cheat->new_val >> (8 * byteIndex)) & 0xFF);
 							code_string += code;
 						}
 
@@ -15512,7 +16260,12 @@ const char * S9xStringInput(const char *msg)
 void S9xToggleSoundChannel (int c)
 {
 	if (c == 8)
+	{
 		GUI.SoundChannelEnable = 255;
+		// Enable All means audibly all-on: drop any engaged viewer solo
+		// too, or the solo mask would keep everything else silent.
+		AudioWaveClearSolo();
+	}
     else
 		GUI.SoundChannelEnable ^= 1 << c;
 
