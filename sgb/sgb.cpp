@@ -2668,6 +2668,11 @@ int32_t S9xSGBGetChannelWaveform(int32_t channel, int16_t *out, int32_t max_samp
 	return SGB::ApuGetChannelWaveform(channel, out, max_samples);
 }
 
+int32_t S9xSGBReadChannelWaveformNew(int32_t channel, int *cursor, int16_t *out, int32_t max_samples)
+{
+	return SGB::ApuReadChannelWaveformNew(channel, cursor, out, max_samples);
+}
+
 void S9xSGBSetAudioRate(int32_t rate_hz)
 {
 	SGB::Instance().SetAudioRate(rate_hz);

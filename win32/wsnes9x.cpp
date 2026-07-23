@@ -10253,7 +10253,7 @@ static const int   kAudioWaveFrames  = 4800;
 // group (SPC / GB / MIX) and each member (V1-8 / CH1-4) has its own color.
 // ---------------------------------------------------------------------------
 
-static const int kWaveHeaderW = 118;
+static const int kWaveHeaderW = 144;
 
 struct WaveTrackInfo { const TCHAR *name; COLORREF color; };
 static const WaveTrackInfo kWaveTracks[15] = {
@@ -10437,6 +10437,131 @@ static RECT AudioWaveSoloRect(const RECT &row)
     return r;
 }
 
+// Logic-style record-arm [R], left of [M].
+static RECT AudioWaveRecRect(const RECT &row)
+{
+    const int cy = (row.top + row.bottom) / 2;
+    RECT r = { row.left + kWaveHeaderW - 84, cy - 9,
+               row.left + kWaveHeaderW - 62, cy + 9 };
+    return r;
+}
+
+// One-track recorder: raw PCM streams to a temp file while armed;
+// stopping prompts for a .wav destination.
+static int    g_wave_rec_src    = -1;
+static FILE  *g_wave_rec_file   = NULL;
+static uint32 g_wave_rec_frames = 0;
+static DWORD  g_wave_rec_tick0  = 0;
+static int    g_wave_rec_cursor = -1;
+static TCHAR  g_wave_rec_tmp[MAX_PATH];
+
+static int AudioWaveRecRate(int src)
+{
+    if (src < 3)  return Settings.SoundPlaybackRate;
+    if (src >= 7) return 32000;
+    return (int)S9xSGBGetAudioRate();
+}
+
+static int AudioWaveRecChans(int src)
+{
+    return (src >= 3 && src <= 6) ? 1 : 2;
+}
+
+static void AudioWaveRecPump(void)
+{
+    if (g_wave_rec_src < 0 || !g_wave_rec_file) return;
+    short buf[4096 * 2];
+    for (;;)
+    {
+        int n;
+        if (g_wave_rec_src >= 3 && g_wave_rec_src <= 6)
+            n = S9xSGBReadChannelWaveformNew(g_wave_rec_src - 3, &g_wave_rec_cursor, buf, 4096);
+        else
+            n = S9xAudioWaveformReadNew(g_wave_rec_src < 3 ? g_wave_rec_src : g_wave_rec_src - 4,
+                                        &g_wave_rec_cursor, buf, 4096);
+        if (n <= 0) break;
+        fwrite(buf, AudioWaveRecChans(g_wave_rec_src) * sizeof(short), n, g_wave_rec_file);
+        g_wave_rec_frames += n;
+        if (n < 4096) break;
+    }
+}
+
+static void AudioWaveRecStart(HWND hwnd, int src)
+{
+    TCHAR dir[MAX_PATH];
+    GetTempPath(MAX_PATH, dir);
+    if (!GetTempFileName(dir, TEXT("s9x"), 0, g_wave_rec_tmp)) return;
+    g_wave_rec_file = _tfopen(g_wave_rec_tmp, TEXT("wb"));
+    if (!g_wave_rec_file) return;
+    g_wave_rec_src    = src;
+    g_wave_rec_frames = 0;
+    g_wave_rec_cursor = -1;
+    g_wave_rec_tick0  = GetTickCount();
+    AudioWaveRecPump();   // latches the cursor
+    SetTimer(hwnd, 2, 50, NULL);
+}
+
+static void AudioWaveRecAbort(HWND hwnd)
+{
+    if (g_wave_rec_src < 0) return;
+    KillTimer(hwnd, 2);
+    if (g_wave_rec_file) fclose(g_wave_rec_file);
+    g_wave_rec_file = NULL;
+    DeleteFile(g_wave_rec_tmp);
+    g_wave_rec_src = -1;
+}
+
+static void AudioWaveRecStop(HWND hwnd)
+{
+    if (g_wave_rec_src < 0) return;
+    KillTimer(hwnd, 2);
+    AudioWaveRecPump();
+    fclose(g_wave_rec_file);
+    g_wave_rec_file = NULL;
+    const int src   = g_wave_rec_src;
+    const int rate  = AudioWaveRecRate(src);
+    const int chans = AudioWaveRecChans(src);
+    g_wave_rec_src = -1;
+
+    TCHAR path[MAX_PATH];
+    _stprintf(path, TEXT("%s.wav"), kWaveTracks[src].name);
+    OPENFILENAME ofn = {};
+    ofn.lStructSize = sizeof(ofn);
+    ofn.hwndOwner   = hwnd;
+    ofn.lpstrFilter = TEXT("WAV audio (*.wav)\0*.wav\0\0");
+    ofn.lpstrFile   = path;
+    ofn.nMaxFile    = MAX_PATH;
+    ofn.lpstrDefExt = TEXT("wav");
+    ofn.Flags       = OFN_OVERWRITEPROMPT | OFN_PATHMUSTEXIST;
+    if (GetSaveFileName(&ofn))
+    {
+        FILE *in  = _tfopen(g_wave_rec_tmp, TEXT("rb"));
+        FILE *out = _tfopen(path, TEXT("wb"));
+        if (in && out)
+        {
+            const uint32 data_bytes = g_wave_rec_frames * chans * 2;
+            const uint32 byte_rate  = (uint32)rate * chans * 2;
+            const uint16 block      = (uint16)(chans * 2);
+            const uint16 bits = 16, fmt = 1, nch = (uint16)chans;
+            const uint32 riff_sz = 36 + data_bytes, fmt_sz = 16;
+            fwrite("RIFF", 1, 4, out); fwrite(&riff_sz, 4, 1, out);
+            fwrite("WAVE", 1, 4, out); fwrite("fmt ", 1, 4, out);
+            fwrite(&fmt_sz, 4, 1, out); fwrite(&fmt, 2, 1, out);
+            fwrite(&nch, 2, 1, out);
+            fwrite(&rate, 4, 1, out); fwrite(&byte_rate, 4, 1, out);
+            fwrite(&block, 2, 1, out); fwrite(&bits, 2, 1, out);
+            fwrite("data", 1, 4, out); fwrite(&data_bytes, 4, 1, out);
+            char cbuf[16384];
+            size_t got;
+            while ((got = fread(cbuf, 1, sizeof(cbuf), in)) > 0)
+                fwrite(cbuf, 1, got, out);
+        }
+        if (in)  fclose(in);
+        if (out) fclose(out);
+    }
+    DeleteFile(g_wave_rec_tmp);
+}
+
 // Vertical scale for the waveform lanes, picked in the footer selectbox.
 // Chip output is often a small fraction of full scale, so linear rendering
 // leaves near-flat traces; these modes trade amplitude truth for
@@ -10546,6 +10671,21 @@ static void DrawWaveTrackRow(HDC hdc, const RECT &r, int src, bool isGroup,
     SetTextColor(hdc, !audible ? RGB(130, 130, 135) : RGB(225, 225, 228));
     TextOut(hdc, hd.left + (isGroup ? 26 : 30), cy - 8,
             ti.name, lstrlen(ti.name));
+
+    // [R]ecord-arm button, Logic-style: solid red while recording.
+    {
+        const bool recThis = (g_wave_rec_src == src);
+        RECT rb = AudioWaveRecRect(r);
+        HBRUSH rbr = CreateSolidBrush(recThis ? RGB(200, 40, 40) : RGB(52, 52, 56));
+        FillRect(hdc, &rb, rbr);
+        DeleteObject(rbr);
+        rbr = CreateSolidBrush(recThis ? RGB(240, 90, 90) : RGB(80, 80, 86));
+        FrameRect(hdc, &rb, rbr);
+        DeleteObject(rbr);
+        SetTextColor(hdc, recThis ? RGB(255, 255, 255) : RGB(150, 150, 156));
+        TextOut(hdc, (rb.left + rb.right) / 2 - 4, (rb.top + rb.bottom) / 2 - 8,
+                TEXT("R"), 1);
+    }
 
     // [M]ute button — filled blue when engaged, dark otherwise.
     RECT mb = AudioWaveMuteRect(r);
@@ -10676,6 +10816,14 @@ static void DrawWaveTrackRow(HDC hdc, const RECT &r, int src, bool isGroup,
     {
         SetTextColor(hdc, WaveTint(ti.color, 40));
         TextOut(hdc, lane.right - 52, lane.top + 2, TEXT("muted"), 5);
+    }
+    if (g_wave_rec_src == src)
+    {
+        const DWORD s = (GetTickCount() - g_wave_rec_tick0) / 1000;
+        TCHAR rec[32];
+        _stprintf(rec, TEXT("REC %u:%02u"), s / 60, s % 60);
+        SetTextColor(hdc, RGB(235, 80, 80));
+        TextOut(hdc, lane.right - 140, lane.top + 2, rec, lstrlen(rec));
     }
 
     if (show_xaxis)
@@ -10827,6 +10975,12 @@ LRESULT CALLBACK AudioWaveProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             SetTimer(hwnd, 1, g_audiowave_refresh_ms, NULL);
             return 0;
         case WM_TIMER:
+            if (wp == 2)
+            {
+                AudioWaveRecPump();
+                InvalidateRect(hwnd, NULL, FALSE);   // keep REC timer fresh
+                return 0;
+            }
             if (!IsIconic(hwnd))
                 InvalidateRect(hwnd, NULL, FALSE);
             return 0;
@@ -10916,6 +11070,17 @@ LRESULT CALLBACK AudioWaveProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 
             RECT row = { 0, idx * hPanel, cr.right,
                          (idx == nPanels - 1) ? hTotal : (idx + 1) * hPanel };
+            RECT rcb = AudioWaveRecRect(row);
+            if (PtInRect(&rcb, pt))
+            {
+                // one track at a time; clicking the armed one stops+saves
+                if (g_wave_rec_src == src)
+                    AudioWaveRecStop(hwnd);
+                else if (g_wave_rec_src < 0)
+                    AudioWaveRecStart(hwnd, src);
+                InvalidateRect(hwnd, NULL, FALSE);
+                return 0;
+            }
             RECT mb = AudioWaveMuteRect(row);
             if (PtInRect(&mb, pt))
             {
@@ -11198,6 +11363,7 @@ LRESULT CALLBACK AudioWaveProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             return 0;
         case WM_DESTROY:
             KillTimer(hwnd, 1);
+            AudioWaveRecAbort(hwnd);
             S9xAudioWaveformEnable(false);
             if (g_wave_backdc)
             {

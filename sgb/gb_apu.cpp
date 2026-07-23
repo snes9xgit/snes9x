@@ -537,6 +537,23 @@ int ApuGetChannelWaveform(int channel, int16_t *out, int max_samples)
 	return n;
 }
 
+// Cursor-based tap for the viewer's recorder: copies samples written
+// since *cursor. Pass *cursor = -1 to latch onto the current position.
+int ApuReadChannelWaveformNew(int channel, int *cursor, int16_t *out, int max_samples)
+{
+	if (channel < 0 || channel > 3 || !out || !cursor || max_samples <= 0) return 0;
+	const int cap = CH_CAPTURE_FRAMES;
+	const int w = g_ch_wpos;
+	int c = *cursor;
+	if (c < 0 || c >= cap) { *cursor = w; return 0; }
+	int avail = (w - c + cap) % cap;
+	if (avail > max_samples) avail = max_samples;
+	for (int i = 0; i < avail; ++i)
+		out[i] = g_ch_wave[channel][(c + i) % cap];
+	*cursor = (c + avail) % cap;
+	return avail;
+}
+
 // Derive the output low-pass coefficients from the current output_rate.
 // 4th-order Butterworth = two RBJ-cookbook biquads at the same corner
 // with the canonical Butterworth section Qs. Called whenever the sample

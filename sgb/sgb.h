@@ -418,6 +418,8 @@ void    S9xSGBSetSoundChannelMask(uint8_t mask);
 // (oldest first) for GB channel 0..3 and returns the count.
 void    S9xSGBSetWaveCaptureEnabled(bool enabled);
 int32_t S9xSGBGetChannelWaveform(int32_t channel, int16_t *out, int32_t max_samples);
+// Recorder tap: samples since *cursor; *cursor = -1 latches to now.
+int32_t S9xSGBReadChannelWaveformNew(int32_t channel, int *cursor, int16_t *out, int32_t max_samples);
 void    S9xSGBSetAudioRate(int32_t rate_hz);
 int32_t S9xSGBGetAudioRate(void);
 

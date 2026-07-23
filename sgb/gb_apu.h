@@ -212,6 +212,8 @@ uint8_t ApuGetHostChannelMask();
 // first) for channel 0..3 and returns the count. Host UI state only.
 void    ApuSetWaveCaptureEnabled(bool enabled);
 int     ApuGetChannelWaveform(int channel, int16_t *out, int max_samples);
+// Recorder tap: samples since *cursor; *cursor = -1 latches to now.
+int     ApuReadChannelWaveformNew(int channel, int *cursor, int16_t *out, int max_samples);
 
 } // namespace SGB
 

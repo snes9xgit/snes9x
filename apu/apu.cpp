@@ -669,6 +669,41 @@ int S9xAudioWaveformSnapshot(int stream, short *out_lr, int max_frames)
     return audiowave::snapshot(stream, out_lr, max_frames);
 }
 
+// Recorder tap: frames written since *cursor; *cursor = -1 latches to now.
+int S9xAudioWaveformReadNew(int stream, int *cursor, short *out_lr, int max_frames)
+{
+    if (!cursor || !out_lr || max_frames <= 0) return 0;
+    int16_t *ring;
+    int      wpos;
+    switch (stream)
+    {
+        case 0: ring = audiowave::buf_spc; wpos = audiowave::wpos_spc; break;
+        case 1: ring = audiowave::buf_gb;  wpos = audiowave::wpos_gb;  break;
+        case 2: ring = audiowave::buf_mix; wpos = audiowave::wpos_mix; break;
+        default:
+            if (stream >= 3 && stream <= 10)
+            {
+                ring = audiowave::buf_voice[stream - 3];
+                wpos = audiowave::wpos_voice[stream - 3];
+                break;
+            }
+            return 0;
+    }
+    const int cap = audiowave::CAPTURE_FRAMES;
+    int c = *cursor;
+    if (c < 0 || c >= cap) { *cursor = wpos; return 0; }
+    int avail = (wpos - c + cap) % cap;
+    if (avail > max_frames) avail = max_frames;
+    for (int i = 0; i < avail; ++i)
+    {
+        const int idx = (c + i) % cap;
+        out_lr[i * 2 + 0] = ring[idx * 2 + 0];
+        out_lr[i * 2 + 1] = ring[idx * 2 + 1];
+    }
+    *cursor = (c + avail) % cap;
+    return avail;
+}
+
 int S9xAudioWaveformSampleRate(void)
 {
     return Settings.SoundPlaybackRate;

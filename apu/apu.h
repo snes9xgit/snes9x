@@ -69,6 +69,8 @@ int  S9xSpcResamplerCapacity(void);   // spc::resampler.buffer_size in input wor
 long S9xSpcDroppedSamples(void);      // words discarded at push (full buffer) — overflow crackle
 void S9xSpcIoMeters(unsigned int *pushed, unsigned int *consumed); // input words in/out
 long S9xApuScanlineMeter(void);       // cumulative emulated scanlines (nominal 15.75k/s)
+// Recorder tap on the audiowave rings: frames since *cursor (-1 latches to now).
+int  S9xAudioWaveformReadNew(int stream, int *cursor, short *out_lr, int max_frames);
 void S9xAudioWaveformPushMix(const int16_t *src, int frames);
 
 // Host-side post-mix step for SGB BIOS mode. Call this on the buffer
