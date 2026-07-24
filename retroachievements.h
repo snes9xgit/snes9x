@@ -2,6 +2,7 @@
 
 #ifdef RETROACHIEVEMENTS_SUPPORT
 
+#include <cstddef>
 #include <cstdint>
 
 #include "rc_client.h"
@@ -29,6 +30,14 @@ struct RAPlatformCallbacks
 
     // Config persistence: called when credentials change (login success / logout)
     void (*on_credentials_changed)(const char *username, const char *token);
+
+    // Login completion: message is a human-readable success/error description.
+    // May be called from a background (HTTP) thread.
+    void (*on_login_result)(bool success, const char *message, bool user_initiated);
+
+    // Reset request for achievement integrity. May be called from a background
+    // thread — implementations must marshal to the emulation thread.
+    void (*reset_emulator)();
 };
 
 void RA_RegisterPlatformCallbacks(const RAPlatformCallbacks &callbacks);
@@ -74,6 +83,16 @@ void RA_LoginWithPassword(const char *username, const char *password);
 void RA_ShowLoginDialog();
 void RA_Logout();
 bool RA_IsLoggedIn();
+
+// Fills buf with "display_name (N points)" for the logged-in user.
+// Returns false (buf untouched) when not logged in.
+bool RA_GetLoggedInUserString(char *buf, size_t size);
+
+// ---------------------------------------------------------------------------
+// Netplay: while active, achievement processing is suspended so remote
+// players' inputs cannot earn unlocks on this account
+// ---------------------------------------------------------------------------
+void RA_SetNetplayActive(bool active);
 
 // ---------------------------------------------------------------------------
 // UI

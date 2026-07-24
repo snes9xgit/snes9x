@@ -623,12 +623,14 @@
 #define ID_RA_ACHIEVEMENTS_LIST         44343
 #define ID_RA_UA_SUPERSNES9X            44344
 #define ID_RA_TOGGLE_IMAGES             44367
+#define ID_RA_VIEW_PROFILE              44368
 #define IDD_RA_LOGIN                    172
 #define IDD_RA_ACHIEVEMENTS             173
 #define IDC_RA_USERNAME                 3080
 #define IDC_RA_PASSWORD                 3081
 #define IDC_RA_ACHLIST                  3082
 #define IDC_RA_GAME_TITLE               3083
+#define IDC_RA_SUMMARY                  3084
 #endif
 
 #define IDD_CHEAT_MASK                  174

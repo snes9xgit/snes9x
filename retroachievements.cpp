@@ -39,6 +39,9 @@ void RA_RegisterPlatformCallbacks(const RAPlatformCallbacks &callbacks)
 static rc_client_t *g_rcClient = nullptr;
 static bool g_initialized = false;
 static bool g_raEnabled = false;
+static bool g_netplayActive = false;
+static bool g_loginUserInitiated = false;
+static bool g_resetPendingOnLoad = false;
 
 // ---------------------------------------------------------------------------
 // Notification queue (thread-safe)
@@ -49,6 +52,8 @@ struct RANotification
     std::string subtitle;
     float duration;
     float elapsed;
+    std::chrono::steady_clock::time_point queued;
+    bool seen;
 };
 
 static std::deque<RANotification> g_notifications;
@@ -63,6 +68,8 @@ static void RA_QueueNotification(const char *title, const char *subtitle, float 
     n.subtitle = subtitle ? subtitle : "";
     n.duration = duration;
     n.elapsed = 0.0f;
+    n.queued = std::chrono::steady_clock::now();
+    n.seen = false;
     g_notifications.push_back(std::move(n));
 }
 
@@ -386,6 +393,15 @@ static void RC_CCONV ra_event_handler(const rc_client_event_t *event, rc_client_
         }
         break;
 
+    case RC_CLIENT_EVENT_ACHIEVEMENT_PROGRESS_INDICATOR_HIDE:
+        // rc_client drives a single shared progress tracker; HIDE carries no
+        // achievement pointer, so drop everything we're showing.
+        {
+            std::lock_guard<std::mutex> lock(g_badgeMutex);
+            g_progressIndicators.clear();
+        }
+        break;
+
     case RC_CLIENT_EVENT_LEADERBOARD_STARTED:
         if (event->leaderboard)
             RA_QueueNotification("Leaderboard Started", event->leaderboard->title, 3.0f);
@@ -406,7 +422,12 @@ static void RC_CCONV ra_event_handler(const rc_client_event_t *event, rc_client_
         break;
 
     case RC_CLIENT_EVENT_RESET:
-        S9xReset();
+        // Prefer the platform's marshalled reset; events can arrive on the
+        // HTTP worker thread where touching the core directly is unsafe.
+        if (g_callbacks.reset_emulator)
+            g_callbacks.reset_emulator();
+        else
+            S9xReset();
         break;
 
     case RC_CLIENT_EVENT_SERVER_ERROR:
@@ -433,6 +454,9 @@ static void RC_CCONV ra_event_handler(const rc_client_event_t *event, rc_client_
 static void RC_CCONV ra_login_callback(int result, const char *error_message,
                                         rc_client_t *client, void *userdata)
 {
+    const bool user_initiated = g_loginUserInitiated;
+    g_loginUserInitiated = false;
+
     if (result == RC_OK)
     {
         const rc_client_user_t *user = rc_client_get_user_info(client);
@@ -444,16 +468,33 @@ static void RC_CCONV ra_login_callback(int result, const char *error_message,
             g_raEnabled = true;
 
             char msg[256];
-            snprintf(msg, sizeof(msg), "Welcome, %s!", user->display_name);
-            RA_QueueNotification("Login Successful", msg, 3.0f);
+            snprintf(msg, sizeof(msg), "Logged in as %s (%u points, %u softcore)",
+                     user->display_name, user->score, user->score_softcore);
+            RA_QueueNotification("Login Successful", msg, 4.0f);
+
+            if (g_callbacks.on_login_result)
+                g_callbacks.on_login_result(true, msg, user_initiated);
 
             if (!Settings.StopEmulation)
+            {
+                // Achievements arm mid-session: reset once the game is
+                // identified so the session starts from power-on.
+                g_resetPendingOnLoad = true;
                 RA_OnLoadROM();
+            }
         }
     }
     else
     {
-        RA_QueueNotification("Unable to Login", "Check your credentials and try again.", 5.0f);
+        char msg[256];
+        snprintf(msg, sizeof(msg), "%s",
+                 (error_message && error_message[0])
+                     ? error_message
+                     : "Login failed. Check your credentials and try again.");
+        RA_QueueNotification("Unable to Login", msg, 5.0f);
+
+        if (g_callbacks.on_login_result)
+            g_callbacks.on_login_result(false, msg, user_initiated);
     }
 }
 
@@ -463,14 +504,27 @@ static void RC_CCONV ra_login_callback(int result, const char *error_message,
 static void RC_CCONV ra_game_loaded_callback(int result, const char *error_message,
                                               rc_client_t *client, void *userdata)
 {
+    const bool reset_pending = g_resetPendingOnLoad;
+    g_resetPendingOnLoad = false;
+
     if (result == RC_OK)
     {
         const rc_client_game_t *game = rc_client_get_game_info(client);
         if (game)
         {
+            rc_client_user_game_summary_t summary = {};
+            rc_client_get_user_game_summary(client, &summary);
+
             char msg[256];
-            snprintf(msg, sizeof(msg), "%s", game->title);
-            RA_QueueNotification("Game Loaded", msg, 3.0f);
+            snprintf(msg, sizeof(msg), "%s (%u of %u achievements earned)",
+                     game->title, summary.num_unlocked_achievements,
+                     summary.num_core_achievements);
+            RA_QueueNotification("Game Loaded", msg, 4.0f);
+
+            // Login happened while this game was already running — restart it
+            // so achievement/hardcore state is valid from power-on.
+            if (reset_pending && !Settings.StopEmulation && g_callbacks.reset_emulator)
+                g_callbacks.reset_emulator();
         }
     }
     else if (result == RC_NO_GAME_LOADED)
@@ -535,6 +589,9 @@ void RA_Shutdown()
 
     g_initialized = false;
     g_raEnabled = false;
+    g_netplayActive = false;
+    g_loginUserInitiated = false;
+    g_resetPendingOnLoad = false;
 }
 
 void RA_DoFrame()
@@ -542,7 +599,37 @@ void RA_DoFrame()
     if (!g_rcClient || !g_raEnabled)
         return;
 
+    // Netplay: peers emulate everyone's inputs, so other players would earn
+    // unlocks here. Idle keeps the server session alive without triggers.
+    if (g_netplayActive)
+    {
+        rc_client_idle(g_rcClient);
+        return;
+    }
+
     rc_client_do_frame(g_rcClient);
+}
+
+void RA_SetNetplayActive(bool active)
+{
+    if (active == g_netplayActive)
+        return;
+
+    g_netplayActive = active;
+
+    if (!g_rcClient || !g_raEnabled || !rc_client_get_game_info(g_rcClient))
+        return;
+
+    if (active)
+    {
+        RA_QueueNotification("RetroAchievements", "Achievements suspended during netplay", 5.0f);
+    }
+    else
+    {
+        // Frames advanced while suspended; re-arm triggers from a clean slate.
+        rc_client_reset(g_rcClient);
+        RA_QueueNotification("RetroAchievements", "Achievements re-enabled", 3.0f);
+    }
 }
 
 // ---------------------------------------------------------------------------
@@ -706,6 +793,7 @@ void RA_AttemptLogin(const char *username, const char *token)
 
     if (username && username[0] && token && token[0])
     {
+        g_loginUserInitiated = false;
         rc_client_begin_login_with_token(g_rcClient,
                                          username, token,
                                          ra_login_callback, nullptr);
@@ -719,6 +807,7 @@ void RA_LoginWithPassword(const char *username, const char *password)
 
     if (username && username[0] && password && password[0])
     {
+        g_loginUserInitiated = true;
         rc_client_begin_login_with_password(g_rcClient, username, password,
                                              ra_login_callback, nullptr);
     }
@@ -736,6 +825,21 @@ bool RA_IsLoggedIn()
         return false;
 
     return rc_client_get_user_info(g_rcClient) != nullptr;
+}
+
+bool RA_GetLoggedInUserString(char *buf, size_t size)
+{
+    if (!g_rcClient)
+        return false;
+
+    const rc_client_user_t *user = rc_client_get_user_info(g_rcClient);
+    if (!user)
+        return false;
+
+    const bool hardcore = rc_client_get_hardcore_enabled(g_rcClient) != 0;
+    snprintf(buf, size, "%s (%u points)", user->display_name,
+             hardcore ? user->score : user->score_softcore);
+    return true;
 }
 
 void RA_Logout()
@@ -940,6 +1044,18 @@ void RA_RenderOverlay(int width, int height)
         auto it = g_notifications.begin();
         while (it != g_notifications.end())
         {
+            // The overlay only renders while a game runs; drop toasts that
+            // aged out unseen so a ROM load doesn't replay the backlog.
+            if (!it->seen)
+            {
+                if (std::chrono::duration<float>(now - it->queued).count() > it->duration + 2.0f)
+                {
+                    it = g_notifications.erase(it);
+                    continue;
+                }
+                it->seen = true;
+            }
+
             it->elapsed += dt;
             if (it->elapsed >= it->duration)
             {

@@ -1147,6 +1147,7 @@ int HandleKeyMessage(WPARAM wParam, LPARAM lParam)
 #ifdef RETROACHIEVEMENTS_SUPPORT
 			if (RA_IsHardcoreModeActive())
 			{
+				S9xSetInfoString("Frame advance is not allowed in Hardcore mode");
 				hitHotKey = true;
 			}
 			else
@@ -1210,32 +1211,24 @@ int HandleKeyMessage(WPARAM wParam, LPARAM lParam)
 				S9xMessage(S9X_INFO, S9X_MOVIE_INFO, MOVIE_ERR_NOREADONLYTOGGLE);
 			hitHotKey = true;
 		}
+		// Fast-forward is allowed in RA hardcore mode (only slowdown,
+		// rewind, states and cheats are restricted).
 		if(HKmatch(FastForward))
 		{
-#ifdef RETROACHIEVEMENTS_SUPPORT
-			if (!RA_IsHardcoreModeActive())
-#endif
-			{
-				if(!Settings.TurboMode)
-					S9xMessage (S9X_INFO, S9X_TURBO_MODE, WINPROC_TURBOMODE_TEXT);
-				Settings.TurboMode = TRUE;
-			}
+			if(!Settings.TurboMode)
+				S9xMessage (S9X_INFO, S9X_TURBO_MODE, WINPROC_TURBOMODE_TEXT);
+			Settings.TurboMode = TRUE;
 			hitHotKey = true;
 		}
 		if(HKmatch(FastForwardToggle))
 		{
-#ifdef RETROACHIEVEMENTS_SUPPORT
-			if (!RA_IsHardcoreModeActive())
-#endif
-			{
-				Settings.TurboMode ^= TRUE;
-				if (Settings.TurboMode)
-					S9xMessage (S9X_INFO, S9X_TURBO_MODE,
-					WINPROC_TURBOMODE_ON);
-				else
-					S9xMessage (S9X_INFO, S9X_TURBO_MODE,
-					WINPROC_TURBOMODE_OFF);
-			}
+			Settings.TurboMode ^= TRUE;
+			if (Settings.TurboMode)
+				S9xMessage (S9X_INFO, S9X_TURBO_MODE,
+				WINPROC_TURBOMODE_ON);
+			else
+				S9xMessage (S9X_INFO, S9X_TURBO_MODE,
+				WINPROC_TURBOMODE_OFF);
 			hitHotKey = true;
 		}
 		if(HKmatch(InsertCoin))
@@ -1328,14 +1321,20 @@ int HandleKeyMessage(WPARAM wParam, LPARAM lParam)
 		}
 		if(HKmatch(SpeedDown))
 		{
+			// Increase emulated frame time
+			int i;
+			for(i=1; FrameTimings[i]<Settings.FrameTime; ++i)
+				;
 #ifdef RETROACHIEVEMENTS_SUPPORT
-			if (!RA_IsHardcoreModeActive())
+			// Hardcore allows running faster than 100%, never slower.
+			if (RA_IsHardcoreModeActive() &&
+				FrameTimings[i+1] > (Settings.PAL ? Settings.FrameTimePAL : Settings.FrameTimeNTSC))
+			{
+				S9xSetInfoString("Slow motion is not allowed in Hardcore mode");
+			}
+			else
 #endif
 			{
-				// Increase emulated frame time
-				int i;
-				for(i=1; FrameTimings[i]<Settings.FrameTime; ++i)
-					;
 				Settings.FrameTime = FrameTimings[i+1];
 				ResetFrameTimer ();
 				sprintf (InfoString, "Speed: %.0f%% (%.1f ms/frame)", ((Settings.PAL?Settings.FrameTimePAL:Settings.FrameTimeNTSC) * 100.0f) / (float)Settings.FrameTime, Settings.FrameTime*0.001f);
@@ -1345,33 +1344,23 @@ int HandleKeyMessage(WPARAM wParam, LPARAM lParam)
 		}
 		if(HKmatch(SpeedUp))
 		{
-#ifdef RETROACHIEVEMENTS_SUPPORT
-			if (!RA_IsHardcoreModeActive())
-#endif
-			{
-				// Decrease emulated frame time
-				int i;
-				for(i=1; FrameTimings[i]<Settings.FrameTime; ++i)
-					;
-				Settings.FrameTime = FrameTimings[i-1];
+			// Decrease emulated frame time
+			int i;
+			for(i=1; FrameTimings[i]<Settings.FrameTime; ++i)
+				;
+			Settings.FrameTime = FrameTimings[i-1];
 
-				ResetFrameTimer ();
-				sprintf (InfoString, "Speed: %.0f%% (%.1f ms/frame)", ((Settings.PAL?Settings.FrameTimePAL:Settings.FrameTimeNTSC) * 100.0f) / (float)Settings.FrameTime, Settings.FrameTime*0.001f);
-				S9xSetInfoString (InfoString);
-			}
+			ResetFrameTimer ();
+			sprintf (InfoString, "Speed: %.0f%% (%.1f ms/frame)", ((Settings.PAL?Settings.FrameTimePAL:Settings.FrameTimeNTSC) * 100.0f) / (float)Settings.FrameTime, Settings.FrameTime*0.001f);
+			S9xSetInfoString (InfoString);
 			hitHotKey = true;
 		}
 		if(HKmatch(ResetSpeed))
 		{
-#ifdef RETROACHIEVEMENTS_SUPPORT
-			if (!RA_IsHardcoreModeActive())
-#endif
-			{
-				Settings.FrameTime = Settings.PAL ? Settings.FrameTimePAL : Settings.FrameTimeNTSC;
-				ResetFrameTimer ();
-				sprintf (InfoString, "Speed: 100%% (%.1f ms/frame)", Settings.FrameTime*0.001f);
-				S9xSetInfoString (InfoString);
-			}
+			Settings.FrameTime = Settings.PAL ? Settings.FrameTimePAL : Settings.FrameTimeNTSC;
+			ResetFrameTimer ();
+			sprintf (InfoString, "Speed: 100%% (%.1f ms/frame)", Settings.FrameTime*0.001f);
+			S9xSetInfoString (InfoString);
 			hitHotKey = true;
 		}
 		bool gbCartLoaded = (Settings.SuperGameBoy || Settings.SGB_BIOSModeActive);
@@ -1483,9 +1472,18 @@ int HandleKeyMessage(WPARAM wParam, LPARAM lParam)
 			}
 			else
 			{
-				if(!Settings.Rewinding)
-					S9xMessage (S9X_INFO, 0, GUI.rewindBufferSize?WINPROC_REWINDING_TEXT:WINPROC_REWINDING_DISABLED);
-				Settings.Rewinding = true;
+#ifdef RETROACHIEVEMENTS_SUPPORT
+				if (GUI.rewindBufferSize && RA_IsHardcoreModeActive())
+				{
+					S9xSetInfoString("Rewind is not allowed in Hardcore mode");
+				}
+				else
+#endif
+				{
+					if(!Settings.Rewinding)
+						S9xMessage (S9X_INFO, 0, GUI.rewindBufferSize?WINPROC_REWINDING_TEXT:WINPROC_REWINDING_DISABLED);
+					Settings.Rewinding = true;
+				}
 			}
 			hitHotKey = true;
         }
@@ -3023,21 +3021,14 @@ LRESULT CALLBACK WinProc(
 			break;
 		case ID_RA_HARDCORE_MODE:
 			GUI.RAHardcoreMode = !GUI.RAHardcoreMode;
-			RA_SetHardcoreEnabled(GUI.RAHardcoreMode);
-			if (GUI.RAHardcoreMode && !Settings.StopEmulation)
+			if (GUI.RAHardcoreMode && Settings.ApplyCheats)
 			{
-				if (Settings.ApplyCheats)
-				{
-					Settings.ApplyCheats = false;
-					S9xCheatsDisable();
-				}
-				S9xMovieUpdateOnReset();
-				if (S9xMoviePlaying())
-					S9xMovieStop(TRUE);
-				S9xSoftReset();
-				ReInitSound();
-				RA_OnReset();
+				Settings.ApplyCheats = false;
+				S9xCheatsDisable();
 			}
+			// Enabling hardcore with a loaded game raises RC_CLIENT_EVENT_RESET,
+			// which posts ID_EMULATION_HARD_RESET (movie stop + reset + RA_OnReset).
+			RA_SetHardcoreEnabled(GUI.RAHardcoreMode);
 			S9xRestoreWindowTitle();
 			break;
 		case ID_RA_TOGGLE_IMAGES:
@@ -3054,10 +3045,26 @@ LRESULT CALLBACK WinProc(
 			RA_Init();
 			RA_ShowAchievementList();
 			break;
+		case ID_RA_VIEW_PROFILE:
+		{
+			rc_client_t *raClient = RA_GetClient();
+			const rc_client_user_t *raUser = raClient ? rc_client_get_user_info(raClient) : NULL;
+			if (raUser && raUser->username && raUser->username[0])
+			{
+				char raUrl[512];
+				snprintf(raUrl, sizeof(raUrl), "https://retroachievements.org/user/%s", raUser->username);
+				ShellExecuteA(hWnd, "open", raUrl, NULL, NULL, SW_SHOWNORMAL);
+			}
+			break;
+		}
 #endif
 		case ID_FRAME_ADVANCE:
 #ifdef RETROACHIEVEMENTS_SUPPORT
-			if (!RA_IsHardcoreModeActive())
+			if (RA_IsHardcoreModeActive())
+			{
+				S9xSetInfoString("Frame advance is not allowed in Hardcore mode");
+			}
+			else
 #endif
 			{
 				Settings.Paused = true;
@@ -3396,6 +3403,24 @@ LRESULT CALLBACK WinProc(
 			RestoreSNESDisplay ();
 		}
 #endif
+		break;
+#endif
+
+#ifdef RETROACHIEVEMENTS_SUPPORT
+	case WM_RA_LOGIN_RESULT:
+		{
+			// Posted from the HTTP worker; lParam owns a malloc'd message.
+			char *raMsg = (char *)lParam;
+			const bool raSuccess = (wParam & 1) != 0;
+			const bool raUserInitiated = (wParam & 2) != 0;
+			if (!raSuccess)
+				MessageBoxA(hWnd, (raMsg && raMsg[0]) ? raMsg : "Login failed.",
+				            "RetroAchievements - Login Failed", MB_OK | MB_ICONERROR);
+			else if (raUserInitiated)
+				MessageBoxA(hWnd, (raMsg && raMsg[0]) ? raMsg : "Login successful.",
+				            "RetroAchievements", MB_OK | MB_ICONINFORMATION);
+			free(raMsg);
+		}
 		break;
 #endif
 
@@ -4744,6 +4769,11 @@ int WINAPI WinMain(
             if (!GetMessage (&msg, NULL, 0, 0))
                 goto loop_exit; // got WM_QUIT
 
+#ifdef RETROACHIEVEMENTS_SUPPORT
+            if (RA_Win32_HandleDialogMessage(&msg))
+                continue;
+#endif
+
             if (!TranslateAccelerator (GUI.hWnd, GUI.Accelerators, &msg))
             {
                 TranslateMessage (&msg);
@@ -4957,7 +4987,21 @@ int WINAPI WinMain(
 				S9xMainLoop();
 			}
 #ifdef RETROACHIEVEMENTS_SUPPORT
-			RA_DoFrame();
+			{
+				// Suspend achievement processing whenever remote inputs are
+				// part of the emulation — unlocks can't be attributed.
+				bool raNetplayActive = false;
+#ifdef NETPLAY_SUPPORT
+				if (Settings.NetPlay || Settings.NetPlayServer)
+					raNetplayActive = true;
+#endif
+#ifdef KAILLERA_SUPPORT
+				if (KailleraClientIsPlaying())
+					raNetplayActive = true;
+#endif
+				RA_SetNetplayActive(raNetplayActive);
+				RA_DoFrame();
+			}
 #endif
 			GUI.FrameCount++;
 			rewindContentFrame++;
@@ -5415,12 +5459,22 @@ static void CheckMenuStates ()
 
     mii.fState = GUI.RAEnabled ? MFS_ENABLED : MFS_DISABLED;
     mii.fMask = MIIM_STATE | MIIM_STRING;
-    if (RA_IsLoggedIn())
-        mii.dwTypeData = (LPTSTR)TEXT("&Logout");
+    TCHAR raLoginText[224];
+    char raUserInfo[160];
+    if (RA_GetLoggedInUserString(raUserInfo, sizeof(raUserInfo)))
+    {
+        // e.g. "Logout shany (12345 points)" — shows who's logged in
+        Utf8ToWide raUserWide(raUserInfo);
+        _stprintf(raLoginText, TEXT("&Logout %s"), (const TCHAR *)raUserWide);
+        mii.dwTypeData = raLoginText;
+    }
     else
         mii.dwTypeData = (LPTSTR)TEXT("&Login...");
     SetMenuItemInfo(GUI.hMenu, ID_RA_LOGIN, FALSE, &mii);
     mii.fMask = MIIM_STATE;
+
+    mii.fState = RA_IsLoggedIn() ? MFS_ENABLED : MFS_DISABLED;
+    SetMenuItemInfo(GUI.hMenu, ID_RA_VIEW_PROFILE, FALSE, &mii);
 
     mii.fState = Settings.StopEmulation ? MFS_DISABLED : MFS_ENABLED;
     SetMenuItemInfo(GUI.hMenu, ID_RA_ACHIEVEMENTS_LIST, FALSE, &mii);
