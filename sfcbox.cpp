@@ -542,6 +542,12 @@ static const struct SOSDXlat	osd_xlat[] =
 	{ "\x80\x8A\x01\x01\xF6\x01\x01\xF7", "Left \x01\x01m\x01\x01s" },
 	{ "\x80\x8A\x01\x01\xF7", "Left \x01\x01s" },
 
+	// Check play (keyswitch 2/3 trial): banner + minutes-only countdown
+	// (あとN分です, digit unpadded; seconds forms reuse the entries above).
+	{ "\xC1\xAA\xAF\xB8\x9D\xDA\xB2\xEB\x93\x87", "Check play in progress" },
+	{ "\x80\x8A\x01\x01\xF6\x93\x87", "Time left \x01\x01 min" },
+	{ "\x80\x8A\x01\xF6\x93\x87", "Time left \x01 min" },
+
 	// Over-an-hour countdowns (enough coins banked): あと 1時間19分(です).
 	// 時=F5h 間=B0h; the KROM pads a space after あと in the hour form.
 	{ "\x80\x8A\x20\x01\xF5\xB0\x01\x01\xF6\x93\x87", "Time left \x01h\x01\x01m" },
