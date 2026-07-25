@@ -50,6 +50,8 @@ set(SNES9X_CORE_SOURCES
     ../seta010.cpp
     ../seta011.cpp
     ../seta018.cpp
+    ../sfcbox.cpp
+    ../hd64180.cpp
     ../controls.cpp
     ../crosshairs.cpp
     ../cpu.cpp
