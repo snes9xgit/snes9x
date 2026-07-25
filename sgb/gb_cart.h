@@ -48,6 +48,9 @@ struct Cart
 	bool                  mbc1_multicart = false;
 	// Duz "2-in-1" MBC3 multicart: $C0 to $0000 unlocks an $A000/$A100 register port whose reg $A3<<1 is the ROM base bank added to every access.
 	bool                  duz_multicart  = false;
+	// "23 in 1" MBC5 multicart: $5001/$5002 latch a base bank and a bank mask,
+	// both in 2-bank units (register value << 1).
+	bool                  mbc5_multicart = false;
 	bool                  sachen_runs_raw = false;
 	uint8_t               camera_regs[0x36] = {0};
 };

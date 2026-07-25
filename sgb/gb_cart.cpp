@@ -208,6 +208,21 @@ bool LooksLikeDuzMulticart(const std::vector<uint8_t> &rom)
 	return true;
 }
 
+// "23 in 1"-style MBC5 multicart: a genuine MBC5 whose menu latches a base bank
+// and bank mask through $5001/$5002. Identified by the crowd of sub-game Nintendo
+// logos sitting on bank boundaries — a single-game cart carries exactly one.
+bool LooksLikeMbc5Multicart(const std::vector<uint8_t> &rom)
+{
+	if (rom.size() < 0x80000) return false;
+	int logos = 0;
+	for (size_t base = 0x4000; base + 0x134 <= rom.size(); base += 0x4000)
+	{
+		if (memcmp(&rom[base + 0x104], kGbNintendoLogo, 48) == 0 && ++logos >= 4)
+			return true;
+	}
+	return false;
+}
+
 std::string MakeSavPath(const std::string &rom_path)
 {
 	if (rom_path.empty()) return {};
@@ -346,6 +361,7 @@ bool CartLoad(Cart &c, const uint8_t *data, size_t size, const char *path)
 	}
 	c.mbc1_multicart = (c.mbc.type == MbcType::MBC1) && LooksLikeMbc1Multicart(c.rom);
 	c.duz_multicart  = (c.mbc.type == MbcType::MBC3) && LooksLikeDuzMulticart(c.rom);
+	c.mbc5_multicart = (c.mbc.type == MbcType::MBC5) && LooksLikeMbc5Multicart(c.rom);
 	MbcReset(c.mbc);
 
 	// ----- Cart RAM allocation -----
@@ -398,6 +414,7 @@ void CartUnload(Cart &c)
 	c.sram_dirty     = false;
 	c.mbc1_multicart = false;
 	c.duz_multicart  = false;
+	c.mbc5_multicart = false;
 	MbcReset(c.mbc);
 	c.mbc.type    = MbcType::None;
 }

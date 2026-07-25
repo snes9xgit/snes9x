@@ -218,6 +218,14 @@ inline uint32_t Mbc1RamBank(const MbcState &s, bool multicart)
 	return s.mbc1_mode ? (s.ram_bank & 0x03) : 0;
 }
 
+// 23-in-1 multicart overlay: the latched base replaces the masked bank bits.
+// mask defaults to 0, so a normal MBC5 cart passes rb through untouched.
+inline uint32_t Mbc5MultiBank(const MbcState &s, uint32_t rb)
+{
+	const uint32_t mask = s.sachen_outer_mask;
+	return (rb & ~mask) | (s.sachen_outer_bank & mask);
+}
+
 // base/mask address up to 32 Mbit, so a smaller cart can select a bank its ROM
 // chip doesn't answer for — that reads open bus, not a mirror of bank 0.
 inline bool SachenBankAbsent(const std::vector<uint8_t> &rom, uint32_t bank)
@@ -544,6 +552,10 @@ uint8_t MbcRead(MbcState &s, const std::vector<uint8_t> &rom, const std::vector<
 		{
 			bank = s.sachen_outer_bank;   // Duz multicart base bank; 0 for normal MBC3
 		}
+		else if (s.type == MbcType::MBC5)
+		{
+			bank = Mbc5MultiBank(s, 0);   // no-op until a 23-in-1 menu sets the mask
+		}
 		return static_cast<uint8_t>(ReadRom(rom, (bank * 0x4000u) + eff_addr));
 	}
 	if (addr < 0x8000)
@@ -553,7 +565,7 @@ uint8_t MbcRead(MbcState &s, const std::vector<uint8_t> &rom, const std::vector<
 		{
 			case MbcType::MBC1: bank = Mbc1BankN(s, mbc1_multicart); break;
 			case MbcType::MBC3: bank = (s.rom_bank ? s.rom_bank : 1) + s.sachen_outer_bank; break;
-			case MbcType::MBC5: bank = s.rom_bank; break;
+			case MbcType::MBC5: bank = Mbc5MultiBank(s, s.rom_bank); break;
 			case MbcType::MBC7: bank = s.rom_bank; break;
 			case MbcType::HuC1: bank = s.rom_bank ? s.rom_bank : 1; break;
 			case MbcType::HuC3: bank = s.rom_bank; break;
@@ -862,6 +874,15 @@ void MbcWrite(Cart &c, uint16_t addr, uint8_t value)
 		}
 		else if (addr < 0x6000)
 		{
+			// 23-in-1 multicart: the menu latches a base bank ($5001) and a
+			// bank mask ($5002), both in 2-bank units, then jumps to $0100.
+			if (c.mbc5_multicart && addr >= 0x5000)
+			{
+				if ((addr & 0x0F) == 1)
+					s.sachen_outer_bank = static_cast<uint8_t>(value << 1);
+				else if ((addr & 0x0F) == 2)
+					s.sachen_outer_mask = static_cast<uint8_t>(value << 1);
+			}
 			s.ram_bank = value & 0x0F;
 			// bit 3 = rumble for rumble carts; ignored here (P7 may wire it).
 		}
