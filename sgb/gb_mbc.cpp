@@ -218,6 +218,13 @@ inline uint32_t Mbc1RamBank(const MbcState &s, bool multicart)
 	return s.mbc1_mode ? (s.ram_bank & 0x03) : 0;
 }
 
+// base/mask address up to 32 Mbit, so a smaller cart can select a bank its ROM
+// chip doesn't answer for — that reads open bus, not a mirror of bank 0.
+inline bool SachenBankAbsent(const std::vector<uint8_t> &rom, uint32_t bank)
+{
+	return static_cast<size_t>(bank) * 0x4000u >= rom.size();
+}
+
 inline uint32_t SachenBank0(const MbcState &s)
 {
 	return static_cast<uint32_t>(s.sachen_outer_bank & s.sachen_outer_mask);
@@ -527,6 +534,7 @@ uint8_t MbcRead(MbcState &s, const std::vector<uint8_t> &rom, const std::vector<
 		{
 			bank = SachenBank0(s);
 			if (s.sachen_locked) eff_addr = SachenLockedHeaderXform(addr);
+			if (SachenBankAbsent(rom, bank)) return 0xFF;
 		}
 		else if (s.type == MbcType::MMM01)
 		{
@@ -556,6 +564,8 @@ uint8_t MbcRead(MbcState &s, const std::vector<uint8_t> &rom, const std::vector<
 			case MbcType::MMM01:      bank = Mmm01RomBank(s, rom.size()); break;
 			default:            bank = 1; break;
 		}
+		if (s.type == MbcType::SachenMMC1 && SachenBankAbsent(rom, bank))
+			return 0xFF;
 		return static_cast<uint8_t>(ReadRom(rom, (bank * 0x4000u) + (addr - 0x4000u)));
 	}
 	if (addr >= 0xA000 && addr < 0xC000)
