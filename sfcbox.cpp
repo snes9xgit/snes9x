@@ -544,7 +544,7 @@ static const struct SOSDXlat	osd_xlat[] =
 
 	// Check play (keyswitch 2/3 trial): banner + minutes-only countdown
 	// (あとN分です, digit unpadded; seconds forms reuse the entries above).
-	{ "\xC1\xAA\xAF\xB8\x9D\xDA\xB2\xEB\x93\x87", "Check play in progress" },
+	{ "\xC1\xAA\xAF\xB8\x9D\xDA\xB2\xEB\x93\x87", "Free play in progress" },
 	{ "\x80\x8A\x01\x01\xF6\x93\x87", "Time left \x01\x01 min" },
 	{ "\x80\x8A\x01\xF6\x93\x87", "Time left \x01 min" },
 
