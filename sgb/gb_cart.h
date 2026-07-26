@@ -52,6 +52,9 @@ struct Cart
 	// both in 2-bank units (register value << 1).
 	bool                  mbc5_multicart = false;
 	bool                  sachen_runs_raw = false;
+	// Sachen carts that keep the boot logo in the RA7-high half of the
+	// permuted $0100-$01FF window (the combo/31-in-1 series).
+	bool                  sachen_logo_high = false;
 	uint8_t               camera_regs[0x36] = {0};
 };
 

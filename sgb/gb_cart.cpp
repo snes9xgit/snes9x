@@ -90,15 +90,23 @@ inline uint16_t SachenScrambleAddr(uint16_t addr)
 	                           | ((addr << 6) & 0x40u));
 }
 
-bool LooksLikeSachenScrambledLogo(const std::vector<uint8_t> &rom)
+// Per Tauwasser's RE the mapper forces ROM address bit 7 high while locked, so
+// a cart may stash its logo in either half of the permuted $0100-$01FF window.
+bool SachenLogoAt(const std::vector<uint8_t> &rom, bool ra7_high)
 {
 	if (rom.size() < 0x0200) return false;
 	for (int i = 0; i < 48; ++i)
 	{
-		const uint16_t a = SachenScrambleAddr(static_cast<uint16_t>(0x0104 + i));
+		uint16_t a = SachenScrambleAddr(static_cast<uint16_t>(0x0104 + i));
+		if (ra7_high) a |= 0x80;
 		if (rom[a] != kGbNintendoLogo[i]) return false;
 	}
 	return true;
+}
+
+bool LooksLikeSachenScrambledLogo(const std::vector<uint8_t> &rom)
+{
+	return SachenLogoAt(rom, false) || SachenLogoAt(rom, true);
 }
 
 bool SachenHeaderRunsRaw(const std::vector<uint8_t> &rom)
@@ -308,7 +316,10 @@ bool CartLoad(Cart &c, const uint8_t *data, size_t size, const char *path)
 		c.has_battery   = false;
 		c.has_rtc       = false;
 		c.has_rumble    = false;
-		c.sachen_runs_raw = SachenHeaderRunsRaw(c.rom);
+		c.sachen_logo_high = !SachenLogoAt(c.rom, false) && SachenLogoAt(c.rom, true);
+		// The RA7-high series keeps its loader inside the permuted window, so
+		// the xform has to survive the boot hand-off.
+		c.sachen_runs_raw = c.sachen_logo_high ? false : SachenHeaderRunsRaw(c.rom);
 	}
 	else if (LooksLikeMmm01(c.rom))
 	{
@@ -353,6 +364,7 @@ bool CartLoad(Cart &c, const uint8_t *data, size_t size, const char *path)
 		c.has_rtc         = false;
 		c.has_rumble      = false;
 		c.sachen_runs_raw = false;
+		c.sachen_logo_high = false;
 	}
 	else
 	{
@@ -415,6 +427,8 @@ void CartUnload(Cart &c)
 	c.mbc1_multicart = false;
 	c.duz_multicart  = false;
 	c.mbc5_multicart = false;
+	c.sachen_runs_raw  = false;
+	c.sachen_logo_high = false;
 	MbcReset(c.mbc);
 	c.mbc.type    = MbcType::None;
 }
