@@ -7454,6 +7454,11 @@ INT_PTR CALLBACK DlgEmulatorProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPar
 					bool AddRegistryChecked = (BST_CHECKED == IsDlgButtonChecked(hDlg, IDC_ADD_REGISTRY));
 					if (GUI.AddToRegistry && !AddRegistryChecked)
 						S9xWinRemoveRegistryKeys();
+					else if (!GUI.AddToRegistry && AddRegistryChecked)
+					{
+						RegisterProgid();
+						RegisterExts();
+					}
 					GUI.AddToRegistry = AddRegistryChecked;
 
 					Settings.TurboSkipFrames=SendDlgItemMessage(hDlg, IDC_SPIN_TURBO_SKIP, UDM_GETPOS, 0,0);
@@ -9154,10 +9159,11 @@ void SetInfoDlgColor(unsigned char r, unsigned char g, unsigned char b)
 	GUI.InfoColor=RGB(r,g,b);
 }
 
-#define SNES9XWPROGID TEXT("Snes9x.Win32")
-#define SNES9XWPROGIDDESC TEXT("Snes9x ROM")
-#define SNES9XWAPPDESC TEXT("Snes9x is a portable, freeware Super Nintendo Entertainment System (SNES) emulator.")
-#define SNES9XWAPPNAME TEXT("Snes9x")
+#define SNES9XWPROGID TEXT("SuperSnes9x.Win32")
+#define SNES9XWPROGIDDESC TEXT("SuperSnes9x ROM")
+#define SNES9XWAPPDESC TEXT("SuperSnes9x is a portable, freeware Super Nintendo Entertainment System (SNES) emulator.")
+#define SNES9XWAPPNAME TEXT("SuperSnes9x")
+#define SNES9XWCAPSKEY TEXT("SOFTWARE\\SuperSnes9x\\Capabilities")
 #define REGCREATEKEY(key,subkey) \
 	if(regResult=RegCreateKeyEx(key, subkey,\
 					0, NULL, REG_OPTION_NON_VOLATILE, KEY_SET_VALUE , NULL , &hKey, NULL ) != ERROR_SUCCESS){\
@@ -9169,32 +9175,65 @@ void SetInfoDlgColor(unsigned char r, unsigned char g, unsigned char b)
 		return false;\
 	}
 
+// deletes every subkey of parent whose name contains match (case-insensitive)
+static void DeleteMatchingSubkeys(const TCHAR *parent, const TCHAR *match)
+{
+	HKEY hKey;
+	if (RegOpenKeyEx(HKEY_CURRENT_USER, parent, 0, KEY_READ, &hKey) != ERROR_SUCCESS)
+		return;
+	TCHAR szName[MAX_PATH], szSubKey[4096];
+	DWORD dwIndex = 0;
+	for (;;)
+	{
+		DWORD dwSize = MAX_PATH;
+		if (RegEnumKeyEx(hKey, dwIndex, szName, &dwSize, NULL, NULL, NULL, NULL) != ERROR_SUCCESS)
+			break;
+		if (StrStrI(szName, match))
+		{
+			_stprintf_s(szSubKey, 4095, TEXT("%s\\%s"), parent, szName);
+			SHDeleteKey(HKEY_CURRENT_USER, szSubKey);
+		}
+		else
+			dwIndex++;
+	}
+	RegCloseKey(hKey);
+}
+
 void S9xWinRemoveRegistryKeys() {
 	TCHAR szRegKey[4096] = {};
+	TCHAR szExePath[PATH_MAX];
 
     if(!valid_ext)
         LoadExts();
 
 	_stprintf_s(szRegKey, 4095, TEXT("Software\\Classes\\%s"), SNES9XWPROGID);
 	SHDeleteKey(HKEY_CURRENT_USER, szRegKey);
-	_stprintf_s(szRegKey, 4095, TEXT("Software\\RegisteredApplications\\%s"), SNES9XWPROGID);
-	SHDeleteKey(HKEY_CURRENT_USER, szRegKey);
-	_stprintf_s(szRegKey, 4095, TEXT("Software\\Snes9x"), SNES9XWPROGID);
-	SHDeleteKey(HKEY_CURRENT_USER, szRegKey);
+	// RegisteredApplications entries are values, not subkeys
+	SHDeleteValue(HKEY_CURRENT_USER, TEXT("Software\\RegisteredApplications"), SNES9XWAPPNAME);
+	SHDeleteKey(HKEY_CURRENT_USER, TEXT("Software\\SuperSnes9x"));
+	// legacy identity written by builds that registered as plain Snes9x
+	SHDeleteKey(HKEY_CURRENT_USER, TEXT("Software\\Classes\\Snes9x.Win32"));
+	SHDeleteValue(HKEY_CURRENT_USER, TEXT("Software\\RegisteredApplications"), TEXT("Snes9x"));
+	SHDeleteKey(HKEY_CURRENT_USER, TEXT("Software\\Snes9x"));
 
-	const TCHAR* szExeNames[] = { TEXT("snes9x.exe"), TEXT("snes9x-debug.exe"), TEXT("snes9x-x64.exe"), TEXT("snes9x-debug-x64.exe") };
-	for (auto& szExeName : szExeNames)
-	{
-		_stprintf_s(szRegKey, 4095, TEXT("Software\\Classes\\Applications\\%s"), szExeName);
-		SHDeleteKey(HKEY_CURRENT_USER, szRegKey);
+	GetModuleFileName(NULL, szExePath, PATH_MAX);
+	const TCHAR *szExeName = PathFindFileName(szExePath);
 
-		ExtList* curr = valid_ext;
-		while (curr->next != NULL) {
-			auto ext = curr->extension;
-			_stprintf(szRegKey, TEXT("Software\\Classes\\.%s\\OpenWithList\\%s"), ext, szExeName);
+	_stprintf_s(szRegKey, 4095, TEXT("Software\\Classes\\Applications\\%s"), szExeName);
+	SHDeleteKey(HKEY_CURRENT_USER, szRegKey);
+	// sweep entries left by renamed copies and older builds
+	DeleteMatchingSubkeys(TEXT("Software\\Classes\\Applications"), TEXT("snes9x"));
+
+	ExtList* curr = valid_ext;
+	while (curr->next != NULL) {
+		if (curr->extension)
+		{
+			_stprintf(szRegKey, TEXT("Software\\Classes\\.%s\\OpenWithList\\%s"), curr->extension, szExeName);
 			SHDeleteKey(HKEY_CURRENT_USER, szRegKey);
-			curr = curr->next;
+			_stprintf(szRegKey, TEXT("Software\\Classes\\.%s\\OpenWithList"), curr->extension);
+			DeleteMatchingSubkeys(szRegKey, TEXT("snes9x"));
 		}
+		curr = curr->next;
 	}
 }
 
@@ -9235,13 +9274,13 @@ bool RegisterProgid() {
 
     /* Register Capabilities (for Default Programs)
     */
-    REGCREATEKEY(HKEY_CURRENT_USER,TEXT("SOFTWARE\\Snes9x\\Capabilities"))
+    REGCREATEKEY(HKEY_CURRENT_USER,SNES9XWCAPSKEY)
     REGSETVALUE(hKey,TEXT("ApplicationDescription"),REG_SZ,SNES9XWAPPDESC,(lstrlen(SNES9XWAPPDESC) + 1) * sizeof(TCHAR))
     REGSETVALUE(hKey,TEXT("ApplicationName"),REG_SZ,SNES9XWAPPNAME,(lstrlen(SNES9XWAPPNAME) + 1) * sizeof(TCHAR))
     RegCloseKey(hKey);
 
     REGCREATEKEY(HKEY_CURRENT_USER,TEXT("SOFTWARE\\RegisteredApplications"))
-    REGSETVALUE(hKey,TEXT("Snes9x"),REG_SZ,TEXT("SOFTWARE\\Snes9x\\Capabilities"),(lstrlen(TEXT("SOFTWARE\\Snes9x\\Capabilities")) + 1) * sizeof(TCHAR))
+    REGSETVALUE(hKey,SNES9XWAPPNAME,REG_SZ,SNES9XWCAPSKEY,(lstrlen(SNES9XWCAPSKEY) + 1) * sizeof(TCHAR))
     RegCloseKey(hKey);
 
     /* Register under Applications for use in OpenWithList
@@ -9274,7 +9313,7 @@ bool RegisterExt(TCHAR *ext) {
 
     /* Register .ext as S9x capability (for Default Programs)
     */
-    REGCREATEKEY(HKEY_CURRENT_USER,TEXT("SOFTWARE\\Snes9x\\Capabilities\\FileAssociations"))
+    REGCREATEKEY(HKEY_CURRENT_USER,SNES9XWCAPSKEY TEXT("\\FileAssociations"))
 	_stprintf_s(szRegKey,PATH_MAX-1,TEXT(".%s"),ext);
 	REGSETVALUE(hKey,szRegKey,REG_SZ,SNES9XWPROGID,(lstrlen(SNES9XWPROGID) + 1) * sizeof(TCHAR))
 	RegCloseKey(hKey);
