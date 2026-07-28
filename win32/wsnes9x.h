@@ -255,6 +255,7 @@ struct sGUI {
 	                         // SoundChannelEnable so the waveform viewer can
 	                         // mute GB channels without touching SPC voices
 	bool BackgroundInput;
+	bool EnableRumble;
     bool BackgroundKeyHotkeys;
 	bool AllowMultipleBindings;
 	bool MultiBindingMode;

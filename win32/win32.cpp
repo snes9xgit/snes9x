@@ -15,6 +15,7 @@
 #include "../gfx.h"
 #include "../movie.h"
 #include "../netplay.h"
+#include "../controls.h"
 #include "../sgb/sgb.h"
 
 #include "wsnes9x.h"
@@ -708,6 +709,26 @@ void S9xWinScanJoypads ()
     }
     // Legacy DLL-based Kaillera removed — native client handles everything above
 #endif
+
+    // LRG rumble dongle -> the SDL device holding SNES Port 1's bindings.
+    // Refresh while active (finite SDL duration), one zero-send on idle.
+    {
+        static uint16 lastLow = 0, lastHigh = 0;
+        uint8 l = 0, r = 0;
+        if (GUI.EnableRumble && !Settings.Paused)
+            S9xGetRumble(l, r);
+        const uint16 low = l * 0x1111, high = r * 0x1111;
+        if (low || high || lastLow || lastHigh)
+        {
+            int slot = -1;
+            const WORD *binds = &Joypad[0].Left;
+            for (int i = 0; i < 16 && slot < 0; i++)
+                if (binds[i] & 0x8000)
+                    slot = (binds[i] >> 8) & 0xF;
+            SDLInput_Rumble(slot, low, high);
+        }
+        lastLow = low, lastHigh = high;
+    }
 }
 
 void S9xDetectJoypads()

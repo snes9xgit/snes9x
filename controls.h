@@ -263,6 +263,7 @@ void S9xSetJoypadLatch (bool latch);
 // Use when reading $4016/7 (JOYSER0 and JOYSER1).
 
 uint8 S9xReadJOYSERn (int n);
+void S9xGetRumble (uint8 &left, uint8 &right);	// LRG dongle motor magnitudes, 0-15
 
 // End-Of-Frame processing. Sets gun latch variables and tries to draw crosshairs
 

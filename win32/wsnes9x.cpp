@@ -2438,6 +2438,10 @@ LRESULT CALLBACK WinProc(
             S9xDetectJoypads();
             break;
 
+        case ID_INPUT_ENABLERUMBLE:
+            GUI.EnableRumble = !GUI.EnableRumble;
+            break;
+
 		case ID_FILE_LOADMULTICART:
 			{
 				RestoreGUIDisplay ();
@@ -5614,6 +5618,9 @@ static void CheckMenuStates ()
     if (!GUI.BackgroundInput)
         mii.fState |= MFS_DISABLED;
     SetMenuItemInfo(GUI.hMenu, ID_INPUT_BACKGROUNDKEYBOARDHOTKEYS, FALSE, &mii);
+
+    mii.fState = GUI.EnableRumble ? MFS_CHECKED : MFS_UNCHECKED;
+    SetMenuItemInfo(GUI.hMenu, ID_INPUT_ENABLERUMBLE, FALSE, &mii);
 
 	UINT validFlag;
     ControllerOptionsFromControllers();

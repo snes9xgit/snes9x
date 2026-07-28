@@ -390,8 +390,24 @@ void S9xControlsReset (void)
 	macsrifle.buttons = 0;
 }
 
+// LRG rumble dongle (Port 1 pass-through, github.com/LimitedRunGames-Tech/snes-rumble):
+// each $4016 read clocks WRIO bit 6 into a shift register; preamble $72
+// frames a byte of right.4/left.4 motor magnitudes.
+static uint16	rumble_shift = 0xffff;
+static uint8	rumble_left  = 0;
+static uint8	rumble_right = 0;
+
+void S9xGetRumble (uint8 &left, uint8 &right)
+{
+	left  = rumble_left;
+	right = rumble_right;
+}
+
 void S9xControlsSoftReset (void)
 {
+	rumble_shift = 0xffff;
+	rumble_left = rumble_right = 0;
+
 	for (set<struct exemulti *>::iterator it = exemultis.begin(); it != exemultis.end(); it++)
 		delete *it;
 	exemultis.clear();
@@ -2928,6 +2944,18 @@ uint8 S9xReadJOYSERn (int n)
 	if (n > 1)
 		n -= 0x4016;
 	assert(n == 0 || n == 1);
+
+	if (n == 0)
+	{
+		// Rumble dongle: sample the Port-1 IOBit (WRIO.6) on every read-clock.
+		rumble_shift = (rumble_shift << 1) | ((Memory.FillRAM[0x4201] >> 6) & 1);
+		if ((rumble_shift & 0xff00) == 0x7200)
+		{
+			rumble_right = (rumble_shift >> 4) & 0xf;
+			rumble_left  =  rumble_shift       & 0xf;
+			rumble_shift = 0xffff;	// consume the frame; WRIO idles high
+		}
+	}
 
 	uint8	bits = (OpenBus & ~3) | ((n == 1) ? 0x1c : 0);
 

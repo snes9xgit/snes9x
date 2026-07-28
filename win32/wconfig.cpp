@@ -1019,6 +1019,7 @@ void WinRegisterConfigItems()
 	ADDGUID(1); ADDGUID(2); ADDGUID(3); ADDGUID(4); ADDGUID(5); ADDGUID(6); ADDGUID(7); ADDGUID(8);
 #undef ADDGUID
 	AddBool2C("Input:Background", GUI.BackgroundInput, false, "on to detect game keypresses and hotkeys while window is inactive, if PauseWhenInactive = FALSE.");
+	AddBool2C("Input:EnableRumble", GUI.EnableRumble, true, "on to pass rumble-cart motor effects (LRG SNES releases) to the port-1 gamepad.");
 	AddBool2C("Input:BackgroundKeyHotkeys", GUI.BackgroundKeyHotkeys, true, "on to also detect keyboard hotkeys when backgroundinput is active");
 #undef CATEGORY
 #define	CATEGORY "Controls\\Win\\Hotkeys"

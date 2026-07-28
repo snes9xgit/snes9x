@@ -156,6 +156,7 @@ enum aspect_mode {
     ASPECT_RATIO_AUTO
 };
 static retro_environment_t environ_cb;
+static struct retro_rumble_interface rumble_iface = {};
 static overscan_mode crop_overscan_mode = OVERSCAN_CROP_ON; // default to crop
 static aspect_mode aspect_ratio_mode = ASPECT_RATIO_4_3; // default to 4:3
 static bool rom_loaded = false;
@@ -1239,6 +1240,9 @@ bool retro_load_game(const struct retro_game_info *game)
 
     update_variables();
 
+    if (!environ_cb(RETRO_ENVIRONMENT_GET_RUMBLE_INTERFACE, &rumble_iface))
+        rumble_iface.set_rumble_state = NULL;
+
     if(game->data == NULL && game->size == 0 && game->path != NULL)
         rom_loaded = Memory.LoadROM(game->path);
     else
@@ -1825,6 +1829,21 @@ static void input_handle_pointer_lightgun( unsigned port, unsigned gun_device, i
     }
 }
 
+static void report_rumble()
+{
+    // LRG rumble dongle on Port 1: strong = left motor, weak = right.
+    static uint16 last_strong = 0, last_weak = 0;
+    if (!rumble_iface.set_rumble_state)
+        return;
+    uint8 l, r;
+    S9xGetRumble(l, r);
+    uint16 strong = l * 0x1111, weak = r * 0x1111;
+    if (strong != last_strong)
+        rumble_iface.set_rumble_state(0, RETRO_RUMBLE_STRONG, last_strong = strong);
+    if (weak != last_weak)
+        rumble_iface.set_rumble_state(0, RETRO_RUMBLE_WEAK, last_weak = weak);
+}
+
 static void report_buttons()
 {
     int offset = snes_devices[0] == RETRO_DEVICE_JOYPAD_MULTITAP ? 4 : 1;
@@ -1995,6 +2014,7 @@ void retro_run()
     poll_cb();
     report_buttons();
     S9xMainLoop();
+    report_rumble();
 }
 
 void retro_deinit()

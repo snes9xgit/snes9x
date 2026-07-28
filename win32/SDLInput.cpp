@@ -613,6 +613,18 @@ bool SDLInput_IsGamepad(int slot)
     return dev->is_gamepad;
 }
 
+void SDLInput_Rumble(int slot, uint16_t low, uint16_t high)
+{
+    auto *dev = FindDeviceBySlot(slot);
+    if (!dev)
+        return;
+    // 120ms outlives one refresh interval; auto-stops if the caller goes quiet.
+    if (dev->gamepad)
+        SDL_RumbleGamepad(dev->gamepad, low, high, 120);
+    else if (dev->joystick)
+        SDL_RumbleJoystick(dev->joystick, low, high, 120);
+}
+
 bool SDLInput_AutoMapGamepad(int slot, SJoypad &out)
 {
     auto *dev = FindDeviceBySlot(slot);

@@ -851,6 +851,7 @@
 #define IDC_PAD_IMAGE                   3320
 
 #define ID_SOUND_AUDIOWAVEFORM          40198
+#define ID_INPUT_ENABLERUMBLE           40211
 
 #define IDC_STATIC                      -1
 
@@ -859,7 +860,7 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        184
-#define _APS_NEXT_COMMAND_VALUE         40209
+#define _APS_NEXT_COMMAND_VALUE         40212
 #define _APS_NEXT_CONTROL_VALUE         3324
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
