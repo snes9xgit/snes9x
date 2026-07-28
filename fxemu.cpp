@@ -152,7 +152,8 @@ uint8 S9xGetSuperFX (uint16 address)
 
 void S9xSuperFXExec (void)
 {
-	if ((Memory.FillRAM[0x3000 + GSU_SFR] & FLG_G) && (Memory.FillRAM[0x3000 + GSU_SCMR] & 0x18) != 0)
+	// FX3: the CPU keeps ROM/RAM access, so SCMR RON/RAN don't gate execution
+	if ((Memory.FillRAM[0x3000 + GSU_SFR] & FLG_G) && (SuperFX.isFx3 || (Memory.FillRAM[0x3000 + GSU_SCMR] & 0x18) != 0))
 	{
 		if (g_gsuCycleMode)
 		{
@@ -168,10 +169,12 @@ void S9xSuperFXExec (void)
 			g_gsuCostMult  = ms0 ? 1 : 2;
 
 			uint32	budget = (uint32) (Timings.H_Max > 0 ? Timings.H_Max : 1364);
+			if (SuperFX.isFx3)
+				budget *= 4;	// the FX3 runs ~4x the GSU clock
 			FxEmulate(budget * Settings.SuperFXClockMultiplier / 100);
 		}
 		else
-		FxEmulate(((Memory.FillRAM[0x3000 + GSU_CLSR] & 1) ? (SuperFX.speedPerLine * 5 / 2) : SuperFX.speedPerLine) * Settings.SuperFXClockMultiplier / 100);
+		FxEmulate(((Memory.FillRAM[0x3000 + GSU_CLSR] & 1) ? (SuperFX.speedPerLine * 5 / 2) : SuperFX.speedPerLine) * (SuperFX.isFx3 ? 4 : 1) * Settings.SuperFXClockMultiplier / 100);
 
 		uint16 GSUStatus = Memory.FillRAM[0x3000 + GSU_SFR] | (Memory.FillRAM[0x3000 + GSU_SFR + 1] << 8);
 		if ((GSUStatus & (FLG_G | FLG_IRQ)) == FLG_IRQ)
@@ -226,18 +229,20 @@ static void FxReset (struct FxInfo_s *psFxInfo)
 	GSU.pvRam             = psFxInfo->pvRam;
 	GSU.nRomBanks         = psFxInfo->nRomBanks;
 	GSU.pvRom             = psFxInfo->pvRom;
+	GSU.bFx3              = psFxInfo->isFx3;
 	GSU.vPrevScreenHeight = ~0;
 	GSU.vPrevMode         = ~0;
 
-	// The GSU can't access more than 2mb (16mbits)
-	if (GSU.nRomBanks > 0x20)
-		GSU.nRomBanks = 0x20;
+	// The GSU can't access more than 2mb (16mbits); the FX3 sees 4mb
+	uint32	maxBanks = GSU.bFx3 ? 0x40 : 0x20;
+	if (GSU.nRomBanks > maxBanks)
+		GSU.nRomBanks = maxBanks;
 
 	// Clear FxChip register space
 	memset(GSU.pvRegisters, 0, 0x300);
 
 	// Set FxChip version Number
-	GSU.pvRegisters[0x3b] = 0;
+	GSU.pvRegisters[0x3b] = GSU.bFx3 ? 0x52 : 0;
 
 	// Make ROM bank table
 	for (int i = 0; i < 256; i++)
@@ -401,6 +406,9 @@ static bool8 fx_checkStartAddress (void)
 	if (GSU.bCacheActive && R15 >= GSU.vCacheBaseReg && R15 < (GSU.vCacheBaseReg + 512))
 		return true;
 
+	// FX3: no bus arbitration, any ROM (<= 0x6f) or RAM (0x70-0x71) bank runs
+	if (GSU.bFx3)
+		return (GSU.vPrgBankReg <= 0x71);
 
 	if (SCMR & (1 << 4))
 	{

@@ -166,6 +166,7 @@ struct CMemory
 	void	Map_SufamiTurboLoROMMap (void);
 	void	Map_SufamiTurboPseudoLoROMMap (void);
 	void	Map_SuperFXLoROMMap (void);
+	void	Map_SuperFX3LoROMMap (void);
 	void	Map_SetaDSPLoROMMap (void);
 	void	Map_SDD1LoROMMap (void);
 	void	Map_SA1LoROMMap (void);

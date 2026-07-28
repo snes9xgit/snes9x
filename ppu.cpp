@@ -1026,9 +1026,17 @@ void S9xSetPPU (uint8 Byte, uint16 Address)
 	}
 	else
 	{
-		if (Settings.SuperFX && Address >= 0x3000 && Address <= 0x32ff)
+		if (Settings.SuperFX && !SuperFX.isFx3 && Address >= 0x3000 && Address <= 0x32ff)
 		{
 			S9xSetSuperFX(Byte, Address);
+			return;
+		}
+		else
+		if (Settings.SuperFX && SuperFX.isFx3 && Address >= 0x7000)
+		{
+			// FX3 GSU MMIO: $7000-$7FFF mirrors $3000-$32FF every 0x400
+			if ((Address & 0x300) != 0x300)
+				S9xSetSuperFX(Byte, 0x3000 | (Address & 0x3ff));
 			return;
 		}
 		else
@@ -1281,8 +1289,16 @@ uint8 S9xGetPPU (uint16 Address)
 	}
 	else
     {
-		if (Settings.SuperFX && Address >= 0x3000 && Address <= 0x32ff)
+		if (Settings.SuperFX && !SuperFX.isFx3 && Address >= 0x3000 && Address <= 0x32ff)
 			return (S9xGetSuperFX(Address));
+		else
+		if (Settings.SuperFX && SuperFX.isFx3 && Address >= 0x7000)
+		{
+			// FX3 GSU MMIO: $7000-$7FFF mirrors $3000-$32FF every 0x400
+			if ((Address & 0x300) == 0x300)
+				return (OpenBus);
+			return (S9xGetSuperFX(0x3000 | (Address & 0x3ff)));
+		}
 		else
 		if (Settings.SA1     && Address >= 0x2200)
 			return (S9xGetSA1(Address));

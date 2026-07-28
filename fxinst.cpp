@@ -46,6 +46,10 @@ static void fx_stop (void)
 	GSU.vPipe = 1;
 	CLRFLAGS;
 	R15++;
+
+	// The FX3 resets R15 on STOP so the CPU can poll it for completion
+	if (GSU.bFx3)
+		R15 = 0;
 }
 
 // 01 - nop - no operation
@@ -1775,9 +1779,55 @@ static void fx_cmp_r15 (void)
 	FX_CMP(15);
 }
 
+// FX3: clear one 64-byte character in the frame buffer (RAM bank 1)
+static void fx3_clearChar (uint32 offset)
+{
+	static const uint8	pattern[64] =
+	{
+		0xff, 0x00, 0xff, 0x00, 0xff, 0x00, 0xff, 0x00,
+		0xff, 0x00, 0xff, 0x00, 0xff, 0x00, 0xff, 0x00,
+		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+		0x00, 0xff, 0x00, 0xff, 0x00, 0xff, 0x00, 0xff,
+		0x00, 0xff, 0x00, 0xff, 0x00, 0xff, 0x00, 0xff
+	};
+
+	if (GSU.nRamBanks >= 2 && offset + 64 <= 0x10000)
+		memcpy(&GSU.pvRam[0x10000 + offset], pattern, 64);
+}
+
+static void fx3_clearCommand (uint32 start, uint32 end)
+{
+	for (uint32 i = 0; i < 18; i++)
+		for (uint32 j = start; j <= end; j++)
+			fx3_clearChar(i * 64 + j * 20 * 64);
+}
+
+// FX3: MERGE is repurposed as a command port, R0 selects the command
+static void fx3_command (void)
+{
+	switch (USEX16(R0))
+	{
+		case 3: fx3_clearCommand( 0,  8); break; // ClearA
+		case 4: fx3_clearCommand( 9, 17); break; // ClearB
+		case 5: fx3_clearCommand(18, 26); break; // ClearC
+		default: break; // chunky-to-planar (0-2) only matters on hardware
+	}
+}
+
 // 70 - merge - R7 as upper byte, R8 as lower byte (used for texture-mapping)
 static void fx_merge (void)
 {
+	if (GSU.bFx3)
+	{
+		fx3_command();
+		R15++;
+		CLRFLAGS;
+		return;
+	}
+
 	uint32	v = (R7 & 0xff00) | ((R8 & 0xff00) >> 8);
 	R15++;
 	DREG = v;
