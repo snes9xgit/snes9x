@@ -56,6 +56,15 @@ void SDLInput_InitBindingState();
 // Get the human-readable device name for a Joystick[] slot.
 std::string SDLInput_GetDeviceName(int slot);
 
+struct SDLDeviceListEntry {
+    int slot = -1;
+    bool is_gamepad = false;
+    std::string name;
+};
+
+// List all attached devices, sorted by Joystick[] slot.
+std::vector<SDLDeviceListEntry> SDLInput_GetDeviceList();
+
 // Check if the device at a Joystick[] slot is a recognized gamepad.
 bool SDLInput_IsGamepad(int slot);
 

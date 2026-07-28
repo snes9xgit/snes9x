@@ -12479,37 +12479,71 @@ static void UpdateBindingMode(HWND hDlg, int index)
 	set_buttoninfo(index, hDlg);
 }
 
-// Helper: update device name label and auto-assign button state for given joypad index
+// Per-controller device pick from the device combo; -1 = derive from bindings
+static int s_deviceChoice[16] = { -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1 };
+
+// Helper: update device combo contents/selection and auto-assign button state
 static void UpdateDeviceInfo(HWND hDlg, int index)
 {
-	// Find which joystick slot this joypad might be bound to
-	// Check if any current binding references a joystick slot
-	int slot = -1;
-	WORD testKey = Joypad[index].A ? Joypad[index].A :
-	               Joypad[index].B ? Joypad[index].B :
-	               Joypad[index].Up ? Joypad[index].Up : 0;
-	if (testKey & 0x8000)
-		slot = (testKey >> 8) & 0xF;
+	HWND combo = GetDlgItem(hDlg, IDC_DEVICECOMBO);
+	if (SendMessage(combo, CB_GETDROPPEDSTATE, 0, 0))
+		return; // don't repopulate under an open dropdown
 
-	// Also check if any joystick is attached at a reasonable slot for this controller index
-	// Default: use the controller index as the slot (0-4 for controllers 1-5)
-	int checkSlot = (index < 5) ? index : (index - 8); // turbo panels map to controller 0-4
-	if (checkSlot < 0) checkSlot = 0;
+	std::vector<SDLDeviceListEntry> devices = SDLInput_GetDeviceList();
 
-	// Prefer the slot from existing bindings, fall back to index-based
-	int displaySlot = (slot >= 0) ? slot : checkSlot;
-
-	std::string devName = SDLInput_GetDeviceName(displaySlot);
-	if (!devName.empty())
+	if (devices.empty())
 	{
-		SetDlgItemTextA(hDlg, IDC_DEVICENAME, devName.c_str());
-		EnableWindow(GetDlgItem(hDlg, IDC_AUTOASSIGN), SDLInput_IsGamepad(displaySlot) ? TRUE : FALSE);
-	}
-	else
-	{
-		SetDlgItemTextA(hDlg, IDC_DEVICENAME, "No device detected");
+		if (SendMessage(combo, CB_GETCOUNT, 0, 0) != 1 ||
+		    (int)SendMessage(combo, CB_GETITEMDATA, 0, 0) != -1)
+		{
+			SendMessage(combo, CB_RESETCONTENT, 0, 0);
+			int item = (int)SendMessage(combo, CB_ADDSTRING, 0, (LPARAM)TEXT("No device detected"));
+			SendMessage(combo, CB_SETITEMDATA, item, (LPARAM)-1);
+		}
+		SendMessage(combo, CB_SETCURSEL, 0, 0);
+		EnableWindow(combo, FALSE);
 		EnableWindow(GetDlgItem(hDlg, IDC_AUTOASSIGN), FALSE);
+		return;
 	}
+	EnableWindow(combo, TRUE);
+
+	// Preferred slot: user's pick for this controller, else the slot current bindings
+	// reference, else the controller index itself (turbo panels map to controller 0-4)
+	int prefer = (index >= 0 && index < 16) ? s_deviceChoice[index] : -1;
+	if (prefer < 0)
+	{
+		WORD testKey = Joypad[index].A ? Joypad[index].A :
+		               Joypad[index].B ? Joypad[index].B :
+		               Joypad[index].Up ? Joypad[index].Up : 0;
+		if (testKey & 0x8000)
+			prefer = (testKey >> 8) & 0xF;
+	}
+	if (prefer < 0)
+	{
+		prefer = (index < 5) ? index : (index - 8);
+		if (prefer < 0) prefer = 0;
+	}
+
+	// Rebuild the list only when the device set changed
+	bool rebuild = (SendMessage(combo, CB_GETCOUNT, 0, 0) != (LRESULT)devices.size());
+	for (size_t i = 0; !rebuild && i < devices.size(); i++)
+		if ((int)SendMessage(combo, CB_GETITEMDATA, (WPARAM)i, 0) != devices[i].slot)
+			rebuild = true;
+	if (rebuild)
+	{
+		SendMessage(combo, CB_RESETCONTENT, 0, 0);
+		for (size_t i = 0; i < devices.size(); i++)
+		{
+			int item = (int)SendMessageW(combo, CB_ADDSTRING, 0, (LPARAM)(wchar_t *)Utf8ToWide(devices[i].name.c_str()));
+			SendMessage(combo, CB_SETITEMDATA, item, (LPARAM)devices[i].slot);
+		}
+	}
+
+	int sel = 0;
+	for (size_t i = 0; i < devices.size(); i++)
+		if (devices[i].slot == prefer) { sel = (int)i; break; }
+	SendMessage(combo, CB_SETCURSEL, sel, 0);
+	EnableWindow(GetDlgItem(hDlg, IDC_AUTOASSIGN), devices[sel].is_gamepad ? TRUE : FALSE);
 }
 
 // Set by DlgInputConfig while the Input Config dialog is open. Read from
@@ -12577,6 +12611,9 @@ INT_PTR CALLBACK DlgInputConfig(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 
 		memcpy(pads, Joypad, 10*sizeof(SJoypad));
 		memcpy(padsExtra, JoypadExtra, 10*sizeof(SJoypadExtraBinds));
+
+		for(i=0;i<16;i++)
+			s_deviceChoice[i] = -1;
 
 		for( i=0;i<256;i++)
 			GetAsyncKeyState(i);
@@ -12769,21 +12806,31 @@ INT_PTR CALLBACK DlgInputConfig(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 			}
 			break;
 
+		case IDC_DEVICECOMBO: // device picked for this controller's auto-assign
+			if(HIWORD(wParam) == CBN_SELCHANGE)
+			{
+				index = SendDlgItemMessage(hDlg,IDC_JPCOMBO,CB_GETCURSEL,0,0);
+				if(index > 4) index += 3;
+				int sel = SendDlgItemMessage(hDlg,IDC_DEVICECOMBO,CB_GETCURSEL,0,0);
+				int slot = (sel >= 0) ? (int)SendDlgItemMessage(hDlg,IDC_DEVICECOMBO,CB_GETITEMDATA,sel,0) : -1;
+				if (slot >= 0 && index >= 0 && index < 16)
+				{
+					s_deviceChoice[index] = slot;
+					EnableWindow(GetDlgItem(hDlg,IDC_AUTOASSIGN), SDLInput_IsGamepad(slot) ? TRUE : FALSE);
+				}
+			}
+			break;
+
 		case IDC_AUTOASSIGN: // Auto-assign gamepad buttons
 			{
 				index = SendDlgItemMessage(hDlg,IDC_JPCOMBO,CB_GETCURSEL,0,0);
 				if(index > 4) index += 3;
 
-				// Determine which joystick slot to auto-assign from
-				int checkSlot = (index < 5) ? index : (index - 8);
-				if (checkSlot < 0) checkSlot = 0;
-
-				// Check existing bindings for a joystick slot
-				WORD testKey = Joypad[index].A ? Joypad[index].A :
-				               Joypad[index].B ? Joypad[index].B :
-				               Joypad[index].Up ? Joypad[index].Up : 0;
-				if (testKey & 0x8000)
-					checkSlot = (testKey >> 8) & 0xF;
+				// Auto-assign from the device selected in the device combo
+				int sel = SendDlgItemMessage(hDlg,IDC_DEVICECOMBO,CB_GETCURSEL,0,0);
+				int checkSlot = (sel >= 0) ? (int)SendDlgItemMessage(hDlg,IDC_DEVICECOMBO,CB_GETITEMDATA,sel,0) : -1;
+				if (checkSlot < 0)
+					break;
 
 				// Save old bindings before auto-assign overwrites them
 				SJoypad oldPad = Joypad[index];
