@@ -5361,6 +5361,8 @@ static void CheckMenuStates ()
 				const UINT count = (UINT)GetMenuItemCount(s_bios_parent);
 				if (pos > count) pos = count;
 				InsertMenuItem(s_bios_parent, pos, TRUE, &ins);
+				if (LocaleIsTranslated())
+					LocalizeMenu(s_bios_parent);
 				DrawMenuBar(GUI.hWnd);
 			}
 			else if (!gb_loaded && currently_in_menu)

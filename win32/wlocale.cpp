@@ -13,7 +13,8 @@ static bool g_translated = false;
 static HMENU g_excludedMenu = NULL;
 static std::unordered_set<std::wstring> g_keys;
 static bool g_keysLoaded = false;
-static std::unordered_map<HMENU, std::vector<std::wstring>> g_origMenu;
+static std::unordered_map<UINT, std::wstring> g_origMenuById;
+static std::unordered_map<HMENU, std::wstring> g_origMenuBySub;
 
 static const struct
 {
@@ -369,7 +370,122 @@ std::vector<LocaleLanguage> LocaleAvailableLanguages()
 	return list;
 }
 
-static BOOL CALLBACK LocalizeChildProc(HWND child, LPARAM)
+static bool IsGroupBoxWnd(HWND w)
+{
+	wchar_t cls[16];
+	GetClassNameW(w, cls, 16);
+	return lstrcmpiW(cls, L"Button") == 0 &&
+		   (GetWindowLongW(w, GWL_STYLE) & BS_TYPEMASK) == BS_GROUPBOX;
+}
+
+// Widen a control (never shrink) so its translated text fits, growing along its
+// alignment and clamped by siblings, its containing group box, and the dialog.
+static void FitTranslatedControl(HWND child)
+{
+	HWND parent = GetParent(child);
+	if (!parent)
+		return;
+
+	wchar_t cls[16];
+	GetClassNameW(child, cls, 16);
+	bool isButton = (lstrcmpiW(cls, L"Button") == 0);
+	LONG style = GetWindowLongW(child, GWL_STYLE);
+
+	int glyph = 0;
+	int growDir = 1;
+	if (isButton)
+	{
+		glyph = GetSystemMetrics(SM_CXMENUCHECK) + 2 * GetSystemMetrics(SM_CXEDGE);
+	}
+	else
+	{
+		LONG t = style & SS_TYPEMASK;
+		if (t == SS_RIGHT)
+			growDir = -1;
+		else if (t == SS_CENTER)
+			growDir = 0;
+	}
+
+	wchar_t text[1024];
+	if (GetWindowTextW(child, text, 1024) <= 0)
+		return;
+
+	HDC dc = GetDC(child);
+	HFONT font = (HFONT)SendMessageW(child, WM_GETFONT, 0, 0);
+	HGDIOBJ oldFont = font ? SelectObject(dc, font) : NULL;
+	RECT calc = {0, 0, 0, 0};
+	UINT fmt = DT_CALCRECT | DT_SINGLELINE;
+	if (!isButton && (style & SS_NOPREFIX))
+		fmt |= DT_NOPREFIX;
+	DrawTextW(dc, text, -1, &calc, fmt);
+	if (oldFont)
+		SelectObject(dc, oldFont);
+	ReleaseDC(child, dc);
+
+	RECT r;
+	GetWindowRect(child, &r);
+	MapWindowPoints(NULL, parent, (POINT *)&r, 2);
+	int width = r.right - r.left;
+	int lineH = calc.bottom - calc.top;
+	int need = (calc.right - calc.left) + glyph + 2;
+	if (need <= width)
+		return;
+	// A static tall enough to word-wrap already fits by wrapping; leave it.
+	if (!isButton && lineH > 0 && (r.bottom - r.top) >= lineH * 2)
+		return;
+
+	RECT pc;
+	GetClientRect(parent, &pc);
+	const int margin = 4, gap = 3;
+	int minLeft = pc.left + margin;
+	int maxRight = pc.right - margin;
+	for (HWND s = GetWindow(parent, GW_CHILD); s; s = GetWindow(s, GW_HWNDNEXT))
+	{
+		if (s == child || !(GetWindowLongW(s, GWL_STYLE) & WS_VISIBLE))
+			continue;
+		RECT rs;
+		GetWindowRect(s, &rs);
+		MapWindowPoints(NULL, parent, (POINT *)&rs, 2);
+		if (rs.bottom <= r.top || rs.top >= r.bottom)
+			continue;
+		if (IsGroupBoxWnd(s) && rs.left <= r.left && rs.right >= r.right)
+		{
+			if (rs.left + margin > minLeft)
+				minLeft = rs.left + margin;
+			if (rs.right - margin < maxRight)
+				maxRight = rs.right - margin;
+			continue;
+		}
+		if (rs.left >= r.right)
+		{
+			if (rs.left - gap < maxRight)
+				maxRight = rs.left - gap;
+		}
+		else if (rs.right <= r.left)
+		{
+			if (rs.right + gap > minLeft)
+				minLeft = rs.right + gap;
+		}
+	}
+
+	int newLeft = r.left, newRight = r.right;
+	if (growDir > 0)
+		newRight = (r.left + need < maxRight) ? r.left + need : maxRight;
+	else if (growDir < 0)
+		newLeft = (r.right - need > minLeft) ? r.right - need : minLeft;
+	else
+	{
+		int half = (need - width + 1) / 2;
+		newLeft = (r.left - half > minLeft) ? r.left - half : minLeft;
+		newRight = (newLeft + need < maxRight) ? newLeft + need : maxRight;
+	}
+	if (newRight - newLeft <= width)
+		return;
+	SetWindowPos(child, NULL, newLeft, r.top, newRight - newLeft, r.bottom - r.top,
+				 SWP_NOZORDER | SWP_NOACTIVATE);
+}
+
+static BOOL CALLBACK LocalizeChildProc(HWND child, LPARAM lp)
 {
 	wchar_t cls[64];
 	GetClassNameW(child, cls, 64);
@@ -378,9 +494,9 @@ static BOOL CALLBACK LocalizeChildProc(HWND child, LPARAM)
 	if (!isButton && !isStatic)
 		return TRUE;
 
+	LONG style = GetWindowLongW(child, GWL_STYLE);
 	if (isStatic)
 	{
-		LONG style = GetWindowLongW(child, GWL_STYLE);
 		LONG t = style & SS_TYPEMASK;
 		if (t == SS_ICON || t == SS_BITMAP || t == SS_BLACKFRAME ||
 			t == SS_GRAYFRAME || t == SS_WHITEFRAME || t == SS_ETCHEDHORZ ||
@@ -394,7 +510,27 @@ static BOOL CALLBACK LocalizeChildProc(HWND child, LPARAM)
 		return TRUE;
 	const TCHAR *tr = _L(buf);
 	if (tr != buf)
+	{
 		SetWindowTextW(child, tr);
+
+		bool sizable;
+		if (isButton)
+		{
+			LONG t = style & BS_TYPEMASK;
+			sizable = (t == BS_CHECKBOX || t == BS_AUTOCHECKBOX ||
+					   t == BS_RADIOBUTTON || t == BS_AUTORADIOBUTTON ||
+					   t == BS_3STATE || t == BS_AUTO3STATE) &&
+					  !(style & BS_PUSHLIKE);
+		}
+		else
+		{
+			LONG t = style & SS_TYPEMASK;
+			sizable = (t == SS_LEFT || t == SS_CENTER || t == SS_RIGHT ||
+					   t == SS_SIMPLE || t == SS_LEFTNOWORDWRAP);
+		}
+		if (sizable && lp)
+			((std::vector<HWND> *)lp)->push_back(child);
+	}
 	return TRUE;
 }
 
@@ -410,7 +546,10 @@ void LocalizeDialog(HWND dlg)
 		if (tr != cap)
 			SetWindowTextW(dlg, tr);
 	}
-	EnumChildWindows(dlg, LocalizeChildProc, 0);
+	std::vector<HWND> fit;
+	EnumChildWindows(dlg, LocalizeChildProc, (LPARAM)&fit);
+	for (HWND c : fit)
+		FitTranslatedControl(c);
 }
 
 static void LoadKeysOnce()
@@ -483,34 +622,50 @@ void LocalizeMenu(HMENU menu)
 	LoadKeysOnce();
 
 	int count = GetMenuItemCount(menu);
-	std::vector<std::wstring> &orig = g_origMenu[menu];
-	if ((int)orig.size() < count)
-		orig.resize(count);
-
 	for (int i = 0; i < count; ++i)
 	{
 		wchar_t buf[1024];
 		int n = GetMenuStringW(menu, i, buf, 1024, MF_BYPOSITION);
-		std::wstring current = (n > 0) ? std::wstring(buf, n) : std::wstring();
+		HMENU sub = GetSubMenu(menu, i);
 
-		if (orig[i].empty() && !current.empty())
-			orig[i] = current;
-
-		if (!orig[i].empty() && g_keys.count(NormalizeKey(orig[i])))
+		if (n > 0)
 		{
-			const TCHAR *tr = g_translated ? _L(orig[i].c_str()) : orig[i].c_str();
-			if (current != tr)
+			std::wstring current(buf, n);
+
+			// Cache originals by command ID / submenu handle, not by position:
+			// items are inserted and removed at runtime and positions shift.
+			std::wstring *orig = NULL;
+			if (sub)
+				orig = &g_origMenuBySub[sub];
+			else
 			{
-				MENUITEMINFOW mii;
-				ZeroMemory(&mii, sizeof(mii));
-				mii.cbSize = sizeof(mii);
-				mii.fMask = MIIM_STRING;
-				mii.dwTypeData = (LPWSTR)tr;
-				SetMenuItemInfoW(menu, i, TRUE, &mii);
+				UINT id = GetMenuItemID(menu, i);
+				if (id != (UINT)-1)
+					orig = &g_origMenuById[id];
+			}
+
+			if (orig)
+			{
+				// Recognized English means the item is new or rebuilt; refresh.
+				if (g_keys.count(NormalizeKey(current)))
+					*orig = current;
+
+				if (!orig->empty())
+				{
+					const TCHAR *tr = g_translated ? _L(orig->c_str()) : orig->c_str();
+					if (current != tr)
+					{
+						MENUITEMINFOW mii;
+						ZeroMemory(&mii, sizeof(mii));
+						mii.cbSize = sizeof(mii);
+						mii.fMask = MIIM_STRING;
+						mii.dwTypeData = (LPWSTR)tr;
+						SetMenuItemInfoW(menu, i, TRUE, &mii);
+					}
+				}
 			}
 		}
 
-		HMENU sub = GetSubMenu(menu, i);
 		if (sub && sub != g_excludedMenu)
 			LocalizeMenu(sub);
 	}
