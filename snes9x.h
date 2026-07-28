@@ -366,6 +366,7 @@ struct SSettings
 struct SSNESGameFixes
 {
 	uint8	SRAMInitialValue;
+	uint8	RAMInitialValue;
 	uint8	Uniracers;
 };
 

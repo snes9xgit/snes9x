@@ -2182,6 +2182,7 @@ bool8 CMemory::LoadROMInt (int32 ROMfillSize)
 
 	memset(&SNESGameFixes, 0, sizeof(SNESGameFixes));
 	SNESGameFixes.SRAMInitialValue = 0x60;
+	SNESGameFixes.RAMInitialValue  = 0x55;
 
 	InitROM();
 
@@ -2343,6 +2344,7 @@ bool8 CMemory::LoadMultiCartInt ()
 
 	memset(&SNESGameFixes, 0, sizeof(SNESGameFixes));
 	SNESGameFixes.SRAMInitialValue = 0x60;
+	SNESGameFixes.RAMInitialValue  = 0x55;
 
 	InitROM();
 
@@ -2619,6 +2621,7 @@ bool8 CMemory::LoadSFCBox (int32 ROMfillSize)
 
 	memset(&SNESGameFixes, 0, sizeof(SNESGameFixes));
 	SNESGameFixes.SRAMInitialValue = 0x60;
+	SNESGameFixes.RAMInitialValue  = 0x55;
 
 	// Initial map; S9xReset() below powers the supervisor on, which remaps
 	// again from the registers' reset state.
@@ -4834,6 +4837,15 @@ void CMemory::ApplyROMFixes (void)
 	// Not gated on DisableGameSpecificHacks: this stands in for cart hardware
 	// we don't emulate, without which the game never boots at all.
 	S9xSimulateSFEXProtection(ROM, CalculatedSize, ROMCRC32);
+
+	// Astro Hawk (PD): enables NMI before clearing WRAM, so the NMI handler
+	// runs on power-on garbage; only boots if WRAM starts zeroed. CRC match —
+	// its internal header is blank.
+	if (ROMCRC32 == 0x41D59381)
+	{
+		SNESGameFixes.RAMInitialValue = 0x00;
+		printf("Applied zeroed-WRAM hack.\n");
+	}
 
 	PF94.active = FALSE;
 	PF94.board  = EVENT_BOARD_PF94;
