@@ -4750,12 +4750,13 @@ static uint32 PF94LoadAuxROM (const std::string &dir, const char *const *names, 
 // game pushes into ROM space at $80:8000-$87FF, read back from $80:8100. We
 // return ROM there, so the SPC bank base resolves to $08 instead of $05 and the
 // uploader reads a garbage header, overruns APU RAM and hangs the boot.
-static void S9xSimulateSFEXProtection (uint8 *rom, uint32 size)
+static void S9xSimulateSFEXProtection (uint8 *rom, uint32 size, uint32 crc32)
 {
-	if (size != 0x200000)
+	// Headerless pirate, so no name to match: identify by dump CRC32.
+	if (size != 0x200000 || crc32 != 0xDAD59B9F)
 		return;
 
-	// JSR $88FC at all three queries, the query routine, and its consumers
+	// The exact instructions we overwrite, at all three query sites
 	if (rom[0x0463] != 0x20 || rom[0x0464] != 0xFC || rom[0x0465] != 0x88 ||
 	    rom[0x0477] != 0x20 || rom[0x0478] != 0xFC || rom[0x0479] != 0x88 ||
 	    rom[0x05B6] != 0x20 || rom[0x05B7] != 0xFC || rom[0x05B8] != 0x88 ||
@@ -4783,7 +4784,7 @@ void CMemory::ApplyROMFixes (void)
 
 	// Not gated on DisableGameSpecificHacks: this stands in for cart hardware
 	// we don't emulate, without which the game never boots at all.
-	S9xSimulateSFEXProtection(ROM, CalculatedSize);
+	S9xSimulateSFEXProtection(ROM, CalculatedSize, ROMCRC32);
 
 	PF94.active = FALSE;
 	PF94.board  = EVENT_BOARD_PF94;
