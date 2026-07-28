@@ -584,10 +584,11 @@ void SDLInput_InitBindingState()
 
 std::string SDLInput_GetDeviceName(int slot)
 {
-    auto *dev = FindDeviceBySlot(slot);
-    if (!dev)
-        return "";
-    return dev->name;
+    // Route through the list so duplicate-name suffixes match the UI
+    for (auto &e : SDLInput_GetDeviceList())
+        if (e.slot == slot)
+            return e.name;
+    return "";
 }
 
 std::vector<SDLDeviceListEntry> SDLInput_GetDeviceList()
@@ -602,6 +603,20 @@ std::vector<SDLDeviceListEntry> SDLInput_GetDeviceList()
     }
     std::sort(list.begin(), list.end(),
               [](const SDLDeviceListEntry &a, const SDLDeviceListEntry &b) { return a.slot < b.slot; });
+
+    // Suffix duplicate names ("Pad", "Pad #2") so identical devices are tellable apart
+    std::vector<std::string> base;
+    for (auto &e : list)
+        base.push_back(e.name);
+    for (size_t i = 0; i < list.size(); i++)
+    {
+        int n = 1;
+        for (size_t j = 0; j < i; j++)
+            if (base[j] == base[i])
+                n++;
+        if (n > 1)
+            list[i].name += " #" + std::to_string(n);
+    }
     return list;
 }
 
