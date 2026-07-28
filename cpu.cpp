@@ -111,7 +111,7 @@ void S9xReset (void)
 
 	S9xResetSaveTimer(FALSE);
 
-	memset(Memory.RAM, 0x55, sizeof(Memory.RAM));
+	memset(Memory.RAM, SNESGameFixes.RAMInitialValue, sizeof(Memory.RAM));
 	memset(Memory.VRAM, 0x00, sizeof(Memory.VRAM));
 	memset(Memory.FillRAM, 0, 0x8000);
 
@@ -222,16 +222,8 @@ static bool8 S9xSGBRestoreSoftResetCheckpoint (void)
 
 void S9xSoftReset (void)
 {
-	// GB/GBC/SGB: a soft reset only warm-resets the GB core — the game
-	// restarts at $0100 with SRAM and the staged boot ROM intact. In
-	// BIOS mode the SNES side is deliberately NOT reset (resetting it
-	// re-runs the SGB BIOS boot splash, which a soft reset exists to
-	// skip); the preserved handshake cache keeps the live BIOS session
-	// happy. S9xSGBSoftReset refuses while the splash handshake is
-	// still in flight — fall back to a full power-cycle there.
-	// (BIOS-less mode must also bypass the SNES reset chain: the SNES
-	// is dormant and its stale SPC DSP state crashes on the reset-
-	// vector read — see S9xReset.)
+	// SGB BIOS mode: warm-restart only from the settled checkpoint;
+	// anything earlier must power-cycle or the BIOS wedges mid-splash.
 	if (Settings.SGB_BIOSModeActive)
 	{
 		if (S9xSGBRestoreSoftResetCheckpoint())
@@ -239,12 +231,7 @@ void S9xSoftReset (void)
 			S9xInitCheatData();
 			return;
 		}
-		if (!S9xSGBSoftReset())
-		{
-			S9xReset();
-			return;
-		}
-		S9xInitCheatData();
+		S9xReset();
 		return;
 	}
 	if (Settings.SuperGameBoy)

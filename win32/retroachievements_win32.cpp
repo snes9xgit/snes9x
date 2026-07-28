@@ -9,6 +9,8 @@
 #include <string>
 #include <vector>
 #include <cstdio>
+#include <cstdlib>
+#include <cstring>
 
 #include "rc_client.h"
 
@@ -172,19 +174,25 @@ static void RC_CCONV ra_win32_server_call(const rc_api_request_t *request,
 }
 
 // ---------------------------------------------------------------------------
-// Win32 Achievement List Dialog
+// Win32 Achievement List Dialog (modeless - the game keeps running)
 // ---------------------------------------------------------------------------
 struct RAAchSortData
 {
     char title[256];
     uint32_t points;
     char status[20];
+    char progress[24];
+    char type[16];
     char description[512];
 };
 
+static HWND s_hAchievementsDlg = nullptr;
 static int raSortColumn = 0;
 static bool raSortAscending = true;
+static bool raSortActive = false;
 static std::vector<RAAchSortData> raAchData;
+
+static const UINT_PTR RA_ACHLIST_TIMER_ID = 1;
 
 static int CALLBACK RA_AchListCompare(LPARAM lParam1, LPARAM lParam2, LPARAM)
 {
@@ -197,15 +205,16 @@ static int CALLBACK RA_AchListCompare(LPARAM lParam1, LPARAM lParam2, LPARAM)
     case 0: result = _stricmp(a->title, b->title); break;
     case 1: result = (int)a->points - (int)b->points; break;
     case 2: result = _stricmp(a->status, b->status); break;
-    case 3: result = _stricmp(a->description, b->description); break;
+    case 3: result = _stricmp(a->progress, b->progress); break;
+    case 4: result = _stricmp(a->type, b->type); break;
+    case 5: result = _stricmp(a->description, b->description); break;
     }
     return raSortAscending ? result : -result;
 }
 
-static void RA_PopulateAchievementList(HWND hList)
+static void RA_BuildAchRows(std::vector<RAAchSortData> &rows)
 {
-    ListView_DeleteAllItems(hList);
-    raAchData.clear();
+    rows.clear();
 
     rc_client_t *client = RA_GetClient();
     if (!client)
@@ -218,11 +227,10 @@ static void RA_PopulateAchievementList(HWND hList)
     if (!list)
         return;
 
-    // Count total achievements and pre-allocate
     int total = 0;
     for (uint32_t b = 0; b < list->num_buckets; b++)
         total += list->buckets[b].num_achievements;
-    raAchData.resize(total);
+    rows.resize(total);
 
     int index = 0;
     for (uint32_t b = 0; b < list->num_buckets; b++)
@@ -231,51 +239,173 @@ static void RA_PopulateAchievementList(HWND hList)
         for (uint32_t a = 0; a < bucket->num_achievements; a++)
         {
             const rc_client_achievement_t *ach = bucket->achievements[a];
-            RAAchSortData &sd = raAchData[index];
+            RAAchSortData &sd = rows[index];
+            memset(&sd, 0, sizeof(sd));
 
             strncpy(sd.title, ach->title ? ach->title : "", sizeof(sd.title) - 1);
             sd.points = ach->points;
             if (ach->unlocked & RC_CLIENT_ACHIEVEMENT_UNLOCKED_HARDCORE)
-                strncpy(sd.status, "Unlocked (HC)", sizeof(sd.status));
+                strncpy(sd.status, "Unlocked (HC)", sizeof(sd.status) - 1);
             else if (ach->unlocked & RC_CLIENT_ACHIEVEMENT_UNLOCKED_SOFTCORE)
-                strncpy(sd.status, "Unlocked", sizeof(sd.status));
+                strncpy(sd.status, "Unlocked", sizeof(sd.status) - 1);
             else if (ach->state == RC_CLIENT_ACHIEVEMENT_STATE_ACTIVE)
-                strncpy(sd.status, "Locked", sizeof(sd.status));
+                strncpy(sd.status, "Locked", sizeof(sd.status) - 1);
             else
-                strncpy(sd.status, "Inactive", sizeof(sd.status));
+                strncpy(sd.status, "Inactive", sizeof(sd.status) - 1);
+
+            strncpy(sd.progress, ach->measured_progress, sizeof(sd.progress) - 1);
+
+            switch (ach->type)
+            {
+            case RC_CLIENT_ACHIEVEMENT_TYPE_MISSABLE:
+                strncpy(sd.type, "Missable", sizeof(sd.type) - 1); break;
+            case RC_CLIENT_ACHIEVEMENT_TYPE_PROGRESSION:
+                strncpy(sd.type, "Progression", sizeof(sd.type) - 1); break;
+            case RC_CLIENT_ACHIEVEMENT_TYPE_WIN:
+                strncpy(sd.type, "Win Condition", sizeof(sd.type) - 1); break;
+            default:
+                break;
+            }
+
             strncpy(sd.description, ach->description ? ach->description : "", sizeof(sd.description) - 1);
-
-            // Insert item with lParam for sorting
-            LVITEMA lvi = {};
-            lvi.mask = LVIF_TEXT | LVIF_PARAM;
-            lvi.iItem = index;
-            lvi.iSubItem = 0;
-            lvi.lParam = (LPARAM)&sd;
-            lvi.pszText = sd.title;
-            SendMessageA(hList, LVM_INSERTITEMA, 0, (LPARAM)&lvi);
-
-            // Set subitems (text only, no LVIF_PARAM)
-            lvi.mask = LVIF_TEXT;
-
-            char pts[16];
-            snprintf(pts, sizeof(pts), "%u", ach->points);
-            lvi.iSubItem = 1;
-            lvi.pszText = pts;
-            SendMessageA(hList, LVM_SETITEMA, 0, (LPARAM)&lvi);
-
-            lvi.iSubItem = 2;
-            lvi.pszText = sd.status;
-            SendMessageA(hList, LVM_SETITEMA, 0, (LPARAM)&lvi);
-
-            lvi.iSubItem = 3;
-            lvi.pszText = sd.description;
-            SendMessageA(hList, LVM_SETITEMA, 0, (LPARAM)&lvi);
-
             index++;
         }
     }
 
     rc_client_destroy_achievement_list(list);
+}
+
+static bool RA_AchRowsEqual(const std::vector<RAAchSortData> &a, const std::vector<RAAchSortData> &b)
+{
+    if (a.size() != b.size())
+        return false;
+    for (size_t i = 0; i < a.size(); i++)
+    {
+        if (a[i].points != b[i].points ||
+            strcmp(a[i].title, b[i].title) != 0 ||
+            strcmp(a[i].status, b[i].status) != 0 ||
+            strcmp(a[i].progress, b[i].progress) != 0 ||
+            strcmp(a[i].type, b[i].type) != 0 ||
+            strcmp(a[i].description, b[i].description) != 0)
+            return false;
+    }
+    return true;
+}
+
+static void RA_FillAchievementList(HWND hList)
+{
+    ListView_DeleteAllItems(hList);
+
+    for (size_t i = 0; i < raAchData.size(); i++)
+    {
+        RAAchSortData &sd = raAchData[i];
+
+        LVITEMA lvi = {};
+        lvi.mask = LVIF_TEXT | LVIF_PARAM;
+        lvi.iItem = (int)i;
+        lvi.iSubItem = 0;
+        lvi.lParam = (LPARAM)&sd;
+        lvi.pszText = sd.title;
+        SendMessageA(hList, LVM_INSERTITEMA, 0, (LPARAM)&lvi);
+
+        lvi.mask = LVIF_TEXT;
+
+        char pts[16];
+        snprintf(pts, sizeof(pts), "%u", sd.points);
+        lvi.iSubItem = 1;
+        lvi.pszText = pts;
+        SendMessageA(hList, LVM_SETITEMA, 0, (LPARAM)&lvi);
+
+        lvi.iSubItem = 2;
+        lvi.pszText = sd.status;
+        SendMessageA(hList, LVM_SETITEMA, 0, (LPARAM)&lvi);
+
+        lvi.iSubItem = 3;
+        lvi.pszText = sd.progress;
+        SendMessageA(hList, LVM_SETITEMA, 0, (LPARAM)&lvi);
+
+        lvi.iSubItem = 4;
+        lvi.pszText = sd.type;
+        SendMessageA(hList, LVM_SETITEMA, 0, (LPARAM)&lvi);
+
+        lvi.iSubItem = 5;
+        lvi.pszText = sd.description;
+        SendMessageA(hList, LVM_SETITEMA, 0, (LPARAM)&lvi);
+    }
+
+    if (raSortActive)
+        ListView_SortItems(hList, RA_AchListCompare, 0);
+}
+
+static std::string s_raLastTitle, s_raLastSummary;
+
+static void RA_UpdateAchievementHeader(HWND hDlg)
+{
+    rc_client_t *client = RA_GetClient();
+    const rc_client_game_t *game = client ? rc_client_get_game_info(client) : nullptr;
+
+    char buf[512];
+    if (game)
+    {
+        rc_client_user_game_summary_t summary = {};
+        rc_client_get_user_game_summary(client, &summary);
+        snprintf(buf, sizeof(buf), "%s - %u of %u achievements, %u of %u points",
+                 game->title, summary.num_unlocked_achievements,
+                 summary.num_core_achievements, summary.points_unlocked,
+                 summary.points_core);
+    }
+    else
+    {
+        snprintf(buf, sizeof(buf), "No game loaded");
+    }
+    if (s_raLastTitle != buf)
+    {
+        s_raLastTitle = buf;
+        SetDlgItemTextA(hDlg, IDC_RA_GAME_TITLE, buf);
+    }
+
+    char user[192];
+    if (RA_GetLoggedInUserString(user, sizeof(user)))
+        snprintf(buf, sizeof(buf), "Logged in as %s%s", user,
+                 RA_IsHardcoreModeActive() ? " - Hardcore" : "");
+    else
+        snprintf(buf, sizeof(buf), "Not logged in");
+    if (s_raLastSummary != buf)
+    {
+        s_raLastSummary = buf;
+        SetDlgItemTextA(hDlg, IDC_RA_SUMMARY, buf);
+    }
+}
+
+// Rebuild the rows; only touch the listview when something actually changed
+// so the periodic refresh doesn't flicker or fight the user's scrolling.
+static void RA_RefreshAchievementList(HWND hDlg)
+{
+    RA_UpdateAchievementHeader(hDlg);
+
+    std::vector<RAAchSortData> rows;
+    RA_BuildAchRows(rows);
+    if (RA_AchRowsEqual(rows, raAchData))
+        return;
+
+    HWND hList = GetDlgItem(hDlg, IDC_RA_ACHLIST);
+    int top = ListView_GetTopIndex(hList);
+    int perPage = ListView_GetCountPerPage(hList);
+
+    SendMessage(hList, WM_SETREDRAW, FALSE, 0);
+    raAchData.swap(rows);
+    RA_FillAchievementList(hList);
+
+    int count = ListView_GetItemCount(hList);
+    if (count > 0 && top > 0)
+    {
+        int bottom = top + perPage - 1;
+        if (bottom >= count) bottom = count - 1;
+        ListView_EnsureVisible(hList, bottom, FALSE);
+        ListView_EnsureVisible(hList, top, FALSE);
+    }
+    SendMessage(hList, WM_SETREDRAW, TRUE, 0);
+    InvalidateRect(hList, NULL, TRUE);
 }
 
 static INT_PTR CALLBACK DlgRAAchievementsProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
@@ -303,29 +433,47 @@ static INT_PTR CALLBACK DlgRAAchievementsProc(HWND hDlg, UINT msg, WPARAM wParam
         col.cx = 85;
         SendMessageA(hList, LVM_INSERTCOLUMNA, 2, (LPARAM)&col);
 
-        col.pszText = (char *)"Description";
-        col.cx = 280;
+        col.pszText = (char *)"Progress";
+        col.cx = 60;
         SendMessageA(hList, LVM_INSERTCOLUMNA, 3, (LPARAM)&col);
 
-        rc_client_t *client = RA_GetClient();
-        const rc_client_game_t *game = client ? rc_client_get_game_info(client) : nullptr;
-        if (game)
-            SetDlgItemTextA(hDlg, IDC_RA_GAME_TITLE, game->title);
-        else
-            SetDlgItemTextA(hDlg, IDC_RA_GAME_TITLE, "No game loaded");
+        col.pszText = (char *)"Type";
+        col.cx = 75;
+        SendMessageA(hList, LVM_INSERTCOLUMNA, 4, (LPARAM)&col);
 
-        RA_PopulateAchievementList(hList);
+        col.pszText = (char *)"Description";
+        col.cx = 280;
+        SendMessageA(hList, LVM_INSERTCOLUMNA, 5, (LPARAM)&col);
+
+        raSortActive = false;
+        s_raLastTitle.clear();
+        s_raLastSummary.clear();
+        RA_UpdateAchievementHeader(hDlg);
+        RA_BuildAchRows(raAchData);
+        RA_FillAchievementList(hList);
+
+        SetTimer(hDlg, RA_ACHLIST_TIMER_ID, 1000, NULL);
         return TRUE;
     }
+
+    case WM_TIMER:
+        if (wParam == RA_ACHLIST_TIMER_ID)
+        {
+            RA_RefreshAchievementList(hDlg);
+            return TRUE;
+        }
+        break;
 
     case WM_SIZE:
     {
         RECT rc;
         GetClientRect(hDlg, &rc);
+        MoveWindow(GetDlgItem(hDlg, IDC_RA_GAME_TITLE), 8, 6, rc.right - 16, 16, TRUE);
+        MoveWindow(GetDlgItem(hDlg, IDC_RA_SUMMARY), 8, 24, rc.right - 16, 16, TRUE);
         HWND hList = GetDlgItem(hDlg, IDC_RA_ACHLIST);
-        MoveWindow(hList, 6, 20, rc.right - 12, rc.bottom - 46, TRUE);
+        MoveWindow(hList, 8, 44, rc.right - 16, rc.bottom - 84, TRUE);
         HWND hBtn = GetDlgItem(hDlg, IDCANCEL);
-        MoveWindow(hBtn, (rc.right - 50) / 2, rc.bottom - 20, 50, 14, TRUE);
+        MoveWindow(hBtn, (rc.right - 80) / 2, rc.bottom - 32, 80, 24, TRUE);
         return TRUE;
     }
 
@@ -335,13 +483,14 @@ static INT_PTR CALLBACK DlgRAAchievementsProc(HWND hDlg, UINT msg, WPARAM wParam
         if (pnm->idFrom == IDC_RA_ACHLIST && pnm->code == LVN_COLUMNCLICK)
         {
             NMLISTVIEW *pnmlv = (NMLISTVIEW *)lParam;
-            if (raSortColumn == pnmlv->iSubItem)
+            if (raSortActive && raSortColumn == pnmlv->iSubItem)
                 raSortAscending = !raSortAscending;
             else
             {
                 raSortColumn = pnmlv->iSubItem;
                 raSortAscending = true;
             }
+            raSortActive = true;
             ListView_SortItems(GetDlgItem(hDlg, IDC_RA_ACHLIST), RA_AchListCompare, 0);
             return TRUE;
         }
@@ -351,12 +500,27 @@ static INT_PTR CALLBACK DlgRAAchievementsProc(HWND hDlg, UINT msg, WPARAM wParam
     case WM_COMMAND:
         if (LOWORD(wParam) == IDCANCEL)
         {
-            EndDialog(hDlg, IDCANCEL);
+            DestroyWindow(hDlg);
             return TRUE;
         }
         break;
+
+    case WM_CLOSE:
+        DestroyWindow(hDlg);
+        return TRUE;
+
+    case WM_DESTROY:
+        KillTimer(hDlg, RA_ACHLIST_TIMER_ID);
+        raAchData.clear();
+        s_hAchievementsDlg = nullptr;
+        return TRUE;
     }
     return FALSE;
+}
+
+bool RA_Win32_HandleDialogMessage(MSG *msg)
+{
+    return s_hAchievementsDlg && IsDialogMessage(s_hAchievementsDlg, msg);
 }
 
 // ---------------------------------------------------------------------------
@@ -381,9 +545,14 @@ static INT_PTR CALLBACK DlgRALoginProc(HWND hDlg, UINT msg, WPARAM wParam, LPARA
             GetDlgItemTextA(hDlg, IDC_RA_USERNAME, username, sizeof(username));
             GetDlgItemTextA(hDlg, IDC_RA_PASSWORD, password, sizeof(password));
 
-            if (username[0] && password[0])
-                RA_LoginWithPassword(username, password);
+            if (!username[0] || !password[0])
+            {
+                MessageBoxA(hDlg, "Please enter both username and password.",
+                            "RetroAchievements", MB_OK | MB_ICONWARNING);
+                return TRUE;
+            }
 
+            RA_LoginWithPassword(username, password);
             EndDialog(hDlg, IDOK);
             return TRUE;
         }
@@ -406,7 +575,18 @@ static void ra_win32_show_login()
 
 static void ra_win32_show_achievements()
 {
-    DialogBoxA(g_hInst, MAKEINTRESOURCEA(IDD_RA_ACHIEVEMENTS), GUI.hWnd, DlgRAAchievementsProc);
+    if (s_hAchievementsDlg)
+    {
+        SetForegroundWindow(s_hAchievementsDlg);
+        return;
+    }
+
+    // Modeless: the emulator's main loop keeps pumping, so the game keeps
+    // running while the list is up.
+    s_hAchievementsDlg = CreateDialogA(g_hInst, MAKEINTRESOURCEA(IDD_RA_ACHIEVEMENTS),
+                                       GUI.hWnd, DlgRAAchievementsProc);
+    if (s_hAchievementsDlg)
+        ShowWindow(s_hAchievementsDlg, SW_SHOW);
 }
 
 static bool ra_win32_confirm_disable_hardcore(const char *activity)
@@ -440,6 +620,24 @@ static void ra_win32_log(const char *message)
     OutputDebugStringA("\n");
 }
 
+static void ra_win32_on_login_result(bool success, const char *message, bool user_initiated)
+{
+    // Called on the HTTP worker thread; marshal to the UI thread so the
+    // MessageBox parents correctly and doesn't race dialog teardown.
+    char *copy = _strdup(message ? message : "");
+    WPARAM flags = (success ? 1 : 0) | (user_initiated ? 2 : 0);
+    if (!PostMessage(GUI.hWnd, WM_RA_LOGIN_RESULT, flags, (LPARAM)copy))
+        free(copy);
+}
+
+static void ra_win32_reset_emulator()
+{
+    // May be called from the HTTP worker thread; the posted command runs the
+    // full reset path (movie stop, S9xReset, sound reinit, RA_OnReset).
+    if (!Settings.StopEmulation)
+        PostMessage(GUI.hWnd, WM_COMMAND, MAKEWPARAM(ID_EMULATION_HARD_RESET, 0), 0);
+}
+
 static void ra_win32_credentials_changed(const char *username, const char *token)
 {
     strncpy(GUI.RAUsername, username ? username : "", sizeof(GUI.RAUsername) - 1);
@@ -463,6 +661,8 @@ void RA_Win32_RegisterCallbacks()
     cb.confirm_disable_hardcore = ra_win32_confirm_disable_hardcore;
     cb.log_message = ra_win32_log;
     cb.on_credentials_changed = ra_win32_credentials_changed;
+    cb.on_login_result = ra_win32_on_login_result;
+    cb.reset_emulator = ra_win32_reset_emulator;
     RA_RegisterPlatformCallbacks(cb);
 }
 

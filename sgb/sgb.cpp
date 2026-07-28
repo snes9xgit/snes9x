@@ -391,11 +391,9 @@ void Emulator::ColdReset()
 
 bool Emulator::SoftReset()
 {
-	// BIOS mode mid-splash: the BIOS handshake state machine is still
-	// waiting on boot-ROM packets; a warm reset that skips the boot ROM
-	// would strand it on a black screen. Let the caller power-cycle.
-	if (Settings.SGB_BIOSModeActive &&
-	    !(impl_->cache_valid || impl_->boot_handoff_captured))
+	// No boot handoff yet = BIOS still mid-splash; a warm reset that skips
+	// the boot ROM strands it on a stale logo screen. Caller power-cycles.
+	if (Settings.SGB_BIOSModeActive && !impl_->boot_handoff_captured)
 		return false;
 
 	const bool    boot_rom       = impl_->boot_rom_loaded;
@@ -532,6 +530,17 @@ void Emulator::Reset()
 	// the cart takes over exactly as it would on real hardware.
 	if (impl_->boot_rom_loaded)
 	{
+		// Real power-on has the LCD OFF; the boot ROM fills VRAM with the
+		// logo before enabling it. PpuReset's post-boot LCDC=$91 would put
+		// those writes in mode 3, where VRAM blocking eats most of them.
+		impl_->ppu.lcdc       = 0x00;
+		impl_->ppu.stat       = 0x84;
+		impl_->ppu.mode       = PpuMode::HBlank;
+		impl_->ppu.mode_clock = 0;
+		impl_->ppu.ly         = 0;
+		impl_->ppu.window_line = 0;
+		impl_->ppu.stat_line_high = false;
+
 		std::memcpy(impl_->mem.boot_rom, impl_->boot_rom_staging, sizeof impl_->mem.boot_rom);
 		impl_->mem.boot_rom_enabled = true;
 		cs.r.af = 0x0000;

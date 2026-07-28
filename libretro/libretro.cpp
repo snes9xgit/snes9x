@@ -156,6 +156,7 @@ enum aspect_mode {
     ASPECT_RATIO_AUTO
 };
 static retro_environment_t environ_cb;
+static struct retro_rumble_interface rumble_iface = {};
 static overscan_mode crop_overscan_mode = OVERSCAN_CROP_ON; // default to crop
 static aspect_mode aspect_ratio_mode = ASPECT_RATIO_4_3; // default to 4:3
 static bool rom_loaded = false;
@@ -1148,11 +1149,99 @@ static bool8 is_SufamiTurbo_Cart (const uint8 *data, uint32 size)
         return (FALSE);
 }
 
+// Publish the GB address space to the frontend when a GB cart is active;
+// without it rcheevos falls back to SNES WRAM and GB achievements never
+// trigger (issue #182). Submitting an empty map clears stale descriptors.
+static void set_gb_memory_maps(void)
+{
+    struct retro_memory_descriptor desc[8];
+    unsigned n = 0;
+
+    if (!environ_cb)
+        return;
+
+    memset(desc, 0, sizeof(desc));
+
+    if (S9xSGBIsActive())
+    {
+        unsigned int wram_size = 0, hram_size = 0, sram_size = 0, rom_size = 0;
+        uint8_t *wram = S9xSGBCheatWRAMPtr(&wram_size);
+        uint8_t *hram = S9xSGBCheatHRAMPtr(&hram_size);
+        uint8_t *sram = S9xSGBCheatSRAMPtr(&sram_size);
+        const uint8_t *rom = S9xSGBCheatROMPtr(&rom_size);
+        const uint8_t *vram = S9xSGBGetVRAM();
+        const uint8_t *oam = S9xSGBGetOAM();
+
+        if (rom && rom_size)
+        {
+            desc[n].flags = RETRO_MEMDESC_CONST;
+            desc[n].ptr   = (void *) rom;
+            desc[n].start = 0x0000;
+            desc[n].len   = rom_size < 0x4000 ? rom_size : 0x4000;
+            n++;
+        }
+        if (vram)
+        {
+            desc[n].ptr   = (void *) vram;
+            desc[n].start = 0x8000;
+            desc[n].len   = 0x2000;
+            n++;
+        }
+        if (sram && sram_size)
+        {
+            desc[n].ptr   = sram;
+            desc[n].start = 0xA000;
+            desc[n].len   = sram_size < 0x2000 ? sram_size : 0x2000;
+            n++;
+        }
+        if (wram && wram_size >= 0x2000)
+        {
+            desc[n].ptr   = wram;
+            desc[n].start = 0xC000;
+            desc[n].len   = 0x2000;
+            n++;
+            // Echo RAM mirrors WRAM
+            desc[n].ptr   = wram;
+            desc[n].start = 0xE000;
+            desc[n].len   = 0x1E00;
+            n++;
+        }
+        if (oam)
+        {
+            desc[n].ptr   = (void *) oam;
+            desc[n].start = 0xFE00;
+            desc[n].len   = 0xA0;
+            n++;
+        }
+        if (hram && hram_size)
+        {
+            desc[n].ptr   = hram;
+            desc[n].start = 0xFF80;
+            desc[n].len   = 0x7F;
+            n++;
+        }
+        if (wram && wram_size >= 0x8000)
+        {
+            // CGB WRAM banks 2-7, rcheevos extended window
+            desc[n].ptr   = wram + 0x2000;
+            desc[n].start = 0x10000;
+            desc[n].len   = 0x6000;
+            n++;
+        }
+    }
+
+    struct retro_memory_map map = { desc, n };
+    environ_cb(RETRO_ENVIRONMENT_SET_MEMORY_MAPS, &map);
+}
+
 bool retro_load_game(const struct retro_game_info *game)
 {
     init_descriptors();
 
     update_variables();
+
+    if (!environ_cb(RETRO_ENVIRONMENT_GET_RUMBLE_INTERFACE, &rumble_iface))
+        rumble_iface.set_rumble_state = NULL;
 
     if(game->data == NULL && game->size == 0 && game->path != NULL)
         rom_loaded = Memory.LoadROM(game->path);
@@ -1204,6 +1293,8 @@ bool retro_load_game(const struct retro_game_info *game)
         }
 
         g_geometry_update = true;
+
+        set_gb_memory_maps();
 
         if (randomize_memory)
         {
@@ -1738,6 +1829,21 @@ static void input_handle_pointer_lightgun( unsigned port, unsigned gun_device, i
     }
 }
 
+static void report_rumble()
+{
+    // LRG rumble dongle on Port 1: strong = left motor, weak = right.
+    static uint16 last_strong = 0, last_weak = 0;
+    if (!rumble_iface.set_rumble_state)
+        return;
+    uint8 l, r;
+    S9xGetRumble(l, r);
+    uint16 strong = l * 0x1111, weak = r * 0x1111;
+    if (strong != last_strong)
+        rumble_iface.set_rumble_state(0, RETRO_RUMBLE_STRONG, last_strong = strong);
+    if (weak != last_weak)
+        rumble_iface.set_rumble_state(0, RETRO_RUMBLE_WEAK, last_weak = weak);
+}
+
 static void report_buttons()
 {
     int offset = snes_devices[0] == RETRO_DEVICE_JOYPAD_MULTITAP ? 4 : 1;
@@ -1908,6 +2014,7 @@ void retro_run()
     poll_cb();
     report_buttons();
     S9xMainLoop();
+    report_rumble();
 }
 
 void retro_deinit()
@@ -1948,11 +2055,17 @@ void* retro_get_memory_data(unsigned type)
             data = RTCData.reg;
             break;
         case RETRO_MEMORY_SYSTEM_RAM:
-        data = Memory.RAM;
-        break;
+            if (S9xSGBIsActive())
+            {
+                unsigned int wram_size = 0;
+                data = S9xSGBCheatWRAMPtr(&wram_size);
+            }
+            else
+                data = Memory.RAM;
+            break;
         case RETRO_MEMORY_VIDEO_RAM:
-        data = Memory.VRAM;
-        break;
+            data = S9xSGBIsActive() ? (void *) S9xSGBGetVRAM() : (void *) Memory.VRAM;
+            break;
         //case RETRO_MEMORY_ROM:
         //	data = Memory.ROM;
         //	break;
@@ -1988,10 +2101,17 @@ size_t retro_get_memory_size(unsigned type)
             size = (Settings.SRTC || Settings.SPC7110RTC)?20:0;
             break;
         case RETRO_MEMORY_SYSTEM_RAM:
-            size = 128 * 1024;
+            if (S9xSGBIsActive())
+            {
+                unsigned int wram_size = 0;
+                S9xSGBCheatWRAMPtr(&wram_size);
+                size = wram_size;
+            }
+            else
+                size = 128 * 1024;
             break;
         case RETRO_MEMORY_VIDEO_RAM:
-            size = 64 * 1024;
+            size = S9xSGBIsActive() ? (S9xSGBIsCgb() ? 0x4000 : 0x2000) : 64 * 1024;
             break;
         //case RETRO_MEMORY_ROM:
         //	size = Memory.CalculatedSize;

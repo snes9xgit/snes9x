@@ -2015,6 +2015,8 @@ bool8 CMemory::LoadROMInt (int32 ROMfillSize)
 		(ROM[0x7fd5] + (ROM[0x7fd6] << 8)) != 0x1420 &&
 		(ROM[0x7fd5] + (ROM[0x7fd6] << 8)) != 0x1520 &&
 		(ROM[0x7fd5] + (ROM[0x7fd6] << 8)) != 0x1A20 &&
+		(ROM[0x7fd5] + (ROM[0x7fd6] << 8)) != 0x1730 && // exclude Super FX 3
+		(ROM[0x7fd5] + (ROM[0x7fd6] << 8)) != 0x1830 &&
 		(ROM[0x7fd5] + (ROM[0x7fd6] << 8)) != 0x3423 && // exclude SA-1
 		(ROM[0x7fd5] + (ROM[0x7fd6] << 8)) != 0x3523 &&
 		(ROM[0x7fd5] + (ROM[0x7fd6] << 8)) != 0x4332 && // exclude S-DD1
@@ -2180,6 +2182,7 @@ bool8 CMemory::LoadROMInt (int32 ROMfillSize)
 
 	memset(&SNESGameFixes, 0, sizeof(SNESGameFixes));
 	SNESGameFixes.SRAMInitialValue = 0x60;
+	SNESGameFixes.RAMInitialValue  = 0x55;
 
 	InitROM();
 
@@ -2341,6 +2344,7 @@ bool8 CMemory::LoadMultiCartInt ()
 
 	memset(&SNESGameFixes, 0, sizeof(SNESGameFixes));
 	SNESGameFixes.SRAMInitialValue = 0x60;
+	SNESGameFixes.RAMInitialValue  = 0x55;
 
 	InitROM();
 
@@ -2564,6 +2568,7 @@ bool8 CMemory::LoadSFCBox (int32 ROMfillSize)
 
 	//// Chip settings (the InitROM preamble we bypass)
 	Settings.SuperFX = FALSE;
+	SuperFX.isFx3 = FALSE;
 	Settings.DSP = 0;
 	Settings.SA1 = FALSE;
 	Settings.C4 = FALSE;
@@ -2616,6 +2621,7 @@ bool8 CMemory::LoadSFCBox (int32 ROMfillSize)
 
 	memset(&SNESGameFixes, 0, sizeof(SNESGameFixes));
 	SNESGameFixes.SRAMInitialValue = 0x60;
+	SNESGameFixes.RAMInitialValue  = 0x55;
 
 	// Initial map; S9xReset() below powers the supervisor on, which remaps
 	// again from the registers' reset state.
@@ -2693,7 +2699,7 @@ bool8 CMemory::SaveSRTC (void)
 void CMemory::ClearSRAM (bool8 onlyNonSavedSRAM)
 {
 	if (onlyNonSavedSRAM)
-		if (!(Settings.SuperFX && ROMType < 0x15) && !(Settings.SA1 && ROMType == 0x34)) // can have SRAM
+		if (!(Settings.SuperFX && (ROMType < 0x15 || ROMType == 0x17)) && !(Settings.SA1 && ROMType == 0x34)) // can have SRAM
 			return;
 	// TODO: If SRAM size changes change this value as well
 	memset(SRAM, SNESGameFixes.SRAMInitialValue, 0x80000);
@@ -2794,7 +2800,7 @@ bool8 CMemory::SaveSRAM (const char *filename)
 	if (Settings.SFCBox)
 		S9xSFCBoxSaveNVRAM();	// KROM battery RAM rides along with the .srm
 
-	if (Settings.SuperFX && ROMType < 0x15) // doesn't have SRAM
+	if (Settings.SuperFX && (ROMType < 0x15 || ROMType == 0x17)) // doesn't have SRAM
 		return (TRUE);
 
 	if (Settings.SA1 && ROMType == 0x34)    // doesn't have SRAM
@@ -2926,6 +2932,7 @@ void CMemory::ParseSNESHeader (uint8 *RomHeader)
 void CMemory::InitROM (void)
 {
 	Settings.SuperFX = FALSE;
+	SuperFX.isFx3 = FALSE;
 	Settings.DSP = 0;
 	Settings.SA1 = FALSE;
 	Settings.C4 = FALSE;
@@ -3079,6 +3086,13 @@ void CMemory::InitROM (void)
 			Settings.SA1 = TRUE;
 			break;
 
+		// Super FX 3 (LRG, $18 = FX3+battery)
+		case 0x1720:
+		case 0x1730:
+		case 0x1820:
+		case 0x1830:
+			SuperFX.isFx3 = TRUE;
+			// Fall through
 		// SuperFX
 		case 0x1320:
 		case 0x1420:
@@ -3165,7 +3179,12 @@ void CMemory::InitROM (void)
 		else if (Settings.SETA && Settings.SETA != ST_018)
 			Map_SetaDSPLoROMMap();
 		else if (Settings.SuperFX)
-			Map_SuperFXLoROMMap();
+		{
+			if (SuperFX.isFx3)
+				Map_SuperFX3LoROMMap();
+			else
+				Map_SuperFXLoROMMap();
+		}
 		else if (Settings.SA1)
 		{
 			if (Multi.cartType == 5)
@@ -3857,6 +3876,39 @@ void CMemory::Map_SuperFXLoROMMap (void)
 	map_WriteProtectROM();
 }
 
+// Super FX 3 (LRG): GSU MMIO moves to $7000-$7FFF, ROM widens to banks
+// $40-$6F/$C0-$FF, RAM sits only at $70-$71, no $6000-$7FFF RAM window.
+void CMemory::Map_SuperFX3LoROMMap (void)
+{
+	printf("Map_SuperFX3LoROMMap\n");
+	map_System();
+
+	// Replicate the first 2Mb of the ROM at ROM + 8MB such that each 32K
+	// block is repeated twice in each 64K block.
+	for (int c = 0; c < 64; c++)
+	{
+		memmove(&ROM[0x800000 + c * 0x10000], &ROM[c * 0x8000], 0x8000);
+		memmove(&ROM[0x808000 + c * 0x10000], &ROM[c * 0x8000], 0x8000);
+	}
+
+	map_lorom(0x00, 0x3f, 0x8000, 0xffff, CalculatedSize);
+	map_lorom(0x80, 0xbf, 0x8000, 0xffff, CalculatedSize);
+
+	map_hirom_offset(0x40, 0x6f, 0x0000, 0xffff, CalculatedSize, 0);
+	map_hirom_offset(0xc0, 0xff, 0x0000, 0xffff, CalculatedSize, 0);
+
+	// GSU registers, routed through S9xGetPPU/S9xSetPPU
+	map_index(0x00, 0x3f, 0x7000, 0x7fff, MAP_PPU, MAP_TYPE_I_O);
+	map_index(0x80, 0xbf, 0x7000, 0x7fff, MAP_PPU, MAP_TYPE_I_O);
+
+	map_space(0x70, 0x70, 0x0000, 0xffff, SRAM);
+	map_space(0x71, 0x71, 0x0000, 0xffff, SRAM + 0x10000);
+
+	map_WRAM();
+
+	map_WriteProtectROM();
+}
+
 void CMemory::Map_SetaDSPLoROMMap (void)
 {
 	printf("Map_SetaDSPLoROMMap\n");
@@ -4230,7 +4282,7 @@ const char * CMemory::KartContents (void)
 	if (Settings.BS)
 		strcpy(chip, "+BS");
 	else if (Settings.SuperFX)
-		strcpy(chip, "+Super FX");
+		strcpy(chip, SuperFX.isFx3 ? "+Super FX 3" : "+Super FX");
 	else if (Settings.SDD1)
 		strcpy(chip, "+S-DD1");
 	else if (Settings.OBC1)
@@ -4746,9 +4798,54 @@ static uint32 PF94LoadAuxROM (const std::string &dir, const char *const *names, 
 	return (0);
 }
 
+// Street Fighter EX Plus Alpha (unlicensed): a cart chip answers queries the
+// game pushes into ROM space at $80:8000-$87FF, read back from $80:8100. We
+// return ROM there, so the SPC bank base resolves to $08 instead of $05 and the
+// uploader reads a garbage header, overruns APU RAM and hangs the boot.
+static void S9xSimulateSFEXProtection (uint8 *rom, uint32 size, uint32 crc32)
+{
+	// Headerless pirate, so no name to match: identify by dump CRC32.
+	if (size != 0x200000 || crc32 != 0xDAD59B9F)
+		return;
+
+	// The exact instructions we overwrite, at all three query sites
+	if (rom[0x0463] != 0x20 || rom[0x0464] != 0xFC || rom[0x0465] != 0x88 ||
+	    rom[0x0477] != 0x20 || rom[0x0478] != 0xFC || rom[0x0479] != 0x88 ||
+	    rom[0x05B6] != 0x20 || rom[0x05B7] != 0xFC || rom[0x05B8] != 0x88 ||
+	    rom[0x08FC] != 0x08 || rom[0x08FD] != 0xC2 || rom[0x08FE] != 0x30 ||
+	    rom[0x00A2] != 0xA5 || rom[0x00A3] != 0x8C ||
+	    rom[0x047A] != 0xAD || rom[0x047B] != 0x04 || rom[0x047C] != 0x01 ||
+	    rom[0x05B9] != 0xAD || rom[0x05BA] != 0x04 || rom[0x05BB] != 0x01)
+		return;
+
+	rom[0x00A2] = 0xA9; rom[0x00A3] = 0x03;		// LDA #$03   -> sound bank $05
+	rom[0x00A4] = 0xEA; rom[0x00A5] = 0xEA;
+	rom[0x047A] = 0xA9; rom[0x047B] = 0x0A;		// LDA #$000A -> gfx bank / NMI phase base
+	rom[0x047C] = 0x00;
+	// $85C3 jump table: wrong entries derail into a bad P/PC, leaking
+	// 2 bytes of stack per frame until it walks into direct page.
+	rom[0x05B9] = 0xA9; rom[0x05BA] = 0x02;		// LDA #$0002 -> round-init $8694
+	rom[0x05BB] = 0x00;
+
+	printf("Street Fighter EX Plus Alpha: cart protection simulated\n");
+}
+
 void CMemory::ApplyROMFixes (void)
 {
 	Settings.BlockInvalidVRAMAccess = Settings.BlockInvalidVRAMAccessMaster;
+
+	// Not gated on DisableGameSpecificHacks: this stands in for cart hardware
+	// we don't emulate, without which the game never boots at all.
+	S9xSimulateSFEXProtection(ROM, CalculatedSize, ROMCRC32);
+
+	// Astro Hawk (PD): enables NMI before clearing WRAM, so the NMI handler
+	// runs on power-on garbage; only boots if WRAM starts zeroed. CRC match —
+	// its internal header is blank.
+	if (ROMCRC32 == 0x41D59381)
+	{
+		SNESGameFixes.RAMInitialValue = 0x00;
+		printf("Applied zeroed-WRAM hack.\n");
+	}
 
 	PF94.active = FALSE;
 	PF94.board  = EVENT_BOARD_PF94;

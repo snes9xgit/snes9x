@@ -1147,6 +1147,7 @@ int HandleKeyMessage(WPARAM wParam, LPARAM lParam)
 #ifdef RETROACHIEVEMENTS_SUPPORT
 			if (RA_IsHardcoreModeActive())
 			{
+				S9xSetInfoString("Frame advance is not allowed in Hardcore mode");
 				hitHotKey = true;
 			}
 			else
@@ -1210,32 +1211,24 @@ int HandleKeyMessage(WPARAM wParam, LPARAM lParam)
 				S9xMessage(S9X_INFO, S9X_MOVIE_INFO, MOVIE_ERR_NOREADONLYTOGGLE);
 			hitHotKey = true;
 		}
+		// Fast-forward is allowed in RA hardcore mode (only slowdown,
+		// rewind, states and cheats are restricted).
 		if(HKmatch(FastForward))
 		{
-#ifdef RETROACHIEVEMENTS_SUPPORT
-			if (!RA_IsHardcoreModeActive())
-#endif
-			{
-				if(!Settings.TurboMode)
-					S9xMessage (S9X_INFO, S9X_TURBO_MODE, WINPROC_TURBOMODE_TEXT);
-				Settings.TurboMode = TRUE;
-			}
+			if(!Settings.TurboMode)
+				S9xMessage (S9X_INFO, S9X_TURBO_MODE, WINPROC_TURBOMODE_TEXT);
+			Settings.TurboMode = TRUE;
 			hitHotKey = true;
 		}
 		if(HKmatch(FastForwardToggle))
 		{
-#ifdef RETROACHIEVEMENTS_SUPPORT
-			if (!RA_IsHardcoreModeActive())
-#endif
-			{
-				Settings.TurboMode ^= TRUE;
-				if (Settings.TurboMode)
-					S9xMessage (S9X_INFO, S9X_TURBO_MODE,
-					WINPROC_TURBOMODE_ON);
-				else
-					S9xMessage (S9X_INFO, S9X_TURBO_MODE,
-					WINPROC_TURBOMODE_OFF);
-			}
+			Settings.TurboMode ^= TRUE;
+			if (Settings.TurboMode)
+				S9xMessage (S9X_INFO, S9X_TURBO_MODE,
+				WINPROC_TURBOMODE_ON);
+			else
+				S9xMessage (S9X_INFO, S9X_TURBO_MODE,
+				WINPROC_TURBOMODE_OFF);
 			hitHotKey = true;
 		}
 		if(HKmatch(InsertCoin))
@@ -1328,14 +1321,20 @@ int HandleKeyMessage(WPARAM wParam, LPARAM lParam)
 		}
 		if(HKmatch(SpeedDown))
 		{
+			// Increase emulated frame time
+			int i;
+			for(i=1; FrameTimings[i]<Settings.FrameTime; ++i)
+				;
 #ifdef RETROACHIEVEMENTS_SUPPORT
-			if (!RA_IsHardcoreModeActive())
+			// Hardcore allows running faster than 100%, never slower.
+			if (RA_IsHardcoreModeActive() &&
+				FrameTimings[i+1] > (Settings.PAL ? Settings.FrameTimePAL : Settings.FrameTimeNTSC))
+			{
+				S9xSetInfoString("Slow motion is not allowed in Hardcore mode");
+			}
+			else
 #endif
 			{
-				// Increase emulated frame time
-				int i;
-				for(i=1; FrameTimings[i]<Settings.FrameTime; ++i)
-					;
 				Settings.FrameTime = FrameTimings[i+1];
 				ResetFrameTimer ();
 				sprintf (InfoString, "Speed: %.0f%% (%.1f ms/frame)", ((Settings.PAL?Settings.FrameTimePAL:Settings.FrameTimeNTSC) * 100.0f) / (float)Settings.FrameTime, Settings.FrameTime*0.001f);
@@ -1345,33 +1344,23 @@ int HandleKeyMessage(WPARAM wParam, LPARAM lParam)
 		}
 		if(HKmatch(SpeedUp))
 		{
-#ifdef RETROACHIEVEMENTS_SUPPORT
-			if (!RA_IsHardcoreModeActive())
-#endif
-			{
-				// Decrease emulated frame time
-				int i;
-				for(i=1; FrameTimings[i]<Settings.FrameTime; ++i)
-					;
-				Settings.FrameTime = FrameTimings[i-1];
+			// Decrease emulated frame time
+			int i;
+			for(i=1; FrameTimings[i]<Settings.FrameTime; ++i)
+				;
+			Settings.FrameTime = FrameTimings[i-1];
 
-				ResetFrameTimer ();
-				sprintf (InfoString, "Speed: %.0f%% (%.1f ms/frame)", ((Settings.PAL?Settings.FrameTimePAL:Settings.FrameTimeNTSC) * 100.0f) / (float)Settings.FrameTime, Settings.FrameTime*0.001f);
-				S9xSetInfoString (InfoString);
-			}
+			ResetFrameTimer ();
+			sprintf (InfoString, "Speed: %.0f%% (%.1f ms/frame)", ((Settings.PAL?Settings.FrameTimePAL:Settings.FrameTimeNTSC) * 100.0f) / (float)Settings.FrameTime, Settings.FrameTime*0.001f);
+			S9xSetInfoString (InfoString);
 			hitHotKey = true;
 		}
 		if(HKmatch(ResetSpeed))
 		{
-#ifdef RETROACHIEVEMENTS_SUPPORT
-			if (!RA_IsHardcoreModeActive())
-#endif
-			{
-				Settings.FrameTime = Settings.PAL ? Settings.FrameTimePAL : Settings.FrameTimeNTSC;
-				ResetFrameTimer ();
-				sprintf (InfoString, "Speed: 100%% (%.1f ms/frame)", Settings.FrameTime*0.001f);
-				S9xSetInfoString (InfoString);
-			}
+			Settings.FrameTime = Settings.PAL ? Settings.FrameTimePAL : Settings.FrameTimeNTSC;
+			ResetFrameTimer ();
+			sprintf (InfoString, "Speed: 100%% (%.1f ms/frame)", Settings.FrameTime*0.001f);
+			S9xSetInfoString (InfoString);
 			hitHotKey = true;
 		}
 		bool gbCartLoaded = (Settings.SuperGameBoy || Settings.SGB_BIOSModeActive);
@@ -1483,9 +1472,18 @@ int HandleKeyMessage(WPARAM wParam, LPARAM lParam)
 			}
 			else
 			{
-				if(!Settings.Rewinding)
-					S9xMessage (S9X_INFO, 0, GUI.rewindBufferSize?WINPROC_REWINDING_TEXT:WINPROC_REWINDING_DISABLED);
-				Settings.Rewinding = true;
+#ifdef RETROACHIEVEMENTS_SUPPORT
+				if (GUI.rewindBufferSize && RA_IsHardcoreModeActive())
+				{
+					S9xSetInfoString("Rewind is not allowed in Hardcore mode");
+				}
+				else
+#endif
+				{
+					if(!Settings.Rewinding)
+						S9xMessage (S9X_INFO, 0, GUI.rewindBufferSize?WINPROC_REWINDING_TEXT:WINPROC_REWINDING_DISABLED);
+					Settings.Rewinding = true;
+				}
 			}
 			hitHotKey = true;
         }
@@ -2440,6 +2438,10 @@ LRESULT CALLBACK WinProc(
             S9xDetectJoypads();
             break;
 
+        case ID_INPUT_ENABLERUMBLE:
+            GUI.EnableRumble = !GUI.EnableRumble;
+            break;
+
 		case ID_FILE_LOADMULTICART:
 			{
 				RestoreGUIDisplay ();
@@ -3023,21 +3025,14 @@ LRESULT CALLBACK WinProc(
 			break;
 		case ID_RA_HARDCORE_MODE:
 			GUI.RAHardcoreMode = !GUI.RAHardcoreMode;
-			RA_SetHardcoreEnabled(GUI.RAHardcoreMode);
-			if (GUI.RAHardcoreMode && !Settings.StopEmulation)
+			if (GUI.RAHardcoreMode && Settings.ApplyCheats)
 			{
-				if (Settings.ApplyCheats)
-				{
-					Settings.ApplyCheats = false;
-					S9xCheatsDisable();
-				}
-				S9xMovieUpdateOnReset();
-				if (S9xMoviePlaying())
-					S9xMovieStop(TRUE);
-				S9xSoftReset();
-				ReInitSound();
-				RA_OnReset();
+				Settings.ApplyCheats = false;
+				S9xCheatsDisable();
 			}
+			// Enabling hardcore with a loaded game raises RC_CLIENT_EVENT_RESET,
+			// which posts ID_EMULATION_HARD_RESET (movie stop + reset + RA_OnReset).
+			RA_SetHardcoreEnabled(GUI.RAHardcoreMode);
 			S9xRestoreWindowTitle();
 			break;
 		case ID_RA_TOGGLE_IMAGES:
@@ -3054,10 +3049,26 @@ LRESULT CALLBACK WinProc(
 			RA_Init();
 			RA_ShowAchievementList();
 			break;
+		case ID_RA_VIEW_PROFILE:
+		{
+			rc_client_t *raClient = RA_GetClient();
+			const rc_client_user_t *raUser = raClient ? rc_client_get_user_info(raClient) : NULL;
+			if (raUser && raUser->username && raUser->username[0])
+			{
+				char raUrl[512];
+				snprintf(raUrl, sizeof(raUrl), "https://retroachievements.org/user/%s", raUser->username);
+				ShellExecuteA(hWnd, "open", raUrl, NULL, NULL, SW_SHOWNORMAL);
+			}
+			break;
+		}
 #endif
 		case ID_FRAME_ADVANCE:
 #ifdef RETROACHIEVEMENTS_SUPPORT
-			if (!RA_IsHardcoreModeActive())
+			if (RA_IsHardcoreModeActive())
+			{
+				S9xSetInfoString("Frame advance is not allowed in Hardcore mode");
+			}
+			else
 #endif
 			{
 				Settings.Paused = true;
@@ -3396,6 +3407,24 @@ LRESULT CALLBACK WinProc(
 			RestoreSNESDisplay ();
 		}
 #endif
+		break;
+#endif
+
+#ifdef RETROACHIEVEMENTS_SUPPORT
+	case WM_RA_LOGIN_RESULT:
+		{
+			// Posted from the HTTP worker; lParam owns a malloc'd message.
+			char *raMsg = (char *)lParam;
+			const bool raSuccess = (wParam & 1) != 0;
+			const bool raUserInitiated = (wParam & 2) != 0;
+			if (!raSuccess)
+				MessageBoxA(hWnd, (raMsg && raMsg[0]) ? raMsg : "Login failed.",
+				            "RetroAchievements - Login Failed", MB_OK | MB_ICONERROR);
+			else if (raUserInitiated)
+				MessageBoxA(hWnd, (raMsg && raMsg[0]) ? raMsg : "Login successful.",
+				            "RetroAchievements", MB_OK | MB_ICONINFORMATION);
+			free(raMsg);
+		}
 		break;
 #endif
 
@@ -4744,6 +4773,11 @@ int WINAPI WinMain(
             if (!GetMessage (&msg, NULL, 0, 0))
                 goto loop_exit; // got WM_QUIT
 
+#ifdef RETROACHIEVEMENTS_SUPPORT
+            if (RA_Win32_HandleDialogMessage(&msg))
+                continue;
+#endif
+
             if (!TranslateAccelerator (GUI.hWnd, GUI.Accelerators, &msg))
             {
                 TranslateMessage (&msg);
@@ -4957,7 +4991,21 @@ int WINAPI WinMain(
 				S9xMainLoop();
 			}
 #ifdef RETROACHIEVEMENTS_SUPPORT
-			RA_DoFrame();
+			{
+				// Suspend achievement processing whenever remote inputs are
+				// part of the emulation — unlocks can't be attributed.
+				bool raNetplayActive = false;
+#ifdef NETPLAY_SUPPORT
+				if (Settings.NetPlay || Settings.NetPlayServer)
+					raNetplayActive = true;
+#endif
+#ifdef KAILLERA_SUPPORT
+				if (KailleraClientIsPlaying())
+					raNetplayActive = true;
+#endif
+				RA_SetNetplayActive(raNetplayActive);
+				RA_DoFrame();
+			}
 #endif
 			GUI.FrameCount++;
 			rewindContentFrame++;
@@ -5317,6 +5365,8 @@ static void CheckMenuStates ()
 				const UINT count = (UINT)GetMenuItemCount(s_bios_parent);
 				if (pos > count) pos = count;
 				InsertMenuItem(s_bios_parent, pos, TRUE, &ins);
+				if (LocaleIsTranslated())
+					LocalizeMenu(s_bios_parent);
 				DrawMenuBar(GUI.hWnd);
 			}
 			else if (!gb_loaded && currently_in_menu)
@@ -5415,12 +5465,22 @@ static void CheckMenuStates ()
 
     mii.fState = GUI.RAEnabled ? MFS_ENABLED : MFS_DISABLED;
     mii.fMask = MIIM_STATE | MIIM_STRING;
-    if (RA_IsLoggedIn())
-        mii.dwTypeData = (LPTSTR)TEXT("&Logout");
+    TCHAR raLoginText[224];
+    char raUserInfo[160];
+    if (RA_GetLoggedInUserString(raUserInfo, sizeof(raUserInfo)))
+    {
+        // e.g. "Logout shany (12345 points)" — shows who's logged in
+        Utf8ToWide raUserWide(raUserInfo);
+        _stprintf(raLoginText, TEXT("&Logout %s"), (const TCHAR *)raUserWide);
+        mii.dwTypeData = raLoginText;
+    }
     else
         mii.dwTypeData = (LPTSTR)TEXT("&Login...");
     SetMenuItemInfo(GUI.hMenu, ID_RA_LOGIN, FALSE, &mii);
     mii.fMask = MIIM_STATE;
+
+    mii.fState = RA_IsLoggedIn() ? MFS_ENABLED : MFS_DISABLED;
+    SetMenuItemInfo(GUI.hMenu, ID_RA_VIEW_PROFILE, FALSE, &mii);
 
     mii.fState = Settings.StopEmulation ? MFS_DISABLED : MFS_ENABLED;
     SetMenuItemInfo(GUI.hMenu, ID_RA_ACHIEVEMENTS_LIST, FALSE, &mii);
@@ -5558,6 +5618,9 @@ static void CheckMenuStates ()
     if (!GUI.BackgroundInput)
         mii.fState |= MFS_DISABLED;
     SetMenuItemInfo(GUI.hMenu, ID_INPUT_BACKGROUNDKEYBOARDHOTKEYS, FALSE, &mii);
+
+    mii.fState = GUI.EnableRumble ? MFS_CHECKED : MFS_UNCHECKED;
+    SetMenuItemInfo(GUI.hMenu, ID_INPUT_ENABLERUMBLE, FALSE, &mii);
 
 	UINT validFlag;
     ControllerOptionsFromControllers();
@@ -7398,6 +7461,11 @@ INT_PTR CALLBACK DlgEmulatorProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPar
 					bool AddRegistryChecked = (BST_CHECKED == IsDlgButtonChecked(hDlg, IDC_ADD_REGISTRY));
 					if (GUI.AddToRegistry && !AddRegistryChecked)
 						S9xWinRemoveRegistryKeys();
+					else if (!GUI.AddToRegistry && AddRegistryChecked)
+					{
+						RegisterProgid();
+						RegisterExts();
+					}
 					GUI.AddToRegistry = AddRegistryChecked;
 
 					Settings.TurboSkipFrames=SendDlgItemMessage(hDlg, IDC_SPIN_TURBO_SKIP, UDM_GETPOS, 0,0);
@@ -9098,10 +9166,11 @@ void SetInfoDlgColor(unsigned char r, unsigned char g, unsigned char b)
 	GUI.InfoColor=RGB(r,g,b);
 }
 
-#define SNES9XWPROGID TEXT("Snes9x.Win32")
-#define SNES9XWPROGIDDESC TEXT("Snes9x ROM")
-#define SNES9XWAPPDESC TEXT("Snes9x is a portable, freeware Super Nintendo Entertainment System (SNES) emulator.")
-#define SNES9XWAPPNAME TEXT("Snes9x")
+#define SNES9XWPROGID TEXT("SuperSnes9x.Win32")
+#define SNES9XWPROGIDDESC TEXT("SuperSnes9x ROM")
+#define SNES9XWAPPDESC TEXT("SuperSnes9x is a portable, freeware Super Nintendo Entertainment System (SNES) emulator.")
+#define SNES9XWAPPNAME TEXT("SuperSnes9x")
+#define SNES9XWCAPSKEY TEXT("SOFTWARE\\SuperSnes9x\\Capabilities")
 #define REGCREATEKEY(key,subkey) \
 	if(regResult=RegCreateKeyEx(key, subkey,\
 					0, NULL, REG_OPTION_NON_VOLATILE, KEY_SET_VALUE , NULL , &hKey, NULL ) != ERROR_SUCCESS){\
@@ -9113,32 +9182,65 @@ void SetInfoDlgColor(unsigned char r, unsigned char g, unsigned char b)
 		return false;\
 	}
 
+// deletes every subkey of parent whose name contains match (case-insensitive)
+static void DeleteMatchingSubkeys(const TCHAR *parent, const TCHAR *match)
+{
+	HKEY hKey;
+	if (RegOpenKeyEx(HKEY_CURRENT_USER, parent, 0, KEY_READ, &hKey) != ERROR_SUCCESS)
+		return;
+	TCHAR szName[MAX_PATH], szSubKey[4096];
+	DWORD dwIndex = 0;
+	for (;;)
+	{
+		DWORD dwSize = MAX_PATH;
+		if (RegEnumKeyEx(hKey, dwIndex, szName, &dwSize, NULL, NULL, NULL, NULL) != ERROR_SUCCESS)
+			break;
+		if (StrStrI(szName, match))
+		{
+			_stprintf_s(szSubKey, 4095, TEXT("%s\\%s"), parent, szName);
+			SHDeleteKey(HKEY_CURRENT_USER, szSubKey);
+		}
+		else
+			dwIndex++;
+	}
+	RegCloseKey(hKey);
+}
+
 void S9xWinRemoveRegistryKeys() {
 	TCHAR szRegKey[4096] = {};
+	TCHAR szExePath[PATH_MAX];
 
     if(!valid_ext)
         LoadExts();
 
 	_stprintf_s(szRegKey, 4095, TEXT("Software\\Classes\\%s"), SNES9XWPROGID);
 	SHDeleteKey(HKEY_CURRENT_USER, szRegKey);
-	_stprintf_s(szRegKey, 4095, TEXT("Software\\RegisteredApplications\\%s"), SNES9XWPROGID);
-	SHDeleteKey(HKEY_CURRENT_USER, szRegKey);
-	_stprintf_s(szRegKey, 4095, TEXT("Software\\Snes9x"), SNES9XWPROGID);
-	SHDeleteKey(HKEY_CURRENT_USER, szRegKey);
+	// RegisteredApplications entries are values, not subkeys
+	SHDeleteValue(HKEY_CURRENT_USER, TEXT("Software\\RegisteredApplications"), SNES9XWAPPNAME);
+	SHDeleteKey(HKEY_CURRENT_USER, TEXT("Software\\SuperSnes9x"));
+	// legacy identity written by builds that registered as plain Snes9x
+	SHDeleteKey(HKEY_CURRENT_USER, TEXT("Software\\Classes\\Snes9x.Win32"));
+	SHDeleteValue(HKEY_CURRENT_USER, TEXT("Software\\RegisteredApplications"), TEXT("Snes9x"));
+	SHDeleteKey(HKEY_CURRENT_USER, TEXT("Software\\Snes9x"));
 
-	const TCHAR* szExeNames[] = { TEXT("snes9x.exe"), TEXT("snes9x-debug.exe"), TEXT("snes9x-x64.exe"), TEXT("snes9x-debug-x64.exe") };
-	for (auto& szExeName : szExeNames)
-	{
-		_stprintf_s(szRegKey, 4095, TEXT("Software\\Classes\\Applications\\%s"), szExeName);
-		SHDeleteKey(HKEY_CURRENT_USER, szRegKey);
+	GetModuleFileName(NULL, szExePath, PATH_MAX);
+	const TCHAR *szExeName = PathFindFileName(szExePath);
 
-		ExtList* curr = valid_ext;
-		while (curr->next != NULL) {
-			auto ext = curr->extension;
-			_stprintf(szRegKey, TEXT("Software\\Classes\\.%s\\OpenWithList\\%s"), ext, szExeName);
+	_stprintf_s(szRegKey, 4095, TEXT("Software\\Classes\\Applications\\%s"), szExeName);
+	SHDeleteKey(HKEY_CURRENT_USER, szRegKey);
+	// sweep entries left by renamed copies and older builds
+	DeleteMatchingSubkeys(TEXT("Software\\Classes\\Applications"), TEXT("snes9x"));
+
+	ExtList* curr = valid_ext;
+	while (curr->next != NULL) {
+		if (curr->extension)
+		{
+			_stprintf(szRegKey, TEXT("Software\\Classes\\.%s\\OpenWithList\\%s"), curr->extension, szExeName);
 			SHDeleteKey(HKEY_CURRENT_USER, szRegKey);
-			curr = curr->next;
+			_stprintf(szRegKey, TEXT("Software\\Classes\\.%s\\OpenWithList"), curr->extension);
+			DeleteMatchingSubkeys(szRegKey, TEXT("snes9x"));
 		}
+		curr = curr->next;
 	}
 }
 
@@ -9179,13 +9281,13 @@ bool RegisterProgid() {
 
     /* Register Capabilities (for Default Programs)
     */
-    REGCREATEKEY(HKEY_CURRENT_USER,TEXT("SOFTWARE\\Snes9x\\Capabilities"))
+    REGCREATEKEY(HKEY_CURRENT_USER,SNES9XWCAPSKEY)
     REGSETVALUE(hKey,TEXT("ApplicationDescription"),REG_SZ,SNES9XWAPPDESC,(lstrlen(SNES9XWAPPDESC) + 1) * sizeof(TCHAR))
     REGSETVALUE(hKey,TEXT("ApplicationName"),REG_SZ,SNES9XWAPPNAME,(lstrlen(SNES9XWAPPNAME) + 1) * sizeof(TCHAR))
     RegCloseKey(hKey);
 
     REGCREATEKEY(HKEY_CURRENT_USER,TEXT("SOFTWARE\\RegisteredApplications"))
-    REGSETVALUE(hKey,TEXT("Snes9x"),REG_SZ,TEXT("SOFTWARE\\Snes9x\\Capabilities"),(lstrlen(TEXT("SOFTWARE\\Snes9x\\Capabilities")) + 1) * sizeof(TCHAR))
+    REGSETVALUE(hKey,SNES9XWAPPNAME,REG_SZ,SNES9XWCAPSKEY,(lstrlen(SNES9XWCAPSKEY) + 1) * sizeof(TCHAR))
     RegCloseKey(hKey);
 
     /* Register under Applications for use in OpenWithList
@@ -9218,7 +9320,7 @@ bool RegisterExt(TCHAR *ext) {
 
     /* Register .ext as S9x capability (for Default Programs)
     */
-    REGCREATEKEY(HKEY_CURRENT_USER,TEXT("SOFTWARE\\Snes9x\\Capabilities\\FileAssociations"))
+    REGCREATEKEY(HKEY_CURRENT_USER,SNES9XWCAPSKEY TEXT("\\FileAssociations"))
 	_stprintf_s(szRegKey,PATH_MAX-1,TEXT(".%s"),ext);
 	REGSETVALUE(hKey,szRegKey,REG_SZ,SNES9XWPROGID,(lstrlen(SNES9XWPROGID) + 1) * sizeof(TCHAR))
 	RegCloseKey(hKey);
@@ -12384,37 +12486,71 @@ static void UpdateBindingMode(HWND hDlg, int index)
 	set_buttoninfo(index, hDlg);
 }
 
-// Helper: update device name label and auto-assign button state for given joypad index
+// Per-controller device pick from the device combo; -1 = derive from bindings
+static int s_deviceChoice[16] = { -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1 };
+
+// Helper: update device combo contents/selection and auto-assign button state
 static void UpdateDeviceInfo(HWND hDlg, int index)
 {
-	// Find which joystick slot this joypad might be bound to
-	// Check if any current binding references a joystick slot
-	int slot = -1;
-	WORD testKey = Joypad[index].A ? Joypad[index].A :
-	               Joypad[index].B ? Joypad[index].B :
-	               Joypad[index].Up ? Joypad[index].Up : 0;
-	if (testKey & 0x8000)
-		slot = (testKey >> 8) & 0xF;
+	HWND combo = GetDlgItem(hDlg, IDC_DEVICECOMBO);
+	if (SendMessage(combo, CB_GETDROPPEDSTATE, 0, 0))
+		return; // don't repopulate under an open dropdown
 
-	// Also check if any joystick is attached at a reasonable slot for this controller index
-	// Default: use the controller index as the slot (0-4 for controllers 1-5)
-	int checkSlot = (index < 5) ? index : (index - 8); // turbo panels map to controller 0-4
-	if (checkSlot < 0) checkSlot = 0;
+	std::vector<SDLDeviceListEntry> devices = SDLInput_GetDeviceList();
 
-	// Prefer the slot from existing bindings, fall back to index-based
-	int displaySlot = (slot >= 0) ? slot : checkSlot;
-
-	std::string devName = SDLInput_GetDeviceName(displaySlot);
-	if (!devName.empty())
+	if (devices.empty())
 	{
-		SetDlgItemTextA(hDlg, IDC_DEVICENAME, devName.c_str());
-		EnableWindow(GetDlgItem(hDlg, IDC_AUTOASSIGN), SDLInput_IsGamepad(displaySlot) ? TRUE : FALSE);
-	}
-	else
-	{
-		SetDlgItemTextA(hDlg, IDC_DEVICENAME, "No device detected");
+		if (SendMessage(combo, CB_GETCOUNT, 0, 0) != 1 ||
+		    (int)SendMessage(combo, CB_GETITEMDATA, 0, 0) != -1)
+		{
+			SendMessage(combo, CB_RESETCONTENT, 0, 0);
+			int item = (int)SendMessage(combo, CB_ADDSTRING, 0, (LPARAM)TEXT("No device detected"));
+			SendMessage(combo, CB_SETITEMDATA, item, (LPARAM)-1);
+		}
+		SendMessage(combo, CB_SETCURSEL, 0, 0);
+		EnableWindow(combo, FALSE);
 		EnableWindow(GetDlgItem(hDlg, IDC_AUTOASSIGN), FALSE);
+		return;
 	}
+	EnableWindow(combo, TRUE);
+
+	// Preferred slot: user's pick for this controller, else the slot current bindings
+	// reference, else the controller index itself (turbo panels map to controller 0-4)
+	int prefer = (index >= 0 && index < 16) ? s_deviceChoice[index] : -1;
+	if (prefer < 0)
+	{
+		WORD testKey = Joypad[index].A ? Joypad[index].A :
+		               Joypad[index].B ? Joypad[index].B :
+		               Joypad[index].Up ? Joypad[index].Up : 0;
+		if (testKey & 0x8000)
+			prefer = (testKey >> 8) & 0xF;
+	}
+	if (prefer < 0)
+	{
+		prefer = (index < 5) ? index : (index - 8);
+		if (prefer < 0) prefer = 0;
+	}
+
+	// Rebuild the list only when the device set changed
+	bool rebuild = (SendMessage(combo, CB_GETCOUNT, 0, 0) != (LRESULT)devices.size());
+	for (size_t i = 0; !rebuild && i < devices.size(); i++)
+		if ((int)SendMessage(combo, CB_GETITEMDATA, (WPARAM)i, 0) != devices[i].slot)
+			rebuild = true;
+	if (rebuild)
+	{
+		SendMessage(combo, CB_RESETCONTENT, 0, 0);
+		for (size_t i = 0; i < devices.size(); i++)
+		{
+			int item = (int)SendMessageW(combo, CB_ADDSTRING, 0, (LPARAM)(wchar_t *)Utf8ToWide(devices[i].name.c_str()));
+			SendMessage(combo, CB_SETITEMDATA, item, (LPARAM)devices[i].slot);
+		}
+	}
+
+	int sel = 0;
+	for (size_t i = 0; i < devices.size(); i++)
+		if (devices[i].slot == prefer) { sel = (int)i; break; }
+	SendMessage(combo, CB_SETCURSEL, sel, 0);
+	EnableWindow(GetDlgItem(hDlg, IDC_AUTOASSIGN), devices[sel].is_gamepad ? TRUE : FALSE);
 }
 
 // Set by DlgInputConfig while the Input Config dialog is open. Read from
@@ -12482,6 +12618,9 @@ INT_PTR CALLBACK DlgInputConfig(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 
 		memcpy(pads, Joypad, 10*sizeof(SJoypad));
 		memcpy(padsExtra, JoypadExtra, 10*sizeof(SJoypadExtraBinds));
+
+		for(i=0;i<16;i++)
+			s_deviceChoice[i] = -1;
 
 		for( i=0;i<256;i++)
 			GetAsyncKeyState(i);
@@ -12674,21 +12813,31 @@ INT_PTR CALLBACK DlgInputConfig(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 			}
 			break;
 
+		case IDC_DEVICECOMBO: // device picked for this controller's auto-assign
+			if(HIWORD(wParam) == CBN_SELCHANGE)
+			{
+				index = SendDlgItemMessage(hDlg,IDC_JPCOMBO,CB_GETCURSEL,0,0);
+				if(index > 4) index += 3;
+				int sel = SendDlgItemMessage(hDlg,IDC_DEVICECOMBO,CB_GETCURSEL,0,0);
+				int slot = (sel >= 0) ? (int)SendDlgItemMessage(hDlg,IDC_DEVICECOMBO,CB_GETITEMDATA,sel,0) : -1;
+				if (slot >= 0 && index >= 0 && index < 16)
+				{
+					s_deviceChoice[index] = slot;
+					EnableWindow(GetDlgItem(hDlg,IDC_AUTOASSIGN), SDLInput_IsGamepad(slot) ? TRUE : FALSE);
+				}
+			}
+			break;
+
 		case IDC_AUTOASSIGN: // Auto-assign gamepad buttons
 			{
 				index = SendDlgItemMessage(hDlg,IDC_JPCOMBO,CB_GETCURSEL,0,0);
 				if(index > 4) index += 3;
 
-				// Determine which joystick slot to auto-assign from
-				int checkSlot = (index < 5) ? index : (index - 8);
-				if (checkSlot < 0) checkSlot = 0;
-
-				// Check existing bindings for a joystick slot
-				WORD testKey = Joypad[index].A ? Joypad[index].A :
-				               Joypad[index].B ? Joypad[index].B :
-				               Joypad[index].Up ? Joypad[index].Up : 0;
-				if (testKey & 0x8000)
-					checkSlot = (testKey >> 8) & 0xF;
+				// Auto-assign from the device selected in the device combo
+				int sel = SendDlgItemMessage(hDlg,IDC_DEVICECOMBO,CB_GETCURSEL,0,0);
+				int checkSlot = (sel >= 0) ? (int)SendDlgItemMessage(hDlg,IDC_DEVICECOMBO,CB_GETITEMDATA,sel,0) : -1;
+				if (checkSlot < 0)
+					break;
 
 				// Save old bindings before auto-assign overwrites them
 				SJoypad oldPad = Joypad[index];

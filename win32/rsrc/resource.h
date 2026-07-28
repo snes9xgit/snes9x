@@ -623,12 +623,14 @@
 #define ID_RA_ACHIEVEMENTS_LIST         44343
 #define ID_RA_UA_SUPERSNES9X            44344
 #define ID_RA_TOGGLE_IMAGES             44367
+#define ID_RA_VIEW_PROFILE              44368
 #define IDD_RA_LOGIN                    172
 #define IDD_RA_ACHIEVEMENTS             173
 #define IDC_RA_USERNAME                 3080
 #define IDC_RA_PASSWORD                 3081
 #define IDC_RA_ACHLIST                  3082
 #define IDC_RA_GAME_TITLE               3083
+#define IDC_RA_SUMMARY                  3084
 #endif
 
 #define IDD_CHEAT_MASK                  174
@@ -651,7 +653,7 @@
 #define IDC_ALLOWMULTIBIND_HK           3104
 #define IDC_BINDINGCOMBO_HK             3105
 #define IDC_AUTOASSIGN                  3106
-#define IDC_DEVICENAME                  3107
+#define IDC_DEVICECOMBO                 3107
 #define IDC_MASTERHOTKEY_ENABLE         3108
 #define IDC_MASTERHOTKEY_BIND           3109
 #define IDC_LABEL_MASTERHOTKEY          3110
@@ -849,6 +851,7 @@
 #define IDC_PAD_IMAGE                   3320
 
 #define ID_SOUND_AUDIOWAVEFORM          40198
+#define ID_INPUT_ENABLERUMBLE           40211
 
 #define IDC_STATIC                      -1
 
@@ -857,7 +860,7 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        184
-#define _APS_NEXT_COMMAND_VALUE         40209
+#define _APS_NEXT_COMMAND_VALUE         40212
 #define _APS_NEXT_CONTROL_VALUE         3324
 #define _APS_NEXT_SYMED_VALUE           101
 #endif

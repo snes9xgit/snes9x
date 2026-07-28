@@ -200,6 +200,8 @@ struct FxRegs_s
 	uint32	vSCBRDirty;					// If SCBR is written, our cached screen pointers need updating
 	
 	uint8	*avRegAddr;					// To reference avReg in snapshot.cpp
+
+	uint8	bFx3;						// Super FX 3 behavior (not in snapshots; set from cart)
 };
 
 extern struct FxRegs_s	GSU;

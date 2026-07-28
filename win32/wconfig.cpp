@@ -43,6 +43,8 @@ void S9xParseArg (char **argv, int &i, int argc)
 {
 	if (strcasecmp (argv [i], "-removeregistrykeys") == 0)
 	{
+		// clear the flag first or LoadExts/startup re-adds the keys we just removed
+		GUI.AddToRegistry = false;
 		S9xWinRemoveRegistryKeys();
 	}
 	else if (strcasecmp (argv [i], "-restore") == 0)
@@ -876,7 +878,7 @@ void WinRegisterConfigItems()
     AddUIntC("RewindGranularity", GUI.rewindGranularity, 1, "rewind granularity - rewind takes a snapshot each x frames");
 	AddBoolC("PauseWhenInactive", GUI.InactivePause, TRUE, "true to pause Snes9x when it is not the active window");
 	AddBoolC("CustomRomOpenDialog", GUI.CustomRomOpen, false, "false to use standard Windows open dialog for the ROM open dialog");
-	AddBoolC("AddToRegistry", GUI.AddToRegistry, true, "true to ask to add entries to registry for file type associations");
+	AddBoolC("AddToRegistry", GUI.AddToRegistry, false, "true to add file association entries to the registry at startup");
 	AddBoolC("AVIHiRes", GUI.AVIHiRes, false, "true to record AVI in Hi-Res scale");
 	AddBoolC("ConfirmSaveLoad", GUI.ConfirmSaveLoad, false, "true to ask for confirmation when saving/loading");
 	AddStringC("Language", GUI.UILanguage, 64, "", "UI language: code matching a file in i18n\\<code>.po (e.g. ja, de, pt_BR); empty = English");
@@ -1017,6 +1019,7 @@ void WinRegisterConfigItems()
 	ADDGUID(1); ADDGUID(2); ADDGUID(3); ADDGUID(4); ADDGUID(5); ADDGUID(6); ADDGUID(7); ADDGUID(8);
 #undef ADDGUID
 	AddBool2C("Input:Background", GUI.BackgroundInput, false, "on to detect game keypresses and hotkeys while window is inactive, if PauseWhenInactive = FALSE.");
+	AddBool2C("Input:EnableRumble", GUI.EnableRumble, true, "on to pass rumble-cart motor effects (LRG SNES releases) to the port-1 gamepad.");
 	AddBool2C("Input:BackgroundKeyHotkeys", GUI.BackgroundKeyHotkeys, true, "on to also detect keyboard hotkeys when backgroundinput is active");
 #undef CATEGORY
 #define	CATEGORY "Controls\\Win\\Hotkeys"

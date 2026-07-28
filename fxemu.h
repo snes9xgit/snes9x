@@ -21,6 +21,7 @@ struct FxInfo_s
 	uint8	*pvRom;			// Pointer to Cart-ROM
 	uint32	speedPerLine;
 	bool8	oneLineDone;
+	bool8	isFx3;			// Super FX 3 (LRG 2026, ROM type $17/$18)
 };
 
 extern struct FxInfo_s	SuperFX;

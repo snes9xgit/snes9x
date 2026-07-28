@@ -38,8 +38,20 @@ static bool IsSlotInUse(int slot)
     return false;
 }
 
-static int FindFirstFreeSlot()
+// A slot is reserved if its saved GUID belongs to a different (maybe unplugged) device.
+static bool IsSlotReservedForOther(int slot, const char *guidStr)
 {
+    return slot < 8 && GUI.JoypadGUID[slot][0] != '\0' &&
+           _stricmp(GUI.JoypadGUID[slot], guidStr) != 0;
+}
+
+static int FindFirstFreeSlot(const char *guidStr)
+{
+    // prefer unreserved slots so a new device can't hijack a saved controller's
+    // slot (and its bindings/hotkeys) just by enumerating first
+    for (int i = 0; i < 16; i++)
+        if (!IsSlotInUse(i) && !IsSlotReservedForOther(i, guidStr))
+            return i;
     for (int i = 0; i < 16; i++)
         if (!IsSlotInUse(i))
             return i;
@@ -121,7 +133,7 @@ static void OpenDevice(int device_index)
 
     // Fall back to first free slot if no GUID match
     if (dev.slot < 0)
-        dev.slot = FindFirstFreeSlot();
+        dev.slot = FindFirstFreeSlot(guidStr);
 
     if (dev.slot < 0)
     {
@@ -578,12 +590,39 @@ std::string SDLInput_GetDeviceName(int slot)
     return dev->name;
 }
 
+std::vector<SDLDeviceListEntry> SDLInput_GetDeviceList()
+{
+    std::vector<SDLDeviceListEntry> list;
+    for (auto &pair : s_devices)
+    {
+        auto &dev = pair.second;
+        if (dev.slot < 0)
+            continue;
+        list.push_back({dev.slot, dev.is_gamepad, dev.name});
+    }
+    std::sort(list.begin(), list.end(),
+              [](const SDLDeviceListEntry &a, const SDLDeviceListEntry &b) { return a.slot < b.slot; });
+    return list;
+}
+
 bool SDLInput_IsGamepad(int slot)
 {
     auto *dev = FindDeviceBySlot(slot);
     if (!dev)
         return false;
     return dev->is_gamepad;
+}
+
+void SDLInput_Rumble(int slot, uint16_t low, uint16_t high)
+{
+    auto *dev = FindDeviceBySlot(slot);
+    if (!dev)
+        return;
+    // 120ms outlives one refresh interval; auto-stops if the caller goes quiet.
+    if (dev->gamepad)
+        SDL_RumbleGamepad(dev->gamepad, low, high, 120);
+    else if (dev->joystick)
+        SDL_RumbleJoystick(dev->joystick, low, high, 120);
 }
 
 bool SDLInput_AutoMapGamepad(int slot, SJoypad &out)

@@ -56,8 +56,21 @@ void SDLInput_InitBindingState();
 // Get the human-readable device name for a Joystick[] slot.
 std::string SDLInput_GetDeviceName(int slot);
 
+struct SDLDeviceListEntry {
+    int slot = -1;
+    bool is_gamepad = false;
+    std::string name;
+};
+
+// List all attached devices, sorted by Joystick[] slot.
+std::vector<SDLDeviceListEntry> SDLInput_GetDeviceList();
+
 // Check if the device at a Joystick[] slot is a recognized gamepad.
 bool SDLInput_IsGamepad(int slot);
+
+// Drive the rumble motors of the device at a Joystick[] slot.
+// low/high are the 0-65535 low- and high-frequency motor magnitudes.
+void SDLInput_Rumble(int slot, uint16_t low, uint16_t high);
 
 // Auto-map a recognized gamepad's buttons to SNES joypad bindings.
 // Returns true if the device is a gamepad and mapping was successful.

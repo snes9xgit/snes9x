@@ -90,15 +90,23 @@ inline uint16_t SachenScrambleAddr(uint16_t addr)
 	                           | ((addr << 6) & 0x40u));
 }
 
-bool LooksLikeSachenScrambledLogo(const std::vector<uint8_t> &rom)
+// Per Tauwasser's RE the mapper forces ROM address bit 7 high while locked, so
+// a cart may stash its logo in either half of the permuted $0100-$01FF window.
+bool SachenLogoAt(const std::vector<uint8_t> &rom, bool ra7_high)
 {
 	if (rom.size() < 0x0200) return false;
 	for (int i = 0; i < 48; ++i)
 	{
-		const uint16_t a = SachenScrambleAddr(static_cast<uint16_t>(0x0104 + i));
+		uint16_t a = SachenScrambleAddr(static_cast<uint16_t>(0x0104 + i));
+		if (ra7_high) a |= 0x80;
 		if (rom[a] != kGbNintendoLogo[i]) return false;
 	}
 	return true;
+}
+
+bool LooksLikeSachenScrambledLogo(const std::vector<uint8_t> &rom)
+{
+	return SachenLogoAt(rom, false) || SachenLogoAt(rom, true);
 }
 
 bool SachenHeaderRunsRaw(const std::vector<uint8_t> &rom)
@@ -208,6 +216,21 @@ bool LooksLikeDuzMulticart(const std::vector<uint8_t> &rom)
 	return true;
 }
 
+// "23 in 1"-style MBC5 multicart: a genuine MBC5 whose menu latches a base bank
+// and bank mask through $5001/$5002. Identified by the crowd of sub-game Nintendo
+// logos sitting on bank boundaries — a single-game cart carries exactly one.
+bool LooksLikeMbc5Multicart(const std::vector<uint8_t> &rom)
+{
+	if (rom.size() < 0x80000) return false;
+	int logos = 0;
+	for (size_t base = 0x4000; base + 0x134 <= rom.size(); base += 0x4000)
+	{
+		if (memcmp(&rom[base + 0x104], kGbNintendoLogo, 48) == 0 && ++logos >= 4)
+			return true;
+	}
+	return false;
+}
+
 std::string MakeSavPath(const std::string &rom_path)
 {
 	if (rom_path.empty()) return {};
@@ -293,7 +316,10 @@ bool CartLoad(Cart &c, const uint8_t *data, size_t size, const char *path)
 		c.has_battery   = false;
 		c.has_rtc       = false;
 		c.has_rumble    = false;
-		c.sachen_runs_raw = SachenHeaderRunsRaw(c.rom);
+		c.sachen_logo_high = !SachenLogoAt(c.rom, false) && SachenLogoAt(c.rom, true);
+		// The RA7-high series keeps its loader inside the permuted window, so
+		// the xform has to survive the boot hand-off.
+		c.sachen_runs_raw = c.sachen_logo_high ? false : SachenHeaderRunsRaw(c.rom);
 	}
 	else if (LooksLikeMmm01(c.rom))
 	{
@@ -338,6 +364,7 @@ bool CartLoad(Cart &c, const uint8_t *data, size_t size, const char *path)
 		c.has_rtc         = false;
 		c.has_rumble      = false;
 		c.sachen_runs_raw = false;
+		c.sachen_logo_high = false;
 	}
 	else
 	{
@@ -346,6 +373,7 @@ bool CartLoad(Cart &c, const uint8_t *data, size_t size, const char *path)
 	}
 	c.mbc1_multicart = (c.mbc.type == MbcType::MBC1) && LooksLikeMbc1Multicart(c.rom);
 	c.duz_multicart  = (c.mbc.type == MbcType::MBC3) && LooksLikeDuzMulticart(c.rom);
+	c.mbc5_multicart = (c.mbc.type == MbcType::MBC5) && LooksLikeMbc5Multicart(c.rom);
 	MbcReset(c.mbc);
 
 	// ----- Cart RAM allocation -----
@@ -398,6 +426,9 @@ void CartUnload(Cart &c)
 	c.sram_dirty     = false;
 	c.mbc1_multicart = false;
 	c.duz_multicart  = false;
+	c.mbc5_multicart = false;
+	c.sachen_runs_raw  = false;
+	c.sachen_logo_high = false;
 	MbcReset(c.mbc);
 	c.mbc.type    = MbcType::None;
 }

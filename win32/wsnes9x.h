@@ -255,6 +255,7 @@ struct sGUI {
 	                         // SoundChannelEnable so the waveform viewer can
 	                         // mute GB channels without touching SPC voices
 	bool BackgroundInput;
+	bool EnableRumble;
     bool BackgroundKeyHotkeys;
 	bool AllowMultipleBindings;
 	bool MultiBindingMode;
@@ -623,6 +624,8 @@ void FreezeUnfreezeDialogPreview(bool8 freeze);
 void FreezeUnfreeze(const char *filename, bool8 freeze);
 bool UnfreezeScreenshotSlot(int slot, uint16 **image_buffer, int &width, int &height);
 void S9xWinRemoveRegistryKeys();
+bool RegisterProgid();
+void RegisterExts(void);
 void WinSaveConfigFile();
 
 std::wstring GetDlgItemTextWstring(HWND hDlg, int nIDDlgItem);
