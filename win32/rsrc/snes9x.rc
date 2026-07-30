@@ -1407,11 +1407,6 @@ BEGIN
             MENUITEM "&SGB1",                       ID_EMULATION_BIOS_SGB1,MFT_STRING,MFS_ENABLED
             MENUITEM "SGB&2",                       ID_EMULATION_BIOS_SGB2,MFT_STRING,MFS_ENABLED
         END
-        POPUP "&Voice Kun",                     ID_EMULATION_VOICEKUN,MFT_STRING,MFS_ENABLED
-        BEGIN
-            MENUITEM "&Attach Audio CD...",         ID_EMULATION_VOICEKUN_ATTACH,MFT_STRING,MFS_ENABLED
-            MENUITEM "&Eject Audio CD",             ID_EMULATION_VOICEKUN_DETACH,MFT_STRING,MFS_GRAYED
-        END
         MENUITEM MFT_SEPARATOR
         POPUP "&S-PPU",                         0,MFT_STRING,MFS_ENABLED
         BEGIN
@@ -1501,6 +1496,11 @@ BEGIN
             MENUITEM "Channel &8",                  ID_CHANNELS_CHANNEL8,MFT_STRING,MFS_ENABLED
             MENUITEM MFT_SEPARATOR
             MENUITEM "Enable All",                  ID_CHANNELS_ENABLEALL,MFT_STRING,MFS_ENABLED
+        END
+        POPUP "&Voice Kun",                     ID_SOUND_VOICEKUN,MFT_STRING,MFS_ENABLED
+        BEGIN
+            MENUITEM "&Attach Audio CD...",         ID_SOUND_VOICEKUN_ATTACH,MFT_STRING,MFS_ENABLED
+            MENUITEM "&Eject Audio CD",             ID_SOUND_VOICEKUN_DETACH,MFT_STRING,MFS_GRAYED
         END
         MENUITEM MFT_SEPARATOR
         MENUITEM "&Mute",                       ID_SOUND_MUTE,MFT_STRING,MFS_ENABLED

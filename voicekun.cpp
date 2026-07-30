@@ -6,7 +6,7 @@
 
 // Voicer-kun audio-CD playback (issue #169). See docs/Angelique.md for the
 // reverse-engineered spec. The user attaches the game's CUE/BIN CD image
-// (Emulation > Voice Kun > Attach Audio CD, .cue or .zip); the disc is
+// (Sound > Voice Kun > Attach Audio CD, .cue or .zip); the disc is
 // verified against the game's known profile, and when the ROM's play-voice
 // routine runs we stream the CD track it computed, mixed like MSU-1 audio.
 

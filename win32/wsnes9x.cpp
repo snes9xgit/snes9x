@@ -2946,7 +2946,7 @@ LRESULT CALLBACK WinProc(
 				}
 			}
 			break;
-		case ID_EMULATION_VOICEKUN_ATTACH:
+		case ID_SOUND_VOICEKUN_ATTACH:
 			{
 				if (Settings.StopEmulation || !S9xVoiceKunGameSupported() || S9xVoiceKunAttached())
 					break;
@@ -2983,7 +2983,7 @@ LRESULT CALLBACK WinProc(
 				RestoreSNESDisplay();
 			}
 			break;
-		case ID_EMULATION_VOICEKUN_DETACH:
+		case ID_SOUND_VOICEKUN_DETACH:
 			if (S9xVoiceKunAttached())
 			{
 				S9xVoiceKunDetach();
@@ -5462,7 +5462,7 @@ static void CheckMenuStates ()
 					probe.cbSize = sizeof(probe);
 					probe.fMask  = MIIM_ID | MIIM_SUBMENU;
 					if (GetMenuItemInfo(sub, j, TRUE, &probe) &&
-					    probe.wID == ID_EMULATION_VOICEKUN && probe.hSubMenu)
+					    probe.wID == ID_SOUND_VOICEKUN && probe.hSubMenu)
 					{
 						s_vk_hmenu  = probe.hSubMenu;
 						s_vk_parent = sub;
@@ -5479,14 +5479,14 @@ static void CheckMenuStates ()
 			present.cbSize = sizeof(present);
 			present.fMask  = MIIM_ID;
 			const bool currently_in_menu =
-				GetMenuItemInfo(s_vk_parent, ID_EMULATION_VOICEKUN, FALSE, &present) != FALSE;
+				GetMenuItemInfo(s_vk_parent, ID_SOUND_VOICEKUN, FALSE, &present) != FALSE;
 			if (vk_supported && !currently_in_menu)
 			{
 				MENUITEMINFO ins = {};
 				ins.cbSize     = sizeof(ins);
 				ins.fMask      = MIIM_STRING | MIIM_SUBMENU | MIIM_ID | MIIM_FTYPE;
 				ins.fType      = MFT_STRING;
-				ins.wID        = ID_EMULATION_VOICEKUN;
+				ins.wID        = ID_SOUND_VOICEKUN;
 				ins.hSubMenu   = s_vk_hmenu;
 				TCHAR txt[]    = TEXT("&Voice Kun");
 				ins.dwTypeData = txt;
@@ -5501,7 +5501,7 @@ static void CheckMenuStates ()
 			}
 			else if (!vk_supported && currently_in_menu)
 			{
-				RemoveMenu(s_vk_parent, ID_EMULATION_VOICEKUN, MF_BYCOMMAND);
+				RemoveMenu(s_vk_parent, ID_SOUND_VOICEKUN, MF_BYCOMMAND);
 				DrawMenuBar(GUI.hWnd);
 			}
 		}
@@ -5510,9 +5510,9 @@ static void CheckMenuStates ()
 		{
 			// one disc at a time: eject before attaching another
 			mii.fState = S9xVoiceKunAttached() ? MFS_ENABLED : MFS_DISABLED;
-			SetMenuItemInfo(GUI.hMenu, ID_EMULATION_VOICEKUN_DETACH, FALSE, &mii);
+			SetMenuItemInfo(GUI.hMenu, ID_SOUND_VOICEKUN_DETACH, FALSE, &mii);
 			mii.fState = S9xVoiceKunAttached() ? MFS_DISABLED : MFS_ENABLED;
-			SetMenuItemInfo(GUI.hMenu, ID_EMULATION_VOICEKUN_ATTACH, FALSE, &mii);
+			SetMenuItemInfo(GUI.hMenu, ID_SOUND_VOICEKUN_ATTACH, FALSE, &mii);
 		}
 	}
 
