@@ -1497,16 +1497,16 @@ BEGIN
             MENUITEM MFT_SEPARATOR
             MENUITEM "Enable All",                  ID_CHANNELS_ENABLEALL,MFT_STRING,MFS_ENABLED
         END
-        POPUP "&Voice Kun",                     ID_SOUND_VOICEKUN,MFT_STRING,MFS_ENABLED
-        BEGIN
-            MENUITEM "&Attach Audio CD...",         ID_SOUND_VOICEKUN_ATTACH,MFT_STRING,MFS_ENABLED
-            MENUITEM "&Eject Audio CD",             ID_SOUND_VOICEKUN_DETACH,MFT_STRING,MFS_GRAYED
-        END
         MENUITEM MFT_SEPARATOR
         MENUITEM "&Mute",                       ID_SOUND_MUTE,MFT_STRING,MFS_ENABLED
         MENUITEM "S&ync Sound\tAlt+]",          ID_SOUND_SYNC,MFT_STRING,MFS_ENABLED
         MENUITEM "&Settings...\tAlt+T",         ID_SOUND_OPTIONS,MFT_STRING,MFS_ENABLED
         MENUITEM MFT_SEPARATOR
+        POPUP "Voicer-&kun",                    ID_SOUND_VOICEKUN,MFT_STRING,MFS_ENABLED
+        BEGIN
+            MENUITEM "&Attach Audio CD...",         ID_SOUND_VOICEKUN_ATTACH,MFT_STRING,MFS_ENABLED
+            MENUITEM "&Eject Audio CD",             ID_SOUND_VOICEKUN_DETACH,MFT_STRING,MFS_GRAYED
+        END
         MENUITEM "Show Audio &Waveform",        ID_SOUND_AUDIOWAVEFORM,MFT_STRING,MFS_ENABLED
     END
     POPUP "&Video",                         0,MFT_STRING,MFS_ENABLED

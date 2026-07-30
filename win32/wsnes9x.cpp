@@ -2968,7 +2968,7 @@ LRESULT CALLBACK WinProc(
 					if (S9xVoiceKunAttach(_tToChar(szFileName)))
 					{
 						char	msg[256];
-						snprintf(msg, sizeof(msg), "Voice Kun: audio CD verified, %d tracks (%s)",
+						snprintf(msg, sizeof(msg), "Voicer-kun: audio CD verified, %d tracks (%s)",
 							S9xVoiceKunTrackCount(), S9xVoiceKunGameTitle());
 						S9xSetInfoString(msg);
 					}
@@ -2977,7 +2977,7 @@ LRESULT CALLBACK WinProc(
 						TCHAR	err[512];
 						_stprintf(err, TEXT("This audio CD was not accepted:\n%hs"),
 							S9xVoiceKunLastError());
-						MessageBox(GUI.hWnd, err, TEXT("Voice Kun"), MB_OK | MB_ICONERROR);
+						MessageBox(GUI.hWnd, err, TEXT("Voicer-kun"), MB_OK | MB_ICONERROR);
 					}
 				}
 				RestoreSNESDisplay();
@@ -2987,7 +2987,7 @@ LRESULT CALLBACK WinProc(
 			if (S9xVoiceKunAttached())
 			{
 				S9xVoiceKunDetach();
-				S9xSetInfoString("Voice Kun: audio CD ejected");
+				S9xSetInfoString("Voicer-kun: audio CD ejected");
 			}
 			break;
 		case ID_FILE_LOGO_1:
@@ -5441,7 +5441,7 @@ static void CheckMenuStates ()
 		}
 	}
 
-	// Voice Kun submenu: only offered while a supported game is loaded.
+	// Voicer-kun submenu: only offered while a supported game is loaded.
 	{
 		const bool vk_supported = !Settings.StopEmulation && S9xVoiceKunGameSupported();
 
@@ -5488,7 +5488,7 @@ static void CheckMenuStates ()
 				ins.fType      = MFT_STRING;
 				ins.wID        = ID_SOUND_VOICEKUN;
 				ins.hSubMenu   = s_vk_hmenu;
-				TCHAR txt[]    = TEXT("&Voice Kun");
+				TCHAR txt[]    = TEXT("Voicer-&kun");
 				ins.dwTypeData = txt;
 				ins.cch        = (UINT)_tcslen(txt);
 				UINT pos = s_vk_pos;

@@ -6,7 +6,7 @@
 
 // Voicer-kun audio-CD playback (issue #169). See docs/Angelique.md for the
 // reverse-engineered spec. The user attaches the game's CUE/BIN CD image
-// (Sound > Voice Kun > Attach Audio CD, .cue or .zip); the disc is
+// (Sound > Voicer-kun > Attach Audio CD, .cue or .zip); the disc is
 // verified against the game's known profile, and when the ROM's play-voice
 // routine runs we stream the CD track it computed, mixed like MSU-1 audio.
 
@@ -393,7 +393,7 @@ bool S9xVoiceKunAttach(const char *path)
 
 	game = FindGame();
 	if (!game)
-		last_error = "the loaded ROM is not a supported Voice Kun game";
+		last_error = "the loaded ROM is not a supported Voicer-kun game";
 	else
 	if (is_zip)
 	{
@@ -410,7 +410,7 @@ bool S9xVoiceKunAttach(const char *path)
 	{
 		tracks.clear();
 		game = NULL;
-		printf("Voice Kun: attach failed: %s\n", last_error.c_str());
+		printf("Voicer-kun: attach failed: %s\n", last_error.c_str());
 		return false;
 	}
 
@@ -426,7 +426,7 @@ bool S9xVoiceKunAttach(const char *path)
 
 	Settings.VoiceKun = TRUE;
 
-	printf("Voice Kun: attached %s (%d tracks, %s)\n", path, (int)tracks.size(), game->title);
+	printf("Voicer-kun: attached %s (%d tracks, %s)\n", path, (int)tracks.size(), game->title);
 	return true;
 }
 
@@ -482,7 +482,7 @@ void S9xVoiceKunPlayTrack(int track)
 	confirm_to   = IPPU.TotalEmulatedFrames + VOICEKUN_CONFIRM_END;
 
 	char	msg[128];
-	snprintf(msg, sizeof(msg), "Voice Kun: playing track %d/%d (%.0fs)",
+	snprintf(msg, sizeof(msg), "Voicer-kun: playing track %d/%d (%.0fs)",
 		track, (int)tracks.size(), (play_end - play_pos) / (2352.0 * 75.0));
 	S9xSetInfoString(msg);
 	printf("%s\n", msg);
@@ -491,7 +491,7 @@ void S9xVoiceKunPlayTrack(int track)
 void S9xVoiceKunStop(void)
 {
 	if (playing)
-		printf("Voice Kun: voice ended\n");
+		printf("Voicer-kun: voice ended\n");
 	playing = false;
 	confirm_from = confirm_to = 0;
 }

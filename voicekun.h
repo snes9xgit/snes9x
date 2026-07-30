@@ -18,7 +18,7 @@ class Resampler;
 bool S9xVoiceKunAttach(const char *path);   // .cue on disk, or .zip holding cue+bin
 void S9xVoiceKunDetach(void);
 bool S9xVoiceKunAttached(void);
-bool S9xVoiceKunGameSupported(void);        // loaded ROM is in the Voice Kun game list
+bool S9xVoiceKunGameSupported(void);        // loaded ROM is in the Voicer-kun game list
 const char *S9xVoiceKunLastError(void);     // why the last attach failed
 const char *S9xVoiceKunCuePath(void);
 int S9xVoiceKunTrackCount(void);
