@@ -73,6 +73,8 @@ static BOOST::uint8_t const initial_regs [SPC_DSP::register_count] =
         resampler->push_sample(l, r);  \
         if (Settings.MSU1)      \
             S9xMSU1Generate(2); \
+        if (Settings.VoiceKun)  \
+            S9xVoiceKunGenerate(2); \
     }
 
 void SPC_DSP::set_output( Resampler *resampler )

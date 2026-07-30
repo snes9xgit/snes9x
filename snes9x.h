@@ -231,6 +231,7 @@ struct SSettings
 	bool8	BSXBootup;
 	bool8	SFCBox;              // Super Famicom Box (hotel unit) cart loaded, KROM supervisor active
 	bool8	MSU1;
+	bool8	VoiceKun;            // Voicer-kun audio CD attached (Emulation > Voice Kun)
 	bool8	SuperGameBoy;        // active when a .gb/.gbc ROM is loaded
 	uint8	GameBoyRunMode;      // 0=DMG, 1=SGB1, 2=SGB2
 	float	GBClockMultiplier;   // 1.0 = real speed; underclock on weak ARM, over on strong hosts

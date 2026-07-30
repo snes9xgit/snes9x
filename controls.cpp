@@ -21,6 +21,7 @@
 #include "movie.h"
 #include "display.h"
 #include "sfcbox.h"
+#include "voicekun.h"
 #ifdef NETPLAY_SUPPORT
 #include "netplay.h"
 #endif
@@ -2874,6 +2875,10 @@ void S9xSetJoypadLatch (bool latch)
 				case JOYPAD6:
 				case JOYPAD7:
 					do_polling(i);
+					// Voice Kun: stand in for the player confirming that the
+					// audio CD is rolling, since we started it ourselves.
+					if (Settings.VoiceKun && n == 0 && S9xVoiceKunAutoConfirm())
+						joypad[i - JOYPAD0].buttons |= SNES_A_MASK;
 					break;
 
 				case MOUSE0:

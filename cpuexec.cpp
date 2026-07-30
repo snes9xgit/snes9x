@@ -16,6 +16,7 @@
 #include "gfx.h"
 #include "sgb/sgb.h"
 #include "sfcbox.h"
+#include "voicekun.h"
 #ifdef DEBUGGER
 #include "debug.h"
 #include "missing.h"
@@ -255,6 +256,23 @@ void S9xMainLoop (void)
 		    CheckIRQ())
 		{
 			ClearIRQ();
+		}
+
+		// Voice Kun: the game requests a CD track / ends the current voice.
+		if (Settings.VoiceKun)
+		{
+			if (VoiceKunHook.PlayPC && Registers.PBPC == VoiceKunHook.PlayPC)
+			{
+				uint32	s = Registers.S.W;
+				int	arg = VoiceKunHook.ArgStackOff
+					? (Memory.RAM[(s + VoiceKunHook.ArgStackOff) & 0x1ffff] |
+					   (Memory.RAM[(s + VoiceKunHook.ArgStackOff + 1) & 0x1ffff] << 8))
+					: (Registers.A.W & 0xff);
+				S9xVoiceKunPlayTrack(arg + VoiceKunHook.TrackBias);
+			}
+			else
+			if (VoiceKunHook.StopPC && Registers.PBPC == VoiceKunHook.StopPC)
+				S9xVoiceKunStop();
 		}
 
 		uint8				Op;

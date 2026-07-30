@@ -4,6 +4,7 @@
 #include "../../../snes9x.h"
 #include "../../resampler.h"
 #include "../../../msu1.h"
+#include "../../../voicekun.h"
 
 #define debugvirtual
 
