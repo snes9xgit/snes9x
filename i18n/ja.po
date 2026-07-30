@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-06-12 02:37-0400\n"
-"PO-Revision-Date: 2026-07-12 10:55+0900\n"
+"PO-Revision-Date: 2026-07-30 21:27+0900\n"
 "Last-Translator: trickart <trickart412@gmail.com>\n"
 "Language-Team: \n"
 "Language: ja\n"
@@ -969,7 +969,7 @@ msgstr "クライアントが"
 
 #: src/snes9x.ui:2589
 msgid "frames behind"
-msgstr "フレーム遅れた時サーバーをポーズする"
+msgstr "フレーム遅延時"
 
 #: src/snes9x.ui:2612
 msgid "<b>Settings</b>"
@@ -2139,7 +2139,7 @@ msgstr "セーブ/ロード時に確認する"
 
 #: win32/rsrc/snes9x.rc
 msgid "Ask Server to Pause when"
-msgstr "サーバーにポーズを要求する条件"
+msgstr "サーバーへのポーズ要求条件"
 
 #: win32/rsrc/snes9x.rc
 msgid "Author Info:"
@@ -2163,7 +2163,7 @@ msgstr "自動検出"
 
 #: win32/rsrc/snes9x.rc
 msgid "Auto-Save S-RAM"
-msgstr "S-RAMを自動セーブ"
+msgstr "S-RAMの自動保存"
 
 #: win32/wlanguage.h
 msgid "Autofire"
@@ -2267,9 +2267,9 @@ msgid ""
 "Red is reserved by Windows. Escape clears bindings.\n"
 "Press multiple keys for multi-bind. Delete removes last."
 msgstr ""
-"青は割り当て済みを意味します。ピンクはホットキーと競合しています。\n"
-"赤はWindowsの予約済みです。Escで割り当てをクリアします。\n"
-"複数キーを押すとマルチ割り当てになります。Deleteで最後の割り当てを削除します。"
+"青: 割り当て済み、ピンク:ホットキーと競合、赤: Windows予約済み\n"
+"Escで割り当てをクリアします。複数キーを押すとマルチ割り当て可能\n"
+"Deleteで最後の割り当てを削除します。"
 
 #: win32/wlanguage.h
 msgid ""
@@ -2681,7 +2681,7 @@ msgstr "ファイルが見つかりません。"
 
 #: win32/rsrc/snes9x.rc
 msgid "First Sprite:"
-msgstr "最初のスプライト:"
+msgstr "First Sprite:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Fixed, always skip:"
@@ -2909,7 +2909,7 @@ msgstr "アイコン4"
 
 #: win32/rsrc/snes9x.rc
 msgid "Index:"
-msgstr "インデックス:"
+msgstr "ｲﾝﾃﾞｯｸｽ:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Input"
@@ -3097,11 +3097,11 @@ msgstr "マップ"
 
 #: win32/rsrc/snes9x.rc
 msgid "Map Addr:"
-msgstr "マップアドレス:"
+msgstr "ﾏｯﾌﾟｱﾄﾞﾚｽ:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Map Size:"
-msgstr "マップサイズ:"
+msgstr "ﾏｯﾌﾟｻｲｽﾞ:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Map:"
@@ -4093,11 +4093,11 @@ msgstr "ムービーファイルが見つからないか、開けませんでし
 
 #: win32/rsrc/snes9x.rc
 msgid "Tile Addr:"
-msgstr "タイルアドレス:"
+msgstr "ﾀｲﾙｱﾄﾞﾚｽ"
 
 #: win32/rsrc/snes9x.rc
 msgid "Tile Data:"
-msgstr "タイルデータ:"
+msgstr "ﾀｲﾙﾃﾞｰﾀ:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Tile Size:"
@@ -4121,7 +4121,7 @@ msgstr "タイル"
 
 #: win32/rsrc/snes9x.rc
 msgid "Timeout:"
-msgstr "タイムアウト:"
+msgstr "ﾀｲﾑｱｳﾄ:"
 
 #: win32/rsrc/snes9x.rc
 msgid "Toggle Achievements Images"
@@ -5545,6 +5545,65 @@ msgstr "ブレンド対象とするゲームボーイのレイヤーを選択し
 #: qt/src/DisplayPanel.ui
 msgid "Window"
 msgstr "ウィンドウ"
+
+# === Win32 strings (added by i18n/extract_strings.py) ===
+#: win32/rsrc/snes9x.rc
+msgid "PowerFest '94 Time Limit:"
+msgstr "PowerFest '94 時間制限:"
+
+#: win32/rsrc/snes9x.rc
+msgid "PowerFest '94 Timer:"
+msgstr "PowerFest '94 タイマー:"
+
+# === Win32 strings (added by i18n/extract_strings.py) ===
+#: win32/rsrc/snes9x.rc
+msgid "Insert Coin"
+msgstr "コイン投入"
+
+#: win32/wlanguage.h
+msgid "Insert Coin:"
+msgstr "コイン投入:"
+
+#: win32/wlanguage.h
+msgid "Key Switch 1:"
+msgstr "キースイッチ 2:"
+
+#: win32/wlanguage.h
+msgid "Key Switch 2:"
+msgstr "キースイッチ 2:"
+
+#: win32/wlanguage.h
+msgid "Key Switch 3:"
+msgstr "キースイッチ 3:"
+
+#: win32/wlanguage.h
+msgid "Key Switch OFF:"
+msgstr "キースイッチ オフ:"
+
+#: win32/wlanguage.h
+msgid "Key Switch ON:"
+msgstr "キースイッチ オン:"
+
+#: win32/rsrc/snes9x.rc
+msgid "SFC-Box Keyswitch:"
+msgstr "SFCボックス キースイッチ:"
+
+#: win32/rsrc/snes9x.rc
+msgid "SFC-Box OSD backdrop"
+msgstr "SFCボックス OSD backdrop"
+
+#: win32/rsrc/snes9x.rc
+msgid "SFC-Box OSD Language:"
+msgstr "SFCボックス OSD言語:"
+
+# === Win32 strings (added by i18n/extract_strings.py) ===
+#: win32/rsrc/snes9x.rc
+msgid "Enable Rumble (Shake)"
+msgstr "振動を有効にする"
+
+#: win32/rsrc/snes9x.rc
+msgid "View Profile"
+msgstr "プロフィールを表示"
 
 #~ msgid "<b>Accuracy</b>"
 #~ msgstr "<b>エミュレーションの正確性</b>"
