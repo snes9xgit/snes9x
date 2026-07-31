@@ -18,7 +18,6 @@ class Resampler;
 bool S9xVoiceKunAttach(const char *path);   // .cue on disk, or .zip holding cue+bin(s)
 void S9xVoiceKunDetach(void);               // ejects every attached disc
 bool S9xVoiceKunAttached(void);
-bool S9xVoiceKunCanAttachMore(void);        // game has a disc that is not attached yet
 bool S9xVoiceKunGameSupported(void);        // loaded ROM is in the Voicer-kun game list
 const char *S9xVoiceKunLastError(void);     // why the last attach failed
 const char *S9xVoiceKunCuePath(void);

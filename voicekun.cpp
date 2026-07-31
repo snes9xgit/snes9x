@@ -709,12 +709,6 @@ bool S9xVoiceKunAttached(void)
 	return !images.empty();
 }
 
-bool S9xVoiceKunCanAttachMore(void)
-{
-	const VoiceKunGame	*g = FindGame();
-	return g && (int)images.size() < g->n_discs;
-}
-
 const char *S9xVoiceKunCuePath(void)
 {
 	return images.empty() ? "" : images[0].path.c_str();

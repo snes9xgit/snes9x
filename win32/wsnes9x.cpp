@@ -2948,7 +2948,7 @@ LRESULT CALLBACK WinProc(
 			break;
 		case ID_SOUND_VOICEKUN_ATTACH:
 			{
-				if (Settings.StopEmulation || !S9xVoiceKunCanAttachMore())
+				if (Settings.StopEmulation || S9xVoiceKunAttached())
 					break;
 				RestoreGUIDisplay();
 				OPENFILENAME	ofn;
@@ -5509,10 +5509,11 @@ static void CheckMenuStates ()
 
 		if (vk_supported)
 		{
-			// Attach stays open until every disc the game uses is in
+			// One disc in the drive at a time: swapping to the game's other
+			// CD means ejecting first, the same as the real hardware.
 			mii.fState = S9xVoiceKunAttached() ? MFS_ENABLED : MFS_DISABLED;
 			SetMenuItemInfo(GUI.hMenu, ID_SOUND_VOICEKUN_DETACH, FALSE, &mii);
-			mii.fState = S9xVoiceKunCanAttachMore() ? MFS_ENABLED : MFS_DISABLED;
+			mii.fState = S9xVoiceKunAttached() ? MFS_DISABLED : MFS_ENABLED;
 			SetMenuItemInfo(GUI.hMenu, ID_SOUND_VOICEKUN_ATTACH, FALSE, &mii);
 		}
 	}
