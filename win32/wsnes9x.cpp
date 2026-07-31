@@ -2948,7 +2948,7 @@ LRESULT CALLBACK WinProc(
 			break;
 		case ID_SOUND_VOICEKUN_ATTACH:
 			{
-				if (Settings.StopEmulation || !S9xVoiceKunGameSupported() || S9xVoiceKunAttached())
+				if (Settings.StopEmulation || !S9xVoiceKunCanAttachMore())
 					break;
 				RestoreGUIDisplay();
 				OPENFILENAME	ofn;
@@ -2968,8 +2968,9 @@ LRESULT CALLBACK WinProc(
 					if (S9xVoiceKunAttach(_tToChar(szFileName)))
 					{
 						char	msg[256];
-						snprintf(msg, sizeof(msg), "Voicer-kun: audio CD verified, %d tracks (%s)",
-							S9xVoiceKunTrackCount(), S9xVoiceKunGameTitle());
+						snprintf(msg, sizeof(msg), "Voicer-kun: %s verified, %d tracks (%s)",
+							S9xVoiceKunDiscLabel(), S9xVoiceKunTrackCount(),
+							S9xVoiceKunGameTitle());
 						S9xSetInfoString(msg);
 					}
 					else
@@ -5508,10 +5509,10 @@ static void CheckMenuStates ()
 
 		if (vk_supported)
 		{
-			// one disc at a time: eject before attaching another
+			// Attach stays open until every disc the game uses is in
 			mii.fState = S9xVoiceKunAttached() ? MFS_ENABLED : MFS_DISABLED;
 			SetMenuItemInfo(GUI.hMenu, ID_SOUND_VOICEKUN_DETACH, FALSE, &mii);
-			mii.fState = S9xVoiceKunAttached() ? MFS_DISABLED : MFS_ENABLED;
+			mii.fState = S9xVoiceKunCanAttachMore() ? MFS_ENABLED : MFS_DISABLED;
 			SetMenuItemInfo(GUI.hMenu, ID_SOUND_VOICEKUN_ATTACH, FALSE, &mii);
 		}
 	}

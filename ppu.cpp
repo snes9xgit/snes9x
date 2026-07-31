@@ -16,6 +16,7 @@
 #include "movie.h"
 #include "display.h"
 #include "sfcbox.h"
+#include "voicekun.h"
 #ifdef NETPLAY_SUPPORT
 #include "netplay.h"
 #endif
@@ -1694,8 +1695,17 @@ uint8 S9xGetCPU (uint16 Address)
 		switch (Address)
 		{
 			case 0x4016: // JOYSER0
-			case 0x4017: // JOYSER1
 				return (S9xReadJOYSERn(Address));
+
+			case 0x4017: // JOYSER1
+			{
+				uint8	ret = S9xReadJOYSERn(Address);
+				// Voicer-kun receives IR on port 2's D1 line; drive it while
+				// the game is learning remote codes.
+				if (Settings.VoiceKun && S9xVoiceKunIRActive())
+					ret = (ret & ~2) | (S9xVoiceKunIRBit() ? 2 : 0);
+				return (ret);
+			}
 
 			default:
 				return (OpenBus);
