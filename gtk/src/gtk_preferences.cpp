@@ -584,7 +584,17 @@ void Snes9xPreferences::move_settings_to_dialog()
     set_combo("scale_method_combo",        config->scale_method);
     set_spin ("save_sram_after_sec",       Settings.AutoSaveDelay);
     set_label("save_sram_after_sec_label", ngettext("second after change", "seconds after change", get_spin("save_sram_after_sec")));
-    set_check("allow_invalid_vram_access", !Settings.BlockInvalidVRAMAccessMaster);
+    // A game on the allow-invalid-VRAM list overrides the preference for
+    // itself; show that and disable the box so the automatic choice is visible
+    // without the saved preference being rewritten when the dialog is applied.
+    {
+        const bool vram_auto = !Settings.StopEmulation &&
+            Settings.BlockInvalidVRAMAccess != Settings.BlockInvalidVRAMAccessMaster;
+        set_check("allow_invalid_vram_access",
+                  vram_auto ? !Settings.BlockInvalidVRAMAccess
+                            : !Settings.BlockInvalidVRAMAccessMaster);
+        enable_widget("allow_invalid_vram_access", !vram_auto);
+    }
     set_check("upanddown",                 Settings.UpAndDown);
     set_combo("default_esc_behavior",      config->default_esc_behavior);
     set_check("prevent_screensaver",       config->prevent_screensaver);
@@ -766,7 +776,11 @@ void Snes9xPreferences::get_settings_from_dialog()
     Settings.AutoSaveDelay            = get_spin("save_sram_after_sec");
     config->multithreading            = get_check("multithreading");
     config->pause_emulation_on_switch = get_check("pause_emulation_on_switch");
-    Settings.BlockInvalidVRAMAccessMaster   = !get_check("allow_invalid_vram_access");
+    // Disabled means the current game forced the setting, so the box no longer
+    // reflects the preference and must not be read back over it.
+    if (Settings.StopEmulation ||
+        Settings.BlockInvalidVRAMAccess == Settings.BlockInvalidVRAMAccessMaster)
+        Settings.BlockInvalidVRAMAccessMaster = !get_check("allow_invalid_vram_access");
     Settings.UpAndDown                = get_check("upanddown");
     Settings.SuperFXClockMultiplier   = get_spin("superfx_multiplier");
     config->sound_driver              = get_combo("sound_driver");
