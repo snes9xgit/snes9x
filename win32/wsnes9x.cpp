@@ -61,6 +61,7 @@
 #include "../sgb/sgb.h"
 #include "../sfcbox.h"
 #include "../movie.h"
+#include "../voicekun.h"
 #include "../crosshairs.h"
 #include "../controls.h"
 #include "../conffile.h"
@@ -2945,6 +2946,51 @@ LRESULT CALLBACK WinProc(
 				}
 			}
 			break;
+		case ID_SOUND_VOICEKUN_ATTACH:
+			{
+				if (Settings.StopEmulation || S9xVoiceKunAttached())
+					break;
+				RestoreGUIDisplay();
+				OPENFILENAME	ofn;
+				TCHAR			szFileName[MAX_PATH];
+				szFileName[0] = TEXT('\0');
+				memset((LPVOID)&ofn, 0, sizeof(OPENFILENAME));
+				ofn.lStructSize = sizeof(OPENFILENAME);
+				ofn.hwndOwner = GUI.hWnd;
+				ofn.lpstrFilter = TEXT("Audio CD Images (*.cue;*.zip)\0*.cue;*.zip\0All Files (*.*)\0*.*\0\0");
+				ofn.lpstrFile = szFileName;
+				ofn.lpstrDefExt = TEXT("cue");
+				ofn.nMaxFile = MAX_PATH;
+				ofn.lpstrTitle = TEXT("Attach Audio CD (.cue or .zip)");
+				ofn.Flags = OFN_HIDEREADONLY | OFN_FILEMUSTEXIST;
+				if (GetOpenFileName(&ofn))
+				{
+					if (S9xVoiceKunAttach(_tToChar(szFileName)))
+					{
+						char	msg[256];
+						snprintf(msg, sizeof(msg), "Voicer-kun: %s verified, %d tracks (%s)",
+							S9xVoiceKunDiscLabel(), S9xVoiceKunTrackCount(),
+							S9xVoiceKunGameTitle());
+						S9xSetInfoString(msg);
+					}
+					else
+					{
+						TCHAR	err[512];
+						_stprintf(err, TEXT("This audio CD was not accepted:\n%hs"),
+							S9xVoiceKunLastError());
+						MessageBox(GUI.hWnd, err, TEXT("Voicer-kun"), MB_OK | MB_ICONERROR);
+					}
+				}
+				RestoreSNESDisplay();
+			}
+			break;
+		case ID_SOUND_VOICEKUN_DETACH:
+			if (S9xVoiceKunAttached())
+			{
+				S9xVoiceKunDetach();
+				S9xSetInfoString("Voicer-kun: audio CD ejected");
+			}
+			break;
 		case ID_FILE_LOGO_1:
 		case ID_FILE_LOGO_2:
 		case ID_FILE_LOGO_3:
@@ -5393,6 +5439,82 @@ static void CheckMenuStates ()
 				if (!avail[i]) mii.fState |= MFS_DISABLED;
 				SetMenuItemInfo(GUI.hMenu, biosIds[i], FALSE, &mii);
 			}
+		}
+	}
+
+	// Voicer-kun submenu: only offered while a supported game is loaded.
+	{
+		const bool vk_supported = !Settings.StopEmulation && S9xVoiceKunGameSupported();
+
+		static HMENU s_vk_hmenu  = NULL;
+		static HMENU s_vk_parent = NULL;
+		static UINT  s_vk_pos    = 0;
+		if (!s_vk_hmenu)
+		{
+			const int top_n = GetMenuItemCount(GUI.hMenu);
+			for (int t = 0; t < top_n && !s_vk_hmenu; t++)
+			{
+				HMENU sub = GetSubMenu(GUI.hMenu, t);
+				if (!sub) continue;
+				const int sub_n = GetMenuItemCount(sub);
+				for (int j = 0; j < sub_n; j++)
+				{
+					MENUITEMINFO probe = {};
+					probe.cbSize = sizeof(probe);
+					probe.fMask  = MIIM_ID | MIIM_SUBMENU;
+					if (GetMenuItemInfo(sub, j, TRUE, &probe) &&
+					    probe.wID == ID_SOUND_VOICEKUN && probe.hSubMenu)
+					{
+						s_vk_hmenu  = probe.hSubMenu;
+						s_vk_parent = sub;
+						s_vk_pos    = (UINT)j;
+						break;
+					}
+				}
+			}
+		}
+
+		if (s_vk_hmenu && s_vk_parent)
+		{
+			MENUITEMINFO present = {};
+			present.cbSize = sizeof(present);
+			present.fMask  = MIIM_ID;
+			const bool currently_in_menu =
+				GetMenuItemInfo(s_vk_parent, ID_SOUND_VOICEKUN, FALSE, &present) != FALSE;
+			if (vk_supported && !currently_in_menu)
+			{
+				MENUITEMINFO ins = {};
+				ins.cbSize     = sizeof(ins);
+				ins.fMask      = MIIM_STRING | MIIM_SUBMENU | MIIM_ID | MIIM_FTYPE;
+				ins.fType      = MFT_STRING;
+				ins.wID        = ID_SOUND_VOICEKUN;
+				ins.hSubMenu   = s_vk_hmenu;
+				TCHAR txt[]    = TEXT("Voicer-&kun");
+				ins.dwTypeData = txt;
+				ins.cch        = (UINT)_tcslen(txt);
+				UINT pos = s_vk_pos;
+				const UINT count = (UINT)GetMenuItemCount(s_vk_parent);
+				if (pos > count) pos = count;
+				InsertMenuItem(s_vk_parent, pos, TRUE, &ins);
+				if (LocaleIsTranslated())
+					LocalizeMenu(s_vk_parent);
+				DrawMenuBar(GUI.hWnd);
+			}
+			else if (!vk_supported && currently_in_menu)
+			{
+				RemoveMenu(s_vk_parent, ID_SOUND_VOICEKUN, MF_BYCOMMAND);
+				DrawMenuBar(GUI.hWnd);
+			}
+		}
+
+		if (vk_supported)
+		{
+			// One disc in the drive at a time: swapping to the game's other
+			// CD means ejecting first, the same as the real hardware.
+			mii.fState = S9xVoiceKunAttached() ? MFS_ENABLED : MFS_DISABLED;
+			SetMenuItemInfo(GUI.hMenu, ID_SOUND_VOICEKUN_DETACH, FALSE, &mii);
+			mii.fState = S9xVoiceKunAttached() ? MFS_DISABLED : MFS_ENABLED;
+			SetMenuItemInfo(GUI.hMenu, ID_SOUND_VOICEKUN_ATTACH, FALSE, &mii);
 		}
 	}
 

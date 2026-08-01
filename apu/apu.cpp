@@ -9,6 +9,7 @@
 #include "../snes9x.h"
 #include "apu.h"
 #include "../msu1.h"
+#include "../voicekun.h"
 #include "../snapshot.h"
 #include "../display.h"
 #include "resampler.h"
@@ -62,6 +63,12 @@ namespace msu {
 static Resampler resampler;
 static std::vector<int16_t> resampler_buffer;
 } // namespace msu
+
+namespace voicekun {
+// Voicer-kun CD audio: same 44.1 kHz stereo plumbing as msu above
+static Resampler resampler;
+static std::vector<int16_t> resampler_buffer;
+} // namespace voicekun
 
 namespace audiowave {
 static bool enabled = false;
@@ -359,6 +366,19 @@ bool8 S9xMixSamples(uint8 *dest, int sample_count)
         }
     }
 
+    if (Settings.VoiceKun)
+    {
+        if ((int)voicekun::resampler_buffer.size() < sample_count)
+            voicekun::resampler_buffer.resize(sample_count);
+
+        voicekun::resampler.read(voicekun::resampler_buffer.data(), sample_count);
+        for (int i = 0; i < sample_count; ++i)
+        {
+            int32 mixed = (int32)out[i] + voicekun::resampler_buffer[i];
+            out[i] = ((int16)mixed != mixed) ? (mixed >> 31) ^ 0x7fff : mixed;
+        }
+    }
+
     if (spc::resampler.space_empty() >= 535 * 2 || !Settings.SoundSync ||
         Settings.TurboMode || Settings.Mute)
         spc::sound_in_sync = true;
@@ -380,6 +400,8 @@ int S9xGetSampleCount(void)
 	int avail = spc::resampler.avail();
 	if (Settings.MSU1)
 		avail = Resampler::min(avail, msu::resampler.avail());
+	if (Settings.VoiceKun)
+		avail = Resampler::min(avail, voicekun::resampler.avail());
     return avail;
 }
 
@@ -400,6 +422,8 @@ void S9xClearSamples(void)
     spc::resampler.clear();
     if (Settings.MSU1)
         msu::resampler.clear();
+    if (Settings.VoiceKun)
+        voicekun::resampler.clear();
 }
 
 void S9xAudioWaveformPushMix(const int16_t *src, int frames)
@@ -716,12 +740,15 @@ int S9xAudioWaveformSampleRate(void)
 // follows on seamlessly from the previous displayed frame's output.
 static ResamplerState saved_spc_resampler_state;
 static ResamplerState saved_msu_resampler_state;
+static ResamplerState saved_voicekun_resampler_state;
 
 void S9xRunAheadSaveAudio(void)
 {
     spc::resampler.save_state(saved_spc_resampler_state);
     if (Settings.MSU1)
         msu::resampler.save_state(saved_msu_resampler_state);
+    if (Settings.VoiceKun)
+        voicekun::resampler.save_state(saved_voicekun_resampler_state);
 }
 
 void S9xRunAheadLoadAudio(void)
@@ -729,6 +756,8 @@ void S9xRunAheadLoadAudio(void)
     spc::resampler.load_state(saved_spc_resampler_state);
     if (Settings.MSU1)
         msu::resampler.load_state(saved_msu_resampler_state);
+    if (Settings.VoiceKun)
+        voicekun::resampler.load_state(saved_voicekun_resampler_state);
 }
 
 bool8 S9xSyncSound(void)
@@ -769,11 +798,12 @@ static void UpdatePlaybackRate(void)
 
     spc::resampler.time_ratio(time_ratio);
 
+    // 44.1 kHz sources; voicekun stays primed even while detached so a
+    // mid-session attach doesn't run at the 1.0 default ratio
+    double cd_ratio = time_ratio * 44100 / 32040;
     if (Settings.MSU1)
-    {
-        time_ratio = time_ratio * 44100 / 32040;
-        msu::resampler.time_ratio(time_ratio);
-    }
+        msu::resampler.time_ratio(cd_ratio);
+    voicekun::resampler.time_ratio(cd_ratio);
 }
 
 bool8 S9xInitSound(int buffer_ms)
@@ -787,9 +817,11 @@ bool8 S9xInitSound(int buffer_ms)
 
     spc::resampler.resize(buffer_size_samples);
     msu::resampler.resize(buffer_size_samples * 3 / 2);
+    voicekun::resampler.resize(buffer_size_samples * 3 / 2);
 
     SNES::dsp.spc_dsp.set_output(&spc::resampler);
     S9xMSU1SetOutput(&msu::resampler);
+    S9xVoiceKunSetOutput(&voicekun::resampler);
 
     UpdatePlaybackRate();
 
@@ -825,6 +857,7 @@ bool8 S9xInitAPU(void)
 {
     spc::resampler.clear();
     msu::resampler.clear();
+    voicekun::resampler.clear();
 
     return true;
 }
@@ -833,6 +866,7 @@ void S9xDeinitAPU(void)
 {
     S9xMSU1DeInit();
     msu::resampler_buffer.clear();
+    voicekun::resampler_buffer.clear();
 }
 
 static inline uint32 S9xAPUEffectiveDenominator(void)

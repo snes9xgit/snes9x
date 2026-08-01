@@ -14,6 +14,7 @@
 #include "snapshot.h"
 #include "cheats.h"
 #include "sgb/sgb.h"
+#include "voicekun.h"
 #include "sfcbox.h"
 #ifdef DEBUGGER
 #include "debug.h"
@@ -126,6 +127,7 @@ void S9xReset (void)
 	S9xResetDMA();
 	S9xResetAPU();
     S9xResetMSU();
+	S9xVoiceKunStop();
 
 	if (Settings.DSP)
 		S9xResetDSP();
@@ -267,6 +269,7 @@ void S9xSoftReset (void)
 	S9xResetDMA();
 	S9xSoftResetAPU();
     S9xResetMSU();
+	S9xVoiceKunStop();
 
 	if (Settings.DSP)
 		S9xResetDSP();

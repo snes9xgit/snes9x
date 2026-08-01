@@ -276,6 +276,9 @@
     <ClInclude Include="..\msu1.h">
       <Filter>APU</Filter>
     </ClInclude>
+    <ClInclude Include="..\voicekun.h">
+      <Filter>APU</Filter>
+    </ClInclude>
     <ClInclude Include="cgMini.h">
       <Filter>GUI\VideoDriver</Filter>
     </ClInclude>
@@ -792,6 +795,9 @@
       <Filter>GUI</Filter>
     </ClCompile>
     <ClCompile Include="..\msu1.cpp">
+      <Filter>APU</Filter>
+    </ClCompile>
+    <ClCompile Include="..\voicekun.cpp">
       <Filter>APU</Filter>
     </ClCompile>
     <ClCompile Include="DumpAtEnd.cpp">

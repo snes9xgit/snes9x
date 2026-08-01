@@ -21,6 +21,7 @@
 #include "movie.h"
 #include "display.h"
 #include "sfcbox.h"
+#include "voicekun.h"
 #ifdef NETPLAY_SUPPORT
 #include "netplay.h"
 #endif
@@ -2874,6 +2875,10 @@ void S9xSetJoypadLatch (bool latch)
 				case JOYPAD6:
 				case JOYPAD7:
 					do_polling(i);
+					// Voice Kun: stand in for the player confirming that the
+					// audio CD is rolling, since we started it ourselves.
+					if (Settings.VoiceKun && n == 0 && S9xVoiceKunAutoConfirm())
+						joypad[i - JOYPAD0].buttons |= SNES_A_MASK;
 					break;
 
 				case MOUSE0:
@@ -3047,7 +3052,14 @@ uint8 S9xReadJOYSERn (int n)
 					return (bits | 1);
 				}
 				else
-					return (bits | ((joypad[i - JOYPAD0].buttons & (0x8000 >> IncreaseReadIdxPost(read_idx[n][0]))) ? 1 : 0));
+				{
+					// Voicer-kun sits on port 2 and answers the controller-id
+					// bits with its own signature; the games poll for it.
+					uint16	w = joypad[i - JOYPAD0].buttons;
+					if (n == 1 && Settings.VoiceKun)
+						w |= S9xVoiceKunPort2Id();
+					return (bits | ((w & (0x8000 >> IncreaseReadIdxPost(read_idx[n][0]))) ? 1 : 0));
+				}
 
 			case MOUSE0:
 			case MOUSE1:
@@ -3158,10 +3170,18 @@ void S9xDoAutoJoypad (void)
 			case JOYPAD5:
 			case JOYPAD6:
 			case JOYPAD7:
+			{
 				read_idx[n][0] = 16;
-				WRITE_WORD(Memory.FillRAM + 0x4218 + n * 2, joypad[i - JOYPAD0].buttons);
+				// Voicer-kun sits on port 2 and answers the auto-joypad read
+				// with its own id in the low nibble; the games poll $421A for
+				// that signature to decide the device is plugged in.
+				uint16	w = joypad[i - JOYPAD0].buttons;
+				if (n == 1 && Settings.VoiceKun)
+					w |= S9xVoiceKunPort2Id();
+				WRITE_WORD(Memory.FillRAM + 0x4218 + n * 2, w);
 				WRITE_WORD(Memory.FillRAM + 0x421c + n * 2, 0);
 				break;
+			}
 
 			case MOUSE0:
 			case MOUSE1:

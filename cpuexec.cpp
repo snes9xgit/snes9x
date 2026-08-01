@@ -16,6 +16,7 @@
 #include "gfx.h"
 #include "sgb/sgb.h"
 #include "sfcbox.h"
+#include "voicekun.h"
 #ifdef DEBUGGER
 #include "debug.h"
 #include "missing.h"
@@ -255,6 +256,49 @@ void S9xMainLoop (void)
 		    CheckIRQ())
 		{
 			ClearIRQ();
+		}
+
+		// Voicer-kun: the game names a CD track, starts it, or ends the voice.
+		if (Settings.VoiceKun)
+		{
+			if (VoiceKunHook.PlayPC && Registers.PBPC == VoiceKunHook.PlayPC)
+			{
+				uint32	s = Registers.S.W;
+				int	arg = 0;
+				if (!VoiceKunHook.ArmPC)
+					arg = VoiceKunHook.ArgStackOff
+						? (Memory.RAM[(s + VoiceKunHook.ArgStackOff) & 0x1ffff] |
+						   (Memory.RAM[(s + VoiceKunHook.ArgStackOff + 1) & 0x1ffff] << 8))
+						  + VoiceKunHook.TrackBias
+						: (Registers.A.W & 0xff) + VoiceKunHook.TrackBias;
+				S9xVoiceKunPlayTrack(arg);
+			}
+			else
+			if (VoiceKunHook.ArmPC && Registers.PBPC == VoiceKunHook.ArmPC)
+			{
+				uint32	s = Registers.S.W;
+				int	arg = Memory.RAM[(s + VoiceKunHook.ArmArgOff) & 0x1ffff] |
+				          (Memory.RAM[(s + VoiceKunHook.ArmArgOff + 1) & 0x1ffff] << 8);
+				S9xVoiceKunArmTrack(arg + VoiceKunHook.TrackBias);
+			}
+			else
+			if (VoiceKunHook.StopPC && Registers.PBPC == VoiceKunHook.StopPC)
+				S9xVoiceKunStop();
+			else
+			if (VoiceKunHook.IRCmdPC && Registers.PBPC == VoiceKunHook.IRCmdPC)
+			{
+				uint32	s = Registers.S.W;
+				int	cmd = Memory.RAM[(s + VoiceKunHook.IRCmdArgOff) & 0x1ffff] |
+				          (Memory.RAM[(s + VoiceKunHook.IRCmdArgOff + 1) & 0x1ffff] << 8);
+				S9xVoiceKunDeckCommand(cmd);
+			}
+
+			// Voice counter: ticks once per voiced scene whether or not the
+			// game prompts for the disc, so it catches scene changes the
+			// prompt hooks miss (continuous play).
+			int	vaddr = S9xVoiceKunVoiceIdAddr();
+			if (vaddr)
+				S9xVoiceKunPollVoiceId(Memory.RAM[vaddr & 0x1ffff]);
 		}
 
 		uint8				Op;

@@ -40,6 +40,7 @@
 #include "sha256.h"
 #include "snapshot.h"
 #include "sfcbox.h"
+#include "voicekun.h"
 
 #ifndef SET_UI_COLOR
 #define SET_UI_COLOR(r, g, b) ;
@@ -2944,6 +2945,7 @@ void CMemory::InitROM (void)
 	Settings.SRTC = FALSE;
 	Settings.BS = FALSE;
 	Settings.MSU1 = FALSE;
+	S9xVoiceKunDetach();	// the hook PC is per-game; a new ROM needs a fresh attach
 
 	SuperFX.nRomBanks = CalculatedSize >> 15;
 
