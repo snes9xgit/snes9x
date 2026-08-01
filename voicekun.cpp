@@ -125,6 +125,19 @@ static const VoiceKunGame voicekun_games[] =
 	  "EMIT Vol. 2: Inochigake no Tabi (J)", 2,
 	  { { 97, 446317872L, 0x5EF56CD7, "CD 1" },
 	    { 98, 478940112L, 0xE4E96D6D, "CD 2" } } },
+
+	// EMIT Vol. 3: same engine again - cue $C143D8, play $C212DF, transport
+	// $C148B1, stop $C14652 (cue+$27A, byte-identical to Vol. 1's and with
+	// the same four call sites). Both discs fingerprint to the CRC of 64 KB
+	// of silence because the midpoint lands in a track's silent tail, so
+	// here the track count and size are what tell the discs apart.
+	{ 0xCBC5DA6D, 0xC212DF, 0xC14652, 0, 1, 0x22B2, 0xC143D8, 4,
+	  0xC148B1, 4,
+	  0, 0, 0,
+	  0, 0, 0, 0, 0, 0x000D,
+	  "EMIT Vol. 3: Watashi ni Sayonara o (J)", 2,
+	  { { 85, 417115440L, 0xD7978EEB, "CD 1" },
+	    { 94, 479459904L, 0xD7978EEB, "CD 2" } } },
 };
 
 struct VoiceKunTrack
