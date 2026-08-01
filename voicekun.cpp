@@ -111,6 +111,20 @@ static const VoiceKunGame voicekun_games[] =
 	  "EMIT Vol. 1: Toki no Maigo (J)", 2,
 	  { { 98, 394863168L, 0x57FD0BE3, "CD 1" },
 	    { 98, 508817568L, 0x4DAC56EF, "CD 2" } } },
+
+	// EMIT Vol. 2: the same engine relocated. Entries matched by byte
+	// signature against Vol. 1 - cue $C312C2, play $C20D2B, transport
+	// $C125CC - and the stop confirmed twice over: $C10241 calls it where
+	// Vol. 1's $C10241 calls $C13B08, and it sits at cue+$27A on both.
+	// Mode byte is $7E22B2 again. CD 1 has 97 tracks, not 98. The chapter
+	// table was not derived; the prompt hooks carry the track.
+	{ 0xAD99D806, 0xC20D2B, 0xC3153C, 0, 1, 0x22B2, 0xC312C2, 4,
+	  0xC125CC, 4,
+	  0, 0, 0,
+	  0, 0, 0, 0, 0, 0x000D,
+	  "EMIT Vol. 2: Inochigake no Tabi (J)", 2,
+	  { { 97, 446317872L, 0x5EF56CD7, "CD 1" },
+	    { 98, 478940112L, 0xE4E96D6D, "CD 2" } } },
 };
 
 struct VoiceKunTrack
