@@ -7117,7 +7117,16 @@ INT_PTR CALLBACK DlgEmulatorHacksProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM
         SendDlgItemMessage(hDlg, IDC_SOUND_INTERPOLATION, CB_ADDSTRING, 0, (LPARAM)TEXT("Sinc"));
         SendDlgItemMessage(hDlg, IDC_SOUND_INTERPOLATION, CB_SETCURSEL, Settings.InterpolationMethod, 0);
 
-        CheckDlgButton(hDlg, IDC_INVALID_VRAM, !Settings.BlockInvalidVRAMAccessMaster);
+        // A game on the allow-invalid-VRAM list overrides the preference for
+        // itself; show that state and grey the box so the automatic choice is
+        // visible without the saved preference being rewritten.
+        {
+            const bool vram_auto = !Settings.StopEmulation &&
+                Settings.BlockInvalidVRAMAccess != Settings.BlockInvalidVRAMAccessMaster;
+            CheckDlgButton(hDlg, IDC_INVALID_VRAM,
+                vram_auto ? !Settings.BlockInvalidVRAMAccess : !Settings.BlockInvalidVRAMAccessMaster);
+            EnableWindow(GetDlgItem(hDlg, IDC_INVALID_VRAM), !vram_auto);
+        }
         CheckDlgButton(hDlg, IDC_SEPARATE_ECHO_BUFFER, Settings.SeparateEchoBuffer);
         CheckDlgButton(hDlg, IDC_NO_SPRITE_LIMIT, Settings.MaxSpriteTilesPerLine == 128);
         CheckDlgButton(hDlg, IDC_ALLOW_EXE_ICON, GUI.ExeIconRewriteOK);
@@ -7225,7 +7234,10 @@ INT_PTR CALLBACK DlgEmulatorHacksProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM
         switch (LOWORD(wParam))
         {
         case IDOK:
-            if (((Settings.BlockInvalidVRAMAccessMaster != !IsDlgButtonChecked(hDlg, IDC_INVALID_VRAM)) ||
+            // Greyed means the current game forced the setting, so the box no
+            // longer reflects the preference and must not be read back.
+            if (((IsWindowEnabled(GetDlgItem(hDlg, IDC_INVALID_VRAM)) &&
+                  Settings.BlockInvalidVRAMAccessMaster != !IsDlgButtonChecked(hDlg, IDC_INVALID_VRAM)) ||
                 (Settings.SeparateEchoBuffer != IsDlgButtonChecked(hDlg, IDC_SEPARATE_ECHO_BUFFER)))
                 && !Settings.StopEmulation)
             {
@@ -7238,7 +7250,8 @@ INT_PTR CALLBACK DlgEmulatorHacksProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM
             Settings.SuperFXClockMultiplier = SendDlgItemMessage(hDlg, IDC_SFX_CLOCK_SPEED_SPIN, UDM_GETPOS, 0, 0);
             Settings.OverclockMode = SendDlgItemMessage(hDlg, IDC_CPU_OVERCLOCK, CB_GETCURSEL, 0, 0);
             Settings.InterpolationMethod = SendDlgItemMessage(hDlg, IDC_SOUND_INTERPOLATION, CB_GETCURSEL, 0, 0);
-            Settings.BlockInvalidVRAMAccessMaster = !IsDlgButtonChecked(hDlg, IDC_INVALID_VRAM);
+            if (IsWindowEnabled(GetDlgItem(hDlg, IDC_INVALID_VRAM)))
+                Settings.BlockInvalidVRAMAccessMaster = !IsDlgButtonChecked(hDlg, IDC_INVALID_VRAM);
             Settings.SeparateEchoBuffer = IsDlgButtonChecked(hDlg, IDC_SEPARATE_ECHO_BUFFER);
             Settings.MaxSpriteTilesPerLine = IsDlgButtonChecked(hDlg, IDC_NO_SPRITE_LIMIT) ? 128 : 34;
             GUI.ExeIconRewriteOK = IsDlgButtonChecked(hDlg, IDC_ALLOW_EXE_ICON);
