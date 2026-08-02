@@ -12,6 +12,13 @@ placed next to `snes9x.exe`. The on-disk `.po` files are also what drives the
 **Translations** menu: each `<lang>.po` present adds its language. Delete them and
 the app runs in English. No rebuild is needed to add or edit a translation.
 
+Dialogs call `LocalizeDialog(hDlg)` from `WM_INITDIALOG`, which localizes twice:
+once immediately, and once more after the handler returned (before the first
+paint), so a dialog that overwrites its `.rc` text with a hardcoded English
+`SetDlgItemText`/`SetWindowText` default still ends up translated. Text written
+to a control *after* init — tab switches, status lines — is not covered; wrap
+those in `_L(...)` at the call site.
+
 ## How the GTK build uses these
 GTK compiles `<lang>.po` → `.mo` via CMake (`gtk/CMakeLists.txt`) and loads it
 with gettext. To add a language to the GTK build, add its code to the

@@ -13237,7 +13237,7 @@ static void set_hotkeyinfo(HWND hDlg, bool layoutChanged)
 		if (!savestates && item.key_entry)
 		{
 			SendMultiBindHotkeyToControl(hDlg, g_hotkeyControlIds[i], item.key_entry, item.extra_entry);
-			SetDlgItemText(hDlg, g_hotkeyLabelIds[i], item.description);
+			SetDlgItemText(hDlg, g_hotkeyLabelIds[i], _L(item.description));
 		}
 		else
 		{
