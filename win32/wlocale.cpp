@@ -16,6 +16,10 @@ static bool g_keysLoaded = false;
 static std::unordered_map<UINT, std::wstring> g_origMenuById;
 static std::unordered_map<HMENU, std::wstring> g_origMenuBySub;
 
+// Posted to the helper window to re-localize a dialog after its WM_INITDIALOG
+// handler finished; wParam is the dialog HWND.
+#define WM_LOCALIZE_REDO (WM_APP + 0x1F4)
+
 static const struct
 {
 	const wchar_t *code;
@@ -534,10 +538,8 @@ static BOOL CALLBACK LocalizeChildProc(HWND child, LPARAM lp)
 	return TRUE;
 }
 
-void LocalizeDialog(HWND dlg)
+static void LocalizeDialogPass(HWND dlg)
 {
-	if (!g_translated || dlg == NULL)
-		return;
 	wchar_t cap[1024];
 	int n = GetWindowTextW(dlg, cap, 1024);
 	if (n > 0)
@@ -550,6 +552,52 @@ void LocalizeDialog(HWND dlg)
 	EnumChildWindows(dlg, LocalizeChildProc, (LPARAM)&fit);
 	for (HWND c : fit)
 		FitTranslatedControl(c);
+}
+
+static LRESULT CALLBACK LocalizeHelperProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+{
+	if (msg == WM_LOCALIZE_REDO)
+	{
+		HWND dlg = (HWND)wp;
+		if (g_translated && IsWindow(dlg))
+			LocalizeDialogPass(dlg);
+		return 0;
+	}
+	return DefWindowProcW(wnd, msg, wp, lp);
+}
+
+// Message-only sink for the deferred pass; keeping it off the dialog means we
+// never touch a dialog's own message chain.
+static HWND LocalizeHelperWnd()
+{
+	static HWND wnd = NULL;
+	static bool created = false;
+	if (!created)
+	{
+		created = true;
+		WNDCLASSEXW wc = {};
+		wc.cbSize = sizeof(wc);
+		wc.lpfnWndProc = LocalizeHelperProc;
+		wc.hInstance = GetModuleHandleW(NULL);
+		wc.lpszClassName = L"Snes9xLocalizeHelper";
+		RegisterClassExW(&wc);
+		wnd = CreateWindowExW(0, wc.lpszClassName, NULL, 0, 0, 0, 0, 0,
+							  HWND_MESSAGE, NULL, wc.hInstance, NULL);
+	}
+	return wnd;
+}
+
+void LocalizeDialog(HWND dlg)
+{
+	if (!g_translated || dlg == NULL)
+		return;
+	LocalizeDialogPass(dlg);
+
+	// Callers run this from the top of WM_INITDIALOG and then overwrite control
+	// text with hardcoded English, so repeat the pass once the handler returned.
+	HWND helper = LocalizeHelperWnd();
+	if (helper)
+		PostMessageW(helper, WM_LOCALIZE_REDO, (WPARAM)dlg, 0);
 }
 
 static void LoadKeysOnce()
