@@ -589,7 +589,7 @@ void Snes9xPreferences::move_settings_to_dialog()
     // without the saved preference being rewritten when the dialog is applied.
     {
         const bool vram_auto = !Settings.StopEmulation &&
-            Settings.BlockInvalidVRAMAccess != Settings.BlockInvalidVRAMAccessMaster;
+            Settings.BlockInvalidVRAMAccessOverride;
         set_check("allow_invalid_vram_access",
                   vram_auto ? !Settings.BlockInvalidVRAMAccess
                             : !Settings.BlockInvalidVRAMAccessMaster);

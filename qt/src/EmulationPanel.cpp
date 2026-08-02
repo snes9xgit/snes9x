@@ -60,7 +60,7 @@ void EmulationPanel::showEvent(QShowEvent *event)
     // clicked(), so setting the state here raises no signal.
     {
         const bool vram_auto = !Settings.StopEmulation &&
-            Settings.BlockInvalidVRAMAccess != Settings.BlockInvalidVRAMAccessMaster;
+            Settings.BlockInvalidVRAMAccessOverride;
         checkBox_allow_invalid_vram_access->setChecked(
             vram_auto ? !Settings.BlockInvalidVRAMAccess : config->allow_invalid_vram_access);
         checkBox_allow_invalid_vram_access->setEnabled(!vram_auto);

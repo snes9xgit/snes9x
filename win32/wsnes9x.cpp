@@ -7122,7 +7122,7 @@ INT_PTR CALLBACK DlgEmulatorHacksProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM
         // visible without the saved preference being rewritten.
         {
             const bool vram_auto = !Settings.StopEmulation &&
-                Settings.BlockInvalidVRAMAccess != Settings.BlockInvalidVRAMAccessMaster;
+                Settings.BlockInvalidVRAMAccessOverride;
             CheckDlgButton(hDlg, IDC_INVALID_VRAM,
                 vram_auto ? !Settings.BlockInvalidVRAMAccess : !Settings.BlockInvalidVRAMAccessMaster);
             EnableWindow(GetDlgItem(hDlg, IDC_INVALID_VRAM), !vram_auto);

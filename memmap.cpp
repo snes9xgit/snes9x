@@ -4850,6 +4850,7 @@ static const struct
 void CMemory::ApplyROMFixes (void)
 {
 	Settings.BlockInvalidVRAMAccess = Settings.BlockInvalidVRAMAccessMaster;
+	Settings.BlockInvalidVRAMAccessOverride = FALSE;
 
 	// Not gated on DisableGameSpecificHacks: this stands in for cart hardware
 	// we don't emulate, without which the game never boots at all.
@@ -4873,6 +4874,7 @@ void CMemory::ApplyROMFixes (void)
 		if (ROMCRC32 == allow_invalid_vram[i].crc32)
 		{
 			Settings.BlockInvalidVRAMAccess = FALSE;
+			Settings.BlockInvalidVRAMAccessOverride = TRUE;
 			printf("Allowing invalid VRAM access for %s.\n", allow_invalid_vram[i].title);
 			break;
 		}
