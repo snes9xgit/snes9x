@@ -1116,7 +1116,7 @@ static void IRBuildBurst(int code)
 		ir_runs[n][0] = 0; ir_runs[n++][1] = ((code >> b) & 1) ? 25 : 10;
 	}
 	ir_runs[n][0] = 1; ir_runs[n++][1] = 10;    // stop mark
-	ir_runs[n][0] = 0; ir_runs[n++][1] = 1 << 20;
+	ir_runs[n][0] = 0; ir_runs[n++][1] = 200;   // gap before the frame repeats
 	ir_nruns = n;
 }
 
@@ -1137,8 +1137,10 @@ bool S9xVoiceKunIRBit(void)
 	if (!S9xVoiceKunIRActive())
 		return false;
 
-	// A gap between reads means the previous capture finished; the next key
-	// gets its own code.
+	// A gap of more than a frame between reads means the game finished the
+	// current key and moved on; the next key gets its own code. While it keeps
+	// polling we loop the same burst, the way a held-down IR remote resends its
+	// frame - the games wait for that repeat before accepting the capture.
 	uint32	f = IPPU.TotalEmulatedFrames;
 	if (f - ir_frame > 1 || !ir_nruns)
 	{
@@ -1146,6 +1148,12 @@ bool S9xVoiceKunIRBit(void)
 		IRBuildBurst(++ir_code);
 	}
 	ir_frame = f;
+
+	int	total = 0;
+	for (int i = 0; i < ir_nruns; i++)
+		total += ir_runs[i][1];
+	if (ir_pos >= total)
+		ir_pos = 0;
 
 	int	pos = ir_pos++, acc = 0;
 	for (int i = 0; i < ir_nruns; i++)
