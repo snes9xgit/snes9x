@@ -302,6 +302,7 @@ struct SSettings
 	bool8	DisableGameSpecificHacks;
 	bool8	BlockInvalidVRAMAccessMaster;
 	bool8	BlockInvalidVRAMAccess;
+	bool8	BlockInvalidVRAMAccessOverride;
 	int32	HDMATimingHack;
 
 	bool8	ForcedPause;

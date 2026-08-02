@@ -2188,8 +2188,18 @@
                     <child>
                       <object class="GtkMenuItem" id="ra_achievement_list_item">
                         <property name="visible">True</property>
+                        <property name="sensitive">False</property>
                         <property name="can_focus">False</property>
                         <property name="label" translatable="yes">_Achievement List...</property>
+                        <property name="use_underline">True</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="ra_view_profile_item">
+                        <property name="visible">True</property>
+                        <property name="sensitive">False</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">_View Profile</property>
                         <property name="use_underline">True</property>
                       </object>
                     </child>

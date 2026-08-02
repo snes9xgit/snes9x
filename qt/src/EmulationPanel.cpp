@@ -1,6 +1,8 @@
 #include "EmulationPanel.hpp"
 #include "EmuApplication.hpp"
 #include "EmuConfig.hpp"
+#include "Snes9xController.hpp"
+#include "snes9x.h"
 
 EmulationPanel::EmulationPanel(EmuApplication *app_)
     : app(app_)
@@ -53,7 +55,19 @@ void EmulationPanel::showEvent(QShowEvent *event)
     spinBox_rewind_buffer_size->setValue(config->rewind_buffer_size);
     spinBox_rewind_frames->setValue(config->rewind_frame_interval);
 
-    checkBox_allow_invalid_vram_access->setChecked(config->allow_invalid_vram_access);
+    // A game on the allow-invalid-VRAM list overrides the preference for
+    // itself; show that and disable the box so the automatic choice is visible
+    // and cannot be written back over the preference. The handler is on
+    // clicked(), so setting the state here raises no signal.
+    {
+        // core->active (not Settings.StopEmulation, which the Qt frontend
+        // never clears) is this frontend's "a ROM is running" flag.
+        const bool vram_auto = app->core->active &&
+            Settings.BlockInvalidVRAMAccessOverride;
+        checkBox_allow_invalid_vram_access->setChecked(
+            vram_auto ? !Settings.BlockInvalidVRAMAccess : config->allow_invalid_vram_access);
+        checkBox_allow_invalid_vram_access->setEnabled(!vram_auto);
+    }
     checkBox_allow_opposing_dpad_directions->setChecked(config->allow_opposing_dpad_directions);
     comboBox_overclock->setCurrentIndex(config->overclock);
     checkBox_remove_sprite_limit->setChecked(config->remove_sprite_limit);

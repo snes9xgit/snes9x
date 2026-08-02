@@ -33,6 +33,8 @@
 #include "memmap.h"
 
 #include <QMessageBox>
+#include <QDesktopServices>
+#include <QUrl>
 #undef KeyPress
 
 static EmuSettingsWindow *g_emu_settings_window = nullptr;
@@ -504,11 +506,22 @@ void EmuMainWindow::createWidgets()
         RA_ShowAchievementList();
     });
 
+    ra_view_profile_action = ra_menu->addAction(tr("&View Profile"));
+    ra_view_profile_action->setEnabled(false);
+    connect(ra_view_profile_action, &QAction::triggered, [&] {
+        rc_client_t *client = RA_GetClient();
+        const rc_client_user_t *user = client ? rc_client_get_user_info(client) : nullptr;
+        if (user && user->username && user->username[0])
+            QDesktopServices::openUrl(QUrl(
+                QString("https://retroachievements.org/user/%1").arg(user->username)));
+    });
+
     connect(ra_menu, &QMenu::aboutToShow, [this] {
         bool enabled = app->config->ra_enabled;
         ra_login_action->setEnabled(enabled);
         ra_hardcore_action->setEnabled(enabled);
-        ra_achievements_action->setEnabled(enabled && app->isCoreActive());
+        ra_achievements_action->setEnabled(enabled && app->isCoreActive() && RA_IsLoggedIn());
+        ra_view_profile_action->setEnabled(enabled && RA_IsLoggedIn());
     });
 
     menuBar()->addMenu(ra_menu);

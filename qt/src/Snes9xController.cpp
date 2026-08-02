@@ -74,7 +74,7 @@ void Snes9xController::init()
     Settings.DisplayIndicators = true;
     Settings.SoundPlaybackRate = 48000;
     Settings.SoundInputRate = 32040;
-    Settings.BlockInvalidVRAMAccess = true;
+    Settings.BlockInvalidVRAMAccessMaster = true;
     Settings.SoundSync = false;
     Settings.Mute = false;
     Settings.DynamicRateControl = false;
@@ -156,7 +156,10 @@ void Snes9xController::updateSettings(EmuConfig *config)
         S9xUpdateDynamicRate();
     }
 
-    Settings.BlockInvalidVRAMAccess = !config->allow_invalid_vram_access;
+    // The preference lives in ...Master; ApplyROMFixes copies it into the
+    // effective flag per game, so writing the effective one here was lost on
+    // every ROM load.
+    Settings.BlockInvalidVRAMAccessMaster = !config->allow_invalid_vram_access;
 
     Settings.SoundSync = config->speed_sync_method == EmuConfig::eSoundSync;
 

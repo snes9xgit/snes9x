@@ -354,6 +354,9 @@ static void game_loop()
         S9xMainLoop();
 
 #ifdef RETROACHIEVEMENTS_SUPPORT
+        // Suspend achievement processing during netplay so remote players'
+        // inputs can't earn unlocks on this account.
+        RA_SetNetplayActive(Settings.NetPlay || Settings.NetPlayServer);
         RA_DoFrame();
 #endif
 
