@@ -1,6 +1,7 @@
 #include "EmulationPanel.hpp"
 #include "EmuApplication.hpp"
 #include "EmuConfig.hpp"
+#include "Snes9xController.hpp"
 #include "snes9x.h"
 
 EmulationPanel::EmulationPanel(EmuApplication *app_)
@@ -59,7 +60,9 @@ void EmulationPanel::showEvent(QShowEvent *event)
     // and cannot be written back over the preference. The handler is on
     // clicked(), so setting the state here raises no signal.
     {
-        const bool vram_auto = !Settings.StopEmulation &&
+        // core->active (not Settings.StopEmulation, which the Qt frontend
+        // never clears) is this frontend's "a ROM is running" flag.
+        const bool vram_auto = app->core->active &&
             Settings.BlockInvalidVRAMAccessOverride;
         checkBox_allow_invalid_vram_access->setChecked(
             vram_auto ? !Settings.BlockInvalidVRAMAccess : config->allow_invalid_vram_access);
