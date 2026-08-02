@@ -81,6 +81,7 @@ set(SNES9X_CORE_SOURCES
     ../bml.cpp
     ../cpuops.cpp
     ../cpuexec.cpp
+    ../voicekun.cpp
     ../sa1cpu.cpp
     ../cheats.cpp
     ../cheats2.cpp
