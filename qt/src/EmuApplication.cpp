@@ -17,6 +17,8 @@
 #ifdef RETROACHIEVEMENTS_SUPPORT
 #include "RAIntegrationQt.hpp"
 #include "retroachievements.h"
+#include "snes9x.h"
+#include "display.h"
 #endif
 #ifdef KAILLERA_SUPPORT
 #include "kaillera_client.h"
@@ -304,6 +306,13 @@ void EmuApplication::mainLoop()
 
     core->mainLoop();
 #ifdef RETROACHIEVEMENTS_SUPPORT
+    // Suspend achievement processing during netplay so remote players' inputs
+    // can't earn unlocks on this account.
+    bool ra_netplay = Settings.NetPlay || Settings.NetPlayServer;
+#ifdef KAILLERA_SUPPORT
+    ra_netplay = ra_netplay || KailleraClientIsPlaying();
+#endif
+    RA_SetNetplayActive(ra_netplay);
     RA_DoFrame();
 #endif
 }
@@ -443,7 +452,11 @@ void EmuApplication::handleBinding(const std::string &name, bool pressed)
         {
 #ifdef RETROACHIEVEMENTS_SUPPORT
             if (RA_IsHardcoreModeActive())
+            {
                 core->rewinding = false;
+                if (pressed)
+                    S9xSetInfoString("Rewind is not allowed in Hardcore mode");
+            }
             else
 #endif
             core->rewinding = pressed;

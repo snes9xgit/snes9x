@@ -18,6 +18,10 @@
 #include "display.h"
 #include "gfx.h"
 
+#ifdef RETROACHIEVEMENTS_SUPPORT
+#include "retroachievements.h"
+#endif
+
 const BindingLink b_links[] =
 {
         /* Joypad-specific bindings. "Joypad# " will be prepended */
@@ -236,7 +240,14 @@ void S9xHandlePortCommand(s9xcommand_t cmd, int16 data1, int16 data2)
         if (cmd.port[0] == PORT_QUIT)
             quit_binding_down = true;
         else if (cmd.port[0] == PORT_REWIND)
+        {
+#ifdef RETROACHIEVEMENTS_SUPPORT
+            if (RA_IsHardcoreModeActive())
+                S9xSetInfoString(_("Rewind is not allowed in Hardcore mode"));
+            else
+#endif
             Settings.Rewinding = true;
+        }
     }
 
     if (data1 == false) /* Release */

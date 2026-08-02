@@ -76,6 +76,7 @@ class EmuMainWindow : public QMainWindow
     QAction *ra_login_action = nullptr;
     QAction *ra_hardcore_action = nullptr;
     QAction *ra_achievements_action = nullptr;
+    QAction *ra_view_profile_action = nullptr;
 #endif
 #ifdef KAILLERA_SUPPORT
     QAction *kaillera_host_action = nullptr;

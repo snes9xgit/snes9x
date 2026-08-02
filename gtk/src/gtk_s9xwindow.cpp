@@ -351,6 +351,16 @@ void Snes9xWindow::connect_signals()
         RA_ShowAchievementList();
     });
 
+    get_object<Gtk::MenuItem>("ra_view_profile_item")->signal_activate().connect([] {
+        rc_client_t *client = RA_GetClient();
+        const rc_client_user_t *user = client ? rc_client_get_user_info(client) : nullptr;
+        if (user && user->username && user->username[0])
+        {
+            std::string url = std::string("https://retroachievements.org/user/") + user->username;
+            g_app_info_launch_default_for_uri(url.c_str(), nullptr, nullptr);
+        }
+    });
+
     // Stored credentials imply we auto-login at startup; reflect that in the label.
     if (!gui_config->ra_username.empty() && !gui_config->ra_api_token.empty())
         get_object<Gtk::MenuItem>("ra_login_item")->set_label(_("_Logout"));
@@ -1018,6 +1028,13 @@ void Snes9xWindow::configure_widgets()
     };
     for (auto &widget : enable_when_rom_loaded)
         enable_widget(widget, config->rom_loaded);
+
+#ifdef RETROACHIEVEMENTS_SUPPORT
+    // The achievement list only makes sense with a game loaded and a user
+    // logged in (win32 gates it on a running game); View Profile needs a login.
+    enable_widget("ra_achievement_list_item", config->rom_loaded && RA_IsLoggedIn());
+    enable_widget("ra_view_profile_item", RA_IsLoggedIn());
+#endif
 
     enable_widget("sync_clients_item",
                   config->rom_loaded &&

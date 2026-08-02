@@ -22,6 +22,9 @@
 #include <QHeaderView>
 #include <QApplication>
 #include <QThread>
+#include <QTimer>
+#include <QPointer>
+#include <QScrollBar>
 #include <thread>
 #include <cstdio>
 #include <cstring>
@@ -184,37 +187,34 @@ static void ra_qt_show_login()
 }
 
 // ---------------------------------------------------------------------------
-// Qt Achievement List Dialog
+// Qt Achievement List Dialog (modeless, refreshes once a second)
 // ---------------------------------------------------------------------------
-static void ra_qt_show_achievements()
-{
-    if (!g_app || !g_app->window)
-        return;
+static QPointer<QDialog> s_achievements_dlg;
 
+static QString ra_qt_type_string(uint8_t type)
+{
+    switch (type)
+    {
+    case RC_CLIENT_ACHIEVEMENT_TYPE_MISSABLE:    return "Missable";
+    case RC_CLIENT_ACHIEVEMENT_TYPE_PROGRESSION: return "Progression";
+    case RC_CLIENT_ACHIEVEMENT_TYPE_WIN:         return "Win Condition";
+    default:                                     return "";
+    }
+}
+
+static void ra_qt_populate_achievements(QTreeWidget *tree, QLabel *summary)
+{
     rc_client_t *client = RA_GetClient();
     if (!client)
         return;
 
-    QDialog dlg(g_app->window.get());
-    dlg.setWindowTitle("RetroAchievements");
-    dlg.resize(550, 400);
+    // Preserve the user's sort choice and scroll position across the refresh.
+    const int sort_col = tree->header()->sortIndicatorSection();
+    const Qt::SortOrder sort_order = tree->header()->sortIndicatorOrder();
+    const int scroll = tree->verticalScrollBar()->value();
 
-    auto *layout = new QVBoxLayout(&dlg);
-
-    const rc_client_game_t *game = rc_client_get_game_info(client);
-    auto *titleLabel = new QLabel(game ? game->title : "No game loaded");
-    auto font = titleLabel->font();
-    font.setBold(true);
-    titleLabel->setFont(font);
-    layout->addWidget(titleLabel);
-
-    auto *tree = new QTreeWidget();
-    tree->setHeaderLabels({"Title", "Points", "Status", "Description"});
-    tree->setRootIsDecorated(false);
-    tree->setAlternatingRowColors(true);
-    tree->setSortingEnabled(true);
-    tree->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
-    tree->header()->setStretchLastSection(true);
+    tree->setSortingEnabled(false);
+    tree->clear();
 
     rc_client_achievement_list_t *list = rc_client_create_achievement_list(client,
         RC_CLIENT_ACHIEVEMENT_CATEGORY_CORE_AND_UNOFFICIAL,
@@ -243,14 +243,90 @@ static void ra_qt_show_achievements()
                     ach->title,
                     QString::number(ach->points),
                     status,
+                    ach->measured_progress,
+                    ra_qt_type_string(ach->type),
                     ach->description
                 });
+                // Keep the Points column sorting numerically.
+                item->setData(1, Qt::UserRole, ach->points);
                 tree->addTopLevelItem(item);
             }
         }
         rc_client_destroy_achievement_list(list);
     }
 
+    tree->setSortingEnabled(true);
+    tree->header()->setSortIndicator(sort_col, sort_order);
+    tree->verticalScrollBar()->setValue(scroll);
+
+    if (!summary)
+        return;
+
+    const rc_client_game_t *game = rc_client_get_game_info(client);
+    if (!game)
+    {
+        summary->setText("No game loaded");
+        return;
+    }
+
+    rc_client_user_game_summary_t gs = {};
+    rc_client_get_user_game_summary(client, &gs);
+    QString text = QString("%1 - %2 of %3 achievements, %4 of %5 points")
+                       .arg(game->title)
+                       .arg(gs.num_unlocked_achievements)
+                       .arg(gs.num_core_achievements)
+                       .arg(gs.points_unlocked)
+                       .arg(gs.points_core);
+
+    char user_buf[256];
+    if (RA_GetLoggedInUserString(user_buf, sizeof(user_buf)))
+        text += QString("    |    Logged in as %1%2")
+                    .arg(user_buf)
+                    .arg(RA_IsHardcoreModeActive() ? " - Hardcore" : "");
+    else
+        text += "    |    Not logged in";
+
+    summary->setText(text);
+}
+
+static void ra_qt_show_achievements()
+{
+    if (!g_app || !g_app->window)
+        return;
+
+    // Modeless: focus the existing window instead of opening a second one.
+    if (s_achievements_dlg)
+    {
+        s_achievements_dlg->raise();
+        s_achievements_dlg->activateWindow();
+        return;
+    }
+
+    if (!RA_GetClient())
+        return;
+
+    auto *dlg = new QDialog(g_app->window.get());
+    dlg->setAttribute(Qt::WA_DeleteOnClose);
+    dlg->setWindowTitle("RetroAchievements");
+    dlg->resize(700, 440);
+    s_achievements_dlg = dlg;
+
+    auto *layout = new QVBoxLayout(dlg);
+
+    auto *summary = new QLabel();
+    auto font = summary->font();
+    font.setBold(true);
+    summary->setFont(font);
+    summary->setWordWrap(true);
+    layout->addWidget(summary);
+
+    auto *tree = new QTreeWidget();
+    tree->setHeaderLabels({"Title", "Points", "Status", "Progress", "Type", "Description"});
+    tree->setRootIsDecorated(false);
+    tree->setAlternatingRowColors(true);
+    tree->setSortingEnabled(true);
+    tree->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
+    tree->header()->setStretchLastSection(true);
     layout->addWidget(tree);
 
     auto *closeBtn = new QPushButton("Close");
@@ -259,10 +335,18 @@ static void ra_qt_show_achievements()
     btnLayout->addWidget(closeBtn);
     btnLayout->addStretch();
     layout->addLayout(btnLayout);
+    QObject::connect(closeBtn, &QPushButton::clicked, dlg, &QDialog::close);
 
-    QObject::connect(closeBtn, &QPushButton::clicked, &dlg, &QDialog::accept);
+    ra_qt_populate_achievements(tree, summary);
 
-    dlg.exec();
+    // Live refresh once a second while the game keeps running behind the dialog.
+    auto *timer = new QTimer(dlg);
+    QObject::connect(timer, &QTimer::timeout, dlg, [tree, summary]() {
+        ra_qt_populate_achievements(tree, summary);
+    });
+    timer->start(1000);
+
+    dlg->show();
 }
 
 // ---------------------------------------------------------------------------
@@ -325,10 +409,56 @@ static void ra_qt_credentials_changed(const char *username, const char *token)
         g_app->config->ra_enabled = logged_in;
         g_app->config->saveFile(EmuConfig::findConfigFile());
 
-        // Update Login/Logout menu text
-        if (g_app->window && g_app->window->ra_login_action)
-            g_app->window->ra_login_action->setText(logged_in ? "&Logout" : "&Login...");
+        if (!g_app->window)
+            return;
+
+        // Update Login/Logout menu text; when logged in, show "Logout <user> (N points)".
+        if (g_app->window->ra_login_action)
+        {
+            if (logged_in)
+            {
+                char buf[256];
+                if (RA_GetLoggedInUserString(buf, sizeof(buf)))
+                    g_app->window->ra_login_action->setText(QString("&Logout %1").arg(buf));
+                else
+                    g_app->window->ra_login_action->setText("&Logout");
+            }
+            else
+            {
+                g_app->window->ra_login_action->setText("&Login...");
+            }
+        }
+
+        if (g_app->window->ra_view_profile_action)
+            g_app->window->ra_view_profile_action->setEnabled(logged_in);
     }, Qt::QueuedConnection);
+}
+
+// ---------------------------------------------------------------------------
+// Qt Login Result — show success/error feedback (may arrive on HTTP thread)
+// ---------------------------------------------------------------------------
+static void ra_qt_on_login_result(bool success, const char *message, bool user_initiated)
+{
+    std::string msg = message ? message : "";
+    QMetaObject::invokeMethod(QApplication::instance(), [=]() {
+        QWidget *parent = g_app ? g_app->window.get() : nullptr;
+        if (!success)
+            QMessageBox::critical(parent, "RetroAchievements - Login Failed",
+                                  QString::fromStdString(msg));
+        else if (user_initiated)
+            QMessageBox::information(parent, "RetroAchievements",
+                                     QString::fromStdString(msg));
+    }, Qt::QueuedConnection);
+}
+
+// ---------------------------------------------------------------------------
+// Qt Reset Emulator — achievement-integrity hard reset (may arrive on HTTP thread)
+// ---------------------------------------------------------------------------
+static void ra_qt_reset_emulator()
+{
+    // powerCycle() marshals to the emu thread and calls RA_OnReset().
+    if (g_app)
+        g_app->powerCycle();
 }
 
 // ---------------------------------------------------------------------------
@@ -353,6 +483,8 @@ void RA_Qt_RegisterCallbacks(EmuApplication *app)
     cb.confirm_disable_hardcore = ra_qt_confirm_disable_hardcore;
     cb.log_message = ra_qt_log;
     cb.on_credentials_changed = ra_qt_credentials_changed;
+    cb.on_login_result = ra_qt_on_login_result;
+    cb.reset_emulator = ra_qt_reset_emulator;
     RA_RegisterPlatformCallbacks(cb);
 }
 

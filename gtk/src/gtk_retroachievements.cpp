@@ -17,6 +17,8 @@
 #include "rc_api_request.h"
 
 #include "snes9x.h"
+#include "memmap.h"
+#include "cpuexec.h"
 
 #include <glib/gi18n.h>
 #include <curl/curl.h>
@@ -194,40 +196,59 @@ class RAAchievementColumns : public Gtk::TreeModel::ColumnRecord
     Gtk::TreeModelColumn<Glib::ustring> title;
     Gtk::TreeModelColumn<Glib::ustring> points;
     Gtk::TreeModelColumn<Glib::ustring> status;
+    Gtk::TreeModelColumn<Glib::ustring> progress;
+    Gtk::TreeModelColumn<Glib::ustring> type;
     Gtk::TreeModelColumn<Glib::ustring> description;
+    Gtk::TreeModelColumn<int>           points_sort;
 
     RAAchievementColumns()
     {
         add(title);
         add(points);
         add(status);
+        add(progress);
+        add(type);
         add(description);
+        add(points_sort);
     }
 };
+
+// The list dialog is modeless and refreshes on a timer, so its widgets and the
+// column record must outlive the callback that creates it.
+struct RAAchievementsDialog
+{
+    RAAchievementColumns         columns;
+    Gtk::Dialog                 *dialog = nullptr;
+    Gtk::Label                  *summary = nullptr;
+    Glib::RefPtr<Gtk::ListStore> store;
+    sigc::connection             timer;
+};
+static RAAchievementsDialog *s_ach_dialog = nullptr;
+
+static const char *ra_gtk_type_string(uint8_t type)
+{
+    switch (type)
+    {
+    case RC_CLIENT_ACHIEVEMENT_TYPE_MISSABLE:    return _("Missable");
+    case RC_CLIENT_ACHIEVEMENT_TYPE_PROGRESSION: return _("Progression");
+    case RC_CLIENT_ACHIEVEMENT_TYPE_WIN:         return _("Win Condition");
+    default:                                     return "";
+    }
+}
 } // namespace
 
-static void ra_gtk_show_achievements()
+static void ra_gtk_refresh_achievements()
 {
-    if (!top_level || !top_level->window)
+    if (!s_ach_dialog)
         return;
 
     rc_client_t *client = RA_GetClient();
     if (!client)
         return;
 
-    Gtk::Dialog dialog(_("RetroAchievements"), *top_level->window.get(), true);
-    dialog.add_button(_("_Close"), Gtk::RESPONSE_CLOSE);
-    dialog.set_default_size(560, 420);
-
-    const rc_client_game_t *game = rc_client_get_game_info(client);
-    Gtk::Label title_label;
-    Glib::ustring game_title = (game && game->title[0]) ? game->title : _("No game loaded");
-    title_label.set_markup("<b>" + Glib::Markup::escape_text(game_title) + "</b>");
-    title_label.set_halign(Gtk::ALIGN_START);
-    title_label.set_margin_bottom(6);
-
-    RAAchievementColumns columns;
-    auto store = Gtk::ListStore::create(columns);
+    auto &columns = s_ach_dialog->columns;
+    auto store = s_ach_dialog->store;
+    store->clear();
 
     rc_client_achievement_list_t *list = rc_client_create_achievement_list(client,
         RC_CLIENT_ACHIEVEMENT_CATEGORY_CORE_AND_UNOFFICIAL,
@@ -256,30 +277,139 @@ static void ra_gtk_show_achievements()
                 row[columns.title] = ach->title ? ach->title : "";
                 row[columns.points] = std::to_string(ach->points);
                 row[columns.status] = status;
+                row[columns.progress] = ach->measured_progress;
+                row[columns.type] = ra_gtk_type_string(ach->type);
                 row[columns.description] = ach->description ? ach->description : "";
+                row[columns.points_sort] = (int)ach->points;
             }
         }
         rc_client_destroy_achievement_list(list);
     }
 
-    Gtk::TreeView tree(store);
-    tree.set_rules_hint(true);
-    tree.append_column(_("Title"), columns.title);
-    tree.append_column(_("Points"), columns.points);
-    tree.append_column(_("Status"), columns.status);
-    tree.append_column(_("Description"), columns.description);
+    if (!s_ach_dialog->summary)
+        return;
 
-    Gtk::ScrolledWindow scroll;
-    scroll.set_policy(Gtk::POLICY_AUTOMATIC, Gtk::POLICY_AUTOMATIC);
-    scroll.add(tree);
+    const rc_client_game_t *game = rc_client_get_game_info(client);
+    if (game && game->title[0])
+    {
+        rc_client_user_game_summary_t gs = {};
+        rc_client_get_user_game_summary(client, &gs);
 
-    auto *content = dialog.get_content_area();
+        char buf[512];
+        snprintf(buf, sizeof(buf),
+                 _("%s — %u of %u achievements, %u of %u points"),
+                 game->title, gs.num_unlocked_achievements, gs.num_core_achievements,
+                 gs.points_unlocked, gs.points_core);
+        std::string text = buf;
+
+        char user_buf[256];
+        if (RA_GetLoggedInUserString(user_buf, sizeof(user_buf)))
+        {
+            text += "    |    ";
+            text += _("Logged in as ");
+            text += user_buf;
+            if (RA_IsHardcoreModeActive())
+                text += _(" - Hardcore");
+        }
+        else
+        {
+            text += "    |    ";
+            text += _("Not logged in");
+        }
+
+        s_ach_dialog->summary->set_markup("<b>" + Glib::Markup::escape_text(text) + "</b>");
+    }
+    else
+    {
+        s_ach_dialog->summary->set_markup("<b>" + Glib::Markup::escape_text(_("No game loaded")) + "</b>");
+    }
+}
+
+static void ra_gtk_show_achievements()
+{
+    if (!top_level || !top_level->window)
+        return;
+
+    // Modeless: present the existing window rather than opening another.
+    if (s_ach_dialog && s_ach_dialog->dialog)
+    {
+        s_ach_dialog->dialog->present();
+        return;
+    }
+
+    if (!RA_GetClient())
+        return;
+
+    s_ach_dialog = new RAAchievementsDialog();
+
+    auto *dialog = new Gtk::Dialog(_("RetroAchievements"), *top_level->window.get(), false);
+    s_ach_dialog->dialog = dialog;
+    dialog->add_button(_("_Close"), Gtk::RESPONSE_CLOSE);
+    dialog->set_default_size(640, 460);
+
+    auto *summary = Gtk::manage(new Gtk::Label());
+    summary->set_halign(Gtk::ALIGN_START);
+    summary->set_margin_bottom(6);
+    summary->set_line_wrap(true);
+    s_ach_dialog->summary = summary;
+
+    s_ach_dialog->store = Gtk::ListStore::create(s_ach_dialog->columns);
+    auto *tree = Gtk::manage(new Gtk::TreeView(s_ach_dialog->store));
+    tree->set_rules_hint(true);
+
+    auto &columns = s_ach_dialog->columns;
+    tree->append_column(_("Title"), columns.title);
+    tree->append_column(_("Points"), columns.points);
+    tree->append_column(_("Status"), columns.status);
+    tree->append_column(_("Progress"), columns.progress);
+    tree->append_column(_("Type"), columns.type);
+    tree->append_column(_("Description"), columns.description);
+
+    // Make headers clickable to sort; Points sorts numerically, the rest as text.
+    tree->get_column(0)->set_sort_column(columns.title);
+    tree->get_column(1)->set_sort_column(columns.points_sort);
+    tree->get_column(2)->set_sort_column(columns.status);
+    tree->get_column(3)->set_sort_column(columns.progress);
+    tree->get_column(4)->set_sort_column(columns.type);
+    tree->get_column(5)->set_sort_column(columns.description);
+
+    auto *scroll = Gtk::manage(new Gtk::ScrolledWindow());
+    scroll->set_policy(Gtk::POLICY_AUTOMATIC, Gtk::POLICY_AUTOMATIC);
+    scroll->add(*tree);
+
+    auto *content = dialog->get_content_area();
     content->set_border_width(8);
-    content->pack_start(title_label, false, false, 0);
-    content->pack_start(scroll, true, true, 0);
-    dialog.show_all();
+    content->pack_start(*summary, false, false, 0);
+    content->pack_start(*scroll, true, true, 0);
 
-    dialog.run();
+    ra_gtk_refresh_achievements();
+
+    // Live refresh once a second while the game keeps running behind the dialog.
+    s_ach_dialog->timer = Glib::signal_timeout().connect([]() -> bool {
+        ra_gtk_refresh_achievements();
+        return true;
+    }, 1000);
+
+    // Tear down (Close button or window-manager close) without blocking.
+    // Clear the global synchronously so a re-open makes a fresh dialog, and
+    // defer the delete so we don't destroy the widget inside its own signal.
+    dialog->signal_response().connect([](int) {
+        if (!s_ach_dialog)
+            return;
+        s_ach_dialog->timer.disconnect();
+        RAAchievementsDialog *dead = s_ach_dialog;
+        s_ach_dialog = nullptr;
+        dead->dialog->hide();
+        g_idle_add([](gpointer p) -> gboolean {
+            auto *d = static_cast<RAAchievementsDialog *>(p);
+            delete d->dialog;
+            delete d;
+            return G_SOURCE_REMOVE;
+        }, dead);
+    });
+
+    dialog->show_all();
+    dialog->present();
 }
 
 // ---------------------------------------------------------------------------
@@ -343,12 +473,90 @@ static gboolean ra_gtk_apply_credentials(gpointer data)
         {
             auto item = Glib::RefPtr<Gtk::MenuItem>::cast_static(login_obj);
             if (item)
-                item->set_label(u->logged_in ? _("_Logout") : _("_Login..."));
+            {
+                if (u->logged_in)
+                {
+                    // Show "Logout <user> (N points)" like the win32/Qt menus.
+                    char buf[256];
+                    if (RA_GetLoggedInUserString(buf, sizeof(buf)))
+                        item->set_label(Glib::ustring(_("_Logout ")) + buf);
+                    else
+                        item->set_label(_("_Logout"));
+                }
+                else
+                {
+                    item->set_label(_("_Login..."));
+                }
+            }
         }
     }
 
+    // Login state gates the achievement-list / view-profile items.
+    if (top_level)
+        top_level->configure_widgets();
+
     delete u;
     return G_SOURCE_REMOVE;
+}
+
+// ---------------------------------------------------------------------------
+// Login result — success/error feedback. May arrive on a background HTTP
+// thread, so the dialog is marshalled to the GTK main thread.
+// ---------------------------------------------------------------------------
+struct RALoginResult
+{
+    bool        success;
+    std::string message;
+    bool        user_initiated;
+};
+
+static gboolean ra_gtk_apply_login_result(gpointer data)
+{
+    auto *r = static_cast<RALoginResult *>(data);
+
+    if (top_level && top_level->window)
+    {
+        if (!r->success)
+        {
+            Gtk::MessageDialog dialog(*top_level->window.get(), r->message, false,
+                                      Gtk::MESSAGE_ERROR, Gtk::BUTTONS_OK, true);
+            dialog.set_title(_("RetroAchievements — Login Failed"));
+            dialog.run();
+        }
+        else if (r->user_initiated)
+        {
+            Gtk::MessageDialog dialog(*top_level->window.get(), r->message, false,
+                                      Gtk::MESSAGE_INFO, Gtk::BUTTONS_OK, true);
+            dialog.set_title(_("RetroAchievements"));
+            dialog.run();
+        }
+    }
+
+    delete r;
+    return G_SOURCE_REMOVE;
+}
+
+static void ra_gtk_on_login_result(bool success, const char *message, bool user_initiated)
+{
+    g_idle_add(ra_gtk_apply_login_result,
+               new RALoginResult{success, message ? message : "", user_initiated});
+}
+
+// ---------------------------------------------------------------------------
+// Reset emulator — achievement-integrity hard reset. May arrive on a
+// background HTTP thread; the emulation loop runs on the GTK main thread, so
+// marshal the reset there.
+// ---------------------------------------------------------------------------
+static gboolean ra_gtk_apply_reset(gpointer)
+{
+    S9xReset();
+    RA_OnReset();
+    return G_SOURCE_REMOVE;
+}
+
+static void ra_gtk_reset_emulator()
+{
+    g_idle_add(ra_gtk_apply_reset, nullptr);
 }
 
 static void ra_gtk_credentials_changed(const char *username, const char *token)
@@ -381,6 +589,8 @@ void RA_Gtk_RegisterCallbacks()
     cb.confirm_disable_hardcore = ra_gtk_confirm_disable_hardcore;
     cb.log_message = ra_gtk_log;
     cb.on_credentials_changed = ra_gtk_credentials_changed;
+    cb.on_login_result = ra_gtk_on_login_result;
+    cb.reset_emulator = ra_gtk_reset_emulator;
     RA_RegisterPlatformCallbacks(cb);
 }
 
