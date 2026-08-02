@@ -1809,6 +1809,35 @@
                         </child>
                       </object>
                     </child>
+                    <child>
+                      <object class="GtkMenuItem" id="voicekun_item">
+                        <property name="label" translatable="yes">Voicer-_kun</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="use_underline">True</property>
+                        <child type="submenu">
+                          <object class="GtkMenu" id="voicekun_menu">
+                            <property name="can_focus">False</property>
+                            <child>
+                              <object class="GtkMenuItem" id="voicekun_attach_item">
+                                <property name="label" translatable="yes">_Attach Audio CD…</property>
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="use_underline">True</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkMenuItem" id="voicekun_detach_item">
+                                <property name="label" translatable="yes">_Eject Audio CD</property>
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="use_underline">True</property>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
                   </object>
                 </child>
               </object>

@@ -55,6 +55,7 @@ class Snes9xWindow : public GtkBuilderWindow
     std::string open_movie_dialog(bool readonly);
     void movie_seek_dialog();
     void open_multicart_dialog();
+    void open_voicekun_dialog();
     void show_rom_info();
 
     /* GTK-base-related functions */

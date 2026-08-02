@@ -31,6 +31,8 @@
 #include "EmuPoTranslator.hpp"
 #include "EmuSettingsWindow.hpp"
 #include "memmap.h"
+#include "display.h"
+#include "voicekun.h"
 
 #include <QMessageBox>
 #include <QDesktopServices>
@@ -187,6 +189,66 @@ void EmuMainWindow::refreshBiosMenu()
     bios_none_action->setChecked(active == 0);
     bios_sgb1_action->setChecked(active == 1);
     bios_sgb2_action->setChecked(active == 2);
+}
+
+void EmuMainWindow::refreshVoicekunMenu()
+{
+    if (!voicekun_menu_action)
+        return;
+
+    const bool supported = S9xVoiceKunGameSupported();
+    voicekun_menu_action->setVisible(supported);
+    if (!supported)
+        return;
+
+    const bool attached = S9xVoiceKunAttached();
+    voicekun_attach_action->setEnabled(!attached);
+    voicekun_detach_action->setEnabled(attached);
+}
+
+void EmuMainWindow::voicekunAttach()
+{
+    if (S9xVoiceKunAttached())
+        return;
+
+    app->pause();
+
+    QFileDialog dialog(this, tr("Attach Audio CD (.cue or .zip)"));
+    dialog.setFileMode(QFileDialog::ExistingFile);
+    dialog.setNameFilters({ tr("Audio CD Images (*.cue *.zip)"), tr("All Files (*)") });
+
+    if (!dialog.exec() || dialog.selectedFiles().empty())
+    {
+        app->unpause();
+        return;
+    }
+
+    auto filename = dialog.selectedFiles()[0].toStdString();
+
+    if (S9xVoiceKunAttach(filename.c_str()))
+    {
+        auto message = tr("Voicer-kun: %1 verified, %2 tracks (%3)")
+            .arg(S9xVoiceKunDiscLabel())
+            .arg(S9xVoiceKunTrackCount())
+            .arg(S9xVoiceKunGameTitle());
+        S9xSetInfoString(message.toUtf8().constData());
+    }
+    else
+    {
+        QMessageBox::critical(this, tr("Voicer-kun"),
+            tr("This audio CD was not accepted:\n%1").arg(S9xVoiceKunLastError()));
+    }
+
+    app->unpause();
+}
+
+void EmuMainWindow::voicekunDetach()
+{
+    if (S9xVoiceKunAttached())
+    {
+        S9xVoiceKunDetach();
+        S9xSetInfoString("Voicer-kun: audio CD ejected");
+    }
 }
 
 void EmuMainWindow::createWidgets()
@@ -376,6 +438,16 @@ void EmuMainWindow::createWidgets()
     bios_menu_action = emulation_menu->addMenu(bios_menu);
     bios_menu_action->setVisible(false);
     connect(emulation_menu, &QMenu::aboutToShow, this, &EmuMainWindow::refreshBiosMenu);
+
+    // Koei Voicer-kun audio CD: only offered while a supported game is loaded.
+    voicekun_menu = new QMenu(tr("Voicer-&kun"));
+    voicekun_attach_action = voicekun_menu->addAction(tr("&Attach Audio CD..."));
+    connect(voicekun_attach_action, &QAction::triggered, this, &EmuMainWindow::voicekunAttach);
+    voicekun_detach_action = voicekun_menu->addAction(tr("&Eject Audio CD"));
+    connect(voicekun_detach_action, &QAction::triggered, this, &EmuMainWindow::voicekunDetach);
+    voicekun_menu_action = emulation_menu->addMenu(voicekun_menu);
+    voicekun_menu_action->setVisible(false);
+    connect(emulation_menu, &QMenu::aboutToShow, this, &EmuMainWindow::refreshVoicekunMenu);
 
     menuBar()->addMenu(emulation_menu);
 

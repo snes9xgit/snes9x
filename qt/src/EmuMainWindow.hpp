@@ -64,6 +64,15 @@ class EmuMainWindow : public QMainWindow
     QAction *bios_sgb1_action = nullptr;
     QAction *bios_sgb2_action = nullptr;
     void refreshBiosMenu();
+
+    QMenu *voicekun_menu = nullptr;
+    QAction *voicekun_menu_action = nullptr;
+    QAction *voicekun_attach_action = nullptr;
+    QAction *voicekun_detach_action = nullptr;
+    void refreshVoicekunMenu();
+    void voicekunAttach();
+    void voicekunDetach();
+
     QTimer mouse_timer;
     bool cursor_visible = true;
     QAction *shader_settings_item;

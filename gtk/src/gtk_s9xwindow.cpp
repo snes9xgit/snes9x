@@ -42,6 +42,8 @@
 #include "cpuexec.h"
 #include "snapshot.h"
 #include "netplay.h"
+#include "display.h"
+#include "voicekun.h"
 
 static Glib::RefPtr<Gtk::FileFilter> get_save_states_file_filter()
 {
@@ -302,6 +304,19 @@ void Snes9xWindow::connect_signals()
 
     get_object<Gtk::MenuItem>("open_multicart_item")->signal_activate().connect([&] {
         open_multicart_dialog();
+    });
+
+    get_object<Gtk::MenuItem>("voicekun_attach_item")->signal_activate().connect([&] {
+        open_voicekun_dialog();
+    });
+
+    get_object<Gtk::MenuItem>("voicekun_detach_item")->signal_activate().connect([&] {
+        if (S9xVoiceKunAttached())
+        {
+            S9xVoiceKunDetach();
+            S9xSetInfoString(_("Voicer-kun: audio CD ejected"));
+        }
+        configure_widgets();
     });
 
 #ifdef RETROACHIEVEMENTS_SUPPORT
@@ -627,6 +642,58 @@ void Snes9xWindow::focus_notify(bool state)
         unpause_from_focus_change();
         paused_from_focus_loss = false;
     }
+}
+
+void Snes9xWindow::open_voicekun_dialog()
+{
+    if (S9xVoiceKunAttached())
+        return;
+
+    pause_from_focus_change();
+
+    Gtk::FileChooserDialog dialog(*window.get(),
+                                  _("Attach Audio CD (.cue or .zip)"),
+                                  Gtk::FILE_CHOOSER_ACTION_OPEN);
+    dialog.add_button(Gtk::StockID("gtk-cancel"), Gtk::RESPONSE_CANCEL);
+    dialog.add_button(Gtk::StockID("gtk-open"), Gtk::RESPONSE_ACCEPT);
+
+    auto filter = Gtk::FileFilter::create();
+    filter->set_name(_("Audio CD Images"));
+    for (const char *ext : { "*.cue", "*.CUE", "*.zip", "*.ZIP" })
+        filter->add_pattern(ext);
+    dialog.add_filter(filter);
+    dialog.add_filter(get_all_files_filter());
+
+    if (!gui_config->last_directory.empty())
+        dialog.set_current_folder(config->last_directory);
+
+    auto result = dialog.run();
+    dialog.hide();
+
+    if (result == Gtk::RESPONSE_ACCEPT)
+    {
+        auto filename = dialog.get_filename();
+        if (S9xVoiceKunAttach(filename.c_str()))
+        {
+            auto message = fmt::format("Voicer-kun: {} verified, {} tracks ({})",
+                                       S9xVoiceKunDiscLabel(),
+                                       S9xVoiceKunTrackCount(),
+                                       S9xVoiceKunGameTitle());
+            S9xSetInfoString(message.c_str());
+        }
+        else
+        {
+            auto message = fmt::format(fmt::runtime(_("This audio CD was not accepted:\n{}")),
+                                       S9xVoiceKunLastError());
+            Gtk::MessageDialog msg(*window.get(), message, false,
+                                   Gtk::MESSAGE_ERROR, Gtk::BUTTONS_CLOSE, true);
+            msg.set_title(_("Voicer-kun"));
+            msg.run();
+        }
+    }
+
+    unpause_from_focus_change();
+    configure_widgets();
 }
 
 void Snes9xWindow::open_multicart_dialog()
@@ -1057,6 +1124,17 @@ void Snes9xWindow::configure_widgets()
         refreshing_bios_menu = true;
         get_object<Gtk::RadioMenuItem>(names[active])->set_active(true);
         refreshing_bios_menu = false;
+    }
+
+    // Koei Voicer-kun audio CD: only offered while a supported game is loaded,
+    // mirroring win32. Attach/eject toggle on whether a disc is mounted.
+    const bool voicekun_supported = config->rom_loaded && S9xVoiceKunGameSupported();
+    show_widget("voicekun_item", voicekun_supported);
+    if (voicekun_supported)
+    {
+        const bool attached = S9xVoiceKunAttached();
+        enable_widget("voicekun_attach_item", !attached);
+        enable_widget("voicekun_detach_item", attached);
     }
 
     if (config->default_esc_behavior != ESC_TOGGLE_MENUBAR)
