@@ -19,6 +19,7 @@
 #include "memmap.h"
 #include "display.h"
 #include "ppu.h"
+#include "controls.h"
 #include "apu/resampler.h"
 #ifdef UNZIP_SUPPORT
 #  ifdef SYSTEM_ZIP
@@ -185,6 +186,14 @@ static uint32	track_done  = 0;    // frame the current track ran out on
 static long		play_pos  = 0;
 static long		play_end  = 0;
 static size_t	partial_frames = 0;
+
+// The device answers the port-2 controller poll with its id, which the games
+// read to decide it is plugged in - but that poll only runs while port 2 is a
+// joypad. win32 ships with joypad 2 enabled; gtk/qt may default port 2 to none,
+// so attach forces it to a joypad and eject restores whatever was there before.
+static bool				port2_forced   = false;
+static enum controllers	saved_port2_ctl = CTL_NONE;
+static int8				saved_port2_id[4] = { 0, 0, 0, 0 };
 
 // A finished track can be asked for again - scenes are replayable from the
 // game's index - but the prompt that asks for it also repeats every few
@@ -712,6 +721,26 @@ bool S9xVoiceKunAttach(const char *path)
 	Settings.VoiceKun = TRUE;
 	S9xVoiceKunIRSetActive(true);
 
+	// Force port 2 to a joypad so the core reports our device id to the game;
+	// stash the previous controller so eject can put it back.
+	if (!port2_forced)
+	{
+		enum controllers	ctl;
+		int8				id[4];
+		S9xGetController(1, &ctl, &id[0], &id[1], &id[2], &id[3]);
+		if (ctl != CTL_JOYPAD)
+		{
+			saved_port2_ctl   = ctl;
+			saved_port2_id[0] = id[0];
+			saved_port2_id[1] = id[1];
+			saved_port2_id[2] = id[2];
+			saved_port2_id[3] = id[3];
+			port2_forced = true;
+			S9xSetController(1, CTL_JOYPAD, 1, 0, 0, 0);
+			S9xVerifyControllers();
+		}
+	}
+
 	printf("Voicer-kun: attached %s (%s, %d tracks, %s)\n", path,
 		game->discs[img.profile].label, (int)img.tracks.size(), game->title);
 	return true;
@@ -729,6 +758,15 @@ void S9xVoiceKunDetach(void)
 	S9xVoiceKunIRSetActive(false);
 	armed_track = cur_track = cued_track = 0;
 	Settings.VoiceKun = FALSE;
+
+	// Put port 2 back to whatever it was before we forced a joypad on attach.
+	if (port2_forced)
+	{
+		S9xSetController(1, saved_port2_ctl, saved_port2_id[0],
+			saved_port2_id[1], saved_port2_id[2], saved_port2_id[3]);
+		S9xVerifyControllers();
+		port2_forced = false;
+	}
 }
 
 bool S9xVoiceKunAttached(void)
