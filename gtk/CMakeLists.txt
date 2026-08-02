@@ -399,6 +399,7 @@ list(APPEND SOURCES
     ../bml.cpp
     ../cpuops.cpp
     ../cpuexec.cpp
+    ../voicekun.cpp
     ../sa1cpu.cpp
     ../cheats.cpp
     ../cheats2.cpp
