@@ -3054,10 +3054,12 @@ uint8 S9xReadJOYSERn (int n)
 				else
 				{
 					// Voicer-kun sits on port 2 and answers the controller-id
-					// bits with its own signature; the games poll for it.
+					// bits with its own signature; the games poll for it. It is
+					// not a real pad, so report only the signature - never the
+					// player's port-2 buttons, which would leak into the game.
 					uint16	w = joypad[i - JOYPAD0].buttons;
 					if (n == 1 && Settings.VoiceKun)
-						w |= S9xVoiceKunPort2Id();
+						w = S9xVoiceKunPort2Id();
 					return (bits | ((w & (0x8000 >> IncreaseReadIdxPost(read_idx[n][0]))) ? 1 : 0));
 				}
 
@@ -3174,10 +3176,12 @@ void S9xDoAutoJoypad (void)
 				read_idx[n][0] = 16;
 				// Voicer-kun sits on port 2 and answers the auto-joypad read
 				// with its own id in the low nibble; the games poll $421A for
-				// that signature to decide the device is plugged in.
+				// that signature to decide the device is plugged in. It is not a
+				// real pad, so report only the signature - never the player's
+				// port-2 buttons, which would leak into the game's menus.
 				uint16	w = joypad[i - JOYPAD0].buttons;
 				if (n == 1 && Settings.VoiceKun)
-					w |= S9xVoiceKunPort2Id();
+					w = S9xVoiceKunPort2Id();
 				WRITE_WORD(Memory.FillRAM + 0x4218 + n * 2, w);
 				WRITE_WORD(Memory.FillRAM + 0x421c + n * 2, 0);
 				break;
