@@ -95,7 +95,10 @@ void Snes9xController::init()
 
     Memory.Init();
     S9xInitAPU();
-    S9xInitSound(0);
+    // Non-zero so the SPC resampler has headroom for SGB BIOS-mode block
+    // draining (win32 uses 25, libretro 32); 0 fell back to ~11ms and the SPC
+    // layer underran mid-block into crackle.
+    S9xInitSound(32);
     S9xSetSamplesAvailableCallback([](void *data) {
         ((Snes9xController *)data)->SamplesAvailable();
     }, this);
@@ -590,6 +593,14 @@ void Snes9xController::SamplesAvailable()
     static std::vector<int16_t> data;
     if (sound_output_function)
     {
+        // SGB BIOS mode fires this ~per scanline with only a few GB samples;
+        // writing those dribbles starves the driver into static. Like win32,
+        // wait for a full ~8ms output block before draining.
+        const int block_int16 = (Settings.SoundPlaybackRate / 1000) * 8 * 2;
+        if (Settings.SGB_BIOSModeActive && S9xSGBBIOSGBIsReleased() &&
+            S9xGetSampleCount() < block_int16)
+            return;
+
         int samples = S9xGetSampleCount();
         if (data.size() < samples)
             data.resize(samples);

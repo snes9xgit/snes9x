@@ -105,7 +105,10 @@ void S9xPortSoundInit()
 
         Settings.SoundPlaybackRate = playback_rates[gui_config->sound_playback_rate];
 
-        S9xInitSound(0);
+        // Non-zero so the SPC resampler has headroom for SGB BIOS-mode block
+        // draining (win32 uses 25, libretro 32); 0 fell back to ~11ms and the
+        // SPC layer underran mid-block into crackle.
+        S9xInitSound(32);
 
         S9xSetSoundMute(false);
     }
@@ -152,16 +155,30 @@ void S9xSamplesAvailable(void *userdata)
 {
     bool clear_leftover_samples = false;
     int samples = S9xGetSampleCount();
+
+    const bool sgb_bios = Settings.SGB_BIOSModeActive && S9xSGBBIOSGBIsReleased();
+
+    // SGB BIOS mode fires this ~per scanline with only a few GB samples;
+    // writing those dribbles starves the driver into static. Like win32,
+    // wait for a full ~8ms output block before draining.
+    const int block_int16 = (Settings.SoundPlaybackRate / 1000) * 8 * 2;
+    if (sgb_bios && samples < block_int16)
+        return;
+
     int space_free = driver->space_free();
 
     if (space_free < samples)
     {
-        if (!Settings.SoundSync)
+        // Normal path drops stale SPC when unsynced; NOT in SGB BIOS mode where
+        // that S9xClearSamples wipes the SPC-over-GB resampler mid-stream.
+        if (!Settings.SoundSync && !sgb_bios)
             clear_leftover_samples = true;
 
-        if (Settings.SoundSync && !Settings.TurboMode && !Settings.Mute)
+        // Pace on the audio buffer. Forced in BIOS mode (like win32) so the emu
+        // can't outrun the device and flood/drop the GB ring into crackle.
+        if ((Settings.SoundSync || sgb_bios) && !Settings.TurboMode && !Settings.Mute)
         {
-            for (int i = 0; i < 200; i++) // Wait for a max of 5ms
+            for (int i = 0; i < 200; i++) // Wait for a max of 10ms
             {
                 space_free = driver->space_free();
                 if (space_free < samples)
@@ -177,7 +194,8 @@ void S9xSamplesAvailable(void *userdata)
 
     if (samples == 0)
     {
-        S9xClearSamples();
+        if (!sgb_bios)
+            S9xClearSamples();
         return;
     }
 
