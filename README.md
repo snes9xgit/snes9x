@@ -17,9 +17,27 @@ Please check the official [Wiki](https://github.com/snes9xgit/snes9x/wiki) for a
 - Supports GameBoy, GameBoy Color, Super GameBoy (1 and 2)
 - Multi-Language Pack
 
+## SuperSnes9x libretro core
+
+The SuperSnes9x libretro core (`supersnes9x_libretro.so` — SNES / SFC / SGB /
+GB / GBC in one core) is built from this repository. There are no prebuilt
+binaries yet; build the portable Linux core locally with Docker:
+
+```bash
+cd libretro/linux
+./build-portable.sh x86_64        # output: libretro/linux/dist/x86_64/
+```
+
+Then copy `supersnes9x_libretro.so` together with
+`libretro/supersnes9x_libretro.info` into your RetroArch cores directory
+(e.g. `~/.config/retroarch/cores/`). For authentic Super Game Boy mode,
+place the SGB BIOS ROMs (`SGB1.sfc` / `SGB2.sfc`) in RetroArch's system
+directory — without them, GB content runs on the built-in BIOS-less core.
+
 ## Upstream Nightly builds
 
-Download _official_ nightly builds from continuous integration:
+The links below are the _official upstream snes9x_ builds (plain snes9x,
+**not** SuperSnes9x) from the original project's continuous integration:
 
 ### snes9x
 
@@ -40,7 +58,7 @@ Download _official_ nightly builds from continuous integration:
 [snes9x_freebsd-x11-amd64]: https://api.cirrus-ci.com/github/snes9xgit/snes9x.svg?task=snes9x_freebsd-x11-amd64
 [snes9x_macOS-amd64]: https://api.cirrus-ci.com/github/snes9xgit/snes9x.svg?task=snes9x_macOS-amd64
 
-### libretro core
+### libretro core (upstream snes9x, not SuperSnes9x)
 
 | OS                  | status                                                  |
 |---------------------|---------------------------------------------------------|
