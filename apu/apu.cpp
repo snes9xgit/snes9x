@@ -508,9 +508,13 @@ void S9xMixSpcOverGB(int16_t *dest, int sample_count)
     S9xAudioWaveformPushMix(dest, frames);
 }
 
+static int spc_sync_demand = 0;   // int16s pulled since last sync; metered here,
+                                  // consumed by S9xSpcSyncToConsumption below
+
 int S9xPullSpcOutput(int16_t *dst, int count)
 {
     if (!dst || count <= 0) return 0;
+    spc_sync_demand += count;   // meter true demand for S9xSpcSyncToConsumption
     int avail = spc::resampler.avail();
     if (count > avail) count = avail;
     if (count & 1) --count;
@@ -613,6 +617,7 @@ void S9xSpcResetDrc(void)
 // controller that holds the resampler buffer near half-full, converging in a
 // few frames. Call once per drained frame while in BIOS mode after GB release.
 static double spc_sync_integ = 0.0;
+// (spc_sync_demand is defined above S9xPullSpcOutput, which meters it.)
 
 void S9xSpcSyncReset(void)
 {
@@ -620,8 +625,9 @@ void S9xSpcSyncReset(void)
     // SGB-specific rate trim (1.0 == no scaling), so resetting it is correct
     // for non-SGB audio; deliberately NOT touching time_ratio so the normal
     // SNES resampler ratio (which may carry a timing hack) is left intact.
-    spc_sync_integ = 0.0;
-    spc::drc_scale = 1.0;
+    spc_sync_integ  = 0.0;
+    spc_sync_demand = 0;
+    spc::drc_scale  = 1.0;
 }
 
 void S9xSpcSyncToConsumption(void)
@@ -633,9 +639,23 @@ void S9xSpcSyncToConsumption(void)
                               (double)Settings.SoundPlaybackRate;
     spc::resampler.time_ratio(base_ratio);
 
-    const int    filled = spc::resampler.space_filled();
-    const int    target = cap / 2;                        // aim half-full: max headroom both ways
-    const double err    = (double)(filled - target) / (double)cap;   // ~[-0.5, +0.5]
+    const int filled = spc::resampler.space_filled();
+
+    // Aim half-full by default, BUT never target below what one host frame
+    // actually pulls (+25% headroom). libretro's mix drains the resampler
+    // dry each frame and its per-frame demand (~541 frames) EXCEEDS cap/2
+    // (~512 frames with the 32ms buffer): a fixed cap/2 target converges
+    // production below consumption, so every frame ended in an SPC-dry
+    // zero-gap -- an audible frame-rate (~60Hz) crackle -- with the chronic
+    // shortfall reading as pitched-down mush. Demand is metered in
+    // S9xPullSpcOutput; for block-drain hosts (gtk/qt, ~256-frame pulls)
+    // demand stays below cap/2 so this is behavior-identical for them.
+    int target = cap / 2;
+    const int demand_target = spc_sync_demand + spc_sync_demand / 4;
+    spc_sync_demand = 0;
+    if (demand_target > target)     target = demand_target;
+    if (target > 7 * cap / 8)       target = 7 * cap / 8;  // keep overflow headroom
+    const double err = (double)(filled - target) / (double)cap;   // ~[-0.5, +0.5]
 
     // PI on production rate. drc_scale > 1 slows the SPC (fewer samples);
     // buffer too full (err > 0) -> raise drc_scale -> drains. The integrator
