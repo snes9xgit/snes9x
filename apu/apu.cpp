@@ -435,6 +435,25 @@ void S9xAudioWaveformPushMix(const int16_t *src, int frames)
 unsigned int S9xSGBMixVolumeSPC = 50;
 unsigned int S9xSGBMixVolumeGB  = 50;
 
+unsigned int S9xSGBMixGainSPC = 0;
+unsigned int S9xSGBMixGainGB  = 0;
+
+// Q8 linear factors for 0..S9X_GAIN_MAX_DB of pre-amp (256 = unity).
+static const int gain_q8_table[S9X_GAIN_MAX_DB + 1] = {
+    256, 287, 322, 362, 406, 455, 511, 573, 643, 722, 810, 908, 1019
+};
+
+int S9xGainQ8(unsigned int db)
+{
+    if (db > S9X_GAIN_MAX_DB) db = S9X_GAIN_MAX_DB;
+    return gain_q8_table[db];
+}
+
+double S9xGainLinear(unsigned int db)
+{
+    return S9xGainQ8(db) / 256.0;
+}
+
 volatile long S9xSGBMixGBPadSamples    = 0;
 volatile long S9xSGBMixSPCShortSamples = 0;
 
@@ -450,10 +469,16 @@ void S9xMixSpcOverGB(int16_t *dest, int sample_count)
         if (Settings.SuperGameBoy)
         {
             const unsigned int vol_gb_pct = (S9xSGBMixVolumeGB > 100) ? 100 : S9xSGBMixVolumeGB;
-            if (vol_gb_pct != 100)
+            const int gb_q8 = ((int)vol_gb_pct * S9xGainQ8(S9xSGBMixGainGB)) / 100;
+            if (gb_q8 != 256)
             {
                 for (int i = 0; i < sample_count; ++i)
-                    dest[i] = (int16_t)(((int32_t)dest[i] * (int)vol_gb_pct) / 100);
+                {
+                    int32_t gb = ((int32_t)dest[i] * gb_q8) >> 8;
+                    if (gb >  32767) gb =  32767;
+                    if (gb < -32768) gb = -32768;
+                    dest[i] = (int16_t)gb;
+                }
             }
         }
         S9xAudioWaveformPushMix(dest, frames);
@@ -465,8 +490,8 @@ void S9xMixSpcOverGB(int16_t *dest, int sample_count)
 
     const unsigned int vol_gb_pct  = (S9xSGBMixVolumeGB  > 100) ? 100 : S9xSGBMixVolumeGB;
     const unsigned int vol_spc_pct = (S9xSGBMixVolumeSPC > 100) ? 100 : S9xSGBMixVolumeSPC;
-    const int gb_gain_eff  = (GB_GAIN_Q8  * (int)vol_gb_pct)  / 100;
-    const int spc_gain_eff = (SPC_GAIN_Q8 * (int)vol_spc_pct) / 100;
+    const int gb_gain_eff  = (GB_GAIN_Q8  * (int)vol_gb_pct  * S9xGainQ8(S9xSGBMixGainGB))  / (100 * 256);
+    const int spc_gain_eff = (SPC_GAIN_Q8 * (int)vol_spc_pct * S9xGainQ8(S9xSGBMixGainSPC)) / (100 * 256);
 
     // Overlay in <=2048-word chunks so blocks larger than the stack
     // buffer still get full SPC coverage — a single capped pull cut the

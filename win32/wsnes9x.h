@@ -279,6 +279,10 @@ struct sGUI {
 	bool Mute;
 	unsigned int VolumeRegular;
 	unsigned int VolumeTurbo;
+	// master pre-amp in whole dB on top of the volume percentages above
+	unsigned int GainRegular;
+	// true to freeze emulation while the Sound Settings dialog is open
+	bool SoundDlgPauseEmulation;
 	bool AutomaticInputRate;
 	// used for sync sound synchronization
 	CRITICAL_SECTION SoundCritSect;

@@ -363,6 +363,30 @@
         <property name="value"><number>100</number></property>
        </widget>
       </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="label_gain_regular">
+        <property name="text"><string>Gain:</string></property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QSlider" name="slider_gain_regular">
+        <property name="whatsThis">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Master pre-amp applied after the volume percentages. 0 dB is unchanged; boosting can clip loud material.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+        <property name="minimum"><number>0</number></property>
+        <property name="maximum"><number>12</number></property>
+        <property name="value"><number>0</number></property>
+        <property name="orientation"><enum>Qt::Horizontal</enum></property>
+       </widget>
+      </item>
+      <item row="2" column="2">
+       <widget class="QSpinBox" name="spinBox_gain_regular">
+        <property name="suffix"><string> dB</string></property>
+        <property name="minimum"><number>0</number></property>
+        <property name="maximum"><number>12</number></property>
+        <property name="value"><number>0</number></property>
+       </widget>
+      </item>
      </layout>
     </widget>
    </item>
@@ -418,6 +442,54 @@
         <property name="minimum"><number>0</number></property>
         <property name="maximum"><number>100</number></property>
         <property name="value"><number>50</number></property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="label_gain_spc">
+        <property name="text"><string>SPC gain:</string></property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QSlider" name="slider_gain_spc">
+        <property name="whatsThis">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Pre-amp on the SPC side of the SGB mix, applied after its volume percentage. Only active in SGB1/SGB2 BIOS mode.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+        <property name="minimum"><number>0</number></property>
+        <property name="maximum"><number>12</number></property>
+        <property name="value"><number>0</number></property>
+        <property name="orientation"><enum>Qt::Horizontal</enum></property>
+       </widget>
+      </item>
+      <item row="2" column="2">
+       <widget class="QSpinBox" name="spinBox_gain_spc">
+        <property name="suffix"><string> dB</string></property>
+        <property name="minimum"><number>0</number></property>
+        <property name="maximum"><number>12</number></property>
+        <property name="value"><number>0</number></property>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QLabel" name="label_gain_gb">
+        <property name="text"><string>GB gain:</string></property>
+       </widget>
+      </item>
+      <item row="3" column="1">
+       <widget class="QSlider" name="slider_gain_gb">
+        <property name="whatsThis">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Pre-amp on the GB side of the SGB mix, applied after its volume percentage. Only active in SGB1/SGB2 BIOS mode.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+        <property name="minimum"><number>0</number></property>
+        <property name="maximum"><number>12</number></property>
+        <property name="value"><number>0</number></property>
+        <property name="orientation"><enum>Qt::Horizontal</enum></property>
+       </widget>
+      </item>
+      <item row="3" column="2">
+       <widget class="QSpinBox" name="spinBox_gain_gb">
+        <property name="suffix"><string> dB</string></property>
+        <property name="minimum"><number>0</number></property>
+        <property name="maximum"><number>12</number></property>
+        <property name="value"><number>0</number></property>
        </widget>
       </item>
      </layout>

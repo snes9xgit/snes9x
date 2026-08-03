@@ -178,6 +178,14 @@ void Snes9xController::updateSettings(EmuConfig *config)
         };
         S9xSGBMixVolumeSPC = clamp_pct(config->sgb_mix_volume_spc);
         S9xSGBMixVolumeGB  = clamp_pct(config->sgb_mix_volume_gb);
+
+        auto clamp_db = [](int v) -> unsigned int {
+            if (v < 0)                v = 0;
+            if (v > S9X_GAIN_MAX_DB)  v = S9X_GAIN_MAX_DB;
+            return (unsigned int)v;
+        };
+        S9xSGBMixGainSPC = clamp_db(config->sgb_mix_gain_spc);
+        S9xSGBMixGainGB  = clamp_db(config->sgb_mix_gain_gb);
     }
 
     Settings.DynamicRateControl = config->dynamic_rate_control;

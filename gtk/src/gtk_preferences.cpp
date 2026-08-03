@@ -301,6 +301,21 @@ void Snes9xPreferences::connect_signals()
         prev_regular_volume = new_val;
     });
 
+    // Gain (dB) pre-amps apply live as well, but are independent of the
+    // Regular-drags-the-SGB-pair linkage above.
+    get_object<Gtk::HScale>("gain_regular")->signal_value_changed().connect([&] {
+        if (suppress_volume_sync) return;
+        config->gain_regular = (int)get_slider("gain_regular");
+    });
+    get_object<Gtk::HScale>("sgb_mix_gain_spc")->signal_value_changed().connect([&] {
+        if (suppress_volume_sync) return;
+        config->sgb_mix_gain_spc = (int)get_slider("sgb_mix_gain_spc");
+    });
+    get_object<Gtk::HScale>("sgb_mix_gain_gb")->signal_value_changed().connect([&] {
+        if (suppress_volume_sync) return;
+        config->sgb_mix_gain_gb = (int)get_slider("sgb_mix_gain_gb");
+    });
+
     std::array<std::string, 6> browse_buttons = { "sram", "savestate", "cheat", "patch", "export", "bios" };
     for (auto &name : browse_buttons)
     {
@@ -340,6 +355,12 @@ void Snes9xPreferences::update_sgb_volume_enable_state()
     enable_widget("sgb_mix_volume_spc_label", bios_mode);
     enable_widget("sgb_mix_volume_gb",        bios_mode);
     enable_widget("sgb_mix_volume_gb_label",  bios_mode);
+
+    // the gains follow their volume counterparts
+    enable_widget("sgb_mix_gain_spc",         bios_mode);
+    enable_widget("sgb_mix_gain_spc_label",   bios_mode);
+    enable_widget("sgb_mix_gain_gb",          bios_mode);
+    enable_widget("sgb_mix_gain_gb_label",    bios_mode);
 
     if (bios_less_gb)
     {
@@ -612,6 +633,9 @@ void Snes9xPreferences::move_settings_to_dialog()
     set_slider("master_volume_fast_forward", config->master_volume_fast_forward);
     set_slider("sgb_mix_volume_spc",         config->sgb_mix_volume_spc);
     set_slider("sgb_mix_volume_gb",          config->sgb_mix_volume_gb);
+    set_slider("gain_regular",               config->gain_regular);
+    set_slider("sgb_mix_gain_spc",           config->sgb_mix_gain_spc);
+    set_slider("sgb_mix_gain_gb",            config->sgb_mix_gain_gb);
     suppress_volume_sync = false;
     prev_regular_volume = config->master_volume_regular;
     update_sgb_volume_enable_state();
@@ -801,6 +825,10 @@ void Snes9xPreferences::get_settings_from_dialog()
         config->sgb_mix_volume_spc = (int)get_slider("sgb_mix_volume_spc");
         config->sgb_mix_volume_gb  = (int)get_slider("sgb_mix_volume_gb");
     }
+    // The gain sliders are never mirrored, so they can always be read back.
+    config->gain_regular     = (int)get_slider("gain_regular");
+    config->sgb_mix_gain_spc = (int)get_slider("sgb_mix_gain_spc");
+    config->sgb_mix_gain_gb  = (int)get_slider("sgb_mix_gain_gb");
     Settings.DynamicRateControl       = get_check("dynamic_rate_control");
     Settings.DynamicRateLimit         = (uint32) (get_spin("dynamic_rate_limit") * 1000);
     store_ntsc_settings();

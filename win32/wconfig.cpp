@@ -931,6 +931,10 @@ void WinRegisterConfigItems()
 	AddUIntC("VolumeTurbo", GUI.VolumeTurbo, 100, "volume during turbo mode (percentage between 0 and 100)");
 	AddUIntC("VolumeSGBMixSPC", S9xSGBMixVolumeSPC, 50, "SGB BIOS mix: SPC channel volume (percentage between 0 and 100, only active when a .gb/.gbc ROM is loaded in SGB BIOS mode)");
 	AddUIntC("VolumeSGBMixGB", S9xSGBMixVolumeGB, 50, "SGB BIOS mix: GB channel volume (percentage between 0 and 100, only active when a .gb/.gbc ROM is loaded in SGB BIOS mode)");
+	AddUIntC("GainRegular", GUI.GainRegular, 0, "master pre-amp applied after the volume percentages (whole dB between 0 and 12, 0 = unity)");
+	AddUIntC("GainSGBMixSPC", S9xSGBMixGainSPC, 0, "SGB BIOS mix: SPC channel pre-amp (whole dB between 0 and 12, 0 = unity)");
+	AddUIntC("GainSGBMixGB", S9xSGBMixGainGB, 0, "SGB BIOS mix: GB channel pre-amp (whole dB between 0 and 12, 0 = unity)");
+	AddBoolC("PauseEmulation", GUI.SoundDlgPauseEmulation, false, "true to freeze emulation while the Sound Settings dialog is open, false to keep it running so changes can be heard live");
     AddStringC("OutputDevice", GUI.AudioDevice, MAX_AUDIO_NAME_LENGTH, "Default", "Name of the output audio device (substring matching, XAudio2 only atm), set to 'Default' for default audio device");
 #undef CATEGORY
 #define	CATEGORY "Controls"

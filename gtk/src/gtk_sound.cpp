@@ -213,6 +213,14 @@ void S9xSamplesAvailable(void *userdata)
         };
         S9xSGBMixVolumeSPC = clamp_pct(gui_config->sgb_mix_volume_spc);
         S9xSGBMixVolumeGB  = clamp_pct(gui_config->sgb_mix_volume_gb);
+
+        auto clamp_db = [](int v) -> unsigned int {
+            if (v < 0)                v = 0;
+            if (v > S9X_GAIN_MAX_DB)  v = S9X_GAIN_MAX_DB;
+            return (unsigned int)v;
+        };
+        S9xSGBMixGainSPC = clamp_db(gui_config->sgb_mix_gain_spc);
+        S9xSGBMixGainGB  = clamp_db(gui_config->sgb_mix_gain_gb);
     }
 
     // SGB BIOS mode: the host output is paced by the GB sample count, which
@@ -231,16 +239,26 @@ void S9xSamplesAvailable(void *userdata)
 
     // Master volume — Regular during normal play, FastForward in turbo/rewind.
     // Scaling is in-place; no driver here exposes a host-side volume API.
+    // The Regular pre-amp gain rides on top, so the result can exceed unity
+    // and needs to clamp at int16.
     {
         int vol_pct = (Settings.TurboMode || Settings.Rewinding)
             ? gui_config->master_volume_fast_forward
             : gui_config->master_volume_regular;
         if (vol_pct < 0)   vol_pct = 0;
         if (vol_pct > 100) vol_pct = 100;
-        if (vol_pct != 100)
+        int gain_db = gui_config->gain_regular;
+        if (gain_db < 0) gain_db = 0;
+        const int vol_q8 = (vol_pct * S9xGainQ8(gain_db)) / 100;
+        if (vol_q8 != 256)
         {
             for (int i = 0; i < samples; ++i)
-                temp_buffer[i] = (int16_t)(((int32_t)temp_buffer[i] * vol_pct) / 100);
+            {
+                int32_t v = ((int32_t)temp_buffer[i] * vol_q8) >> 8;
+                if (v >  32767) v =  32767;
+                if (v < -32768) v = -32768;
+                temp_buffer[i] = (int16_t)v;
+            }
         }
     }
 

@@ -126,6 +126,12 @@ struct EmuConfig
     int master_volume_fast_forward;
     int sgb_mix_volume_spc;
     int sgb_mix_volume_gb;
+    // Pre-amp gain (0..S9X_GAIN_MAX_DB, whole dB, 0 = unity) applied on top of
+    // the volume percentages. Regular rides the post-mix master; SPC/GB fold
+    // into the SGB-mix channel gains.
+    int gain_regular;
+    int sgb_mix_gain_spc;
+    int sgb_mix_gain_gb;
 
     // Emulation
 

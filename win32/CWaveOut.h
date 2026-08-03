@@ -44,6 +44,9 @@ class CWaveOut : public IS9xSoundOutput
     volatile LONG fade_in_pending;
     UINT32 fade_in_pos;
     volatile LONG fadeout_in_flight;
+    // waveOutSetVolume tops out at unity, so any requested volume above it
+    // (the pre-amp gain) is applied to the samples in SubmitBlock. Q12.
+    volatile LONG preampGainQ12;
     WAVEHDR fadeoutHeader;
     int16 *fadeoutBuffer;
     bool fadeoutPrepared;

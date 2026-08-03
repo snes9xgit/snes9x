@@ -305,7 +305,7 @@ struct SSettings
 	bool8	BlockInvalidVRAMAccessOverride;
 	int32	HDMATimingHack;
 
-	bool8	ForcedPause;
+	uint32	ForcedPause;   // PAUSE_* bitmask, not a bool — bool8 ran out of bits at 8 reasons
 	bool8	Paused;
 	bool8	StopEmulation;
 
@@ -381,7 +381,8 @@ enum
 	PAUSE_INACTIVE_WINDOW		= (1 << 4),
 	PAUSE_WINDOW_ICONISED		= (1 << 5),
 	PAUSE_RESTORE_GUI			= (1 << 6),
-	PAUSE_FREEZE_FILE			= (1 << 7)
+	PAUSE_FREEZE_FILE			= (1 << 7),
+	PAUSE_SOUND_DIALOG			= (1 << 8)
 };
 
 void S9xSetPause(uint32);

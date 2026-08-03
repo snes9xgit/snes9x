@@ -272,6 +272,9 @@ bool EmuConfig::setDefaults(int section)
         master_volume_fast_forward = 100;
         sgb_mix_volume_spc = 50;
         sgb_mix_volume_gb = 50;
+        gain_regular = 0;
+        sgb_mix_gain_spc = 0;
+        sgb_mix_gain_gb = 0;
     }
 
     if (section == -1 || section == 3)
@@ -503,6 +506,9 @@ void EmuConfig::config(const std::string &filename, bool write)
     Int("MasterVolumeFastForward", master_volume_fast_forward);
     Int("VolumeSGBMixSPC", sgb_mix_volume_spc);
     Int("VolumeSGBMixGB", sgb_mix_volume_gb);
+    Int("GainRegular", gain_regular);
+    Int("GainSGBMixSPC", sgb_mix_gain_spc);
+    Int("GainSGBMixGB", sgb_mix_gain_gb);
     EndSection();
 
     BeginSection("Emulation");
