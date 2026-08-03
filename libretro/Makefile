@@ -49,7 +49,10 @@ endif
 # Unix
 ifneq (,$(findstring unix,$(platform)))
    CFLAGS += $(LTO)
-   CXXFLAGS += $(LTO)
+   # -std=c++17 is required (the core uses std::string_view); pin it so the
+   # build does not depend on the compiler's default standard, which lets it
+   # build on older toolchains such as GCC 9 (Ubuntu 20.04).
+   CXXFLAGS += -std=c++17 $(LTO)
    LDFLAGS += $(LTO)
    TARGET := $(TARGET_NAME)_libretro.so
    fpic := -fPIC
@@ -61,6 +64,16 @@ ifneq (,$(findstring unix,$(platform)))
    endif
    ifneq ($(findstring Haiku,$(shell uname -a)),)
       LIBS :=
+   endif
+
+   # Portable variant (platform=unix-portable, or `make portable`):
+   # statically link the C++/GCC runtimes and strip, so the resulting
+   # .so loads on other distros without matching libstdc++/libgcc_s.
+   # NOTE: this does NOT lower the glibc floor -- to run on older
+   # distros, build this target inside an old container (e.g. ubuntu:20.04).
+   ifneq (,$(findstring portable,$(platform)))
+      LDFLAGS += -static-libstdc++ -static-libgcc
+      STRIP_TARGET := 1
    endif
 
    # ARM
@@ -644,6 +657,8 @@ else
 	LD = $(CXX)
 endif
 
+STRIP ?= strip
+
 INCFLAGS += $(INCFLAGS_PLATFORM)
 
 ifeq ($(platform), theos_ios)
@@ -660,6 +675,9 @@ ifeq ($(STATIC_LINKING), 1)
 	$(AR) rcs $@ $(OBJECTS)
 else
 	+$(LD) $(fpic) $(SHARED) $(LINKOUT)$@ $(OBJECTS) $(LDFLAGS) $(LIBS)
+ifeq ($(STRIP_TARGET), 1)
+	$(STRIP) $@
+endif
 endif
 
 %.o: %.cpp 
@@ -670,4 +688,10 @@ endif
 
 clean:
 	rm -f $(OBJECTS) $(TARGET)
+
+# Convenience target: build a portable, redistributable .so.
+# Statically links libstdc++/libgcc and strips the result.
+.PHONY: portable
+portable:
+	$(MAKE) platform=unix-portable
 endif
