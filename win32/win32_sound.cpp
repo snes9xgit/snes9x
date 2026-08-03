@@ -116,6 +116,8 @@ void S9xSoundCallback(void *data)
 
 	// only try to change volume if we actually need to switch it
 	double current_volume = ((Settings.TurboMode || Settings.Rewinding) ? GUI.VolumeTurbo : GUI.VolumeRegular) / 100.;
+	// master pre-amp rides on top, so it can push the level past unity
+	current_volume *= S9xGainLinear(GUI.GainRegular);
 	if (last_volume != current_volume) {
 		S9xSoundOutput->SetVolume(current_volume);
 		last_volume = current_volume;

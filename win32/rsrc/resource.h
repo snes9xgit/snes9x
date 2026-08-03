@@ -851,6 +851,18 @@
 #define IDC_EDIT_VOLUME_GB              3254
 #define IDC_STATIC_GB_LABEL             3255
 #define IDC_STATIC_GB_PCT               3256
+#define IDC_GROUP_GAIN                  3340
+#define IDC_SLIDER_GAIN_REGULAR         3341
+#define IDC_EDIT_GAIN_REGULAR           3342
+#define IDC_STATIC_GAIN_REGULAR_LABEL   3343
+#define IDC_SLIDER_GAIN_SPC             3344
+#define IDC_EDIT_GAIN_SPC               3345
+#define IDC_STATIC_GAIN_SPC_LABEL       3346
+#define IDC_SLIDER_GAIN_GB              3347
+#define IDC_EDIT_GAIN_GB                3348
+#define IDC_STATIC_GAIN_GB_LABEL        3349
+#define IDC_STATIC_REGULAR_LABEL        3350
+#define IDC_PAUSE_EMULATION             3351
 #define IDC_PAD_IMAGE                   3320
 
 #define ID_SOUND_AUDIOWAVEFORM          40198

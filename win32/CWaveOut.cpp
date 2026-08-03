@@ -46,6 +46,7 @@ CWaveOut::CWaveOut(void)
     fade_in_pending = 0;
     fade_in_pos = kFadeFrames;  // "done" — no fade in progress
     fadeout_in_flight = 0;
+    preampGainQ12 = 4096;   // unity
     fadeoutBuffer = NULL;
     fadeoutPrepared = false;
     ZeroMemory(&fadeoutHeader, sizeof(fadeoutHeader));
@@ -138,7 +139,12 @@ bool CWaveOut::SetupSound()
 
 void CWaveOut::SetVolume(double volume)
 {
-    uint32 volumeout = (uint32) (volume * 0xffff);
+    // Split the request: waveOutSetVolume can only attenuate, so the part
+    // above unity becomes a software multiply in SubmitBlock.
+    const double hw = (volume > 1.0) ? 1.0 : volume;
+    InterlockedExchange(&preampGainQ12, (LONG)((volume > 1.0 ? volume : 1.0) * 4096.0 + 0.5));
+
+    uint32 volumeout = (uint32) (hw * 0xffff);
     waveOutSetVolume(hWaveOut, volumeout + (volumeout << 16));
 }
 
@@ -212,6 +218,19 @@ void CWaveOut::SubmitBlock(WAVEHDR &header)
 {
     int16 *samples = (int16*)header.lpData;
     const UINT32 frames = header.dwBufferLength / (2 * sizeof(int16));
+
+    // Pre-amp before the fade ramps so a fade still lands on 0 at its ends.
+    const LONG preamp_q12 = InterlockedCompareExchange(&preampGainQ12, 0, 0);
+    if (preamp_q12 > 4096 && frames > 0)
+    {
+        for (UINT32 i = 0; i < frames * 2; ++i)
+        {
+            int32 v = ((int32)samples[i] * preamp_q12) >> 12;
+            if (v >  32767) v =  32767;
+            if (v < -32768) v = -32768;
+            samples[i] = (int16)v;
+        }
+    }
 
     if (frames > 0)
     {

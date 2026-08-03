@@ -88,6 +88,18 @@ void S9xMixSpcOverGB(int16_t *dest, int sample_count);
 extern unsigned int S9xSGBMixVolumeSPC;
 extern unsigned int S9xSGBMixVolumeGB;
 
+// Pre-amp gain in whole dB, applied on top of the volume percentages
+// above. 0 = unity; the sliders only go up because attenuation is
+// already what the percent volumes do.
+#define S9X_GAIN_MAX_DB 12
+extern unsigned int S9xSGBMixGainSPC;
+extern unsigned int S9xSGBMixGainGB;
+
+// Linear factor for a whole-dB pre-amp gain, Q8 (256 = unity) and as a
+// double. Input is clamped to 0..S9X_GAIN_MAX_DB.
+int    S9xGainQ8(unsigned int db);
+double S9xGainLinear(unsigned int db);
+
 // Splice-health counters for the GB/SPC mix path, surfaced by the
 // waveform viewer. gb_pad: output samples zero-filled because the GB
 // ring came up short mid-block; spc_short: samples the SPC layer missed

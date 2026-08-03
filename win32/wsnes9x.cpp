@@ -554,6 +554,11 @@ void WinSaveConfigFile ();
 void WinSetDefaultValues ();
 void WinLockConfigFile ();
 void WinUnlockConfigFile ();
+
+// Sound Settings runs modeless so emulation can keep going behind it; the
+// dialog's Pause Emulation checkbox drives PAUSE_SOUND_DIALOG instead.
+static HWND s_hSoundOptsDlg    = NULL;
+static bool s_soundOptsUserClose = false;
 void WinCleanupConfigData ();
 
 #include "../ppu.h"
@@ -2707,12 +2712,15 @@ LRESULT CALLBACK WinProc(
             break;
         case ID_SOUND_OPTIONS:
 			{
-				RestoreGUIDisplay ();
-				if(1<=DialogBoxParam(g_hInst,MAKEINTRESOURCE(IDD_SOUND_OPTS),hWnd,DlgSoundConf, (LPARAM)&Settings))
+				if (s_hSoundOptsDlg)
 				{
-					ReInitSound();
+					SetForegroundWindow(s_hSoundOptsDlg);
+					break;
 				}
-				RestoreSNESDisplay ();
+				RestoreGUIDisplay ();
+				s_hSoundOptsDlg = CreateDialogParam(g_hInst,MAKEINTRESOURCE(IDD_SOUND_OPTS),hWnd,DlgSoundConf, (LPARAM)&Settings);
+				if (!s_hSoundOptsDlg)
+					RestoreSNESDisplay ();
 				break;
 			}
 		case ID_SOUND_AUDIOWAVEFORM:
@@ -4285,6 +4293,9 @@ void S9xOnSNESPadRead()
 					return;
 				}
 
+				if (s_hSoundOptsDlg && IsDialogMessage (s_hSoundOptsDlg, &msg))
+					continue;
+
 				if (!TranslateAccelerator (GUI.hWnd, GUI.Accelerators, &msg))
 				{
 					TranslateMessage (&msg);
@@ -4823,6 +4834,9 @@ int WINAPI WinMain(
             if (RA_Win32_HandleDialogMessage(&msg))
                 continue;
 #endif
+
+            if (s_hSoundOptsDlg && IsDialogMessage (s_hSoundOptsDlg, &msg))
+                continue;
 
             if (!TranslateAccelerator (GUI.hWnd, GUI.Accelerators, &msg))
             {
@@ -6250,6 +6264,55 @@ void UpdateAudioDeviceDropdown(HWND hCtl)
     }
 }
 
+// Which sliders apply, and what the master pair is called. The dialog is
+// modeless, so the ROM can change under it — a timer re-runs this and it
+// no-ops until the mode actually differs (redoing it every tick flickers).
+#define SOUNDCONF_MODE_TIMER_ID 1
+
+static bool s_soundConfBios = false;
+static bool s_soundConfGb   = false;
+
+static void SoundConfUpdateModeState(HWND hDlg, bool force)
+{
+    const bool bios_mode = Settings.SGB_BIOSModeActive ? true : false;
+    const bool gb_active = (Settings.SuperGameBoy || Settings.SGB_BIOSModeActive) ? true : false;
+    if (!force && bios_mode == s_soundConfBios && gb_active == s_soundConfGb)
+        return;
+    s_soundConfBios = bios_mode;
+    s_soundConfGb   = gb_active;
+
+    // SPC slider only matters in SGB1/SGB2 BIOS mode (the SPC stream is
+    // discarded in BIOS-less .gb/.gbc). The GB slider applies in both
+    // BIOS and BIOS-less modes: in BIOS mode as the GB side of the
+    // SPC+GB mix, in BIOS-less mode as a pre-master attenuation on the
+    // GB-only buffer so the user can balance GB vs SNES independently
+    // when switching between cartridges.
+    const BOOL bios = bios_mode ? TRUE : FALSE;
+    const BOOL gb   = gb_active ? TRUE : FALSE;
+    EnableWindow(GetDlgItem(hDlg, IDC_SLIDER_VOLUME_SPC), bios);
+    EnableWindow(GetDlgItem(hDlg, IDC_EDIT_VOLUME_SPC),   bios);
+    EnableWindow(GetDlgItem(hDlg, IDC_STATIC_SPC_LABEL),  bios);
+    EnableWindow(GetDlgItem(hDlg, IDC_STATIC_SPC_PCT),    bios);
+    EnableWindow(GetDlgItem(hDlg, IDC_SLIDER_VOLUME_GB),  gb);
+    EnableWindow(GetDlgItem(hDlg, IDC_EDIT_VOLUME_GB),    gb);
+    EnableWindow(GetDlgItem(hDlg, IDC_STATIC_GB_LABEL),   gb);
+    EnableWindow(GetDlgItem(hDlg, IDC_STATIC_GB_PCT),     gb);
+
+    // the gains follow their volume counterparts
+    EnableWindow(GetDlgItem(hDlg, IDC_SLIDER_GAIN_SPC),       bios);
+    EnableWindow(GetDlgItem(hDlg, IDC_EDIT_GAIN_SPC),         bios);
+    EnableWindow(GetDlgItem(hDlg, IDC_STATIC_GAIN_SPC_LABEL), bios);
+    EnableWindow(GetDlgItem(hDlg, IDC_SLIDER_GAIN_GB),        gb);
+    EnableWindow(GetDlgItem(hDlg, IDC_EDIT_GAIN_GB),          gb);
+    EnableWindow(GetDlgItem(hDlg, IDC_STATIC_GAIN_GB_LABEL),  gb);
+
+    // Name the Regular pair after what it actually rides on: the SNES APU
+    // alone, or the post-mix master in any SGB/GB mode.
+    const TCHAR *regularLabel = gb_active ? TEXT("Mix") : TEXT("Master");
+    SetDlgItemText(hDlg, IDC_STATIC_REGULAR_LABEL,      regularLabel);
+    SetDlgItemText(hDlg, IDC_STATIC_GAIN_REGULAR_LABEL, regularLabel);
+}
+
 INT_PTR CALLBACK DlgSoundConf(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	HWND hTrackbar;
@@ -6259,6 +6322,11 @@ INT_PTR CALLBACK DlgSoundConf(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
     static int prevDriver;
     // tracked so the Regular slider can drag SPC/GB by the same delta (clamped 0..100).
     static int prevRegularVolume;
+    // The volume/gain sliders apply as you drag them, so Cancel has to put them back.
+    static struct {
+        unsigned int volRegular, volTurbo, volSPC, volGB;
+        unsigned int gainRegular, gainSPC, gainGB;
+    } prevAudio;
 
 	switch(msg)
 	{
@@ -6269,12 +6337,22 @@ INT_PTR CALLBACK DlgSoundConf(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 
             prevDriver = GUI.SoundDriver;
             prevRegularVolume = (int)GUI.VolumeRegular;
+            prevAudio.volRegular  = GUI.VolumeRegular;
+            prevAudio.volTurbo    = GUI.VolumeTurbo;
+            prevAudio.volSPC      = S9xSGBMixVolumeSPC;
+            prevAudio.volGB       = S9xSGBMixVolumeGB;
+            prevAudio.gainRegular = GUI.GainRegular;
+            prevAudio.gainSPC     = S9xSGBMixGainSPC;
+            prevAudio.gainGB      = S9xSGBMixGainGB;
 
             // FIXME: these strings should come from wlanguage.h
 
             CreateToolTip(IDC_INRATEEDIT, hDlg, TEXT("For each 'Input rate' samples generated by the SNES, 'Playback rate' samples will produced. If you experience crackling you can try to lower this setting."));
             CreateToolTip(IDC_INRATE, hDlg, TEXT("For each 'Input rate' samples generated by the SNES, 'Playback rate' samples will produced. If you experience crackling you can try to lower this setting."));
             CreateToolTip(IDC_DYNRATECONTROL, hDlg, TEXT("Try to dynamically adjust the input rate to never overflow or underflow the sound buffer."));
+            CreateToolTip(IDC_SLIDER_GAIN_REGULAR, hDlg, TEXT("Master pre-amp applied after the Volume percentages. 0 dB is unchanged; boosting can clip loud material."));
+            CreateToolTip(IDC_SLIDER_GAIN_SPC, hDlg, TEXT("Pre-amp on the SPC side of the SGB mix, applied after its Volume percentage."));
+            CreateToolTip(IDC_SLIDER_GAIN_GB, hDlg, TEXT("Pre-amp on the GB side of the SGB mix, applied after its Volume percentage."));
 
             HWND output_dropdown = GetDlgItem(hDlg, IDC_OUTPUT_DEVICE);
             UpdateAudioDeviceDropdown(output_dropdown);
@@ -6335,24 +6413,27 @@ INT_PTR CALLBACK DlgSoundConf(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
             _sntprintf(valTxt, 10, TEXT("%u"), S9xSGBMixVolumeGB);
             Edit_SetText(GetDlgItem(hDlg, IDC_EDIT_VOLUME_GB), valTxt);
 
+            // pre-amp gains, one per volume slider (Fast-Forward excluded)
             {
-                // SPC slider only matters in SGB1/SGB2 BIOS mode (the SPC stream is
-                // discarded in BIOS-less .gb/.gbc). The GB slider applies in both
-                // BIOS and BIOS-less modes: in BIOS mode as the GB side of the
-                // SPC+GB mix, in BIOS-less mode as a pre-master attenuation on the
-                // GB-only buffer so the user can balance GB vs SNES (Regular)
-                // independently when switching between cartridges.
-                BOOL bios_mode = Settings.SGB_BIOSModeActive ? TRUE : FALSE;
-                BOOL gb_active = (Settings.SuperGameBoy || Settings.SGB_BIOSModeActive) ? TRUE : FALSE;
-                EnableWindow(GetDlgItem(hDlg, IDC_SLIDER_VOLUME_SPC), bios_mode);
-                EnableWindow(GetDlgItem(hDlg, IDC_EDIT_VOLUME_SPC),   bios_mode);
-                EnableWindow(GetDlgItem(hDlg, IDC_STATIC_SPC_LABEL),  bios_mode);
-                EnableWindow(GetDlgItem(hDlg, IDC_STATIC_SPC_PCT),    bios_mode);
-                EnableWindow(GetDlgItem(hDlg, IDC_SLIDER_VOLUME_GB),  gb_active);
-                EnableWindow(GetDlgItem(hDlg, IDC_EDIT_VOLUME_GB),    gb_active);
-                EnableWindow(GetDlgItem(hDlg, IDC_STATIC_GB_LABEL),   gb_active);
-                EnableWindow(GetDlgItem(hDlg, IDC_STATIC_GB_PCT),     gb_active);
+                const int gainCtl[3][2] = {
+                    { IDC_SLIDER_GAIN_REGULAR, IDC_EDIT_GAIN_REGULAR },
+                    { IDC_SLIDER_GAIN_SPC,     IDC_EDIT_GAIN_SPC     },
+                    { IDC_SLIDER_GAIN_GB,      IDC_EDIT_GAIN_GB      },
+                };
+                const unsigned int gainVal[3] = { GUI.GainRegular, S9xSGBMixGainSPC, S9xSGBMixGainGB };
+                for (int i = 0; i < 3; ++i)
+                {
+                    int val = (gainVal[i] > S9X_GAIN_MAX_DB) ? S9X_GAIN_MAX_DB : (int)gainVal[i];
+                    SendDlgItemMessage(hDlg, gainCtl[i][0], TBM_SETRANGE, TRUE, MAKELONG(0, S9X_GAIN_MAX_DB));
+                    SendDlgItemMessage(hDlg, gainCtl[i][0], TBM_SETPOS, TRUE, S9X_GAIN_MAX_DB - val);
+                    SendDlgItemMessage(hDlg, gainCtl[i][0], TBM_SETTICFREQ, 1, 0);
+                    _sntprintf(valTxt, 10, TEXT("%d"), val);
+                    Edit_SetText(GetDlgItem(hDlg, gainCtl[i][1]), valTxt);
+                }
             }
+
+            SoundConfUpdateModeState(hDlg, true);
+            SetTimer(hDlg, SOUNDCONF_MODE_TIMER_ID, 250, NULL);
 
 
             SendDlgItemMessage(hDlg, IDC_RATE, CB_INSERTSTRING, 0, (LPARAM)TEXT("8 KHz"));
@@ -6413,6 +6494,14 @@ INT_PTR CALLBACK DlgSoundConf(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
             if (GUI.AutomaticInputRate)
                 SendDlgItemMessage(hDlg, IDC_AUTOMATICINPUTRATE, BM_SETCHECK, BST_CHECKED, 0);
 
+            // Takes effect immediately, not on OK — the dialog is modeless and
+            // the whole point is hearing the game while you adjust it.
+            if (GUI.SoundDlgPauseEmulation)
+            {
+                SendDlgItemMessage(hDlg, IDC_PAUSE_EMULATION, BM_SETCHECK, BST_CHECKED, 0);
+                S9xSetPause(PAUSE_SOUND_DIALOG);
+            }
+
             return true;
         }
 		case WM_PAINT:
@@ -6423,6 +6512,28 @@ INT_PTR CALLBACK DlgSoundConf(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 		    EndPaint (hDlg, &ps);
 		}
 		return true;
+		// Modeless: the frame's X button has to destroy the dialog itself, and
+		// it means the same thing as Cancel.
+		case WM_CLOSE:
+			SendMessage(hDlg, WM_COMMAND, MAKEWPARAM(IDCANCEL, BN_CLICKED), 0);
+			return true;
+		case WM_TIMER:
+			if (wParam == SOUNDCONF_MODE_TIMER_ID)
+				SoundConfUpdateModeState(hDlg, false);
+			return true;
+		case WM_DESTROY:
+			KillTimer(hDlg, SOUNDCONF_MODE_TIMER_ID);
+			S9xClearPause(PAUSE_SOUND_DIALOG);
+			s_hSoundOptsDlg = NULL;
+			// Only on a user-driven close — at app teardown the parent takes
+			// this dialog down with it and the sound device is already going away.
+			if (s_soundOptsUserClose)
+			{
+				s_soundOptsUserClose = false;
+				RestoreSNESDisplay();
+				ReInitSound();
+			}
+			return true;
 		case WM_HSCROLL:
 		case WM_VSCROLL:
 		{
@@ -6432,6 +6543,9 @@ INT_PTR CALLBACK DlgSoundConf(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 				WORD scrollPos = SendMessage(trackHwnd, TBM_GETPOS, 0, 0);
 				int trackValue = 100 - scrollPos;
 				int editId = 0;
+				// Volume and gain apply as you drag so the change is audible
+				// against the running game; Cancel restores prevAudio.
+				unsigned int *applyTo = NULL;
 				if (trackHwnd == GetDlgItem(hDlg, IDC_INRATE))
 				{
 					trackValue = 31100 + 50 * scrollPos;
@@ -6440,6 +6554,7 @@ INT_PTR CALLBACK DlgSoundConf(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 				else if (trackHwnd == GetDlgItem(hDlg, IDC_SLIDER_VOLUME_REGULAR))
 				{
 					editId = IDC_EDIT_VOLUME_REGULAR;
+					applyTo = &GUI.VolumeRegular;
 
 					// Master behavior: in BIOS mode the Regular slider drags SPC +
 					// GB together (those gains live inside the SPC+GB mix and the
@@ -6453,6 +6568,7 @@ INT_PTR CALLBACK DlgSoundConf(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 					{
 						const int linked[2] = { IDC_SLIDER_VOLUME_SPC, IDC_SLIDER_VOLUME_GB };
 						const int linkedEdit[2] = { IDC_EDIT_VOLUME_SPC, IDC_EDIT_VOLUME_GB };
+						unsigned int *linkedVal[2] = { &S9xSGBMixVolumeSPC, &S9xSGBMixVolumeGB };
 						for (int i = 0; i < 2; ++i)
 						{
 							HWND sH = GetDlgItem(hDlg, linked[i]);
@@ -6464,6 +6580,7 @@ INT_PTR CALLBACK DlgSoundConf(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 							TCHAR tx[10];
 							_sntprintf(tx, 10, TEXT("%d"), newVal);
 							Edit_SetText(GetDlgItem(hDlg, linkedEdit[i]), tx);
+							*linkedVal[i] = (unsigned int)newVal;
 						}
 					}
 					prevRegularVolume = trackValue;
@@ -6471,15 +6588,38 @@ INT_PTR CALLBACK DlgSoundConf(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 				else if (trackHwnd == GetDlgItem(hDlg, IDC_SLIDER_VOLUME_TURBO))
 				{
 					editId = IDC_EDIT_VOLUME_TURBO;
+					applyTo = &GUI.VolumeTurbo;
 				}
 				else if (trackHwnd == GetDlgItem(hDlg, IDC_SLIDER_VOLUME_SPC))
 				{
 					editId = IDC_EDIT_VOLUME_SPC;
+					applyTo = &S9xSGBMixVolumeSPC;
 				}
 				else if (trackHwnd == GetDlgItem(hDlg, IDC_SLIDER_VOLUME_GB))
 				{
 					editId = IDC_EDIT_VOLUME_GB;
+					applyTo = &S9xSGBMixVolumeGB;
 				}
+				else if (trackHwnd == GetDlgItem(hDlg, IDC_SLIDER_GAIN_REGULAR))
+				{
+					trackValue = S9X_GAIN_MAX_DB - scrollPos;
+					editId = IDC_EDIT_GAIN_REGULAR;
+					applyTo = &GUI.GainRegular;
+				}
+				else if (trackHwnd == GetDlgItem(hDlg, IDC_SLIDER_GAIN_SPC))
+				{
+					trackValue = S9X_GAIN_MAX_DB - scrollPos;
+					editId = IDC_EDIT_GAIN_SPC;
+					applyTo = &S9xSGBMixGainSPC;
+				}
+				else if (trackHwnd == GetDlgItem(hDlg, IDC_SLIDER_GAIN_GB))
+				{
+					trackValue = S9X_GAIN_MAX_DB - scrollPos;
+					editId = IDC_EDIT_GAIN_GB;
+					applyTo = &S9xSGBMixGainGB;
+				}
+				if (applyTo)
+					*applyTo = (unsigned int)trackValue;
 				_sntprintf(valTxt, 10, TEXT("%d"), trackValue);
 				Edit_SetText(GetDlgItem(hDlg, editId), valTxt);
 				return true;
@@ -6548,21 +6688,61 @@ INT_PTR CALLBACK DlgSoundConf(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 						S9xSGBMixVolumeGB = (sliderVal >= 0 && sliderVal <= 100) ? (unsigned int)sliderVal : 100u;
 					}
 
+					// pre-amp gains, same mode gating as the volumes above
+					Edit_GetText(GetDlgItem(hDlg, IDC_EDIT_GAIN_REGULAR), valTxt, 10);
+					sliderVal = _tstoi(valTxt);
+					GUI.GainRegular = (sliderVal >= 0 && sliderVal <= S9X_GAIN_MAX_DB) ? (unsigned int)sliderVal : 0u;
+					if (Settings.SGB_BIOSModeActive)
+					{
+						Edit_GetText(GetDlgItem(hDlg, IDC_EDIT_GAIN_SPC), valTxt, 10);
+						sliderVal = _tstoi(valTxt);
+						S9xSGBMixGainSPC = (sliderVal >= 0 && sliderVal <= S9X_GAIN_MAX_DB) ? (unsigned int)sliderVal : 0u;
+					}
+					if (Settings.SuperGameBoy || Settings.SGB_BIOSModeActive)
+					{
+						Edit_GetText(GetDlgItem(hDlg, IDC_EDIT_GAIN_GB), valTxt, 10);
+						sliderVal = _tstoi(valTxt);
+						S9xSGBMixGainGB = (sliderVal >= 0 && sliderVal <= S9X_GAIN_MAX_DB) ? (unsigned int)sliderVal : 0u;
+					}
+
                     // output device
                     Edit_GetText(GetDlgItem(hDlg, IDC_OUTPUT_DEVICE), GUI.AudioDevice, MAX_AUDIO_NAME_LENGTH);
 
 					WinSaveConfigFile();
 
-					// already done in WinProc on return
-					// ReInitSound();
+					// ReInitSound runs from WM_DESTROY below
 
-                    EndDialog(hDlg, 1);
-                    return true;
+					s_soundOptsUserClose = true;
+					DestroyWindow(hDlg);
+					return true;
 				}
 
 				case IDCANCEL:
                     GUI.SoundDriver = prevDriver;
-					EndDialog(hDlg, 1);
+					// Pause Emulation is deliberately not reverted — it is a live
+					// toggle that already persisted itself when clicked.
+					// undo everything the sliders applied live
+					GUI.VolumeRegular  = prevAudio.volRegular;
+					GUI.VolumeTurbo    = prevAudio.volTurbo;
+					S9xSGBMixVolumeSPC = prevAudio.volSPC;
+					S9xSGBMixVolumeGB  = prevAudio.volGB;
+					GUI.GainRegular    = prevAudio.gainRegular;
+					S9xSGBMixGainSPC   = prevAudio.gainSPC;
+					S9xSGBMixGainGB    = prevAudio.gainGB;
+					s_soundOptsUserClose = true;
+					DestroyWindow(hDlg);
+					return true;
+
+				case IDC_PAUSE_EMULATION:
+					// Sticky, unlike the rest of the dialog: it applies the moment
+					// you click it, so Cancel must not take it back. Persist here
+					// rather than on OK so closing with X or Esc still keeps it.
+					GUI.SoundDlgPauseEmulation = IsDlgButtonChecked(hDlg, IDC_PAUSE_EMULATION) != 0;
+					if (GUI.SoundDlgPauseEmulation)
+						S9xSetPause(PAUSE_SOUND_DIALOG);
+					else
+						S9xClearPause(PAUSE_SOUND_DIALOG);
+					WinSaveConfigFile();
 					return true;
 
 				case IDC_AUTOMATICINPUTRATE:
