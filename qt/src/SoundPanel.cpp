@@ -102,6 +102,9 @@ SoundPanel::SoundPanel(EmuApplication *app_)
     pairSync(slider_volume_fast_forward, spinBox_volume_fast_forward);
     pairSync(slider_volume_spc,          spinBox_volume_spc);
     pairSync(slider_volume_gb,           spinBox_volume_gb);
+    pairSync(slider_gain_regular,        spinBox_gain_regular);
+    pairSync(slider_gain_spc,            spinBox_gain_spc);
+    pairSync(slider_gain_gb,             spinBox_gain_gb);
 
     auto dragLinked = [&](int new_regular) {
         int delta = new_regular - prev_regular_volume;
@@ -150,6 +153,24 @@ SoundPanel::SoundPanel(EmuApplication *app_)
             app->config->sgb_mix_volume_gb = value;
         app->updateSettings();
     });
+
+    // Gain (dB) pre-amps apply live as well, but are independent of the
+    // Regular-drags-the-SGB-pair linkage above. The Regular gain is read
+    // straight from the config in the sample callback; the SGB pair needs
+    // updateSettings() to reach the apu globals.
+    connect(slider_gain_regular, &QSlider::valueChanged, [&](int value) {
+        app->config->gain_regular = value;
+    });
+
+    connect(slider_gain_spc, &QSlider::valueChanged, [&](int value) {
+        app->config->sgb_mix_gain_spc = value;
+        app->updateSettings();
+    });
+
+    connect(slider_gain_gb, &QSlider::valueChanged, [&](int value) {
+        app->config->sgb_mix_gain_gb = value;
+        app->updateSettings();
+    });
 }
 
 void SoundPanel::updateInputRate()
@@ -186,6 +207,15 @@ void SoundPanel::updateSGBVolumeEnableState()
     slider_volume_gb->setEnabled(bios_mode);
     spinBox_volume_gb->setEnabled(bios_mode);
     label_volume_gb->setEnabled(bios_mode);
+
+    // the gains follow their volume counterparts
+    slider_gain_spc->setEnabled(bios_mode);
+    spinBox_gain_spc->setEnabled(bios_mode);
+    label_gain_spc->setEnabled(bios_mode);
+
+    slider_gain_gb->setEnabled(bios_mode);
+    spinBox_gain_gb->setEnabled(bios_mode);
+    label_gain_gb->setEnabled(bios_mode);
 
     if (bios_less_gb)
     {
@@ -255,6 +285,12 @@ void SoundPanel::showEvent(QShowEvent *event)
     spinBox_volume_spc->setValue(config->sgb_mix_volume_spc);
     slider_volume_gb->setValue(config->sgb_mix_volume_gb);
     spinBox_volume_gb->setValue(config->sgb_mix_volume_gb);
+    slider_gain_regular->setValue(config->gain_regular);
+    spinBox_gain_regular->setValue(config->gain_regular);
+    slider_gain_spc->setValue(config->sgb_mix_gain_spc);
+    spinBox_gain_spc->setValue(config->sgb_mix_gain_spc);
+    slider_gain_gb->setValue(config->sgb_mix_gain_gb);
+    spinBox_gain_gb->setValue(config->sgb_mix_gain_gb);
     suppress_volume_sync = false;
     prev_regular_volume = config->master_volume_regular;
 

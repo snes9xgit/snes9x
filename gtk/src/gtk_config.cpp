@@ -113,6 +113,9 @@ int Snes9xConfig::load_defaults()
     master_volume_fast_forward = 100;
     sgb_mix_volume_spc = 50;
     sgb_mix_volume_gb = 50;
+    gain_regular = 0;
+    sgb_mix_gain_spc = 0;
+    sgb_mix_gain_gb = 0;
     last_directory.clear();
     last_shader_directory.clear();
     window_width = -1;
@@ -297,6 +300,9 @@ int Snes9xConfig::save_config_file()
     outint("MasterVolumeFastForward", master_volume_fast_forward, "Master output volume during turbo/rewind (0..100, percent)");
     outint("VolumeSGBMixSPC", sgb_mix_volume_spc, "SGB BIOS mix: SPC channel volume (0..100, percent; only active in SGB BIOS mode)");
     outint("VolumeSGBMixGB", sgb_mix_volume_gb, "SGB BIOS mix: GB channel volume (0..100, percent; only active in SGB BIOS mode)");
+    outint("GainRegular", gain_regular, "Master pre-amp applied after the volume percentages (whole dB between 0 and 12, 0 = unity)");
+    outint("GainSGBMixSPC", sgb_mix_gain_spc, "SGB BIOS mix: SPC channel pre-amp (whole dB between 0 and 12, 0 = unity)");
+    outint("GainSGBMixGB", sgb_mix_gain_gb, "SGB BIOS mix: GB channel pre-amp (whole dB between 0 and 12, 0 = unity)");
 
     section = "Files";
     outstring("LastDirectory", last_directory);
@@ -541,6 +547,9 @@ int Snes9xConfig::load_config_file()
     inint("MasterVolumeFastForward", master_volume_fast_forward);
     inint("VolumeSGBMixSPC", sgb_mix_volume_spc);
     inint("VolumeSGBMixGB", sgb_mix_volume_gb);
+    inint("GainRegular", gain_regular);
+    inint("GainSGBMixSPC", sgb_mix_gain_spc);
+    inint("GainSGBMixGB", sgb_mix_gain_gb);
 
     section = "Files";
     instr("LastDirectory", last_directory);

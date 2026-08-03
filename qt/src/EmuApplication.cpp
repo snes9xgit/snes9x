@@ -4,6 +4,7 @@
 #include "Snes9xController.hpp"
 #include "common/audio/s9x_sound_driver_sdl3.hpp"
 #include "common/audio/s9x_sound_driver_cubeb.hpp"
+#include "apu/apu.h"
 #ifdef USE_PULSEAUDIO
 #include "common/audio/s9x_sound_driver_pulse.hpp"
 #endif
@@ -140,17 +141,26 @@ void EmuApplication::writeSamples(int16_t *data, int samples)
 
     // Master volume (post-mix) — Regular for normal play, FastForward when
     // turbo/rewind is active. No sound driver here exposes a host volume API,
-    // so scale samples in place.
+    // so scale samples in place. The Regular pre-amp gain rides on top, so
+    // the result can exceed unity and needs to clamp at int16.
     {
         int vol_pct = core->isAbnormalSpeed()
             ? config->master_volume_fast_forward
             : config->master_volume_regular;
         if (vol_pct < 0)   vol_pct = 0;
         if (vol_pct > 100) vol_pct = 100;
-        if (vol_pct != 100)
+        int gain_db = config->gain_regular;
+        if (gain_db < 0) gain_db = 0;
+        const int vol_q8 = (vol_pct * S9xGainQ8(gain_db)) / 100;
+        if (vol_q8 != 256)
         {
             for (int i = 0; i < samples; ++i)
-                data[i] = (int16_t)(((int32_t)data[i] * vol_pct) / 100);
+            {
+                int32_t v = ((int32_t)data[i] * vol_q8) >> 8;
+                if (v >  32767) v =  32767;
+                if (v < -32768) v = -32768;
+                data[i] = (int16_t)v;
+            }
         }
     }
 
