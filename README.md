@@ -6,15 +6,24 @@ This is the un-official source code fork for the Snes9x project.
 Please check the official [Wiki](https://github.com/snes9xgit/snes9x/wiki) for additional information.
 
 ## SuperSnes9x Features:
+- Super FX 3 (FX3) support for the 2026 LRG releases, with cycle-accurate GSU timing
+- LRG SNES rumble dongle support (Ultimate Doom FX3, RT.SFC)
+- Supports GameBoy, GameBoy Color, Super GameBoy (1 and 2)
+- libretro core (SNES / SFC / SGB / GB / GBC in a single core)
+- Voicer-kun peripheral emulation (plays its audio CDs from cue/bin images)
+- Super Famicom Box (hotel SNES) emulation, with English OSD translation
+- Event carts: PowerFest '94, Nintendo Campus Challenge '92
+- XBAND modem BIOS support
 - Kaillera Server/Client
-- RetroAchievements (with Hardcode)
+- RetroAchievements (with Hardcore)
+- CPU debugger (Mesen-style disassembly, watch/call-stack/mapper panels, GB I/O)
 - PPU Sprite/Tile/Tiles viewers (SNES, GB)
+- Audio waveform viewer (Logic-style per-channel tracks, solo/mute, level meters)
+- Enhanced Cheat Search / Cheat Editor (SNES, GB — incl. GB cheats in SGB BIOS mode)
 - Multi-Bind-Controller support
-- SDL Support
 - Run-Ahead (Input lag reduction)
 - Color Correction Support / Native CRT Colors
-- Enhanced Cheat Search / Cheat Editor (SNES, GB)
-- Supports GameBoy, GameBoy Color, Super GameBoy (1 and 2)
+- SDL Support
 - Multi-Language Pack
 
 ## SuperSnes9x libretro core
