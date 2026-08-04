@@ -1676,7 +1676,9 @@ int CMemory::LoadGBFromBytes (const uint8 *rom, uint32 size, const char *filenam
     // BIOS-less fallback — the legacy path that runs our GB core directly in
     // S9xMainLoop, gated on Settings.SuperGameBoy.
     S9xDeleteCheats();
-    if (Settings.SuperGameBoy) S9xSGBDeinit();
+    // Tear down for BIOS mode too (mirrors the BIOS path): a live BIOS ->
+    // BIOS-less switch otherwise keeps the staged GB boot ROM.
+    if (Settings.SuperGameBoy || Settings.SGB_BIOSModeActive) S9xSGBDeinit();
     if (Settings.SGB_BIOSModeActive) Settings.SGB_BIOSModeActive = FALSE;
     Settings.SuperGameBoy      = TRUE;
     Settings.GameBoyRunMode    = gbCgb ? 0 : 1;   // CGB carts run BIOS-less in CGB mode
@@ -1740,7 +1742,9 @@ bool8 CMemory::LoadROM (const char *filename)
         // BIOS-less fallback — the legacy path that runs our GB core directly
         // in S9xMainLoop, gated on Settings.SuperGameBoy.
         S9xDeleteCheats();
-        if (Settings.SuperGameBoy) S9xSGBDeinit();
+        // Tear down for BIOS mode too (see the LoadGBFromBytes twin): a live
+        // BIOS -> BIOS-less switch otherwise keeps the staged GB boot ROM.
+        if (Settings.SuperGameBoy || Settings.SGB_BIOSModeActive) S9xSGBDeinit();
         if (Settings.SGB_BIOSModeActive) Settings.SGB_BIOSModeActive = FALSE;
         Settings.SuperGameBoy      = TRUE;
         Settings.GameBoyRunMode    = gbCgb ? 0 : 1;   // CGB carts run BIOS-less in CGB mode
