@@ -1488,7 +1488,6 @@ BEGIN
     BEGIN
         POPUP "&Playback Rate",                 0,MFT_STRING,MFS_ENABLED
         BEGIN
-            MENUITEM "&Mute Sound",                 ID_SOUND_NOSOUND,MFT_STRING,MFS_ENABLED
             MENUITEM "8KHz",                        ID_SOUND_8000HZ,MFT_STRING,MFS_ENABLED
             MENUITEM "11KHz",                       ID_SOUND_11025HZ,MFT_STRING,MFS_ENABLED
             MENUITEM "16KHz",                       ID_SOUND_16000HZ,MFT_STRING,MFS_ENABLED

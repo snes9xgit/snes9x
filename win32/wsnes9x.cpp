@@ -559,6 +559,7 @@ void WinUnlockConfigFile ();
 // dialog's Pause Emulation checkbox drives PAUSE_SOUND_DIALOG instead.
 static HWND s_hSoundOptsDlg    = NULL;
 static bool s_soundOptsUserClose = false;
+static void S9xSetMuted (bool mute);
 void WinCleanupConfigData ();
 
 #include "../ppu.h"
@@ -1507,7 +1508,7 @@ int HandleKeyMessage(WPARAM wParam, LPARAM lParam)
 
 		if(HKmatch(Mute))
 		{
-			GUI.Mute = !GUI.Mute;
+			S9xSetMuted(!GUI.Mute);
 			hitHotKey = true;
 		}
 
@@ -2616,7 +2617,7 @@ LRESULT CALLBACK WinProc(
 				if (SoundRates[i].ident == (int) wParam)
 				{
                     Settings.SoundPlaybackRate = SoundRates [i].rate;
-					GUI.Mute = false;
+					S9xSetMuted(false);
 					ReInitSound();
                     break;
 				}
@@ -2686,25 +2687,9 @@ LRESULT CALLBACK WinProc(
         case ID_CHANNELS_CHANNEL8: S9xToggleSoundChannel(7); break;
         case ID_CHANNELS_ENABLEALL: S9xToggleSoundChannel(8); break;
 
-		case ID_SOUND_NOSOUND:
-			S9xSetSoundMute(!GUI.Mute);
-			GUI.Mute = !GUI.Mute;
-            break;
-
 		case ID_SOUND_MUTE:
-		{
-			static unsigned int savedVolume = 100;
-			if(GUI.VolumeRegular > 0)
-			{
-				savedVolume = GUI.VolumeRegular;
-				GUI.VolumeRegular = 0;
-			}
-			else
-			{
-				GUI.VolumeRegular = savedVolume;
-			}
+			S9xSetMuted(!GUI.Mute);
 			break;
-		}
 
         case ID_SOUND_SYNC:
             Settings.SoundSync = !Settings.SoundSync;
@@ -5633,11 +5618,12 @@ static void CheckMenuStates ()
         mii.fState |= MFS_DISABLED;
     SetMenuItemInfo (GUI.hMenu, ID_SOUND_OPTIONS, FALSE, &mii);
 
-    SetMenuItemInfo (GUI.hMenu, ID_SOUND_NOSOUND, FALSE, &mii);
     for (i = 0; i < COUNT(SoundRates); i++)
         SetMenuItemInfo (GUI.hMenu, SoundRates[i].ident, FALSE, &mii);
 
-    if (Settings.SoundPlaybackRate == 0 || GUI.Mute)
+    // Mute is not a reason to grey these — Sync Sound still decides whether
+    // pacing returns to the audio path on unmute, and buffer length re-inits fine.
+    if (Settings.SoundPlaybackRate == 0)
         mii.fState |= MFS_DISABLED;
 
     SetMenuItemInfo (GUI.hMenu, ID_SOUND_SYNC, FALSE, &mii);
@@ -5661,20 +5647,17 @@ static void CheckMenuStates ()
 	if (GUI.AVIOut)
         mii.fState |= MFS_DISABLED;
 
-    if (Settings.SoundPlaybackRate == 0 || GUI.Mute )
-        SetMenuItemInfo (GUI.hMenu, ID_SOUND_NOSOUND, FALSE, &mii);
-    else
+    // The submenu lists real rates only, so rate 0 ("No sound", reachable from
+    // the Settings dialog) matches nothing and leaves the group unchecked.
+    for (i = 0; i < COUNT(SoundRates); i++)
     {
-        for (i = 0; i < COUNT(SoundRates); i++)
+        if (SoundRates [i].rate == Settings.SoundPlaybackRate)
         {
-            if (SoundRates [i].rate == Settings.SoundPlaybackRate)
-            {
-                SetMenuItemInfo (GUI.hMenu, SoundRates[i].ident, FALSE, &mii);
-                break;
-            }
+            SetMenuItemInfo (GUI.hMenu, SoundRates[i].ident, FALSE, &mii);
+            break;
         }
     }
-    if (Settings.SoundPlaybackRate == 0 || GUI.Mute)
+    if (Settings.SoundPlaybackRate == 0)
         mii.fState |= MFS_DISABLED;
 
 	int id;
@@ -5699,7 +5682,7 @@ static void CheckMenuStates ()
     if (Settings.SoundSync)
         SetMenuItemInfo (GUI.hMenu, ID_SOUND_SYNC, FALSE, &mii);
 
-    mii.fState = (GUI.VolumeRegular == 0) ? MFS_CHECKED : MFS_UNCHECKED;
+    mii.fState = GUI.Mute ? MFS_CHECKED : MFS_UNCHECKED;
     SetMenuItemInfo (GUI.hMenu, ID_SOUND_MUTE, FALSE, &mii);
 
 #ifdef DEBUGGER
@@ -6313,6 +6296,18 @@ static void SoundConfUpdateModeState(HWND hDlg, bool force)
     SetDlgItemText(hDlg, IDC_STATIC_GAIN_REGULAR_LABEL, regularLabel);
 }
 
+// One entry point for the real mute — Sound|Mute, the Mute hotkey and the
+// waveform viewer's master button. Sound Settings is modeless, so its checkbox
+// has to track changes made behind it or OK would push a stale value back.
+static void S9xSetMuted(bool mute)
+{
+	GUI.Mute = mute;
+	S9xSetSoundMute(GUI.Mute);
+	if (s_hSoundOptsDlg)
+		SendDlgItemMessage(s_hSoundOptsDlg, IDC_MUTE, BM_SETCHECK,
+		                   mute ? (WPARAM)BST_CHECKED : (WPARAM)BST_UNCHECKED, 0);
+}
+
 INT_PTR CALLBACK DlgSoundConf(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	HWND hTrackbar;
@@ -6322,10 +6317,12 @@ INT_PTR CALLBACK DlgSoundConf(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
     static int prevDriver;
     // tracked so the Regular slider can drag SPC/GB by the same delta (clamped 0..100).
     static int prevRegularVolume;
-    // The volume/gain sliders apply as you drag them, so Cancel has to put them back.
+    // The volume/gain sliders and Mute apply as you touch them, so Cancel has to
+    // put them back.
     static struct {
         unsigned int volRegular, volTurbo, volSPC, volGB;
         unsigned int gainRegular, gainSPC, gainGB;
+        bool mute;
     } prevAudio;
 
 	switch(msg)
@@ -6344,6 +6341,7 @@ INT_PTR CALLBACK DlgSoundConf(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
             prevAudio.gainRegular = GUI.GainRegular;
             prevAudio.gainSPC     = S9xSGBMixGainSPC;
             prevAudio.gainGB      = S9xSGBMixGainGB;
+            prevAudio.mute        = GUI.Mute;
 
             // FIXME: these strings should come from wlanguage.h
 
@@ -6729,8 +6727,15 @@ INT_PTR CALLBACK DlgSoundConf(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 					GUI.GainRegular    = prevAudio.gainRegular;
 					S9xSGBMixGainSPC   = prevAudio.gainSPC;
 					S9xSGBMixGainGB    = prevAudio.gainGB;
+					S9xSetMuted(prevAudio.mute);
 					s_soundOptsUserClose = true;
 					DestroyWindow(hDlg);
+					return true;
+
+				case IDC_MUTE:
+					// Live like the sliders, so you hear the toggle against the
+					// running game; Cancel above puts it back.
+					S9xSetMuted(IsDlgButtonChecked(hDlg, IDC_MUTE) != 0);
 					return true;
 
 				case IDC_PAUSE_EMULATION:
@@ -11233,8 +11238,7 @@ static void AudioWaveToggleMute(int src)
                 GUI.GBChannelEnable = savedGb ? savedGb : 0x0F;
             break;
         case 2:
-            GUI.Mute = !GUI.Mute;
-            S9xSetSoundMute(GUI.Mute);
+            S9xSetMuted(!GUI.Mute);
             return;
         default:
             if (src >= 7)
