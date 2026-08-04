@@ -781,9 +781,12 @@ void WinThrottleFramerate()
 	if (Settings.SkipFrames != AUTO_FRAMERATE || Settings.TurboMode || Settings.NetPlay || Settings.NetPlayServer)
 		return;
 
+	// Yield pacing to the sound driver only while it is actually blocking.
+	// Every driver's sync wait is gated on !Settings.Mute, so a muted GB/SGB
+	// would otherwise have nothing throttling it and free-run.
 	const bool sgb_owns_audio = Settings.SuperGameBoy ||
 		(Settings.SGB_BIOSModeActive && S9xSGBBIOSGBIsReleased());
-	if (sgb_owns_audio && Settings.SoundSync && GUI.AllowSoundSync)
+	if (sgb_owns_audio && Settings.SoundSync && GUI.AllowSoundSync && !Settings.Mute)
 		return;
 
 	if (!throttle_timer)
