@@ -324,6 +324,11 @@ struct sGUI {
     unsigned int rewindGranularity;
 
 	bool AddToRegistry;
+	// which ROM types the shell association covers
+	bool AssocSfc;
+	bool AssocSmc;
+	bool AssocGb;
+	bool AssocGbc;
 
 #ifdef RETROACHIEVEMENTS_SUPPORT
     // RetroAchievements

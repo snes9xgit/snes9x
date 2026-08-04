@@ -7642,6 +7642,63 @@ INT_PTR CALLBACK DlgColorCorrectionProc(HWND hDlg, UINT msg, WPARAM wParam, LPAR
 	return FALSE;
 }
 
+// Height the checkbox row adds to the dialog template (252 tall with the row,
+// 238 without). Everything else is measured, so this is the only shared value.
+#define ASSOC_ROW_UNITS 14
+
+static int   s_assocRowPx  = 0;	// row height in pixels, so DPI scaling is respected
+static int   s_assocDlgCY  = 0;	// dialog window height with the row showing
+static POINT s_assocOk     = {};	// button positions with the row showing
+static POINT s_assocCancel = {};
+
+// Records the full-size layout before anything is hidden, so the compact layout
+// is always derived from the template rather than from the last toggle.
+static void CaptureAssocLayout(HWND hDlg)
+{
+	RECT row = { 0, 0, 0, ASSOC_ROW_UNITS };
+	MapDialogRect(hDlg, &row);
+	s_assocRowPx = row.bottom;
+
+	RECT wr;
+	GetWindowRect(hDlg, &wr);
+	s_assocDlgCY = wr.bottom - wr.top;
+
+	const int  ids[] = { IDOK, IDCANCEL };
+	POINT     *out[] = { &s_assocOk, &s_assocCancel };
+	for (size_t i = 0; i < _countof(ids); i++)
+	{
+		RECT r;
+		GetWindowRect(GetDlgItem(hDlg, ids[i]), &r);
+		POINT p = { r.left, r.top };
+		ScreenToClient(hDlg, &p);
+		*out[i] = p;
+	}
+}
+
+// The per-type ticks mean nothing unless the master association is on, so the
+// row is hidden and its height handed back rather than left as a blank gap.
+static void LayoutAssocChecks(HWND hDlg, bool visible)
+{
+	static const int ids[] = { IDC_ASSOC_SFC, IDC_ASSOC_SMC, IDC_ASSOC_GB, IDC_ASSOC_GBC };
+	for (size_t i = 0; i < _countof(ids); i++)
+		ShowWindow(GetDlgItem(hDlg, ids[i]), visible ? SW_SHOW : SW_HIDE);
+
+	if (!s_assocDlgCY)
+		return;			// layout not captured yet
+
+	// absolute positions, so repeated toggling cannot accumulate drift
+	const int drop = visible ? 0 : s_assocRowPx;
+	SetWindowPos(GetDlgItem(hDlg, IDOK), NULL, s_assocOk.x, s_assocOk.y - drop,
+	             0, 0, SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE);
+	SetWindowPos(GetDlgItem(hDlg, IDCANCEL), NULL, s_assocCancel.x, s_assocCancel.y - drop,
+	             0, 0, SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE);
+
+	RECT wr;
+	GetWindowRect(hDlg, &wr);
+	SetWindowPos(hDlg, NULL, 0, 0, wr.right - wr.left, s_assocDlgCY - drop,
+	             SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE);
+}
+
 INT_PTR CALLBACK DlgEmulatorProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	static TCHAR paths[10][MAX_PATH];
@@ -7680,6 +7737,12 @@ INT_PTR CALLBACK DlgEmulatorProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPar
 			CheckDlgButton(hDlg,IDC_INACTIVE_PAUSE,GUI.InactivePause ? BST_CHECKED : BST_UNCHECKED);
 			CheckDlgButton(hDlg,IDC_CUSTOMROMOPEN,GUI.CustomRomOpen ? BST_CHECKED : BST_UNCHECKED);
 			CheckDlgButton(hDlg, IDC_ADD_REGISTRY, GUI.AddToRegistry ? BST_CHECKED : BST_UNCHECKED);
+			CheckDlgButton(hDlg, IDC_ASSOC_SFC, GUI.AssocSfc ? BST_CHECKED : BST_UNCHECKED);
+			CheckDlgButton(hDlg, IDC_ASSOC_SMC, GUI.AssocSmc ? BST_CHECKED : BST_UNCHECKED);
+			CheckDlgButton(hDlg, IDC_ASSOC_GB,  GUI.AssocGb  ? BST_CHECKED : BST_UNCHECKED);
+			CheckDlgButton(hDlg, IDC_ASSOC_GBC, GUI.AssocGbc ? BST_CHECKED : BST_UNCHECKED);
+			CaptureAssocLayout(hDlg);
+			LayoutAssocChecks(hDlg, GUI.AddToRegistry);
 			CheckDlgButton(hDlg,IDC_HIRESAVI,GUI.AVIHiRes ? BST_CHECKED : BST_UNCHECKED);
 			CheckDlgButton(hDlg, IDC_CONFIRMSAVELOAD, GUI.ConfirmSaveLoad ? BST_CHECKED : BST_UNCHECKED);
 
@@ -7747,6 +7810,10 @@ INT_PTR CALLBACK DlgEmulatorProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPar
  					SetDlgItemText(hDlg, IDC_CUSTOM_FOLDER_FIELD, paths[which]);
 				}
 				break;
+			case IDC_ADD_REGISTRY:
+				// reveal the per-type ticks only while the master is on
+				LayoutAssocChecks(hDlg, BST_CHECKED == IsDlgButtonChecked(hDlg, IDC_ADD_REGISTRY));
+				break;
 			case IDC_CUSTOM_FOLDER_FIELD:
 				which = SendDlgItemMessage(hDlg,IDC_DIRCOMBO,CB_GETCURSEL,0,0);
 				GetDlgItemText(hDlg, IDC_CUSTOM_FOLDER_FIELD, paths[which], MAX_PATH);
@@ -7774,13 +7841,21 @@ INT_PTR CALLBACK DlgEmulatorProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPar
 					GUI.AVIHiRes = (BST_CHECKED==IsDlgButtonChecked(hDlg, IDC_HIRESAVI));
 					GUI.ConfirmSaveLoad = (BST_CHECKED == IsDlgButtonChecked(hDlg, IDC_CONFIRMSAVELOAD));
 					bool AddRegistryChecked = (BST_CHECKED == IsDlgButtonChecked(hDlg, IDC_ADD_REGISTRY));
-					if (GUI.AddToRegistry && !AddRegistryChecked)
-						S9xWinRemoveRegistryKeys();
-					else if (!GUI.AddToRegistry && AddRegistryChecked)
+					// store first: RegisterExt consults these to decide per type
+					GUI.AssocSfc = (BST_CHECKED == IsDlgButtonChecked(hDlg, IDC_ASSOC_SFC));
+					GUI.AssocSmc = (BST_CHECKED == IsDlgButtonChecked(hDlg, IDC_ASSOC_SMC));
+					GUI.AssocGb  = (BST_CHECKED == IsDlgButtonChecked(hDlg, IDC_ASSOC_GB));
+					GUI.AssocGbc = (BST_CHECKED == IsDlgButtonChecked(hDlg, IDC_ASSOC_GBC));
+
+					if (AddRegistryChecked)
 					{
+						// always re-run -- the per-type ticks may have changed
+						// even when the master checkbox did not
 						RegisterProgid();
 						RegisterExts();
 					}
+					else if (GUI.AddToRegistry)
+						S9xWinRemoveRegistryKeys();
 					GUI.AddToRegistry = AddRegistryChecked;
 
 					Settings.TurboSkipFrames=SendDlgItemMessage(hDlg, IDC_SPIN_TURBO_SKIP, UDM_GETPOS, 0,0);
@@ -9483,9 +9558,107 @@ void SetInfoDlgColor(unsigned char r, unsigned char g, unsigned char b)
 
 #define SNES9XWPROGID TEXT("SuperSnes9x.Win32")
 #define SNES9XWPROGIDDESC TEXT("SuperSnes9x ROM")
+#define SNES9XWPROGIDGB TEXT("SuperSnes9x.GameBoy")
+#define SNES9XWPROGIDGBDESC TEXT("Game Boy ROM")
+#define SNES9XWPROGIDGBC TEXT("SuperSnes9x.GameBoyColor")
+#define SNES9XWPROGIDGBCDESC TEXT("Game Boy Color ROM")
 #define SNES9XWAPPDESC TEXT("SuperSnes9x is a portable, freeware Super Nintendo Entertainment System (SNES) emulator.")
 #define SNES9XWAPPNAME TEXT("SuperSnes9x")
 #define SNES9XWCAPSKEY TEXT("SOFTWARE\\SuperSnes9x\\Capabilities")
+
+// One shell identity per ROM family so Explorer can show distinct file icons.
+struct ProgIdEntry {
+	const TCHAR *progid;
+	const TCHAR *desc;
+	UINT         icon;
+};
+
+static const ProgIdEntry ProgIdTable[] = {
+	{ SNES9XWPROGID,    SNES9XWPROGIDDESC,    IDI_ICON_SNESROM      },
+	{ SNES9XWPROGIDGB,  SNES9XWPROGIDGBDESC,  IDI_ICON_GAMEBOY      },
+	{ SNES9XWPROGIDGBC, SNES9XWPROGIDGBCDESC, IDI_ICON_GAMEBOYCOLOR },
+};
+
+// Everything that isn't a Game Boy dump is a SNES ROM as far as the shell cares.
+static const TCHAR *ProgIdForExt(const TCHAR *ext)
+{
+	if (ext)
+	{
+		if (lstrcmpi(ext, TEXT("gb")) == 0)
+			return SNES9XWPROGIDGB;
+		if (lstrcmpi(ext, TEXT("gbc")) == 0)
+			return SNES9XWPROGIDGBC;
+	}
+	return SNES9XWPROGID;
+}
+
+// Reads a key's default value as a string. RegQueryValueEx is not obliged to
+// NUL-terminate, so the result is terminated explicitly.
+static bool RegReadDefaultString(HKEY root, const TCHAR *subkey, TCHAR *buf, DWORD cbBuf)
+{
+	HKEY  hKey;
+	DWORD type = 0, cb = cbBuf;
+
+	if (RegOpenKeyEx(root, subkey, 0, KEY_QUERY_VALUE, &hKey) != ERROR_SUCCESS)
+		return false;
+	LONG result = RegQueryValueEx(hKey, NULL, NULL, &type, (LPBYTE)buf, &cb);
+	RegCloseKey(hKey);
+
+	if (result != ERROR_SUCCESS || (type != REG_SZ && type != REG_EXPAND_SZ))
+		return false;
+
+	DWORD chars = cb / sizeof(TCHAR);
+	if (chars > (cbBuf / sizeof(TCHAR)) - 1)
+		chars = (cbBuf / sizeof(TCHAR)) - 1;
+	buf[chars] = TEXT('\0');
+	return true;
+}
+
+// Only genuine ROM dumps are claimed as a file type. The container formats in
+// Valid.Ext (zip, gz, jma, msu1) belong to whichever archiver owns them.
+static bool ExtMayClaimType(const TCHAR *ext)
+{
+	static const TCHAR *claimable[] = { TEXT("sfc"), TEXT("smc"), TEXT("gb"), TEXT("gbc") };
+	for (size_t i = 0; i < _countof(claimable); i++)
+		if (lstrcmpi(ext, claimable[i]) == 0)
+			return true;
+	return false;
+}
+
+// The four ROM types carry their own checkbox. Everything else in Valid.Ext is
+// always advertised and never claimed, so it needs no opt-in.
+static bool ExtTypeEnabled(const TCHAR *ext)
+{
+	if (lstrcmpi(ext, TEXT("sfc")) == 0)
+		return GUI.AssocSfc;
+	if (lstrcmpi(ext, TEXT("smc")) == 0)
+		return GUI.AssocSmc;
+	if (lstrcmpi(ext, TEXT("gb")) == 0)
+		return GUI.AssocGb;
+	if (lstrcmpi(ext, TEXT("gbc")) == 0)
+		return GUI.AssocGbc;
+	return true;
+}
+
+// True when nothing owns the extension yet, or we already do. Claiming the type
+// is what actually gives the file its icon, but only where it takes nothing away
+// from another application.
+static bool ExtIsUnclaimed(const TCHAR *ext)
+{
+	TCHAR szKey[PATH_MAX], szOwner[PATH_MAX] = {};
+
+	_stprintf_s(szKey, PATH_MAX-1, TEXT(".%s"), ext);
+	if (!RegReadDefaultString(HKEY_CLASSES_ROOT, szKey, szOwner, sizeof(szOwner)))
+		return true;
+	if (szOwner[0] == TEXT('\0'))
+		return true;
+
+	for (size_t i = 0; i < _countof(ProgIdTable); i++)
+		if (lstrcmpi(szOwner, ProgIdTable[i].progid) == 0)
+			return true;
+
+	return lstrcmpi(szOwner, TEXT("Snes9x.Win32")) == 0;	// identity used by older builds
+}
 #define REGCREATEKEY(key,subkey) \
 	if(regResult=RegCreateKeyEx(key, subkey,\
 					0, NULL, REG_OPTION_NON_VOLATILE, KEY_SET_VALUE , NULL , &hKey, NULL ) != ERROR_SUCCESS){\
@@ -9521,6 +9694,42 @@ static void DeleteMatchingSubkeys(const TCHAR *parent, const TCHAR *match)
 	RegCloseKey(hKey);
 }
 
+// Removes everything this build may have written for a single extension.
+static void UnregisterExt(const TCHAR *ext, const TCHAR *szExeName)
+{
+	TCHAR szRegKey[PATH_MAX], szName[PATH_MAX];
+
+	_stprintf_s(szName, PATH_MAX-1, TEXT(".%s"), ext);
+	SHDeleteValue(HKEY_CURRENT_USER, SNES9XWCAPSKEY TEXT("\\FileAssociations"), szName);
+
+	_stprintf_s(szRegKey, PATH_MAX-1, TEXT("Software\\Classes\\.%s\\OpenWithList\\%s"), ext, szExeName);
+	SHDeleteKey(HKEY_CURRENT_USER, szRegKey);
+	_stprintf_s(szRegKey, PATH_MAX-1, TEXT("Software\\Classes\\.%s\\OpenWithList"), ext);
+	DeleteMatchingSubkeys(szRegKey, TEXT("snes9x"));
+
+	_stprintf_s(szRegKey, PATH_MAX-1, TEXT("Software\\Classes\\.%s\\OpenWithProgids"), ext);
+	for (size_t i = 0; i < _countof(ProgIdTable); i++)
+		SHDeleteValue(HKEY_CURRENT_USER, szRegKey, ProgIdTable[i].progid);
+
+	// release the file type, but only while it is still ours
+	TCHAR szOwner[PATH_MAX] = {};
+	_stprintf_s(szRegKey, PATH_MAX-1, TEXT("Software\\Classes\\.%s"), ext);
+	if (!RegReadDefaultString(HKEY_CURRENT_USER, szRegKey, szOwner, sizeof(szOwner)))
+		return;
+	for (size_t i = 0; i < _countof(ProgIdTable); i++)
+	{
+		if (lstrcmpi(szOwner, ProgIdTable[i].progid) != 0)
+			continue;
+		HKEY hExt;
+		if (RegOpenKeyEx(HKEY_CURRENT_USER, szRegKey, 0, KEY_SET_VALUE, &hExt) == ERROR_SUCCESS)
+		{
+			RegDeleteValue(hExt, NULL);
+			RegCloseKey(hExt);
+		}
+		break;
+	}
+}
+
 void S9xWinRemoveRegistryKeys() {
 	TCHAR szRegKey[4096] = {};
 	TCHAR szExePath[PATH_MAX];
@@ -9528,8 +9737,11 @@ void S9xWinRemoveRegistryKeys() {
     if(!valid_ext)
         LoadExts();
 
-	_stprintf_s(szRegKey, 4095, TEXT("Software\\Classes\\%s"), SNES9XWPROGID);
-	SHDeleteKey(HKEY_CURRENT_USER, szRegKey);
+	for (size_t i = 0; i < _countof(ProgIdTable); i++)
+	{
+		_stprintf_s(szRegKey, 4095, TEXT("Software\\Classes\\%s"), ProgIdTable[i].progid);
+		SHDeleteKey(HKEY_CURRENT_USER, szRegKey);
+	}
 	// RegisteredApplications entries are values, not subkeys
 	SHDeleteValue(HKEY_CURRENT_USER, TEXT("Software\\RegisteredApplications"), SNES9XWAPPNAME);
 	SHDeleteKey(HKEY_CURRENT_USER, TEXT("Software\\SuperSnes9x"));
@@ -9547,16 +9759,13 @@ void S9xWinRemoveRegistryKeys() {
 	DeleteMatchingSubkeys(TEXT("Software\\Classes\\Applications"), TEXT("snes9x"));
 
 	ExtList* curr = valid_ext;
-	while (curr->next != NULL) {
+	while (curr != NULL) {
 		if (curr->extension)
-		{
-			_stprintf(szRegKey, TEXT("Software\\Classes\\.%s\\OpenWithList\\%s"), curr->extension, szExeName);
-			SHDeleteKey(HKEY_CURRENT_USER, szRegKey);
-			_stprintf(szRegKey, TEXT("Software\\Classes\\.%s\\OpenWithList"), curr->extension);
-			DeleteMatchingSubkeys(szRegKey, TEXT("snes9x"));
-		}
+			UnregisterExt(curr->extension, szExeName);
 		curr = curr->next;
 	}
+
+	S9xNotifyShellIconChanged(szExePath);
 }
 
 bool RegisterProgid() {
@@ -9570,29 +9779,35 @@ bool RegisterProgid() {
 	GetModuleFileName(NULL, szExePath, PATH_MAX);
     szExeName = PathFindFileName(szExePath);
 
-    /* Register ProgID (for use in Default Programs)
+    /* Register one ProgID per ROM family (for use in Default Programs)
     */
-    _stprintf_s(szRegKey,PATH_MAX-1,TEXT("Software\\Classes\\%s"),SNES9XWPROGID);
-    REGCREATEKEY(HKEY_CURRENT_USER, szRegKey)
-    REGSETVALUE(hKey,NULL,REG_SZ,SNES9XWPROGIDDESC,(lstrlen(SNES9XWPROGIDDESC) + 1) * sizeof(TCHAR))
-    RegCloseKey(hKey);
+    for (size_t i = 0; i < _countof(ProgIdTable); i++)
+    {
+        const ProgIdEntry *pid = &ProgIdTable[i];
 
-    _stprintf_s(szRegKey,PATH_MAX-1,TEXT("Software\\Classes\\%s\\DefaultIcon"),SNES9XWPROGID);
-    REGCREATEKEY(HKEY_CURRENT_USER,szRegKey)
-    _stprintf_s(szRegKey,PATH_MAX-1,TEXT("%s,0"), szExePath);
-    REGSETVALUE(hKey,NULL,REG_SZ,szRegKey,(lstrlen(szRegKey) + 1) * sizeof(TCHAR))
-    RegCloseKey(hKey);
+        _stprintf_s(szRegKey,PATH_MAX-1,TEXT("Software\\Classes\\%s"),pid->progid);
+        REGCREATEKEY(HKEY_CURRENT_USER, szRegKey)
+        REGSETVALUE(hKey,NULL,REG_SZ,pid->desc,(lstrlen(pid->desc) + 1) * sizeof(TCHAR))
+        RegCloseKey(hKey);
 
-    _stprintf_s(szRegKey,PATH_MAX-1,TEXT("Software\\Classes\\%s\\shell"),SNES9XWPROGID);
-    REGCREATEKEY(HKEY_CURRENT_USER,szRegKey)
-    REGSETVALUE(hKey,NULL,REG_SZ,TEXT("open"),5 * sizeof(TCHAR))
-    RegCloseKey(hKey);
+        _stprintf_s(szRegKey,PATH_MAX-1,TEXT("Software\\Classes\\%s\\DefaultIcon"),pid->progid);
+        REGCREATEKEY(HKEY_CURRENT_USER,szRegKey)
+        // negative index means resource ID, so adding icons never shifts these
+        _stprintf_s(szRegKey,PATH_MAX-1,TEXT("%s,-%u"), szExePath, pid->icon);
+        REGSETVALUE(hKey,NULL,REG_SZ,szRegKey,(lstrlen(szRegKey) + 1) * sizeof(TCHAR))
+        RegCloseKey(hKey);
 
-    _stprintf_s(szRegKey,PATH_MAX-1,TEXT("Software\\Classes\\%s\\shell\\open\\command"),SNES9XWPROGID);
-    REGCREATEKEY(HKEY_CURRENT_USER,szRegKey)
-    _stprintf_s(szRegKey,PATH_MAX-1,TEXT("\"%s\" \"%%L\""),szExePath);
-    REGSETVALUE(hKey,NULL,REG_SZ,szRegKey,(lstrlen(szRegKey) + 1) * sizeof(TCHAR))
-    RegCloseKey(hKey);
+        _stprintf_s(szRegKey,PATH_MAX-1,TEXT("Software\\Classes\\%s\\shell"),pid->progid);
+        REGCREATEKEY(HKEY_CURRENT_USER,szRegKey)
+        REGSETVALUE(hKey,NULL,REG_SZ,TEXT("open"),5 * sizeof(TCHAR))
+        RegCloseKey(hKey);
+
+        _stprintf_s(szRegKey,PATH_MAX-1,TEXT("Software\\Classes\\%s\\shell\\open\\command"),pid->progid);
+        REGCREATEKEY(HKEY_CURRENT_USER,szRegKey)
+        _stprintf_s(szRegKey,PATH_MAX-1,TEXT("\"%s\" \"%%L\""),szExePath);
+        REGSETVALUE(hKey,NULL,REG_SZ,szRegKey,(lstrlen(szRegKey) + 1) * sizeof(TCHAR))
+        RegCloseKey(hKey);
+    }
 
     /* Register Capabilities (for Default Programs)
     */
@@ -9609,6 +9824,9 @@ bool RegisterProgid() {
     */
     _stprintf_s(szRegKey,PATH_MAX-1,TEXT("Software\\Classes\\Applications\\%s"),szExeName);
 	REGCREATEKEY(HKEY_CURRENT_USER,szRegKey)
+	// state the Open With name outright; otherwise the shell reuses whatever it
+	// cached in MuiCache from an earlier build at this path
+	REGSETVALUE(hKey,TEXT("FriendlyAppName"),REG_SZ,SNES9XWAPPNAME,(lstrlen(SNES9XWAPPNAME) + 1) * sizeof(TCHAR))
 	RegCloseKey(hKey);
 
     _stprintf_s(szRegKey,PATH_MAX-1,TEXT("Software\\Classes\\Applications\\%s\\shell\\open\\command"),szExeName);
@@ -9633,11 +9851,20 @@ bool RegisterExt(TCHAR *ext) {
     GetModuleFileName(NULL, szExePath, PATH_MAX);
     szExeName = PathFindFileName(szExePath);
 
+    // a type the user unticked is actively removed, not merely skipped
+    if (!ExtTypeEnabled(ext))
+    {
+        UnregisterExt(ext, szExeName);
+        return true;
+    }
+
     /* Register .ext as S9x capability (for Default Programs)
     */
+    const TCHAR *progid = ProgIdForExt(ext);
+
     REGCREATEKEY(HKEY_CURRENT_USER,SNES9XWCAPSKEY TEXT("\\FileAssociations"))
 	_stprintf_s(szRegKey,PATH_MAX-1,TEXT(".%s"),ext);
-	REGSETVALUE(hKey,szRegKey,REG_SZ,SNES9XWPROGID,(lstrlen(SNES9XWPROGID) + 1) * sizeof(TCHAR))
+	REGSETVALUE(hKey,szRegKey,REG_SZ,progid,(lstrlen(progid) + 1) * sizeof(TCHAR))
 	RegCloseKey(hKey);
 
     /* Register in OpenWithList - will not be taken as default icon, necessary for Jump List
@@ -9646,15 +9873,38 @@ bool RegisterExt(TCHAR *ext) {
 	REGCREATEKEY(HKEY_CURRENT_USER,szRegKey)
 	RegCloseKey(hKey);
 
+    /* Advertise the ProgID against the extension, then claim the type outright
+       when nobody else has. Without the claim the ProgID exists but nothing
+       points at it, so the shell shows no icon and no default verb.
+    */
+	_stprintf_s(szRegKey,PATH_MAX-1,TEXT("Software\\Classes\\.%s\\OpenWithProgids"),ext);
+	REGCREATEKEY(HKEY_CURRENT_USER,szRegKey)
+	REGSETVALUE(hKey,progid,REG_NONE,TEXT(""),0)
+	RegCloseKey(hKey);
+
+	if (ExtMayClaimType(ext) && ExtIsUnclaimed(ext))
+	{
+		_stprintf_s(szRegKey,PATH_MAX-1,TEXT("Software\\Classes\\.%s"),ext);
+		REGCREATEKEY(HKEY_CURRENT_USER,szRegKey)
+		REGSETVALUE(hKey,NULL,REG_SZ,progid,(lstrlen(progid) + 1) * sizeof(TCHAR))
+		RegCloseKey(hKey);
+	}
+
 	return true;
 }
 
 void RegisterExts(void) {
 	ExtList *curr=valid_ext;
-	while(curr->next!=NULL) {
+	// walk to the end -- stopping at curr->next dropped the final extension
+	while(curr!=NULL) {
 		RegisterExt(curr->extension);
 		curr=curr->next;
 	}
+
+	// tell Explorer to re-read the types it just gained
+	TCHAR szExePath[PATH_MAX];
+	GetModuleFileName(NULL, szExePath, PATH_MAX);
+	S9xNotifyShellIconChanged(szExePath);
 }
 
 void ClearExts(void)
@@ -9673,6 +9923,61 @@ void ClearExts(void)
 
 }
 
+// Valid.Ext predates Game Boy support. Top up older files in place rather than
+// rewriting them, so extensions the user added by hand survive the upgrade.
+static void TopUpExtFile(void)
+{
+	static const char *needed[] = { "gb", "gbc" };
+	bool found[_countof(needed)] = {};
+	char buffer[MAX_PATH+2];
+
+	ifstream in("Valid.Ext", ios::in);
+	if(!in.is_open())
+		return;			// absent: MakeExtFile writes a complete list anyway
+	while(in.getline(buffer, MAX_PATH+2))
+	{
+		size_t len = strlen(buffer);
+		if(len < 2)
+			continue;
+		buffer[len-1] = '\0';	// drop the trailing compressed flag
+		for(size_t i = 0; i < _countof(needed); i++)
+			if(0 == _stricmp(buffer, needed[i]))
+				found[i] = true;
+	}
+	in.close();
+
+	bool complete = true;
+	for(size_t i = 0; i < _countof(needed); i++)
+		complete = complete && found[i];
+	if(complete)
+		return;
+
+	// a file left without a trailing newline would fuse with the first append
+	bool needsNewline = false;
+	ifstream tail("Valid.Ext", ios::in|ios::binary|ios::ate);
+	if(tail.is_open() && tail.tellg() > 0)
+	{
+		char last = '\n';
+		tail.seekg(-1, ios::end);
+		tail.get(last);
+		needsNewline = (last != '\n');
+	}
+	tail.close();
+
+	SetFileAttributes(TEXT("Valid.Ext"), FILE_ATTRIBUTE_ARCHIVE);
+	ofstream out("Valid.Ext", ios::app);
+	if(out.is_open())
+	{
+		if(needsNewline)
+			out<<endl;
+		for(size_t i = 0; i < _countof(needed); i++)
+			if(!found[i])
+				out<<needed[i]<<"N"<<endl;
+		out.close();
+	}
+	SetFileAttributes(TEXT("Valid.Ext"), FILE_ATTRIBUTE_ARCHIVE|FILE_ATTRIBUTE_READONLY);
+}
+
 void LoadExts(void)
 {
 	char buffer[MAX_PATH+2];
@@ -9680,6 +9985,7 @@ void LoadExts(void)
 	{
 		ClearExts();
 	}
+	TopUpExtFile();
 	ExtList* curr;
 	valid_ext=new ExtList;
 	curr=valid_ext;
@@ -9754,6 +10060,8 @@ void MakeExtFile(void)
 	out<<"swcN"<<endl;
 	out<<"figN"<<endl;
 	out<<"sfcN"<<endl;
+	out<<"gbN"<<endl;
+	out<<"gbcN"<<endl;
 	out<<"bsN"<<endl;
 	out<<"jmaY"<<endl;
 	out << "stN" << endl;

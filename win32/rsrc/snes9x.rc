@@ -109,7 +109,7 @@ BEGIN
     EDITTEXT        IDC_DISCLAIMER,6,6,308,148,ES_MULTILINE | ES_NOHIDESEL | ES_READONLY | WS_VSCROLL,WS_EX_STATICEDGE
 END
 
-IDD_EMU_SETTINGS DIALOGEX 0, 0, 343, 238
+IDD_EMU_SETTINGS DIALOGEX 0, 0, 343, 252
 STYLE DS_SETFONT | DS_MODALFRAME | DS_3DLOOK | DS_FIXEDSYS | DS_CENTER | WS_POPUP | WS_CLIPCHILDREN | WS_CAPTION | WS_SYSMENU
 CAPTION "APP - Emulator Settings"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
@@ -131,8 +131,8 @@ BEGIN
     CONTROL         "Pause When Inactive",IDC_INACTIVE_PAUSE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,102,156,96,8
     CONTROL         "Custom ROM Open Dialog",IDC_CUSTOMROMOPEN,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,102,168,114,8
     CONTROL         "Hi-Res AVI Recording",IDC_HIRESAVI,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,102,180,114,8
-    DEFPUSHBUTTON   "&OK",IDOK,233,215,48,14
-    PUSHBUTTON      "&Cancel",IDCANCEL,287,215,48,14
+    DEFPUSHBUTTON   "&OK",IDOK,233,229,48,14
+    PUSHBUTTON      "&Cancel",IDCANCEL,287,229,48,14
     COMBOBOX        IDC_DIRCOMBO,42,30,53,30,CBS_DROPDOWNLIST | WS_TABSTOP
     RTEXT           "Directory:",IDC_LABEL_FREEZE,0,30,38,12,SS_CENTERIMAGE
     RTEXT           "Auto-Save S-RAM",IDC_LABEL_ASRAM,12,47,84,14,SS_CENTERIMAGE
@@ -154,6 +154,10 @@ BEGIN
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,102,192,145,8
     CONTROL         "Add SuperSnes9x to registry for supported file types",IDC_ADD_REGISTRY,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,102,204,180,8
+    CONTROL         ".sfc",IDC_ASSOC_SFC,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,112,216,32,8
+    CONTROL         ".smc",IDC_ASSOC_SMC,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,150,216,32,8
+    CONTROL         ".gb",IDC_ASSOC_GB,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,188,216,28,8
+    CONTROL         ".gbc",IDC_ASSOC_GBC,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,222,216,32,8
 END
 
 IDD_OPEN_ROM DIALOGEX 0, 0, 430, 223
@@ -1270,6 +1274,12 @@ IDI_ICON2               ICON                    "icon2.ico"
 IDI_ICON3               ICON                    "icon3.ico"
 
 IDI_ICON4               ICON                    "icon4.ico"
+
+IDI_ICON_SNESROM        ICON                    "snes-rom.ico"
+
+IDI_ICON_GAMEBOY        ICON                    "gameboy.ico"
+
+IDI_ICON_GAMEBOYCOLOR   ICON                    "gameboy-color.ico"
 
 
 /////////////////////////////////////////////////////////////////////////////
