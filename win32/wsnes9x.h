@@ -327,6 +327,10 @@ struct sGUI {
 	// which ROM types the shell association covers
 	bool AssocSfc;
 	bool AssocSmc;
+	bool AssocSwc;
+	bool AssocFig;
+	bool AssocBs;
+	bool AssocSt;
 	bool AssocGb;
 	bool AssocGbc;
 

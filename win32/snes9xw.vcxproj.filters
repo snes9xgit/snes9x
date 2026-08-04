@@ -1026,6 +1026,12 @@
     <Image Include="rsrc\gameboy-color.ico">
       <Filter>Resource\Other</Filter>
     </Image>
+    <Image Include="rsrc\satellaview.ico">
+      <Filter>Resource\Other</Filter>
+    </Image>
+    <Image Include="rsrc\sufami-turbo.ico">
+      <Filter>Resource\Other</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\65c816.h">

@@ -7642,9 +7642,9 @@ INT_PTR CALLBACK DlgColorCorrectionProc(HWND hDlg, UINT msg, WPARAM wParam, LPAR
 	return FALSE;
 }
 
-// Height the checkbox row adds to the dialog template (252 tall with the row,
+// Height the two checkbox rows add to the dialog template (264 tall with them,
 // 238 without). Everything else is measured, so this is the only shared value.
-#define ASSOC_ROW_UNITS 14
+#define ASSOC_ROW_UNITS 26
 
 static int   s_assocRowPx  = 0;	// row height in pixels, so DPI scaling is respected
 static int   s_assocDlgCY  = 0;	// dialog window height with the row showing
@@ -7679,7 +7679,11 @@ static void CaptureAssocLayout(HWND hDlg)
 // row is hidden and its height handed back rather than left as a blank gap.
 static void LayoutAssocChecks(HWND hDlg, bool visible)
 {
-	static const int ids[] = { IDC_ASSOC_SFC, IDC_ASSOC_SMC, IDC_ASSOC_GB, IDC_ASSOC_GBC };
+	static const int ids[] = {
+		IDC_ASSOC_LABEL_SNES, IDC_ASSOC_SFC, IDC_ASSOC_SMC, IDC_ASSOC_SWC,
+		IDC_ASSOC_FIG, IDC_ASSOC_BS, IDC_ASSOC_ST,
+		IDC_ASSOC_LABEL_GB, IDC_ASSOC_GB, IDC_ASSOC_GBC,
+	};
 	for (size_t i = 0; i < _countof(ids); i++)
 		ShowWindow(GetDlgItem(hDlg, ids[i]), visible ? SW_SHOW : SW_HIDE);
 
@@ -7739,6 +7743,10 @@ INT_PTR CALLBACK DlgEmulatorProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPar
 			CheckDlgButton(hDlg, IDC_ADD_REGISTRY, GUI.AddToRegistry ? BST_CHECKED : BST_UNCHECKED);
 			CheckDlgButton(hDlg, IDC_ASSOC_SFC, GUI.AssocSfc ? BST_CHECKED : BST_UNCHECKED);
 			CheckDlgButton(hDlg, IDC_ASSOC_SMC, GUI.AssocSmc ? BST_CHECKED : BST_UNCHECKED);
+			CheckDlgButton(hDlg, IDC_ASSOC_SWC, GUI.AssocSwc ? BST_CHECKED : BST_UNCHECKED);
+			CheckDlgButton(hDlg, IDC_ASSOC_FIG, GUI.AssocFig ? BST_CHECKED : BST_UNCHECKED);
+			CheckDlgButton(hDlg, IDC_ASSOC_BS,  GUI.AssocBs  ? BST_CHECKED : BST_UNCHECKED);
+			CheckDlgButton(hDlg, IDC_ASSOC_ST,  GUI.AssocSt  ? BST_CHECKED : BST_UNCHECKED);
 			CheckDlgButton(hDlg, IDC_ASSOC_GB,  GUI.AssocGb  ? BST_CHECKED : BST_UNCHECKED);
 			CheckDlgButton(hDlg, IDC_ASSOC_GBC, GUI.AssocGbc ? BST_CHECKED : BST_UNCHECKED);
 			CaptureAssocLayout(hDlg);
@@ -7844,6 +7852,10 @@ INT_PTR CALLBACK DlgEmulatorProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPar
 					// store first: RegisterExt consults these to decide per type
 					GUI.AssocSfc = (BST_CHECKED == IsDlgButtonChecked(hDlg, IDC_ASSOC_SFC));
 					GUI.AssocSmc = (BST_CHECKED == IsDlgButtonChecked(hDlg, IDC_ASSOC_SMC));
+					GUI.AssocSwc = (BST_CHECKED == IsDlgButtonChecked(hDlg, IDC_ASSOC_SWC));
+					GUI.AssocFig = (BST_CHECKED == IsDlgButtonChecked(hDlg, IDC_ASSOC_FIG));
+					GUI.AssocBs  = (BST_CHECKED == IsDlgButtonChecked(hDlg, IDC_ASSOC_BS));
+					GUI.AssocSt  = (BST_CHECKED == IsDlgButtonChecked(hDlg, IDC_ASSOC_ST));
 					GUI.AssocGb  = (BST_CHECKED == IsDlgButtonChecked(hDlg, IDC_ASSOC_GB));
 					GUI.AssocGbc = (BST_CHECKED == IsDlgButtonChecked(hDlg, IDC_ASSOC_GBC));
 
@@ -9562,6 +9574,10 @@ void SetInfoDlgColor(unsigned char r, unsigned char g, unsigned char b)
 #define SNES9XWPROGIDGBDESC TEXT("Game Boy ROM")
 #define SNES9XWPROGIDGBC TEXT("SuperSnes9x.GameBoyColor")
 #define SNES9XWPROGIDGBCDESC TEXT("Game Boy Color ROM")
+#define SNES9XWPROGIDBS TEXT("SuperSnes9x.Satellaview")
+#define SNES9XWPROGIDBSDESC TEXT("Satellaview ROM")
+#define SNES9XWPROGIDST TEXT("SuperSnes9x.SufamiTurbo")
+#define SNES9XWPROGIDSTDESC TEXT("Sufami Turbo ROM")
 #define SNES9XWAPPDESC TEXT("SuperSnes9x is a portable, freeware Super Nintendo Entertainment System (SNES) emulator.")
 #define SNES9XWAPPNAME TEXT("SuperSnes9x")
 #define SNES9XWCAPSKEY TEXT("SOFTWARE\\SuperSnes9x\\Capabilities")
@@ -9577,9 +9593,12 @@ static const ProgIdEntry ProgIdTable[] = {
 	{ SNES9XWPROGID,    SNES9XWPROGIDDESC,    IDI_ICON_SNESROM      },
 	{ SNES9XWPROGIDGB,  SNES9XWPROGIDGBDESC,  IDI_ICON_GAMEBOY      },
 	{ SNES9XWPROGIDGBC, SNES9XWPROGIDGBCDESC, IDI_ICON_GAMEBOYCOLOR },
+	{ SNES9XWPROGIDBS,  SNES9XWPROGIDBSDESC,  IDI_ICON_SATELLAVIEW  },
+	{ SNES9XWPROGIDST,  SNES9XWPROGIDSTDESC,  IDI_ICON_SUFAMITURBO  },
 };
 
-// Everything that isn't a Game Boy dump is a SNES ROM as far as the shell cares.
+// Satellaview and Sufami Turbo are their own media; .swc and .fig are just
+// copier dumps of ordinary cartridges, so they stay on the SNES identity.
 static const TCHAR *ProgIdForExt(const TCHAR *ext)
 {
 	if (ext)
@@ -9588,6 +9607,10 @@ static const TCHAR *ProgIdForExt(const TCHAR *ext)
 			return SNES9XWPROGIDGB;
 		if (lstrcmpi(ext, TEXT("gbc")) == 0)
 			return SNES9XWPROGIDGBC;
+		if (lstrcmpi(ext, TEXT("bs")) == 0)
+			return SNES9XWPROGIDBS;
+		if (lstrcmpi(ext, TEXT("st")) == 0)
+			return SNES9XWPROGIDST;
 	}
 	return SNES9XWPROGID;
 }
@@ -9618,21 +9641,32 @@ static bool RegReadDefaultString(HKEY root, const TCHAR *subkey, TCHAR *buf, DWO
 // Valid.Ext (zip, gz, jma, msu1) belong to whichever archiver owns them.
 static bool ExtMayClaimType(const TCHAR *ext)
 {
-	static const TCHAR *claimable[] = { TEXT("sfc"), TEXT("smc"), TEXT("gb"), TEXT("gbc") };
+	static const TCHAR *claimable[] = {
+		TEXT("sfc"), TEXT("smc"), TEXT("swc"), TEXT("fig"),
+		TEXT("bs"),  TEXT("st"),  TEXT("gb"),  TEXT("gbc"),
+	};
 	for (size_t i = 0; i < _countof(claimable); i++)
 		if (lstrcmpi(ext, claimable[i]) == 0)
 			return true;
 	return false;
 }
 
-// The four ROM types carry their own checkbox. Everything else in Valid.Ext is
-// always advertised and never claimed, so it needs no opt-in.
+// The ROM types carry their own checkbox. Everything else in Valid.Ext is always
+// advertised and never claimed, so it needs no opt-in.
 static bool ExtTypeEnabled(const TCHAR *ext)
 {
 	if (lstrcmpi(ext, TEXT("sfc")) == 0)
 		return GUI.AssocSfc;
 	if (lstrcmpi(ext, TEXT("smc")) == 0)
 		return GUI.AssocSmc;
+	if (lstrcmpi(ext, TEXT("swc")) == 0)
+		return GUI.AssocSwc;
+	if (lstrcmpi(ext, TEXT("fig")) == 0)
+		return GUI.AssocFig;
+	if (lstrcmpi(ext, TEXT("bs")) == 0)
+		return GUI.AssocBs;
+	if (lstrcmpi(ext, TEXT("st")) == 0)
+		return GUI.AssocSt;
 	if (lstrcmpi(ext, TEXT("gb")) == 0)
 		return GUI.AssocGb;
 	if (lstrcmpi(ext, TEXT("gbc")) == 0)

@@ -796,6 +796,8 @@
     <Image Include="rsrc\snes-rom.ico" />
     <Image Include="rsrc\gameboy.ico" />
     <Image Include="rsrc\gameboy-color.ico" />
+    <Image Include="rsrc\satellaview.ico" />
+    <Image Include="rsrc\sufami-turbo.ico" />
     <Image Include="rsrc\nd.bmp" />
     <Image Include="rsrc\openfold.bmp" />
     <Image Include="rsrc\pad.bmp" />

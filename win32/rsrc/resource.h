@@ -49,11 +49,19 @@
 #define IDI_ICON_SNESROM                184
 #define IDI_ICON_GAMEBOY                185
 #define IDI_ICON_GAMEBOYCOLOR           186
+#define IDI_ICON_SATELLAVIEW            187
+#define IDI_ICON_SUFAMITURBO            188
 // per-extension association checkboxes
 #define IDC_ASSOC_SFC                   3352
 #define IDC_ASSOC_SMC                   3353
 #define IDC_ASSOC_GB                    3354
 #define IDC_ASSOC_GBC                   3355
+#define IDC_ASSOC_SWC                   3356
+#define IDC_ASSOC_FIG                   3357
+#define IDC_ASSOC_BS                    3358
+#define IDC_ASSOC_ST                    3359
+#define IDC_ASSOC_LABEL_SNES            3360
+#define IDC_ASSOC_LABEL_GB              3361
 #define IDD_DIALOG_HACKS                164
 #define IDD_DIALOG_LOAD_PREVIEW         167
 #define IDD_CHEAT_GROUP                 169
@@ -883,9 +891,9 @@
 //
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        187
+#define _APS_NEXT_RESOURCE_VALUE        189
 #define _APS_NEXT_COMMAND_VALUE         40215
-#define _APS_NEXT_CONTROL_VALUE         3356
+#define _APS_NEXT_CONTROL_VALUE         3362
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif
