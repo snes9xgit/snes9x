@@ -1683,6 +1683,10 @@ int CMemory::LoadGBFromBytes (const uint8 *rom, uint32 size, const char *filenam
     Settings.SuperGameBoy      = TRUE;
     Settings.GameBoyRunMode    = gbCgb ? 0 : 1;   // CGB carts run BIOS-less in CGB mode
     Settings.GBClockMultiplier = 1.0f;
+    // InitROM never runs on this path, so set the video timing it would have.
+    Settings.PAL               = FALSE;
+    Settings.FrameTime         = Settings.FrameTimeNTSC;
+    ROMFramesPerSecond         = 60;
 
     if (!S9xSGBInit() ||
         !S9xSGBLoadROMBytes(rom, static_cast<size_t>(size), filename))
@@ -1749,6 +1753,10 @@ bool8 CMemory::LoadROM (const char *filename)
         Settings.SuperGameBoy      = TRUE;
         Settings.GameBoyRunMode    = gbCgb ? 0 : 1;   // CGB carts run BIOS-less in CGB mode
         Settings.GBClockMultiplier = 1.0f;
+        // InitROM never runs on this path, so set the video timing it would have.
+        Settings.PAL               = FALSE;
+        Settings.FrameTime         = Settings.FrameTimeNTSC;
+        ROMFramesPerSecond         = 60;
 
         if (!S9xSGBInit() || !S9xSGBLoadROM(filename))
         {
