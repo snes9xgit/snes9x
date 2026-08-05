@@ -42,8 +42,9 @@ void S9xClearSamples (void);
 bool8 S9xMixSamples (uint8 *, int);
 void S9xSetSamplesAvailableCallback (apu_callback, void *);
 void S9xUpdateDynamicRate (int empty = 1, int buffer_size = 2);
+void S9xSetAudioFidelity (int engine);   // 0 = Hermite, 1 = Windowed-Sinc
 
-// Save/restore resampler state for run-ahead (preserves hermite filter
+// Save/restore resampler state for run-ahead (preserves the filter
 // continuity across the hidden frame)
 void S9xRunAheadSaveAudio (void);
 void S9xRunAheadLoadAudio (void);

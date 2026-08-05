@@ -232,6 +232,7 @@ void S9xLoadConfigFiles (char **argv, int argc)
 	Settings.DynamicRateControl         =  conf.GetBool("Sound::DynamicRateControl",           false);
 	Settings.DynamicRateLimit           =  conf.GetInt ("Sound::DynamicRateLimit",             5);
 	Settings.InterpolationMethod        =  conf.GetInt ("Sound::InterpolationMethod",          2);
+	Settings.AudioFidelity              =  conf.GetInt ("Sound::AudioFidelity",                1); // 1 = windowed-sinc
 	Settings.SGB_BIOSPreference         =  static_cast<uint8>(conf.GetUInt("SGB::BIOSPreference", 2));
 	if (Settings.SGB_BIOSPreference > 2) Settings.SGB_BIOSPreference = 2;
 	Settings.GBRomPath[0] = '\0';

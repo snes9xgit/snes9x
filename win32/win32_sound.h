@@ -14,6 +14,7 @@ class IS9xSoundOutput;
 extern IS9xSoundOutput *S9xSoundOutput;
 
 bool ReInitSound();
+void ApplyLiveSoundSettings();   // no device rebuild - see win32_sound.cpp
 void S9xSoundCallback(void *data);
 void CloseSoundDevice();
 std::vector<std::wstring> GetAvailableSoundDevices();

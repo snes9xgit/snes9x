@@ -277,6 +277,7 @@ struct SSettings
 	bool8	DynamicRateControl;
 	int32	DynamicRateLimit; /* Multiplied by 1000 */
 	int32	InterpolationMethod;
+	int32	AudioFidelity; /* resampler kernel: 0 = Hermite, 1 = Windowed-Sinc */
 
 	bool8	Transparency;
 	uint8	BG_Forced;

@@ -927,6 +927,7 @@ void WinRegisterConfigItems()
 	AddBool("DynamicRateControl", Settings.DynamicRateControl, false);
 	AddBool("AutomaticInputRate", GUI.AutomaticInputRate, false);
 	AddIntC("InterpolationMethod", Settings.InterpolationMethod, 2, "0 = None, 1 = Linear, 2 = Gaussian (accurate), 3 = Cubic, 4 = Sinc");
+	AddIntC("AudioFidelity", Settings.AudioFidelity, 1, "resampler used to convert the SPC's 32040 Hz to 'Rate': 0 = Hermite (legacy), 1 = Windowed-Sinc");
 #undef CATEGORY
 #define	CATEGORY "SGB"
 	AddUIntC("BIOSPreference", Settings.SGB_BIOSPreference, 2, "BIOS mode for GB/GBC ROMs: 0=No BIOS (BIOS-less), 1=SGB1, 2=SGB2 (default).");
