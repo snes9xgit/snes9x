@@ -43,7 +43,7 @@ int main(int argc, char *argv[])
     EmuApplication emu;
     emu.qtapp = std::make_unique<QApplication>(argc, argv);
 
-    QGuiApplication::setDesktopFileName("snes9x-qt");
+    QGuiApplication::setDesktopFileName("super-snes9x-qt");
 
     if (QApplication::platformName() == "windows")
     {

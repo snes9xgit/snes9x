@@ -1,5 +1,6 @@
 #include "ShortcutsPanel.hpp"
 #include "EmuConfig.hpp"
+#include <QAction>
 
 ShortcutsPanel::ShortcutsPanel(EmuApplication *app_)
     : BindingPanel(app_)

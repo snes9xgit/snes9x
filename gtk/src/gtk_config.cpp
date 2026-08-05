@@ -28,7 +28,7 @@ std::string get_config_dir()
 
     if (!env_home && !env_xdg_config_home)
     {
-        return std::string{".snes9x"};
+        return std::string{".supersnes9x"};
     }
 
     fs::path config;
@@ -36,12 +36,12 @@ std::string get_config_dir()
     if (env_xdg_config_home)
     {
         config = env_xdg_config_home;
-        config /= "snes9x";
+        config /= "supersnes9x";
     }
     else
     {
         config = env_home;
-        config /= ".config/snes9x";
+        config /= ".config/supersnes9x";
     }
 
     if (!fs::exists(config))
@@ -52,7 +52,7 @@ std::string get_config_dir()
 
 std::string get_config_file_name()
 {
-    return get_config_dir() + "/snes9x.conf";
+    return get_config_dir() + "/super-snes9x-gtk.conf";
 }
 
 void S9xParsePortConfig(ConfigFile &conf, int pass)

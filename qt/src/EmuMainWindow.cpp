@@ -53,7 +53,7 @@ public:
     void paintEvent(QPaintEvent *event) override
     {
         QPainter paint(this);
-        QLinearGradient gradient(0.0, 0.0, 0.0, event->rect().toRectF().height());
+        QLinearGradient gradient(0.0, 0.0, 0.0, event->rect().height());
         gradient.setColorAt(0.0, QColor(0, 0, 128));
         gradient.setColorAt(1.0, QColor(0, 0, 0));
 

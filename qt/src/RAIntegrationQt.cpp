@@ -1,5 +1,7 @@
 #ifdef RETROACHIEVEMENTS_SUPPORT
 
+#include <QAction>
+
 #include "RAIntegrationQt.hpp"
 #include "EmuApplication.hpp"
 #include "EmuMainWindow.hpp"

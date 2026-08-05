@@ -3,6 +3,7 @@
 #include "SDLInputManager.hpp"
 #include "EmuApplication.hpp"
 #include "EmuConfig.hpp"
+#include <QAction>
 #include <QtEvents>
 #include <QTimer>
 

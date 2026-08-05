@@ -448,6 +448,7 @@ add_custom_command(
     DEPENDS sourcify ${CMAKE_CURRENT_SOURCE_DIR}/data/mini_icon.png)
 
 add_executable(snes9x-gtk ${SOURCES} ${jma} ${CMAKE_CURRENT_BINARY_DIR}/gtk_snes9x_ui.cpp ${CMAKE_CURRENT_BINARY_DIR}/mini_icon.cpp)
+set_target_properties(snes9x-gtk PROPERTIES OUTPUT_NAME super-snes9x-gtk)
 target_include_directories(snes9x-gtk PRIVATE ${INCLUDES})
 target_compile_options(snes9x-gtk PRIVATE ${ARGS})
 target_link_libraries(snes9x-gtk PRIVATE ${LIBS})
@@ -476,7 +477,7 @@ endif()
 
 install(TARGETS snes9x-gtk)
 install(FILES ../data/cheats.bml DESTINATION ${DATADIR})
-install(FILES data/snes9x-gtk.desktop DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/applications)
+install(FILES data/super-snes9x-gtk.desktop DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/applications)
 install(FILES data/snes9x_16x16.png DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/icons/hicolor/16x16/apps RENAME snes9x.png)
 install(FILES data/snes9x_24x24.png DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/icons/hicolor/24x24/apps RENAME snes9x.png)
 install(FILES data/snes9x_32x32.png DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/icons/hicolor/32x32/apps RENAME snes9x.png)

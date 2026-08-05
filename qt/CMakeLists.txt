@@ -407,6 +407,7 @@ list(APPEND SOURCES ../external/imgui/imgui.cpp
 list(APPEND INCLUDES ../external/imgui)
 
 add_executable(snes9x-qt ${QT_GUI_SOURCES} ${SOURCES} ${PLATFORM_SOURCES} src/resources/snes9x.qrc)
+set_target_properties(snes9x-qt PROPERTIES OUTPUT_NAME super-snes9x-qt)
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
     set_target_properties(snes9x-qt PROPERTIES WIN32_EXECUTABLE True)
@@ -418,3 +419,7 @@ target_include_directories(snes9x-qt PRIVATE "../" ${INCLUDES})
 
 install(TARGETS snes9x-qt)
 install(FILES ../data/cheats.bml DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/snes9x)
+if(UNIX AND NOT APPLE)
+    install(FILES src/resources/super-snes9x-qt.desktop DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/applications)
+    install(FILES src/resources/snes9x.svg DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/icons/hicolor/scalable/apps)
+endif()
