@@ -1501,6 +1501,7 @@ BEGIN
             MENUITEM "22KHz",                       ID_SOUND_22050HZ,MFT_STRING,MFS_ENABLED
             MENUITEM "30KHz",                       ID_SOUND_30000HZ,MFT_STRING,MFS_ENABLED
             MENUITEM "32KHz",                       ID_SOUND_32000HZ,MFT_STRING,MFS_ENABLED
+            MENUITEM "32040Hz (SNES native)",       ID_SOUND_32040HZ,MFT_STRING,MFS_ENABLED
             MENUITEM "35KHz",                       ID_SOUND_35000HZ,MFT_STRING,MFS_ENABLED
             MENUITEM "44KHz",                       ID_SOUND_44100HZ,MFT_STRING,MFS_ENABLED
             MENUITEM "48KHz",                       ID_SOUND_48000HZ,MFT_STRING,MFS_ENABLED

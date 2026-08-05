@@ -679,6 +679,7 @@
 #define IDC_LABEL_MASTERHOTKEY          3110
 #define ID_SOUND_MUTE                   40189
 #define ID_SOUND_VOICEKUN               40214
+#define ID_SOUND_32040HZ                40215
 #define ID_SOUND_VOICEKUN_ATTACH        40212
 #define ID_SOUND_VOICEKUN_DETACH        40213
 #define ID_EMULATION_RUNAHEAD           40190
@@ -895,7 +896,7 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        189
-#define _APS_NEXT_COMMAND_VALUE         40215
+#define _APS_NEXT_COMMAND_VALUE         40216
 #define _APS_NEXT_CONTROL_VALUE         3367
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
