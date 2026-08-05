@@ -28,9 +28,12 @@ apt-get install -y -qq --no-install-recommends \
     libudev-dev libdbus-1-dev libusb-1.0-0-dev libxkbcommon-dev \
     libfontconfig1-dev libfreetype-dev
 
+# Always build from scratch: reproducible, and sidesteps stale-state issues.
+# PCH is disabled to avoid cmake 3.22'"'"'s Ninja+PCH+AUTOMOC ordering bug.
+rm -rf /snes9x/qt/build-appimage
 mkdir -p /snes9x/qt/build-appimage
 cd /snes9x/qt/build-appimage
-cmake .. -G Ninja -DCMAKE_BUILD_TYPE=Release
+cmake .. -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_DISABLE_PRECOMPILE_HEADERS=ON
 ninja
 ../scripts/makeappimage.sh
 chown -R "$HOST_UID:$HOST_GID" /snes9x/qt/build-appimage
