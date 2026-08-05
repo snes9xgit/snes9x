@@ -2017,7 +2017,7 @@ msgid "all of SuperSnes9x's settings are stored in this file"
 msgstr "tất cả cài đặt của SuperSnes9x được lưu trong tệp này"
 
 #: win32/rsrc/snes9x.rc
-msgid "Allow executable logo override"
+msgid "Allow executable icon override"
 msgstr "Cho phép ghi đè logo của tệp thực thi"
 
 #: win32/rsrc/snes9x.rc

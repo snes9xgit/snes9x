@@ -2093,7 +2093,7 @@ msgid "all of SuperSnes9x's settings are stored in this file"
 msgstr "SuperSnes9x की सभी सेटिंग्स इस फ़ाइल में संग्रहीत हैं"
 
 #: win32/rsrc/snes9x.rc
-msgid "Allow executable logo override"
+msgid "Allow executable icon override"
 msgstr "एग्जीक्यूटेबल लोगो ओवरराइड की अनुमति दें"
 
 #: win32/rsrc/snes9x.rc

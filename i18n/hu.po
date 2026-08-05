@@ -2097,7 +2097,7 @@ msgid "all of SuperSnes9x's settings are stored in this file"
 msgstr "a SuperSnes9x összes beállítása ebben a fájlban tárolódik"
 
 #: win32/rsrc/snes9x.rc
-msgid "Allow executable logo override"
+msgid "Allow executable icon override"
 msgstr "Végrehajtható logó felülbírálásának engedélyezése"
 
 #: win32/rsrc/snes9x.rc

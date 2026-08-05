@@ -3008,14 +3008,6 @@ LRESULT CALLBACK WinProc(
 			RestoreSNESDisplay ();
 			break;
         case ID_EMULATION_HACKS:
-			if (MessageBoxA(hWnd,
-				"The settings in this dialog should only be used for compatibility "
-				"with old ROM hacks or if you otherwise know what you're doing.\n\n"
-				"If any problems occur, click \"Set Defaults\" to reset the options to normal.",
-				"Warning: Unsupported",
-				MB_ICONWARNING | MB_OKCANCEL) != IDOK)
-				break;
-
             RestoreGUIDisplay();
 			i = DialogBox(g_hInst, MAKEINTRESOURCE(IDD_DIALOG_HACKS), hWnd, DlgEmulatorHacksProc);
             if (i == 1)
@@ -7284,6 +7276,8 @@ INT_PTR CALLBACK DlgEmulatorHacksProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM
     {
     case WM_INITDIALOG:
     	LocalizeDialog(hDlg);
+
+        SendDlgItemMessage(hDlg, IDC_HACKS_WARNING_ICON, STM_SETICON, (WPARAM)LoadIcon(NULL, IDI_WARNING), 0);
 
         SendDlgItemMessage(hDlg, IDC_SFX_CLOCK_SPEED_SPIN, UDM_SETRANGE, 0, MAKELPARAM((short)400, (short)50));
         SendDlgItemMessage(hDlg, IDC_SFX_CLOCK_SPEED_SPIN, UDM_SETPOS, 0, Settings.SuperFXClockMultiplier);

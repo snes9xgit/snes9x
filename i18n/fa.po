@@ -2111,7 +2111,7 @@ msgid "all of SuperSnes9x's settings are stored in this file"
 msgstr "تمام تنظیمات SuperSnes9x در این فایل ذخیره می‌شوند"
 
 #: win32/rsrc/snes9x.rc
-msgid "Allow executable logo override"
+msgid "Allow executable icon override"
 msgstr "اجازه جایگزینی لوگوی اجرایی"
 
 #: win32/rsrc/snes9x.rc

@@ -2072,7 +2072,7 @@ msgid "all of SuperSnes9x's settings are stored in this file"
 msgstr "SuperSnes9x의 모든 설정이 이 파일에 저장됩니다"
 
 #: win32/rsrc/snes9x.rc
-msgid "Allow executable logo override"
+msgid "Allow executable icon override"
 msgstr "실행 파일 내장 로고 교체 허용"
 
 #: win32/rsrc/snes9x.rc
