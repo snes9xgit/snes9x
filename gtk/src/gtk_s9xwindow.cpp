@@ -867,7 +867,7 @@ bool Snes9xWindow::try_open_rom(const std::string &filename)
     Gtk::RecentManager::Data data;
     data.description = "SNES ROM";
     data.mime_type = "application/x-snes-rom";
-    data.app_name = "Snes9x";
+    data.app_name = "SuperSnes9x";
     data.groups = { "cartridge" };
     data.is_private = false;
     data.app_exec = Glib::get_prgname() + " %f";
@@ -1166,12 +1166,12 @@ void Snes9xWindow::configure_widgets()
     if (config->rom_loaded)
     {
         std::string title = S9xBasenameNoExt(Memory.ROMFilename);
-        title += " - Snes9x";
+        title += " - SuperSnes9x " VERSION_DISPLAY;
         window->set_title(title);
     }
     else
     {
-        window->set_title("Snes9x");
+        window->set_title("SuperSnes9x " VERSION_DISPLAY);
     }
 }
 

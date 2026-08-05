@@ -10,7 +10,7 @@ if [ ! -f linuxdeploy-x86_64.AppImage ]; then
     chmod +x linuxdeploy-x86_64.AppImage
 fi
 
-DESTDIR=AppDir ninja install
+DESTDIR=$PWD/AppDir cmake --install . --prefix /usr --strip
 ./linuxdeploy-x86_64.AppImage --appimage-extract-and-run --appdir=AppDir \
 	--exclude-library="libX*" \
 	--exclude-library="libglib*" \
@@ -28,4 +28,4 @@ pushd AppDir
 ln -s usr/share/icons/hicolor/256x256/apps/snes9x.png
 chmod +x AppRun
 popd
-./appimagetool-x86_64.AppImage --appimage-extract-and-run AppDir
+./appimagetool-x86_64.AppImage --appimage-extract-and-run AppDir super-snes9x-gtk-x86_64.AppImage
