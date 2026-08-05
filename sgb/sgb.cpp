@@ -912,6 +912,11 @@ void Emulator::SetLayerEnabled(int layer, bool enabled)
 	}
 }
 
+void Emulator::SetNoSpriteLimit(bool enabled)
+{
+	impl_->ppu.no_sprite_limit = enabled;
+}
+
 bool Emulator::GetLayerEnabled(int layer) const
 {
 	switch (layer)
@@ -2314,7 +2319,10 @@ void VisitState(Emulator::Impl &impl, IoCtx &c)
 		IoField(c, impl.boot_handoff_regs);
 		IoField(c, impl.handoff_frames);
 		IoField(c, impl.ppu.draw_x);
-		IoBytes(c, impl.ppu.sprites, sizeof impl.ppu.sprites);
+		// Fixed at the hardware cap, not sizeof: Ppu::sprites is oversized for
+		// the no-sprite-limit hack and states must stay byte-compatible. The
+		// tail is mid-scanline scratch, recomputed at the next mode 2 → 3.
+		IoBytes(c, impl.ppu.sprites, sizeof impl.ppu.sprites[0] * GB_OAM_SCAN_LIMIT);
 		IoField(c, impl.ppu.sprite_count);
 		IoField(c, impl.ppu.window_active);
 		IoField(c, impl.ppu.window_start_x);
@@ -2606,6 +2614,7 @@ void S9xSGBGetPpuRegs(SgbPpuRegs *out)
 	out->obp1 = r[8]; out->wy   = r[9]; out->wx   = r[10]; out->vbk  = r[11];
 }
 void S9xSGBSetLayerEnabled(int layer, bool enabled) { SGB::Instance().SetLayerEnabled(layer, enabled); }
+void S9xSGBSetNoSpriteLimit(bool enabled) { SGB::Instance().SetNoSpriteLimit(enabled); }
 bool S9xSGBGetLayerEnabled(int layer) { return SGB::Instance().GetLayerEnabled(layer); }
 void S9xSGBCaptureScanline(const unsigned char *pixels)
 {

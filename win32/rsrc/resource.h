@@ -445,6 +445,7 @@
 #define IDC_SFX_CLOCK_SPEED             3035
 #define IDC_SFX_CLOCK_SPEED_SPIN        3036
 #define IDC_NO_SPRITE_LIMIT             3037
+#define IDC_NO_SPRITE_LIMIT_GB          3362
 #define IDC_ALLOW_EXE_ICON              3321
 #define IDC_PF94_TIME                   3322
 #define IDC_PF94_TIME_LABEL             3323
@@ -893,7 +894,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        189
 #define _APS_NEXT_COMMAND_VALUE         40215
-#define _APS_NEXT_CONTROL_VALUE         3362
+#define _APS_NEXT_CONTROL_VALUE         3363
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

@@ -1104,6 +1104,7 @@ void WinRegisterConfigItems()
     AddUIntC("MaxSpriteTilesPerLine", Settings.MaxSpriteTilesPerLine, 34, "Max sprite tiles rendered per line. Default = 34, Unlimited ~= 128");
 	AddUIntC("SuperFXClockMultiplier", Settings.SuperFXClockMultiplier, 100, "SuperFX speed, in percent (default 100)");
     AddBoolC("SeparateEchoBuffer", Settings.SeparateEchoBuffer, false, "Separate echo buffer from APU ram. For old hacks only.");
+    AddBoolC("GBNoSpriteLimit", Settings.GBNoSpriteLimit, false, "Game Boy: draw every object on a scanline instead of the hardware limit of 10, so sprite-heavy lines stop dropping their highest-index objects (Balloon Fight GB's title clouds). Not hardware-accurate; mode-3 timing is unchanged so raster effects still render correctly");
     AddBoolC("SFCBoxOSDBackdrop", Settings.SFCBoxOSDBackdrop, true, "Draw SFC-Box supervisor screens over the MB90082's solid background raster (blue boot screen, like NO$SNS) instead of superimposing on the SNES video");
     AddBoolC("SFCBoxOSDEnglish", Settings.SFCBoxOSDEnglish, false, "SFC-Box supervisor screen language: FALSE=Japanese (authentic), TRUE=English (render-time translation; the KROM firmware and savestates stay untouched)");
     AddUIntC("PowerFest94TimeLimit", Settings.PF94TimerMinutes, 6, "PowerFest '94 event cart session length in minutes (DIP switches, 3-18)");

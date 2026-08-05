@@ -7314,6 +7314,7 @@ INT_PTR CALLBACK DlgEmulatorHacksProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM
         }
         CheckDlgButton(hDlg, IDC_SEPARATE_ECHO_BUFFER, Settings.SeparateEchoBuffer);
         CheckDlgButton(hDlg, IDC_NO_SPRITE_LIMIT, Settings.MaxSpriteTilesPerLine == 128);
+        CheckDlgButton(hDlg, IDC_NO_SPRITE_LIMIT_GB, Settings.GBNoSpriteLimit);
         CheckDlgButton(hDlg, IDC_ALLOW_EXE_ICON, GUI.ExeIconRewriteOK);
         CheckDlgButton(hDlg, IDC_SFCBOX_OSD_BACKDROP, Settings.SFCBoxOSDBackdrop);
         CreateToolTip(IDC_SFCBOX_OSD_BACKDROP, hDlg, TEXT("Draw the Super Famicom Box supervisor screens over the\nMB90082 OSD chip's solid background raster (the blue\nstartup screen NO$SNS shows) instead of superimposing\nthe text on the SNES video output. Takes effect immediately."));
@@ -7367,31 +7368,56 @@ INT_PTR CALLBACK DlgEmulatorHacksProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM
         ShowWindow(GetDlgItem(hDlg, IDC_PF94_TIMER_SHOW), PF94.active ? SW_SHOW : SW_HIDE);
         ShowWindow(GetDlgItem(hDlg, IDC_PF94_TIMER_SHOW_LABEL), PF94.active ? SW_SHOW : SW_HIDE);
 
+        CreateToolTip(IDC_NO_SPRITE_LIMIT_GB, hDlg, TEXT("Game Boy only. Real hardware draws at most 10 objects\nper scanline and drops the rest, so sprite-heavy lines shed\ntheir highest-index objects - Balloon Fight GB's title clouds\nbreak up where the balloons cross them. Checking this draws\nthem all. Not hardware-accurate, but mode-3 timing is left\nalone so per-scanline raster effects still render correctly.\nTakes effect on the next frame."));
         CreateToolTip(IDC_ALLOW_EXE_ICON, hDlg, TEXT("When checked, choosing a logo also overwrites\nthe icon embedded in the SuperSnes9x .exe on disk,\nso it shows in Explorer, on shortcuts and the\ntaskbar. SuperSnes9x will restart to apply.\nWhen unchecked, only the in-app icon changes."));
 
-        // The SFC-Box rows only show when a Super Famicom Box is loaded
-        // (checkbox + keyswitch/coin row = 30 units), the two PowerFest
-        // '94 rows only when that board is loaded (36 units). When a group
+        // Three cart-specific groups only show when their hardware is loaded:
+        // the Game Boy sprite-limit row (12 units) for a GB/GBC cart on the
+        // BIOS-less core, the SFC-Box rows (checkbox + keyswitch/coin row =
+        // 48 units), and the two PowerFest '94 rows (36 units). When a group
         // is hidden, collapse the space it'd occupy: everything below it
         // slides up by its height and the dialog shrinks by the total.
+        //
+        // Settings.SuperGameBoy is TRUE only for a GB/GBC cart running on the
+        // BIOS-less GB core — the SGB BIOS path clears it and sets
+        // SGB_BIOSModeActive instead, and S9xMainLoop forces the hack off
+        // there, so the hidden box can never be silently in effect.
         {
+            const bool gb_hack_row = Settings.SuperGameBoy != 0;
+            ShowWindow(GetDlgItem(hDlg, IDC_NO_SPRITE_LIMIT_GB), gb_hack_row ? SW_SHOW : SW_HIDE);
+
             const int boxrows[] = { IDC_SFCBOX_OSD_BACKDROP, IDC_SFCBOX_OSD_LANGUAGE_LABEL,
                                     IDC_SFCBOX_OSD_LANGUAGE, IDC_SFCBOX_KEYSWITCH_LABEL,
                                     IDC_SFCBOX_KEYSWITCH, IDC_SFCBOX_COIN };
             for (int i = 0; i < 6; i++)
                 ShowWindow(GetDlgItem(hDlg, boxrows[i]), SFCBox.Active ? SW_SHOW : SW_HIDE);
-        }
-        {
-            RECT dlu = { 0, SFCBox.Active ? 0 : 48, 0, PF94.active ? 0 : 36 };
-            dlu.bottom += dlu.top;
-            MapDialogRect(hDlg, &dlu);
 
-            const int rows[] = { IDC_PF94_TIME_LABEL, IDC_PF94_TIME,
+            // Each control moves by the total height of every hidden group
+            // above it. Totals are summed in dialog units and mapped to
+            // pixels once, so the DLU scaling rounds a single time instead
+            // of accumulating a rounding error per group.
+            //   dlu.top    — rows below the GB row (exe-icon + SFC-Box group)
+            //   dlu.bottom — the PowerFest rows, also below the SFC-Box group
+            //   tail.top   — the button row, below everything, = total shrink
+            const int gb_dlu  = gb_hack_row  ? 0 : 12;
+            const int box_dlu = SFCBox.Active ? 0 : 48;
+            const int pf_dlu  = PF94.active   ? 0 : 36;
+
+            RECT dlu  = { 0, gb_dlu, 0, gb_dlu + box_dlu };
+            RECT tail = { 0, gb_dlu + box_dlu + pf_dlu, 0, 0 };
+            MapDialogRect(hDlg, &dlu);
+            MapDialogRect(hDlg, &tail);
+
+            const int rows[] = { IDC_ALLOW_EXE_ICON,
+                                 IDC_SFCBOX_OSD_BACKDROP, IDC_SFCBOX_OSD_LANGUAGE_LABEL,
+                                 IDC_SFCBOX_OSD_LANGUAGE, IDC_SFCBOX_KEYSWITCH_LABEL,
+                                 IDC_SFCBOX_KEYSWITCH, IDC_SFCBOX_COIN,
+                                 IDC_PF94_TIME_LABEL, IDC_PF94_TIME,
                                  IDC_PF94_TIMER_SHOW_LABEL, IDC_PF94_TIMER_SHOW,
                                  IDOK, IDCANCEL, IDC_SET_DEFAULTS };
-            for (int i = 0; i < 7; i++)
+            for (int i = 0; i < 14; i++)
             {
-                int dy = (i < 4) ? dlu.top : dlu.bottom;
+                int dy = (i < 7) ? dlu.top : (i < 11) ? dlu.bottom : tail.top;
                 if (!dy)
                     continue;
                 HWND h = GetDlgItem(hDlg, rows[i]);
@@ -7402,11 +7428,11 @@ INT_PTR CALLBACK DlgEmulatorHacksProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM
                 SetWindowPos(h, NULL, p.x, p.y - dy, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
             }
 
-            if (dlu.bottom)
+            if (tail.top)
             {
                 RECT wr;
                 GetWindowRect(hDlg, &wr);
-                SetWindowPos(hDlg, NULL, 0, 0, wr.right - wr.left, wr.bottom - wr.top - dlu.bottom,
+                SetWindowPos(hDlg, NULL, 0, 0, wr.right - wr.left, wr.bottom - wr.top - tail.top,
                              SWP_NOMOVE | SWP_NOZORDER);
             }
         }
@@ -7439,6 +7465,7 @@ INT_PTR CALLBACK DlgEmulatorHacksProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM
                 Settings.BlockInvalidVRAMAccessMaster = !IsDlgButtonChecked(hDlg, IDC_INVALID_VRAM);
             Settings.SeparateEchoBuffer = IsDlgButtonChecked(hDlg, IDC_SEPARATE_ECHO_BUFFER);
             Settings.MaxSpriteTilesPerLine = IsDlgButtonChecked(hDlg, IDC_NO_SPRITE_LIMIT) ? 128 : 34;
+            Settings.GBNoSpriteLimit = IsDlgButtonChecked(hDlg, IDC_NO_SPRITE_LIMIT_GB);
             GUI.ExeIconRewriteOK = IsDlgButtonChecked(hDlg, IDC_ALLOW_EXE_ICON);
             Settings.SFCBoxOSDBackdrop = IsDlgButtonChecked(hDlg, IDC_SFCBOX_OSD_BACKDROP);
             Settings.SFCBoxOSDEnglish = (SendDlgItemMessage(hDlg, IDC_SFCBOX_OSD_LANGUAGE, CB_GETCURSEL, 0, 0) == 1);
@@ -7507,6 +7534,7 @@ INT_PTR CALLBACK DlgEmulatorHacksProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM
 			CheckDlgButton(hDlg, IDC_INVALID_VRAM, false);
 			CheckDlgButton(hDlg, IDC_SEPARATE_ECHO_BUFFER, false);
 			CheckDlgButton(hDlg, IDC_NO_SPRITE_LIMIT, false);
+			CheckDlgButton(hDlg, IDC_NO_SPRITE_LIMIT_GB, false);
 			CheckDlgButton(hDlg, IDC_ALLOW_EXE_ICON, false);
 			CheckDlgButton(hDlg, IDC_SFCBOX_OSD_BACKDROP, true);
 			SendDlgItemMessage(hDlg, IDC_SFCBOX_OSD_LANGUAGE, CB_SETCURSEL, 0, 0);
