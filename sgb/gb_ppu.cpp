@@ -231,8 +231,15 @@ void EvalSprites(Ppu &p)
 	const bool large    = (p.lcdc & 0x04) != 0;
 	const int  sprite_h = large ? 16 : 8;
 
+	// Hardware keeps the first 10 hits in OAM index order and drops the rest,
+	// so an over-budget line loses its highest-index objects. no_sprite_limit
+	// keeps them all (Emulator Hacks): mode 3 still bills 10, see below.
+	const int limit = p.no_sprite_limit
+		? static_cast<int>(sizeof p.sprites / sizeof p.sprites[0])
+		: GB_OAM_SCAN_LIMIT;
+
 	p.sprite_count = 0;
-	for (int i = 0; i < 40 && p.sprite_count < 10; ++i)
+	for (int i = 0; i < 40 && p.sprite_count < limit; ++i)
 	{
 		const uint8_t oy  = p.oam[i * 4 + 0];
 		const int     top = static_cast<int>(oy) - 16;
@@ -690,8 +697,13 @@ inline void ExecPpuDot(Ppu &p, Memory &mem)
 			//      mode 3 instead of HBlank, producing split scanlines.
 			// Mode 0 (HBlank) shrinks by the same amount so each scanline
 			// still totals 456 dots.
+			// Billed against the hardware cap, not sprite_count, so the
+			// no_sprite_limit hack cannot stretch mode 3 and shift the
+			// HBlank-timed raster writes games hang their effects on.
+			const int billed = p.sprite_count > GB_OAM_SCAN_LIMIT
+				? GB_OAM_SCAN_LIMIT : p.sprite_count;
 			p.mode3_sprite_stall = static_cast<int16_t>(
-				p.sprite_count * SPRITE_STALL_DOTS +
+				billed * SPRITE_STALL_DOTS +
 				(p.scx & 0x07));
 			// WX is snapshotted here so mid-mode-3 writes don't engage
 			// the window mid-line — they take effect on the next line.

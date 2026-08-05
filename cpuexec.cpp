@@ -55,6 +55,7 @@ void S9xMainLoop (void)
 		                  ? Settings.GBClockMultiplier : 1.0f;
 		S9xSGBSetClockMultiplier(mul);
 		S9xSGBSetRunMode(Settings.GameBoyRunMode);
+		S9xSGBSetNoSpriteLimit(Settings.GBNoSpriteLimit);
 		// Match the GB APU's downsample target to the host playback rate
 		// so the samples we drain need no further rate conversion. The
 		// setter is idempotent, so calling every frame is cheap and
@@ -372,6 +373,10 @@ void S9xMainLoop (void)
 			                  ? Settings.GBClockMultiplier : 1.0f;
 			S9xSGBSetClockMultiplier(mul);
 			S9xSGBSetRunMode(Settings.GameBoyRunMode);
+			// The no-sprite-limit hack is offered for the BIOS-less GB/GBC
+			// core only — the Hacks dialog hides its checkbox in BIOS mode,
+			// so force it off here rather than leave a hidden box in effect.
+			S9xSGBSetNoSpriteLimit(false);
 			S9xSGBSetAudioRate(Settings.SoundPlaybackRate);
 		}
 

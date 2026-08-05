@@ -20,6 +20,11 @@ constexpr int GB_SCREEN_HEIGHT = 144;
 
 constexpr int32_t GB_MODE3_SETUP_DOTS = 12;
 
+// Objects the hardware OAM scan can hold for one scanline. Everything past
+// this is dropped, which is what makes sprite-heavy lines flicker on a real
+// Game Boy. Ppu::no_sprite_limit overrides it for rendering only.
+constexpr int GB_OAM_SCAN_LIMIT = 10;
+
 enum class PpuMode : uint8_t
 {
 	HBlank     = 0,  // 204-cycle mode 0
@@ -43,6 +48,9 @@ struct Ppu
 
 	bool     cgb = false;
 	bool     show_bg = true, show_window = true, show_obj = true;
+	// Host hack (Emulator Hacks dialog): keep every OAM-scan hit instead of
+	// the hardware 10. Off by default; mode-3 timing still bills only 10.
+	bool     no_sprite_limit = false;
 
 	uint8_t  vbk  = 0;            // 0xFF4F
 	uint8_t  bcps = 0, ocps = 0;  // 0xFF68 / 0xFF6A
@@ -64,11 +72,14 @@ struct Ppu
 	// Up to 10 sprites overlap a scanline; we pre-sort by render priority
 	// (lowest X first, ties by OAM index) so per-pixel coverage checks can
 	// be a linear scan against sprite_x[i] / sprite_x_end[i].
+	// Sized for all 40 objects because no_sprite_limit lifts the cap; the
+	// savestate block still stores only the first GB_OAM_SCAN_LIMIT entries
+	// so state files stay byte-compatible either way.
 	struct SpriteHit {
 		int16_t  x;        // OAM X-8 (screen-space leftmost pixel)
 		uint8_t  oam_idx;  // 0..39
 	};
-	SpriteHit sprites[10];
+	SpriteHit sprites[40];
 	uint8_t   sprite_count    = 0;
 	bool      window_active   = false;   // window engaged on this LY
 	int16_t   window_start_x  = 0;       // x at which window engaged

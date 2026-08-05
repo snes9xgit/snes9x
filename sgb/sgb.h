@@ -102,6 +102,7 @@ public:
 	// Live-frame layer visibility (0=BG, 1=window, 2=OBJ). Display-only.
 	void SetLayerEnabled(int layer, bool enabled);
 	bool GetLayerEnabled(int layer) const;
+	void SetNoSpriteLimit(bool enabled);
 
 	// When Settings.GBFrameBlendAuto is on, set Settings.GBFrameBlend/Layer from
 	// the per-title table for the loaded cart (off for unlisted titles). Called
@@ -362,6 +363,10 @@ void            S9xSGBGetPpuRegs(struct SgbPpuRegs *out);
 
 // Live-frame layer visibility (0=BG, 1=window, 2=OBJ) — debug show/hide.
 void S9xSGBSetLayerEnabled(int layer, bool enabled);
+// Emulator Hacks toggle: keep every OAM-scan hit for a scanline instead of
+// the hardware 10, so sprite-dense lines stop shedding their highest-index
+// objects. Rendering only — mode-3 length still bills the hardware cap.
+void S9xSGBSetNoSpriteLimit(bool enabled);
 bool S9xSGBGetLayerEnabled(int layer);
 
 // Capture a drawn GB scanline (160 palette indices, 0..3) into the SGB
