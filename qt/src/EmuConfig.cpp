@@ -356,26 +356,26 @@ void EmuConfig::config(const std::string &filename, bool write)
     if (write)
     {
         Bool = [&](const std::string &key, bool &value) {
-            settings.setValue(key, value);
+            settings.setValue(QString::fromStdString(key), value);
         };
         Int = [&](const std::string &key, int &value) {
-            settings.setValue(key, value);
+            settings.setValue(QString::fromStdString(key), value);
         };
         String = [&](const std::string &key, std::string &value) {
-            settings.setValue(key, QString::fromStdString(value));
+            settings.setValue(QString::fromStdString(key), QString::fromStdString(value));
         };
         Enum = [&](const std::string &key, int &value,
                    const std::vector<const char *> &map) {
-            settings.setValue(key, map[value]);
+            settings.setValue(QString::fromStdString(key), map[value]);
         };
         Double = [&](const std::string &key, double &value) {
-            settings.setValue(key, value);
+            settings.setValue(QString::fromStdString(key), value);
         };
         Binding = [&](const std::string &key, EmuBinding &binding) {
-            settings.setValue(key, QString::fromStdString(binding.to_config_string()));
+            settings.setValue(QString::fromStdString(key), QString::fromStdString(binding.to_config_string()));
         };
         BeginSection = [&](const std::string &str) {
-            settings.beginGroup(str);
+            settings.beginGroup(QString::fromStdString(str));
         };
         EndSection = [&]() {
             settings.endGroup();
@@ -384,31 +384,31 @@ void EmuConfig::config(const std::string &filename, bool write)
     else
     {
         Bool = [&](const std::string &key, bool &value) {
-            if (settings.contains(key))
-                value = settings.value(key).toBool();
+            if (settings.contains(QString::fromStdString(key)))
+                value = settings.value(QString::fromStdString(key)).toBool();
         };
         Int = [&](const std::string &key, int &value) {
-            if (settings.contains(key))
-                value = settings.value(key).toInt();
+            if (settings.contains(QString::fromStdString(key)))
+                value = settings.value(QString::fromStdString(key)).toInt();
         };
         String = [&](const std::string &key, std::string &value) {
-            if (settings.contains(key))
-                value = settings.value(key).toString().toStdString();
+            if (settings.contains(QString::fromStdString(key)))
+                value = settings.value(QString::fromStdString(key)).toString().toStdString();
         };
         Binding = [&](const std::string &key, EmuBinding &binding) {
-            if (settings.contains(key))
-                binding = EmuBinding::from_config_string(settings.value(key).toString().toStdString());
+            if (settings.contains(QString::fromStdString(key)))
+                binding = EmuBinding::from_config_string(settings.value(QString::fromStdString(key)).toString().toStdString());
         };
         Double = [&](const std::string &key, double &value) {
-            if (settings.contains(key))
-                value = settings.value(key).toDouble();
+            if (settings.contains(QString::fromStdString(key)))
+                value = settings.value(QString::fromStdString(key)).toDouble();
         };
         Enum = [&](const std::string &key, int &value,
                    const std::vector<const char *> &map) {
             QString entry;
 
-            if (settings.contains(key))
-                entry = settings.value(key).toString().toLower();
+            if (settings.contains(QString::fromStdString(key)))
+                entry = settings.value(QString::fromStdString(key)).toString().toLower();
             else
                 return;
 
