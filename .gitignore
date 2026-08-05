@@ -506,3 +506,12 @@ MigrationBackup/
 *.lock
 profile
 /win32/super-snes9x.conf
+
+# --- Super Snes9x: build artifacts and local data ---
+libretro/jni/dist/
+libretro/linux/dist/
+libretro/libs/
+qt/build-appimage/
+*.AppImage
+Roms/
+Bios/
