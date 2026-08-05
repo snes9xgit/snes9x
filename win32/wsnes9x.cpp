@@ -476,13 +476,16 @@ struct SSoundRates
 {
     uint32 rate;
     int ident;
-} SoundRates[9] = {
+} SoundRates[10] = {
     { 8000, ID_SOUND_8000HZ},
     {11025, ID_SOUND_11025HZ},
     {16000, ID_SOUND_16000HZ},
     {22050, ID_SOUND_22050HZ},
     {30000, ID_SOUND_30000HZ},
 	{32000, ID_SOUND_32000HZ},
+    // The SPC's own rate: Resampler::read passes through instead of
+    // interpolating, and the host converts to the device rate instead.
+    {32040, ID_SOUND_32040HZ},
     {35000, ID_SOUND_35000HZ},
     {44100, ID_SOUND_44100HZ},
     {48000, ID_SOUND_48000HZ}
@@ -534,6 +537,8 @@ void RestoreGUIDisplay ();
 void RestoreSNESDisplay ();
 void CheckDirectoryIsWritable (const char *filename);
 static void CheckMenuStates ();
+static bool RateSupportedByDriver (unsigned int rate, int driver);
+static bool RateUsefulForMode (unsigned int rate);
 static void AudioWaveEffectiveMasks (uint8 *outSpc, uint8 *outGb);
 static int  ClampLogoIndex (int n);
 static void ApplyLogoIcon  (HWND hWnd, HINSTANCE hInst, int n);
@@ -2613,6 +2618,7 @@ LRESULT CALLBACK WinProc(
 		case ID_SOUND_44100HZ:
 		case ID_SOUND_48000HZ:
 		case ID_SOUND_32000HZ:
+		case ID_SOUND_32040HZ:
             for( i = 0; i < COUNT(SoundRates); i ++)
 				if (SoundRates[i].ident == (int) wParam)
 				{
@@ -5613,6 +5619,44 @@ static void CheckMenuStates ()
     for (i = 0; i < COUNT(SoundRates); i++)
         SetMenuItemInfo (GUI.hMenu, SoundRates[i].ident, FALSE, &mii);
 
+    // Grey rates the active driver cannot open (XAudio2's NOSRC quantum limit).
+    for (i = 0; i < COUNT(SoundRates); i++)
+        EnableMenuItem (GUI.hMenu, SoundRates[i].ident, MF_BYCOMMAND |
+                        (RateSupportedByDriver (SoundRates[i].rate, GUI.SoundDriver)
+                             ? MF_ENABLED : MF_GRAYED));
+
+    // 32040 "SNES native" is meaningless in BIOS-less GB/GBC, so REMOVE the
+    // item there rather than grey it; put it back (before 35KHz) when a
+    // SNES/SGB ROM returns. Runs on every WM_ENTERMENULOOP, so it tracks
+    // whatever ROM is loaded.
+    {
+        const bool want = RateUsefulForMode (32040);
+        const bool have = GetMenuState (GUI.hMenu, ID_SOUND_32040HZ, MF_BYCOMMAND) != (UINT)-1;
+        if (!want && have)
+            RemoveMenu (GUI.hMenu, ID_SOUND_32040HZ, MF_BYCOMMAND);
+        else if (want && !have)
+        {
+            MENUITEMINFO ins = { 0 };
+            ins.cbSize = sizeof (ins);
+            ins.fMask = MIIM_ID | MIIM_STRING | MIIM_FTYPE;
+            ins.fType = MFT_STRING;
+            ins.wID = ID_SOUND_32040HZ;
+            ins.dwTypeData = (LPTSTR)TEXT("32040Hz (SNES native)");
+            InsertMenuItem (GUI.hMenu, ID_SOUND_35000HZ, FALSE, &ins);
+            EnableMenuItem (GUI.hMenu, ID_SOUND_32040HZ, MF_BYCOMMAND |
+                            (RateSupportedByDriver (32040, GUI.SoundDriver)
+                                 ? MF_ENABLED : MF_GRAYED));
+            if (Settings.SoundPlaybackRate == 32040)
+            {
+                MENUITEMINFO chk = { 0 };
+                chk.cbSize = sizeof (chk);
+                chk.fMask = MIIM_STATE;
+                chk.fState = MFS_CHECKED;
+                SetMenuItemInfo (GUI.hMenu, ID_SOUND_32040HZ, FALSE, &chk);
+            }
+        }
+    }
+
     // Mute is not a reason to grey these — Sync Sound still decides whether
     // pacing returns to the audio path on unmute, and buffer length re-inits fine.
     if (Settings.SoundPlaybackRate == 0)
@@ -5882,6 +5926,18 @@ static bool LoadROM(const TCHAR *filename, const TCHAR *filename2 /*= NULL*/) {
 #ifdef RETROACHIEVEMENTS_SUPPORT
 		RA_OnLoadROM();
 #endif
+
+		// The loaded ROM decides the mode, and the mode can invalidate the
+		// playback rate (32040 "SNES native" means nothing in BIOS-less
+		// GB/GBC). A driver-unsupported rate from a hand-edited config is
+		// caught here too. Fall back to 48 kHz rather than play nothing.
+		if (!RateSupportedByDriver(Settings.SoundPlaybackRate, GUI.SoundDriver) ||
+		    !RateUsefulForMode(Settings.SoundPlaybackRate))
+		{
+			Settings.SoundPlaybackRate = 48000;
+			ReInitSound();
+			S9xMessage(S9X_INFO, 0, "Playback rate not usable here - switched to 48 kHz");
+		}
 	}
 
 	if(GUI.ControllerOption == SNES_SUPERSCOPE || GUI.ControllerOption == SNES_MACSRIFLE)
@@ -6212,8 +6268,14 @@ BOOL CreateToolTip(int toolID, HWND hDlg, TCHAR* pText)
     toolInfo.lpszText = pText;
     SendMessage(hwndTip, TTM_ADDTOOL, 0, (LPARAM)&toolInfo);
 
-    if (_tcschr(pText, TEXT('\n')))
-        SendMessage(hwndTip, TTM_SETMAXTIPWIDTH, 0, 1000);
+    // Cap the width so long text wraps instead of stretching across the screen.
+    // This message doubles as the switch into multiline mode, so embedded '\n'
+    // still breaks where it says to.
+    HDC hdc = GetDC(hDlg);
+    int dpi = hdc ? GetDeviceCaps(hdc, LOGPIXELSX) : 96;
+    if (hdc)
+        ReleaseDC(hDlg, hdc);
+    SendMessage(hwndTip, TTM_SETMAXTIPWIDTH, 0, MulDiv(320, dpi, 96));
 
     return TRUE;
 }
@@ -6246,15 +6308,99 @@ void UpdateAudioDeviceDropdown(HWND hCtl)
 
 static bool s_soundConfBios = false;
 static bool s_soundConfGb   = false;
+static unsigned int s_soundConfRate = 0;
+
+static const struct { unsigned int rate; const TCHAR *label; } PlaybackRates[] = {
+    {  8000, TEXT("8 KHz")  },
+    { 11025, TEXT("11 KHz") },
+    { 16000, TEXT("16 KHz") },
+    { 22050, TEXT("22 KHz") },
+    { 30000, TEXT("30 KHz") },
+    { 32000, TEXT("32 KHz") },
+    { 32040, TEXT("32040 Hz (SNES native)") },
+    { 35000, TEXT("35 KHz") },
+    { 44100, TEXT("44 KHz") },
+    { 48000, TEXT("48 KHz") },
+};
+
+// XAudio2 processes on a fixed 10 ms quantum, and a source voice created with
+// XAUDIO2_VOICE_NOSRC (as ours is) must produce a whole number of samples per
+// quantum: CreateSourceVoice fails with XAUDIO2_E_INVALID_CALL for any rate
+// that is not a multiple of 100 (verified empirically -- the mastering voice
+// itself accepts them all). In a release build that failure is silent
+// (DXTRACE_ERR_MSGBOX compiles away), leaving no audio at all; 11025 and
+// 22050 have always been broken this way on XAudio2. WaveOut passes the rate
+// straight to waveOutOpen and has no such limit.
+static bool RateSupportedByDriver(unsigned int rate, int driver)
+{
+    if (driver == WIN_XAUDIO2_SOUND_DRIVER)
+        return (rate % 100) == 0;
+    return true;
+}
+
+// 32040 exists to bypass the SNES resampler; in BIOS-less GB/GBC there is no
+// resampler in the path and no SPC, so "SNES native" would be a nonsense
+// offer. SGB BIOS mode keeps it: the SPC stream mixed under the GB does go
+// through the resampler.
+static bool RateUsefulForMode(unsigned int rate)
+{
+    if (rate == 32040 && (Settings.SuperGameBoy && !Settings.SGB_BIOSModeActive))
+        return false;
+    return true;
+}
+
+// (Re)fill the playback-rate list for a driver, keeping `want` selected if it
+// survives the filter and falling back to 48 KHz if it does not.
+static void SoundConfFillRates(HWND hDlg, int driver, unsigned int want)
+{
+    SendDlgItemMessage(hDlg, IDC_RATE, CB_RESETCONTENT, 0, 0);
+    int sel = -1, fallback = 0;
+    for (int i = 0; i < (int)COUNT(PlaybackRates); i++)
+    {
+        if (!RateSupportedByDriver(PlaybackRates[i].rate, driver) ||
+            !RateUsefulForMode(PlaybackRates[i].rate))
+            continue;
+        int pos = (int)SendDlgItemMessage(hDlg, IDC_RATE, CB_ADDSTRING, 0,
+                                          (LPARAM)PlaybackRates[i].label);
+        SendDlgItemMessage(hDlg, IDC_RATE, CB_SETITEMDATA, pos, PlaybackRates[i].rate);
+        if (PlaybackRates[i].rate == want)     sel = pos;
+        if (PlaybackRates[i].rate == 48000)    fallback = pos;
+    }
+    SendDlgItemMessage(hDlg, IDC_RATE, CB_SETCURSEL, sel >= 0 ? sel : fallback, 0);
+}
+
+// Playback rate for the CURRENT combo selection, which is what the enable
+// state has to follow -- Settings.SoundPlaybackRate is only written on OK.
+// Falls back to the committed value before the combo has been filled in.
+static unsigned int SoundConfSelectedRate(HWND hDlg)
+{
+    LRESULT sel = SendDlgItemMessage(hDlg, IDC_RATE, CB_GETCURSEL, 0, 0);
+    if (sel < 0)
+        return Settings.SoundPlaybackRate;
+    return (unsigned int)SendDlgItemMessage(hDlg, IDC_RATE, CB_GETITEMDATA, sel, 0);
+}
 
 static void SoundConfUpdateModeState(HWND hDlg, bool force)
 {
     const bool bios_mode = Settings.SGB_BIOSModeActive ? true : false;
     const bool gb_active = (Settings.SuperGameBoy || Settings.SGB_BIOSModeActive) ? true : false;
-    if (!force && bios_mode == s_soundConfBios && gb_active == s_soundConfGb)
+    const unsigned int rate = SoundConfSelectedRate(hDlg);
+    if (!force && bios_mode == s_soundConfBios && gb_active == s_soundConfGb &&
+        rate == s_soundConfRate)
         return;
+    const bool mode_moved = (bios_mode != s_soundConfBios || gb_active != s_soundConfGb);
     s_soundConfBios = bios_mode;
     s_soundConfGb   = gb_active;
+    s_soundConfRate = rate;
+
+    // A mode change can invalidate entries in the rate list (32040 in
+    // BIOS-less GB), so rebuild it around the current selection.
+    if (mode_moved && !force)
+    {
+        int driver = (int)SendDlgItemMessage(hDlg, IDC_DRIVER, CB_GETITEMDATA,
+                        SendDlgItemMessage(hDlg, IDC_DRIVER, CB_GETCURSEL, 0, 0), 0);
+        SoundConfFillRates(hDlg, driver, rate);
+    }
 
     // SPC slider only matters in SGB1/SGB2 BIOS mode (the SPC stream is
     // discarded in BIOS-less .gb/.gbc). The GB slider applies in both
@@ -6280,6 +6426,16 @@ static void SoundConfUpdateModeState(HWND hDlg, bool force)
     EnableWindow(GetDlgItem(hDlg, IDC_SLIDER_GAIN_GB),        gb);
     EnableWindow(GetDlgItem(hDlg, IDC_EDIT_GAIN_GB),          gb);
     EnableWindow(GetDlgItem(hDlg, IDC_STATIC_GAIN_GB_LABEL),  gb);
+
+    // Audio Fidelity only drives the SPC/MSU-1/Voicer-kun resamplers. The GB
+    // core synthesises straight at the output rate and never touches them, so
+    // the control is dead in BIOS-less .gb/.gbc — but still live in SGB BIOS
+    // mode, where the SPC stream is mixed under the GB.
+    // ...and at the SPC's own rate Resampler::read passes through untouched, so
+    // neither kernel runs and the choice is inert.
+    const BOOL fidelity = ((!gb_active || bios_mode) &&
+                           rate != Settings.SoundInputRate) ? TRUE : FALSE;
+    EnableWindow(GetDlgItem(hDlg, IDC_AUDIO_FIDELITY), fidelity);
 
     // Name the Regular pair after what it actually rides on: the SNES APU
     // alone, or the post-mix master in any SGB/GB mode.
@@ -6315,6 +6471,13 @@ INT_PTR CALLBACK DlgSoundConf(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
         unsigned int volRegular, volTurbo, volSPC, volGB;
         unsigned int gainRegular, gainSPC, gainGB;
         bool mute;
+        int  fidelity;
+        // Device-defining settings. Only these require tearing the audio
+        // engine down and re-acquiring the endpoint on close; everything else
+        // in this dialog applies live.
+        unsigned int rate;
+        int  bufferSize;
+        TCHAR device[MAX_AUDIO_NAME_LENGTH];
     } prevAudio;
 
 	switch(msg)
@@ -6334,12 +6497,19 @@ INT_PTR CALLBACK DlgSoundConf(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
             prevAudio.gainSPC     = S9xSGBMixGainSPC;
             prevAudio.gainGB      = S9xSGBMixGainGB;
             prevAudio.mute        = GUI.Mute;
+            prevAudio.fidelity    = Settings.AudioFidelity;
+            prevAudio.rate        = Settings.SoundPlaybackRate;
+            prevAudio.bufferSize  = GUI.SoundBufferSize;
+            _tcsncpy(prevAudio.device, GUI.AudioDevice, MAX_AUDIO_NAME_LENGTH);
+            prevAudio.device[MAX_AUDIO_NAME_LENGTH - 1] = 0;
 
             // FIXME: these strings should come from wlanguage.h
 
             CreateToolTip(IDC_INRATEEDIT, hDlg, TEXT("For each 'Input rate' samples generated by the SNES, 'Playback rate' samples will produced. If you experience crackling you can try to lower this setting."));
             CreateToolTip(IDC_INRATE, hDlg, TEXT("For each 'Input rate' samples generated by the SNES, 'Playback rate' samples will produced. If you experience crackling you can try to lower this setting."));
             CreateToolTip(IDC_DYNRATECONTROL, hDlg, TEXT("Try to dynamically adjust the input rate to never overflow or underflow the sound buffer."));
+            CreateToolTip(IDC_RATE, hDlg, TEXT("32040 Hz is the SPC's own rate: SNES audio is passed through unresampled and Windows converts it instead. Game Boy audio gains nothing from it."));
+            CreateToolTip(IDC_AUDIO_FIDELITY, hDlg, TEXT("Resampler for SNES audio. Windowed-Sinc is cleaner on treble."));
             CreateToolTip(IDC_SLIDER_GAIN_REGULAR, hDlg, TEXT("Master pre-amp applied after the Volume percentages. 0 dB is unchanged; boosting can clip loud material."));
             CreateToolTip(IDC_SLIDER_GAIN_SPC, hDlg, TEXT("Pre-amp on the SPC side of the SGB mix, applied after its Volume percentage."));
             CreateToolTip(IDC_SLIDER_GAIN_GB, hDlg, TEXT("Pre-amp on the GB side of the SGB mix, applied after its Volume percentage."));
@@ -6426,33 +6596,16 @@ INT_PTR CALLBACK DlgSoundConf(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
             SetTimer(hDlg, SOUNDCONF_MODE_TIMER_ID, 250, NULL);
 
 
-            SendDlgItemMessage(hDlg, IDC_RATE, CB_INSERTSTRING, 0, (LPARAM)TEXT("8 KHz"));
-            SendDlgItemMessage(hDlg, IDC_RATE, CB_INSERTSTRING, 1, (LPARAM)TEXT("11 KHz"));
-            SendDlgItemMessage(hDlg, IDC_RATE, CB_INSERTSTRING, 2, (LPARAM)TEXT("16 KHz"));
-            SendDlgItemMessage(hDlg, IDC_RATE, CB_INSERTSTRING, 3, (LPARAM)TEXT("22 KHz"));
-            SendDlgItemMessage(hDlg, IDC_RATE, CB_INSERTSTRING, 4, (LPARAM)TEXT("30 KHz"));
-            SendDlgItemMessage(hDlg, IDC_RATE, CB_INSERTSTRING, 5, (LPARAM)TEXT("32 KHz"));
-            SendDlgItemMessage(hDlg, IDC_RATE, CB_INSERTSTRING, 6, (LPARAM)TEXT("35 KHz"));
-            SendDlgItemMessage(hDlg, IDC_RATE, CB_INSERTSTRING, 7, (LPARAM)TEXT("44 KHz"));
-            SendDlgItemMessage(hDlg, IDC_RATE, CB_INSERTSTRING, 8, (LPARAM)TEXT("48 KHz"));
+            SoundConfFillRates(hDlg, GUI.SoundDriver, Settings.SoundPlaybackRate);
 
-            int temp;
-            switch (Settings.SoundPlaybackRate)
-            {
-                case 8000:temp = 0; break;
-                case 11025:temp = 1; break;
-                case 16000:temp = 2; break;
-                case 22050:temp = 3; break;
-                case 30000:temp = 4; break;
-                case 0:
-                default:
-                case 32000:temp = 5; break;
-                case 35000:temp = 6; break;
-                case 44000:
-                case 44100:temp = 7; break;
-                case 48000:temp = 8; break;
-            }
-            SendDlgItemMessage(hDlg, IDC_RATE, CB_SETCURSEL, temp, 0);
+            // Audio Fidelity: which kernel resamples the SPC's 32040 Hz to the
+            // playback rate. Hermite is the historical 4-point spline; it leaves
+            // the first image barely attenuated above ~8 kHz.
+            SendDlgItemMessage(hDlg, IDC_AUDIO_FIDELITY, CB_INSERTSTRING, 0, (LPARAM)TEXT("Hermite (legacy)"));
+            SendDlgItemMessage(hDlg, IDC_AUDIO_FIDELITY, CB_INSERTSTRING, 1, (LPARAM)TEXT("Windowed-Sinc"));
+            // 0 = Hermite, 1 = Windowed-Sinc (see Settings.AudioFidelity)
+            SendDlgItemMessage(hDlg, IDC_AUDIO_FIDELITY, CB_SETCURSEL,
+                               Settings.AudioFidelity == 0 ? 0 : 1, 0);
 
             SendDlgItemMessage(hDlg, IDC_BUFLEN, CB_INSERTSTRING, 0, (LPARAM)TEXT("16 ms"));
             SendDlgItemMessage(hDlg, IDC_BUFLEN, CB_INSERTSTRING, 1, (LPARAM)TEXT("32 ms"));
@@ -6521,7 +6674,18 @@ INT_PTR CALLBACK DlgSoundConf(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 			{
 				s_soundOptsUserClose = false;
 				RestoreSNESDisplay();
-				ReInitSound();
+				// Re-opening the device stalls for most of a second while
+				// CreateMasteringVoice acquires the endpoint, so only pay it
+				// when the driver, rate, buffer size or output device changed.
+				const bool deviceChanged =
+					GUI.SoundDriver            != prevDriver ||
+					Settings.SoundPlaybackRate != prevAudio.rate ||
+					GUI.SoundBufferSize        != prevAudio.bufferSize ||
+					_tcscmp(GUI.AudioDevice, prevAudio.device) != 0;
+				if (deviceChanged)
+					ReInitSound();
+				else
+					ApplyLiveSoundSettings();
 			}
 			return true;
 		case WM_HSCROLL:
@@ -6617,6 +6781,20 @@ INT_PTR CALLBACK DlgSoundConf(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 		}
 		break;
 		case WM_COMMAND:
+			// Audio Fidelity applies as you pick it, like the volume sliders.
+			// Both kernels share a delay line and group delay, so the swap is
+			// inaudible and needs no sound-device restart; Cancel restores it.
+			if (LOWORD(wParam) == IDC_RATE && HIWORD(wParam) == CBN_SELCHANGE)
+			{
+				SoundConfUpdateModeState(hDlg, false);
+				return true;
+			}
+			if (LOWORD(wParam) == IDC_AUDIO_FIDELITY && HIWORD(wParam) == CBN_SELCHANGE)
+			{
+				S9xSetAudioFidelity(
+					SendDlgItemMessage(hDlg, IDC_AUDIO_FIDELITY, CB_GETCURSEL, 0, 0) == 0 ? 0 : 1);
+				return true;
+			}
 			switch(LOWORD(wParam))
 			{
 				case IDOK:
@@ -6629,20 +6807,12 @@ INT_PTR CALLBACK DlgSoundConf(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 					GUI.FAMute=IsDlgButtonChecked(hDlg, IDC_FAMT)!=0;
 
 
-					switch(SendDlgItemMessage(hDlg, IDC_RATE,CB_GETCURSEL,0,0))
-					{
-					case 0: Settings.SoundPlaybackRate=8000;	break;
-					case 1: Settings.SoundPlaybackRate=11025;	break;
-					case 2: Settings.SoundPlaybackRate=16000;	break;
-					case 3: Settings.SoundPlaybackRate=22050;	break;
-					case 4: Settings.SoundPlaybackRate=30000;	break;
-					case 5: Settings.SoundPlaybackRate=32000;	break;
-					case 6: Settings.SoundPlaybackRate=35000;	break;
-					case 7: Settings.SoundPlaybackRate=44100;	break;
-					case 8: Settings.SoundPlaybackRate=48000;	break;
-					}
+					Settings.SoundPlaybackRate = SoundConfSelectedRate(hDlg);
 
 					GUI.SoundBufferSize=(16*(1+(SendDlgItemMessage(hDlg,IDC_BUFLEN,CB_GETCURSEL,0,0))));
+
+					S9xSetAudioFidelity(
+						SendDlgItemMessage(hDlg, IDC_AUDIO_FIDELITY, CB_GETCURSEL, 0, 0) == 0 ? 0 : 1);
 
 					Edit_GetText(GetDlgItem(hDlg,IDC_INRATEEDIT),valTxt,10);
 					int sliderVal=_tstoi(valTxt);
@@ -6720,6 +6890,7 @@ INT_PTR CALLBACK DlgSoundConf(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 					S9xSGBMixGainSPC   = prevAudio.gainSPC;
 					S9xSGBMixGainGB    = prevAudio.gainGB;
 					S9xSetMuted(prevAudio.mute);
+					S9xSetAudioFidelity(prevAudio.fidelity);
 					s_soundOptsUserClose = true;
 					DestroyWindow(hDlg);
 					return true;
@@ -6770,6 +6941,11 @@ INT_PTR CALLBACK DlgSoundConf(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 					{
 						int driver = SendDlgItemMessage(hDlg, IDC_DRIVER, CB_GETITEMDATA,
 										SendDlgItemMessage(hDlg, IDC_DRIVER, CB_GETCURSEL, 0,0),0);
+
+						// Rates the new driver cannot open must leave the list,
+						// or picking one would silently produce no audio.
+						SoundConfFillRates(hDlg, driver, SoundConfSelectedRate(hDlg));
+						SoundConfUpdateModeState(hDlg, true);
 
 						switch(driver) {
 							case WIN_WAVEOUT_DRIVER:

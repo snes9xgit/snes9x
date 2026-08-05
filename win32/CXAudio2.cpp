@@ -503,6 +503,16 @@ bool CXAudio2::SetupSound()
 
 	DeInitVoices();
 
+	// The mastering voice needs a whole number of samples per XAudio2's fixed
+	// 10 ms quantum, so CreateMasteringVoice rejects any rate that is not a
+	// multiple of XAUDIO2_QUANTUM_DENOMINATOR. The GUI filters those out per
+	// driver, but snes9x.conf can still name one directly -- and in a release
+	// build the failure is silent (DXTRACE_ERR_MSGBOX compiles to nothing), so
+	// we would just lose all audio. Snap it here, before the buffer maths.
+	if (Settings.SoundPlaybackRate % XAUDIO2_QUANTUM_DENOMINATOR)
+		Settings.SoundPlaybackRate -=
+			Settings.SoundPlaybackRate % XAUDIO2_QUANTUM_DENOMINATOR;
+
 	blockCount = 8;
 	UINT32 blockTime = GUI.SoundBufferSize / blockCount;
 

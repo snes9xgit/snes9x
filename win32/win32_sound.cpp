@@ -32,10 +32,14 @@ mode		-	0 disables sound output, 1 enables
 -----
 returns true if successful, false otherwise
 */
-bool ReInitSound()
+/*  ApplyLiveSoundSettings
+applies every sound setting that does NOT define the device or its format:
+input rate, mute, dynamic rate control, resampler kernel. Re-opening the
+device costs a noticeable pause (CreateMasteringVoice has to acquire the
+endpoint), so callers that only changed these must use this instead.
+*/
+void ApplyLiveSoundSettings()
 {
-	if (GUI.AVIOut)
-		return false;
 	if (GUI.AutomaticInputRate)
 	{
 		int rate = WinGetAutomaticInputRate();
@@ -49,8 +53,20 @@ bool ReInitSound()
 	}
 
 	Settings.SoundInputRate = CLAMP(Settings.SoundInputRate,31700, 32300);
-	Settings.SoundPlaybackRate = CLAMP(Settings.SoundPlaybackRate,8000, 48000);
 	S9xSetSoundMute(GUI.Mute);
+	// Re-derives the resampler ratio from the input/playback rates and
+	// re-applies Settings.AudioFidelity. (1, 2) leaves the rate multiplier at
+	// unity, matching the other non-audio-thread callers.
+	S9xUpdateDynamicRate(1, 2);
+}
+
+bool ReInitSound()
+{
+	if (GUI.AVIOut)
+		return false;
+
+	ApplyLiveSoundSettings();
+	Settings.SoundPlaybackRate = CLAMP(Settings.SoundPlaybackRate,8000, 48000);
 	if(S9xSoundOutput)
 		S9xSoundOutput->DeInitSoundOutput();
 

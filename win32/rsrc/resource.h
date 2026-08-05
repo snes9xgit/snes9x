@@ -313,6 +313,7 @@
 #define IDC_GB_BLEND_AUTO               3261
 #define IDC_GB_ENABLE_CAMERA            3364
 #define IDC_GB_CAMERA_LIST              3365
+#define IDC_AUDIO_FIDELITY              3366
 #define IDC_RECORD_NOW                  1201
 #define IDC_MESSAGES_SCALE              1201
 #define IDC_LABEL_UP28                  1201
@@ -678,6 +679,7 @@
 #define IDC_LABEL_MASTERHOTKEY          3110
 #define ID_SOUND_MUTE                   40189
 #define ID_SOUND_VOICEKUN               40214
+#define ID_SOUND_32040HZ                40215
 #define ID_SOUND_VOICEKUN_ATTACH        40212
 #define ID_SOUND_VOICEKUN_DETACH        40213
 #define ID_EMULATION_RUNAHEAD           40190
@@ -894,8 +896,8 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        189
-#define _APS_NEXT_COMMAND_VALUE         40215
-#define _APS_NEXT_CONTROL_VALUE         3366
+#define _APS_NEXT_COMMAND_VALUE         40216
+#define _APS_NEXT_CONTROL_VALUE         3367
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

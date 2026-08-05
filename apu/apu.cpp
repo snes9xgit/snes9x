@@ -136,6 +136,17 @@ int snapshot(int stream, short *out_lr, int max_frames)
 }
 } // namespace audiowave
 
+// Live "Audio Fidelity" switch. The resamplers only record the request and
+// swap inside read(), and both kernels share a delay line and group delay, so
+// this is safe to call from the GUI thread mid-playback and is inaudible.
+void S9xSetAudioFidelity(int engine)
+{
+    Settings.AudioFidelity = engine;
+    spc::resampler.set_engine(engine);
+    msu::resampler.set_engine(engine);
+    voicekun::resampler.set_engine(engine);
+}
+
 static void UpdatePlaybackRate(void);
 static void SPCSnapshotCallback(void);
 static inline int S9xAPUGetClock(int32);
@@ -779,8 +790,8 @@ int S9xAudioWaveformSampleRate(void)
 }
 
 // Run-ahead audio state preservation. We snapshot the resampler control state
-// (ring positions, phase accumulator, hermite history) before the hidden
-// frame runs, and restore it afterwards. This keeps the hermite interpolation
+// (ring positions, phase accumulator, filter history) before the hidden
+// frame runs, and restore it afterwards. This keeps the interpolation
 // warmed-up across iterations so the audio output for the displayed frame
 // follows on seamlessly from the previous displayed frame's output.
 static ResamplerState saved_spc_resampler_state;
@@ -840,6 +851,10 @@ static void UpdatePlaybackRate(void)
     {
         time_ratio *= spc::dynamic_rate_multiplier;
     }
+
+    // Kernel choice ("Audio Fidelity") applies to every stream that feeds the
+    // host mix, so a rate change never leaves one of them on the other engine.
+    S9xSetAudioFidelity(Settings.AudioFidelity);
 
     spc::resampler.time_ratio(time_ratio);
 
