@@ -15,7 +15,7 @@
 # Usage:
 #   ./build-portable.sh [arch ...]
 #
-#   arch: x86_64 (default), aarch64, armhf  -- may pass several
+#   arch: x86_64 (default), x86, aarch64, armhf  -- may pass several
 #
 # Examples:
 #   ./build-portable.sh                 # x86_64 only
@@ -23,12 +23,14 @@
 #
 # Non-native architectures are built via QEMU emulation. Enable it once with:
 #   docker run --rm --privileged tonistiigi/binfmt --install all
+# (x86 on an x86_64 host runs natively, no QEMU needed.)
 #
 # If your user is not in the `docker` group, run docker via sudo:
 #   DOCKER='sudo docker' ./build-portable.sh
 #
 # Requirements: docker.
-# Output: libretro/linux/dist/<arch>/supersnes9x_libretro.so
+# Output: libretro/linux/dist/<arch>/supersnes9x_libretro.so + matching .info
+#         (the x86_64 core is named supersnes9x_libretro-x64.so/.info)
 
 set -euo pipefail
 
@@ -46,24 +48,44 @@ DOCKER="${DOCKER:-docker}"   # override, e.g. DOCKER='sudo docker'
 docker_platform() {
   case "$1" in
     x86_64)  echo "linux/amd64" ;;
+    x86)     echo "linux/386" ;;
     aarch64) echo "linux/arm64" ;;
     armhf)   echo "linux/arm/v7" ;;
     *) echo "unknown arch: $1" >&2; return 1 ;;
   esac
 }
 
+# Map arch name -> docker image. The multi-arch ubuntu:18.04 manifest has no
+# i386 entry, so 32-bit x86 needs the explicit i386 image.
+docker_image() {
+  case "$1" in
+    x86) echo "i386/ubuntu:18.04" ;;
+    *)   echo "${IMAGE}" ;;
+  esac
+}
+
+# Map arch name -> released filename (x86_64 carries an -x64 suffix).
+out_name() {
+  case "$1" in
+    x86_64) echo "${TARGET_SO%.so}-x64.so" ;;
+    *)      echo "${TARGET_SO}" ;;
+  esac
+}
+
 build_arch() {
-  local arch="$1" platform out_dir
+  local arch="$1" platform image out_dir out_so
   platform="$(docker_platform "$arch")"
+  image="$(docker_image "$arch")"
   out_dir="${DIST_DIR}/${arch}"
+  out_so="$(out_name "$arch")"
   mkdir -p "${out_dir}"
 
-  echo ">>> Building ${TARGET_SO} for ${arch} (${platform}) in ${IMAGE} ..."
+  echo ">>> Building ${out_so} for ${arch} (${platform}) in ${image} ..."
 
   # Build with a clean object tree so we never mix objects across archs.
   # The whole repo is mounted because libretro objects live in the repo root.
   ${DOCKER} run --rm --platform "${platform}" \
-    -v "${REPO_DIR}:/build" -w /build/libretro "${IMAGE}" \
+    -v "${REPO_DIR}:/build" -w /build/libretro "${image}" \
     bash -euo pipefail -c '
       export DEBIAN_FRONTEND=noninteractive
       apt-get update -qq
@@ -73,9 +95,12 @@ build_arch() {
       make portable -j"$(nproc)"
     '
 
-  cp "${LIBRETRO_DIR}/${TARGET_SO}" "${out_dir}/${TARGET_SO}"
-  echo ">>> Wrote ${out_dir}/${TARGET_SO}"
-  echo "    $(cd "${out_dir}" && file "${TARGET_SO}" | cut -d, -f1-3)"
+  cp "${LIBRETRO_DIR}/${TARGET_SO}" "${out_dir}/${out_so}"
+  # RetroArch matches cores to their .info by filename, so ship a copy named
+  # after the core (supersnes9x_libretro-x64.info for the x86_64 build).
+  cp "${LIBRETRO_DIR}/${TARGET_SO%.so}.info" "${out_dir}/${out_so%.so}.info"
+  echo ">>> Wrote ${out_dir}/${out_so}"
+  echo "    $(cd "${out_dir}" && file "${out_so}" | cut -d, -f1-3)"
 }
 
 main() {

@@ -6,7 +6,7 @@
 # then rebuilds everything and prints the full path of each fresh file.
 #
 # Usage:
-#   ./build-all.sh                # Android core for arm64-v8a (default)
+#   ./build-all.sh                # Android cores for arm64-v8a + armeabi-v7a
 #   ANDROID_ABI=all ./build-all.sh
 #
 # Notes:
@@ -21,14 +21,15 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
-ANDROID_ABI="${ANDROID_ABI:-arm64-v8a}"
+ANDROID_ABI="${ANDROID_ABI:-arm64-v8a armeabi-v7a}"
 JOBS="$(nproc)"
 
 QT_BIN="${REPO_DIR}/qt/build/super-snes9x-qt"
 GTK_BIN="${REPO_DIR}/gtk/build/super-snes9x-gtk"
 QT_APPIMAGE="${REPO_DIR}/qt/build/super-snes9x-qt-x86_64.AppImage"
 GTK_APPIMAGE="${REPO_DIR}/gtk/build/super-snes9x-gtk-x86_64.AppImage"
-LINUX_SO="${SCRIPT_DIR}/linux/dist/x86_64/supersnes9x_libretro.so"
+LINUX_SO="${SCRIPT_DIR}/linux/dist/x86_64/supersnes9x_libretro-x64.so"
+LINUX_SO_X86="${SCRIPT_DIR}/linux/dist/x86/supersnes9x_libretro.so"
 ANDROID_DIST="${SCRIPT_DIR}/jni/dist"
 
 # Run the AppImage tools without FUSE (works everywhere, incl. containers).
@@ -39,7 +40,9 @@ step() { echo; echo "==> $*"; }
 # ---- Clean old artifacts -------------------------------------------------
 
 step "Cleaning old executables and cores"
-rm -f "${QT_BIN}" "${GTK_BIN}" "${QT_APPIMAGE}" "${GTK_APPIMAGE}" "${LINUX_SO}" \
+rm -f "${QT_BIN}" "${GTK_BIN}" "${QT_APPIMAGE}" "${GTK_APPIMAGE}" \
+      "${LINUX_SO}" "${LINUX_SO_X86}" \
+      "${SCRIPT_DIR}/linux/dist/x86_64/supersnes9x_libretro.so" \
       "${SCRIPT_DIR}/supersnes9x_libretro.so"
 rm -rf "${REPO_DIR}/qt/build/AppDir" "${REPO_DIR}/gtk/build/AppDir"
 rm -rf "${ANDROID_DIST}" "${SCRIPT_DIR}/libs" "${SCRIPT_DIR}/obj"
@@ -71,8 +74,8 @@ step "Packaging GTK AppImage"
 
 # ---- Linux libretro core -------------------------------------------------
 
-step "Building Linux libretro core (portable, Ubuntu 18.04 baseline)"
-"${SCRIPT_DIR}/linux/build-portable.sh"
+step "Building Linux libretro cores (portable, Ubuntu 18.04 baseline: x86_64 + x86)"
+"${SCRIPT_DIR}/linux/build-portable.sh" x86_64 x86
 
 # ---- Android libretro core ----------------------------------------------
 
@@ -97,12 +100,13 @@ show "${GTK_BIN}"
 show "${QT_APPIMAGE}"
 show "${GTK_APPIMAGE}"
 show "${LINUX_SO}"
+show "${LINUX_SO_X86}"
 found_android=0
-for so in "${ANDROID_DIST}"/*/supersnes9x_libretro_android.so; do
+for so in "${ANDROID_DIST}"/*/supersnes9x_libretro_android*.so; do
     [ -f "$so" ] && { echo "  $so"; found_android=1; }
 done
 if [ "${found_android}" -eq 0 ]; then
-    echo "  MISSING: ${ANDROID_DIST}/<abi>/supersnes9x_libretro_android.so"
+    echo "  MISSING: ${ANDROID_DIST}/<abi>/supersnes9x_libretro_android*.so"
     missing=1
 fi
 echo "================================================="

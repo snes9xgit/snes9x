@@ -21,15 +21,26 @@ LIBRETRO_DIR="$(dirname "$JNI_DIR")"
 cd "$JNI_DIR"
 "$NDK/ndk-build" -j"$(nproc)" APP_ABI="$ABI"
 
-# RetroArch matches cores to supersnes9x_libretro.info by filename.
+# RetroArch matches cores to their .info by filename, so each ABI dir gets a
+# core plus a matching-named .info. 64-bit ABIs carry an arch suffix so cores
+# from different ABIs can sit in one folder; 32-bit ABIs keep the plain name.
+core_name() {
+    case "$1" in
+        arm64-v8a) echo "supersnes9x_libretro_android-arm64.so" ;;
+        x86_64)    echo "supersnes9x_libretro_android-x64.so" ;;
+        *)         echo "supersnes9x_libretro_android.so" ;;
+    esac
+}
+
 OUT="$JNI_DIR/dist"
 rm -rf "$OUT"
 for so in "$LIBRETRO_DIR"/libs/*/libretro.so; do
     abi_dir="$(basename "$(dirname "$so")")"
+    out_so="$(core_name "$abi_dir")"
     mkdir -p "$OUT/$abi_dir"
-    cp "$so" "$OUT/$abi_dir/supersnes9x_libretro_android.so"
+    cp "$so" "$OUT/$abi_dir/$out_so"
+    cp "$LIBRETRO_DIR/supersnes9x_libretro.info" "$OUT/$abi_dir/${out_so%.so}.info"
 done
-cp "$LIBRETRO_DIR/supersnes9x_libretro.info" "$OUT/"
 
 echo "Done:"
 find "$OUT" -name '*.so'
