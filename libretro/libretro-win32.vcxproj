@@ -251,6 +251,7 @@
     <ClInclude Include="..\stream.h" />
     <ClInclude Include="..\tile.h" />
     <ClInclude Include="..\tileimpl.h" />
+    <ClInclude Include="..\voicekun.h" />
     <ClInclude Include="libretro.h" />
     <ClInclude Include="..\sgb\gb_apu.h" />
     <ClInclude Include="..\sgb\gb_cart.h" />
@@ -330,6 +331,7 @@
     <ClCompile Include="..\tileimpl-n1x1.cpp" />
     <ClCompile Include="..\tileimpl-n2x1.cpp" />
     <ClCompile Include="..\tileimpl-h2x1.cpp" />
+    <ClCompile Include="..\voicekun.cpp" />
     <ClCompile Include="libretro.cpp" />
     <ClCompile Include="..\fscompat.cpp" />
     <ClCompile Include="..\sgb\gb_apu.cpp" />
