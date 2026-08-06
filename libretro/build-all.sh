@@ -10,10 +10,12 @@
 #   ANDROID_ABI=all ./build-all.sh
 #
 # Notes:
-# - The Linux core is a native build (matches this machine's glibc). For the
-#   shippable portable core use linux/build-portable.sh (needs docker).
-# - Same for the GUIs: qt/scripts/makeappimage-docker.sh builds the
-#   shippable Qt AppImage against the Ubuntu 22.04 baseline.
+# - The Linux core is built with linux/build-portable.sh (needs docker):
+#   an Ubuntu 18.04 container with static libstdc++, so the released .so
+#   loads on essentially any distro (verified GLIBC_2.14 floor).
+# - The GUI AppImages here are native builds. For public releases build the
+#   Qt AppImage with qt/scripts/makeappimage-docker.sh (Ubuntu 22.04
+#   baseline).
 
 set -euo pipefail
 
@@ -26,7 +28,7 @@ QT_BIN="${REPO_DIR}/qt/build/super-snes9x-qt"
 GTK_BIN="${REPO_DIR}/gtk/build/super-snes9x-gtk"
 QT_APPIMAGE="${REPO_DIR}/qt/build/super-snes9x-qt-x86_64.AppImage"
 GTK_APPIMAGE="${REPO_DIR}/gtk/build/super-snes9x-gtk-x86_64.AppImage"
-LINUX_SO="${SCRIPT_DIR}/supersnes9x_libretro.so"
+LINUX_SO="${SCRIPT_DIR}/linux/dist/x86_64/supersnes9x_libretro.so"
 ANDROID_DIST="${SCRIPT_DIR}/jni/dist"
 
 # Run the AppImage tools without FUSE (works everywhere, incl. containers).
@@ -37,7 +39,8 @@ step() { echo; echo "==> $*"; }
 # ---- Clean old artifacts -------------------------------------------------
 
 step "Cleaning old executables and cores"
-rm -f "${QT_BIN}" "${GTK_BIN}" "${QT_APPIMAGE}" "${GTK_APPIMAGE}" "${LINUX_SO}"
+rm -f "${QT_BIN}" "${GTK_BIN}" "${QT_APPIMAGE}" "${GTK_APPIMAGE}" "${LINUX_SO}" \
+      "${SCRIPT_DIR}/supersnes9x_libretro.so"
 rm -rf "${REPO_DIR}/qt/build/AppDir" "${REPO_DIR}/gtk/build/AppDir"
 rm -rf "${ANDROID_DIST}" "${SCRIPT_DIR}/libs" "${SCRIPT_DIR}/obj"
 # Libretro objects live in the repo root and are shared with other Makefile
@@ -68,8 +71,8 @@ step "Packaging GTK AppImage"
 
 # ---- Linux libretro core -------------------------------------------------
 
-step "Building Linux libretro core (native)"
-make -C "${SCRIPT_DIR}" -j"${JOBS}"
+step "Building Linux libretro core (portable, Ubuntu 18.04 baseline)"
+"${SCRIPT_DIR}/linux/build-portable.sh"
 
 # ---- Android libretro core ----------------------------------------------
 
