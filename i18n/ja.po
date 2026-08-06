@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-06-12 02:37-0400\n"
-"PO-Revision-Date: 2026-07-30 21:27+0900\n"
+"PO-Revision-Date: 2026-08-06 21:01+0900\n"
 "Last-Translator: trickart <trickart412@gmail.com>\n"
 "Language-Team: \n"
 "Language: ja\n"
@@ -2106,7 +2106,7 @@ msgid "all of SuperSnes9x's settings are stored in this file"
 msgstr "SuperSnes9xのすべての設定はこのファイルに保存されます"
 
 #: win32/rsrc/snes9x.rc
-msgid "Allow executable icon override"
+msgid "Allow executable logo override"
 msgstr "実行ファイルのロゴ上書きを許可"
 
 #: win32/rsrc/snes9x.rc
@@ -5604,6 +5604,136 @@ msgstr "振動を有効にする"
 #: win32/rsrc/snes9x.rc
 msgid "View Profile"
 msgstr "プロフィールを表示"
+
+# === Win32 strings (added by i18n/extract_strings.py) ===
+#: win32/rsrc/snes9x.rc
+msgid ".bs"
+msgstr ".bs"
+
+#: win32/rsrc/snes9x.rc
+msgid ".fig"
+msgstr ".fig"
+
+#: win32/rsrc/snes9x.rc
+msgid ".gb"
+msgstr ".gb"
+
+#: win32/rsrc/snes9x.rc
+msgid ".gbc"
+msgstr ".gbc"
+
+#: win32/rsrc/snes9x.rc
+msgid ".sfc"
+msgstr ".sfc"
+
+#: win32/rsrc/snes9x.rc
+msgid ".smc"
+msgstr ".smc"
+
+#: win32/rsrc/snes9x.rc
+msgid ".st"
+msgstr ".st"
+
+#: win32/rsrc/snes9x.rc
+msgid ".swc"
+msgstr ".swc"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>Master pre-amp applied after the volume percentages. 0 dB is unchanged; boosting can clip loud material.</p></body></html>"
+msgstr "<html><head/><body><p>ボリュームのパーセンテージ適用後にマスタープリアンプが適用されます。0 dBの場合は変化しませんが、ブーストを行うと、音量の大きい素材でクリッピングが発生する可能性があります。</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>Pre-amp on the GB side of the SGB mix, applied after its volume percentage. Only active in SGB1/SGB2 BIOS mode.</p></body></html>"
+msgstr "<html><head/><body><p>SGBミックスにおけるGB側のプリアンプで、音量比率（ボリューム％）が適用された後に作用します。SGB1/SGB2のBIOSモードでのみ有効です。</p></body></html>"
+
+#: qt/src/SoundPanel.ui
+msgid "<html><head/><body><p>Pre-amp on the SPC side of the SGB mix, applied after its volume percentage. Only active in SGB1/SGB2 BIOS mode.</p></body></html>"
+msgstr "<html><head/><body><p>SGBミックスのSPC側にかかるプリアンプで、音量比率（ボリューム％）が適用された後に作用します。SGB1/SGB2 BIOSモードでのみ有効です。</p></body></html>"
+
+#: win32/rsrc/snes9x.rc
+msgid "Allow executable icon override"
+msgstr "実行ファイルのアイコン上書きを許可"
+
+#: win32/rsrc/snes9x.rc
+msgid "Attach Audio CD"
+msgstr "オーディオCDの追加"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Attach Audio CD (.cue or .zip)"
+msgstr "オーディオCDの追加 (.cue or .zip)"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Audio CD Images (*.cue *.zip)"
+msgstr "オーディオCD イメージ (*.cue *.zip)"
+
+#: qt/src/SoundPanel.ui
+msgid "dB"
+msgstr "dB"
+
+#: win32/rsrc/snes9x.rc
+msgid "Eject Audio CD"
+msgstr "オーディオCDのイジェクト"
+
+#: win32/rsrc/snes9x.rc
+msgid "Gain (dB)"
+msgstr "ゲイン (dB)"
+
+#: qt/src/SoundPanel.ui
+msgid "Gain:"
+msgstr "ゲイン:"
+
+#: win32/rsrc/snes9x.rc
+msgid "Game Boy:"
+msgstr "ゲームボーイ:"
+
+#: qt/src/SoundPanel.ui
+msgid "GB gain:"
+msgstr "GBゲイン:"
+
+#: win32/rsrc/snes9x.rc
+msgid "No Sprite Limit (GameBoy)"
+msgstr "ｽﾌﾟﾗｲﾄを制限しない(ゲームボーイ)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Pause Emulation"
+msgstr "エミュレーションを停止"
+
+#: win32/rsrc/snes9x.rc
+msgid "SNES:"
+msgstr "SNES:"
+
+#: qt/src/SoundPanel.ui
+msgid "SPC gain:"
+msgstr "SPCゲイン:"
+
+#: win32/rsrc/snes9x.rc
+msgid "The settings in this dialog should only be used for compatibility with old ROM hacks or if you otherwise know what you're doing. If any problems occur, click \"Set Defaults\" to reset the options to normal."
+msgstr "この設定は、古いROMハックとの互換性を確保するため、または設定内容を十分に理解している場合にのみ使用してください。問題が発生した場合は、「リセット」をクリックすると設定を最初の状態に戻すことができます。"
+
+#: qt/src/EmuMainWindow.cpp
+msgid ""
+"This audio CD was not accepted:\n"
+"%1"
+msgstr ""
+"このオーディオCDは取り扱いできません:\n"
+"%1"
+
+#: win32/rsrc/snes9x.rc
+msgid "Voicer-kun"
+msgstr "ボイサーくん"
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Voicer-kun: %1 verified, %2 tracks (%3)"
+msgstr "ボイサーくん：%1検証済み、%2トラック(%3)"
+
+# === Win32 strings (added by i18n/extract_strings.py) ===
+#: win32/rsrc/snes9x.rc
+msgid "32040Hz (SNES native)"
+msgstr "32040Hz (SNES 固有)"
+
+#: win32/rsrc/snes9x.rc
+msgid "Audio Fidelity:"
+msgstr "ｵｰﾃﾞｨｵ再現性"
 
 #~ msgid "<b>Accuracy</b>"
 #~ msgstr "<b>エミュレーションの正確性</b>"
