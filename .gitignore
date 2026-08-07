@@ -512,6 +512,8 @@ libretro/jni/dist/
 libretro/linux/dist/
 libretro/libs/
 qt/build-appimage/
+qt/build-appimage-x86/
+gtk/build-appimage-x86/
 *.AppImage
 Roms/
 Bios/
