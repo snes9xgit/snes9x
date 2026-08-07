@@ -20,6 +20,7 @@
 #include "display.h"
 #include "ppu.h"
 #include "controls.h"
+#include "apu/apu.h"
 #include "apu/resampler.h"
 #ifdef UNZIP_SUPPORT
 #  ifdef SYSTEM_ZIP
@@ -715,10 +716,10 @@ bool S9xVoiceKunAttach(const char *path)
 	VoiceKunHook.IRCmdArgOff = game->ir_cmd_arg_off;
 
 	partial_frames = 0;
-	if (resampler)
-		resampler->clear();
-
 	Settings.VoiceKun = TRUE;
+	// Clear all streams together: min()-gated mixing preserves an attach-time
+	// fill offset forever, pinning the SPC ring above the landing threshold.
+	S9xClearSamples();
 	S9xVoiceKunIRSetActive(true);
 
 	// Force port 2 to a joypad so the core reports our device id to the game;

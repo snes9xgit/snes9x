@@ -398,12 +398,16 @@ void CWaveOut::RecoverFromUnderrun()
 
 void CWaveOut::ProcessSound()
 {
-    int freeBytes = GetAvailableBytes();
+    // Cheap lower bound first: bufferCount only lags completions, so this
+    // never overestimates free space. waveOutGetPosition round-trips into
+    // winmm and is far too slow for the per-landing call rate — query the
+    // real cursor only once this bound says the queue may be full.
+    int freeBytes = ((blockCount - bufferCount) * singleBufferBytes) - partialOffset;
 
     if (bufferCount == 0)
     {
         RecoverFromUnderrun();
-        freeBytes = GetAvailableBytes();
+        freeBytes = ((blockCount - bufferCount) * singleBufferBytes) - partialOffset;
     }
 
     if (Settings.DynamicRateControl)
@@ -421,8 +425,12 @@ void CWaveOut::ProcessSound()
         // maintain an accurate measurement.
         if (availableSamples > (freeBytes >> 1))
         {
-            S9xClearSamples();
-            return;
+            freeBytes = GetAvailableBytes();
+            if (availableSamples > (freeBytes >> 1))
+            {
+                S9xClearSamples();
+                return;
+            }
         }
     }
 
@@ -432,6 +440,8 @@ void CWaveOut::ProcessSound()
     if(Settings.SoundSync && !Settings.TurboMode && !Settings.Mute)
     {
         // no sound sync when speed is not set to 100%
+        if ((freeBytes >> 1) < availableSamples)
+            freeBytes = GetAvailableBytes();
         const DWORD sync_start = timeGetTime();
         while((freeBytes >> 1) < availableSamples)
         {
