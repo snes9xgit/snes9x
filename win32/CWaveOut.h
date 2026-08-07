@@ -25,6 +25,12 @@ class CWaveOut : public IS9xSoundOutput
     bool initDone;
 
     volatile LONG bufferCount;
+    // Free space for pacing comes from the device play cursor, not WOM_DONE
+    // arrival — winmm's callback pump can lag playback by a full period.
+    UINT64 submittedBytes;
+    UINT64 playedBytesAccum;
+    DWORD  lastPosBytes;
+    UINT64 PlayedBytes();
     UINT32 sumBufferSize;
     UINT32 singleBufferSamples;
     UINT32 singleBufferBytes;
