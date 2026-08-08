@@ -100,11 +100,27 @@ else
 fi
 
 # -always-overwrite keeps repeated runs from mixing an old Qt into the bundle.
+#
+# Output goes to a log rather than the terminal. macdeployqt prints a wall of
+# "ERROR: Cannot resolve rpath ..." for the modules described above and then
+# exits 0; echoing that verbatim reads like a failed build when it is the
+# normal, handled case. Only the summary below is shown -- unless macdeployqt
+# genuinely fails, in which case the whole log is dumped.
 DEPLOY_LOG="$(mktemp -t macdeployqt)"
+deploy_status=0
 if [ -n "${DEPLOY_LIBPATH}" ]; then
-    "${MACDEPLOYQT}" "${APP}" -always-overwrite "${DEPLOY_LIBPATH}" 2>&1 | tee "${DEPLOY_LOG}"
+    "${MACDEPLOYQT}" "${APP}" -always-overwrite "${DEPLOY_LIBPATH}" \
+        > "${DEPLOY_LOG}" 2>&1 || deploy_status=$?
 else
-    "${MACDEPLOYQT}" "${APP}" -always-overwrite 2>&1 | tee "${DEPLOY_LOG}"
+    "${MACDEPLOYQT}" "${APP}" -always-overwrite \
+        > "${DEPLOY_LOG}" 2>&1 || deploy_status=$?
+fi
+
+if [ "${deploy_status}" -ne 0 ]; then
+    echo "error: macdeployqt failed (exit ${deploy_status}):" >&2
+    cat "${DEPLOY_LOG}" >&2
+    rm -f "${DEPLOY_LOG}"
+    exit 1
 fi
 
 # macdeployqt reports unresolved dependencies and still exits 0. These are
