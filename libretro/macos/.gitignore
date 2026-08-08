@@ -1,0 +1,3 @@
+# Build output from build-macos.sh
+dist/
+build/

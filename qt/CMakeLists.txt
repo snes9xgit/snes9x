@@ -1,4 +1,18 @@
 cmake_minimum_required(VERSION 3.20)
+
+# Must be set before project(), which is where CMake bakes it into the
+# compiler/linker probes.
+#
+# The floor is dictated by whichever Qt you link against: Homebrew's qt
+# bottles are built for the host OS (currently macOS 14.0), so linking a
+# lower target against them only produces "built for newer macOS version"
+# warnings. Override on the command line when using a Qt that supports
+# older systems, e.g. the official online-installer builds:
+#   cmake -S qt -B qt/build -DCMAKE_OSX_DEPLOYMENT_TARGET=12.0
+if(APPLE AND NOT CMAKE_OSX_DEPLOYMENT_TARGET)
+    set(CMAKE_OSX_DEPLOYMENT_TARGET "14.0" CACHE STRING "Minimum macOS version")
+endif()
+
 project(snes9x-qt VERSION 1.63)
 
 include(GNUInstallDirs)
@@ -12,6 +26,15 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_GLOBAL_AUTOGEN_TARGET ON)
+
+# AUTOMOC above applies to the FetchContent'd SDL3 too, and Ninja + PCH +
+# AUTOMOC hit a CMake ordering bug where SDL3's mocs_compilation.cpp is
+# scheduled against a cmake_pch.hxx.pch that nothing generates. The Linux
+# AppImage scripts pass -DCMAKE_DISABLE_PRECOMPILE_HEADERS=ON for the same
+# reason; do it by default on macOS, where Ninja is the usual generator.
+if(APPLE AND NOT DEFINED CMAKE_DISABLE_PRECOMPILE_HEADERS)
+    set(CMAKE_DISABLE_PRECOMPILE_HEADERS ON CACHE BOOL "" FORCE)
+endif()
 
 set(DEFINES SNES9X_QT)
 set(SNES9X_CORE_SOURCES
@@ -115,12 +138,24 @@ endif()
 find_package(Qt6 REQUIRED COMPONENTS Widgets Gui)
 list(APPEND LIBS Qt6::Widgets Qt6::Gui)
 
-pkg_check_modules(CURL REQUIRED libcurl)
-list(APPEND INCLUDES ${CURL_INCLUDE_DIRS})
-list(APPEND LIBS ${CURL_LIBRARIES})
+# Must come before the first pkg_check_modules() call below. It used to sit
+# after the libcurl lookup and only worked because something else in the
+# Linux configure had already pulled FindPkgConfig in.
+find_package(PkgConfig REQUIRED)
+
+if(APPLE)
+    # The libcurl in the macOS SDK ships no pkg-config file, so go through
+    # CMake's own finder rather than requiring a Homebrew curl.
+    find_package(CURL REQUIRED)
+    list(APPEND INCLUDES ${CURL_INCLUDE_DIRS})
+    list(APPEND LIBS CURL::libcurl)
+else()
+    pkg_check_modules(CURL REQUIRED libcurl)
+    list(APPEND INCLUDES ${CURL_INCLUDE_DIRS})
+    list(APPEND LIBS ${CURL_LIBRARIES})
+endif()
 list(APPEND INCLUDES ${Qt6Gui_PRIVATE_INCLUDE_DIRS})
 
-find_package(PkgConfig REQUIRED)
 pkg_check_modules(ZLIB REQUIRED IMPORTED_TARGET zlib)
 pkg_check_modules(PNG REQUIRED IMPORTED_TARGET libpng)
 list(APPEND INCLUDES ${ZLIB_INCLUDE_DIRS})
@@ -140,6 +175,35 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
         ../common/video/opengl/wgl_context.cpp
         ../external/glad/src/wgl.c
         src/resources/snes9x_win32.rc)
+elseif(APPLE)
+
+    enable_language(OBJCXX)
+
+    # See the Windows note below: screenshot.cpp inside snes9x-core calls
+    # libpng directly, so png/zlib have to hang off the core target to land
+    # after the archive on the link line.
+    target_link_libraries(snes9x-core PUBLIC PkgConfig::PNG PkgConfig::ZLIB)
+
+    # OpenGL is deprecated on macOS but is the only 3D API available without
+    # bringing in MoltenVK. It tops out at a 4.1 core profile.
+    find_library(COCOA_LIBRARY Cocoa REQUIRED)
+    find_library(OPENGL_FRAMEWORK OpenGL REQUIRED)
+    list(APPEND LIBS ${COCOA_LIBRARY} ${OPENGL_FRAMEWORK})
+
+    list(APPEND PLATFORM_SOURCES
+        ../common/video/opengl/mac_opengl_context.mm
+        ../common/video/opengl/mac_opengl_context.hpp)
+
+    # The context implementation uses __bridge_retained/__bridge_transfer to
+    # hand the NSOpenGLContext across the C++ boundary, which clang only
+    # accepts under ARC. Nothing else in the project is Objective-C, so scope
+    # the flag to this one file.
+    set_source_files_properties(../common/video/opengl/mac_opengl_context.mm
+        PROPERTIES COMPILE_OPTIONS "-fobjc-arc")
+
+    # cubeb's CoreAudio backend covers macOS, so no PulseAudio equivalent is
+    # needed here.
+
 else()
 
     pkg_check_modules(WAYLAND REQUIRED wayland-client wayland-egl)
@@ -245,7 +309,6 @@ list(APPEND QT_GUI_SOURCES
     src/SoftwareScalers.cpp
     src/EmuCanvasQt.cpp
     src/EmuCanvasOpenGL.cpp
-    src/EmuCanvasVulkan.cpp
     ../external/glad/src/gl.c
     ../common/audio/s9x_sound_driver_sdl3.cpp
     ../common/audio/s9x_sound_driver_sdl3.hpp
@@ -259,6 +322,10 @@ list(APPEND QT_GUI_SOURCES
     ../filter/snes_ntsc.h
     ../filter/snes_ntsc_impl.h
     ../filter/snes_ntsc.c)
+
+if(NOT APPLE)
+    list(APPEND QT_GUI_SOURCES src/EmuCanvasVulkan.cpp)
+endif()
 
 # RetroAchievements support
 list(APPEND DEFINES RETROACHIEVEMENTS_SUPPORT RC_DISABLE_LUA RC_CLIENT_SUPPORTS_HASH)
@@ -343,47 +410,39 @@ list(APPEND LIBS
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
     list(APPEND DEFINES "VK_USE_PLATFORM_WIN32_KHR")
-else()
+elseif(NOT APPLE)
     list(APPEND DEFINES
         "VK_USE_PLATFORM_XLIB_KHR"
         "VK_USE_PLATFORM_WAYLAND_KHR")
 endif()
 
-list(APPEND DEFINES
-    "VULKAN_HPP_DISPATCH_LOADER_DYNAMIC=1"
-    "VULKAN_HPP_NO_NODISCARD_WARNINGS=1"
-    "VULKAN_HPP_NO_EXCEPTIONS=1"
-    "VMA_DYNAMIC_VULKAN_FUNCTIONS=1"
-    "VMA_STATIC_VULKAN_FUNCTIONS=0"
-    "USE_SLANG")
+if(NOT APPLE)
+    list(APPEND DEFINES
+        "VULKAN_HPP_DISPATCH_LOADER_DYNAMIC=1"
+        "VULKAN_HPP_NO_NODISCARD_WARNINGS=1"
+        "VULKAN_HPP_NO_EXCEPTIONS=1"
+        "VMA_DYNAMIC_VULKAN_FUNCTIONS=1"
+        "VMA_STATIC_VULKAN_FUNCTIONS=0")
+    list(APPEND INCLUDES
+        ../external/vulkan-headers/include
+        ../external/VulkanMemoryAllocator-Hpp/include)
+endif()
+
+list(APPEND DEFINES "USE_SLANG")
 list(APPEND INCLUDES
-    ../external/vulkan-headers/include
-    ../external/VulkanMemoryAllocator-Hpp/include
     ../external/stb
     "../external/glad/include")
+
+# The slang_* files under common/video/vulkan/ are preset/shader *parsing*
+# only -- they pull in glslang and SPIRV-Cross but no Vulkan API -- and the
+# OpenGL shader stack (glsl.cpp, slang.cpp) depends on them. They are built
+# on every platform; only the files that actually call Vulkan are skipped on
+# macOS, which has no native Vulkan driver.
 list(APPEND SOURCES
     ../common/video/vulkan/slang_shader.cpp
     ../common/video/vulkan/slang_shader.hpp
     ../common/video/vulkan/slang_preset.cpp
     ../common/video/vulkan/slang_preset.hpp
-    ../common/video/vulkan/vulkan_hpp_storage.cpp
-    ../common/video/vulkan/vk_mem_alloc_implementation.cpp
-    ../common/video/vulkan/vulkan_context.cpp
-    ../common/video/vulkan/vulkan_context.hpp
-    ../common/video/vulkan/vulkan_common.cpp
-    ../common/video/vulkan/vulkan_common.hpp
-    ../common/video/vulkan/vulkan_texture.cpp
-    ../common/video/vulkan/vulkan_texture.hpp
-    ../common/video/vulkan/vulkan_swapchain.cpp
-    ../common/video/vulkan/vulkan_swapchain.hpp
-    ../common/video/vulkan/vulkan_slang_pipeline.cpp
-    ../common/video/vulkan/vulkan_slang_pipeline.hpp
-    ../common/video/vulkan/vulkan_pipeline_image.cpp
-    ../common/video/vulkan/vulkan_pipeline_image.hpp
-    ../common/video/vulkan/vulkan_shader_chain.cpp
-    ../common/video/vulkan/vulkan_shader_chain.hpp
-    ../common/video/vulkan/vulkan_simple_output.hpp
-    ../common/video/vulkan/vulkan_simple_output.cpp
     ../common/video/std_chrono_throttle.cpp
     ../common/video/std_chrono_throttle.hpp
     ../common/video/vulkan/slang_helpers.cpp
@@ -395,16 +454,80 @@ list(APPEND SOURCES
     ../common/video/opengl/shaders/slang.cpp
     ../common/video/opengl/shaders/shader_helpers.cpp)
 
-list(APPEND DEFINES "IMGUI_IMPL_VULKAN_NO_PROTOTYPES")
+if(NOT APPLE)
+    list(APPEND SOURCES
+        ../common/video/vulkan/vulkan_hpp_storage.cpp
+        ../common/video/vulkan/vk_mem_alloc_implementation.cpp
+        ../common/video/vulkan/vulkan_context.cpp
+        ../common/video/vulkan/vulkan_context.hpp
+        ../common/video/vulkan/vulkan_common.cpp
+        ../common/video/vulkan/vulkan_common.hpp
+        ../common/video/vulkan/vulkan_texture.cpp
+        ../common/video/vulkan/vulkan_texture.hpp
+        ../common/video/vulkan/vulkan_swapchain.cpp
+        ../common/video/vulkan/vulkan_swapchain.hpp
+        ../common/video/vulkan/vulkan_slang_pipeline.cpp
+        ../common/video/vulkan/vulkan_slang_pipeline.hpp
+        ../common/video/vulkan/vulkan_pipeline_image.cpp
+        ../common/video/vulkan/vulkan_pipeline_image.hpp
+        ../common/video/vulkan/vulkan_shader_chain.cpp
+        ../common/video/vulkan/vulkan_shader_chain.hpp
+        ../common/video/vulkan/vulkan_simple_output.hpp
+        ../common/video/vulkan/vulkan_simple_output.cpp)
+endif()
+
 list(APPEND SOURCES ../external/imgui/imgui.cpp
     ../external/imgui/imgui_demo.cpp
     ../external/imgui/imgui_draw.cpp
     ../external/imgui/imgui_tables.cpp
     ../external/imgui/imgui_widgets.cpp
     ../external/imgui/imgui_impl_opengl3.cpp
-    ../external/imgui/imgui_impl_vulkan.cpp
     ../external/imgui/snes9x_imgui.cpp)
+if(NOT APPLE)
+    list(APPEND DEFINES "IMGUI_IMPL_VULKAN_NO_PROTOTYPES")
+    list(APPEND SOURCES ../external/imgui/imgui_impl_vulkan.cpp)
+endif()
 list(APPEND INCLUDES ../external/imgui)
+
+if(APPLE)
+    # Build the .icns from the icon the fork already ships, so the bundle
+    # never depends on a checked-in binary that can drift from the Windows
+    # and Linux artwork. sips/iconutil are part of the base system.
+    set(MACOS_ICONSET "${CMAKE_CURRENT_BINARY_DIR}/super-snes9x-qt.iconset")
+    set(MACOS_ICNS "${CMAKE_CURRENT_BINARY_DIR}/super-snes9x-qt.icns")
+    set(MACOS_ICON_SOURCE "${CMAKE_CURRENT_SOURCE_DIR}/src/resources/snes9x.ico")
+
+    # The source art is 256x256, so the largest honest entry is
+    # icon_128x128@2x. Anything above that would just be an upscale.
+    add_custom_command(
+        OUTPUT ${MACOS_ICNS}
+        COMMAND ${CMAKE_COMMAND} -E rm -rf ${MACOS_ICONSET}
+        COMMAND ${CMAKE_COMMAND} -E make_directory ${MACOS_ICONSET}
+        COMMAND sips -s format png ${MACOS_ICON_SOURCE} --out ${MACOS_ICONSET}/base.png > /dev/null
+        COMMAND sips -z 16 16     ${MACOS_ICONSET}/base.png --out ${MACOS_ICONSET}/icon_16x16.png > /dev/null
+        COMMAND sips -z 32 32     ${MACOS_ICONSET}/base.png --out ${MACOS_ICONSET}/icon_16x16@2x.png > /dev/null
+        COMMAND sips -z 32 32     ${MACOS_ICONSET}/base.png --out ${MACOS_ICONSET}/icon_32x32.png > /dev/null
+        COMMAND sips -z 64 64     ${MACOS_ICONSET}/base.png --out ${MACOS_ICONSET}/icon_32x32@2x.png > /dev/null
+        COMMAND sips -z 128 128   ${MACOS_ICONSET}/base.png --out ${MACOS_ICONSET}/icon_128x128.png > /dev/null
+        COMMAND sips -z 256 256   ${MACOS_ICONSET}/base.png --out ${MACOS_ICONSET}/icon_128x128@2x.png > /dev/null
+        COMMAND ${CMAKE_COMMAND} -E rm -f ${MACOS_ICONSET}/base.png
+        COMMAND iconutil -c icns ${MACOS_ICONSET} -o ${MACOS_ICNS}
+        DEPENDS ${MACOS_ICON_SOURCE}
+        COMMENT "Generating super-snes9x-qt.icns"
+        VERBATIM)
+
+    # Listing the .icns as a source with MACOSX_PACKAGE_LOCATION is what gets
+    # it copied into Contents/Resources.
+    set_source_files_properties(${MACOS_ICNS} PROPERTIES
+        MACOSX_PACKAGE_LOCATION "Resources")
+    list(APPEND PLATFORM_SOURCES ${MACOS_ICNS})
+
+    # Ship the cheat database inside the bundle as well -- an .app has no
+    # /usr/share to fall back on.
+    set_source_files_properties("${CMAKE_CURRENT_SOURCE_DIR}/../data/cheats.bml"
+        PROPERTIES MACOSX_PACKAGE_LOCATION "Resources" HEADER_FILE_ONLY ON)
+    list(APPEND PLATFORM_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/../data/cheats.bml")
+endif()
 
 add_executable(snes9x-qt ${QT_GUI_SOURCES} ${SOURCES} ${PLATFORM_SOURCES} src/resources/snes9x.qrc)
 set_target_properties(snes9x-qt PROPERTIES OUTPUT_NAME super-snes9x-qt)
@@ -412,13 +535,32 @@ set_target_properties(snes9x-qt PROPERTIES OUTPUT_NAME super-snes9x-qt)
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
     set_target_properties(snes9x-qt PROPERTIES WIN32_EXECUTABLE True)
 endif()
+
+if(APPLE)
+    set_target_properties(snes9x-qt PROPERTIES
+        MACOSX_BUNDLE TRUE
+        MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/src/resources/Info.plist.in"
+        MACOSX_BUNDLE_EXECUTABLE_NAME "super-snes9x-qt"
+        MACOSX_BUNDLE_BUNDLE_NAME "Super Snes9x"
+        MACOSX_BUNDLE_GUI_IDENTIFIER "com.snes9x.super-snes9x-qt"
+        MACOSX_BUNDLE_ICON_FILE "super-snes9x-qt.icns"
+        MACOSX_BUNDLE_SHORT_VERSION_STRING "${PROJECT_VERSION}"
+        MACOSX_BUNDLE_BUNDLE_VERSION "${PROJECT_VERSION}"
+        MACOSX_BUNDLE_COPYRIGHT "Licensed under the Snes9x License.")
+endif()
 target_link_libraries(snes9x-qt PRIVATE snes9x-core ${LIBS})
 target_compile_definitions(snes9x-qt PRIVATE ${DEFINES})
 target_compile_options(snes9x-qt PRIVATE ${FLAGS})
 target_include_directories(snes9x-qt PRIVATE "../" ${INCLUDES})
 
-install(TARGETS snes9x-qt)
-install(FILES ../data/cheats.bml DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/snes9x)
+if(APPLE)
+    # cheats.bml rides inside the bundle (CheatsDialog looks in
+    # Contents/Resources); there is no shared datadir to install it to.
+    install(TARGETS snes9x-qt BUNDLE DESTINATION .)
+else()
+    install(TARGETS snes9x-qt)
+    install(FILES ../data/cheats.bml DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/snes9x)
+endif()
 if(UNIX AND NOT APPLE)
     install(FILES src/resources/super-snes9x-qt.desktop DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/applications)
     install(FILES src/resources/snes9x.svg DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/icons/hicolor/scalable/apps)

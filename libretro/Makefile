@@ -87,7 +87,10 @@ ifneq (,$(findstring unix,$(platform)))
 # OS X
 else ifeq ($(platform), osx)
    CFLAGS += $(LTO)
-   CXXFLAGS += -std=c++14 $(LTO)
+   # -std=c++17 is required (the core uses std::string_view); pin it for the
+   # same reason the unix branch does, rather than relying on the compiler's
+   # default standard.
+   CXXFLAGS += -std=c++17 $(LTO)
    LDFLAGS += $(LTO)
    TARGET := $(TARGET_NAME)_libretro.dylib
    fpic := -fPIC
@@ -99,11 +102,26 @@ else ifeq ($(platform), osx)
    ifeq ($(arch),ppc)
       CXXFLAGS += -DBLARGG_BIG_ENDIAN=1 -D__ppc__
    endif
-   OSXVER = $(shell sw_vers -productVersion | cut -d. -f 2)
-   OSX_GT_MOJAVE = $(shell (( $(OSXVER) >= 14)) && echo "YES")
-   ifneq ($(OSX_GT_MOJAVE),YES)
-	#this breaks compiling on Mac OS Mojave
-      fpic += -mmacosx-version-min=10.1
+
+   # Deployment target. The previous code read the *minor* field of
+   # `sw_vers -productVersion`, which was written for the 10.x scheme. On
+   # macOS 11+ that parses "14.3" as "3", always takes the pre-Mojave branch
+   # and passes -mmacosx-version-min=10.1 -- which makes the modern linker
+   # abort with "Assertion failed: (targetAtom != NULL)". Pick a sane floor
+   # instead and let the caller override it.
+   #
+   # 10.13 is the oldest target current Xcode still links x86_64 against.
+   # arm64 does not exist before 11.0, so arm64 builds must raise this
+   # (macos/build-macos.sh does).
+   OSX_MIN_VERSION ?= 10.13
+   fpic += -mmacosx-version-min=$(OSX_MIN_VERSION)
+
+   # Target architecture(s). Defaults to whatever the host compiler picks.
+   # Set OSX_ARCHS to cross-compile, e.g. OSX_ARCHS=arm64. Universal binaries
+   # are produced by building each arch separately and lipo'ing them together
+   # (see macos/build-macos.sh) so that -flto stays single-arch per link.
+   ifneq ($(OSX_ARCHS),)
+      fpic += $(addprefix -arch ,$(OSX_ARCHS))
    endif
 
 # Nintendo Switch (libnx)

@@ -508,12 +508,19 @@ profile
 /win32/super-snes9x.conf
 
 # --- Super Snes9x: build artifacts and local data ---
+libretro/dist/
 libretro/jni/dist/
 libretro/linux/dist/
+libretro/macos/dist/
+libretro/macos/build/
 libretro/libs/
 qt/build-appimage/
 qt/build-appimage-x86/
+qt/build-macos/
 gtk/build-appimage-x86/
 *.AppImage
+*.dylib
+*.app/
+*.dmg
 Roms/
 Bios/

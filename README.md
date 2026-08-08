@@ -49,6 +49,34 @@ cd libretro
 ./build-all.sh
 ```
 
+## macOS
+
+The Qt GUI and the libretro core both build on macOS, self-signed so they run
+without a paid Apple Developer account:
+
+```bash
+# Qt GUI -> qt/build-macos/super-snes9x-qt.app
+cmake -S qt -B qt/build-macos -G Ninja -DCMAKE_BUILD_TYPE=Release \
+      -DCMAKE_PREFIX_PATH="$(brew --prefix qt)"
+cmake --build qt/build-macos -j"$(sysctl -n hw.ncpu)"
+qt/scripts/makeapp-macos.sh
+
+# libretro core -> libretro/macos/dist/ (universal x86_64 + arm64)
+libretro/macos/build-macos.sh
+```
+
+Or build both at once with `cd libretro && ./build-all.sh --osx`. That flag
+selects the macOS artifacts *instead of* the Linux and Android ones — the
+Linux AppImages are native builds and the macOS ones need Xcode, so a single
+host can't produce both.
+
+The macOS GUI uses the Qt Software or OpenGL display driver; Vulkan is not
+available on the platform. Because the builds are ad-hoc signed rather than
+notarized, a copy that arrives over the network needs its quarantine flag
+cleared: `xattr -dr com.apple.quarantine <path>`.
+
+See [qt/docs/README-macos.md](qt/docs/README-macos.md) for details.
+
 ## Upstream builds (plain snes9x, not SuperSnes9x)
 
 Official upstream snes9x builds, for reference:

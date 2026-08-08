@@ -183,12 +183,16 @@ void DisplayPanel::showEvent(QShowEvent *event)
     comboBox_driver->clear();
     comboBox_driver->addItem("Qt Software");
     comboBox_driver->addItem("OpenGL");
-    comboBox_driver->addItem("Vulkan");
 
     driver_list.clear();
     driver_list.emplace_back(driver_list.size(), "qt");
     driver_list.emplace_back(driver_list.size(), "opengl");
+
+#ifndef __APPLE__
+    // macOS has no native Vulkan, so the driver is not built there.
+    comboBox_driver->addItem("Vulkan");
     driver_list.emplace_back(driver_list.size(), "vulkan");
+#endif
 
     for (auto &[index, driver] : driver_list)
         if (config->display_driver == driver)

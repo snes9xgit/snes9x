@@ -101,6 +101,12 @@ void CheatsDialog::searchDatabase()
     {
         EmuConfig::findConfigDir(),
         QGuiApplication::applicationDirPath().toStdString(),
+#ifdef __APPLE__
+        // Inside a bundle applicationDirPath() is Contents/MacOS, and the
+        // database is installed alongside the other bundle resources.
+        QDir(QGuiApplication::applicationDirPath())
+            .absoluteFilePath("../Resources").toStdString(),
+#endif
         S9xGetDirectory(CHEAT_DIR),
         "/usr/share/snes9x",
         "/usr/local/share/snes9x"
