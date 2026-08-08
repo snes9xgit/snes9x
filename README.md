@@ -11,8 +11,9 @@ Please check the official [Wiki](https://github.com/snes9xgit/snes9x/wiki) for a
 - Supports GameBoy, GameBoy Color, Super GameBoy (1 and 2)
 - libretro core (SNES / SFC / SGB / GB / GBC in a single core)
 - Voicer-kun peripheral emulation (plays its audio CDs from cue/bin images)
-- Super Famicom Box (hotel SNES) emulation, with English OSD translation
-- Event carts: PowerFest '94, Nintendo Campus Challenge '92
+- Super Famicom Box (hotel SNES) emulation, with live English OSD translations
+- Event carts - PowerFest '94, Nintendo Campus Challenge '92
+- Voicer-kun - infrared transmitter/receiver that connects to the second controller port
 - Kaillera Server/Client
 - RetroAchievements (with Hardcore)
 - PPU Sprite/Tile/Tiles viewers (SNES, GB)
