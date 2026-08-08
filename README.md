@@ -8,8 +8,8 @@ Please check the official [Wiki](https://github.com/snes9xgit/snes9x/wiki) for a
 ## SuperSnes9x Features:
 - Super FX 3 (FX3) support for the 2026 LRG releases, with cycle-accurate GSU timing
 - LRG SNES rumble dongle support (Ultimate Doom FX3, RT.SFC)
-- Supports GameBoy, GameBoy Color, Super GameBoy (1 and 2)
-- libretro core (SNES / SFC / SGB / GB / GBC in a single core)
+- Supports GameBoy, GameBoy Color, SuperGameBoy (1 and 2)
+- libretro core for SNES / SGB / GB / GBC
 - Voicer-kun peripheral emulation (plays its audio CDs from cue/bin images)
 - Super Famicom Box (hotel SNES) emulation, with live English OSD translations
 - Event carts - PowerFest '94, Nintendo Campus Challenge '92
