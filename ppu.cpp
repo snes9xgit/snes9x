@@ -334,15 +334,15 @@ void S9xSetPPU (uint8 Byte, uint16 Address)
 				{
 					FLUSH_REDRAW();
 
-					// Brightness-only change in the middle of a visible line,
-					// after this line's render latch: the line is already drawn
-					// with the old value, so log a span for the post-pass
+					// Brightness-only change in the middle of a visible line:
+					// a scanline renderer draws the whole line with one value,
+					// so log the event; the post-pass re-scales whatever span
+					// disagrees with the brightness the line was rendered with
 					// (A.S.P.'s mid-scanline aircraft shadow).
 					if (!(Byte & 0x80) && !((Memory.FillRAM[0x2100] ^ Byte) & 0x80) &&
 						PPU.Brightness != (Byte & 0xf) &&
 						CPU.V_Counter >= FIRST_VISIBLE_LINE &&
-						CPU.V_Counter < PPU.ScreenHeight + FIRST_VISIBLE_LINE &&
-						CPU.Cycles > Timings.RenderPos)
+						CPU.V_Counter < PPU.ScreenHeight + FIRST_VISIBLE_LINE)
 					{
 						int x = CPU.Cycles / ONE_DOT_CYCLE - 22;
 						if (x >= 1 && x <= 255)

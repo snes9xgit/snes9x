@@ -122,7 +122,9 @@ void S9xGraphicsScreenResize (void)
 	IPPU.InterlaceOBJ = Memory.FillRAM[0x2133] & 2;
 	IPPU.PseudoHires = Memory.FillRAM[0x2133] & 8;
 
-	if (PPU.BGMode == 5 || PPU.BGMode == 6 || IPPU.PseudoHires)
+	// Interlaced frames render double-width too: the field-aware tile
+	// renderers live on the 512-wide path (see S9xSelectTileRenderers).
+	if (PPU.BGMode == 5 || PPU.BGMode == 6 || IPPU.PseudoHires || IPPU.Interlace)
 	{
 		IPPU.DoubleWidthPixels = TRUE;
 		IPPU.RenderedScreenWidth = SNES_WIDTH << 1;
@@ -168,18 +170,20 @@ void S9xBuildDirectColourMaps (void)
 // Mid-scanline INIDISP brightness windows. A.S.P. Air Strike Patrol draws the
 // aircraft shadow by dimming $2100 for ~10 dots in the middle of a scanline
 // and restoring it before HBlank; a line renderer can't split a line, so the
-// events are recorded here and the affected pixel span is re-scaled after the
-// frame is done.
+// events are recorded here and the mismatching pixel spans are re-scaled
+// after the frame is done. RenderLine snapshots the brightness each line was
+// actually drawn with, so the pass is exact for any Timings.RenderPos.
 #define MAX_BRIGHT_EVENTS 64
 static struct
 {
 	uint8	line, x, oldB, newB;
 }	bright_events[MAX_BRIGHT_EVENTS];
-static int	bright_event_count = 0;
+static int		bright_event_count = 0;
+static uint8	line_brightness[240];
 
 void S9xRecordMidLineBrightness (int line, int x, uint8 oldBright, uint8 newBright)
 {
-	if (bright_event_count >= MAX_BRIGHT_EVENTS || line > 255)
+	if (bright_event_count >= MAX_BRIGHT_EVENTS || line > 239)
 		return;
 	bright_events[bright_event_count].line = (uint8) line;
 	bright_events[bright_event_count].x    = (uint8) x;
@@ -201,35 +205,47 @@ static void S9xApplyMidLineBrightness (void)
 		if (line >= (int) PPU.ScreenHeight)
 			continue;
 
-		// The line itself was rendered with the brightness the first event
-		// on it replaced; spans between events use each event's new value.
-		int	renderedB = bright_events[i].oldB;
-		for (int j = i - 1; j >= 0; j--)
-			if (bright_events[j].line == line)
-				{ renderedB = bright_events[j].oldB; break; }
+		const int	renderedB = line_brightness[line];
 
-		int	xend = 256;
-		if (i + 1 < bright_event_count && bright_events[i + 1].line == line)
-			xend = bright_events[i + 1].x;
-
-		if (bright_events[i].newB == renderedB || xend <= bright_events[i].x)
-			continue;
-
-		const int	num = bright_events[i].newB + 1;
-		const int	den = renderedB + 1;
-
-		uint16	*p = GFX.Screen + line * GFX.PPL;
-		if (GFX.DoInterlace && S9xInterlaceField())
-			p += GFX.RealPPL;
-
-		for (int x = bright_events[i].x * xscale; x < xend * xscale; x++)
+		// Piecewise true-brightness timeline: before the line's first event
+		// the old value ruled, between events each event's new value does.
+		const bool	firstOnLine = (i == 0 || bright_events[i - 1].line != line);
+		for (int seg = firstOnLine ? 0 : 1; seg < 2; seg++)
 		{
-			uint32	r, g, b;
-			DECOMPOSE_PIXEL(p[x], r, g, b);
-			r = r * num / den;
-			g = g * num / den;
-			b = b * num / den;
-			p[x] = BUILD_PIXEL(r, g, b);
+			int	trueB, x0, x1;
+			if (seg == 0)
+			{
+				trueB = bright_events[i].oldB;
+				x0 = 0;
+				x1 = bright_events[i].x;
+			}
+			else
+			{
+				trueB = bright_events[i].newB;
+				x0 = bright_events[i].x;
+				x1 = (i + 1 < bright_event_count && bright_events[i + 1].line == line)
+						? bright_events[i + 1].x : 256;
+			}
+
+			if (trueB == renderedB || x1 <= x0)
+				continue;
+
+			const int	num = trueB + 1;
+			const int	den = renderedB + 1;
+
+			uint16	*p = GFX.Screen + line * GFX.PPL;
+			if (GFX.DoInterlace && S9xInterlaceField())
+				p += GFX.RealPPL;
+
+			for (int x = x0 * xscale; x < x1 * xscale; x++)
+			{
+				uint32	r, g, b;
+				DECOMPOSE_PIXEL(p[x], r, g, b);
+				r = r * num / den; if (r > 31) r = 31;
+				g = g * num / den; if (g > 31) g = 31;
+				b = b * num / den; if (b > 31) b = 31;
+				p[x] = BUILD_PIXEL(r, g, b);
+			}
 		}
 	}
 }
@@ -664,6 +680,9 @@ void RenderLine (uint8 C)
 {
 	if (IPPU.RenderThisFrame)
 	{
+		if (C < 240)
+			line_brightness[C] = PPU.Brightness;
+
 		LineData[C].BG[0].VOffset = PPU.BG[0].VOffset + 1;
 		LineData[C].BG[0].HOffset = PPU.BG[0].HOffset;
 		LineData[C].BG[1].VOffset = PPU.BG[1].VOffset + 1;
@@ -852,7 +871,7 @@ void S9xUpdateScreen (void)
 			PPU.RecomputeClipWindows = FALSE;
 		}
 
-		if (!IPPU.DoubleWidthPixels && (PPU.BGMode == 5 || PPU.BGMode == 6 || IPPU.PseudoHires))
+		if (!IPPU.DoubleWidthPixels && (PPU.BGMode == 5 || PPU.BGMode == 6 || IPPU.PseudoHires || IPPU.Interlace))
 		{
 			// Have to back out of the regular speed hack
 			for (uint32 y = 0; y < GFX.StartY; y++)
@@ -868,7 +887,7 @@ void S9xUpdateScreen (void)
 			IPPU.RenderedScreenWidth = 512;
 		}
 
-		if (!IPPU.DoubleHeightPixels && IPPU.Interlace && (PPU.BGMode == 5 || PPU.BGMode == 6))
+		if (!IPPU.DoubleHeightPixels && IPPU.Interlace)
 		{
 			IPPU.DoubleHeightPixels = TRUE;
 			IPPU.RenderedScreenHeight = PPU.ScreenHeight << 1;
