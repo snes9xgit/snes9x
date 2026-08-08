@@ -250,6 +250,215 @@ static void S9xApplyMidLineBrightness (void)
 	}
 }
 
+// Mid-scanline raster spans. A.S.P. also rewrites window-select bytes
+// ($2123/$2125, the pause-map transparency stripes) and BG scroll registers
+// ($2112, the GOOD LUCK wave) inside the visible line and restores them
+// before HBlank, bounding the effect horizontally by write timing. The
+// per-line latch applies the rastered value to the whole line, so the events
+// are recorded here and the outer spans are re-rendered with the pre-raster
+// state after the frame, clipped through the normal window-segment lists.
+#define MAX_RASTER_EVENTS 512
+static struct
+{
+	uint8	line, x, cls, reg;   // cls 0 = $2123+reg window byte, 1 = $210d+reg scroll
+	uint16	oldV, newV;
+}	raster_events[MAX_RASTER_EVENTS];
+static int	raster_event_count = 0;
+
+static int		raster_span_count = 0;   // re-render clip restriction, consumed by S9xUpdateScreen
+static uint16	raster_span_l[2], raster_span_r[2];
+
+static bool mid_line_event_pos (int &line, int &x)
+{
+	if (!IPPU.RenderThisFrame || raster_event_count >= MAX_RASTER_EVENTS)
+		return (false);
+	if (CPU.V_Counter < FIRST_VISIBLE_LINE || CPU.V_Counter >= PPU.ScreenHeight + FIRST_VISIBLE_LINE)
+		return (false);
+	line = CPU.V_Counter - FIRST_VISIBLE_LINE;
+	x = CPU.Cycles / ONE_DOT_CYCLE - 22;
+	return (x >= 1 && x <= 255 && line <= 239);
+}
+
+void S9xRecordMidLineWindowSel (int reg, uint8 oldVal, uint8 newVal)
+{
+	int	line, x;
+	if (oldVal == newVal || !mid_line_event_pos(line, x))
+		return;
+	raster_events[raster_event_count].line = (uint8) line;
+	raster_events[raster_event_count].x    = (uint8) x;
+	raster_events[raster_event_count].cls  = 0;
+	raster_events[raster_event_count].reg  = (uint8) reg;
+	raster_events[raster_event_count].oldV = oldVal;
+	raster_events[raster_event_count].newV = newVal;
+	raster_event_count++;
+}
+
+void S9xRecordMidLineScroll (int reg, uint16 oldVal, uint16 newVal)
+{
+	int	line, x;
+	if (oldVal == newVal || PPU.BGMode == 7 || !mid_line_event_pos(line, x))
+		return;
+	raster_events[raster_event_count].line = (uint8) line;
+	raster_events[raster_event_count].x    = (uint8) x;
+	raster_events[raster_event_count].cls  = 1;
+	raster_events[raster_event_count].reg  = (uint8) reg;
+	raster_events[raster_event_count].oldV = oldVal;
+	raster_events[raster_event_count].newV = newVal;
+	raster_event_count++;
+}
+
+// Same field decode as the $2123-$2125 handlers, without flush/record.
+static void apply_window_sel (int reg, uint8 byte)
+{
+	const int	n = reg * 2;
+	PPU.ClipWindow1Enable[n]     = !!(byte & 0x02);
+	PPU.ClipWindow1Enable[n + 1] = !!(byte & 0x20);
+	PPU.ClipWindow2Enable[n]     = !!(byte & 0x08);
+	PPU.ClipWindow2Enable[n + 1] = !!(byte & 0x80);
+	PPU.ClipWindow1Inside[n]     = !(byte & 0x01);
+	PPU.ClipWindow1Inside[n + 1] = !(byte & 0x10);
+	PPU.ClipWindow2Inside[n]     = !(byte & 0x04);
+	PPU.ClipWindow2Inside[n + 1] = !(byte & 0x40);
+}
+
+// Intersect every layer's clip segments with the allowed re-render spans.
+static void RestrictClipWindows (void)
+{
+	for (int s = 0; s <= 1; s++)
+	{
+		for (int l = 0; l < 6; l++)
+		{
+			struct ClipData	*c = &IPPU.Clip[s][l];
+			if (!c->Count)
+				continue;
+
+			uint16	L[6], R[6];
+			uint8	M[6];
+			int		n = 0;
+
+			for (int sp = 0; sp < raster_span_count; sp++)
+			{
+				for (int k = 0; k < c->Count && n < 6; k++)
+				{
+					uint16	a = c->Left[k]  > raster_span_l[sp] ? c->Left[k]  : raster_span_l[sp];
+					uint16	b = c->Right[k] < raster_span_r[sp] ? c->Right[k] : raster_span_r[sp];
+					if (a < b)
+					{
+						L[n] = a;
+						R[n] = b;
+						M[n] = c->DrawMode[k];
+						n++;
+					}
+				}
+			}
+
+			c->Count = (uint8) n;
+			for (int k = 0; k < n; k++)
+			{
+				c->Left[k] = L[k];
+				c->Right[k] = R[k];
+				c->DrawMode[k] = M[k];
+			}
+		}
+	}
+}
+
+static void S9xApplyMidLineRaster (void)
+{
+	if (!raster_event_count)
+		return;
+
+	const uint32	savedPrev = IPPU.PreviousLine;
+	const uint32	savedCur  = IPPU.CurrentLine;
+
+	for (int i = 0; i < raster_event_count; )
+	{
+		const int	line = raster_events[i].line;
+		int	end = i;
+		while (end < raster_event_count && raster_events[end].line == line)
+			end++;
+
+		for (int cls = 0; line < (int) PPU.ScreenHeight && cls < 2; cls++)
+		{
+			uint16	firstOld[8], lastNew[8], savedOfs[8];
+			bool	touched[8] = { false };
+			int		firstX = 256, lastX = 0;
+			bool	any = false, restored = true;
+
+			for (int j = i; j < end; j++)
+			{
+				if (raster_events[j].cls != cls)
+					continue;
+				const int	r = raster_events[j].reg;
+				if (!touched[r])
+					{ touched[r] = true; firstOld[r] = raster_events[j].oldV; }
+				lastNew[r] = raster_events[j].newV;
+				if (raster_events[j].x < firstX)	firstX = raster_events[j].x;
+				if (raster_events[j].x > lastX)		lastX  = raster_events[j].x;
+				any = true;
+			}
+
+			for (int r = 0; r < 8; r++)
+				if (touched[r] && lastNew[r] != firstOld[r])
+					restored = false;
+			if (!any || !restored)
+				continue;   // no clean write/restore pair: the whole-line latch stands
+
+			// The pre-raster state rules left of the first write; for window
+			// rasters also right of the restore. Scroll restores land inside
+			// the BG fetch pipeline, so the right side keeps the line latch.
+			raster_span_count = 0;
+			if (firstX > 1)
+				{ raster_span_l[raster_span_count] = 0; raster_span_r[raster_span_count++] = firstX; }
+			if (cls == 0 && lastX < 255)
+				{ raster_span_l[raster_span_count] = lastX; raster_span_r[raster_span_count++] = 256; }
+			if (!raster_span_count)
+				continue;
+
+			for (int r = 0; r < 8; r++)
+			{
+				if (!touched[r])
+					continue;
+				if (cls == 0)
+					apply_window_sel(r, (uint8) firstOld[r]);
+				else if (r & 1)
+					{ savedOfs[r] = LineData[line].BG[r >> 1].VOffset; LineData[line].BG[r >> 1].VOffset = firstOld[r] + 1; }
+				else
+					{ savedOfs[r] = LineData[line].BG[r >> 1].HOffset; LineData[line].BG[r >> 1].HOffset = firstOld[r]; }
+			}
+
+			// depth values from the first pass would reject the re-render
+			uint32	zrow = line * GFX.PPL + ((GFX.DoInterlace && S9xInterlaceField()) ? GFX.RealPPL : 0);
+			memset(GFX.ZBuffer + zrow, 0, IPPU.RenderedScreenWidth);
+			memset(GFX.SubZBuffer + zrow, 0, IPPU.RenderedScreenWidth);
+
+			IPPU.PreviousLine = line;
+			IPPU.CurrentLine  = line + 1;
+			PPU.RecomputeClipWindows = TRUE;
+			S9xUpdateScreen();
+			raster_span_count = 0;
+
+			for (int r = 0; r < 8; r++)
+			{
+				if (!touched[r])
+					continue;
+				if (cls == 0)
+					apply_window_sel(r, Memory.FillRAM[0x2123 + r]);
+				else if (r & 1)
+					LineData[line].BG[r >> 1].VOffset = savedOfs[r];
+				else
+					LineData[line].BG[r >> 1].HOffset = savedOfs[r];
+			}
+			PPU.RecomputeClipWindows = TRUE;
+		}
+
+		i = end;
+	}
+
+	IPPU.PreviousLine = savedPrev;
+	IPPU.CurrentLine  = savedCur;
+}
+
 void S9xStartScreenRefresh (void)
 {
 	if (GFX.DoInterlace)
@@ -274,6 +483,7 @@ void S9xStartScreenRefresh (void)
 		PPU.RecomputeClipWindows = TRUE;
 		IPPU.PreviousLine = IPPU.CurrentLine = 0;
 		bright_event_count = 0;
+		raster_event_count = 0;
 
 		memset(GFX.ZBuffer, 0, GFX.ScreenSize);
 		memset(GFX.SubZBuffer, 0, GFX.ScreenSize);
@@ -571,6 +781,7 @@ void S9xEndScreenRefresh (void)
 	{
 		FLUSH_REDRAW();
 
+		S9xApplyMidLineRaster();
 		S9xApplyMidLineBrightness();
 
 		// SGB BIOS-mode custom-border overlay. FLUSH_REDRAW above
@@ -870,6 +1081,9 @@ void S9xUpdateScreen (void)
 			S9xComputeClipWindows();
 			PPU.RecomputeClipWindows = FALSE;
 		}
+
+		if (raster_span_count)
+			RestrictClipWindows();
 
 		if (!IPPU.DoubleWidthPixels && (PPU.BGMode == 5 || PPU.BGMode == 6 || IPPU.PseudoHires || IPPU.Interlace))
 		{

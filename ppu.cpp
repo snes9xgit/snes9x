@@ -552,48 +552,80 @@ void S9xSetPPU (uint8 Byte, uint16 Address)
 				break;
 
 			case 0x210d: // BG1HOFS, M7HOFS
+			{
+				uint16 old = PPU.BG[0].HOffset;
 				PPU.BG[0].HOffset = (Byte << 8) | (PPU.BGnxOFSbyte & ~7) | ((PPU.BG[0].HOffset >> 8) & 7);
 				PPU.M7HOFS = (Byte << 8) | PPU.M7byte;
 				PPU.BGnxOFSbyte = Byte;
 				PPU.M7byte = Byte;
+				S9xRecordMidLineScroll(0, old, PPU.BG[0].HOffset);
 				break;
+			}
 
 			case 0x210e: // BG1VOFS, M7VOFS
+			{
+				uint16 old = PPU.BG[0].VOffset;
 				PPU.BG[0].VOffset = (Byte << 8) | PPU.BGnxOFSbyte;
 				PPU.M7VOFS = (Byte << 8) | PPU.M7byte;
 				PPU.BGnxOFSbyte = Byte;
 				PPU.M7byte = Byte;
+				S9xRecordMidLineScroll(1, old, PPU.BG[0].VOffset);
 				break;
+			}
 
 			case 0x210f: // BG2HOFS
+			{
+				uint16 old = PPU.BG[1].HOffset;
 				PPU.BG[1].HOffset = (Byte << 8) | (PPU.BGnxOFSbyte & ~7) | ((PPU.BG[1].HOffset >> 8) & 7);
 				PPU.BGnxOFSbyte = Byte;
+				S9xRecordMidLineScroll(2, old, PPU.BG[1].HOffset);
 				break;
+			}
 
 			case 0x2110: // BG2VOFS
+			{
+				uint16 old = PPU.BG[1].VOffset;
 				PPU.BG[1].VOffset = (Byte << 8) | PPU.BGnxOFSbyte;
 				PPU.BGnxOFSbyte = Byte;
+				S9xRecordMidLineScroll(3, old, PPU.BG[1].VOffset);
 				break;
+			}
 
 			case 0x2111: // BG3HOFS
+			{
+				uint16 old = PPU.BG[2].HOffset;
 				PPU.BG[2].HOffset = (Byte << 8) | (PPU.BGnxOFSbyte & ~7) | ((PPU.BG[2].HOffset >> 8) & 7);
 				PPU.BGnxOFSbyte = Byte;
+				S9xRecordMidLineScroll(4, old, PPU.BG[2].HOffset);
 				break;
+			}
 
 			case 0x2112: // BG3VOFS
+			{
+				uint16 old = PPU.BG[2].VOffset;
 				PPU.BG[2].VOffset = (Byte << 8) | PPU.BGnxOFSbyte;
 				PPU.BGnxOFSbyte = Byte;
+				S9xRecordMidLineScroll(5, old, PPU.BG[2].VOffset);
 				break;
+			}
 
 			case 0x2113: // BG4HOFS
+			{
+				uint16 old = PPU.BG[3].HOffset;
 				PPU.BG[3].HOffset = (Byte << 8) | (PPU.BGnxOFSbyte & ~7) | ((PPU.BG[3].HOffset >> 8) & 7);
 				PPU.BGnxOFSbyte = Byte;
+				S9xRecordMidLineScroll(6, old, PPU.BG[3].HOffset);
 				break;
+			}
 
 			case 0x2114: // BG4VOFS
+			{
+				uint16 old = PPU.BG[3].VOffset;
 				PPU.BG[3].VOffset = (Byte << 8) | PPU.BGnxOFSbyte;
 				PPU.BGnxOFSbyte = Byte;
+				S9xRecordMidLineScroll(7, old, PPU.BG[3].VOffset);
 				break;
+			}
 
 			case 0x2115: // VMAIN
 				PPU.VMA.High = (Byte & 0x80) == 0 ? FALSE : TRUE;
@@ -709,6 +741,7 @@ void S9xSetPPU (uint8 Byte, uint16 Address)
 				if (Byte != Memory.FillRAM[0x2123])
 				{
 					FLUSH_REDRAW();
+					S9xRecordMidLineWindowSel(0, Memory.FillRAM[0x2123], Byte);
 					PPU.ClipWindow1Enable[0] = !!(Byte & 0x02);
 					PPU.ClipWindow1Enable[1] = !!(Byte & 0x20);
 					PPU.ClipWindow2Enable[0] = !!(Byte & 0x08);
@@ -736,6 +769,7 @@ void S9xSetPPU (uint8 Byte, uint16 Address)
 				if (Byte != Memory.FillRAM[0x2124])
 				{
 					FLUSH_REDRAW();
+					S9xRecordMidLineWindowSel(1, Memory.FillRAM[0x2124], Byte);
 					PPU.ClipWindow1Enable[2] = !!(Byte & 0x02);
 					PPU.ClipWindow1Enable[3] = !!(Byte & 0x20);
 					PPU.ClipWindow2Enable[2] = !!(Byte & 0x08);
@@ -763,6 +797,7 @@ void S9xSetPPU (uint8 Byte, uint16 Address)
 				if (Byte != Memory.FillRAM[0x2125])
 				{
 					FLUSH_REDRAW();
+					S9xRecordMidLineWindowSel(2, Memory.FillRAM[0x2125], Byte);
 					PPU.ClipWindow1Enable[4] = !!(Byte & 0x02);
 					PPU.ClipWindow1Enable[5] = !!(Byte & 0x20);
 					PPU.ClipWindow2Enable[4] = !!(Byte & 0x08);
