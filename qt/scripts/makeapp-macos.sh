@@ -71,6 +71,18 @@ MACDEPLOYQT="$(find_macdeployqt)" || {
     exit 1
 }
 
+# CMake emits Contents/Info.plist at generate time rather than as a build
+# rule, so deleting the .app and running only `cmake --build` produces a
+# bundle without one. That still launches, which is why it is worth failing
+# on here: the app would have no bundle identifier, no icon and no
+# NSHighResolutionCapable, and macOS would fall back to the executable name.
+if [ ! -f "${APP}/Contents/Info.plist" ]; then
+    echo "error: ${APP_NAME} has no Contents/Info.plist" >&2
+    echo "       re-run cmake to regenerate it:" >&2
+    echo "         cmake -S \"$(dirname "${QT_DIR}")/qt\" -B \"${BUILD_DIR}\"" >&2
+    exit 1
+fi
+
 step "Deploying Qt frameworks into ${APP_NAME}"
 # Homebrew's qt is a meta-formula: the frameworks the app links against
 # resolve through the qtbase keg, but modules like QtSvg and QtPdf live in

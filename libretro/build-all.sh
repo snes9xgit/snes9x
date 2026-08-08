@@ -157,6 +157,13 @@ if [ ! -f "${MACOS_BUILD_DIR}/CMakeCache.txt" ]; then
         cmake -S "${REPO_DIR}/qt" -B "${MACOS_BUILD_DIR}" -G Ninja \
               -DCMAKE_BUILD_TYPE=Release
     fi
+else
+    # CMake writes Contents/Info.plist at *generate* time; there is no build
+    # rule for it. The clean step above deletes the .app, so `cmake --build`
+    # alone would relink the executable into a bundle with no Info.plist at
+    # all -- no identifier, no icon, no Retina flag. Re-generate from the
+    # existing cache to put it back.
+    cmake -S "${REPO_DIR}/qt" -B "${MACOS_BUILD_DIR}" >/dev/null
 fi
 cmake --build "${MACOS_BUILD_DIR}" -j"${JOBS}"
 
