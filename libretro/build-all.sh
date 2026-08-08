@@ -8,10 +8,14 @@
 # Usage:
 #   ./build-all.sh                # Android cores for arm64-v8a + armeabi-v7a
 #   ./build-all.sh --copy         # also copy artifacts to the VMware share
+#   ./build-all.sh --compress     # zip each core with its .info
 #   ANDROID_ABI=all ./build-all.sh
 #
 # --copy copies every artifact (AppImages, cores, .info files) flat into
 # SHARE_DIR (default /mnt/hgfs/Shared) after a fully successful build.
+# --compress zips each core (.so) together with its matching .info next to
+# the .so; AppImages are never compressed. With --copy, the share receives
+# the zips instead of the bare .so/.info files.
 #
 # Notes:
 # - The Linux core is built with linux/build-portable.sh (needs docker):
@@ -32,9 +36,11 @@ JOBS="$(nproc)"
 SHARE_DIR="${SHARE_DIR:-/mnt/hgfs/Shared}"
 
 COPY_TO_SHARE=0
+COMPRESS=0
 for arg in "$@"; do
     case "$arg" in
         --copy) COPY_TO_SHARE=1 ;;
+        --compress) COMPRESS=1 ;;
         *) echo "unknown option: $arg" >&2; exit 2 ;;
     esac
 done
@@ -139,6 +145,27 @@ if [ "${found_android}" -eq 0 ]; then
 fi
 echo "================================================="
 
+# ---- Compress cores (.so + matching .info) -------------------------------
+
+if [ "${COMPRESS}" -eq 1 ]; then
+    if [ "${missing}" -ne 0 ]; then
+        echo "Not compressing: build has missing artifacts." >&2
+        exit 1
+    fi
+    if ! command -v zip >/dev/null; then
+        echo "error: zip is required for --compress (sudo apt install zip)" >&2
+        exit 1
+    fi
+    step "Compressing cores (.so + .info)"
+    for so in "${LINUX_SO}" "${LINUX_SO_X86}" \
+              "${ANDROID_DIST}"/*/supersnes9x_libretro_android*.so; do
+        zipf="${so%.so}.zip"
+        rm -f "${zipf}"
+        zip -j -q "${zipf}" "${so}" "${so%.so}.info"
+        echo "  ${zipf}"
+    done
+fi
+
 # ---- Copy to the VMware shared folder ------------------------------------
 
 if [ "${COPY_TO_SHARE}" -eq 1 ]; then
@@ -154,12 +181,19 @@ if [ "${COPY_TO_SHARE}" -eq 1 ]; then
         echo "       (mount it with: sudo mount -t fuse.vmhgfs-fuse .host:/ /mnt/hgfs -o allow_other)" >&2
         exit 1
     fi
-    cp -v "${QT_APPIMAGE}" "${GTK_APPIMAGE}" "${QT_APPIMAGE_X86}" "${GTK_APPIMAGE_X86}" \
-          "${LINUX_SO}" "${LINUX_SO%.so}.info" \
-          "${LINUX_SO_X86}" "${LINUX_SO_X86%.so}.info" \
-          "${ANDROID_DIST}"/*/supersnes9x_libretro_android*.so \
-          "${ANDROID_DIST}"/*/supersnes9x_libretro_android*.info \
-          "${SHARE_DIR}/"
+    if [ "${COMPRESS}" -eq 1 ]; then
+        cp -v "${QT_APPIMAGE}" "${GTK_APPIMAGE}" "${QT_APPIMAGE_X86}" "${GTK_APPIMAGE_X86}" \
+              "${LINUX_SO%.so}.zip" "${LINUX_SO_X86%.so}.zip" \
+              "${ANDROID_DIST}"/*/supersnes9x_libretro_android*.zip \
+              "${SHARE_DIR}/"
+    else
+        cp -v "${QT_APPIMAGE}" "${GTK_APPIMAGE}" "${QT_APPIMAGE_X86}" "${GTK_APPIMAGE_X86}" \
+              "${LINUX_SO}" "${LINUX_SO%.so}.info" \
+              "${LINUX_SO_X86}" "${LINUX_SO_X86%.so}.info" \
+              "${ANDROID_DIST}"/*/supersnes9x_libretro_android*.so \
+              "${ANDROID_DIST}"/*/supersnes9x_libretro_android*.info \
+              "${SHARE_DIR}/"
+    fi
 fi
 
 exit "${missing}"
