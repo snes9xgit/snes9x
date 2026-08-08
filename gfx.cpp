@@ -403,7 +403,7 @@ static void S9xApplyMidLineRaster (void)
 		{
 			uint16	firstOld[8], lastNew[8], savedOfs[8];
 			bool	touched[8] = { false };
-			int		firstX = 256, lastX = 0;
+			int		maxFirstX = 0, lastX = 0;
 			bool	any = false;
 
 			for (int j = i; j < end; j++)
@@ -412,28 +412,37 @@ static void S9xApplyMidLineRaster (void)
 					continue;
 				const int	r = raster_events[j].reg;
 				if (!touched[r])
-					{ touched[r] = true; firstOld[r] = raster_events[j].oldV; }
+				{
+					touched[r] = true;
+					firstOld[r] = raster_events[j].oldV;
+					if (raster_events[j].x > maxFirstX)
+						maxFirstX = raster_events[j].x;
+				}
 				lastNew[r] = raster_events[j].newV;
-				if (raster_events[j].x < firstX)	firstX = raster_events[j].x;
-				if (raster_events[j].x > lastX)		lastX  = raster_events[j].x;
+				if (raster_events[j].x > lastX)
+					lastX = raster_events[j].x;
 				any = true;
 			}
 			if (!any)
 				continue;
 
-			// True timeline: left of the first write the old values rule,
-			// right of the last write the final values do; between them the
-			// line latch (whatever was live at the latch dot) already drew.
-			// Scroll writes act through the BG fetch pipeline, so their right
-			// boundary gets a one-tile margin before the reverted span.
+			// True timeline: the raster state rules from when its last
+			// register is set (+2 dots of pipeline) until its restore; the
+			// old values rule to the left, the final ones to the right.
+			// Scroll writes act through the BG fetch pipeline, so their
+			// right boundary gets a one-tile margin instead.
+			const int	leftEnd    = maxFirstX + 2;
+			int			rightStart = cls ? lastX + 8 : (lastX > 2 ? lastX - 2 : lastX);
+			if (rightStart < leftEnd)
+				rightStart = leftEnd;
+
 			for (int side = 0; side < 2; side++)
 			{
-				const int	rspanX = cls ? lastX + 8 : lastX;
 				raster_span_count = 0;
-				if (side == 0 && firstX > 1)
-					{ raster_span_l[0] = 0; raster_span_r[0] = firstX; raster_span_count = 1; }
-				if (side == 1 && rspanX < 255)
-					{ raster_span_l[0] = rspanX; raster_span_r[0] = 256; raster_span_count = 1; }
+				if (side == 0 && maxFirstX > 1 && leftEnd < 256)
+					{ raster_span_l[0] = 0; raster_span_r[0] = leftEnd; raster_span_count = 1; }
+				if (side == 1 && rightStart < 255)
+					{ raster_span_l[0] = rightStart; raster_span_r[0] = 256; raster_span_count = 1; }
 				if (!raster_span_count)
 					continue;
 
