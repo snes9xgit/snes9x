@@ -334,6 +334,22 @@ void S9xSetPPU (uint8 Byte, uint16 Address)
 				{
 					FLUSH_REDRAW();
 
+					// Brightness-only change in the middle of a visible line,
+					// after this line's render latch: the line is already drawn
+					// with the old value, so log a span for the post-pass
+					// (A.S.P.'s mid-scanline aircraft shadow).
+					if (!(Byte & 0x80) && !((Memory.FillRAM[0x2100] ^ Byte) & 0x80) &&
+						PPU.Brightness != (Byte & 0xf) &&
+						CPU.V_Counter >= FIRST_VISIBLE_LINE &&
+						CPU.V_Counter < PPU.ScreenHeight + FIRST_VISIBLE_LINE &&
+						CPU.Cycles > Timings.RenderPos)
+					{
+						int x = CPU.Cycles / ONE_DOT_CYCLE - 22;
+						if (x >= 1 && x <= 255)
+							S9xRecordMidLineBrightness(CPU.V_Counter - FIRST_VISIBLE_LINE, x,
+									PPU.Brightness, Byte & 0xf);
+					}
+
 					if (PPU.Brightness != (Byte & 0xf))
 					{
 						IPPU.ColorsChanged = TRUE;

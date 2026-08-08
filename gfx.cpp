@@ -165,6 +165,75 @@ void S9xBuildDirectColourMaps (void)
 	}
 }
 
+// Mid-scanline INIDISP brightness windows. A.S.P. Air Strike Patrol draws the
+// aircraft shadow by dimming $2100 for ~10 dots in the middle of a scanline
+// and restoring it before HBlank; a line renderer can't split a line, so the
+// events are recorded here and the affected pixel span is re-scaled after the
+// frame is done.
+#define MAX_BRIGHT_EVENTS 64
+static struct
+{
+	uint8	line, x, oldB, newB;
+}	bright_events[MAX_BRIGHT_EVENTS];
+static int	bright_event_count = 0;
+
+void S9xRecordMidLineBrightness (int line, int x, uint8 oldBright, uint8 newBright)
+{
+	if (bright_event_count >= MAX_BRIGHT_EVENTS || line > 255)
+		return;
+	bright_events[bright_event_count].line = (uint8) line;
+	bright_events[bright_event_count].x    = (uint8) x;
+	bright_events[bright_event_count].oldB = oldBright;
+	bright_events[bright_event_count].newB = newBright;
+	bright_event_count++;
+}
+
+static void S9xApplyMidLineBrightness (void)
+{
+	if (!bright_event_count)
+		return;
+
+	const int	xscale = IPPU.DoubleWidthPixels ? 2 : 1;
+
+	for (int i = 0; i < bright_event_count; i++)
+	{
+		const int	line = bright_events[i].line;
+		if (line >= (int) PPU.ScreenHeight)
+			continue;
+
+		// The line itself was rendered with the brightness the first event
+		// on it replaced; spans between events use each event's new value.
+		int	renderedB = bright_events[i].oldB;
+		for (int j = i - 1; j >= 0; j--)
+			if (bright_events[j].line == line)
+				{ renderedB = bright_events[j].oldB; break; }
+
+		int	xend = 256;
+		if (i + 1 < bright_event_count && bright_events[i + 1].line == line)
+			xend = bright_events[i + 1].x;
+
+		if (bright_events[i].newB == renderedB || xend <= bright_events[i].x)
+			continue;
+
+		const int	num = bright_events[i].newB + 1;
+		const int	den = renderedB + 1;
+
+		uint16	*p = GFX.Screen + line * GFX.PPL;
+		if (GFX.DoInterlace && S9xInterlaceField())
+			p += GFX.RealPPL;
+
+		for (int x = bright_events[i].x * xscale; x < xend * xscale; x++)
+		{
+			uint32	r, g, b;
+			DECOMPOSE_PIXEL(p[x], r, g, b);
+			r = r * num / den;
+			g = g * num / den;
+			b = b * num / den;
+			p[x] = BUILD_PIXEL(r, g, b);
+		}
+	}
+}
+
 void S9xStartScreenRefresh (void)
 {
 	if (GFX.DoInterlace)
@@ -188,6 +257,7 @@ void S9xStartScreenRefresh (void)
 		PPU.MosaicStart = 0;
 		PPU.RecomputeClipWindows = TRUE;
 		IPPU.PreviousLine = IPPU.CurrentLine = 0;
+		bright_event_count = 0;
 
 		memset(GFX.ZBuffer, 0, GFX.ScreenSize);
 		memset(GFX.SubZBuffer, 0, GFX.ScreenSize);
@@ -484,6 +554,8 @@ void S9xEndScreenRefresh (void)
 	if (IPPU.RenderThisFrame)
 	{
 		FLUSH_REDRAW();
+
+		S9xApplyMidLineBrightness();
 
 		// SGB BIOS-mode custom-border overlay. FLUSH_REDRAW above
 		// finalized the SNES PPU output (including the SGB2 BIOS's
