@@ -475,6 +475,7 @@ void S9xSetPPU (uint8 Byte, uint16 Address)
 				if (Byte != Memory.FillRAM[0x2106])
 				{
 					FLUSH_REDRAW();
+					S9xRecordMidLineWindowSel(3, Memory.FillRAM[0x2106], Byte);
 					PPU.MosaicStart = CPU.V_Counter;
 					if (PPU.MosaicStart > PPU.ScreenHeight)
 						PPU.MosaicStart = 0;
