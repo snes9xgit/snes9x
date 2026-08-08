@@ -45,7 +45,7 @@ directory — without them, GB content runs on the built-in BIOS-less core.
 Or you can build all versions: appimage, linux, android (requires docker).
 
 ```bash
-cd libretro/linux
+cd libretro
 ./build-all.sh
 ```
 
