@@ -42,6 +42,13 @@ Then copy `supersnes9x_libretro.so` together with
 place the SGB BIOS ROMs (`SGB1.sfc` / `SGB2.sfc`) in RetroArch's system
 directory — without them, GB content runs on the built-in BIOS-less core.
 
+Or you can build all versions: appimage, linux, android (requires docker).
+
+```bash
+cd libretro/linux
+./build-all.sh
+```
+
 ## Upstream builds (plain snes9x, not SuperSnes9x)
 
 Official upstream snes9x builds, for reference:
