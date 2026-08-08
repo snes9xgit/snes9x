@@ -268,10 +268,12 @@ static int	raster_event_count = 0;
 static int		raster_span_count = 0;   // re-render clip restriction, consumed by S9xUpdateScreen
 static uint16	raster_span_l[2], raster_span_r[2];
 
-// Window positions are HDMA-driven per line (gauge shapes, the radar sweep),
-// so the end-of-frame values are wrong for a re-render; RenderLine snapshots
+// Window positions and the backdrop color are HDMA-driven per line (gauge
+// shapes, the radar sweep, the ambient-light gradient on CGRAM entry 0), so
+// the end-of-frame values are wrong for a re-render; RenderLine snapshots
 // what each line actually latched.
 static uint8	line_windows[240][4];
+static uint16	line_backdrop[240];
 
 static bool mid_line_event_pos (int &line, int &x)
 {
@@ -465,7 +467,8 @@ static void S9xApplyMidLineRaster (void)
 					}
 				}
 
-				// this line's HDMA-written window positions, not the frame's last
+				// this line's HDMA-written window positions and backdrop
+				// color, not the frame's last
 				const uint8	savedWin[4] =
 				{
 					Memory.FillRAM[0x2126], Memory.FillRAM[0x2127],
@@ -475,6 +478,22 @@ static void S9xApplyMidLineRaster (void)
 				PPU.Window1Right = line_windows[line][1];
 				PPU.Window2Left  = line_windows[line][2];
 				PPU.Window2Right = line_windows[line][3];
+
+				const uint16	savedBackdrop = PPU.CGDATA[0];
+				const uint16	savedScreen0  = IPPU.ScreenColors[0];
+				const uint8	savedR0 = IPPU.Red[0], savedG0 = IPPU.Green[0], savedB0 = IPPU.Blue[0];
+				{
+					const uint16	c = line_backdrop[line];
+					uint8	rr = IPPU.XB[c & 0x1f];
+					uint8	gg = IPPU.XB[(c >> 5) & 0x1f];
+					uint8	bb = IPPU.XB[(c >> 10) & 0x1f];
+					S9xApplyColorAdjustments(rr, gg, bb, 0x1f);
+					PPU.CGDATA[0] = c;
+					IPPU.Red[0]   = rr;
+					IPPU.Green[0] = gg;
+					IPPU.Blue[0]  = bb;
+					IPPU.ScreenColors[0] = (uint16) BUILD_PIXEL(rr, gg, bb);
+				}
 
 				// depth values from the first pass would reject the re-render
 				uint32	zrow = line * GFX.PPL + ((GFX.DoInterlace && S9xInterlaceField()) ? GFX.RealPPL : 0);
@@ -491,6 +510,11 @@ static void S9xApplyMidLineRaster (void)
 				PPU.Window1Right = savedWin[1];
 				PPU.Window2Left  = savedWin[2];
 				PPU.Window2Right = savedWin[3];
+				PPU.CGDATA[0]        = savedBackdrop;
+				IPPU.ScreenColors[0] = savedScreen0;
+				IPPU.Red[0]   = savedR0;
+				IPPU.Green[0] = savedG0;
+				IPPU.Blue[0]  = savedB0;
 
 				for (int r = 0; r < 8; r++)
 				{
@@ -953,6 +977,7 @@ void RenderLine (uint8 C)
 			line_windows[C][1] = Memory.FillRAM[0x2127];
 			line_windows[C][2] = Memory.FillRAM[0x2128];
 			line_windows[C][3] = Memory.FillRAM[0x2129];
+			line_backdrop[C]   = PPU.CGDATA[0];
 		}
 
 		LineData[C].BG[0].VOffset = PPU.BG[0].VOffset + 1;
