@@ -307,6 +307,7 @@ void S9xLoadConfigFiles (char **argv, int argc)
 	Settings.BlockInvalidVRAMAccessMaster   = !conf.GetBool("Hack::AllowInvalidVRAMAccess",        false);
 	Settings.HDMATimingHack                 =  conf.GetInt ("Hack::HDMATiming",                    100);
 	Settings.MaxSpriteTilesPerLine          =  conf.GetInt ("Hack::MaxSpriteTilesPerLine",         34);
+    Settings.DisableGSUCycleMode            = conf.GetBool("Hack::DisableGSUCycleMode", false);
 
 	// Netplay
 
@@ -710,6 +711,9 @@ char * S9xParseArgs (char **argv, int argc)
 			if (!strcasecmp(argv[i], "-invalidvramaccess"))
 				Settings.BlockInvalidVRAMAccessMaster = FALSE;
 			else
+            if (!strcasecmp(argv[i], "-disablegsucyclemode"))
+                Settings.DisableGSUCycleMode = TRUE;
+            else
 
 			// OTHER OPTIONS
 

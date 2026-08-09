@@ -188,6 +188,7 @@ struct STimings
 	int32	IRQFlagChanging;	// This value is just a hack.
 	int32	APUSpeedup;
 	bool8	APUAllowTimeOverflow;
+    int32   GSUCelDelay;
 };
 
 // Game Boy frame-blend selection (Settings.GBFrameBlend / GBFrameBlendLayer).
@@ -357,6 +358,7 @@ struct SSettings
 	int	OneSlowClockCycle;
 	int	TwoClockCycles;
 	int	MaxSpriteTilesPerLine;
+    bool8   DisableGSUCycleMode;
 
 	int		RunAhead;     // 0 = off, 1-4 = number of frames to run ahead
 	bool8	InRunAhead;   // true while emulating a hidden "ahead" frame

@@ -2435,10 +2435,10 @@ bool8 CMemory::LoadBSCart ()
 
 // Dedicated SuperFX ROM view for the box's GSU socket (Star Fox). fxemu
 // wants the image linear at +0 (GSU banks 40h+) and the doubled-32K layout
-// at +0x800000 (GSU banks 00h-3Fh). The multi-game image can't be
-// rearranged in place the way Map_SuperFXLoROMMap does — a PSS-61+63 file
-// is 9.5MB and overlaps +0x800000 — so the selected image is staged into
-// this buffer when the KROM programs the GSU mapping.
+// at +FX_MEMORY_32K_MIRRORS (GSU banks 00h-3Fh). The multi-game image can't
+// be rearranged in place the way Map_SuperFXLoROMMap does — a PSS-61+63 file
+// is 9.5MB and overlaps the mirror window — so the selected image is staged
+// into this buffer when the KROM programs the GSU mapping.
 static uint8	*SFCBoxFXRom = NULL;
 static uint32	SFCBoxFXRomOffset = ~0u;
 
@@ -2446,7 +2446,7 @@ static bool8 SFCBoxStageGSU (uint32 off, uint32 size)
 {
 	if (!SFCBoxFXRom)
 	{
-		SFCBoxFXRom = (uint8 *) malloc(0xC00000);
+		SFCBoxFXRom = (uint8 *) malloc(FX_MEMORY_32K_MIRRORS + 0x400000);
 		if (!SFCBoxFXRom)
 			return (FALSE);
 	}
@@ -2464,8 +2464,8 @@ static bool8 SFCBoxStageGSU (uint32 off, uint32 size)
 	for (uint32 c = 0; c < 64; c++)
 	{
 		const uint8	*src = Memory.ROM + off + ((c * 0x8000) & mask);
-		memcpy(SFCBoxFXRom + 0x800000 + c * 0x10000,           src, 0x8000);
-		memcpy(SFCBoxFXRom + 0x800000 + c * 0x10000 + 0x8000,  src, 0x8000);
+		memcpy(SFCBoxFXRom + FX_MEMORY_32K_MIRRORS + c * 0x10000,          src, 0x8000);
+		memcpy(SFCBoxFXRom + FX_MEMORY_32K_MIRRORS + c * 0x10000 + 0x8000, src, 0x8000);
 	}
 
 	SFCBoxFXRomOffset = off;
@@ -3354,6 +3354,7 @@ void CMemory::InitROM (void)
 	Timings.NMIDMADelay  = 24;
 	Timings.IRQTriggerCycles = 14;
 	Timings.APUSpeedup = 0;
+    Timings.GSUCelDelay = 0;
 	S9xAPUTimingSetSpeedup(Timings.APUSpeedup);
 
 	IPPU.TotalEmulatedFrames = 0;
@@ -3832,29 +3833,27 @@ void CMemory::Map_SuperFXLoROMMap (void)
 	printf("Map_SuperFXLoROMMap\n");
 	map_System();
 
-	// Replicate the first 2Mb of the ROM at ROM + 8MB such that each 32K
+	// Replicate the first 2Mb of the ROM at ROM + FX_MEMORY_32K_MIRRORS such that each 32K
 	// block is repeated twice in each 64K block.
 	for (int c = 0; c < 64; c++)
 	{
-		memmove(&ROM[0x800000 + c * 0x10000], &ROM[c * 0x8000], 0x8000);
-		memmove(&ROM[0x808000 + c * 0x10000], &ROM[c * 0x8000], 0x8000);
+		memmove(&ROM[FX_MEMORY_32K_MIRRORS + 0x0000 + c * 0x10000], &ROM[c * 0x8000], 0x8000);
+		memmove(&ROM[FX_MEMORY_32K_MIRRORS + 0x8000 + c * 0x10000], &ROM[c * 0x8000], 0x8000);
 	}
 
-	// Check GSU revision (not 100% accurate but it works)
-	// GSU2
-	if (CalculatedSize > 0x400000)
-	{
+	// Support for ROMs up to 11MB by setting the ROM size to $0E, The GSU still cannot access more than 2 MB.
+	if (ROM[0x7FD7] >= 0x0E) {
 		map_lorom(0x00, 0x3f, 0x8000, 0xffff, 0x200000);
-		map_lorom(0x80, 0xbf, 0x8000, 0xffff, 0x200000);
+		map_lorom_offset(0x80, 0xbf, 0x8000, 0xffff, 0x200000, 0x200000);
 
-		map_hirom_offset(0x40, 0x5f, 0x0000, 0xffff, 0x200000, 0);
-		map_hirom_offset(0xc0, 0xff, 0x0000, 0xffff, CalculatedSize, 0);
+		map_hirom_offset(0x40, 0x6f, 0x0000, 0xffff, 0x300000, 0x800000);
+		map_hirom_offset(0xc0, 0xff, 0x0000, 0xffff, CalculatedSize, 0x400000);
 
 		map_space(0x00, 0x3f, 0x6000, 0x7fff, SRAM - 0x6000);
 		map_space(0x80, 0xbf, 0x6000, 0x7fff, SRAM - 0x6000);
-		map_space(0x70, 0x70, 0x0000, 0xffff, SRAM);
-		map_space(0x71, 0x71, 0x0000, 0xffff, SRAM + 0x10000);
 	}
+	// Check GSU revision (not 100% accurate but it works)
+	// GSU2
 	else if (CalculatedSize > 0x200000)
 	{
 		map_lorom(0x00, 0x3f, 0x8000, 0xffff, 0x200000);
@@ -3865,8 +3864,6 @@ void CMemory::Map_SuperFXLoROMMap (void)
 
 		map_space(0x00, 0x3f, 0x6000, 0x7fff, SRAM - 0x6000);
 		map_space(0x80, 0xbf, 0x6000, 0x7fff, SRAM - 0x6000);
-		map_space(0x70, 0x70, 0x0000, 0xffff, SRAM);
-		map_space(0x71, 0x71, 0x0000, 0xffff, SRAM + 0x10000);
 	}
 	// GSU1
 	else
@@ -3879,10 +3876,30 @@ void CMemory::Map_SuperFXLoROMMap (void)
 
 		map_space(0x00, 0x3f, 0x6000, 0x7fff, SRAM - 0x6000);
 		map_space(0x80, 0xbf, 0x6000, 0x7fff, SRAM - 0x6000);
-		map_space(0x70, 0x70, 0x0000, 0xffff, SRAM);
-		map_space(0x71, 0x71, 0x0000, 0xffff, SRAM + 0x10000);
 		map_space(0xf0, 0xf0, 0x0000, 0xffff, SRAM);
 		map_space(0xf1, 0xf1, 0x0000, 0xffff, SRAM + 0x10000);
+	}
+
+	// Respect SRAMSize
+	map_space(0x70, 0x70, 0x0000, 0xffff, SRAM);
+	map_space(0x71, 0x71, 0x0000, 0xffff, SRAM + 0x10000);
+	if(SRAMSize > 7) {
+		map_space(0x72, 0x72, 0x0000, 0xffff, SRAM + 0x20000);
+		map_space(0x73, 0x73, 0x0000, 0xffff, SRAM + 0x30000);
+	}
+	if(SRAMSize > 8) {
+		map_space(0x74, 0x74, 0x0000, 0xffff, SRAM + 0x40000);
+		map_space(0x75, 0x75, 0x0000, 0xffff, SRAM + 0x50000);
+		map_space(0x76, 0x76, 0x0000, 0xffff, SRAM + 0x60000);
+		map_space(0x77, 0x77, 0x0000, 0xffff, SRAM + 0x70000);
+	}
+	if(SRAMSize > 9) {
+		map_space(0x78, 0x78, 0x0000, 0xffff, SRAM + 0x80000);
+		map_space(0x79, 0x79, 0x0000, 0xffff, SRAM + 0x90000);
+		map_space(0x7A, 0x7A, 0x0000, 0xffff, SRAM + 0xA0000);
+		map_space(0x7B, 0x7B, 0x0000, 0xffff, SRAM + 0xB0000);
+		map_space(0x7C, 0x7C, 0x0000, 0xffff, SRAM + 0xC0000);
+		map_space(0x7D, 0x7D, 0x0000, 0xffff, SRAM + 0xD0000);
 	}
 
 	map_WRAM();
@@ -3897,12 +3914,12 @@ void CMemory::Map_SuperFX3LoROMMap (void)
 	printf("Map_SuperFX3LoROMMap\n");
 	map_System();
 
-	// Replicate the first 2Mb of the ROM at ROM + 8MB such that each 32K
+	// Replicate the first 2Mb of the ROM at ROM + FX_MEMORY_32K_MIRRORS such that each 32K
 	// block is repeated twice in each 64K block.
 	for (int c = 0; c < 64; c++)
 	{
-		memmove(&ROM[0x800000 + c * 0x10000], &ROM[c * 0x8000], 0x8000);
-		memmove(&ROM[0x808000 + c * 0x10000], &ROM[c * 0x8000], 0x8000);
+		memmove(&ROM[FX_MEMORY_32K_MIRRORS + 0x0000 + c * 0x10000], &ROM[c * 0x8000], 0x8000);
+		memmove(&ROM[FX_MEMORY_32K_MIRRORS + 0x8000 + c * 0x10000], &ROM[c * 0x8000], 0x8000);
 	}
 
 	map_lorom(0x00, 0x3f, 0x8000, 0xffff, CalculatedSize);
@@ -5115,6 +5132,9 @@ void CMemory::ApplyROMFixes (void)
 		Timings.RenderPos = 32;
 	else if (match_na("ADVENTURES OF FRANKEN") && Settings.PAL)
 		Timings.RenderPos = 32;
+
+    if (match_na("FX SKIING NINTENDO 96"))
+        Timings.GSUCelDelay = 312;
 }
 
 std::string CMemory::SafeString(std::string s, bool allow_jis /*=false*/)

@@ -202,26 +202,28 @@ struct FxRegs_s
 	uint8	*avRegAddr;					// To reference avReg in snapshot.cpp
 
 	uint8	bFx3;						// Super FX 3 behavior (not in snapshots; set from cart)
+
+    // Cycle-accurate GSU timing (costs in SNES master-clock cycles, derived from
+    // Mesen2's GSU model). When GSU.bCycleMode is set (default), fx_run() consumes
+    // a master-cycle budget instead of a flat instruction count: cached fetches
+    // cost 1 (2 at 10MHz), uncached fetches and RAM/ROM data accesses 5 (6),
+    // 16-byte cache-line fills 16x that, multiplies per CFGR MS0. This makes the
+    // GSU's throughput distribution match hardware: cache-hot loops run at full
+    // clock while plot/RAM/ROM-heavy work is paced by real access latency.
+    uint32	vCycles;		    // cycles consumed in the current fx_run
+    uint32	vCacheMask;		// cache lines treated as loaded (timing only)
+    uint32	vCostCache;		// fetch, cache hit:      CLSR ? 1 : 2
+    uint32	vCostMem;		// fetch/data, uncached:  CLSR ? 5 : 6
+    uint32	vCostFmult;		// fmult/lmult: (MS0 ? 3 : 7) * (CLSR ? 1 : 2)
+    uint32	vCostMult;		// mult/umult:   MS0 ? 1 : 2
+    uint8	bCycleMode;		// 1 = cycle budget (default), 0 = legacy
 };
 
 extern struct FxRegs_s	GSU;
 
-// Cycle-accurate GSU timing (costs in SNES master-clock cycles, derived from
-// Mesen2's GSU model). When g_gsuCycleMode is set (default), fx_run() consumes
-// a master-cycle budget instead of a flat instruction count: cached fetches
-// cost 1 (2 at 10MHz), uncached fetches and RAM/ROM data accesses 5 (6),
-// 16-byte cache-line fills 16x that, multiplies per CFGR MS0. This makes the
-// GSU's throughput distribution match hardware: cache-hot loops run at full
-// clock while plot/RAM/ROM-heavy work is paced by real access latency.
-extern uint32	g_gsuCycles;		// cycles consumed in the current fx_run
-extern uint32	g_gsuCacheMask;		// cache lines treated as loaded (timing only)
-extern uint32	g_gsuCostCache;		// fetch, cache hit:      CLSR ? 1 : 2
-extern uint32	g_gsuCostMem;		// fetch/data, uncached:  CLSR ? 5 : 6
-extern uint32	g_gsuCostFmult;		// fmult/lmult: (MS0 ? 3 : 7) * (CLSR ? 1 : 2)
-extern uint32	g_gsuCostMult;		// mult/umult:   MS0 ? 1 : 2
-extern uint8	g_gsuCycleMode;		// 1 = cycle budget (default), 0 = legacy
 
-#define FX_CYC(n)	{ g_gsuCycles += (uint32) (n); }
+
+#define FX_CYC(n)	{ GSU.vCycles += (uint32) (n); }
 
 // GSU registers
 #define GSU_R0			0x000
@@ -317,15 +319,15 @@ extern uint8	g_gsuCycleMode;		// 1 = cycle budget (default), 0 = legacy
 	if (GSU.bCacheActive && _fca < 512) \
 	{ \
 		uint32 _flb = 1U << (_fca >> 4); \
-		if (!(g_gsuCacheMask & _flb)) \
+		if (!(GSU.vCacheMask & _flb)) \
 		{ \
-			g_gsuCacheMask |= _flb; \
-			g_gsuCycles += g_gsuCostMem << 4; \
+			GSU.vCacheMask |= _flb; \
+			GSU.vCycles += GSU.vCostMem << 4; \
 		} \
-		g_gsuCycles += g_gsuCostCache; \
+		GSU.vCycles += GSU.vCostCache; \
 	} \
 	else \
-		g_gsuCycles += g_gsuCostMem; \
+		GSU.vCycles += GSU.vCostMem; \
 }
 
 // ABS
