@@ -430,15 +430,17 @@ static void S9xApplyMidLineRaster (void)
 
 			// True timeline: the raster state is fully in effect once its
 			// last register is set and stops when the first one reverts,
-			// each taking effect ~2 dots after the write. Scroll writes act
-			// through the BG fetch pipeline, so their right boundary gets a
-			// one-tile margin instead.
+			// each taking effect ~2 dots after the write. Scroll restores
+			// act through the BG fetch pipeline: HOFS gets a one-tile
+			// margin, and a VOFS-only raster keeps the line latch on the
+			// right - the game restores within a tile of its last glyph and
+			// IRQ jitter would otherwise expose the raw tilemap there.
 			int	minLastX = 256;
 			for (int r = 0; r < 8; r++)
-				if (touched[r] && lastXPerReg[r] < minLastX)
+				if (touched[r] && (cls == 0 || !(r & 1)) && lastXPerReg[r] < minLastX)
 					minLastX = lastXPerReg[r];
 			const int	leftEnd    = maxFirstX + 2;
-			int			rightStart = minLastX + (cls ? 8 : 2);
+			int			rightStart = (minLastX >= 256) ? 256 : minLastX + (cls ? 8 : 2);
 			if (rightStart < leftEnd)
 				rightStart = leftEnd;
 
