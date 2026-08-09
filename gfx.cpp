@@ -122,7 +122,9 @@ void S9xGraphicsScreenResize (void)
 	IPPU.InterlaceOBJ = Memory.FillRAM[0x2133] & 2;
 	IPPU.PseudoHires = Memory.FillRAM[0x2133] & 8;
 
-	if (PPU.BGMode == 5 || PPU.BGMode == 6 || IPPU.PseudoHires)
+	// Interlaced frames render double-width too: the field-aware tile
+	// renderers live on the 512-wide path (see S9xSelectTileRenderers).
+	if (PPU.BGMode == 5 || PPU.BGMode == 6 || IPPU.PseudoHires || IPPU.Interlace)
 	{
 		IPPU.DoubleWidthPixels = TRUE;
 		IPPU.RenderedScreenWidth = SNES_WIDTH << 1;
@@ -165,6 +167,438 @@ void S9xBuildDirectColourMaps (void)
 	}
 }
 
+// Mid-scanline INIDISP brightness windows. A.S.P. Air Strike Patrol draws the
+// aircraft shadow by dimming $2100 for ~10 dots in the middle of a scanline
+// and restoring it before HBlank; a line renderer can't split a line, so the
+// events are recorded here and the mismatching pixel spans are re-scaled
+// after the frame is done. RenderLine snapshots the brightness each line was
+// actually drawn with, so the pass is exact for any Timings.RenderPos.
+#define MAX_BRIGHT_EVENTS 64
+static struct
+{
+	uint8	line, x, oldB, newB;
+}	bright_events[MAX_BRIGHT_EVENTS];
+static int		bright_event_count = 0;
+static uint8	line_brightness[240];
+
+void S9xRecordMidLineBrightness (int line, int x, uint8 oldBright, uint8 newBright)
+{
+	if (bright_event_count >= MAX_BRIGHT_EVENTS || line > 239)
+		return;
+	bright_events[bright_event_count].line = (uint8) line;
+	bright_events[bright_event_count].x    = (uint8) x;
+	bright_events[bright_event_count].oldB = oldBright;
+	bright_events[bright_event_count].newB = newBright;
+	bright_event_count++;
+}
+
+static void S9xApplyMidLineBrightness (void);
+
+// Mid-scanline raster spans. A.S.P. also rewrites window-select bytes
+// ($2123/$2125, the pause-map transparency stripes) and BG scroll registers
+// ($2112, the GOOD LUCK wave) inside the visible line and restores them
+// before HBlank, bounding the effect horizontally by write timing. The
+// per-line latch applies the rastered value to the whole line, so the events
+// are recorded here and the outer spans are re-rendered with the pre-raster
+// state after the frame, clipped through the normal window-segment lists.
+#define MAX_RASTER_EVENTS 1536
+static struct
+{
+	uint8	line, x, cls, reg;   // cls 0 = $2123+reg window byte, 1 = $210d+reg scroll
+	uint16	oldV, newV;
+}	raster_events[MAX_RASTER_EVENTS];
+static int	raster_event_count = 0;
+
+static int		raster_span_count = 0;   // re-render clip restriction, consumed by S9xUpdateScreen
+static uint16	raster_span_l[2], raster_span_r[2];
+
+// Window positions and the backdrop color are HDMA-driven per line (gauge
+// shapes, the radar sweep, the ambient-light gradient on CGRAM entry 0), so
+// the end-of-frame values are wrong for a re-render; RenderLine snapshots
+// what each line actually latched.
+static uint8	line_windows[240][4];
+static uint16	line_backdrop[240];
+
+static bool mid_line_event_pos (int &line, int &x)
+{
+	if (!IPPU.RenderThisFrame || raster_event_count >= MAX_RASTER_EVENTS)
+		return (false);
+	if (CPU.V_Counter < FIRST_VISIBLE_LINE || CPU.V_Counter >= PPU.ScreenHeight + FIRST_VISIBLE_LINE)
+		return (false);
+	// Writes from HBlank onward (HBlank-IRQ splits, HDMA) belong to the next
+	// line and stay on the ordinary per-line latch path.
+	if (CPU.Cycles >= Timings.HBlankStart)
+		return (false);
+	line = CPU.V_Counter - FIRST_VISIBLE_LINE;
+	x = CPU.Cycles / ONE_DOT_CYCLE - 22;
+	return (x >= 1 && x <= 255 && line <= 239);
+}
+
+void S9xRecordMidLineWindowSel (int reg, uint8 oldVal, uint8 newVal)
+{
+	int	line, x;
+	if (oldVal == newVal || !mid_line_event_pos(line, x))
+		return;
+	raster_events[raster_event_count].line = (uint8) line;
+	raster_events[raster_event_count].x    = (uint8) x;
+	raster_events[raster_event_count].cls  = 0;
+	raster_events[raster_event_count].reg  = (uint8) reg;
+	raster_events[raster_event_count].oldV = oldVal;
+	raster_events[raster_event_count].newV = newVal;
+	raster_event_count++;
+}
+
+void S9xRecordMidLineScroll (int reg, uint16 oldVal, uint16 newVal)
+{
+	int	line, x;
+	if (oldVal == newVal || PPU.BGMode == 7 || !mid_line_event_pos(line, x))
+		return;
+	raster_events[raster_event_count].line = (uint8) line;
+	raster_events[raster_event_count].x    = (uint8) x;
+	raster_events[raster_event_count].cls  = 1;
+	raster_events[raster_event_count].reg  = (uint8) reg;
+	raster_events[raster_event_count].oldV = oldVal;
+	raster_events[raster_event_count].newV = newVal;
+	raster_event_count++;
+}
+
+// Same field decode as the $2123-$2125/$2106 handlers, without flush/record.
+// reg 0-2 = W12SEL/W34SEL/WOBJSEL, reg 3 = MOSAIC (the map grow-in effect).
+static void apply_byte_reg (int reg, uint8 byte)
+{
+	if (reg == 3)
+	{
+		PPU.Mosaic     = (byte >> 4) + 1;
+		PPU.BGMosaic[0] = (byte & 1);
+		PPU.BGMosaic[1] = (byte & 2);
+		PPU.BGMosaic[2] = (byte & 4);
+		PPU.BGMosaic[3] = (byte & 8);
+		return;
+	}
+
+	const int	n = reg * 2;
+	PPU.ClipWindow1Enable[n]     = !!(byte & 0x02);
+	PPU.ClipWindow1Enable[n + 1] = !!(byte & 0x20);
+	PPU.ClipWindow2Enable[n]     = !!(byte & 0x08);
+	PPU.ClipWindow2Enable[n + 1] = !!(byte & 0x80);
+	PPU.ClipWindow1Inside[n]     = !(byte & 0x01);
+	PPU.ClipWindow1Inside[n + 1] = !(byte & 0x10);
+	PPU.ClipWindow2Inside[n]     = !(byte & 0x04);
+	PPU.ClipWindow2Inside[n + 1] = !(byte & 0x40);
+}
+
+static inline uint16 byte_reg_addr (int reg)
+{
+	return (reg == 3) ? 0x2106 : (0x2123 + reg);
+}
+
+// Re-render one line's [x0,x1) span through the normal compositor, using the
+// line's own HDMA-written window positions and backdrop color rather than the
+// frame's last values. The caller swaps in whatever other state the span
+// should render with. Clobbers IPPU.PreviousLine/CurrentLine.
+static void rerender_line_span (int line, int x0, int x1)
+{
+	raster_span_l[0] = (uint16) x0;
+	raster_span_r[0] = (uint16) x1;
+	raster_span_count = 1;
+
+	const uint8	savedWin[4] =
+	{
+		Memory.FillRAM[0x2126], Memory.FillRAM[0x2127],
+		Memory.FillRAM[0x2128], Memory.FillRAM[0x2129],
+	};
+	PPU.Window1Left  = line_windows[line][0];
+	PPU.Window1Right = line_windows[line][1];
+	PPU.Window2Left  = line_windows[line][2];
+	PPU.Window2Right = line_windows[line][3];
+
+	const uint16	savedBackdrop = PPU.CGDATA[0];
+	const uint16	savedScreen0  = IPPU.ScreenColors[0];
+	const uint8	savedR0 = IPPU.Red[0], savedG0 = IPPU.Green[0], savedB0 = IPPU.Blue[0];
+	{
+		const uint16	c = line_backdrop[line];
+		uint8	rr = IPPU.XB[c & 0x1f];
+		uint8	gg = IPPU.XB[(c >> 5) & 0x1f];
+		uint8	bb = IPPU.XB[(c >> 10) & 0x1f];
+		S9xApplyColorAdjustments(rr, gg, bb, 0x1f);
+		PPU.CGDATA[0] = c;
+		IPPU.Red[0]   = rr;
+		IPPU.Green[0] = gg;
+		IPPU.Blue[0]  = bb;
+		IPPU.ScreenColors[0] = (uint16) BUILD_PIXEL(rr, gg, bb);
+	}
+
+	// depth values from the first pass would reject the re-render
+	uint32	zrow = line * GFX.PPL + ((GFX.DoInterlace && S9xInterlaceField()) ? GFX.RealPPL : 0);
+	memset(GFX.ZBuffer + zrow, 0, IPPU.RenderedScreenWidth);
+	memset(GFX.SubZBuffer + zrow, 0, IPPU.RenderedScreenWidth);
+
+	IPPU.PreviousLine = line;
+	IPPU.CurrentLine  = line + 1;
+	PPU.RecomputeClipWindows = TRUE;
+	S9xUpdateScreen();
+	raster_span_count = 0;
+
+	PPU.Window1Left  = savedWin[0];
+	PPU.Window1Right = savedWin[1];
+	PPU.Window2Left  = savedWin[2];
+	PPU.Window2Right = savedWin[3];
+	PPU.CGDATA[0]        = savedBackdrop;
+	IPPU.ScreenColors[0] = savedScreen0;
+	IPPU.Red[0]   = savedR0;
+	IPPU.Green[0] = savedG0;
+	IPPU.Blue[0]  = savedB0;
+}
+
+static void S9xApplyMidLineBrightness (void)
+{
+	if (!bright_event_count)
+		return;
+
+	const uint32	savedPrev = IPPU.PreviousLine;
+	const uint32	savedCur  = IPPU.CurrentLine;
+	const int	xscale = IPPU.DoubleWidthPixels ? 2 : 1;
+
+	for (int i = 0; i < bright_event_count; )
+	{
+		const int	line = bright_events[i].line;
+		int	end = i;
+		while (end < bright_event_count && bright_events[end].line == line)
+			end++;
+
+		if (line >= (int) PPU.ScreenHeight)
+			{ i = end; continue; }
+
+		// the brightness at line start rules outside the raced window
+		const uint8	base = bright_events[i].oldB;
+
+		// If the line latch caught a mid-window value, the whole line was
+		// rendered with it. Re-render at the base brightness rather than
+		// scaling pixels back up - the round trip through the brightness
+		// LUT leaves a visible band across the line otherwise.
+		if (line_brightness[line] != base)
+		{
+			const uint8	savedBright = PPU.Brightness;
+			PPU.Brightness = base;
+			S9xFixColourBrightness();
+			S9xBuildDirectColourMaps();
+			rerender_line_span(line, 0, 256);
+			PPU.Brightness = savedBright;
+			S9xFixColourBrightness();
+			S9xBuildDirectColourMaps();
+		}
+
+		// darken each span whose true brightness differs from the base
+		for (int j = i; j < end; j++)
+		{
+			const int	trueB = bright_events[j].newB;
+			const int	x0 = bright_events[j].x;
+			const int	x1 = (j + 1 < end) ? bright_events[j + 1].x : 256;
+			if (trueB == base || x1 <= x0)
+				continue;
+
+			const int	num = trueB + 1;
+			const int	den = base + 1;
+
+			uint16	*p = GFX.Screen + line * GFX.PPL;
+			if (GFX.DoInterlace && S9xInterlaceField())
+				p += GFX.RealPPL;
+
+			for (int x = x0 * xscale; x < x1 * xscale; x++)
+			{
+				uint32	r, g, b;
+				DECOMPOSE_PIXEL(p[x], r, g, b);
+				r = r * num / den; if (r > 31) r = 31;
+				g = g * num / den; if (g > 31) g = 31;
+				b = b * num / den; if (b > 31) b = 31;
+				p[x] = BUILD_PIXEL(r, g, b);
+			}
+		}
+
+		i = end;
+	}
+
+	IPPU.PreviousLine = savedPrev;
+	IPPU.CurrentLine  = savedCur;
+}
+
+// Intersect every layer's clip segments with the allowed re-render spans.
+static void RestrictClipWindows (void)
+{
+	for (int s = 0; s <= 1; s++)
+	{
+		for (int l = 0; l < 6; l++)
+		{
+			struct ClipData	*c = &IPPU.Clip[s][l];
+			if (!c->Count)
+				continue;
+
+			uint16	L[6], R[6];
+			uint8	M[6];
+			int		n = 0;
+
+			for (int sp = 0; sp < raster_span_count; sp++)
+			{
+				for (int k = 0; k < c->Count && n < 6; k++)
+				{
+					uint16	a = c->Left[k]  > raster_span_l[sp] ? c->Left[k]  : raster_span_l[sp];
+					uint16	b = c->Right[k] < raster_span_r[sp] ? c->Right[k] : raster_span_r[sp];
+					if (a < b)
+					{
+						L[n] = a;
+						R[n] = b;
+						M[n] = c->DrawMode[k];
+						n++;
+					}
+				}
+			}
+
+			c->Count = (uint8) n;
+			for (int k = 0; k < n; k++)
+			{
+				c->Left[k] = L[k];
+				c->Right[k] = R[k];
+				c->DrawMode[k] = M[k];
+			}
+		}
+	}
+}
+
+static void S9xApplyMidLineRaster (void)
+{
+	if (!raster_event_count)
+		return;
+
+	const uint32	savedPrev = IPPU.PreviousLine;
+	const uint32	savedCur  = IPPU.CurrentLine;
+
+	for (int i = 0; i < raster_event_count; )
+	{
+		const int	line = raster_events[i].line;
+		int	end = i;
+		while (end < raster_event_count && raster_events[end].line == line)
+			end++;
+
+		for (int cls = 0; line < (int) PPU.ScreenHeight && cls < 2; cls++)
+		{
+			uint16	firstOld[8], firstNew[8], lastNew[8], savedOfs[8];
+			uint8	firstXPerReg[8], lastXPerReg[8];
+			bool	touched[8] = { false };
+			int		maxFirstX = 0, minFirstX = 256;
+			bool	any = false;
+
+			for (int j = i; j < end; j++)
+			{
+				if (raster_events[j].cls != cls)
+					continue;
+				const int	r = raster_events[j].reg;
+				if (!touched[r])
+				{
+					touched[r] = true;
+					firstOld[r] = raster_events[j].oldV;
+					firstNew[r] = raster_events[j].newV;
+					firstXPerReg[r] = raster_events[j].x;
+					if (raster_events[j].x > maxFirstX)
+						maxFirstX = raster_events[j].x;
+					if (raster_events[j].x < minFirstX)
+						minFirstX = raster_events[j].x;
+				}
+				lastNew[r] = raster_events[j].newV;
+				lastXPerReg[r] = raster_events[j].x;
+				any = true;
+			}
+			if (!any)
+				continue;
+
+			// True timeline: the raster state is fully in effect once its
+			// last register is set and stops when the first one reverts,
+			// each taking effect ~2 dots after the write. Scroll restores
+			// act through the BG fetch pipeline: HOFS gets a one-tile
+			// margin, and a VOFS-only raster keeps the line latch on the
+			// right - the game restores within a tile of its last glyph and
+			// IRQ jitter would otherwise expose the raw tilemap there.
+			int	minLastX = 256;
+			for (int r = 0; r < 8; r++)
+				if (touched[r] && (cls == 0 || !(r & 1)) && lastXPerReg[r] < minLastX)
+					minLastX = lastXPerReg[r];
+			// Windows switch as a set (both regs written before the effect
+			// shows); scroll offsets each take effect at their own write;
+			// mosaic starts at its next block-grid boundary, which keeps the
+			// grow-in's box border clear of the 14x14 blocks like hardware.
+			int	leftEnd = minFirstX + 2;
+			if (cls == 0)
+			{
+				for (int r = 0; r < 3; r++)
+					if (touched[r] && firstXPerReg[r] + 2 > leftEnd)
+						leftEnd = firstXPerReg[r] + 2;
+				if (touched[3])
+				{
+					// a mid-line mosaic enable takes roughly a max-size block
+					// to engage; A.S.P. times the grow-in's write so that
+					// latency spares the box border (block size animates, so
+					// grid rounding alone lands mid-border on small blocks)
+					const int	onset = firstXPerReg[3] + 14;
+					if (onset > leftEnd)
+						leftEnd = onset;
+				}
+			}
+			int	rightStart = (minLastX >= 256) ? 256 : minLastX + (cls ? 8 : 2);
+			if (rightStart < leftEnd)
+				rightStart = leftEnd;
+
+			for (int side = 0; side < 2; side++)
+			{
+				raster_span_count = 0;
+				if (side == 0 && maxFirstX > 1 && leftEnd < 256)
+					{ raster_span_l[0] = 0; raster_span_r[0] = leftEnd; raster_span_count = 1; }
+				if (side == 1 && rightStart < 255)
+					{ raster_span_l[0] = rightStart; raster_span_r[0] = 256; raster_span_count = 1; }
+				if (!raster_span_count)
+					continue;
+
+				const uint16	*vals = side ? lastNew : firstOld;
+				for (int r = 0; r < 8; r++)
+				{
+					if (!touched[r])
+						continue;
+					if (cls == 0)
+						apply_byte_reg(r, (uint8) vals[r]);
+					else if (r & 1)
+					{
+						savedOfs[r] = LineData[line].BG[r >> 1].VOffset;
+						LineData[line].BG[r >> 1].VOffset = vals[r] + 1;
+					}
+					else
+					{
+						savedOfs[r] = LineData[line].BG[r >> 1].HOffset;
+						LineData[line].BG[r >> 1].HOffset = vals[r];
+					}
+				}
+
+				rerender_line_span(line, raster_span_l[0], raster_span_r[0]);
+
+				for (int r = 0; r < 8; r++)
+				{
+					if (!touched[r])
+						continue;
+					if (cls == 0)
+						apply_byte_reg(r, Memory.FillRAM[byte_reg_addr(r)]);
+					else if (r & 1)
+						LineData[line].BG[r >> 1].VOffset = savedOfs[r];
+					else
+						LineData[line].BG[r >> 1].HOffset = savedOfs[r];
+				}
+			}
+			PPU.RecomputeClipWindows = TRUE;
+		}
+
+		i = end;
+	}
+
+	IPPU.PreviousLine = savedPrev;
+	IPPU.CurrentLine  = savedCur;
+}
+
 void S9xStartScreenRefresh (void)
 {
 	if (GFX.DoInterlace)
@@ -188,6 +622,8 @@ void S9xStartScreenRefresh (void)
 		PPU.MosaicStart = 0;
 		PPU.RecomputeClipWindows = TRUE;
 		IPPU.PreviousLine = IPPU.CurrentLine = 0;
+		bright_event_count = 0;
+		raster_event_count = 0;
 
 		memset(GFX.ZBuffer, 0, GFX.ScreenSize);
 		memset(GFX.SubZBuffer, 0, GFX.ScreenSize);
@@ -485,6 +921,9 @@ void S9xEndScreenRefresh (void)
 	{
 		FLUSH_REDRAW();
 
+		S9xApplyMidLineRaster();
+		S9xApplyMidLineBrightness();
+
 		// SGB BIOS-mode custom-border overlay. FLUSH_REDRAW above
 		// finalized the SNES PPU output (including the SGB2 BIOS's
 		// default device-frame border) into GFX.Screen. If the loaded
@@ -592,6 +1031,16 @@ void RenderLine (uint8 C)
 {
 	if (IPPU.RenderThisFrame)
 	{
+		if (C < 240)
+		{
+			line_brightness[C] = PPU.Brightness;
+			line_windows[C][0] = Memory.FillRAM[0x2126];
+			line_windows[C][1] = Memory.FillRAM[0x2127];
+			line_windows[C][2] = Memory.FillRAM[0x2128];
+			line_windows[C][3] = Memory.FillRAM[0x2129];
+			line_backdrop[C]   = PPU.CGDATA[0];
+		}
+
 		LineData[C].BG[0].VOffset = PPU.BG[0].VOffset + 1;
 		LineData[C].BG[0].HOffset = PPU.BG[0].HOffset;
 		LineData[C].BG[1].VOffset = PPU.BG[1].VOffset + 1;
@@ -780,7 +1229,10 @@ void S9xUpdateScreen (void)
 			PPU.RecomputeClipWindows = FALSE;
 		}
 
-		if (!IPPU.DoubleWidthPixels && (PPU.BGMode == 5 || PPU.BGMode == 6 || IPPU.PseudoHires))
+		if (raster_span_count)
+			RestrictClipWindows();
+
+		if (!IPPU.DoubleWidthPixels && (PPU.BGMode == 5 || PPU.BGMode == 6 || IPPU.PseudoHires || IPPU.Interlace))
 		{
 			// Have to back out of the regular speed hack
 			for (uint32 y = 0; y < GFX.StartY; y++)
@@ -796,7 +1248,7 @@ void S9xUpdateScreen (void)
 			IPPU.RenderedScreenWidth = 512;
 		}
 
-		if (!IPPU.DoubleHeightPixels && IPPU.Interlace && (PPU.BGMode == 5 || PPU.BGMode == 6))
+		if (!IPPU.DoubleHeightPixels && IPPU.Interlace)
 		{
 			IPPU.DoubleHeightPixels = TRUE;
 			IPPU.RenderedScreenHeight = PPU.ScreenHeight << 1;
