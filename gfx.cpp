@@ -117,7 +117,9 @@ void S9xGraphicsScreenResize (void)
 	IPPU.InterlaceOBJ = Memory.FillRAM[0x2133] & 2;
 	IPPU.PseudoHires = Memory.FillRAM[0x2133] & 8;
 
-	if (PPU.BGMode == 5 || PPU.BGMode == 6 || IPPU.PseudoHires)
+	// Interlaced frames render double-width too: the field-aware tile
+	// renderers live on the 512-wide path (see S9xSelectTileRenderers).
+	if (PPU.BGMode == 5 || PPU.BGMode == 6 || IPPU.PseudoHires || IPPU.Interlace)
 	{
 		IPPU.DoubleWidthPixels = TRUE;
 		IPPU.RenderedScreenWidth = SNES_WIDTH << 1;
@@ -456,7 +458,7 @@ void S9xUpdateScreen (void)
 			PPU.RecomputeClipWindows = FALSE;
 		}
 
-		if (!IPPU.DoubleWidthPixels && (PPU.BGMode == 5 || PPU.BGMode == 6 || IPPU.PseudoHires))
+		if (!IPPU.DoubleWidthPixels && (PPU.BGMode == 5 || PPU.BGMode == 6 || IPPU.PseudoHires || IPPU.Interlace))
 		{
 			// Have to back out of the regular speed hack
 			for (uint32 y = 0; y < GFX.StartY; y++)
@@ -472,7 +474,7 @@ void S9xUpdateScreen (void)
 			IPPU.RenderedScreenWidth = 512;
 		}
 
-		if (!IPPU.DoubleHeightPixels && IPPU.Interlace && (PPU.BGMode == 5 || PPU.BGMode == 6))
+		if (!IPPU.DoubleHeightPixels && IPPU.Interlace)
 		{
 			IPPU.DoubleHeightPixels = TRUE;
 			IPPU.RenderedScreenHeight = PPU.ScreenHeight << 1;

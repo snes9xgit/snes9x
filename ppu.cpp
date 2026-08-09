@@ -368,10 +368,9 @@ void S9xSetPPU (uint8 Byte, uint16 Address)
 					PPU.BGMode = Byte & 7;
 					// BJ: BG3Priority only takes effect if BGMode == 1 and the bit is set
 					PPU.BG3Priority = ((Byte & 0x0f) == 0x09);
-					if (PPU.BGMode == 6 || PPU.BGMode == 5 || PPU.BGMode == 7)
-					    IPPU.Interlace = Memory.FillRAM[0x2133] & 1;
-					else
-					    IPPU.Interlace = 0;
+					// SETINI interlace applies in every BG mode (A.S.P. runs its
+					// mode-1 screens interlaced for the two-field map/message art)
+					IPPU.Interlace = Memory.FillRAM[0x2133] & 1;
 				#ifdef DEBUGGER
 					missing.modes[PPU.BGMode] = 1;
 				#endif
