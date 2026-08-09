@@ -2422,6 +2422,7 @@ void CMemory::InitROM (void)
 	Timings.NMIDMADelay  = 24;
 	Timings.IRQTriggerCycles = 14;
 	Timings.APUSpeedup = 0;
+    Timings.GSUCelDelay = 0;
 	S9xAPUTimingSetSpeedup(Timings.APUSpeedup);
 
 	IPPU.TotalEmulatedFrames = 0;
@@ -3538,6 +3539,9 @@ void CMemory::ApplyROMFixes (void)
 		Timings.RenderPos = 32;
 	else if (match_na("ADVENTURES OF FRANKEN") && Settings.PAL)
 		Timings.RenderPos = 32;
+
+    if (match_na("FX SKIING NINTENDO 96"))
+        Timings.GSUCelDelay = 312;
 }
 
 std::string CMemory::SafeString(std::string s, bool allow_jis /*=false*/)
