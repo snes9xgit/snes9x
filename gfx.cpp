@@ -406,7 +406,7 @@ static void S9xApplyMidLineRaster (void)
 			uint16	firstOld[8], lastNew[8], savedOfs[8];
 			uint8	lastXPerReg[8];
 			bool	touched[8] = { false };
-			int		maxFirstX = 0;
+			int		maxFirstX = 0, minFirstX = 256;
 			bool	any = false;
 
 			for (int j = i; j < end; j++)
@@ -420,6 +420,8 @@ static void S9xApplyMidLineRaster (void)
 					firstOld[r] = raster_events[j].oldV;
 					if (raster_events[j].x > maxFirstX)
 						maxFirstX = raster_events[j].x;
+					if (raster_events[j].x < minFirstX)
+						minFirstX = raster_events[j].x;
 				}
 				lastNew[r] = raster_events[j].newV;
 				lastXPerReg[r] = raster_events[j].x;
@@ -439,7 +441,9 @@ static void S9xApplyMidLineRaster (void)
 			for (int r = 0; r < 8; r++)
 				if (touched[r] && (cls == 0 || !(r & 1)) && lastXPerReg[r] < minLastX)
 					minLastX = lastXPerReg[r];
-			const int	leftEnd    = maxFirstX + 2;
+			// Windows switch as a set (both regs written before the effect
+			// shows); scroll offsets each take effect at their own write.
+			const int	leftEnd    = (cls ? minFirstX : maxFirstX) + 2;
 			int			rightStart = (minLastX >= 256) ? 256 : minLastX + (cls ? 8 : 2);
 			if (rightStart < leftEnd)
 				rightStart = leftEnd;
