@@ -342,7 +342,8 @@ void S9xSetPPU (uint8 Byte, uint16 Address)
 					if (!(Byte & 0x80) && !((Memory.FillRAM[0x2100] ^ Byte) & 0x80) &&
 						PPU.Brightness != (Byte & 0xf) &&
 						CPU.V_Counter >= FIRST_VISIBLE_LINE &&
-						CPU.V_Counter < PPU.ScreenHeight + FIRST_VISIBLE_LINE)
+						CPU.V_Counter < PPU.ScreenHeight + FIRST_VISIBLE_LINE &&
+						CPU.Cycles < Timings.HBlankStart)
 					{
 						int x = CPU.Cycles / ONE_DOT_CYCLE - 22;
 						if (x >= 1 && x <= 255)

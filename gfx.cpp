@@ -225,6 +225,10 @@ static bool mid_line_event_pos (int &line, int &x)
 		return (false);
 	if (CPU.V_Counter < FIRST_VISIBLE_LINE || CPU.V_Counter >= PPU.ScreenHeight + FIRST_VISIBLE_LINE)
 		return (false);
+	// Writes from HBlank onward (HBlank-IRQ splits, HDMA) belong to the next
+	// line and stay on the ordinary per-line latch path.
+	if (CPU.Cycles >= Timings.HBlankStart)
+		return (false);
 	line = CPU.V_Counter - FIRST_VISIBLE_LINE;
 	x = CPU.Cycles / ONE_DOT_CYCLE - 22;
 	return (x >= 1 && x <= 255 && line <= 239);
