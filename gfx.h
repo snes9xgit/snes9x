@@ -202,6 +202,9 @@ struct COLOR_SUB
 
 void S9xStartScreenRefresh (void);
 void S9xEndScreenRefresh (void);
+void S9xRecordMidLineBrightness (int line, int x, uint8 oldBright, uint8 newBright);
+void S9xRecordMidLineWindowSel (int reg, uint8 oldVal, uint8 newVal);
+void S9xRecordMidLineScroll (int reg, uint16 oldVal, uint16 newVal);
 void S9xBuildDirectColourMaps (void);
 void RenderLine (uint8);
 void S9xComputeClipWindows (void);
