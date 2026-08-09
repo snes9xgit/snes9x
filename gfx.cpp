@@ -192,63 +192,7 @@ void S9xRecordMidLineBrightness (int line, int x, uint8 oldBright, uint8 newBrig
 	bright_event_count++;
 }
 
-static void S9xApplyMidLineBrightness (void)
-{
-	if (!bright_event_count)
-		return;
-
-	const int	xscale = IPPU.DoubleWidthPixels ? 2 : 1;
-
-	for (int i = 0; i < bright_event_count; i++)
-	{
-		const int	line = bright_events[i].line;
-		if (line >= (int) PPU.ScreenHeight)
-			continue;
-
-		const int	renderedB = line_brightness[line];
-
-		// Piecewise true-brightness timeline: before the line's first event
-		// the old value ruled, between events each event's new value does.
-		const bool	firstOnLine = (i == 0 || bright_events[i - 1].line != line);
-		for (int seg = firstOnLine ? 0 : 1; seg < 2; seg++)
-		{
-			int	trueB, x0, x1;
-			if (seg == 0)
-			{
-				trueB = bright_events[i].oldB;
-				x0 = 0;
-				x1 = bright_events[i].x;
-			}
-			else
-			{
-				trueB = bright_events[i].newB;
-				x0 = bright_events[i].x;
-				x1 = (i + 1 < bright_event_count && bright_events[i + 1].line == line)
-						? bright_events[i + 1].x : 256;
-			}
-
-			if (trueB == renderedB || x1 <= x0)
-				continue;
-
-			const int	num = trueB + 1;
-			const int	den = renderedB + 1;
-
-			uint16	*p = GFX.Screen + line * GFX.PPL;
-			if (GFX.DoInterlace && S9xInterlaceField())
-				p += GFX.RealPPL;
-
-			for (int x = x0 * xscale; x < x1 * xscale; x++)
-			{
-				uint32	r, g, b;
-				DECOMPOSE_PIXEL(p[x], r, g, b);
-				r = r * num / den; if (r > 31) r = 31;
-				g = g * num / den; if (g > 31) g = 31;
-				b = b * num / den; if (b > 31) b = 31;
-				p[x] = BUILD_PIXEL(r, g, b);
-			}
-		}
-	}
-}
+static void S9xApplyMidLineBrightness (void);
 
 // Mid-scanline raster spans. A.S.P. also rewrites window-select bytes
 // ($2123/$2125, the pause-map transparency stripes) and BG scroll registers
@@ -342,6 +286,136 @@ static void apply_byte_reg (int reg, uint8 byte)
 static inline uint16 byte_reg_addr (int reg)
 {
 	return (reg == 3) ? 0x2106 : (0x2123 + reg);
+}
+
+// Re-render one line's [x0,x1) span through the normal compositor, using the
+// line's own HDMA-written window positions and backdrop color rather than the
+// frame's last values. The caller swaps in whatever other state the span
+// should render with. Clobbers IPPU.PreviousLine/CurrentLine.
+static void rerender_line_span (int line, int x0, int x1)
+{
+	raster_span_l[0] = (uint16) x0;
+	raster_span_r[0] = (uint16) x1;
+	raster_span_count = 1;
+
+	const uint8	savedWin[4] =
+	{
+		Memory.FillRAM[0x2126], Memory.FillRAM[0x2127],
+		Memory.FillRAM[0x2128], Memory.FillRAM[0x2129],
+	};
+	PPU.Window1Left  = line_windows[line][0];
+	PPU.Window1Right = line_windows[line][1];
+	PPU.Window2Left  = line_windows[line][2];
+	PPU.Window2Right = line_windows[line][3];
+
+	const uint16	savedBackdrop = PPU.CGDATA[0];
+	const uint16	savedScreen0  = IPPU.ScreenColors[0];
+	const uint8	savedR0 = IPPU.Red[0], savedG0 = IPPU.Green[0], savedB0 = IPPU.Blue[0];
+	{
+		const uint16	c = line_backdrop[line];
+		uint8	rr = IPPU.XB[c & 0x1f];
+		uint8	gg = IPPU.XB[(c >> 5) & 0x1f];
+		uint8	bb = IPPU.XB[(c >> 10) & 0x1f];
+		S9xApplyColorAdjustments(rr, gg, bb, 0x1f);
+		PPU.CGDATA[0] = c;
+		IPPU.Red[0]   = rr;
+		IPPU.Green[0] = gg;
+		IPPU.Blue[0]  = bb;
+		IPPU.ScreenColors[0] = (uint16) BUILD_PIXEL(rr, gg, bb);
+	}
+
+	// depth values from the first pass would reject the re-render
+	uint32	zrow = line * GFX.PPL + ((GFX.DoInterlace && S9xInterlaceField()) ? GFX.RealPPL : 0);
+	memset(GFX.ZBuffer + zrow, 0, IPPU.RenderedScreenWidth);
+	memset(GFX.SubZBuffer + zrow, 0, IPPU.RenderedScreenWidth);
+
+	IPPU.PreviousLine = line;
+	IPPU.CurrentLine  = line + 1;
+	PPU.RecomputeClipWindows = TRUE;
+	S9xUpdateScreen();
+	raster_span_count = 0;
+
+	PPU.Window1Left  = savedWin[0];
+	PPU.Window1Right = savedWin[1];
+	PPU.Window2Left  = savedWin[2];
+	PPU.Window2Right = savedWin[3];
+	PPU.CGDATA[0]        = savedBackdrop;
+	IPPU.ScreenColors[0] = savedScreen0;
+	IPPU.Red[0]   = savedR0;
+	IPPU.Green[0] = savedG0;
+	IPPU.Blue[0]  = savedB0;
+}
+
+static void S9xApplyMidLineBrightness (void)
+{
+	if (!bright_event_count)
+		return;
+
+	const uint32	savedPrev = IPPU.PreviousLine;
+	const uint32	savedCur  = IPPU.CurrentLine;
+	const int	xscale = IPPU.DoubleWidthPixels ? 2 : 1;
+
+	for (int i = 0; i < bright_event_count; )
+	{
+		const int	line = bright_events[i].line;
+		int	end = i;
+		while (end < bright_event_count && bright_events[end].line == line)
+			end++;
+
+		if (line >= (int) PPU.ScreenHeight)
+			{ i = end; continue; }
+
+		// the brightness at line start rules outside the raced window
+		const uint8	base = bright_events[i].oldB;
+
+		// If the line latch caught a mid-window value, the whole line was
+		// rendered with it. Re-render at the base brightness rather than
+		// scaling pixels back up - the round trip through the brightness
+		// LUT leaves a visible band across the line otherwise.
+		if (line_brightness[line] != base)
+		{
+			const uint8	savedBright = PPU.Brightness;
+			PPU.Brightness = base;
+			S9xFixColourBrightness();
+			S9xBuildDirectColourMaps();
+			rerender_line_span(line, 0, 256);
+			PPU.Brightness = savedBright;
+			S9xFixColourBrightness();
+			S9xBuildDirectColourMaps();
+		}
+
+		// darken each span whose true brightness differs from the base
+		for (int j = i; j < end; j++)
+		{
+			const int	trueB = bright_events[j].newB;
+			const int	x0 = bright_events[j].x;
+			const int	x1 = (j + 1 < end) ? bright_events[j + 1].x : 256;
+			if (trueB == base || x1 <= x0)
+				continue;
+
+			const int	num = trueB + 1;
+			const int	den = base + 1;
+
+			uint16	*p = GFX.Screen + line * GFX.PPL;
+			if (GFX.DoInterlace && S9xInterlaceField())
+				p += GFX.RealPPL;
+
+			for (int x = x0 * xscale; x < x1 * xscale; x++)
+			{
+				uint32	r, g, b;
+				DECOMPOSE_PIXEL(p[x], r, g, b);
+				r = r * num / den; if (r > 31) r = 31;
+				g = g * num / den; if (g > 31) g = 31;
+				b = b * num / den; if (b > 31) b = 31;
+				p[x] = BUILD_PIXEL(r, g, b);
+			}
+		}
+
+		i = end;
+	}
+
+	IPPU.PreviousLine = savedPrev;
+	IPPU.CurrentLine  = savedCur;
 }
 
 // Intersect every layer's clip segments with the allowed re-render spans.
@@ -497,54 +571,7 @@ static void S9xApplyMidLineRaster (void)
 					}
 				}
 
-				// this line's HDMA-written window positions and backdrop
-				// color, not the frame's last
-				const uint8	savedWin[4] =
-				{
-					Memory.FillRAM[0x2126], Memory.FillRAM[0x2127],
-					Memory.FillRAM[0x2128], Memory.FillRAM[0x2129],
-				};
-				PPU.Window1Left  = line_windows[line][0];
-				PPU.Window1Right = line_windows[line][1];
-				PPU.Window2Left  = line_windows[line][2];
-				PPU.Window2Right = line_windows[line][3];
-
-				const uint16	savedBackdrop = PPU.CGDATA[0];
-				const uint16	savedScreen0  = IPPU.ScreenColors[0];
-				const uint8	savedR0 = IPPU.Red[0], savedG0 = IPPU.Green[0], savedB0 = IPPU.Blue[0];
-				{
-					const uint16	c = line_backdrop[line];
-					uint8	rr = IPPU.XB[c & 0x1f];
-					uint8	gg = IPPU.XB[(c >> 5) & 0x1f];
-					uint8	bb = IPPU.XB[(c >> 10) & 0x1f];
-					S9xApplyColorAdjustments(rr, gg, bb, 0x1f);
-					PPU.CGDATA[0] = c;
-					IPPU.Red[0]   = rr;
-					IPPU.Green[0] = gg;
-					IPPU.Blue[0]  = bb;
-					IPPU.ScreenColors[0] = (uint16) BUILD_PIXEL(rr, gg, bb);
-				}
-
-				// depth values from the first pass would reject the re-render
-				uint32	zrow = line * GFX.PPL + ((GFX.DoInterlace && S9xInterlaceField()) ? GFX.RealPPL : 0);
-				memset(GFX.ZBuffer + zrow, 0, IPPU.RenderedScreenWidth);
-				memset(GFX.SubZBuffer + zrow, 0, IPPU.RenderedScreenWidth);
-
-				IPPU.PreviousLine = line;
-				IPPU.CurrentLine  = line + 1;
-				PPU.RecomputeClipWindows = TRUE;
-				S9xUpdateScreen();
-				raster_span_count = 0;
-
-				PPU.Window1Left  = savedWin[0];
-				PPU.Window1Right = savedWin[1];
-				PPU.Window2Left  = savedWin[2];
-				PPU.Window2Right = savedWin[3];
-				PPU.CGDATA[0]        = savedBackdrop;
-				IPPU.ScreenColors[0] = savedScreen0;
-				IPPU.Red[0]   = savedR0;
-				IPPU.Green[0] = savedG0;
-				IPPU.Blue[0]  = savedB0;
+				rerender_line_span(line, raster_span_l[0], raster_span_r[0]);
 
 				for (int r = 0; r < 8; r++)
 				{
