@@ -403,8 +403,8 @@ static void S9xApplyMidLineRaster (void)
 
 		for (int cls = 0; line < (int) PPU.ScreenHeight && cls < 2; cls++)
 		{
-			uint16	firstOld[8], lastNew[8], savedOfs[8];
-			uint8	lastXPerReg[8];
+			uint16	firstOld[8], firstNew[8], lastNew[8], savedOfs[8];
+			uint8	firstXPerReg[8], lastXPerReg[8];
 			bool	touched[8] = { false };
 			int		maxFirstX = 0, minFirstX = 256;
 			bool	any = false;
@@ -418,6 +418,8 @@ static void S9xApplyMidLineRaster (void)
 				{
 					touched[r] = true;
 					firstOld[r] = raster_events[j].oldV;
+					firstNew[r] = raster_events[j].newV;
+					firstXPerReg[r] = raster_events[j].x;
 					if (raster_events[j].x > maxFirstX)
 						maxFirstX = raster_events[j].x;
 					if (raster_events[j].x < minFirstX)
@@ -442,9 +444,27 @@ static void S9xApplyMidLineRaster (void)
 				if (touched[r] && (cls == 0 || !(r & 1)) && lastXPerReg[r] < minLastX)
 					minLastX = lastXPerReg[r];
 			// Windows switch as a set (both regs written before the effect
-			// shows); scroll offsets each take effect at their own write.
-			const int	leftEnd    = (cls ? minFirstX : maxFirstX) + 2;
-			int			rightStart = (minLastX >= 256) ? 256 : minLastX + (cls ? 8 : 2);
+			// shows); scroll offsets each take effect at their own write;
+			// mosaic starts at its next block-grid boundary, which keeps the
+			// grow-in's box border clear of the 14x14 blocks like hardware.
+			int	leftEnd = minFirstX + 2;
+			if (cls == 0)
+			{
+				for (int r = 0; r < 3; r++)
+					if (touched[r] && firstXPerReg[r] + 2 > leftEnd)
+						leftEnd = firstXPerReg[r] + 2;
+				if (touched[3])
+				{
+					// a mid-line mosaic enable takes roughly a max-size block
+					// to engage; A.S.P. times the grow-in's write so that
+					// latency spares the box border (block size animates, so
+					// grid rounding alone lands mid-border on small blocks)
+					const int	onset = firstXPerReg[3] + 14;
+					if (onset > leftEnd)
+						leftEnd = onset;
+				}
+			}
+			int	rightStart = (minLastX >= 256) ? 256 : minLastX + (cls ? 8 : 2);
 			if (rightStart < leftEnd)
 				rightStart = leftEnd;
 
