@@ -404,8 +404,9 @@ static void S9xApplyMidLineRaster (void)
 		for (int cls = 0; line < (int) PPU.ScreenHeight && cls < 2; cls++)
 		{
 			uint16	firstOld[8], lastNew[8], savedOfs[8];
+			uint8	lastXPerReg[8];
 			bool	touched[8] = { false };
-			int		maxFirstX = 0, lastX = 0;
+			int		maxFirstX = 0;
 			bool	any = false;
 
 			for (int j = i; j < end; j++)
@@ -421,20 +422,23 @@ static void S9xApplyMidLineRaster (void)
 						maxFirstX = raster_events[j].x;
 				}
 				lastNew[r] = raster_events[j].newV;
-				if (raster_events[j].x > lastX)
-					lastX = raster_events[j].x;
+				lastXPerReg[r] = raster_events[j].x;
 				any = true;
 			}
 			if (!any)
 				continue;
 
-			// True timeline: the raster state rules from when its last
-			// register is set (+2 dots of pipeline) until its restore; the
-			// old values rule to the left, the final ones to the right.
-			// Scroll writes act through the BG fetch pipeline, so their
-			// right boundary gets a one-tile margin instead.
+			// True timeline: the raster state is fully in effect once its
+			// last register is set and stops when the first one reverts,
+			// each taking effect ~2 dots after the write. Scroll writes act
+			// through the BG fetch pipeline, so their right boundary gets a
+			// one-tile margin instead.
+			int	minLastX = 256;
+			for (int r = 0; r < 8; r++)
+				if (touched[r] && lastXPerReg[r] < minLastX)
+					minLastX = lastXPerReg[r];
 			const int	leftEnd    = maxFirstX + 2;
-			int			rightStart = cls ? lastX + 8 : (lastX > 2 ? lastX - 2 : lastX);
+			int			rightStart = minLastX + (cls ? 8 : 2);
 			if (rightStart < leftEnd)
 				rightStart = leftEnd;
 
