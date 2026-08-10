@@ -539,10 +539,28 @@ void EmuConfig::config(const std::string &filename, bool write)
     Bool("RemoveSpriteLimit", remove_sprite_limit, "Draw more sprites per line than the hardware allows (reduces flicker, may glitch)");
     Bool("EnableShadowBuffer", enable_shadow_buffer, "Use a separate echo buffer so the SPC echo can't overwrite APU RAM");
     Int("SuperFXClockMultiplier", superfx_clock_multiplier, "SuperFX (GSU) chip speed as a percentage of normal (50-400; 100 = accurate). Higher reduces slowdown in Star Fox and other SuperFX games");
-    // NOTE: the token order below is preserved from the original config for
-    // backward compatibility; change SoundFilter from the Emulation settings
-    // dialog rather than by hand. Gaussian is the hardware-accurate default.
-    Enum("SoundFilter", sound_filter, { "Gaussian", "Nearest", "Linear", "Cubic", "Sinc" }, "Audio interpolation quality; best changed from the in-app Emulation settings");
+    // Audio interpolation. The legacy "SoundFilter" key used a token map whose
+    // first three entries were scrambled (indices 0-2 wrote the wrong word, so
+    // the default Gaussian was saved as "Linear"). Write a corrected
+    // "SoundInterpolation" key going forward, and migrate old configs by decoding
+    // the legacy key with its original buggy map so the real value is preserved
+    // rather than silently changed. sound_filter is used directly as the combo
+    // index and as Settings.InterpolationMethod, so only the on-disk token was
+    // ever wrong.
+    const std::vector<const char *> sound_filter_map = { "Nearest", "Linear", "Gaussian", "Cubic", "Sinc" };
+    if (write)
+    {
+        Enum("SoundInterpolation", sound_filter, sound_filter_map, "Audio interpolation filter: Nearest, Linear, Gaussian (hardware-accurate default), Cubic, or Sinc");
+    }
+    else if (cf.Exists(fullkey("SoundInterpolation").c_str()))
+    {
+        Enum("SoundInterpolation", sound_filter, sound_filter_map);
+    }
+    else
+    {
+        const std::vector<const char *> legacy_sound_filter_map = { "Gaussian", "Nearest", "Linear", "Cubic", "Sinc" };
+        Enum("SoundFilter", sound_filter, legacy_sound_filter_map);
+    }
     EndSection();
 
     BeginSection("Ports");
