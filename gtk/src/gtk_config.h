@@ -159,6 +159,10 @@ class Snes9xConfig
     bool modal_dialogs;
     bool enable_icons;
 
+    // Control the appearance of the on-disk config file itself (mirrors win32).
+    bool config_show_comments;
+    bool config_nice_alignment;
+
     bool pointer_is_visible;
     gint64 pointer_timestamp;
 
