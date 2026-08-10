@@ -73,7 +73,7 @@ class ConfigFile {
     static void SetDefaultAutoAdd(bool autoAdd);
     static void SetNiceAlignment(bool align);
     static void SetShowComments(bool show);
-    static void SetProgramName(const char *name); // program name shown in the config file's header comment (default "snes9x")
+    static void SetProgramName(const char *name); // program name shown in the config file's header comment (default "SuperSnes9x")
     static void SetAlphaSort(bool sort);
     static void SetTimeSort(bool sort);
 

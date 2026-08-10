@@ -22,7 +22,7 @@ using namespace std;
 bool ConfigFile::defaultAutoAdd = false;
 bool ConfigFile::niceAlignment = false;
 bool ConfigFile::showComments = true;
-std::string ConfigFile::programName = "snes9x";
+std::string ConfigFile::programName = "SuperSnes9x";
 bool ConfigFile::alphaSort = true;
 bool ConfigFile::timeSort = false;
 static ConfigFile* curConfigFile = NULL; // for section_then_key_less
@@ -479,7 +479,7 @@ void ConfigFile::SetShowComments(bool show)
 }
 void ConfigFile::SetProgramName(const char *name)
 {
-	programName = (name && *name) ? name : "snes9x";
+	programName = (name && *name) ? name : "SuperSnes9x";
 }
 void ConfigFile::SetAlphaSort(bool sort)
 {
