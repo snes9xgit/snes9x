@@ -443,6 +443,7 @@ int Snes9xConfig::save_config_file()
         outstring(b_links[i].snes9x_name, shortcut[i - NUM_JOYPAD_LINKS].as_string());
     }
 
+    ConfigFile::SetProgramName("SuperSnes9x");
     ConfigFile::SetNiceAlignment(config_nice_alignment);
     ConfigFile::SetShowComments(config_show_comments);
     cf.SaveTo(get_config_file_name().c_str());
