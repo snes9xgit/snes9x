@@ -178,6 +178,11 @@ struct EmuConfig
     };
     int sound_filter;
 
+    // SGB BIOS mode for GB/GBC ROMs: 0=No BIOS (BIOS-less), 1=SGB1, 2=SGB2 (default).
+    // Persisted under [SGB] BIOSPreference to match win32/GTK/CLI, applied to
+    // Settings.SGB_BIOSPreference; the BIOS menu keeps this in sync.
+    int sgb_bios_preference;
+
     // Files
     enum FileLocation
     {

@@ -301,6 +301,7 @@ bool EmuConfig::setDefaults(int section)
         enable_shadow_buffer = false;
         superfx_clock_multiplier = 100;
         sound_filter = eGaussian;
+        sgb_bios_preference = 2;
     }
 
     if (section == -1 || section == 4)
@@ -561,6 +562,12 @@ void EmuConfig::config(const std::string &filename, bool write)
         const std::vector<const char *> legacy_sound_filter_map = { "Gaussian", "Nearest", "Linear", "Cubic", "Sinc" };
         Enum("SoundFilter", sound_filter, legacy_sound_filter_map);
     }
+    EndSection();
+
+    // Key path "SGB::BIOSPreference" matches the win32 config (wconfig.cpp) and
+    // the CLI (snes9x.cpp) so every port reads/writes the same entry.
+    BeginSection("SGB");
+    Int("BIOSPreference", sgb_bios_preference, "BIOS mode for GB/GBC ROMs: 0=No BIOS (BIOS-less), 1=SGB1, 2=SGB2 (default)");
     EndSection();
 
     BeginSection("Ports");
