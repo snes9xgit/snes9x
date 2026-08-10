@@ -627,6 +627,7 @@ void EmuConfig::config(const std::string &filename, bool write)
 
     if (write)
     {
+        ConfigFile::SetProgramName("SuperSnes9x");
         ConfigFile::SetNiceAlignment(config_nice_alignment);
         ConfigFile::SetShowComments(config_show_comments);
         cf.SaveTo(filename.c_str());
