@@ -429,6 +429,7 @@ void EmuMainWindow::createWidgets()
     }
     auto reload_with_pref = [this](uint8_t pref) {
         Settings.SGB_BIOSPreference = pref;
+        app->config->sgb_bios_preference = pref; // persist the choice to the config file
         if (Settings.GBRomPath[0])
             openFile(std::string(Settings.GBRomPath));
     };

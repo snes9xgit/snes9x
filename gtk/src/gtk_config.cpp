@@ -388,6 +388,11 @@ int Snes9xConfig::save_config_file()
     outbool("OverclockCPU", Settings.OneClockCycle != 6, "Speed up the emulated CPU to cut in-game slowdown (inaccurate; can break some games)");
     outbool("EchoBufferHack", Settings.SeparateEchoBuffer, "Prevents echo buffer from overwriting APU RAM");
 
+    // Key path "SGB::BIOSPreference" matches the win32 config (wconfig.cpp) and
+    // the CLI (snes9x.cpp) so every port reads/writes the same entry.
+    section = "SGB";
+    outint("BIOSPreference", Settings.SGB_BIOSPreference, "BIOS mode for GB/GBC ROMs: 0=No BIOS (BIOS-less), 1=SGB1, 2=SGB2 (default)");
+
     section = "Input";
     controllers controller = CTL_NONE;
     int8 id[4];
@@ -637,6 +642,11 @@ int Snes9xConfig::load_config_file()
     bool OverclockCPU = false;
     inbool("OverclockCPU", OverclockCPU);
     inbool("EchoBufferHack", Settings.SeparateEchoBuffer);
+
+    section = "SGB";
+    inint("BIOSPreference", Settings.SGB_BIOSPreference);
+    if (Settings.SGB_BIOSPreference > 2)
+        Settings.SGB_BIOSPreference = 2;
 
     section = "Input";
 
