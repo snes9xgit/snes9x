@@ -1651,7 +1651,6 @@ int CMemory::LoadGBFromBytes (const uint8 *rom, uint32 size, const char *filenam
 
     const uint8 gbFlag    = GbBytesCgbFlag(rom, (size_t)size);
     const bool  gbCgb     = (gbFlag & 0x80) != 0;
-    const bool  gbCgbOnly = (gbFlag == 0xC0);
 
     std::string bios_path;
     uint8 bios_mode = 0;
@@ -1666,7 +1665,7 @@ int CMemory::LoadGBFromBytes (const uint8 *rom, uint32 size, const char *filenam
         else bios_path.clear();
     }
 
-    if (!gbCgbOnly && bios_mode &&
+    if (bios_mode &&
         LoadROMWithSGBBIOSBytes(rom, size, filename, bios_path.c_str()))
     {
         EmitSGBLoadBanner(filename, bios_mode);
