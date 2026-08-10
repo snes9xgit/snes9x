@@ -194,6 +194,12 @@ void Snes9xController::updateSettings(EmuConfig *config)
 
     Settings.SuperFXClockMultiplier  = config->superfx_clock_multiplier;
 
+    // "Use shadow echo buffer": give the APU echo its own buffer so it can't
+    // overwrite APU RAM. Only honored in ALLOW_CPU_OVERCLOCK builds, which is how
+    // the Qt core is compiled. Previously the checkbox/config value was stored
+    // but never applied here.
+    Settings.SeparateEchoBuffer = config->enable_shadow_buffer;
+
     if (rewind_buffer_size != config->rewind_buffer_size && active)
     {
         g_state_manager.init(config->rewind_buffer_size * 1048576);

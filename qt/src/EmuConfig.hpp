@@ -25,6 +25,10 @@ struct EmuConfig
     int saved_speed_sync_method = 0;
     bool saved_enable_vsync = false;
 
+    // Control the appearance of the on-disk config file itself (mirrors win32/GTK).
+    bool config_show_comments = true;
+    bool config_nice_alignment = true;
+
     // Operational
     std::string last_rom_folder;
     int main_window_width = 0;

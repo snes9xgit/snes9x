@@ -5,10 +5,18 @@ namespace fs = std::filesystem;
 
 #include "EmuConfig.hpp"
 #include "EmuBinding.hpp"
-#include <functional>
-#include <QSettings>
+#include <cctype>
+#include <cstdlib>
 #include <QGuiApplication>
 #include <QDir>
+#include <QFile>
+
+// The config file is written in the shared snes9x conffile format (see
+// conffile.cpp) — the same one the win32 and GTK ports use. This replaces the
+// old QSettings INI backend, which could not carry inline comments, and gives
+// the Qt port a documented, human-readable config with a comment toggle.
+// Included last so snes9x.h's macros don't leak into the Qt headers above.
+#include "conffile.h"
 
 static const char *shortcut_names[] =
 {
@@ -342,95 +350,103 @@ bool EmuConfig::setDefaults(int section)
 
 void EmuConfig::config(const std::string &filename, bool write)
 {
-    QSettings settings(QString::fromStdString(filename), QSettings::IniFormat);
+    ConfigFile cf;
+    if (!write)
+        cf.LoadFile(filename.c_str());
 
-    std::function<void(std::string, bool &)> Bool;
-    std::function<void(std::string, int &)> Int;
-    std::function<void(std::string, std::string &)> String;
-    std::function<void(std::string, int &, std::vector<const char *>)> Enum;
-    std::function<void(std::string, double &)> Double;
-    std::function<void(std::string, EmuBinding &)> Binding;
-    std::function<void(std::string)> BeginSection;
-    std::function<void()> EndSection;
+    // Current section prefix. ConfigFile keys are "Section::Key"; BeginSection
+    // sets the prefix and EndSection clears it (no nesting is used).
+    std::string section;
+    auto fullkey = [&](const std::string &key) {
+        return section.empty() ? key : section + "::" + key;
+    };
 
-    if (write)
-    {
-        Bool = [&](const std::string &key, bool &value) {
-            settings.setValue(QString::fromStdString(key), value);
-        };
-        Int = [&](const std::string &key, int &value) {
-            settings.setValue(QString::fromStdString(key), value);
-        };
-        String = [&](const std::string &key, std::string &value) {
-            settings.setValue(QString::fromStdString(key), QString::fromStdString(value));
-        };
-        Enum = [&](const std::string &key, int &value,
-                   const std::vector<const char *> &map) {
-            settings.setValue(QString::fromStdString(key), map[value]);
-        };
-        Double = [&](const std::string &key, double &value) {
-            settings.setValue(QString::fromStdString(key), value);
-        };
-        Binding = [&](const std::string &key, EmuBinding &binding) {
-            settings.setValue(QString::fromStdString(key), QString::fromStdString(binding.to_config_string()));
-        };
-        BeginSection = [&](const std::string &str) {
-            settings.beginGroup(QString::fromStdString(str));
-        };
-        EndSection = [&]() {
-            settings.endGroup();
-        };
-    }
-    else
-    {
-        Bool = [&](const std::string &key, bool &value) {
-            if (settings.contains(QString::fromStdString(key)))
-                value = settings.value(QString::fromStdString(key)).toBool();
-        };
-        Int = [&](const std::string &key, int &value) {
-            if (settings.contains(QString::fromStdString(key)))
-                value = settings.value(QString::fromStdString(key)).toInt();
-        };
-        String = [&](const std::string &key, std::string &value) {
-            if (settings.contains(QString::fromStdString(key)))
-                value = settings.value(QString::fromStdString(key)).toString().toStdString();
-        };
-        Binding = [&](const std::string &key, EmuBinding &binding) {
-            if (settings.contains(QString::fromStdString(key)))
-                binding = EmuBinding::from_config_string(settings.value(QString::fromStdString(key)).toString().toStdString());
-        };
-        Double = [&](const std::string &key, double &value) {
-            if (settings.contains(QString::fromStdString(key)))
-                value = settings.value(QString::fromStdString(key)).toDouble();
-        };
-        Enum = [&](const std::string &key, int &value,
-                   const std::vector<const char *> &map) {
-            QString entry;
+    // Case-insensitive compare, portable (the old QString path lower-cased both
+    // sides before matching enum tokens).
+    auto ieq = [](const std::string &a, const std::string &b) {
+        if (a.size() != b.size())
+            return false;
+        for (size_t i = 0; i < a.size(); i++)
+            if (std::tolower((unsigned char)a[i]) != std::tolower((unsigned char)b[i]))
+                return false;
+        return true;
+    };
 
-            if (settings.contains(QString::fromStdString(key)))
-                entry = settings.value(QString::fromStdString(key)).toString().toLower();
-            else
-                return;
+    // Each accessor reads or writes depending on `write`; the trailing comment
+    // is only emitted on write and ignored on read. Reads leave the value at its
+    // default when the key is absent, matching the old QSettings behavior.
+    auto Bool = [&](const std::string &key, bool &value, const std::string &comment = "") {
+        std::string k = fullkey(key);
+        if (write)
+            cf.SetBool(k.c_str(), value, "true", "false", comment.c_str());
+        else if (cf.Exists(k.c_str()))
+            value = cf.GetBool(k.c_str());
+    };
 
+    auto Int = [&](const std::string &key, int &value, const std::string &comment = "") {
+        std::string k = fullkey(key);
+        if (write)
+            cf.SetInt(k.c_str(), value, comment.c_str());
+        else if (cf.Exists(k.c_str()))
+            value = cf.GetInt(k.c_str());
+    };
+
+    auto String = [&](const std::string &key, std::string &value, const std::string &comment = "") {
+        std::string k = fullkey(key);
+        if (write)
+            cf.SetString(k.c_str(), value, comment.c_str());
+        else
+            value = cf.GetString(k.c_str(), value);
+    };
+
+    auto Double = [&](const std::string &key, double &value, const std::string &comment = "") {
+        std::string k = fullkey(key);
+        if (write)
+            cf.SetString(k.c_str(), std::to_string(value), comment.c_str());
+        else if (cf.Exists(k.c_str()))
+            value = atof(cf.GetString(k.c_str(), std::string()).c_str());
+    };
+
+    auto Enum = [&](const std::string &key, int &value,
+                    const std::vector<const char *> &map, const std::string &comment = "") {
+        std::string k = fullkey(key);
+        if (write)
+        {
+            cf.SetString(k.c_str(), map[value], comment.c_str());
+        }
+        else if (cf.Exists(k.c_str()))
+        {
+            std::string entry = cf.GetString(k.c_str(), std::string());
             for (size_t i = 0; i < map.size(); i++)
-            {
-                if (QString(map[i]).toLower() == entry)
+                if (ieq(entry, map[i]))
                 {
-                    value = i;
-                    return;
+                    value = (int)i;
+                    break;
                 }
-            }
-        };
-        BeginSection = [&](const std::string &str) {
-            settings.beginGroup(QString::fromStdString(str));
-        };
-        EndSection = [&]() {
-            settings.endGroup();
-        };
-    }
+        }
+    };
 
+    auto Binding = [&](const std::string &key, EmuBinding &binding) {
+        std::string k = fullkey(key);
+        if (write)
+            cf.SetString(k.c_str(), binding.to_config_string());
+        else if (cf.Exists(k.c_str()))
+            binding = EmuBinding::from_config_string(cf.GetString(k.c_str(), std::string()));
+    };
+
+    auto BeginSection = [&](const std::string &str) { section = str; };
+    auto EndSection = [&]() { section.clear(); };
+
+    // Section name and semantics match the win32/GTK configs so these two knobs
+    // control the look of this file the same way across all ports.
+    BeginSection("Config");
+    Bool("NiceAlignment", config_nice_alignment, "true to line up the = and # columns in each section of this config file");
+    Bool("Comments", config_show_comments, "true to keep comments such as this in this config file. To refresh all comments after an upgrade, set this to false and run Snes9x, then set it back to true and run Snes9x again.");
+    EndSection();
+
+    // Window sizes and recently-used lists, remembered automatically.
     BeginSection("Operational");
-    String("LastROMFolder", last_rom_folder);
+    String("LastROMFolder", last_rom_folder, "Folder last browsed for a ROM");
     Int("MainWindowWidth", main_window_width);
     Int("MainWindowHeight", main_window_height);
     Int("ShaderParametersDialogWidth", shader_parameters_dialog_width);
@@ -439,7 +455,7 @@ void EmuConfig::config(const std::string &filename, bool write)
     Int("CheatDialogHeight", cheat_dialog_height);
 
     int recent_count = recently_used.size();
-    Int("RecentlyUsedEntries", recent_count);
+    Int("RecentlyUsedEntries", recent_count, "Number of RecentlyUsed entries below");
     if (!write)
         recently_used.resize(recent_count);
     for (int i = 0; i < recent_count; i++)
@@ -449,86 +465,107 @@ void EmuConfig::config(const std::string &filename, bool write)
     EndSection();
 
     BeginSection("General");
-    Bool("FullscreenOnOpen", fullscreen_on_open);
-    Bool("DisableScreensaver", disable_screensaver);
-    Bool("PauseEmulationWhenUnfocused", pause_emulation_when_unfocused);
+    Bool("FullscreenOnOpen", fullscreen_on_open, "Enter fullscreen automatically when a ROM is opened");
+    Bool("DisableScreensaver", disable_screensaver, "Stop the system screensaver from starting while a game is running");
+    Bool("PauseEmulationWhenUnfocused", pause_emulation_when_unfocused, "Pause the game whenever the Snes9x window loses focus");
 
-    Bool("ShowFrameRate", show_frame_rate);
-    Bool("ShowIndicators", show_indicators);
-    Bool("ShowPressedKeys", show_pressed_keys);
-    Bool("ShowTime", show_time);
-    String("Language", language);
+    Bool("ShowFrameRate", show_frame_rate, "Show the frames-per-second counter on screen");
+    Bool("ShowIndicators", show_indicators, "Show on-screen indicators for turbo, pause, rewind, etc.");
+    Bool("ShowPressedKeys", show_pressed_keys, "Show the controller buttons being pressed on screen");
+    Bool("ShowTime", show_time, "Show the current wall-clock time on screen");
+    String("Language", language, "UI language code (e.g. en, es); empty follows the system locale");
     EndSection();
 
     BeginSection("Display");
-    String("DisplayDriver", display_driver);
-    Int("DisplayDevice", display_device_index);
-    Bool("VSync", enable_vsync);
-    Bool("ReduceInputLag", reduce_input_lag);
-    Bool("BilinearFilter", bilinear_filter);
-    Bool("AdjustForVRR", adjust_for_vrr);
-    Bool("UseShader", use_shader);
-    String("Shader", shader);
-    String("LastShaderFolder", last_shader_folder);
+    String("DisplayDriver", display_driver, "Rendering backend (e.g. vulkan, opengl)");
+    Int("DisplayDevice", display_device_index, "Index of the GPU/output to render on (0 = default)");
+    Bool("VSync", enable_vsync, "Synchronize to the monitor's refresh to avoid tearing");
+    Bool("ReduceInputLag", reduce_input_lag, "Wait for each frame to finish drawing before continuing (lower lag, may cost speed)");
+    Bool("BilinearFilter", bilinear_filter, "Smooth the scaled image");
+    Bool("AdjustForVRR", adjust_for_vrr, "Adjust timing for variable-refresh-rate (FreeSync/G-Sync) displays");
+    Bool("UseShader", use_shader, "Apply the shader named in Shader below");
+    String("Shader", shader, "Path to the shader preset used when UseShader is on");
+    String("LastShaderFolder", last_shader_folder, "Folder last browsed for a shader");
 
-    Bool("ScaleImage", scale_image);
-    Bool("MaintainAspectRatio", maintain_aspect_ratio);
-    Bool("UseIntegerScaling", use_integer_scaling);
-    Int("AspectRatioNumerator", aspect_ratio_numerator);
-    Int("AspectRatioDenominator", aspect_ratio_denominator);
-    Bool("ShowOverscan", show_overscan);
-    Enum("HighResolutionEffect", high_resolution_effect, { "LeaveAlone", "ScaleDown", "ScaleUp" });
+    Bool("ScaleImage", scale_image, "Scale the image to fit the window");
+    Bool("MaintainAspectRatio", maintain_aspect_ratio, "Keep the correct proportions when scaling instead of stretching");
+    Bool("UseIntegerScaling", use_integer_scaling, "Restrict scaling to whole-number multiples to keep pixels even");
+    Int("AspectRatioNumerator", aspect_ratio_numerator, "Aspect-ratio width term (e.g. 4 in 4:3)");
+    Int("AspectRatioDenominator", aspect_ratio_denominator, "Aspect-ratio height term (e.g. 3 in 4:3)");
+    Bool("ShowOverscan", show_overscan, "Show the overscan area at the top and bottom that most games hide");
+    Enum("HighResolutionEffect", high_resolution_effect, { "LeaveAlone", "ScaleDown", "ScaleUp" }, "How to handle hi-res (512-wide) frames: LeaveAlone, ScaleDown, or ScaleUp");
 
-    String("SoftwareFilter", software_filter);
+    String("SoftwareFilter", software_filter, "Software scaling filter name; empty means none");
 
-    Enum("DisplayMessages", display_messages, { "Onscreen", "Inscreen", "None" });
-    Int("OSDSize", osd_size);
+    Enum("DisplayMessages", display_messages, { "Onscreen", "Inscreen", "None" }, "Where to draw on-screen messages: Onscreen, Inscreen, or None");
+    Int("OSDSize", osd_size, "Size of on-screen display text in points (default 24)");
 
     // Key names match the win32 config (wconfig.cpp) so a shared install reads/writes
     // the same entries.
-    Enum("BlendGBFrames", gb_frame_blend, { "Off", "SimpleBlend", "LCDBlend" });
-    Enum("BlendGBFramesLayer", gb_frame_blend_layer, { "All", "Background", "Window", "Sprites" });
-    Bool("BlendGBFramesAuto", gb_frame_blend_auto);
+    Enum("BlendGBFrames", gb_frame_blend, { "Off", "SimpleBlend", "LCDBlend" }, "Game Boy frame-blend (Super Game Boy only): Off, SimpleBlend (fixes flicker fake-transparency), or LCDBlend (LCD-style ghosting)");
+    Enum("BlendGBFramesLayer", gb_frame_blend_layer, { "All", "Background", "Window", "Sprites" }, "Which Game Boy layer the frame-blend applies to: All, Background, Window, or Sprites");
+    Bool("BlendGBFramesAuto", gb_frame_blend_auto, "Auto-pick the GB frame-blend per game from a built-in known-flicker table");
     EndSection();
 
     BeginSection("Sound");
-    String("SoundDriver", sound_driver);
-    String("SoundDevice", sound_device);
-    Int("PlaybackRate", playback_rate);
-    Int("BufferSize", audio_buffer_size_ms);
-    Bool("AdjustInputRateAutomatically", adjust_input_rate_automatically);
-    Int("InputRate", input_rate);
-    Bool("DynamicRateControl", dynamic_rate_control);
-    Double("DynamicRateLimit", dynamic_rate_limit);
-    Bool("Mute", mute_audio);
-    Bool("MuteAudioDuringAlternateSpeed", mute_audio_during_alternate_speed);
-    Int("MasterVolumeRegular", master_volume_regular);
-    Int("MasterVolumeFastForward", master_volume_fast_forward);
-    Int("VolumeSGBMixSPC", sgb_mix_volume_spc);
-    Int("VolumeSGBMixGB", sgb_mix_volume_gb);
-    Int("GainRegular", gain_regular);
-    Int("GainSGBMixSPC", sgb_mix_gain_spc);
-    Int("GainSGBMixGB", sgb_mix_gain_gb);
+    String("SoundDriver", sound_driver, "Audio backend name (e.g. cubeb)");
+    String("SoundDevice", sound_device, "Specific output device name; empty uses the system default");
+    Int("PlaybackRate", playback_rate, "Output sample rate in Hz (e.g. 48000)");
+    Int("BufferSize", audio_buffer_size_ms, "Audio buffer size in milliseconds (larger is safer against crackle, adds latency)");
+    Bool("AdjustInputRateAutomatically", adjust_input_rate_automatically, "Guess the input rate from the monitor's refresh rate");
+    Int("InputRate", input_rate, "APU sample rate in Hz resampled to the output rate; default 32040. Nudges pitch/sync");
+    Bool("DynamicRateControl", dynamic_rate_control, "Slightly bend the sample rate to keep the buffer full and avoid dropouts");
+    Double("DynamicRateLimit", dynamic_rate_limit, "How far Dynamic Rate Control may bend the rate, as a fraction (e.g. 0.005 = 0.5%)");
+    Bool("Mute", mute_audio, "Silence all audio output");
+    Bool("MuteAudioDuringAlternateSpeed", mute_audio_during_alternate_speed, "Silence audio while fast-forwarding or rewinding");
+    Int("MasterVolumeRegular", master_volume_regular, "Master output volume during normal play (0..100, percent)");
+    Int("MasterVolumeFastForward", master_volume_fast_forward, "Master output volume during turbo/rewind (0..100, percent)");
+    Int("VolumeSGBMixSPC", sgb_mix_volume_spc, "SGB BIOS mix: SPC channel volume (0..100, percent; only active in SGB BIOS mode)");
+    Int("VolumeSGBMixGB", sgb_mix_volume_gb, "SGB BIOS mix: GB channel volume (0..100, percent; only active in SGB BIOS mode)");
+    Int("GainRegular", gain_regular, "Master pre-amp applied after the volume percentages (whole dB, 0 = unity)");
+    Int("GainSGBMixSPC", sgb_mix_gain_spc, "SGB BIOS mix: SPC channel pre-amp (whole dB, 0 = unity)");
+    Int("GainSGBMixGB", sgb_mix_gain_gb, "SGB BIOS mix: GB channel pre-amp (whole dB, 0 = unity)");
     EndSection();
 
     BeginSection("Emulation");
-    Enum("SpeedSyncMethod", speed_sync_method, { "Timer", "TimerFrameskip", "SoundSync", "Unlimited" });
-    Double("FixedFrameRate", fixed_frame_rate);
-    Int("FastForwardSkipFrames", fast_forward_skip_frames);
-    Int("RewindBufferSize", rewind_buffer_size);
-    Int("RewindFrameInterval", rewind_frame_interval);
-    Bool("AllowInvalidVRAMAccess", allow_invalid_vram_access);
-    Bool("AllowOpposingDpadDirections", allow_opposing_dpad_directions);
-    Int("Overclock", overclock);
-    Bool("RemoveSpriteLimit", remove_sprite_limit);
-    Bool("EnableShadowBuffer", enable_shadow_buffer);
-    Int("SuperFXClockMultiplier", superfx_clock_multiplier);
-    Enum("SoundFilter", sound_filter, { "Gaussian", "Nearest", "Linear", "Cubic", "Sinc" });
+    Enum("SpeedSyncMethod", speed_sync_method, { "Timer", "TimerFrameskip", "SoundSync", "Unlimited" }, "How gameplay speed is regulated: Timer, TimerFrameskip, SoundSync, or Unlimited");
+    Double("FixedFrameRate", fixed_frame_rate, "Force this frame rate in frames per second; 0 uses the console's native rate");
+    Int("FastForwardSkipFrames", fast_forward_skip_frames, "How many frames to skip drawing while fast-forwarding (higher is faster)");
+    Int("RewindBufferSize", rewind_buffer_size, "Memory (in MB) reserved for rewind; 0 disables rewind");
+    Int("RewindFrameInterval", rewind_frame_interval, "Save a rewind snapshot every N frames");
+    Bool("AllowInvalidVRAMAccess", allow_invalid_vram_access, "Let games make the VRAM accesses real hardware blocks (off for accuracy; on only for a few broken hacks)");
+    Bool("AllowOpposingDpadDirections", allow_opposing_dpad_directions, "Allow the D-Pad to press both left+right or up+down at once");
+    Int("Overclock", overclock, "CPU overclock: 0 none, 1 auto-FastROM, 2 low, 3 high (reduces slowdown; inaccurate, can break games)");
+    Bool("RemoveSpriteLimit", remove_sprite_limit, "Draw more sprites per line than the hardware allows (reduces flicker, may glitch)");
+    Bool("EnableShadowBuffer", enable_shadow_buffer, "Use a separate echo buffer so the SPC echo can't overwrite APU RAM");
+    Int("SuperFXClockMultiplier", superfx_clock_multiplier, "SuperFX (GSU) chip speed as a percentage of normal (50-400; 100 = accurate). Higher reduces slowdown in Star Fox and other SuperFX games");
+    // Audio interpolation. The legacy "SoundFilter" key used a token map whose
+    // first three entries were scrambled (indices 0-2 wrote the wrong word, so
+    // the default Gaussian was saved as "Linear"). Write a corrected
+    // "SoundInterpolation" key going forward, and migrate old configs by decoding
+    // the legacy key with its original buggy map so the real value is preserved
+    // rather than silently changed. sound_filter is used directly as the combo
+    // index and as Settings.InterpolationMethod, so only the on-disk token was
+    // ever wrong.
+    const std::vector<const char *> sound_filter_map = { "Nearest", "Linear", "Gaussian", "Cubic", "Sinc" };
+    if (write)
+    {
+        Enum("SoundInterpolation", sound_filter, sound_filter_map, "Audio interpolation filter: Nearest, Linear, Gaussian (hardware-accurate default), Cubic, or Sinc");
+    }
+    else if (cf.Exists(fullkey("SoundInterpolation").c_str()))
+    {
+        Enum("SoundInterpolation", sound_filter, sound_filter_map);
+    }
+    else
+    {
+        const std::vector<const char *> legacy_sound_filter_map = { "Gaussian", "Nearest", "Linear", "Cubic", "Sinc" };
+        Enum("SoundFilter", sound_filter, legacy_sound_filter_map);
+    }
     EndSection();
 
     BeginSection("Ports");
-    Bool("AutomapGamepads", automap_gamepads);
-    Enum("PortConfiguration", port_configuration, { "OneController", "TwoControllers", "Mouse", "SuperScope", "Multitap" });
+    Bool("AutomapGamepads", automap_gamepads, "Automatically map newly connected gamepads to a sensible default layout");
+    Enum("PortConfiguration", port_configuration, { "OneController", "TwoControllers", "Mouse", "SuperScope", "Multitap" }, "What is plugged into the console's controller ports: OneController, TwoControllers, Mouse, SuperScope, or Multitap");
     EndSection();
 
     for (int c = 0; c < 5; c++)
@@ -560,31 +597,41 @@ void EmuConfig::config(const std::string &filename, bool write)
     }
     EndSection();
 
+    // Each *Location picks where that file type lives; the matching *Folder is
+    // only used when the location is set to Custom.
     BeginSection("Files");
-    Enum("SRAMLocation", sram_location, { "ROMDirectory", "ConfigDirectory", "Custom" });
-    Enum("StateLocation", state_location, { "ROMDirectory", "ConfigDirectory", "Custom" });
-    Enum("CheatLocation", cheat_location, { "ROMDirectory", "ConfigDirectory", "Custom" });
-    Enum("PatchLocation", patch_location, { "ROMDirectory", "ConfigDirectory", "Custom" });
-    Enum("ExportLocation", export_location, { "ROMDirectory", "ConfigDirectory", "Custom" });
-    Enum("BIOSLocation", bios_location, { "ROMDirectory", "ConfigDirectory", "Custom" });
+    Enum("SRAMLocation", sram_location, { "ROMDirectory", "ConfigDirectory", "Custom" }, "Where battery saves (.srm) go: ROMDirectory, ConfigDirectory, or Custom");
+    Enum("StateLocation", state_location, { "ROMDirectory", "ConfigDirectory", "Custom" }, "Where save states go: ROMDirectory, ConfigDirectory, or Custom");
+    Enum("CheatLocation", cheat_location, { "ROMDirectory", "ConfigDirectory", "Custom" }, "Where cheat files go: ROMDirectory, ConfigDirectory, or Custom");
+    Enum("PatchLocation", patch_location, { "ROMDirectory", "ConfigDirectory", "Custom" }, "Where ROM patches are looked for: ROMDirectory, ConfigDirectory, or Custom");
+    Enum("ExportLocation", export_location, { "ROMDirectory", "ConfigDirectory", "Custom" }, "Where exported files go: ROMDirectory, ConfigDirectory, or Custom");
+    Enum("BIOSLocation", bios_location, { "ROMDirectory", "ConfigDirectory", "Custom" }, "Where BIOS images are looked for: ROMDirectory, ConfigDirectory, or Custom");
 
-    String("SRAMFolder", sram_folder);
-    String("StateFolder", state_folder);
-    String("CheatFolder", cheat_folder);
-    String("PatchFolder", patch_folder);
-    String("ExportFolder", export_folder);
-    String("BIOSFolder", bios_folder);
+    String("SRAMFolder", sram_folder, "Custom folder for battery saves (used when SRAMLocation is Custom)");
+    String("StateFolder", state_folder, "Custom folder for save states (used when StateLocation is Custom)");
+    String("CheatFolder", cheat_folder, "Custom folder for cheat files (used when CheatLocation is Custom)");
+    String("PatchFolder", patch_folder, "Custom folder for ROM patches (used when PatchLocation is Custom)");
+    String("ExportFolder", export_folder, "Custom folder for exported files (used when ExportLocation is Custom)");
+    String("BIOSFolder", bios_folder, "Custom folder for BIOS images (used when BIOSLocation is Custom)");
 
-    Int("SRAMSaveInterval", sram_save_interval);
+    Int("SRAMSaveInterval", sram_save_interval, "Auto-write the battery save this many seconds after the game changes it (0 = only on exit/reset)");
     EndSection();
 
     BeginSection("RetroAchievements");
-    Bool("Enabled", ra_enabled);
-    Bool("HardcoreMode", ra_hardcore_mode);
-    String("Username", ra_username);
-    String("ApiToken", ra_api_token);
-    String("EmulatorName", ra_emulator_name);
+    Bool("Enabled", ra_enabled, "Connect to RetroAchievements and track achievements");
+    Bool("HardcoreMode", ra_hardcore_mode, "Disable save states, cheats and rewind for competitive achievement earning");
+    String("Username", ra_username, "RetroAchievements account name");
+    String("ApiToken", ra_api_token, "Login token issued by RetroAchievements (not your password); cleared on logout");
+    String("EmulatorName", ra_emulator_name, "Client name reported to the RetroAchievements server");
     EndSection();
+
+    if (write)
+    {
+        ConfigFile::SetProgramName("SuperSnes9x");
+        ConfigFile::SetNiceAlignment(config_nice_alignment);
+        ConfigFile::SetShowComments(config_show_comments);
+        cf.SaveTo(filename.c_str());
+    }
 }
 
 void EmuConfig::setVRRConfig(bool enable)
