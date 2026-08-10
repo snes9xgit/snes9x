@@ -22,6 +22,7 @@ using namespace std;
 bool ConfigFile::defaultAutoAdd = false;
 bool ConfigFile::niceAlignment = false;
 bool ConfigFile::showComments = true;
+std::string ConfigFile::programName = "snes9x";
 bool ConfigFile::alphaSort = true;
 bool ConfigFile::timeSort = false;
 static ConfigFile* curConfigFile = NULL; // for section_then_key_less
@@ -134,7 +135,7 @@ bool ConfigFile::SaveTo(const char *filename){
 	curConfigFile = this;
     section.clear();
     set<ConfigEntry, ConfigEntry::line_less> tmp;
-    fprintf(fp, "# Config file output by snes9x\n");
+    fprintf(fp, "# Config file output by %s\n", programName.c_str());
     time_t t=time(NULL);
     fprintf(fp, "# %s", ctime(&t));
 
@@ -475,6 +476,10 @@ void ConfigFile::SetNiceAlignment(bool align)
 void ConfigFile::SetShowComments(bool show)
 {
 	showComments = show;
+}
+void ConfigFile::SetProgramName(const char *name)
+{
+	programName = (name && *name) ? name : "snes9x";
 }
 void ConfigFile::SetAlphaSort(bool sort)
 {

@@ -159,6 +159,8 @@ int Snes9xConfig::load_defaults()
     ra_api_token.clear();
     ra_emulator_name = "SuperSnes9x";
     modal_dialogs = true;
+    config_show_comments = true;
+    config_nice_alignment = true;
     current_save_slot = 0;
     S9xCheatsEnable();
 
@@ -240,21 +242,27 @@ int Snes9xConfig::save_config_file()
         cf.SetInt((section + "::" + name).c_str(), i, comment.c_str());
     };
 
+    // Section name and semantics match the win32 config (wconfig.cpp) so these
+    // two knobs control the look of this file the same way on both platforms.
+    section = "Config";
+    outbool("NiceAlignment", config_nice_alignment, "true to line up the = and # columns in each section of this config file");
+    outbool("Comments", config_show_comments, "true to keep comments such as this in this config file. To refresh all comments after an upgrade, set this to false and run Snes9x, then set it back to true and run Snes9x again.");
+
     section = "Display";
     outbool("FullscreenOnOpen", full_screen_on_open, "Set the screen resolution after opening a ROM");
     outbool("ChangeDisplayResolution", change_display_resolution, "Set the resolution in fullscreen mode");
     outbool("ScaleToFit", scale_to_fit, "Scale the image to fit the window size");
-    outbool("ShowOverscanArea", overscan);
+    outbool("ShowOverscanArea", overscan, "Show the overscan area at the top and bottom that most games hide");
     outbool("MaintainAspectRatio", maintain_aspect_ratio, "Resize the screen to the proportions set by aspect ratio option");
     outbool("Multithreading", multithreading, "Apply filters using multiple threads");
     outbool("BilinearFilter", Settings.BilinearFilter, "Smoothes scaled image");
-    outbool("ForceInvertedByteOrder", force_inverted_byte_order);
+    outbool("ForceInvertedByteOrder", force_inverted_byte_order, "Swap the pixel byte order (troubleshooting for wrong colors on unusual setups; normally off)");
     outint("VideoMode", xrr_index, "Platform-specific video mode number");
     outint("AspectRatio", aspect_ratio, "0: uncorrected, 1: uncorrected integer scale, 2: 4:3, 3: 4/3 integer scale, 4: NTSC/PAL, 5: NTSC/PAL integer scale");
     outint("SoftwareScaleFilter", scale_method, "Build-specific number of filter used for software scaling");
     outint("ScanlineFilterIntensity", scanline_filter_intensity, "0: 0%, 1: 12.5%, 2: 25%, 3: 50%, 4: 100%");
     outint("HiresEffect", hires_effect, "0: Downscale to low-res, 1: Leave as-is, 2: Upscale low-res screens");
-    outint("NumberOfThreads", num_threads);
+    outint("NumberOfThreads", num_threads, "Number of worker threads to use when Multithreading is enabled");
     outstring("HardwareAcceleration", display_driver, "none, opengl, xv, vulkan");
     outint("SplashBackground", splash_image, "0: Black, 1: Color bars, 2: Pattern, 3: Blue, 4: Default");
     outbool("AutoVRR", auto_vrr, "Automatically use the best settings for variable sync in fullscreen mode");
@@ -266,34 +274,36 @@ int Snes9xConfig::save_config_file()
     outbool("BlendGBFramesAuto", Settings.GBFrameBlendAuto, "Auto-pick the GB frame-blend per game from a built-in known-flicker-game table at load (off for unlisted games); when false the manual mode/layer apply to every GB game");
     
     
+    // NTSC composite-video filter knobs; only used when the NTSC software filter
+    // is selected. Each is a float from -1.0 to 1.0 (0.0 = neutral/default).
     section = "NTSC";
-    outstring("Hue", std::to_string(ntsc_setup.hue));
-    outstring("Saturation", std::to_string(ntsc_setup.saturation));
-    outstring("Contrast", std::to_string(ntsc_setup.contrast));
-    outstring("Brightness", std::to_string(ntsc_setup.brightness));
-    outstring("Sharpness", std::to_string(ntsc_setup.sharpness));
-    outstring("Artifacts", std::to_string(ntsc_setup.artifacts));
-    outstring("Gamma", std::to_string(ntsc_setup.gamma));
-    outstring("Bleed", std::to_string(ntsc_setup.bleed));
-    outstring("Fringing", std::to_string(ntsc_setup.fringing));
-    outstring("Resolution", std::to_string(ntsc_setup.resolution));
-    outbool("MergeFields", ntsc_setup.merge_fields);
-    outint("ScanlineIntensity", ntsc_scanline_intensity);
+    outstring("Hue", std::to_string(ntsc_setup.hue), "Color hue shift, -1.0 to 1.0");
+    outstring("Saturation", std::to_string(ntsc_setup.saturation), "Color saturation, -1.0 to 1.0");
+    outstring("Contrast", std::to_string(ntsc_setup.contrast), "Contrast, -1.0 to 1.0");
+    outstring("Brightness", std::to_string(ntsc_setup.brightness), "Brightness, -1.0 to 1.0");
+    outstring("Sharpness", std::to_string(ntsc_setup.sharpness), "Sharpness, -1.0 to 1.0");
+    outstring("Artifacts", std::to_string(ntsc_setup.artifacts), "Amount of NTSC artifact color, -1.0 to 1.0");
+    outstring("Gamma", std::to_string(ntsc_setup.gamma), "Gamma, -1.0 to 1.0");
+    outstring("Bleed", std::to_string(ntsc_setup.bleed), "Horizontal color bleed, -1.0 to 1.0");
+    outstring("Fringing", std::to_string(ntsc_setup.fringing), "Color fringing on edges, -1.0 to 1.0");
+    outstring("Resolution", std::to_string(ntsc_setup.resolution), "Image resolution/detail, -1.0 to 1.0");
+    outbool("MergeFields", ntsc_setup.merge_fields, "Blend the two interlaced fields together to reduce flicker");
+    outint("ScanlineIntensity", ntsc_scanline_intensity, "0: 0%, 1: 12.5%, 2: 25%, 3: 50%, 4: 100%");
 
     section = "OpenGL";
-    outbool("VSync", sync_to_vblank);
-    outbool("ReduceInputLag", reduce_input_lag);
-    outbool("EnableCustomShaders", use_shaders);
-    outstring("ShaderFile", shader_filename);
+    outbool("VSync", sync_to_vblank, "Synchronize to the monitor's refresh to avoid tearing");
+    outbool("ReduceInputLag", reduce_input_lag, "Wait for each frame to finish drawing before continuing (lower lag, may cost speed)");
+    outbool("EnableCustomShaders", use_shaders, "Apply the shader named in ShaderFile below");
+    outstring("ShaderFile", shader_filename, "Path to the shader preset (.glslp/.slangp) used when EnableCustomShaders is on");
 
     section = "Sound";
-    outbool("MuteSound", mute_sound);
-    outbool("MuteSoundDuringTurbo", mute_sound_turbo);
+    outbool("MuteSound", mute_sound, "Silence all audio output");
+    outbool("MuteSoundDuringTurbo", mute_sound_turbo, "Silence audio only while fast-forwarding");
     outint("BufferSize", sound_buffer_size, "Buffer size in milliseconds");
-    outint("Driver", sound_driver);
-    outint("InputRate", sound_input_rate);
-    outbool("DynamicRateControl", Settings.DynamicRateControl);
-    outint("DynamicRateControlLimit", Settings.DynamicRateLimit);
+    outint("Driver", sound_driver, "Build-specific sound driver index (order of the drivers compiled in, e.g. PulseAudio/ALSA/OSS/SDL/PortAudio)");
+    outint("InputRate", sound_input_rate, "APU sample rate in Hz that gets resampled to the output rate; default 32040. Nudges audio pitch/sync");
+    outbool("DynamicRateControl", Settings.DynamicRateControl, "Slightly bend the sample rate to keep the buffer full and avoid crackle/dropouts");
+    outint("DynamicRateControlLimit", Settings.DynamicRateLimit, "How far Dynamic Rate Control may bend the rate (stored as the UI ratio x 1000; larger = more correction)");
     outbool("AutomaticInputRate", auto_input_rate, "Guess input rate by asking the monitor what its refresh rate is");
     outint("PlaybackRate", gui_config->sound_playback_rate, "1: 8000Hz, 2: 11025Hz, 3: 16000Hz, 4: 22050Hz, 5: 32000Hz, 6: 44100Hz, 7: 48000Hz");
     outint("MasterVolumeRegular", master_volume_regular, "Master output volume during normal play (0..100, percent)");
@@ -304,16 +314,19 @@ int Snes9xConfig::save_config_file()
     outint("GainSGBMixSPC", sgb_mix_gain_spc, "SGB BIOS mix: SPC channel pre-amp (whole dB between 0 and 12, 0 = unity)");
     outint("GainSGBMixGB", sgb_mix_gain_gb, "SGB BIOS mix: GB channel pre-amp (whole dB between 0 and 12, 0 = unity)");
 
+    // Folders Snes9x reads from and writes to. Leave a folder empty to use the
+    // default location (next to the ROM, or the standard config directory).
     section = "Files";
-    outstring("LastDirectory", last_directory);
-    outstring("LastShaderDirectory", last_shader_directory);
-    outstring("SRAMDirectory", sram_directory);
-    outstring("SaveStateDirectory", savestate_directory);
-    outstring("CheatDirectory", cheat_directory);
-    outstring("PatchDirectory", patch_directory);
-    outstring("ExportDirectory", export_directory);
-    outstring("BIOSDirectory", bios_directory);
+    outstring("LastDirectory", last_directory, "Last folder browsed for a ROM (remembered automatically)");
+    outstring("LastShaderDirectory", last_shader_directory, "Last folder browsed for a shader (remembered automatically)");
+    outstring("SRAMDirectory", sram_directory, "Where in-game battery saves (.srm) are stored");
+    outstring("SaveStateDirectory", savestate_directory, "Where save states are stored");
+    outstring("CheatDirectory", cheat_directory, "Where cheat files (.cht) are stored");
+    outstring("PatchDirectory", patch_directory, "Where ROM patches (IPS/UPS/BPS) are looked for");
+    outstring("ExportDirectory", export_directory, "Where exported files (e.g. SPC dumps) are written");
+    outstring("BIOSDirectory", bios_directory, "Where BIOS images (e.g. the Super Game Boy boot ROM) are looked for");
 
+    // Window sizes and UI state, remembered automatically between sessions.
     section = "Window State";
     outint("MainWidth", window_width);
     outint("MainHeight", window_height);
@@ -321,58 +334,58 @@ int Snes9xConfig::save_config_file()
     outint("PreferencesHeight", preferences_height);
     outint("ShaderParametersWidth", shader_parameters_width);
     outint("ShaderParametersHeight", shader_parameters_height);
-    outint("CurrentDisplayTab", current_display_tab);
-    outbool("UIVisible", ui_visible);
-    outbool("EnableIcons", enable_icons);
+    outint("CurrentDisplayTab", current_display_tab, "Last-selected tab in the Preferences window");
+    outbool("UIVisible", ui_visible, "Show the menu bar");
+    outbool("EnableIcons", enable_icons, "Show icons next to menu items");
     if (default_esc_behavior != ESC_TOGGLE_MENUBAR)
         outbool("Fullscreen", false);
     else
         outbool("Fullscreen", fullscreen);
 
     section = "Netplay";
-    outbool("ActAsServer", netplay_is_server);
-    outbool("UseResetToSync", netplay_sync_reset);
-    outbool("SendROM", netplay_send_rom);
-    outint("DefaultPort", netplay_default_port);
-    outint("MaxFrameLoss", netplay_max_frame_loss);
-    outint("LastUsedPort", netplay_last_port);
-    outstring("LastUsedROM", netplay_last_rom);
-    outstring("LastUsedHost", netplay_last_host);
+    outbool("ActAsServer", netplay_is_server, "true to host the session, false to join one");
+    outbool("UseResetToSync", netplay_sync_reset, "Reset the game when players connect so everyone starts in sync");
+    outbool("SendROM", netplay_send_rom, "Send the ROM to clients that don't already have it");
+    outint("DefaultPort", netplay_default_port, "TCP port used for hosting/joining (default 6096)");
+    outint("MaxFrameLoss", netplay_max_frame_loss, "How many frames a client may fall behind before the host waits for it");
+    outint("LastUsedPort", netplay_last_port, "Port from the last session (remembered automatically)");
+    outstring("LastUsedROM", netplay_last_rom, "ROM from the last session (remembered automatically)");
+    outstring("LastUsedHost", netplay_last_host, "Host address from the last session (remembered automatically)");
 
     // Key names match the win32 (wconfig.cpp) and Qt (EmuConfig.cpp) configs so a
     // shared install reads/writes the same RetroAchievements credentials.
     section = "RetroAchievements";
-    outbool("Enabled", ra_enabled);
-    outbool("HardcoreMode", ra_hardcore_mode);
-    outstring("Username", ra_username);
-    outstring("ApiToken", ra_api_token);
-    outstring("EmulatorName", ra_emulator_name);
+    outbool("Enabled", ra_enabled, "Connect to RetroAchievements and track achievements");
+    outbool("HardcoreMode", ra_hardcore_mode, "Disable save states, cheats and rewind for competitive achievement earning");
+    outstring("Username", ra_username, "RetroAchievements account name");
+    outstring("ApiToken", ra_api_token, "Login token issued by RetroAchievements (not your password); cleared on logout");
+    outstring("EmulatorName", ra_emulator_name, "Client name reported to the RetroAchievements server");
 
     section = "Behavior";
-    outbool("PauseEmulationWhenFocusLost", pause_emulation_on_switch);
-    outint("DefaultESCKeyBehavior", default_esc_behavior);
-    outbool("PreventScreensaver", prevent_screensaver);
-    outbool("UseModalDialogs", modal_dialogs);
-    outint("RewindBufferSize", rewind_buffer_size, "Amount of memory (in MB) to use for rewinding");
+    outbool("PauseEmulationWhenFocusLost", pause_emulation_on_switch, "Pause the game whenever the Snes9x window loses focus");
+    outint("DefaultESCKeyBehavior", default_esc_behavior, "What the Esc key does: 0: toggle the menu bar, 1: leave fullscreen, 2: quit Snes9x");
+    outbool("PreventScreensaver", prevent_screensaver, "Stop the system screensaver from starting while a game is running");
+    outbool("UseModalDialogs", modal_dialogs, "Make dialogs block the main window instead of floating independently");
+    outint("RewindBufferSize", rewind_buffer_size, "Amount of memory (in MB) to use for rewinding; 0 disables rewind");
     outint("RewindGranularity", rewind_granularity, "Only save rewind snapshots every N frames");
-    outint("CurrentSaveSlot", current_save_slot);
+    outint("CurrentSaveSlot", current_save_slot, "Currently selected save-state slot (remembered automatically)");
 
     section = "Emulation";
-    outbool("EmulateTransparency", Settings.Transparency);
-    outbool("DisplayTime", Settings.DisplayTime);
-    outbool("DisplayFrameRate", Settings.DisplayFrameRate);
-    outbool("DisplayPressedKeys", Settings.DisplayPressedKeys);
-    outbool("DisplayIndicators", Settings.DisplayIndicators);
+    outbool("EmulateTransparency", Settings.Transparency, "Render the SNES color/transparency effects (turn off only for troubleshooting)");
+    outbool("DisplayTime", Settings.DisplayTime, "Show the current wall-clock time on screen");
+    outbool("DisplayFrameRate", Settings.DisplayFrameRate, "Show the frames-per-second counter on screen");
+    outbool("DisplayPressedKeys", Settings.DisplayPressedKeys, "Show the controller buttons being pressed on screen");
+    outbool("DisplayIndicators", Settings.DisplayIndicators, "Show on-screen indicators for turbo, pause, rewind, etc.");
     outint("SpeedControlMethod", Settings.SkipFrames, "0: Time the frames to 50 or 60Hz, 1: Same, but skip frames if too slow, 2: Synchronize to the sound buffer, 3: Unlimited, except potentially by vsync");
-    outint("SaveSRAMEveryNSeconds", Settings.AutoSaveDelay);
-    outbool("BlockInvalidVRAMAccess", Settings.BlockInvalidVRAMAccessMaster);
+    outint("SaveSRAMEveryNSeconds", Settings.AutoSaveDelay, "Auto-write the battery save this many seconds after the game changes it (0: only on exit/reset)");
+    outbool("BlockInvalidVRAMAccess", Settings.BlockInvalidVRAMAccessMaster, "Emulate the real hardware's VRAM access restrictions (on for accuracy; off only for a few broken ROMs/hacks)");
     outbool("AllowDPadContradictions", Settings.UpAndDown, "Allow the D-Pad to press both up + down at the same time, or left + right");
 
     section = "Hacks";
-    outint("SuperFXClockMultiplier", Settings.SuperFXClockMultiplier);
+    outint("SuperFXClockMultiplier", Settings.SuperFXClockMultiplier, "SuperFX (GSU) chip speed as a percentage of normal (50-400; 100 = accurate). Higher reduces slowdown in Star Fox and other SuperFX games");
     outint("SoundInterpolationMethod", Settings.InterpolationMethod, "0: None, 1: Linear, 2: Gaussian (what the hardware uses), 3: Cubic, 4: Sinc");
-    outbool("RemoveSpriteLimit", Settings.MaxSpriteTilesPerLine != 34);
-    outbool("OverclockCPU", Settings.OneClockCycle != 6);
+    outbool("RemoveSpriteLimit", Settings.MaxSpriteTilesPerLine != 34, "Draw more sprites per scanline than the hardware allows (reduces flicker, but can cause glitches)");
+    outbool("OverclockCPU", Settings.OneClockCycle != 6, "Speed up the emulated CPU to cut in-game slowdown (inaccurate; can break some games)");
     outbool("EchoBufferHack", Settings.SeparateEchoBuffer, "Prevents echo buffer from overwriting APU RAM");
 
     section = "Input";
@@ -408,10 +421,10 @@ int Snes9xConfig::save_config_file()
             value = "none";
         }
 
-        outstring(name, value);
+        outstring(name, value, "Device in this port: none, joypad, mouse, superscope, justifier, or multitap");
     }
 
-    outint("JoystickThreshold", joystick_threshold);
+    outint("JoystickThreshold", joystick_threshold, "How far an analog stick/trigger must move to register as pressed (percent, 1-100)");
 
     for (int i = 0; i < NUM_JOYPADS; i++)
     {
@@ -430,8 +443,9 @@ int Snes9xConfig::save_config_file()
         outstring(b_links[i].snes9x_name, shortcut[i - NUM_JOYPAD_LINKS].as_string());
     }
 
-    ConfigFile::SetNiceAlignment(true);
-    ConfigFile::SetShowComments(true);
+    ConfigFile::SetProgramName("SuperSnes9x");
+    ConfigFile::SetNiceAlignment(config_nice_alignment);
+    ConfigFile::SetShowComments(config_show_comments);
     cf.SaveTo(get_config_file_name().c_str());
 
     return 0;
@@ -488,6 +502,10 @@ int Snes9xConfig::load_config_file()
     auto instr = [&](const std::string &name, std::string &str) {
         str = cf.GetString((section + "::" + name).c_str(), none);
     };
+
+    section = "Config";
+    inbool("NiceAlignment", config_nice_alignment);
+    inbool("Comments", config_show_comments);
 
     section = "Display";
     inbool("FullscreenOnOpen", full_screen_on_open);
