@@ -3,7 +3,9 @@
 #include <QMessageBox>
 #include "common/video/opengl/opengl_context.hpp"
 
-#ifndef _WIN32
+#if defined(__APPLE__)
+#include "common/video/opengl/mac_opengl_context.hpp"
+#elif !defined(_WIN32)
 #include "common/video/opengl/glx_context.hpp"
 #include "common/video/opengl/wayland_egl_context.hpp"
 using namespace QNativeInterface;
@@ -17,9 +19,16 @@ using namespace QNativeInterface;
 #include "imgui_impl_opengl3.h"
 #include <clocale>
 
-static const char *stock_vertex_shader_140 = R"(
-#version 140
+// macOS only exposes OpenGL through a core profile, and its GLSL compiler
+// rejects `#version 140` in one -- 150 is the lowest a core profile accepts.
+// The shader bodies below are valid unchanged under both versions.
+#ifdef __APPLE__
+#define STOCK_SHADER_VERSION "#version 150\n"
+#else
+#define STOCK_SHADER_VERSION "#version 140\n"
+#endif
 
+static const char *stock_vertex_shader_140 = STOCK_SHADER_VERSION R"(
 in vec2 in_position;
 in vec2 in_texcoord;
 out vec2 texcoord;
@@ -31,9 +40,7 @@ void main()
 }
 )";
 
-static const char *stock_fragment_shader_140 = R"(
-#version 140
-
+static const char *stock_fragment_shader_140 = STOCK_SHADER_VERSION R"(
 uniform sampler2D texmap;
 out vec4 fragcolor;
 in vec2 texcoord;
@@ -131,7 +138,21 @@ bool EmuCanvasOpenGL::createContext()
     auto platform = QGuiApplication::platformName();
     auto app = reinterpret_cast<QGuiApplication *>(QGuiApplication::instance());
     QGuiApplication::sync();
-#ifndef _WIN32
+#if defined(__APPLE__)
+    // On macOS winId() is the NSView* backing this widget. AppKit requires
+    // -[NSOpenGLContext setView:] to run on the main thread, so unlike the
+    // other platforms EmuMainWindow creates this context there rather than
+    // on the emulation thread.
+    auto mac_context = new MacOpenGLContext();
+    if (!mac_context->attach((void *)winId()))
+    {
+        printf("Couldn't attach to NSView.\n");
+        delete mac_context;
+        context.reset();
+        return false;
+    }
+    context.reset(mac_context);
+#elif !defined(_WIN32)
 #if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
     if (platform == "wayland")
     {
@@ -313,7 +334,11 @@ void EmuCanvasOpenGL::resizeEvent(QResizeEvent *event)
 
     int s = devicePixelRatio();
     auto platform = QGuiApplication::platformName();
-#ifndef _WIN32
+#if defined(__APPLE__)
+    (void)s;
+    (void)platform;
+    ((MacOpenGLContext *)context.get())->resize();
+#elif !defined(_WIN32)
     if (QGuiApplication::platformName() == "wayland")
         ((WaylandEGLContext *)context.get())->resize({ x() - main_window->x(), y() - main_window->y(), width(), height(), s });
     else if (platform == "xcb")
@@ -337,6 +362,13 @@ void EmuCanvasOpenGL::paintEvent(QPaintEvent *event)
     }
 
     context->resize();
+
+#ifdef __APPLE__
+    // This runs on the main thread while the emulation thread owns the
+    // context. NSOpenGL current-context state is per-thread, so the clear
+    // below would otherwise be issued with no context bound at all.
+    context->make_current();
+#endif
 
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);

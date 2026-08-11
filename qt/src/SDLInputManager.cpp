@@ -65,7 +65,12 @@ SDLInputManager::discretizeHatEvent(SDL_Event &event)
     for (auto &s : { SDL_HAT_UP, SDL_HAT_DOWN, SDL_HAT_LEFT, SDL_HAT_RIGHT })
         if ((old_state & s) != (new_state & s))
         {
-            events.emplace_back(device.index, hat, s, new_state & s);
+            // Braced push_back rather than emplace_back: these structs are
+            // aggregates with no constructor, and emplace_back on an
+            // aggregate needs C++20 parenthesized aggregate initialization
+            // (P0960), which libc++ does not implement.
+            events.push_back({ device.index, hat, static_cast<int>(s),
+                               (new_state & s) != 0 });
         }
 
     old_state = new_state;
@@ -102,11 +107,11 @@ SDLInputManager::discretizeJoyAxisEvent(SDL_Event &event, int threshold_percent)
 
     if (previous_direction == -1 || current_direction == -1)
     {
-        events.emplace_back(device.index, axis, -1, (current_direction == -1));
+        events.push_back({ device.index, axis, -1, (current_direction == -1) });
     }
     if (previous_direction == 1 || current_direction == 1)
     {
-        events.emplace_back(device.index, axis, 1, (current_direction == 1));
+        events.push_back({ device.index, axis, 1, (current_direction == 1) });
     }
 
     then = now;

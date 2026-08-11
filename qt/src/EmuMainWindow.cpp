@@ -26,7 +26,9 @@
 #include "EmuBinding.hpp"
 #include "EmuCanvasOpenGL.hpp"
 #include "EmuCanvasQt.hpp"
+#ifndef __APPLE__
 #include "EmuCanvasVulkan.hpp"
+#endif
 #include "EmuMainWindow.hpp"
 #include "EmuPoTranslator.hpp"
 #include "EmuSettingsWindow.hpp"
@@ -116,8 +118,15 @@ bool EmuMainWindow::createCanvas()
         app->config->display_driver != "qt")
         app->config->display_driver = "qt";
 
+#ifdef __APPLE__
+    // macOS has no native Vulkan; the driver is not built on this platform.
+    if (app->config->display_driver == "vulkan")
+        app->config->display_driver = "opengl";
+#endif
+
     if (app->config->display_driver == "vulkan")
     {
+#ifndef __APPLE__
         canvas = new EmuCanvasVulkan(app->config.get(), this);
         QGuiApplication::processEvents();
         if (!canvas->createContext())
@@ -125,12 +134,23 @@ bool EmuMainWindow::createCanvas()
             delete canvas;
             return fallback();
         }
+#endif
     }
     else if (app->config->display_driver == "opengl")
     {
         canvas = new EmuCanvasOpenGL(app->config.get(), this);
         QGuiApplication::processEvents();
+#ifdef __APPLE__
+        // -[NSOpenGLContext setView:] is main-thread only, so the context is
+        // built here and simply made current on the emulation thread later.
+        if (!canvas->createContext())
+        {
+            delete canvas;
+            return fallback();
+        }
+#else
         app->emu_thread->runOnThread([&] { canvas->createContext(); }, true);
+#endif
     }
     else
         canvas = new EmuCanvasQt(app->config.get(), this);
@@ -651,7 +671,9 @@ void EmuMainWindow::resizeToMultiple(int multiple)
 
 void EmuMainWindow::setBypassCompositor(bool bypass)
 {
-#ifndef _WIN32
+    // _NET_WM_BYPASS_COMPOSITOR is an X11 EWMH hint; macOS and Windows have
+    // no equivalent, and the Quartz compositor cannot be bypassed at all.
+#if !defined(_WIN32) && !defined(__APPLE__)
     if (QGuiApplication::platformName() == "xcb")
     {
         uint32_t value = bypass;

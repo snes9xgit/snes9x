@@ -825,10 +825,11 @@ void retro_get_system_info(struct retro_system_info *info)
     memset(info,0,sizeof(retro_system_info));
 
     info->library_name = "SuperSnes9x";
-#ifndef GIT_VERSION
-#define GIT_VERSION ""
-#endif
-    info->library_version = VERSION GIT_VERSION;
+    // VERSION_DISPLAY (VERSION "." PATCH_VERSION) rather than the bare
+    // VERSION plus the git hash, so the core reports the same 1.63.29 the
+    // GUIs show. RetroArch also treats library_version as a single token,
+    // and the old string embedded a space.
+    info->library_version = VERSION_DISPLAY;
     info->valid_extensions = "smc|sfc|swc|fig|bs|st|gb|gbc|dmg|sgb";
     info->need_fullpath = false;
     info->block_extract = false;
