@@ -89,6 +89,8 @@ typedef struct
 #define kMacWindowHeight	(SNES_HEIGHT_EXTENDED)
 #define MAC_MAX_CHEATS      150
 
+extern NSNotificationName const S9xInputDeviceListChangeNotification;
+
 extern volatile bool8	running, s9xthreadrunning;
 extern volatile bool8	eventQueued, windowExtend;
 extern uint32			controlPad[MAC_MAX_PLAYERS];
