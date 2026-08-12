@@ -208,7 +208,7 @@ inline bool S9xInterlaceField()
 }
 
 void S9xAutoSaveSRAM (void);
-bool8 LoadZip(const char *, uint32 *, uint8 *);
+bool8 LoadZip(const char *, uint32 *, uint8 *, uint32);
 
 enum s9xwrap_t
 {

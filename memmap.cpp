@@ -1237,7 +1237,7 @@ uint32 CMemory::FileLoader (uint8 *buffer, const char *filename, uint32 maxsize)
 		case FILE_ZIP:
 		{
 		#ifdef UNZIP_SUPPORT
-			if (!LoadZip(filename, &totalSize, buffer))
+			if (!LoadZip(filename, &totalSize, buffer, maxsize + 0x200))
 			{
 			 	S9xMessage(S9X_ERROR, S9X_ROM_INFO, "Invalid Zip archive.");
 				return (0);
