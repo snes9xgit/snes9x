@@ -106,9 +106,12 @@ bool8 S9xDoScreenshot (int width, int height)
 	sig_bit.green = 5;
 	sig_bit.blue  = 5;
 	png_set_sBIT(png_ptr, info_ptr, &sig_bit);
-	png_set_shift(png_ptr, &sig_bit);
 
 	png_write_info(png_ptr, info_ptr);
+
+	// png_set_shift must come after png_write_info: libpng >= 1.6.56 validates
+	// the shift against the write struct's bit depth, which is only set there.
+	png_set_shift(png_ptr, &sig_bit);
 
 	png_set_packing(png_ptr);
 
