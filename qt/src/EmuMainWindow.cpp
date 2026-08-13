@@ -454,7 +454,7 @@ void EmuMainWindow::createWidgets()
         });
         run_ahead_actions.push_back(action);
     }
-    emulation_menu->addMenu(run_ahead_menu);
+    core_actions.push_back(emulation_menu->addMenu(run_ahead_menu));
     // The Emulation settings panel can also change the value, so sync the
     // check state whenever the menu opens.
     connect(emulation_menu, &QMenu::aboutToShow, this, [this, run_ahead_actions] {

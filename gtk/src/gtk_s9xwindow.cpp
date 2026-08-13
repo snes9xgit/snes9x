@@ -1111,7 +1111,8 @@ void Snes9xWindow::configure_widgets()
         "open_movie_item",
         "jump_to_frame_item",
         "cheats_item",
-        "rom_info_item"
+        "rom_info_item",
+        "run_ahead_item"
     };
     for (auto &widget : enable_when_rom_loaded)
         enable_widget(widget, config->rom_loaded);
