@@ -34,6 +34,7 @@ EmulationPanel::EmulationPanel(EmuApplication *app_)
 
     connect_spin(spinBox_rewind_buffer_size, &app->config->rewind_buffer_size);
     connect_spin(spinBox_rewind_frames, &app->config->rewind_frame_interval);
+    connect_spin(spinBox_run_ahead_frames, &app->config->run_ahead_frames);
     connect_spin(spinBox_fast_forward_skip_frames, &app->config->fast_forward_skip_frames);
 
     connect_checkbox(checkBox_allow_invalid_vram_access, &app->config->allow_invalid_vram_access);
@@ -54,6 +55,7 @@ void EmulationPanel::showEvent(QShowEvent *event)
 
     spinBox_rewind_buffer_size->setValue(config->rewind_buffer_size);
     spinBox_rewind_frames->setValue(config->rewind_frame_interval);
+    spinBox_run_ahead_frames->setValue(config->run_ahead_frames);
 
     // A game on the allow-invalid-VRAM list overrides the preference for
     // itself; show that and disable the box so the automatic choice is visible

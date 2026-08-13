@@ -167,6 +167,8 @@ int Snes9xConfig::load_defaults()
     rewind_granularity = 5;
     rewind_buffer_size = 0;
     Settings.Rewinding = false;
+    Settings.RunAhead = 0;
+    Settings.InRunAhead = false;
 
     sync_to_vblank = true;
     use_shaders = false;
@@ -380,6 +382,7 @@ int Snes9xConfig::save_config_file()
     outint("SaveSRAMEveryNSeconds", Settings.AutoSaveDelay, "Auto-write the battery save this many seconds after the game changes it (0: only on exit/reset)");
     outbool("BlockInvalidVRAMAccess", Settings.BlockInvalidVRAMAccessMaster, "Emulate the real hardware's VRAM access restrictions (on for accuracy; off only for a few broken ROMs/hacks)");
     outbool("AllowDPadContradictions", Settings.UpAndDown, "Allow the D-Pad to press both up + down at the same time, or left + right");
+    outint("RunAhead", Settings.RunAhead, "Number of frames to run ahead for reduced input latency (0 = off, 1-4)");
 
     section = "Hacks";
     outint("SuperFXClockMultiplier", Settings.SuperFXClockMultiplier, "SuperFX (GSU) chip speed as a percentage of normal (50-400; 100 = accurate). Higher reduces slowdown in Star Fox and other SuperFX games");
@@ -632,6 +635,11 @@ int Snes9xConfig::load_config_file()
     inbool("BlockInvalidVRAMAccess", Settings.BlockInvalidVRAMAccessMaster);
     inbool("AllowDPadContradictions", Settings.UpAndDown);
     inbool("DisplayIndicators", Settings.DisplayIndicators);
+    inint("RunAhead", Settings.RunAhead);
+    if (Settings.RunAhead < 0)
+        Settings.RunAhead = 0;
+    if (Settings.RunAhead > 4)
+        Settings.RunAhead = 4;
 
     section = "Hacks";
     inint("SuperFXClockMultiplier", Settings.SuperFXClockMultiplier);

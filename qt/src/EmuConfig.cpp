@@ -294,6 +294,8 @@ bool EmuConfig::setDefaults(int section)
         rewind_buffer_size = 0;
         rewind_frame_interval = 5;
 
+        run_ahead_frames = 0;
+
         allow_invalid_vram_access = false;
         allow_opposing_dpad_directions = false;
         overclock = eNoOverclock;
@@ -534,6 +536,7 @@ void EmuConfig::config(const std::string &filename, bool write)
     Int("FastForwardSkipFrames", fast_forward_skip_frames, "How many frames to skip drawing while fast-forwarding (higher is faster)");
     Int("RewindBufferSize", rewind_buffer_size, "Memory (in MB) reserved for rewind; 0 disables rewind");
     Int("RewindFrameInterval", rewind_frame_interval, "Save a rewind snapshot every N frames");
+    Int("RunAhead", run_ahead_frames, "Number of frames to run ahead for reduced input latency (0 = off, 1-4)");
     Bool("AllowInvalidVRAMAccess", allow_invalid_vram_access, "Let games make the VRAM accesses real hardware blocks (off for accuracy; on only for a few broken hacks)");
     Bool("AllowOpposingDpadDirections", allow_opposing_dpad_directions, "Allow the D-Pad to press both left+right or up+down at once");
     Int("Overclock", overclock, "CPU overclock: 0 none, 1 auto-FastROM, 2 low, 3 high (reduces slowdown; inaccurate, can break games)");

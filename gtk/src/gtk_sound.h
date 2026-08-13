@@ -13,5 +13,6 @@ void S9xPortSoundDeinit();
 void S9xPortSoundReinit();
 void S9xSoundStart();
 void S9xSoundStop();
+void S9xSamplesAvailable(void *userdata);
 
 std::vector<std::string> S9xGetSoundDriverNames();

@@ -153,6 +153,8 @@ struct EmuConfig
     int rewind_buffer_size;
     int rewind_frame_interval;
 
+    int run_ahead_frames;
+
     // Emulation/Hacks
 
     bool allow_invalid_vram_access;

@@ -92,6 +92,8 @@ void Snes9xController::init()
 
     rewind_buffer_size = 0;
     rewind_frame_interval = 5;
+    Settings.RunAhead = 0;
+    Settings.InRunAhead = false;
 
     Memory.Init();
     S9xInitAPU();
@@ -213,6 +215,8 @@ void Snes9xController::updateSettings(EmuConfig *config)
     rewind_buffer_size = config->rewind_buffer_size;
     rewind_frame_interval = config->rewind_frame_interval;
 
+    Settings.RunAhead = config->run_ahead_frames < 0 ? 0 : (config->run_ahead_frames > 4 ? 4 : config->run_ahead_frames);
+
     if (config->remove_sprite_limit)
         Settings.MaxSpriteTilesPerLine = 128;
     else
@@ -273,8 +277,82 @@ bool Snes9xController::openFile(const std::string &filename)
     {
         active = true;
         Memory.LoadSRAM(S9xGetFilename(".srm", SRAM_DIR).c_str());
+        run_ahead_buffer.clear();
     }
     return active;
+}
+
+void Snes9xController::mainLoopWithRunAhead()
+{
+    // Run-ahead: commit 1 hidden frame, save state, run N-1 more hidden frames
+    // to "look into the future", then run the displayed frame as a preview, and
+    // finally restore to the committed state. The displayed frame shows what
+    // the game will look like N frames in the future given the current input,
+    // reducing apparent input latency by N frames.
+    int numAheadFrames = Settings.RunAhead;
+    if (numAheadFrames > 4)
+        numAheadFrames = 4;
+
+    // Minimize per-frame overhead:
+    // - drop the ~500KB screenshot from the state
+    // - enable fast path (skips 512KB screen memset + memory zeroing on load)
+    // - detach the sample-available callback during hidden frames so their
+    //   audio never reaches the OS buffer; otherwise we push multiple frames
+    //   of audio per iteration and the buffer fills faster than it drains
+    bool8 savedScreenshots = Settings.SnapshotScreenshots;
+    bool8 savedFast = Settings.FastSavestates;
+    Settings.SnapshotScreenshots = false;
+    Settings.FastSavestates = true;
+
+    // S9xFreezeSize() is expensive (it does a full dry-run serialization), so
+    // cache the buffer until the next ROM load.
+    if (run_ahead_buffer.empty())
+        run_ahead_buffer.resize(S9xFreezeSize());
+
+    // Suppress audio output for the hidden frames
+    S9xSetSamplesAvailableCallback(nullptr, nullptr);
+
+    // Snapshot the resampler so we can undo the hidden frames' effect on it
+    // (preserves filter continuity across iterations)
+    S9xRunAheadSaveAudio();
+
+    Settings.InRunAhead = true;
+
+    // First hidden frame: the "commit" frame — its state gets saved and
+    // becomes the starting point of the next iteration
+    IPPU.RenderThisFrame = false;
+    S9xMainLoop();
+
+    // Save state at end of the committed frame
+    S9xFreezeGameMem(run_ahead_buffer.data(), run_ahead_buffer.size());
+
+    // Additional hidden frames (peek further into the future)
+    for (int i = 1; i < numAheadFrames; i++)
+    {
+        IPPU.RenderThisFrame = false;
+        S9xMainLoop();
+    }
+
+    Settings.InRunAhead = false;
+
+    // Restore resampler state so the displayed frame's output flows on
+    // directly from the previous displayed frame's output
+    S9xRunAheadLoadAudio();
+
+    // Re-enable audio output for the displayed frame
+    S9xSetSamplesAvailableCallback([](void *data) {
+        ((Snes9xController *)data)->SamplesAvailable();
+    }, this);
+
+    // Displayed "preview" frame: renders and throttles normally
+    IPPU.RenderThisFrame = true;
+    S9xMainLoop();
+
+    // Restore to end-of-committed-frame so next iteration starts from there
+    S9xUnfreezeGameMem(run_ahead_buffer.data(), run_ahead_buffer.size());
+
+    Settings.SnapshotScreenshots = savedScreenshots;
+    Settings.FastSavestates = savedFast;
 }
 
 void Snes9xController::mainLoop()
@@ -343,7 +421,18 @@ void Snes9xController::mainLoop()
     }
 #endif
 
-    S9xMainLoop();
+    bool use_run_ahead = Settings.RunAhead > 0 && !rewinding && !Settings.TurboMode;
+#ifdef KAILLERA_SUPPORT
+    // Never run ahead during netplay — the input exchange is once per call,
+    // and hidden frames would desync us from the remote players.
+    if (KailleraClientIsPlaying())
+        use_run_ahead = false;
+#endif
+
+    if (use_run_ahead)
+        mainLoopWithRunAhead();
+    else
+        S9xMainLoop();
 }
 
 void Snes9xController::setPaused(bool paused)
