@@ -2363,8 +2363,8 @@ msgid "Cheats Search Dialog:"
 msgstr "חלון חיפוש הצ'יטים:"
 
 #: win32/rsrc/snes9x.rc
-msgid "Choose Logo"
-msgstr "בחירת לוגו"
+msgid "Choose Icon"
+msgstr "בחירת סמל"
 
 #: win32/rsrc/snes9x.rc
 msgid "Clear"

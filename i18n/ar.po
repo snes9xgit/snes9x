@@ -2387,8 +2387,8 @@ msgid "Cheats Search Dialog:"
 msgstr "مربع حوار البحث عن رموز الغش:"
 
 #: win32/rsrc/snes9x.rc
-msgid "Choose Logo"
-msgstr "اختر الشعار"
+msgid "Choose Icon"
+msgstr "اختر الأيقونة"
 
 #: win32/rsrc/snes9x.rc
 msgid "Clear"

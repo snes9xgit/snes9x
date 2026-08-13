@@ -2269,8 +2269,8 @@ msgid "Cheats Search Dialog:"
 msgstr "Hộp thoại tìm kiếm mã gian lận:"
 
 #: win32/rsrc/snes9x.rc
-msgid "Choose Logo"
-msgstr "Chọn Logo"
+msgid "Choose Icon"
+msgstr "Chọn Biểu tượng"
 
 #: win32/rsrc/snes9x.rc
 msgid "Clear"

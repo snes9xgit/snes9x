@@ -2370,8 +2370,8 @@ msgid "Cheats Search Dialog:"
 msgstr "চিটস অনুসন্ধান ডায়ালগ:"
 
 #: win32/rsrc/snes9x.rc
-msgid "Choose Logo"
-msgstr "লোগো নির্বাচন করুন"
+msgid "Choose Icon"
+msgstr "আইকন নির্বাচন করুন"
 
 #: win32/rsrc/snes9x.rc
 msgid "Clear"

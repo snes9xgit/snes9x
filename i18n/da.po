@@ -2328,8 +2328,8 @@ msgid "Cheats Search Dialog:"
 msgstr "Dialogboks til snydekodesøgning:"
 
 #: win32/rsrc/snes9x.rc
-msgid "Choose Logo"
-msgstr "Vælg logo"
+msgid "Choose Icon"
+msgstr "Vælg ikon"
 
 #: win32/rsrc/snes9x.rc
 msgid "Clear"

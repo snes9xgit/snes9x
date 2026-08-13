@@ -2366,8 +2366,8 @@ msgid "Cheats Search Dialog:"
 msgstr "پنجره جستجوی تقلب‌ها:"
 
 #: win32/rsrc/snes9x.rc
-msgid "Choose Logo"
-msgstr "انتخاب لوگو"
+msgid "Choose Icon"
+msgstr "انتخاب آیکون"
 
 #: win32/rsrc/snes9x.rc
 msgid "Clear"

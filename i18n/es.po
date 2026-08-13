@@ -3452,8 +3452,8 @@ msgid "Cheats Search Dialog:"
 msgstr "Diálogo de búsqueda de trucos:"
 
 #: win32/rsrc/snes9x.rc
-msgid "Choose Logo"
-msgstr "Elegir logotipo"
+msgid "Choose Icon"
+msgstr "Elegir icono"
 
 #: win32/rsrc/snes9x.rc
 msgid "Clear"

@@ -2355,8 +2355,8 @@ msgid "Cheats Search Dialog:"
 msgstr "Huijausten etsintäikkuna:"
 
 #: win32/rsrc/snes9x.rc
-msgid "Choose Logo"
-msgstr "Valitse logo"
+msgid "Choose Icon"
+msgstr "Valitse kuvake"
 
 #: win32/rsrc/snes9x.rc
 msgid "Clear"

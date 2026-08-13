@@ -2359,7 +2359,7 @@ msgid "Cheats Search Dialog:"
 msgstr "作弊码搜索对话框:"
 
 #: win32/rsrc/snes9x.rc
-msgid "Choose Logo"
+msgid "Choose Icon"
 msgstr "选择图标"
 
 #: win32/rsrc/snes9x.rc

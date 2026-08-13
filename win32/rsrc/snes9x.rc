@@ -1412,7 +1412,7 @@ BEGIN
         MENUITEM MFT_SEPARATOR
         MENUITEM "AVI Recording",               ID_FILE_AVI_RECORDING,MFT_STRING,MFS_ENABLED
         MENUITEM MFT_SEPARATOR
-        POPUP "Choose &Logo",                   ID_FILE_LOGO_POPUP,MFT_STRING,MFS_ENABLED
+        POPUP "Choose &Icon",                   ID_FILE_LOGO_POPUP,MFT_STRING,MFS_ENABLED
         BEGIN
             MENUITEM "Icon &1",                     ID_FILE_LOGO_1,MFT_STRING,MFS_ENABLED
             MENUITEM "Icon &2",                     ID_FILE_LOGO_2,MFT_STRING,MFS_ENABLED

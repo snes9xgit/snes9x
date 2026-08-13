@@ -2352,8 +2352,8 @@ msgid "Cheats Search Dialog:"
 msgstr "Csaláskereső ablak:"
 
 #: win32/rsrc/snes9x.rc
-msgid "Choose Logo"
-msgstr "Logó kiválasztása"
+msgid "Choose Icon"
+msgstr "Ikon kiválasztása"
 
 #: win32/rsrc/snes9x.rc
 msgid "Clear"

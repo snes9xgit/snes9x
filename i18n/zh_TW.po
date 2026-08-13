@@ -2318,8 +2318,8 @@ msgid "Cheats Search Dialog:"
 msgstr "金手指追蹤尋找核心視窗："
 
 #: win32/rsrc/snes9x.rc
-msgid "Choose Logo"
-msgstr "選擇自訂商標外觀"
+msgid "Choose Icon"
+msgstr "選擇圖示"
 
 #: win32/rsrc/snes9x.rc
 msgid "Clear"

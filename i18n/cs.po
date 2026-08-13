@@ -2361,8 +2361,8 @@ msgid "Cheats Search Dialog:"
 msgstr "Dialogové okno vyhledávání cheatů:"
 
 #: win32/rsrc/snes9x.rc
-msgid "Choose Logo"
-msgstr "Vybrat logo"
+msgid "Choose Icon"
+msgstr "Vybrat ikonu"
 
 #: win32/rsrc/snes9x.rc
 msgid "Clear"

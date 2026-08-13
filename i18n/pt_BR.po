@@ -2677,8 +2677,8 @@ msgid "Cheats Search Dialog:"
 msgstr "Janela de Procura de Trapaças:"
 
 #: win32/rsrc/snes9x.rc
-msgid "Choose Logo"
-msgstr "Escolher Logo"
+msgid "Choose Icon"
+msgstr "Escolher Ícone"
 
 #: win32/rsrc/snes9x.rc
 msgid "Clear"

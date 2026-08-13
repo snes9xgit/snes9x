@@ -2380,8 +2380,8 @@ msgid "Cheats Search Dialog:"
 msgstr "Dialogruta för fusksökning:"
 
 #: win32/rsrc/snes9x.rc
-msgid "Choose Logo"
-msgstr "Välj logotyp"
+msgid "Choose Icon"
+msgstr "Välj ikon"
 
 #: win32/rsrc/snes9x.rc
 msgid "Clear"

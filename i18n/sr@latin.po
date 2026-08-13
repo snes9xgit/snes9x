@@ -2596,8 +2596,8 @@ msgid "Cheats Search Dialog:"
 msgstr "Dijalog pretrage varanja:"
 
 #: win32/rsrc/snes9x.rc
-msgid "Choose Logo"
-msgstr "Odaberi logo"
+msgid "Choose Icon"
+msgstr "Odaberi ikonu"
 
 #: win32/rsrc/snes9x.rc
 msgid "Clear"
