@@ -107,6 +107,12 @@ bool EmuCanvasVulkan::createContext()
     if (platform == "wayland")
     {
         auto iface = app->nativeInterface<QNativeInterface::QWaylandApplication>();
+        if (!iface)
+        {
+            printf("Couldn't get a Wayland interface from Qt.\n");
+            context.reset();
+            return false;
+        }
         auto display = iface->display();
         auto surface = (wl_surface *)main_window->winId();
         wayland_surface = std::make_unique<WaylandSurface>();
@@ -127,6 +133,12 @@ bool EmuCanvasVulkan::createContext()
     if (platform == "xcb")
     {
         auto iface = app->nativeInterface<QNativeInterface::QX11Application>();
+        if (!iface)
+        {
+            printf("Couldn't get an X11 interface from Qt.\n");
+            context.reset();
+            return false;
+        }
         auto display = iface->display();
         auto xid = (Window)winId();
 
@@ -137,6 +149,17 @@ bool EmuCanvasVulkan::createContext()
             context.reset();
             return false;
         }
+    }
+    else
+    {
+        // No branch above handled this platform — notably a Wayland session
+        // on Qt builds older than 6.5, which have no QWaylandApplication
+        // native interface. Without a surface the context is unusable, so
+        // fail and let the caller fall back to another display driver.
+        printf("No Vulkan surface available for platform \"%s\".\n",
+               platform.toUtf8().constData());
+        context.reset();
+        return false;
     }
 #endif
 

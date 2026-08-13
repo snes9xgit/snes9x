@@ -157,6 +157,11 @@ bool EmuCanvasOpenGL::createContext()
     if (platform == "wayland")
     {
         auto iface = app->nativeInterface<QNativeInterface::QWaylandApplication>();
+        if (!iface)
+        {
+            printf("Couldn't get a Wayland interface from Qt.\n");
+            return false;
+        }
         auto display = iface->display();
         auto surface = (wl_surface *)main_window->winId();
         auto wayland_egl_context = new WaylandEGLContext();
@@ -176,6 +181,11 @@ bool EmuCanvasOpenGL::createContext()
     if (platform == "xcb")
     {
         auto iface = app->nativeInterface<QNativeInterface::QX11Application>();
+        if (!iface)
+        {
+            printf("Couldn't get an X11 interface from Qt.\n");
+            return false;
+        }
         auto display = iface->display();
         auto xid = (Window)winId();
 
@@ -201,9 +211,22 @@ bool EmuCanvasOpenGL::createContext()
     context.reset(wgl_context);
 #endif
 
+    // A platform none of the branches above handled leaves context null — in
+    // particular a Wayland session on Qt builds older than 6.5, which have no
+    // QWaylandApplication native interface. Fail so the caller can fall back
+    // to another display driver instead of crashing on a null context.
+    if (!context)
+    {
+        printf("No OpenGL context available for platform \"%s\".\n",
+               platform.toUtf8().constData());
+        return false;
+    }
+
     if (!context->create_context())
     {
         printf("Couldn't create OpenGL context.\n");
+        context.reset();
+        return false;
     }
 
     context->make_current();

@@ -149,7 +149,17 @@ bool EmuMainWindow::createCanvas()
             return fallback();
         }
 #else
-        app->emu_thread->runOnThread([&] { canvas->createContext(); }, true);
+        // The call blocks, so context_created is safely written before the
+        // check below runs. A false result (e.g. Wayland on a Qt build older
+        // than 6.5, or broken GL drivers) falls back to the software driver
+        // instead of leaving a dead canvas that crashes on first use.
+        bool context_created = false;
+        app->emu_thread->runOnThread([&] { context_created = canvas->createContext(); }, true);
+        if (!context_created)
+        {
+            delete canvas;
+            return fallback();
+        }
 #endif
     }
     else
