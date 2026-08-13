@@ -542,6 +542,7 @@ static bool RateUsefulForMode (unsigned int rate);
 static void AudioWaveEffectiveMasks (uint8 *outSpc, uint8 *outGb);
 static int  ClampLogoIndex (int n);
 static void ApplyLogoIcon  (HWND hWnd, HINSTANCE hInst, int n);
+static void S9xNotifyShellIconChanged (const TCHAR *exePath);
 static bool SetExeFileIcon (int logoIndex);
 static void UpdateLogoMenuBitmaps ();
 static void RestartSnes9x ();
@@ -3002,6 +3003,15 @@ LRESULT CALLBACK WinProc(
 					ApplyLogoIcon(GUI.hWnd, GUI.hInstance, GUI.IconIndex);
 					UpdateLogoMenuBitmaps();
 					WinSaveConfigFile();
+
+					// registered file icons follow the logo while the override is on
+					if (GUI.AddToRegistry && GUI.AssocUseExeIcon)
+					{
+						RegisterProgid();
+						TCHAR exePath[PATH_MAX];
+						GetModuleFileName(NULL, exePath, PATH_MAX);
+						S9xNotifyShellIconChanged(exePath);
+					}
 
 					if (GUI.ExeIconRewriteOK && SetExeFileIcon(GUI.IconIndex))
 						RestartSnes9x();
@@ -7845,9 +7855,9 @@ INT_PTR CALLBACK DlgColorCorrectionProc(HWND hDlg, UINT msg, WPARAM wParam, LPAR
 	return FALSE;
 }
 
-// Height the two checkbox rows add to the dialog template (264 tall with them,
-// 238 without). Everything else is measured, so this is the only shared value.
-#define ASSOC_ROW_UNITS 26
+// Height the three checkbox rows add to the dialog template (276 tall with
+// them, 238 without). Everything else is measured, so this is the only shared value.
+#define ASSOC_ROW_UNITS 38
 
 static int   s_assocRowPx  = 0;	// row height in pixels, so DPI scaling is respected
 static int   s_assocDlgCY  = 0;	// dialog window height with the row showing
@@ -7886,6 +7896,7 @@ static void LayoutAssocChecks(HWND hDlg, bool visible)
 		IDC_ASSOC_LABEL_SNES, IDC_ASSOC_SFC, IDC_ASSOC_SMC, IDC_ASSOC_SWC,
 		IDC_ASSOC_FIG, IDC_ASSOC_BS, IDC_ASSOC_ST,
 		IDC_ASSOC_LABEL_GB, IDC_ASSOC_GB, IDC_ASSOC_GBC,
+		IDC_ASSOC_EXEICON,
 	};
 	for (size_t i = 0; i < _countof(ids); i++)
 		ShowWindow(GetDlgItem(hDlg, ids[i]), visible ? SW_SHOW : SW_HIDE);
@@ -7952,6 +7963,7 @@ INT_PTR CALLBACK DlgEmulatorProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPar
 			CheckDlgButton(hDlg, IDC_ASSOC_ST,  GUI.AssocSt  ? BST_CHECKED : BST_UNCHECKED);
 			CheckDlgButton(hDlg, IDC_ASSOC_GB,  GUI.AssocGb  ? BST_CHECKED : BST_UNCHECKED);
 			CheckDlgButton(hDlg, IDC_ASSOC_GBC, GUI.AssocGbc ? BST_CHECKED : BST_UNCHECKED);
+			CheckDlgButton(hDlg, IDC_ASSOC_EXEICON, GUI.AssocUseExeIcon ? BST_CHECKED : BST_UNCHECKED);
 			CaptureAssocLayout(hDlg);
 			LayoutAssocChecks(hDlg, GUI.AddToRegistry);
 			CheckDlgButton(hDlg,IDC_HIRESAVI,GUI.AVIHiRes ? BST_CHECKED : BST_UNCHECKED);
@@ -8061,6 +8073,7 @@ INT_PTR CALLBACK DlgEmulatorProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPar
 					GUI.AssocSt  = (BST_CHECKED == IsDlgButtonChecked(hDlg, IDC_ASSOC_ST));
 					GUI.AssocGb  = (BST_CHECKED == IsDlgButtonChecked(hDlg, IDC_ASSOC_GB));
 					GUI.AssocGbc = (BST_CHECKED == IsDlgButtonChecked(hDlg, IDC_ASSOC_GBC));
+					GUI.AssocUseExeIcon = (BST_CHECKED == IsDlgButtonChecked(hDlg, IDC_ASSOC_EXEICON));
 
 					if (AddRegistryChecked)
 					{
@@ -10029,8 +10042,10 @@ bool RegisterProgid() {
 
         _stprintf_s(szRegKey,PATH_MAX-1,TEXT("Software\\Classes\\%s\\DefaultIcon"),pid->progid);
         REGCREATEKEY(HKEY_CURRENT_USER,szRegKey)
+        // override collapses every family onto the chosen logo icon
+        UINT icon = GUI.AssocUseExeIcon ? LogoIndexToResource(GUI.IconIndex) : pid->icon;
         // negative index means resource ID, so adding icons never shifts these
-        _stprintf_s(szRegKey,PATH_MAX-1,TEXT("%s,-%u"), szExePath, pid->icon);
+        _stprintf_s(szRegKey,PATH_MAX-1,TEXT("%s,-%u"), szExePath, icon);
         REGSETVALUE(hKey,NULL,REG_SZ,szRegKey,(lstrlen(szRegKey) + 1) * sizeof(TCHAR))
         RegCloseKey(hKey);
 

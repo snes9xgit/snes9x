@@ -887,6 +887,7 @@ void WinRegisterConfigItems()
 	AddBoolC("AssociateSt", GUI.AssocSt, false, "when AddToRegistry is set, associate .st (Sufami Turbo) ROMs -- off by default, .st is also Atari ST disk images");
 	AddBoolC("AssociateGb", GUI.AssocGb, true, "when AddToRegistry is set, associate .gb ROMs with SuperSnes9x");
 	AddBoolC("AssociateGbc", GUI.AssocGbc, true, "when AddToRegistry is set, associate .gbc ROMs with SuperSnes9x");
+	AddBoolC("AssociateUseExeIcon", GUI.AssocUseExeIcon, false, "when AddToRegistry is set, use the File > Choose Icon selection for every registered type instead of the per-type icons");
 	AddBoolC("AVIHiRes", GUI.AVIHiRes, false, "true to record AVI in Hi-Res scale");
 	AddBoolC("ConfirmSaveLoad", GUI.ConfirmSaveLoad, false, "true to ask for confirmation when saving/loading");
 	AddStringC("Language", GUI.UILanguage, 64, "", "UI language: code matching a file in i18n\\<code>.po (e.g. ja, de, pt_BR); empty = English");

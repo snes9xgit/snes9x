@@ -343,6 +343,9 @@ struct sGUI {
     char RAApiToken[256];
     char RAEmulatorName[64];
 #endif
+
+	// all registered types use the File > Choose Icon selection as their shell icon
+	bool AssocUseExeIcon;
 };
 
 //TURBO masks
