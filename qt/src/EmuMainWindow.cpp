@@ -436,6 +436,33 @@ void EmuMainWindow::createWidgets()
 
     emulation_menu->addSeparator();
 
+    auto run_ahead_menu = new QMenu(tr("Run &Ahead"));
+    auto run_ahead_group = new QActionGroup(this);
+    run_ahead_group->setExclusive(true);
+    std::vector<QAction *> run_ahead_actions;
+    for (int i = 0; i <= 4; i++)
+    {
+        auto action = run_ahead_menu->addAction(
+            i == 0 ? tr("&0 (off)") :
+            i == 1 ? tr("&1 frame") :
+                     tr("&%1 frames").arg(i));
+        action->setCheckable(true);
+        run_ahead_group->addAction(action);
+        connect(action, &QAction::triggered, [&, i] {
+            app->config->run_ahead_frames = i;
+            app->updateSettings();
+        });
+        run_ahead_actions.push_back(action);
+    }
+    emulation_menu->addMenu(run_ahead_menu);
+    // The Emulation settings panel can also change the value, so sync the
+    // check state whenever the menu opens.
+    connect(emulation_menu, &QMenu::aboutToShow, this, [this, run_ahead_actions] {
+        int n = app->config->run_ahead_frames;
+        n = n < 0 ? 0 : (n > 4 ? 4 : n);
+        run_ahead_actions[n]->setChecked(true);
+    });
+
     bios_menu = new QMenu(tr("&BIOS"));
     auto bios_group = new QActionGroup(this);
     bios_group->setExclusive(true);

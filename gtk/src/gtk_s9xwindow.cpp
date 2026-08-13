@@ -205,6 +205,26 @@ void Snes9xWindow::connect_signals()
             reload_with_bios_pref(2);
     });
 
+    for (int i = 0; i <= 4; i++)
+    {
+        std::string name = "run_ahead_" + std::to_string(i) + "_item";
+        get_object<Gtk::RadioMenuItem>(name.c_str())->signal_toggled().connect([&, name, i] {
+            if (refreshing_runahead_menu)
+                return;
+            if (get_object<Gtk::RadioMenuItem>(name.c_str())->get_active())
+                Settings.RunAhead = i;
+        });
+    }
+    // The preferences dialog can also change Settings.RunAhead, so sync the
+    // radio state whenever the menu opens.
+    get_object<Gtk::Menu>("emulation_menu_item_menu")->signal_show().connect([&] {
+        int clamped = Settings.RunAhead < 0 ? 0 : (Settings.RunAhead > 4 ? 4 : Settings.RunAhead);
+        std::string name = "run_ahead_" + std::to_string(clamped) + "_item";
+        refreshing_runahead_menu = true;
+        get_object<Gtk::RadioMenuItem>(name.c_str())->set_active(true);
+        refreshing_runahead_menu = false;
+    });
+
     get_object<Gtk::MenuItem>("shader_parameters_item")->signal_activate().connect([&] {
         gtk_shader_parameters_dialog(get_window());
     });
