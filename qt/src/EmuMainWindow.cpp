@@ -149,7 +149,17 @@ bool EmuMainWindow::createCanvas()
             return fallback();
         }
 #else
-        app->emu_thread->runOnThread([&] { canvas->createContext(); }, true);
+        // The call blocks, so context_created is safely written before the
+        // check below runs. A false result (e.g. Wayland on a Qt build older
+        // than 6.5, or broken GL drivers) falls back to the software driver
+        // instead of leaving a dead canvas that crashes on first use.
+        bool context_created = false;
+        app->emu_thread->runOnThread([&] { context_created = canvas->createContext(); }, true);
+        if (!context_created)
+        {
+            delete canvas;
+            return fallback();
+        }
 #endif
     }
     else
@@ -435,6 +445,33 @@ void EmuMainWindow::createWidgets()
     core_actions.push_back(cheats_item);
 
     emulation_menu->addSeparator();
+
+    auto run_ahead_menu = new QMenu(tr("Run &Ahead"));
+    auto run_ahead_group = new QActionGroup(this);
+    run_ahead_group->setExclusive(true);
+    std::vector<QAction *> run_ahead_actions;
+    for (int i = 0; i <= 4; i++)
+    {
+        auto action = run_ahead_menu->addAction(
+            i == 0 ? tr("&0 (off)") :
+            i == 1 ? tr("&1 frame") :
+                     tr("&%1 frames").arg(i));
+        action->setCheckable(true);
+        run_ahead_group->addAction(action);
+        connect(action, &QAction::triggered, [&, i] {
+            app->config->run_ahead_frames = i;
+            app->updateSettings();
+        });
+        run_ahead_actions.push_back(action);
+    }
+    core_actions.push_back(emulation_menu->addMenu(run_ahead_menu));
+    // The Emulation settings panel can also change the value, so sync the
+    // check state whenever the menu opens.
+    connect(emulation_menu, &QMenu::aboutToShow, this, [this, run_ahead_actions] {
+        int n = app->config->run_ahead_frames;
+        n = n < 0 ? 0 : (n > 4 ? 4 : n);
+        run_ahead_actions[n]->setChecked(true);
+    });
 
     bios_menu = new QMenu(tr("&BIOS"));
     auto bios_group = new QActionGroup(this);

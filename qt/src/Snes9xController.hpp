@@ -74,6 +74,11 @@ class Snes9xController
 
   private:
     void SamplesAvailable();
+    void mainLoopWithRunAhead();
+
+    // Savestate scratch buffer for run-ahead. Sized per ROM (freeze size
+    // depends on which special chips the cart uses), so openFile clears it.
+    std::vector<uint8_t> run_ahead_buffer;
 
 };
 

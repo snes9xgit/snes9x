@@ -34,6 +34,10 @@ static void check_pointer_timer();
 static bool idle_func();
 static bool screen_saver_check_func();
 
+// Savestate scratch buffer for run-ahead. Sized per ROM (freeze size depends
+// on which special chips the cart uses), so S9xROMLoaded clears it.
+static std::vector<uint8> run_ahead_buffer;
+
 Snes9xWindow *top_level = nullptr;
 Snes9xConfig *gui_config = nullptr;
 StateManager state_manager;
@@ -222,6 +226,7 @@ int S9xOpenROM(const char *rom_filename)
 void S9xROMLoaded()
 {
     gui_config->rom_loaded = true;
+    run_ahead_buffer.clear();
     top_level->configure_widgets();
 
 #ifdef RETROACHIEVEMENTS_SUPPORT
@@ -351,7 +356,86 @@ static void game_loop()
         else
             Settings.Mute &= ~0x80;
 
-        S9xMainLoop();
+        // Never run ahead during netplay — the frame exchange assumes one
+        // emulated frame per iteration, and hidden frames would desync us.
+        if (Settings.RunAhead > 0 && !Settings.Rewinding && !Settings.TurboMode &&
+            !Settings.NetPlay && !Settings.NetPlayServer)
+        {
+            // Run-ahead: commit 1 hidden frame, save state, run N-1 more hidden
+            // frames to "look into the future", then run the displayed frame as
+            // a preview, and finally restore to the committed state. The
+            // displayed frame shows what the game will look like N frames in
+            // the future given the current input, reducing apparent input
+            // latency by N frames.
+            int num_ahead_frames = Settings.RunAhead;
+            if (num_ahead_frames > 4)
+                num_ahead_frames = 4;
+
+            // Minimize per-frame overhead:
+            // - drop the ~500KB screenshot from the state
+            // - enable fast path (skips screen memset + memory zeroing on load)
+            // - detach the sample-available callback during hidden frames so
+            //   their audio never reaches the OS buffer; otherwise we push
+            //   multiple frames of audio per iteration and the buffer fills
+            //   faster than it drains
+            bool8 saved_screenshots = Settings.SnapshotScreenshots;
+            bool8 saved_fast = Settings.FastSavestates;
+            Settings.SnapshotScreenshots = false;
+            Settings.FastSavestates = true;
+
+            // S9xFreezeSize() is expensive (it does a full dry-run
+            // serialization), so cache the buffer until the next ROM load.
+            if (run_ahead_buffer.empty())
+                run_ahead_buffer.resize(S9xFreezeSize());
+
+            // Suppress audio output for the hidden frames
+            S9xSetSamplesAvailableCallback(nullptr, nullptr);
+
+            // Snapshot the resampler so we can undo the hidden frames' effect
+            // on it (preserves filter continuity across iterations)
+            S9xRunAheadSaveAudio();
+
+            Settings.InRunAhead = true;
+
+            // First hidden frame: the "commit" frame — its state gets saved
+            // and becomes the starting point of the next iteration
+            IPPU.RenderThisFrame = false;
+            S9xMainLoop();
+
+            // Save state at end of the committed frame
+            S9xFreezeGameMem(run_ahead_buffer.data(), run_ahead_buffer.size());
+
+            // Additional hidden frames (peek further into the future)
+            for (int i = 1; i < num_ahead_frames; i++)
+            {
+                IPPU.RenderThisFrame = false;
+                S9xMainLoop();
+            }
+
+            Settings.InRunAhead = false;
+
+            // Restore resampler state so the displayed frame's output flows
+            // on directly from the previous displayed frame's output
+            S9xRunAheadLoadAudio();
+
+            // Re-enable audio output for the displayed frame
+            S9xSetSamplesAvailableCallback(S9xSamplesAvailable, nullptr);
+
+            // Displayed "preview" frame: renders and throttles normally
+            IPPU.RenderThisFrame = true;
+            S9xMainLoop();
+
+            // Restore to end-of-committed-frame so the next iteration starts
+            // from there
+            S9xUnfreezeGameMem(run_ahead_buffer.data(), run_ahead_buffer.size());
+
+            Settings.SnapshotScreenshots = saved_screenshots;
+            Settings.FastSavestates = saved_fast;
+        }
+        else
+        {
+            S9xMainLoop();
+        }
 
 #ifdef RETROACHIEVEMENTS_SUPPORT
         // Suspend achievement processing during netplay so remote players'
