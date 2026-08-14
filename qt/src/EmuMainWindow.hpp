@@ -37,6 +37,7 @@ class EmuMainWindow : public QMainWindow
     bool openFile(const std::string &filename);
     void recreateUIAssets();
     void shaderChanged();
+    void updateShaderSettingsItem();
     void gameChanging();
     void toggleMouseGrab();
     std::vector<std::string> getDisplayDeviceList();

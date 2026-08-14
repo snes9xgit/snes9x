@@ -190,6 +190,7 @@ void EmuMainWindow::recreateCanvas()
     createCanvas();
 
     app->unsuspendThread();
+    updateShaderSettingsItem();
 }
 
 void EmuMainWindow::setCoreActionsEnabled(bool enable)
@@ -565,12 +566,13 @@ void EmuMainWindow::createWidgets()
     }
 
     options_menu->addSeparator();
-    auto shader_settings_item = new QAction(QIcon(iconset + "shader.svg"), tr("S&hader Settings..."));
+    shader_settings_item = new QAction(QIcon(iconset + "shader.svg"), tr("S&hader Settings..."));
     QObject::connect(shader_settings_item, &QAction::triggered, [&] {
         if (canvas)
             canvas->showParametersDialog();
     });
     options_menu->addAction(shader_settings_item);
+    updateShaderSettingsItem();
 
     menuBar()->addMenu(options_menu);
 
@@ -794,6 +796,7 @@ bool EmuMainWindow::openFile(const std::string &filename)
         if (!canvas)
             if (!createCanvas())
                 return false;
+        updateShaderSettingsItem();
 
         QApplication::sync();
         app->startGame();
@@ -1067,6 +1070,19 @@ void EmuMainWindow::shaderChanged()
         if (canvas)
             canvas->shaderChanged();
     });
+    updateShaderSettingsItem();
+}
+
+void EmuMainWindow::updateShaderSettingsItem()
+{
+    // Shader Settings edits the parameters of a loaded shader preset, so it is
+    // meaningless until a game is running (no canvas yet) with a preset
+    // configured on a driver that can use one. The preset may still fail to
+    // load; clicking then reports that instead of showing parameters.
+    bool shader_configured = app->config->use_shader &&
+                             !app->config->shader.empty() &&
+                             app->config->display_driver != "qt";
+    shader_settings_item->setEnabled(canvas != nullptr && shader_configured);
 }
 
 void EmuMainWindow::gameChanging()
