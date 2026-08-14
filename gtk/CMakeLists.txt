@@ -295,8 +295,8 @@ list(APPEND SOURCES
     ../filter/2xsai.h
     ../filter/epx.cpp
     ../filter/epx.h
-    src/filter_epx_unsafe.h
-    src/filter_epx_unsafe.cpp
+    ../filter/filter_epx_unsafe.h
+    ../filter/filter_epx_unsafe.cpp
     src/gtk_binding.cpp
     src/gtk_binding.h
     src/gtk_cheat.cpp

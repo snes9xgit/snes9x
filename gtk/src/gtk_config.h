@@ -63,6 +63,7 @@ class Snes9xConfig
     bool maintain_aspect_ratio;
     int aspect_ratio;
     int scale_method;
+    int hires_scale_method;
     bool overscan;
     bool multithreading;
     int hires_effect;

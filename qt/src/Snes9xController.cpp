@@ -1,6 +1,7 @@
 #include "Snes9xController.hpp"
 #include "EmuConfig.hpp"
 #include "SoftwareScalers.hpp"
+#include "SoftwareFilters.hpp"
 #include "fscompat.h"
 #include <filesystem>
 namespace fs = std::filesystem;
@@ -246,6 +247,8 @@ void Snes9xController::updateSettings(EmuConfig *config)
     }
 
     high_resolution_effect = config->high_resolution_effect;
+    software_filter = S9xSoftwareFilterFromName(config->software_filter);
+    software_filter_hires = S9xSoftwareFilterFromName(config->software_filter_hires);
 
     config_folder = EmuConfig::findConfigDir();
 
@@ -504,7 +507,34 @@ bool8 S9xDeinitUpdate(int width, int height)
         }
     }
 
-    display(screen_view, width, height, GFX.Pitch, Settings.PAL ? 50.0 : 60.098813);
+    const double frame_rate = Settings.PAL ? 50.0 : 60.098813;
+
+    // Hi-res frames get their own filter selection, like the win32 port's
+    // second "Hi Res" box under Output Image Processing.
+    bool hires_frame = (width == 512 || height > SNES_HEIGHT_EXTENDED);
+    int filter = hires_frame ? Snes9xController::get()->software_filter_hires
+                             : Snes9xController::get()->software_filter;
+    if (filter != 0)
+    {
+        // The filters can only grow the image, so the scratch buffer sized for
+        // the largest frame seen so far is never shrunk.
+        static std::vector<uint16_t> filter_buffer;
+
+        int filtered_width = width;
+        int filtered_height = height;
+        S9xSoftwareFilterScale(filter, filtered_width, filtered_height);
+        if (filter_buffer.size() < (size_t)filtered_width * filtered_height)
+            filter_buffer.resize(filtered_width * filtered_height);
+
+        S9xApplySoftwareFilter(filter,
+                               (uint8_t *)screen_view, GFX.Pitch,
+                               (uint8_t *)filter_buffer.data(), filtered_width * 2,
+                               width, height);
+        display(filter_buffer.data(), filtered_width, filtered_height, filtered_width * 2, frame_rate);
+        return true;
+    }
+
+    display(screen_view, width, height, GFX.Pitch, frame_rate);
 
     return true;
 }

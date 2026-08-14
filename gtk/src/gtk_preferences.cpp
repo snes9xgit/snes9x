@@ -182,11 +182,14 @@ void Snes9xPreferences::connect_signals()
                      "threads for filtering and scaling",
                      get_spin("num_threads")));
     });
-    get_object<Gtk::ComboBox>("scale_method_combo")->signal_changed().connect([&] {
+    auto update_filter_panels = [&] {
         int id = get_combo("scale_method_combo");
-        show_widget("ntsc_alignment", id == FILTER_NTSC);
-        show_widget("scanline_alignment", id == FILTER_SCANLINES);
-    });
+        int hires_id = get_combo("scale_method_hires_combo");
+        show_widget("ntsc_alignment", id == FILTER_NTSC || hires_id == FILTER_NTSC);
+        show_widget("scanline_alignment", id == FILTER_SCANLINES || hires_id == FILTER_SCANLINES);
+    };
+    get_object<Gtk::ComboBox>("scale_method_combo")->signal_changed().connect(update_filter_panels);
+    get_object<Gtk::ComboBox>("scale_method_hires_combo")->signal_changed().connect(update_filter_panels);
 
     get_object<Gtk::ComboBox>("hw_accel")->signal_changed().connect([&] {
         int id = get_combo("hw_accel");
@@ -603,6 +606,7 @@ void Snes9xPreferences::move_settings_to_dialog()
 
     set_combo("resolution_combo",          config->xrr_index);
     set_combo("scale_method_combo",        config->scale_method);
+    set_combo("scale_method_hires_combo",  config->hires_scale_method);
     set_spin ("save_sram_after_sec",       Settings.AutoSaveDelay);
     set_label("save_sram_after_sec_label", ngettext("second after change", "seconds after change", get_spin("save_sram_after_sec")));
     // A game on the allow-invalid-VRAM list overrides the preference for
@@ -663,8 +667,10 @@ void Snes9xPreferences::move_settings_to_dialog()
 
     set_combo ("sound_driver",              config->sound_driver);
 
-    show_widget("ntsc_alignment", config->scale_method == FILTER_NTSC);
-    show_widget("scanline_alignment", config->scale_method == FILTER_SCANLINES);
+    show_widget("ntsc_alignment", config->scale_method == FILTER_NTSC ||
+                                  config->hires_scale_method == FILTER_NTSC);
+    show_widget("scanline_alignment", config->scale_method == FILTER_SCANLINES ||
+                                      config->hires_scale_method == FILTER_SCANLINES);
 
     load_ntsc_settings();
     set_combo ("ntsc_scanline_intensity",   config->ntsc_scanline_intensity);
@@ -795,6 +801,7 @@ void Snes9xPreferences::get_settings_from_dialog()
     config->maintain_aspect_ratio     = get_check("maintain_aspect_ratio");
     config->aspect_ratio              = get_combo("aspect_ratio");
     config->scale_method              = get_combo("scale_method_combo");
+    config->hires_scale_method        = get_combo("scale_method_hires_combo");
     config->hires_effect              = get_combo("hires_effect");
     config->auto_vrr                  = get_check("auto_vrr");
     config->force_inverted_byte_order = get_check("force_inverted_byte_order");

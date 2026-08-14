@@ -19,7 +19,7 @@
 
 #include "port.h"
 //#include <cstddef> //size_t
-//#include <cstdint> //uint32_t
+#include <cstdint> //uint32_t
 #include <limits>
 #include "xbrz_config.h"
 

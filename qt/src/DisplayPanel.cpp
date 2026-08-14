@@ -1,6 +1,7 @@
 #include "DisplayPanel.hpp"
 #include "EmuMainWindow.hpp"
 #include "EmuConfig.hpp"
+#include "SoftwareFilters.hpp"
 #include <QFileDialog>
 
 #include "snes9x.h"
@@ -34,6 +35,8 @@ DisplayPanel::DisplayPanel(EmuApplication *app_)
 
     connect(checkBox_use_shader, &QCheckBox::clicked, [&](bool checked) {
         app->config->use_shader = checked;
+        lineEdit_shader->setEnabled(checked);
+        pushButton_browse_shader->setEnabled(checked);
         app->window->shaderChanged();
     });
 
@@ -85,6 +88,22 @@ DisplayPanel::DisplayPanel(EmuApplication *app_)
         app->updateSettings();
     });
 
+    for (int i = 0; i < S9xSoftwareFilterCount(); i++)
+    {
+        comboBox_software_filter->addItem(S9xSoftwareFilterName(i));
+        comboBox_software_filter_hires->addItem(S9xSoftwareFilterName(i));
+    }
+
+    connect(comboBox_software_filter, &QComboBox::activated, [&](int index) {
+        app->config->software_filter = S9xSoftwareFilterName(index);
+        app->updateSettings();
+    });
+
+    connect(comboBox_software_filter_hires, &QComboBox::activated, [&](int index) {
+        app->config->software_filter_hires = S9xSoftwareFilterName(index);
+        app->updateSettings();
+    });
+
     connect(comboBox_messages, &QComboBox::currentIndexChanged, [&](int index) {
         bool recreate = (app->config->display_messages == EmuConfig::eOnscreen || index == EmuConfig::eOnscreen);
 
@@ -132,8 +151,6 @@ DisplayPanel::DisplayPanel(EmuApplication *app_)
         app->config->gb_frame_blend_layer = index;
         app->updateSettings();
     });
-
-    groupBox_software_filters->hide();
 }
 
 void DisplayPanel::updateGBBlendEnabledState()
@@ -205,6 +222,8 @@ void DisplayPanel::showEvent(QShowEvent *event)
 
     checkBox_use_shader->setChecked(config->use_shader);
     lineEdit_shader->setText(config->shader.c_str());
+    lineEdit_shader->setEnabled(config->use_shader);
+    pushButton_browse_shader->setEnabled(config->use_shader);
 
     checkBox_vsync->setChecked(config->enable_vsync);
     checkBox_reduce_input_lag->setChecked(config->reduce_input_lag);
@@ -223,6 +242,9 @@ void DisplayPanel::showEvent(QShowEvent *event)
         comboBox_aspect_ratio->setCurrentIndex(2);
 
     comboBox_high_resolution_mode->setCurrentIndex(config->high_resolution_effect);
+
+    comboBox_software_filter->setCurrentIndex(S9xSoftwareFilterFromName(config->software_filter));
+    comboBox_software_filter_hires->setCurrentIndex(S9xSoftwareFilterFromName(config->software_filter_hires));
 
     comboBox_messages->setCurrentIndex(config->display_messages);
     spinBox_osd_size->setValue(config->osd_size);

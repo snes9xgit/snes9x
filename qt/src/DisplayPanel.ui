@@ -315,9 +315,59 @@ Output directly will cause the screen to change between the two modes and look w
      <property name="title">
       <string>Software Filters</string>
      </property>
-     <layout class="QVBoxLayout" name="verticalLayout_4">
-      <item>
-       <widget class="QComboBox" name="comboBox"/>
+     <layout class="QGridLayout" name="gridLayout_software_filter">
+      <item row="0" column="0">
+       <widget class="QLabel" name="label_software_filter">
+        <property name="text">
+         <string>Filter:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QComboBox" name="comboBox_software_filter">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="toolTip">
+         <string>Process the image on the CPU before display. These are the same filters as the &quot;Output Image Processing&quot; options in the Windows port. For GPU shader-based processing, use a shader preset instead.</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="label_software_filter_hires">
+        <property name="text">
+         <string>Hi-res filter:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QComboBox" name="comboBox_software_filter_hires">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="toolTip">
+         <string>Filter used instead of the one above when the frame is high-resolution (512 pixels wide or interlaced), like the win32 &quot;Hi Res&quot; box. Also applies when the high-resolution mode above is set to &quot;Scale up&quot;.</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="2">
+       <spacer name="horizontalSpacer_software_filter">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
       </item>
      </layout>
     </widget>

@@ -34,7 +34,7 @@
 #ifdef USE_XBRZ
 #include "filter_xbrz.h"
 #endif
-#include "filter_epx_unsafe.h"
+#include "filter/filter_epx_unsafe.h"
 #include "filter/snes_ntsc.h"
 
 void filter_scanlines(uint8 *, int, uint8 *, int, int, int);
@@ -69,6 +69,9 @@ static struct
 };
 
 static S9xDisplayDriver *driver;
+/* Filter in effect for the frame being shown: scale_method, or
+   hires_scale_method when the frame is hi-res. Set in S9xDeinitUpdate. */
+static int active_filter = 0;
 static snes_ntsc_t snes_ntsc;
 static int burst_phase = 0;
 static uint8 *y_table, *u_table, *v_table;
@@ -476,14 +479,14 @@ void filter_scanlines(uint8 *src_buffer,
 
 void apply_filter_scale(int &width, int &height)
 {
-    if (gui_config->scale_method == FILTER_NTSC)
+    if (active_filter == FILTER_NTSC)
     {
         width = SNES_NTSC_OUT_WIDTH(256);
         height *= 2;
         return;
     }
 
-    const auto &filter = filter_data[gui_config->scale_method];
+    const auto &filter = filter_data[active_filter];
     width *= filter.xscale;
     height *= filter.yscale;
 }
@@ -495,12 +498,12 @@ static void internal_filter(uint8 *src_buffer,
                             int width,
                             int height)
 {
-    if (gui_config->scale_method == FILTER_NONE)
+    if (active_filter == FILTER_NONE)
     {
         return;
     }
 
-    if (gui_config->scale_method == FILTER_NTSC)
+    if (active_filter == FILTER_NTSC)
     {
         if (width > 256)
             snes_ntsc_blit_hires_scanlines(&snes_ntsc,
@@ -523,7 +526,7 @@ static void internal_filter(uint8 *src_buffer,
     }
     else
     {
-        filter_data[gui_config->scale_method].filter_func(src_buffer,
+        filter_data[active_filter].filter_func(src_buffer,
                                                           src_pitch,
                                                           dst_buffer,
                                                           dst_pitch,
@@ -621,13 +624,13 @@ static void internal_threaded_filter(uint8 *src_buffer,
                                      int height)
 {
     // NTSC filter has internal state, so it can't be threaded properly.
-    if (gui_config->scale_method == FILTER_NTSC)
+    if (active_filter == FILTER_NTSC)
         return internal_filter(src_buffer, src_pitch, dst_buffer, dst_pitch, width, height);
 
     /* If the threadpool doesn't exist, create it */
     create_thread_pool();
 
-    int yscale = filter_data[gui_config->scale_method].yscale;
+    int yscale = filter_data[active_filter].yscale;
     int lines_handled = 0;
 
     for (int i = 0; i < gui_config->num_threads; i++)
@@ -888,7 +891,12 @@ bool8 S9xDeinitUpdate(int width, int height)
         }
     }
 
-    if (gui_config->scale_method > 0)
+    /* Hi-res frames use their own filter selection, like the win32 port's
+       second "Hi Res" box under Output Image Processing. */
+    bool hires_frame = (width == 512 || height > SNES_HEIGHT_EXTENDED);
+    active_filter = hires_frame ? gui_config->hires_scale_method : gui_config->scale_method;
+
+    if (active_filter > 0)
     {
         int scaled_width = width;
         int scaled_height = height;
