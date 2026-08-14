@@ -77,6 +77,7 @@ struct EmuConfig
     int high_resolution_effect;
 
     std::string software_filter;
+    std::string software_filter_hires;
 
     enum DisplayMessages
     {

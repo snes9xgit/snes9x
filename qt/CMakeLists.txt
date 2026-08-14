@@ -307,6 +307,8 @@ list(APPEND QT_GUI_SOURCES
     src/ShaderParametersDialog.cpp
     src/CheatsDialog.cpp
     src/SoftwareScalers.cpp
+    src/SoftwareFilters.cpp
+    src/SoftwareFilters.hpp
     src/EmuCanvasQt.cpp
     src/EmuCanvasOpenGL.cpp
     ../external/glad/src/gl.c
@@ -318,6 +320,12 @@ list(APPEND QT_GUI_SOURCES
     ../filter/2xsai.h
     ../filter/epx.cpp
     ../filter/epx.h
+    ../filter/filter_epx_unsafe.cpp
+    ../filter/filter_epx_unsafe.h
+    ../filter/hq2x.cpp
+    ../filter/hq2x.h
+    ../filter/xbrz.cpp
+    ../filter/xbrz.h
     ../filter/snes_ntsc_config.h
     ../filter/snes_ntsc.h
     ../filter/snes_ntsc_impl.h

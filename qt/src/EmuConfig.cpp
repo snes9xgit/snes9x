@@ -252,6 +252,7 @@ bool EmuConfig::setDefaults(int section)
         high_resolution_effect = eLeaveAlone;
 
         software_filter = {};
+        software_filter_hires = {};
 
         display_messages = eOnscreen;
         osd_size = 24;
@@ -498,7 +499,8 @@ void EmuConfig::config(const std::string &filename, bool write)
     Bool("ShowOverscan", show_overscan, "Show the overscan area at the top and bottom that most games hide");
     Enum("HighResolutionEffect", high_resolution_effect, { "LeaveAlone", "ScaleDown", "ScaleUp" }, "How to handle hi-res (512-wide) frames: LeaveAlone, ScaleDown, or ScaleUp");
 
-    String("SoftwareFilter", software_filter, "Software scaling filter name; empty means none");
+    String("SoftwareFilter", software_filter, "Software scaling filter name, e.g. \"HQ2x\" or \"Blargg's NTSC (Composite)\"; empty means none");
+    String("SoftwareFilterHiRes", software_filter_hires, "Software scaling filter used for hi-res (512-wide or interlaced) frames; empty means none");
 
     Enum("DisplayMessages", display_messages, { "Onscreen", "Inscreen", "None" }, "Where to draw on-screen messages: Onscreen, Inscreen, or None");
     Int("OSDSize", osd_size, "Size of on-screen display text in points (default 24)");

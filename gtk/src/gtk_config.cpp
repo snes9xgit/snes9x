@@ -83,6 +83,7 @@ int Snes9xConfig::load_defaults()
     maintain_aspect_ratio = true;
     aspect_ratio = 2;
     scale_method = 0;
+    hires_scale_method = 0;
     overscan = false;
     save_sram_after_secs = 0;
     rom_loaded = false;
@@ -262,6 +263,7 @@ int Snes9xConfig::save_config_file()
     outint("VideoMode", xrr_index, "Platform-specific video mode number");
     outint("AspectRatio", aspect_ratio, "0: uncorrected, 1: uncorrected integer scale, 2: 4:3, 3: 4/3 integer scale, 4: NTSC/PAL, 5: NTSC/PAL integer scale");
     outint("SoftwareScaleFilter", scale_method, "Build-specific number of filter used for software scaling");
+    outint("SoftwareScaleFilterHires", hires_scale_method, "Filter used instead for hi-res (512-wide or interlaced) frames");
     outint("ScanlineFilterIntensity", scanline_filter_intensity, "0: 0%, 1: 12.5%, 2: 25%, 3: 50%, 4: 100%");
     outint("HiresEffect", hires_effect, "0: Downscale to low-res, 1: Leave as-is, 2: Upscale low-res screens");
     outint("NumberOfThreads", num_threads, "Number of worker threads to use when Multithreading is enabled");
@@ -523,6 +525,7 @@ int Snes9xConfig::load_config_file()
     inbool("MaintainAspectRatio", maintain_aspect_ratio);
     inint("AspectRatio", aspect_ratio);
     inint("SoftwareScaleFilter", scale_method);
+    inint("SoftwareScaleFilterHires", hires_scale_method);
     inint("ScanlineFilterIntensity", scanline_filter_intensity);
     inbool("ShowOverscanArea", overscan);
     inint("HiresEffect", hires_effect);
@@ -738,17 +741,25 @@ int Snes9xConfig::load_config_file()
 #ifdef USE_HQ2X
     if (scale_method >= NUM_FILTERS)
         scale_method = 0;
+    if (hires_scale_method >= NUM_FILTERS)
+        hires_scale_method = 0;
 #else
     if (scale_method >= NUM_FILTERS - 3)
         scale_method = 0;
+    if (hires_scale_method >= NUM_FILTERS - 3)
+        hires_scale_method = 0;
 #endif /* USE_HQ2X */
 
 #ifdef USE_XBRZ
     if (scale_method >= NUM_FILTERS)
         scale_method = 0;
+    if (hires_scale_method >= NUM_FILTERS)
+        hires_scale_method = 0;
 #else
     if (scale_method >= NUM_FILTERS - 3)
         scale_method = 0;
+    if (hires_scale_method >= NUM_FILTERS - 3)
+        hires_scale_method = 0;
 #endif /* USE_XBRZ */
 
     if (Settings.SkipFrames == THROTTLE_SOUND_SYNC)
