@@ -203,18 +203,16 @@ void CWaveOut::RecoverFromUnderrun()
 
 void CWaveOut::ProcessSound()
 {
+    if (bufferCount == 0)
+    {
+        RecoverFromUnderrun();
+    }
+
     // Cheap lower bound first: bufferCount only lags completions, so this
     // never overestimates free space. waveOutGetPosition round-trips into
     // winmm and is far too slow for the per-landing call rate — query the
     // real cursor only once this bound says the queue may be full.
     int freeBytes = ((blockCount - bufferCount) * singleBufferBytes) - partialOffset;
-
-    if (bufferCount == 0)
-    {
-        RecoverFromUnderrun();
-        freeBytes = ((blockCount - bufferCount) * singleBufferBytes) - partialOffset;
-    }
-
     if (Settings.DynamicRateControl)
     {
         S9xUpdateDynamicRate(freeBytes, sumBufferSize);
