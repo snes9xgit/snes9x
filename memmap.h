@@ -156,6 +156,7 @@ struct CMemory
 	void	Map_SuperFXLoROMMap (void);
 	void	Map_SetaDSPLoROMMap (void);
 	void	Map_SDD1LoROMMap (void);
+	void	Map_SDD1DecompressedMap (void);
 	void	Map_SA1LoROMMap (void);
 	void	Map_BSSA1LoROMMap (void);
 	void	Map_HiROMMap (void);
