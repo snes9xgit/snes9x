@@ -444,8 +444,6 @@
 #define IDC_INVALID_VRAM                3030
 #define IDC_SEPARATE_ECHO_BUFFER        3031
 #define IDC_SOUND_INTERPOLATION         3033
-#define IDC_SFX_CLOCK_SPEED             3035
-#define IDC_SFX_CLOCK_SPEED_SPIN        3036
 #define IDC_NO_SPRITE_LIMIT             3037
 #define IDC_NO_SPRITE_LIMIT_GB          3362
 #define IDC_HACKS_WARNING_ICON          3363
