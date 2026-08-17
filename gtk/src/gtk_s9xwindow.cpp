@@ -817,25 +817,52 @@ std::string Snes9xWindow::open_movie_dialog(bool readonly)
 
 std::string Snes9xWindow::open_rom_dialog(bool run)
 {
-    const auto extensions = {
+    // Gtk::FileFilter patterns are case-sensitive, hence the doubled entries.
+    const auto snes_extensions = {
         "*.smc", "*.SMC", "*.fig", "*.FIG", "*.sfc", "*.SFC",
-        "*.jma", "*.JMA", "*.zip", "*.ZIP", "*.gd3", "*.GD3",
-        "*.swc", "*.SWC", "*.gz", "*.GZ", "*.bs", "*.BS"
+        "*.swc", "*.SWC", "*.gd3", "*.GD3", "*.bs", "*.BS",
+        "*.st", "*.ST", "*.bin", "*.BIN"
+    };
+    // .gb/.gbc route into the SGB subsystem in CMemory::LoadROM, and .sgb (plus
+    // any GB dump under a foreign extension) is caught by the Nintendo-logo
+    // content sniff, so Game Boy carts load straight from here.
+    const auto gb_extensions = {
+        "*.gb", "*.GB", "*.gbc", "*.GBC", "*.sgb", "*.SGB"
+    };
+    const auto archive_extensions = {
+        "*.jma", "*.JMA", "*.zip", "*.ZIP", "*.gz", "*.GZ"
     };
 
     pause_from_focus_change();
 
     auto dialog = Gtk::FileChooserDialog(*top_level->window.get(),
-                                         _("Open SNES ROM Image"));
+                                         _("Open ROM Image"));
     dialog.add_button(Gtk::StockID("gtk-cancel"), Gtk::RESPONSE_CANCEL);
     dialog.add_button(Gtk::StockID("gtk-open"), Gtk::RESPONSE_ACCEPT);
 
-    auto filter = Gtk::FileFilter::create();
-    filter->set_name(_("SNES ROM Images"));
-    for (const auto &ext : extensions)
-        filter->add_pattern(ext);
+    auto add_patterns = [](const Glib::RefPtr<Gtk::FileFilter> &filter,
+                           const std::initializer_list<const char *> &extensions) {
+        for (const auto &ext : extensions)
+            filter->add_pattern(ext);
+    };
 
+    auto filter = Gtk::FileFilter::create();
+    filter->set_name(_("ROM Images"));
+    add_patterns(filter, snes_extensions);
+    add_patterns(filter, gb_extensions);
+    add_patterns(filter, archive_extensions);
     dialog.add_filter(filter);
+
+    auto snes_filter = Gtk::FileFilter::create();
+    snes_filter->set_name(_("Super Nintendo ROM Images"));
+    add_patterns(snes_filter, snes_extensions);
+    dialog.add_filter(snes_filter);
+
+    auto gb_filter = Gtk::FileFilter::create();
+    gb_filter->set_name(_("Game Boy ROM Images"));
+    add_patterns(gb_filter, gb_extensions);
+    dialog.add_filter(gb_filter);
+
     dialog.add_filter(get_all_files_filter());
 
     if (!gui_config->last_directory.empty())
@@ -884,9 +911,14 @@ bool Snes9xWindow::try_open_rom(const std::string &filename)
         return false;
     }
 
+    // The load has already happened, so the SGB flags say what kind of cart it
+    // is — more reliable than the extension (a GB dump can arrive as .sgb, or
+    // zipped, and still be routed to the GB core by the content sniff).
+    const bool gb_cart = Settings.SuperGameBoy || Settings.SGB_BIOSModeActive;
+
     Gtk::RecentManager::Data data;
-    data.description = "SNES ROM";
-    data.mime_type = "application/x-snes-rom";
+    data.description = gb_cart ? "Game Boy ROM" : "SNES ROM";
+    data.mime_type = gb_cart ? "application/x-gameboy-rom" : "application/x-snes-rom";
     data.app_name = "SuperSnes9x";
     data.groups = { "cartridge" };
     data.is_private = false;
