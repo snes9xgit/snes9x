@@ -226,12 +226,20 @@ msgstr ""
 msgid "SNES Movies"
 msgstr ""
 
-#: src/gtk_s9xwindow.cpp:690
-msgid "Open SNES ROM Image"
+#: src/gtk_s9xwindow.cpp:839
+msgid "Open ROM Image"
 msgstr ""
 
-#: src/gtk_s9xwindow.cpp:695
-msgid "SNES ROM Images"
+#: src/gtk_s9xwindow.cpp:850
+msgid "ROM Images"
+msgstr ""
+
+#: src/gtk_s9xwindow.cpp:857
+msgid "Super Nintendo ROM Images"
+msgstr ""
+
+#: src/gtk_s9xwindow.cpp:862
+msgid "Game Boy ROM Images"
 msgstr ""
 
 #: src/gtk_s9xwindow.cpp:740
@@ -4988,7 +4996,15 @@ msgid "Rewind buffer size (0 to disable):"
 msgstr ""
 
 #: qt/src/EmuMainWindow.cpp
-msgid "ROM Files (*.sfc *.smc *.bin *.fig *.msu *.zip)"
+msgid "ROM Files (*.sfc *.smc *.swc *.fig *.gd3 *.bs *.st *.bin *.gb *.gbc *.sgb *.msu *.zip *.gz)"
+msgstr ""
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Super Nintendo ROM Files (*.sfc *.smc *.swc *.fig *.gd3 *.bs *.st *.bin)"
+msgstr ""
+
+#: qt/src/EmuMainWindow.cpp
+msgid "Game Boy ROM Files (*.gb *.gbc *.sgb)"
 msgstr ""
 
 #: qt/src/FoldersPanel.ui
