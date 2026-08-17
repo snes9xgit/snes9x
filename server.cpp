@@ -285,6 +285,7 @@ void S9xNPProcessClient (int c)
     uint8 *data;
     uint32 len;
     uint8 *ptr;
+    char *rom_name;
 
     if (!S9xNPSGetData (NPServer.Clients [c].Socket, header, 7))
     {
@@ -329,7 +330,7 @@ void S9xNPProcessClient (int c)
             printf ("SERVER: Got HELLO from client @%ld\n", S9xGetMilliTime () - START);
 #endif
             S9xNPSetAction ("Got HELLO from client...", TRUE);
-            if (len > 0x10000)
+            if (len < 12 || len > 0x10000)
             {
                 S9xNPSetWarning ("SERVER: Client HELLO message length error.");
                 S9xNPShutdownClient (c, TRUE);
@@ -342,15 +343,23 @@ void S9xNPProcessClient (int c)
                 S9xNPShutdownClient (c, TRUE);
                 return;
             }
+            rom_name = (char *) &data [4];
+            if (!memchr(rom_name, 0, len - 11))
+            {
+                S9xNPSetWarning ("SERVER: Client HELLO message ROM name error.");
+                delete[] data;
+                S9xNPShutdownClient (c, TRUE);
+                return;
+            }
 
             if (NPServer.NumClients <= NP_ONE_CLIENT)
             {
 		NPServer.FrameTime = READ_LONG (data);
-		strncpy (NPServer.ROMName, (char *) &data [4], 29);
+		strncpy (NPServer.ROMName, rom_name, 29);
 		NPServer.ROMName [29] = 0;
             }
 
-            NPServer.Clients [c].ROMName = strdup ((char *) &data [4]);
+            NPServer.Clients [c].ROMName = strdup (rom_name);
 #ifdef NP_DEBUG
             printf ("SERVER: Client is playing: %s, Frame Time: %d @%ld\n", data + 4, READ_LONG (data), S9xGetMilliTime () - START);
 #endif

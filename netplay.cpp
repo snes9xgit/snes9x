@@ -62,6 +62,8 @@ void S9xNPGetFreezeFile (uint32 len);
 
 unsigned long START = 0;
 
+static const uint32 NP_MAX_FREEZE_FILE_SIZE = 64 * 1024 * 1024;
+
 bool8 S9xNPConnect ();
 
 bool8 S9xNPConnectToServer (const char *hostname, int port,
@@ -578,26 +580,30 @@ bool8 S9xNPLoadROMDialog (const char *rom_name)
 
 bool8 S9xNPLoadROM (uint32 len)
 {
-    uint8 *data = new uint8 [len];
+    if (len == 0 || len > PATH_MAX)
+    {
+        S9xNPSetError ("Length error in ROM name received from server.");
+        S9xNPDisconnect ();
+        return (FALSE);
+    }
+
+    std::vector<uint8> data(len);
 
     S9xNPSetAction ("Receiving ROM name...");
-    if (!S9xNPGetData (NetPlay.Socket, data, len))
+    if (!S9xNPGetData (NetPlay.Socket, data.data(), len) || data.back() != 0)
     {
         S9xNPSetError ("Error while receiving ROM name.");
-        delete[] data;
         S9xNPDisconnect ();
         return (FALSE);
     }
 
     S9xNPSetAction ("Opening LoadROM dialog...");
-    if (!S9xNPLoadROMDialog ((char *) data))
+    if (!S9xNPLoadROMDialog ((char *) data.data()))
     {
         S9xNPSetError ("Disconnected from NetPlay server because you are playing a different game!");
-        delete[] data;
         S9xNPDisconnect ();
         return (FALSE);
     }
-    delete[] data;
     return (TRUE);
 }
 
@@ -646,14 +652,23 @@ bool8 S9xNPGetROMImage (uint32 len)
 #endif
     S9xNPSetAction ("Receiving ROM filename...");
     uint32 filename_len = len - Memory.CalculatedSize - 5;
-    if (filename_len > PATH_MAX ||
-        !S9xNPGetData (NetPlay.Socket, (uint8 *) Memory.ROMFilename.c_str(), filename_len))
+    if (filename_len == 0 || filename_len > PATH_MAX)
     {
         S9xNPSetError ("Error while receiving ROM filename from server.");
         S9xNPDisconnect ();
         Settings.StopEmulation = TRUE;
         return (FALSE);
     }
+    std::vector<uint8> filename(filename_len);
+    if (!S9xNPGetData (NetPlay.Socket, filename.data(), filename_len) ||
+        filename.back() != 0)
+    {
+        S9xNPSetError ("Error while receiving ROM filename from server.");
+        S9xNPDisconnect ();
+        Settings.StopEmulation = TRUE;
+        return (FALSE);
+    }
+    Memory.ROMFilename.assign((char *) filename.data());
     Memory.InitROM ();
     S9xReset ();
     S9xNPResetJoypadReadPos ();
@@ -686,6 +701,16 @@ void S9xNPGetSRAMData (uint32 len)
 void S9xNPGetFreezeFile (uint32 len)
 {
     uint8 frame_count [4];
+    uint32 data_len;
+
+    if (len <= sizeof (frame_count) ||
+        len > sizeof (frame_count) + NP_MAX_FREEZE_FILE_SIZE)
+    {
+        S9xNPSetError ("Length error in freeze file received from server.");
+        S9xNPDisconnect ();
+        return;
+    }
+    data_len = len - sizeof (frame_count);
 
 #ifdef NP_DEBUG
     printf ("CLIENT: Receiving freeze file information @%ld...\n", S9xGetMilliTime () - START);
@@ -703,8 +728,8 @@ void S9xNPGetFreezeFile (uint32 len)
     printf ("CLIENT: Receiving freeze file @%ld...\n", S9xGetMilliTime () - START);
 #endif
     S9xNPSetAction ("Receiving freeze file...");
-    uint8 *data = new uint8 [len];
-    if (!S9xNPGetData (NetPlay.Socket, data, len - 4))
+    uint8 *data = new uint8 [data_len];
+    if (!S9xNPGetData (NetPlay.Socket, data, data_len))
     {
         S9xNPSetError ("Error while receiving freeze file from server.");
         S9xNPDisconnect ();
@@ -728,19 +753,27 @@ void S9xNPGetFreezeFile (uint32 len)
         if ((file = fopen (fname, "wb")))
 #endif
         {
-            if (fwrite (data, 1, len, file) == len)
+            if (fwrite (data, 1, data_len, file) == data_len)
             {
                 fclose(file);
 #ifndef __WIN32__
-		/* We need .s96 extension, else .s96 is addded by unix code */
+                /* We need .s96 extension, else .s96 is addded by unix code */
                 char buf[PATH_MAX +1 ];
 
                 strncpy(buf, fname, PATH_MAX);
                 strcat(buf, ".s96");
 
-                rename(fname, buf);
-
-                if (!S9xUnfreezeGame (buf))
+                if (rename(fname, buf) == 0)
+                {
+                    if (!S9xUnfreezeGame (buf))
+                        S9xNPSetError ("Unable to load freeze file just received.");
+                    remove(buf);
+                }
+                else
+                {
+                    S9xNPSetError ("Failed to prepare freeze file.");
+                    remove(fname);
+                }
 #else
                 if (!S9xUnfreezeGame (fname))
 #endif

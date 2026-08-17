@@ -169,6 +169,7 @@ struct CMemory
 	void	Map_SuperFX3LoROMMap (void);
 	void	Map_SetaDSPLoROMMap (void);
 	void	Map_SDD1LoROMMap (void);
+	void	Map_SDD1DecompressedMap (void);
 	void	Map_SA1LoROMMap (void);
 	void	Map_BSSA1LoROMMap (void);
 	void	Map_HiROMMap (void);
@@ -221,7 +222,7 @@ inline bool S9xInterlaceField()
 }
 
 void S9xAutoSaveSRAM (void);
-bool8 LoadZip(const char *, uint32 *, uint8 *);
+bool8 LoadZip(const char *, uint32 *, uint8 *, uint32);
 bool8 S9xSGBBIOSAvailable(uint8 mode, const char *gb_rom_path);
 // Content-sniff a buffer for a Game Boy cart (Nintendo logo at 0x0104, incl.
 // the Sachen scrambled variant). Lets in-memory callers route GB carts away
