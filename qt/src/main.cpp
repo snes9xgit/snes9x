@@ -3,8 +3,11 @@
 #include "EmuMainWindow.hpp"
 #include "SDLInputManager.hpp"
 
+#include "snes9x.h"
+
 #include <clocale>
 #include <qnamespace.h>
+#include <QCommandLineParser>
 #include <QStyle>
 #include <QStyleHints>
 
@@ -26,6 +29,7 @@ int main(int argc, char *argv[])
     emu.qtapp = std::make_unique<QApplication>(argc, argv);
 
     QGuiApplication::setDesktopFileName("snes9x-qt");
+    QGuiApplication::setApplicationVersion(VERSION);
 
     if (QApplication::platformName() == "windows")
     {
@@ -73,6 +77,13 @@ int main(int argc, char *argv[])
         signal(s, quit_handler);
 #endif
 
+    QCommandLineParser parser;
+    parser.setApplicationDescription("Snes9x Qt");
+    parser.addHelpOption();
+    parser.addVersionOption();
+    parser.addPositionalArgument("rom", "ROM file.");
+    parser.process(QCoreApplication::arguments());
+
     emu.startThread();
 
     emu.config = std::make_unique<EmuConfig>();
@@ -85,6 +96,10 @@ int main(int argc, char *argv[])
 
     emu.updateBindings();
     emu.startInputTimer();
+
+    if (parser.positionalArguments().size())
+        emu.window->openFile(parser.positionalArguments().at(0).toStdString());
+
     emu.qtapp->exec();
 
     emu.stopThread();
