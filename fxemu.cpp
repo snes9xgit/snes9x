@@ -12,6 +12,7 @@
 static void FxReset (struct FxInfo_s *);
 static void fx_readRegisterSpace (void);
 static void fx_writeRegisterSpace (void);
+static void fx_rebuildPointerTables (void);
 static void fx_updateRamBank (uint8);
 static void fx_dirtySCBR (void);
 static bool8 fx_checkStartAddress (void);
@@ -235,6 +236,28 @@ static void FxReset (struct FxInfo_s *psFxInfo)
 	// Set FxChip version Number
 	GSU.pvRegisters[0x3b] = 0;
 
+	fx_rebuildPointerTables();
+
+	// Start with a nop in the pipe
+	GSU.vPipe = 0x01;
+
+	// Set pointer to GSU cache
+	GSU.pvCache = &GSU.pvRegisters[0x100];
+
+    // Cycle-accurate GSU timing state (see fxinst.h)
+    GSU.vCycles = 0;
+    GSU.vCacheMask = 0;
+    GSU.vCostCache = 1;
+    GSU.vCostMem = 5;
+    GSU.vCostFmult = 7;
+    GSU.vCostMult = 2;
+    GSU.bCycleMode = Settings.DisableGSUCycleMode ? 0 : 1;
+
+	fx_readRegisterSpace();
+}
+
+static void fx_rebuildPointerTables (void)
+{
 	// Make ROM bank table
 	for (int i = 0; i < 256; i++)
 	{
@@ -262,23 +285,6 @@ static void FxReset (struct FxInfo_s *psFxInfo)
 		GSU.apvRamBank[i] = &GSU.pvRam[(i % GSU.nRamBanks) << 16];
 		GSU.apvRomBank[0x70 + i] = GSU.apvRamBank[i];
 	}
-
-	// Start with a nop in the pipe
-	GSU.vPipe = 0x01;
-
-	// Set pointer to GSU cache
-	GSU.pvCache = &GSU.pvRegisters[0x100];
-
-    // Cycle-accurate GSU timing state (see fxinst.h)
-    GSU.vCycles = 0;
-    GSU.vCacheMask = 0;
-    GSU.vCostCache = 1;
-    GSU.vCostMem = 5;
-    GSU.vCostFmult = 7;
-    GSU.vCostMult = 2;
-    GSU.bCycleMode = Settings.DisableGSUCycleMode ? 0 : 1;
-
-	fx_readRegisterSpace();
 }
 
 static void fx_readRegisterSpace (void)
@@ -345,6 +351,48 @@ static void fx_readRegisterSpace (void)
 	fx_computeScreenPointers();
 
 	//fx_backupCache();
+}
+
+void S9xFixSuperFXState (void)
+{
+	const uintptr_t reg_begin = (uintptr_t) GSU.avReg;
+	const uintptr_t reg_end = reg_begin + sizeof(GSU.avReg);
+	const uintptr_t dreg = (uintptr_t) GSU.pvDreg;
+	const uintptr_t sreg = (uintptr_t) GSU.pvSreg;
+	uint32 dreg_index = 0;
+	uint32 sreg_index = 0;
+
+	if (dreg >= reg_begin && dreg <= reg_end - sizeof(GSU.avReg[0]) &&
+		(dreg - reg_begin) % sizeof(GSU.avReg[0]) == 0)
+		dreg_index = (dreg - reg_begin) / sizeof(GSU.avReg[0]);
+
+	if (sreg >= reg_begin && sreg <= reg_end - sizeof(GSU.avReg[0]) &&
+		(sreg - reg_begin) % sizeof(GSU.avReg[0]) == 0)
+		sreg_index = (sreg - reg_begin) / sizeof(GSU.avReg[0]);
+
+	uint32 max_ram_banks = SuperFX.nRamBanks;
+	if (max_ram_banks == 0 || max_ram_banks > FX_RAM_BANKS)
+		max_ram_banks = FX_RAM_BANKS;
+	if (GSU.nRamBanks == 0 || GSU.nRamBanks > max_ram_banks)
+		GSU.nRamBanks = max_ram_banks;
+
+	uint32 max_rom_banks = SuperFX.nRomBanks;
+	if (max_rom_banks == 0 || max_rom_banks > 0x20)
+		max_rom_banks = 0x20;
+	if (GSU.nRomBanks == 0 || GSU.nRomBanks > max_rom_banks)
+		GSU.nRomBanks = max_rom_banks;
+
+	// All of these pointers are derived from the GSU register space and the
+	// current ROM/RAM allocations. Never restore their serialized addresses.
+	fx_rebuildPointerTables();
+	GSU.pvCache = &GSU.pvRegisters[GSU_CACHERAM];
+	GSU.vPrevMode = ~0;
+	GSU.vPrevScreenHeight = ~0;
+	GSU.vSCBRDirty = TRUE;
+	fx_readRegisterSpace();
+
+	GSU.pvDreg = &GSU.avReg[dreg_index];
+	GSU.pvSreg = &GSU.avReg[sreg_index];
 }
 
 static void fx_writeRegisterSpace (void)
