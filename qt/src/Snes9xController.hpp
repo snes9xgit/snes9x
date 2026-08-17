@@ -50,6 +50,7 @@ class Snes9xController
     std::string getContentFolder();
 
     std::string getStateFolder();
+    std::string getStateFilename(int slot);
     std::string config_folder;
     std::string sram_folder;
     std::string state_folder;

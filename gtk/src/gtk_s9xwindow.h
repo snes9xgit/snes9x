@@ -18,7 +18,7 @@ class Snes9xWindow : public GtkBuilderWindow
 
     struct AcceleratorEntry
     {
-        std::string name;
+        Gtk::MenuItem *item;
         unsigned int key;
         Gdk::ModifierType modifiers;
     };
@@ -49,6 +49,7 @@ class Snes9xWindow : public GtkBuilderWindow
     std::string open_rom_dialog(bool run = true);
     void save_state_dialog();
     void load_state_dialog();
+    void state_preview_dialog(bool is_save);
     void configure_widgets();
     void save_spc_dialog();
     bool try_open_rom(const std::string &filename);
@@ -64,7 +65,10 @@ class Snes9xWindow : public GtkBuilderWindow
     void set_mouseable_area(int x, int y, int width, int height);
     void set_accelerator_to_binding(const char *name,
                                         const char *binding);
+    void set_accelerator_to_binding(Gtk::MenuItem *item,
+                                        const char *binding);
     void reset_screensaver();
+    void build_state_menus();
     void update_accelerators();
     void toggle_ui();
     void resize_to_multiple(int factor);
@@ -109,6 +113,11 @@ class Snes9xWindow : public GtkBuilderWindow
     Glib::RefPtr<Gdk::DrawingContext> gdk_drawing_context;
     Glib::RefPtr<Gtk::AccelGroup> accel_group;
     std::vector<AcceleratorEntry> accelerators;
+
+    /* File->Save/Load State slot items, indexed by bank * SAVE_SLOTS_PER_BANK
+     * + slot. Built at runtime since there are too many for the .ui file. */
+    std::array<Gtk::MenuItem *, NUM_SAVE_SLOTS> save_state_items;
+    std::array<Gtk::MenuItem *, NUM_SAVE_SLOTS> load_state_items;
 
     unsigned int last_key_pressed_keyval;
     GdkEventType last_key_pressed_type;

@@ -310,6 +310,8 @@ list(APPEND SOURCES
     src/gtk_display_driver_gtk.h
     src/gtk_display_driver.h
     src/gtk_display.h
+    src/gtk_state_preview_dialog.cpp
+    src/gtk_state_preview_dialog.h
     src/threadpool.cpp
     src/threadpool.h
     src/gtk_file.cpp

@@ -31,6 +31,7 @@ class EmuMainWindow : public QMainWindow
     void resizeToMultiple(int multiple);
     void populateRecentlyUsed();
     void chooseState(bool save);
+    void statePreviewDialog(bool save);
     void pauseContinue();
     bool isActivelyDrawing();
     void openFile();
@@ -49,7 +50,6 @@ class EmuMainWindow : public QMainWindow
     void createWidgets();
 
     static const size_t recent_menu_size = 10;
-    static const size_t state_items_size = 10;
 
     std::unique_ptr<CheatsDialog> cheats_dialog;
 

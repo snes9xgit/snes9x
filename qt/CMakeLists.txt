@@ -306,6 +306,8 @@ list(APPEND QT_GUI_SOURCES
     src/SDLInputManager.cpp
     src/ShaderParametersDialog.cpp
     src/CheatsDialog.cpp
+    src/StatePreviewDialog.cpp
+    src/StatePreviewDialog.hpp
     src/SoftwareScalers.cpp
     src/SoftwareFilters.cpp
     src/SoftwareFilters.hpp

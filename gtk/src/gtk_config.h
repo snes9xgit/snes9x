@@ -171,6 +171,7 @@ class Snes9xConfig
     unsigned int rewind_buffer_size;
 
     int current_save_slot;
+    int current_save_bank;
 
     XRRScreenResources *xrr_screen_resources;
     XRRCrtcInfo *xrr_crtc_info;

@@ -18,6 +18,7 @@
 #endif
 
 #include "gtk_shader_parameters.h"
+#include "gtk_state_preview_dialog.h"
 
 #include "gtk_s9x.h"
 #include "gtk_preferences.h"
@@ -235,21 +236,7 @@ void Snes9xWindow::connect_signals()
         get_object<Gtk::MenuItem>(name)->signal_activate().connect(sigc::bind<const char *>(sigc::mem_fun(*this, &Snes9xWindow::port_activate), name));
     }
 
-    for (int i = 0; i <= 9; i++)
-    {
-        std::string name = "load_state_" + std::to_string(i);
-        get_object<Gtk::MenuItem>(name.c_str())->signal_activate().connect([i] {
-#ifdef RETROACHIEVEMENTS_SUPPORT
-            if (!RA_WarnDisableHardcore(_("Loading save states")))
-                return;
-#endif
-            S9xQuickLoadSlot(i);
-        });
-        name = "save_state_" + std::to_string(i);
-        get_object<Gtk::MenuItem>(name.c_str())->signal_activate().connect([i] {
-            S9xQuickSaveSlot(i);
-        });
-    }
+    build_state_menus();
 
     get_object<Gtk::MenuItem>("from_file1")->signal_activate().connect([&] {
         load_state_dialog();
@@ -257,6 +244,14 @@ void Snes9xWindow::connect_signals()
 
     get_object<Gtk::MenuItem>("to_file1")->signal_activate().connect([&] {
         save_state_dialog();
+    });
+
+    get_object<Gtk::MenuItem>("save_state_preview_item")->signal_activate().connect([&] {
+        state_preview_dialog(true);
+    });
+
+    get_object<Gtk::MenuItem>("load_state_preview_item")->signal_activate().connect([&] {
+        state_preview_dialog(false);
     });
 
     get_object<Gtk::MenuItem>("load_state_undo")->signal_activate().connect([&] {
@@ -965,6 +960,32 @@ void Snes9xWindow::load_state_dialog()
     unpause_from_focus_change();
 }
 
+/* win32's "Save/Load with Preview": pick a slot from a thumbnail grid. */
+void Snes9xWindow::state_preview_dialog(bool is_save)
+{
+    if (!config->rom_loaded)
+        return;
+
+#ifdef RETROACHIEVEMENTS_SUPPORT
+    if (!is_save && !RA_WarnDisableHardcore(_("Loading save states")))
+        return;
+#endif
+
+    pause_from_focus_change();
+
+    int slot = S9xStatePreviewDialog(*window.get(), is_save);
+
+    if (slot >= 0)
+    {
+        if (is_save)
+            S9xQuickSaveSlot(slot);
+        else
+            S9xQuickLoadSlot(slot);
+    }
+
+    unpause_from_focus_change();
+}
+
 void Snes9xWindow::movie_seek_dialog()
 {
     if (!S9xMovieActive())
@@ -1136,6 +1157,8 @@ void Snes9xWindow::configure_widgets()
         "reset_item",
         "load_state_item",
         "save_state_item",
+        "save_state_preview_item",
+        "load_state_preview_item",
         "save_spc_item",
         "hard_reset_item",
         "record_movie_item",
@@ -1665,7 +1688,7 @@ bool Snes9xWindow::is_paused()
     return false;
 }
 
-void Snes9xWindow::set_accelerator_to_binding(const char *name, const char *binding)
+void Snes9xWindow::set_accelerator_to_binding(Gtk::MenuItem *item, const char *binding)
 {
     Binding bin;
 
@@ -1682,12 +1705,69 @@ void Snes9xWindow::set_accelerator_to_binding(const char *name, const char *bind
         return;
 
     AcceleratorEntry entry{};
-    entry.name = name;
+    entry.item = item;
     entry.key = bin.get_key();
     entry.modifiers = bin.get_gdk_modifiers();
 
-    get_object<Gtk::MenuItem>(name)->add_accelerator("activate", accel_group, entry.key, entry.modifiers, Gtk::ACCEL_VISIBLE);
+    item->add_accelerator("activate", accel_group, entry.key, entry.modifiers, Gtk::ACCEL_VISIBLE);
     accelerators.push_back(entry);
+}
+
+void Snes9xWindow::set_accelerator_to_binding(const char *name, const char *binding)
+{
+    set_accelerator_to_binding(get_object<Gtk::MenuItem>(name).get(), binding);
+}
+
+/* Populates File->Save State and File->Load State with a submenu per bank,
+ * each holding one item per slot, mirroring the win32 layout. */
+void Snes9xWindow::build_state_menus()
+{
+    auto save_menu = get_object<Gtk::Menu>("save_state_item_menu");
+    auto load_menu = get_object<Gtk::Menu>("load_state_item_menu");
+
+    for (int bank = 0; bank < NUM_SAVE_BANKS; bank++)
+    {
+        auto bank_label = fmt::format(fmt::runtime(_("Bank #_{}")), bank);
+
+        auto save_bank_item = Gtk::manage(new Gtk::MenuItem(bank_label, true));
+        auto load_bank_item = Gtk::manage(new Gtk::MenuItem(bank_label, true));
+        auto save_bank_menu = Gtk::manage(new Gtk::Menu());
+        auto load_bank_menu = Gtk::manage(new Gtk::Menu());
+
+        for (int slot = 0; slot < SAVE_SLOTS_PER_BANK; slot++)
+        {
+            int index = bank * SAVE_SLOTS_PER_BANK + slot;
+            auto slot_label = fmt::format(fmt::runtime(_("Slot #_{}")), slot);
+
+            auto save_item = Gtk::manage(new Gtk::MenuItem(slot_label, true));
+            save_item->signal_activate().connect([index] {
+                S9xQuickSaveSlot(index);
+            });
+            save_bank_menu->append(*save_item);
+            save_state_items[index] = save_item;
+
+            auto load_item = Gtk::manage(new Gtk::MenuItem(slot_label, true));
+            load_item->signal_activate().connect([index] {
+#ifdef RETROACHIEVEMENTS_SUPPORT
+                if (!RA_WarnDisableHardcore(_("Loading save states")))
+                    return;
+#endif
+                S9xQuickLoadSlot(index);
+            });
+            load_bank_menu->append(*load_item);
+            load_state_items[index] = load_item;
+        }
+
+        save_bank_item->set_submenu(*save_bank_menu);
+        load_bank_item->set_submenu(*load_bank_menu);
+
+        /* Insert ahead of the separator and the "…File…" items from the .ui. */
+        save_menu->insert(*save_bank_item, bank);
+        load_menu->insert(*load_bank_item, bank);
+    }
+
+    save_menu->show_all();
+    load_menu->show_all();
 }
 
 void Snes9xWindow::update_accelerators()
@@ -1700,7 +1780,7 @@ void Snes9xWindow::update_accelerators()
 
     for (auto &entry : accelerators)
     {
-        get_object<Gtk::MenuItem>(entry.name.c_str())->remove_accelerator(accel_group, entry.key, entry.modifiers);
+        entry.item->remove_accelerator(accel_group, entry.key, entry.modifiers);
     }
     accelerators.clear();
 
@@ -1708,27 +1788,11 @@ void Snes9xWindow::update_accelerators()
     {
         { "fullscreen_item", "GTK_fullscreen" },
         { "reset_item", "SoftReset" },
-        { "save_state_0", "QuickSave000" },
-        { "save_state_1", "QuickSave001" },
-        { "save_state_2", "QuickSave002" },
-        { "save_state_3", "QuickSave003" },
-        { "save_state_4", "QuickSave004" },
-        { "save_state_5", "QuickSave005" },
-        { "save_state_6", "QuickSave006" },
-        { "save_state_7", "QuickSave007" },
-        { "save_state_8", "QuickSave008" },
-        { "save_state_9", "QuickSave009" },
-        { "load_state_0", "QuickLoad000" },
-        { "load_state_1", "QuickLoad001" },
-        { "load_state_2", "QuickLoad002" },
-        { "load_state_3", "QuickLoad003" },
-        { "load_state_4", "QuickLoad004" },
-        { "load_state_5", "QuickLoad005" },
-        { "load_state_6", "QuickLoad006" },
-        { "load_state_7", "QuickLoad007" },
-        { "load_state_8", "QuickLoad008" },
-        { "load_state_9", "QuickLoad009" },
         { "pause_item", "GTK_pause" },
+        { "save_state_preview_item", "GTK_state_dialog_save" },
+        { "load_state_preview_item", "GTK_state_dialog_load" },
+        { "from_file1", "GTK_state_file_load" },
+        { "to_file1", "GTK_state_file_save" },
         { "save_spc_item", "GTK_save_spc" },
         { "open_rom_item", "GTK_open_rom" },
         { "record_movie_item", "BeginRecordingMovie" },
@@ -1744,6 +1808,18 @@ void Snes9xWindow::update_accelerators()
 
     for (auto &[accelerator, binding_name] : pairs) {
         set_accelerator_to_binding(accelerator, binding_name);
+    }
+
+    /* The numbered quick save/load hotkeys act on the current bank, so show
+     * them on that bank's slot items only. */
+    for (int slot = 0; slot < SAVE_SLOTS_PER_BANK; slot++)
+    {
+        int index = config->current_save_bank * SAVE_SLOTS_PER_BANK + slot;
+        auto save_binding = fmt::format("QuickSave{:03d}", slot);
+        auto load_binding = fmt::format("QuickLoad{:03d}", slot);
+
+        set_accelerator_to_binding(save_state_items[index], save_binding.c_str());
+        set_accelerator_to_binding(load_state_items[index], load_binding.c_str());
     }
 }
 

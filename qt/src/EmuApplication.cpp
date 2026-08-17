@@ -361,7 +361,11 @@ void EmuApplication::updateBindings()
 
             if (binding.type != EmuBinding::None)
             {
-                auto handler = core->acceptsCommand(name) ? Core : UI;
+                /* The core's QuickSave/QuickLoad commands address absolute
+                 * slots; handle them here so they apply to the current bank. */
+                bool bank_relative = strncmp(name, "QuickSave", 9) == 0 ||
+                                     strncmp(name, "QuickLoad", 9) == 0;
+                auto handler = (!bank_relative && core->acceptsCommand(name)) ? Core : UI;
                 bindings.insert({ binding.hash(), { name, handler } });
             }
         }
@@ -478,30 +482,84 @@ void EmuApplication::handleBinding(const std::string &name, bool pressed)
                 window->pauseContinue();
             }
 
-            else if (name == "IncreaseSlot" || name == "DecreaseSlot")
+            else if (name == "IncreaseSlot" || name == "DecreaseSlot" ||
+                     name == "IncreaseBank" || name == "DecreaseBank")
             {
+                auto &slot = config->current_save_slot;
+                auto &bank = config->current_save_bank;
+
+                /* Slots wrap inside the current bank; banks wrap on their own. */
                 if (name == "IncreaseSlot")
-                    save_slot++;
+                    slot++;
+                else if (name == "DecreaseSlot")
+                    slot--;
+                else if (name == "IncreaseBank")
+                    bank++;
                 else
-                    save_slot--;
+                    bank--;
 
-                if (save_slot > 999)
-                    save_slot = 0;
-                if (save_slot < 0)
-                    save_slot = 999;
+                if (slot >= EmuConfig::save_slots_per_bank)
+                    slot = 0;
+                if (slot < 0)
+                    slot = EmuConfig::save_slots_per_bank - 1;
+                if (bank >= EmuConfig::num_save_banks)
+                    bank = 0;
+                if (bank < 0)
+                    bank = EmuConfig::num_save_banks - 1;
 
-                emu_thread->runOnThread([&, slot = this->save_slot] {
-                    std::string status = core->slotUsed(slot) ? " [used]" : " [empty]";
-                    core->setMessage("Current slot: " + std::to_string(save_slot) + status);
+                emu_thread->runOnThread([&, slot, bank, index = currentSaveSlot()] {
+                    std::string status = core->slotUsed(index) ? " [used]" : " [empty]";
+                    core->setMessage("Current slot: " + std::to_string(slot) +
+                                     ", bank: " + std::to_string(bank) + status);
                 });
             }
             else if (name == "SaveState")
             {
-                saveState(save_slot);
+                saveState(currentSaveSlot());
             }
             else if (name == "LoadState")
             {
-                loadState(save_slot);
+                loadState(currentSaveSlot());
+            }
+            else if (name.compare(0, 9, "QuickSave") == 0)
+            {
+                /* The numbered hotkeys address slots inside the current bank. */
+                saveState(config->current_save_bank * EmuConfig::save_slots_per_bank +
+                          std::stoi(name.substr(9)));
+            }
+            else if (name.compare(0, 9, "QuickLoad") == 0)
+            {
+                loadState(config->current_save_bank * EmuConfig::save_slots_per_bank +
+                          std::stoi(name.substr(9)));
+            }
+            else if (name.compare(0, 10, "SelectSlot") == 0)
+            {
+                /* Select a slot in the current bank without saving or loading. */
+                config->current_save_slot = std::stoi(name.substr(10));
+
+                emu_thread->runOnThread([&, index = currentSaveSlot()] {
+                    std::string status = core->slotUsed(index) ? " [used]" : " [empty]";
+                    core->setMessage("Current slot: " +
+                                     std::to_string(config->current_save_slot) +
+                                     ", bank: " +
+                                     std::to_string(config->current_save_bank) + status);
+                });
+            }
+            else if (name == "SaveStateDialog")
+            {
+                window->statePreviewDialog(true);
+            }
+            else if (name == "LoadStateDialog")
+            {
+                window->statePreviewDialog(false);
+            }
+            else if (name == "SaveStateFile")
+            {
+                window->chooseState(true);
+            }
+            else if (name == "LoadStateFile")
+            {
+                window->chooseState(false);
             }
             else if (name == "SwapControllers1and2")
             {
@@ -647,6 +705,13 @@ void EmuApplication::startInputTimer()
     poll_input_timer->start();
 }
 
+/* Flat state index of the currently selected bank/slot pair. */
+int EmuApplication::currentSaveSlot()
+{
+    return config->current_save_bank * EmuConfig::save_slots_per_bank +
+           config->current_save_slot;
+}
+
 void EmuApplication::loadState(int slot)
 {
     emu_thread->runOnThread([&, slot] {
@@ -719,6 +784,11 @@ void EmuApplication::loadUndoState()
 std::string EmuApplication::getStateFolder()
 {
     return core->getStateFolder();
+}
+
+std::string EmuApplication::getStateFilename(int slot)
+{
+    return core->getStateFilename(slot);
 }
 
 std::vector<std::tuple<bool, std::string, std::string>> EmuApplication::getCheatList()

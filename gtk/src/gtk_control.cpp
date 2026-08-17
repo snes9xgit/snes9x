@@ -76,6 +76,8 @@ const BindingLink b_links[] =
         { "b_state_decrement_load","GTK_state_decrement_load" },
         { "b_state_increment",     "GTK_state_increment" },
         { "b_state_decrement",     "GTK_state_decrement" },
+        { "b_state_bank_increment","GTK_state_bank_increment" },
+        { "b_state_bank_decrement","GTK_state_bank_decrement" },
         { "b_save_0",              "QuickSave000"      },
         { "b_save_1",              "QuickSave001"      },
         { "b_save_2",              "QuickSave002"      },
@@ -96,6 +98,20 @@ const BindingLink b_links[] =
         { "b_load_7",              "QuickLoad007"      },
         { "b_load_8",              "QuickLoad008"      },
         { "b_load_9",              "QuickLoad009"      },
+        { "b_select_slot_0",       "GTK_state_select_0" },
+        { "b_select_slot_1",       "GTK_state_select_1" },
+        { "b_select_slot_2",       "GTK_state_select_2" },
+        { "b_select_slot_3",       "GTK_state_select_3" },
+        { "b_select_slot_4",       "GTK_state_select_4" },
+        { "b_select_slot_5",       "GTK_state_select_5" },
+        { "b_select_slot_6",       "GTK_state_select_6" },
+        { "b_select_slot_7",       "GTK_state_select_7" },
+        { "b_select_slot_8",       "GTK_state_select_8" },
+        { "b_select_slot_9",       "GTK_state_select_9" },
+        { "b_state_dialog_save",   "GTK_state_dialog_save" },
+        { "b_state_dialog_load",   "GTK_state_dialog_load" },
+        { "b_state_file_save",     "GTK_state_file_save" },
+        { "b_state_file_load",     "GTK_state_file_load" },
         { "b_sound_channel_0",     "SoundChannel0"     },
         { "b_sound_channel_1",     "SoundChannel1"     },
         { "b_sound_channel_2",     "SoundChannel2"     },
@@ -124,9 +140,9 @@ const int b_breaks[] =
         24, /* End of turbo/sticky buttons */
         35, /* End of base emulator buttons */
         43, /* End of Graphic options */
-        69, /* End of save/load states */
-        78, /* End of sound buttons */
-        86, /* End of miscellaneous buttons */
+        85, /* End of save/load states */
+        94, /* End of sound buttons */
+        102, /* End of miscellaneous buttons */
         -1
 };
 
@@ -209,26 +225,54 @@ static void swap_controllers_1_2()
     gui_config->rebind_keys();
 }
 
-static void change_slot(int difference)
+/* Flat state index of the currently selected bank/slot pair. */
+int S9xCurrentSaveSlot()
 {
-    gui_config->current_save_slot += difference;
-    gui_config->current_save_slot %= 1000;
-    if (gui_config->current_save_slot < 0)
-        gui_config->current_save_slot += 1000;
+    return gui_config->current_save_bank * SAVE_SLOTS_PER_BANK +
+           gui_config->current_save_slot;
+}
+
+static void show_slot_info()
+{
     if (!gui_config->rom_loaded)
         return;
 
     char extension_string[5];
-    snprintf(extension_string, 5, ".%03d", gui_config->current_save_slot);
+    snprintf(extension_string, 5, ".%03d", S9xCurrentSaveSlot());
     auto filename = S9xGetFilename(extension_string, SNAPSHOT_DIR);
     struct stat info{};
     std::string exists = "empty";
     if (stat(filename.c_str(), &info) == 0)
         exists = "used";
 
-    auto info_string = "State Slot: " + std::to_string(gui_config->current_save_slot) + " [" + exists + "]";
+    auto info_string = "State Slot: " + std::to_string(gui_config->current_save_slot) +
+                       ", Bank: " + std::to_string(gui_config->current_save_bank) +
+                       " [" + exists + "]";
     S9xSetInfoString(info_string.c_str());
     GFX.InfoStringTimeout = 60;
+}
+
+/* Slots wrap inside the current bank; the bank is only changed explicitly. */
+static void change_slot(int difference)
+{
+    gui_config->current_save_slot += difference;
+    gui_config->current_save_slot %= SAVE_SLOTS_PER_BANK;
+    if (gui_config->current_save_slot < 0)
+        gui_config->current_save_slot += SAVE_SLOTS_PER_BANK;
+
+    show_slot_info();
+}
+
+static void change_bank(int difference)
+{
+    gui_config->current_save_bank += difference;
+    gui_config->current_save_bank %= NUM_SAVE_BANKS;
+    if (gui_config->current_save_bank < 0)
+        gui_config->current_save_bank += NUM_SAVE_BANKS;
+
+    top_level->update_accelerators();
+
+    show_slot_info();
 }
 
 void S9xHandlePortCommand(s9xcommand_t cmd, int16 data1, int16 data2)
@@ -294,25 +338,33 @@ void S9xHandlePortCommand(s9xcommand_t cmd, int16 data1, int16 data2)
         }
         else if (cmd.port[0] >= PORT_QUICKLOAD0 && cmd.port[0] <= PORT_QUICKLOAD9)
         {
-            S9xQuickLoadSlot(cmd.port[0] - PORT_QUICKLOAD0);
+            /* The numbered save/load hotkeys address slots inside the
+             * currently selected bank, as on win32. */
+            S9xQuickLoadSlot(gui_config->current_save_bank * SAVE_SLOTS_PER_BANK +
+                             cmd.port[0] - PORT_QUICKLOAD0);
+        }
+        else if (cmd.port[0] >= PORT_QUICKSAVE0 && cmd.port[0] <= PORT_QUICKSAVE9)
+        {
+            S9xQuickSaveSlot(gui_config->current_save_bank * SAVE_SLOTS_PER_BANK +
+                             cmd.port[0] - PORT_QUICKSAVE0);
         }
         else if (cmd.port[0] == PORT_SAVESLOT)
         {
-            S9xQuickSaveSlot(gui_config->current_save_slot);
+            S9xQuickSaveSlot(S9xCurrentSaveSlot());
         }
         else if (cmd.port[0] == PORT_LOADSLOT)
         {
-            S9xQuickLoadSlot(gui_config->current_save_slot);
+            S9xQuickLoadSlot(S9xCurrentSaveSlot());
         }
         else if (cmd.port[0] == PORT_INCREMENTSAVESLOT)
         {
             change_slot(1);
-            S9xQuickSaveSlot(gui_config->current_save_slot);
+            S9xQuickSaveSlot(S9xCurrentSaveSlot());
         }
         else if (cmd.port[0] == PORT_DECREMENTLOADSLOT)
         {
             change_slot(-1);
-            S9xQuickLoadSlot(gui_config->current_save_slot);
+            S9xQuickLoadSlot(S9xCurrentSaveSlot());
         }
         else if (cmd.port[0] == PORT_INCREMENTSLOT)
         {
@@ -321,6 +373,36 @@ void S9xHandlePortCommand(s9xcommand_t cmd, int16 data1, int16 data2)
         else if (cmd.port[0] == PORT_DECREMENTSLOT)
         {
             change_slot(-1);
+        }
+        else if (cmd.port[0] == PORT_INCREMENTBANK)
+        {
+            change_bank(1);
+        }
+        else if (cmd.port[0] == PORT_DECREMENTBANK)
+        {
+            change_bank(-1);
+        }
+        else if (cmd.port[0] >= PORT_SELECTSLOT0 && cmd.port[0] <= PORT_SELECTSLOT9)
+        {
+            /* Select a slot in the current bank without saving or loading. */
+            gui_config->current_save_slot = cmd.port[0] - PORT_SELECTSLOT0;
+            show_slot_info();
+        }
+        else if (cmd.port[0] == PORT_DIALOGSAVE)
+        {
+            top_level->state_preview_dialog(true);
+        }
+        else if (cmd.port[0] == PORT_DIALOGLOAD)
+        {
+            top_level->state_preview_dialog(false);
+        }
+        else if (cmd.port[0] == PORT_FILESAVE)
+        {
+            top_level->save_state_dialog();
+        }
+        else if (cmd.port[0] == PORT_FILELOAD)
+        {
+            top_level->load_state_dialog();
         }
         else if (cmd.port[0] == PORT_GRABMOUSE)
         {
@@ -425,6 +507,75 @@ s9xcommand_t S9xGetPortCommandT(const char *name)
     else if (strstr(name, "QuickLoad009"))
     {
         cmd.port[0] = PORT_QUICKLOAD9;
+    }
+    else if (strstr(name, "QuickSave000"))
+    {
+        cmd.port[0] = PORT_QUICKSAVE0;
+    }
+    else if (strstr(name, "QuickSave001"))
+    {
+        cmd.port[0] = PORT_QUICKSAVE1;
+    }
+    else if (strstr(name, "QuickSave002"))
+    {
+        cmd.port[0] = PORT_QUICKSAVE2;
+    }
+    else if (strstr(name, "QuickSave003"))
+    {
+        cmd.port[0] = PORT_QUICKSAVE3;
+    }
+    else if (strstr(name, "QuickSave004"))
+    {
+        cmd.port[0] = PORT_QUICKSAVE4;
+    }
+    else if (strstr(name, "QuickSave005"))
+    {
+        cmd.port[0] = PORT_QUICKSAVE5;
+    }
+    else if (strstr(name, "QuickSave006"))
+    {
+        cmd.port[0] = PORT_QUICKSAVE6;
+    }
+    else if (strstr(name, "QuickSave007"))
+    {
+        cmd.port[0] = PORT_QUICKSAVE7;
+    }
+    else if (strstr(name, "QuickSave008"))
+    {
+        cmd.port[0] = PORT_QUICKSAVE8;
+    }
+    else if (strstr(name, "QuickSave009"))
+    {
+        cmd.port[0] = PORT_QUICKSAVE9;
+    }
+    else if (!strncmp(name, "GTK_state_select_", 17) &&
+             name[17] >= '0' && name[17] <= '9')
+    {
+        cmd.port[0] = PORT_SELECTSLOT0 + (name[17] - '0');
+    }
+    else if (strstr(name, "GTK_state_dialog_save"))
+    {
+        cmd.port[0] = PORT_DIALOGSAVE;
+    }
+    else if (strstr(name, "GTK_state_dialog_load"))
+    {
+        cmd.port[0] = PORT_DIALOGLOAD;
+    }
+    else if (strstr(name, "GTK_state_file_save"))
+    {
+        cmd.port[0] = PORT_FILESAVE;
+    }
+    else if (strstr(name, "GTK_state_file_load"))
+    {
+        cmd.port[0] = PORT_FILELOAD;
+    }
+    else if (strstr(name, "GTK_state_bank_increment"))
+    {
+        cmd.port[0] = PORT_INCREMENTBANK;
+    }
+    else if (strstr(name, "GTK_state_bank_decrement"))
+    {
+        cmd.port[0] = PORT_DECREMENTBANK;
     }
     else if (strstr(name, "GTK_state_save_current"))
     {

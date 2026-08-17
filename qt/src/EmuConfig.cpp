@@ -34,6 +34,8 @@ static const char *shortcut_names[] =
     "LoadState",
     "IncreaseSlot",
     "DecreaseSlot",
+    "IncreaseBank",
+    "DecreaseBank",
     "QuickSave000",
     "QuickSave001",
     "QuickSave002",
@@ -54,6 +56,20 @@ static const char *shortcut_names[] =
     "QuickLoad007",
     "QuickLoad008",
     "QuickLoad009",
+    "SelectSlot0",
+    "SelectSlot1",
+    "SelectSlot2",
+    "SelectSlot3",
+    "SelectSlot4",
+    "SelectSlot5",
+    "SelectSlot6",
+    "SelectSlot7",
+    "SelectSlot8",
+    "SelectSlot9",
+    "SaveStateDialog",
+    "LoadStateDialog",
+    "SaveStateFile",
+    "LoadStateFile",
     "Rewind",
     "GrabMouse",
     "SwapControllers1and2",
@@ -93,6 +109,8 @@ static const char *default_controller_keys[] =
     "Keyboard F4", //    eLoadState
     "Keyboard F6", //    eIncreaseSlot
     "Keyboard F5", //    eDecreaseSlot
+    "Keyboard Shift+F6", //    eIncreaseBank
+    "Keyboard Shift+F5", //    eDecreaseBank
     "Keyboard 0", //    eSaveState0
     "Keyboard 1", //    eSaveState1
     "Keyboard 2", //    eSaveState2
@@ -113,6 +131,23 @@ static const char *default_controller_keys[] =
     "Keyboard Ctrl+7", //    eLoadState7
     "Keyboard Ctrl+8", //    eLoadState8
     "Keyboard Ctrl+9", //    eLoadState9
+    "", //    eSelectSlot0
+    "", //    eSelectSlot1
+    "", //    eSelectSlot2
+    "", //    eSelectSlot3
+    "", //    eSelectSlot4
+    "", //    eSelectSlot5
+    "", //    eSelectSlot6
+    "", //    eSelectSlot7
+    "", //    eSelectSlot8
+    "", //    eSelectSlot9
+    // win32 defaults these to Shift+F11 / F11, but F11 is already Qt's
+    // fullscreen toggle and the first binding registered wins, so leave them
+    // unassigned rather than shadowing one silently.
+    "", //    eSaveStateDialog
+    "", //    eLoadStateDialog
+    "", //    eSaveStateFile
+    "", //    eLoadStateFile
     "", //    eRewind
     "Keyboard Ctrl+g", //    eGrabMouse
     "", //    eSwapControllers1and2
@@ -298,6 +333,7 @@ bool EmuConfig::setDefaults(int section)
         run_ahead_frames = 0;
 
         allow_invalid_vram_access = false;
+        snapshot_screenshots = true;
         allow_opposing_dpad_directions = false;
         overclock = eNoOverclock;
         remove_sprite_limit = false;
@@ -457,6 +493,16 @@ void EmuConfig::config(const std::string &filename, bool write)
     Int("ShaderParametersDialogHeight", shader_parameters_dialog_height);
     Int("CheatDialogWidth", cheat_dialog_width);
     Int("CheatDialogHeight", cheat_dialog_height);
+    Int("CurrentSaveSlot", current_save_slot, "Currently selected save-state slot within the bank (remembered automatically)");
+    Int("CurrentSaveBank", current_save_bank, "Currently selected save-state bank (remembered automatically)");
+
+    if (!write)
+    {
+        if (current_save_slot < 0 || current_save_slot >= save_slots_per_bank)
+            current_save_slot = 0;
+        if (current_save_bank < 0 || current_save_bank >= num_save_banks)
+            current_save_bank = 0;
+    }
 
     int recent_count = recently_used.size();
     Int("RecentlyUsedEntries", recent_count, "Number of RecentlyUsed entries below");
@@ -540,6 +586,7 @@ void EmuConfig::config(const std::string &filename, bool write)
     Int("RewindFrameInterval", rewind_frame_interval, "Save a rewind snapshot every N frames");
     Int("RunAhead", run_ahead_frames, "Number of frames to run ahead for reduced input latency (0 = off, 1-4)");
     Bool("AllowInvalidVRAMAccess", allow_invalid_vram_access, "Let games make the VRAM accesses real hardware blocks (off for accuracy; on only for a few broken hacks)");
+    Bool("SnapshotScreenshots", snapshot_screenshots, "Store a screenshot inside each save state, for the save/load-with-preview dialog");
     Bool("AllowOpposingDpadDirections", allow_opposing_dpad_directions, "Allow the D-Pad to press both left+right or up+down at once");
     Int("Overclock", overclock, "CPU overclock: 0 none, 1 auto-FastROM, 2 low, 3 high (reduces slowdown; inaccurate, can break games)");
     Bool("RemoveSpriteLimit", remove_sprite_limit, "Draw more sprites per line than the hardware allows (reduces flicker, may glitch)");
