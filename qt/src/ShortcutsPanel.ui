@@ -128,6 +128,16 @@
      </row>
      <row>
       <property name="text">
+       <string>Increase Current Save Bank</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Decrease Current Save Bank</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
        <string>Quick Save Slot 0</string>
       </property>
      </row>
@@ -224,6 +234,76 @@
      <row>
       <property name="text">
        <string>Quick Load Slot 9</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Select Slot 0</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Select Slot 1</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Select Slot 2</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Select Slot 3</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Select Slot 4</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Select Slot 5</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Select Slot 6</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Select Slot 7</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Select Slot 8</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Select Slot 9</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Save State with Preview</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Load State with Preview</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Save State to File</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Load State from File</string>
       </property>
      </row>
      <row>

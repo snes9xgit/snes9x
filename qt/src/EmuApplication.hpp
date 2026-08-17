@@ -78,7 +78,9 @@ struct EmuApplication
     void loadState(const std::string& filename);
     void saveState(int slot);
     void saveState(const std::string& filename);
+    int currentSaveSlot();
     std::string getStateFolder();
+    std::string getStateFilename(int slot);
     void loadUndoState();
     void startGame();
     void startThread();
@@ -108,7 +110,6 @@ struct EmuApplication
     std::unique_ptr<QTimer> poll_input_timer;
     std::function<void(EmuBinding)> binding_callback = nullptr;
     std::function<void()> joypads_changed_callback = nullptr;
-    int save_slot = 0;
     int pause_count = 0;
     int suspend_count = 0;
 };

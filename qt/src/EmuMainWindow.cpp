@@ -11,6 +11,7 @@
 #endif
 
 #include "CheatsDialog.hpp"
+#include "StatePreviewDialog.hpp"
 #include "EmuApplication.hpp"
 #include "EmuConfig.hpp"
 #include "snes9x.h"
@@ -315,19 +316,28 @@ void EmuMainWindow::createWidgets()
     // File->Load/Save State submenus
     load_state_menu = new QMenu(tr("&Load State"));
     save_state_menu = new QMenu(tr("&Save State"));
-    for  (size_t i = 0; i < state_items_size; i++)
+    // One submenu per bank, each holding one item per slot, as on win32.
+    for (int bank = 0; bank < EmuConfig::num_save_banks; bank++)
     {
-        auto action = load_state_menu->addAction(tr("Slot &%1").arg(i));
-        connect(action, &QAction::triggered, [&, i] {
-            app->loadState(i);
-        });
-        core_actions.push_back(action);
+        auto load_bank_menu = load_state_menu->addMenu(tr("Bank &%1").arg(bank));
+        auto save_bank_menu = save_state_menu->addMenu(tr("Bank &%1").arg(bank));
 
-        action = save_state_menu->addAction(tr("Slot &%1").arg(i));
-        connect(action, &QAction::triggered, [&, i] {
-            app->saveState(i);
-        });
-        core_actions.push_back(action);
+        for (int slot = 0; slot < EmuConfig::save_slots_per_bank; slot++)
+        {
+            int index = bank * EmuConfig::save_slots_per_bank + slot;
+
+            auto action = load_bank_menu->addAction(tr("Slot &%1").arg(slot));
+            connect(action, &QAction::triggered, [&, index] {
+                app->loadState(index);
+            });
+            core_actions.push_back(action);
+
+            action = save_bank_menu->addAction(tr("Slot &%1").arg(slot));
+            connect(action, &QAction::triggered, [&, index] {
+                app->saveState(index);
+            });
+            core_actions.push_back(action);
+        }
     }
 
     load_state_menu->addSeparator();
@@ -355,6 +365,18 @@ void EmuMainWindow::createWidgets()
     });
     core_actions.push_back(save_state_file_item);
     file_menu->addMenu(save_state_menu);
+
+    auto save_preview_item = file_menu->addAction(tr("Sa&ve with Preview..."));
+    connect(save_preview_item, &QAction::triggered, [&] {
+        this->statePreviewDialog(true);
+    });
+    core_actions.push_back(save_preview_item);
+
+    auto load_preview_item = file_menu->addAction(tr("Loa&d with Preview..."));
+    connect(load_preview_item, &QAction::triggered, [&] {
+        this->statePreviewDialog(false);
+    });
+    core_actions.push_back(load_preview_item);
 
     auto languages = EmuPoTranslator::availableLanguages();
     if (languages.size() > 1)
@@ -723,6 +745,28 @@ void EmuMainWindow::setBypassCompositor(bool bypass)
         XChangeProperty(display, xid, net_wm_bypass_compositor, 6, 32, PropModeReplace, (unsigned char *)&value, 1);
     }
 #endif
+}
+
+/* win32's "Save/Load with Preview": pick a slot from a thumbnail grid. */
+void EmuMainWindow::statePreviewDialog(bool save)
+{
+    if (!app->isCoreActive())
+        return;
+
+    app->pause();
+
+    StatePreviewDialog dialog(app, this, save);
+    int slot = dialog.exec() ? dialog.selection() : -1;
+
+    if (slot >= 0)
+    {
+        if (save)
+            app->saveState(slot);
+        else
+            app->loadState(slot);
+    }
+
+    app->unpause();
 }
 
 void EmuMainWindow::chooseState(bool save)

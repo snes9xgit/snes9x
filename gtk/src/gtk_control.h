@@ -16,6 +16,12 @@
 
 const int NUM_JOYPADS = 10;
 
+/* Save states are organized in banks of slots, as on win32. The state file
+ * extension is the flat index, i.e. bank * SAVE_SLOTS_PER_BANK + slot. */
+const int SAVE_SLOTS_PER_BANK = 10;
+const int NUM_SAVE_BANKS      = 10;
+const int NUM_SAVE_SLOTS      = NUM_SAVE_BANKS * SAVE_SLOTS_PER_BANK;
+
 enum {
     JOY_MODE_GLOBAL     = 0,
     JOY_MODE_INDIVIDUAL = 1,
@@ -52,7 +58,33 @@ enum {
     PORT_DECREMENTLOADSLOT  = 22,
     PORT_INCREMENTSLOT      = 23,
     PORT_DECREMENTSLOT      = 24,
-    PORT_GRABMOUSE          = 25
+    PORT_GRABMOUSE          = 25,
+    PORT_QUICKSAVE0         = 26,
+    PORT_QUICKSAVE1         = 27,
+    PORT_QUICKSAVE2         = 28,
+    PORT_QUICKSAVE3         = 29,
+    PORT_QUICKSAVE4         = 30,
+    PORT_QUICKSAVE5         = 31,
+    PORT_QUICKSAVE6         = 32,
+    PORT_QUICKSAVE7         = 33,
+    PORT_QUICKSAVE8         = 34,
+    PORT_QUICKSAVE9         = 35,
+    PORT_INCREMENTBANK      = 36,
+    PORT_DECREMENTBANK      = 37,
+    PORT_SELECTSLOT0        = 38,
+    PORT_SELECTSLOT1        = 39,
+    PORT_SELECTSLOT2        = 40,
+    PORT_SELECTSLOT3        = 41,
+    PORT_SELECTSLOT4        = 42,
+    PORT_SELECTSLOT5        = 43,
+    PORT_SELECTSLOT6        = 44,
+    PORT_SELECTSLOT7        = 45,
+    PORT_SELECTSLOT8        = 46,
+    PORT_SELECTSLOT9        = 47,
+    PORT_DIALOGSAVE         = 48,
+    PORT_DIALOGLOAD         = 49,
+    PORT_FILESAVE           = 50,
+    PORT_FILELOAD           = 51
 };
 
 typedef struct BindingLink
@@ -65,7 +97,7 @@ typedef struct BindingLink
 extern const BindingLink b_links[];
 extern const int b_breaks[];
 const int NUM_JOYPAD_LINKS = 24;
-const int NUM_EMU_LINKS = 62;
+const int NUM_EMU_LINKS = 78;
 
 typedef struct JoypadBinding
 {
@@ -74,6 +106,7 @@ typedef struct JoypadBinding
 
 bool S9xGrabJoysticks();
 void S9xReleaseJoysticks();
+int S9xCurrentSaveSlot();
 
 typedef struct JoyEvent
 {

@@ -88,6 +88,9 @@ void Snes9xController::init()
     Settings.ShowOverscan = false;
     Settings.InitialInfoStringTimeout = 120;
     Settings.SGB_BIOSPreference = 2;
+    /* Embed a screenshot in each snapshot so the save/load-with-preview
+     * dialog has something to show, as win32 does by default. */
+    Settings.SnapshotScreenshots = true;
 
     CPU.Flags = 0;
 
@@ -166,6 +169,8 @@ void Snes9xController::updateSettings(EmuConfig *config)
     // effective flag per game, so writing the effective one here was lost on
     // every ROM load.
     Settings.BlockInvalidVRAMAccessMaster = !config->allow_invalid_vram_access;
+
+    Settings.SnapshotScreenshots = config->snapshot_screenshots;
 
     Settings.SoundSync = config->speed_sync_method == EmuConfig::eSoundSync;
 
@@ -994,6 +999,11 @@ void Snes9xController::loadUndoState()
 std::string Snes9xController::getStateFolder()
 {
     return S9xGetDirectory(SNAPSHOT_DIR);
+}
+
+std::string Snes9xController::getStateFilename(int slot)
+{
+    return save_slot_path(slot).string();
 }
 
 bool Snes9xController::slotUsed(int slot)

@@ -163,6 +163,7 @@ int Snes9xConfig::load_defaults()
     config_show_comments = true;
     config_nice_alignment = true;
     current_save_slot = 0;
+    current_save_bank = 0;
     S9xCheatsEnable();
 
     rewind_granularity = 5;
@@ -188,6 +189,9 @@ int Snes9xConfig::load_defaults()
     Settings.DisplayTime = false;
     Settings.DisplayFrameRate = false;
     Settings.DisplayIndicators = false;
+    /* Embed a screenshot in each snapshot so the save/load-with-preview
+     * dialog has something to show, as win32 does by default. */
+    Settings.SnapshotScreenshots = true;
     Settings.SixteenBitSound = true;
     Settings.Stereo = true;
     Settings.ReverseStereo = false;
@@ -372,7 +376,8 @@ int Snes9xConfig::save_config_file()
     outbool("UseModalDialogs", modal_dialogs, "Make dialogs block the main window instead of floating independently");
     outint("RewindBufferSize", rewind_buffer_size, "Amount of memory (in MB) to use for rewinding; 0 disables rewind");
     outint("RewindGranularity", rewind_granularity, "Only save rewind snapshots every N frames");
-    outint("CurrentSaveSlot", current_save_slot, "Currently selected save-state slot (remembered automatically)");
+    outint("CurrentSaveSlot", current_save_slot, "Currently selected save-state slot within the bank (remembered automatically)");
+    outint("CurrentSaveBank", current_save_bank, "Currently selected save-state bank (remembered automatically)");
 
     section = "Emulation";
     outbool("EmulateTransparency", Settings.Transparency, "Render the SNES color/transparency effects (turn off only for troubleshooting)");
@@ -380,6 +385,7 @@ int Snes9xConfig::save_config_file()
     outbool("DisplayFrameRate", Settings.DisplayFrameRate, "Show the frames-per-second counter on screen");
     outbool("DisplayPressedKeys", Settings.DisplayPressedKeys, "Show the controller buttons being pressed on screen");
     outbool("DisplayIndicators", Settings.DisplayIndicators, "Show on-screen indicators for turbo, pause, rewind, etc.");
+    outbool("SnapshotScreenshots", Settings.SnapshotScreenshots, "Store a screenshot inside each save state, for the save/load-with-preview dialog");
     outint("SpeedControlMethod", Settings.SkipFrames, "0: Time the frames to 50 or 60Hz, 1: Same, but skip frames if too slow, 2: Synchronize to the sound buffer, 3: Unlimited, except potentially by vsync");
     outint("SaveSRAMEveryNSeconds", Settings.AutoSaveDelay, "Auto-write the battery save this many seconds after the game changes it (0: only on exit/reset)");
     outbool("BlockInvalidVRAMAccess", Settings.BlockInvalidVRAMAccessMaster, "Emulate the real hardware's VRAM access restrictions (on for accuracy; off only for a few broken ROMs/hacks)");
@@ -627,6 +633,19 @@ int Snes9xConfig::load_config_file()
     inint("RewindBufferSize", rewind_buffer_size);
     inint("RewindGranularity", rewind_granularity);
     inint("CurrentSaveSlot", current_save_slot);
+    inint("CurrentSaveBank", current_save_bank);
+
+    /* Older configs stored a flat 0-999 slot index. Split it into a bank and
+     * an in-bank slot so the selection survives the upgrade. */
+    if (current_save_slot >= SAVE_SLOTS_PER_BANK)
+    {
+        current_save_bank = current_save_slot / SAVE_SLOTS_PER_BANK;
+        current_save_slot %= SAVE_SLOTS_PER_BANK;
+    }
+    if (current_save_slot < 0)
+        current_save_slot = 0;
+    if (current_save_bank < 0 || current_save_bank >= NUM_SAVE_BANKS)
+        current_save_bank = 0;
 
     section = "Emulation";
     inbool("EmulateTransparency", Settings.Transparency);
@@ -638,6 +657,7 @@ int Snes9xConfig::load_config_file()
     inbool("BlockInvalidVRAMAccess", Settings.BlockInvalidVRAMAccessMaster);
     inbool("AllowDPadContradictions", Settings.UpAndDown);
     inbool("DisplayIndicators", Settings.DisplayIndicators);
+    inbool("SnapshotScreenshots", Settings.SnapshotScreenshots);
     inint("RunAhead", Settings.RunAhead);
     if (Settings.RunAhead < 0)
         Settings.RunAhead = 0;

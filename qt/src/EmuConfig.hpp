@@ -37,6 +37,8 @@ struct EmuConfig
     int cheat_dialog_height = 0;
     int shader_parameters_dialog_width = 0;
     int shader_parameters_dialog_height = 0;
+    int current_save_slot = 0;
+    int current_save_bank = 0;
     std::vector<std::string> recently_used;
 
     // General
@@ -159,6 +161,7 @@ struct EmuConfig
     // Emulation/Hacks
 
     bool allow_invalid_vram_access;
+    bool snapshot_screenshots;
     bool allow_opposing_dpad_directions;
     enum Overclock
     {
@@ -227,7 +230,12 @@ struct EmuConfig
 
     static const int allowed_bindings = 4;
     static const int num_controller_bindings = 18;
-    static const int num_shortcuts = 55;
+    static const int num_shortcuts = 71;
+
+    /* Save states are organized in banks of slots, as on win32. The state
+     * file extension is the flat index, bank * save_slots_per_bank + slot. */
+    static const int save_slots_per_bank = 10;
+    static const int num_save_banks = 10;
 
     bool automap_gamepads;
 
@@ -267,6 +275,8 @@ struct EmuConfig
         eLoadState,
         eIncreaseSlot,
         eDecreaseSlot,
+        eIncreaseBank,
+        eDecreaseBank,
         eSaveState0,
         eSaveState1,
         eSaveState2,
@@ -287,6 +297,20 @@ struct EmuConfig
         eLoadState7,
         eLoadState8,
         eLoadState9,
+        eSelectSlot0,
+        eSelectSlot1,
+        eSelectSlot2,
+        eSelectSlot3,
+        eSelectSlot4,
+        eSelectSlot5,
+        eSelectSlot6,
+        eSelectSlot7,
+        eSelectSlot8,
+        eSelectSlot9,
+        eSaveStateDialog,
+        eLoadStateDialog,
+        eSaveStateFile,
+        eLoadStateFile,
         eRewind,
         eGrabMouse,
         eSwapControllers1and2,
