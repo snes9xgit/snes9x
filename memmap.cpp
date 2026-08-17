@@ -1567,6 +1567,11 @@ bool8 CMemory::LoadMultiCartMem (const uint8 *sourceA, uint32 sourceASize,
                                  const uint8 *sourceB, uint32 sourceBSize,
                                  const uint8 *bios, uint32 biosSize)
 {
+    if (biosSize > MAX_ROM_SIZE ||
+        sourceASize > MAX_ROM_SIZE - biosSize ||
+        sourceBSize > MAX_ROM_SIZE - biosSize - sourceASize)
+        return FALSE;
+
     uint32 offset = 0;
     memset(ROM, 0, MAX_ROM_SIZE);
 	memset(&Multi, 0, sizeof(Multi));
@@ -1611,7 +1616,10 @@ bool8 CMemory::LoadMultiCart (const char *cartA, const char *cartB)
     if (cartB && cartB[0])
 		Multi.cartSizeB = FileLoader(ROM, cartB, MAX_ROM_SIZE);
 
-    if (Multi.cartSizeB) {
+	if (Multi.cartSizeB) {
+		if (Multi.cartSizeB > MAX_ROM_SIZE - 0x400000)
+			return FALSE;
+
         strcpy(Multi.fileNameB, cartB);
 
 		CheckForAnyPatch(cartB, HeaderCount != 0, Multi.cartSizeB);
