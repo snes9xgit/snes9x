@@ -286,14 +286,33 @@ bool8 S9xOpenSoundDevice()
 }
 
 /* This really shouldn't be in the port layer */
+static uint8_t sound_channel_mask = 255;
+
+static void apply_sound_channel_mask()
+{
+    S9xSetSoundControl(sound_channel_mask);
+    // Channels 1-4 double as the GB APU's CH1-CH4 (pulse A, pulse B, wave,
+    // noise) so the mask also works for GB/SGB games, as on win32.
+    S9xSGBSetSoundChannelMask(sound_channel_mask & 0x0f);
+}
+
+uint8_t S9xGetSoundChannelMask()
+{
+    return sound_channel_mask;
+}
+
+void S9xSetSoundChannelMask(uint8_t mask)
+{
+    sound_channel_mask = mask;
+    apply_sound_channel_mask();
+}
+
 void S9xToggleSoundChannel(int c)
 {
-    static int sound_switch = 255;
-
     if (c == 8)
-        sound_switch = 255;
+        sound_channel_mask = 255;
     else
-        sound_switch ^= 1 << c;
+        sound_channel_mask ^= 1 << c;
 
-    S9xSetSoundControl(sound_switch);
+    apply_sound_channel_mask();
 }

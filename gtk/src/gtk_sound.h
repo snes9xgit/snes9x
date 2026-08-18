@@ -7,6 +7,7 @@
 #pragma once
 #include <vector>
 #include <string>
+#include <cstdint>
 
 void S9xPortSoundInit();
 void S9xPortSoundDeinit();
@@ -16,3 +17,6 @@ void S9xSoundStop();
 void S9xSamplesAvailable(void *userdata);
 
 std::vector<std::string> S9xGetSoundDriverNames();
+
+uint8_t S9xGetSoundChannelMask();
+void S9xSetSoundChannelMask(uint8_t mask);

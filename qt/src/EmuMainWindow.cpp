@@ -532,6 +532,60 @@ void EmuMainWindow::createWidgets()
 
     menuBar()->addMenu(emulation_menu);
 
+    // Sound Menu, mirroring win32's Sound menu (Channels popup + Mute).
+    auto sound_menu = new QMenu(tr("&Sound"));
+
+    auto channels_menu = new QMenu(tr("&Channels"));
+    std::array<QAction *, 8> channel_actions{};
+    for (int i = 0; i < 8; i++)
+    {
+        auto action = channels_menu->addAction(tr("Channel &%1").arg(i + 1));
+        action->setCheckable(true);
+        action->setChecked(true);
+        connect(action, &QAction::triggered, [&, i](bool checked) {
+            uint8_t mask = app->getSoundChannelMask();
+            if (checked)
+                mask |= 1 << i;
+            else
+                mask &= ~(1 << i);
+            app->setSoundChannelMask(mask);
+        });
+        channel_actions[i] = action;
+    }
+    channels_menu->addSeparator();
+    auto enable_all_channels_item = channels_menu->addAction(tr("Enable All"));
+    connect(enable_all_channels_item, &QAction::triggered, [&] {
+        app->setSoundChannelMask(255);
+    });
+    core_actions.push_back(sound_menu->addMenu(channels_menu));
+
+    sound_menu->addSeparator();
+
+    // Same setting as the Sound panel's "Mute all sound" checkbox.
+    auto mute_item = sound_menu->addAction(tr("&Mute"));
+    mute_item->setCheckable(true);
+    connect(mute_item, &QAction::triggered, [&](bool checked) {
+        app->config->mute_audio = checked;
+        app->updateSettings();
+    });
+
+    connect(sound_menu, &QMenu::aboutToShow, this, [this, channel_actions, mute_item] {
+        const uint8_t mask = app->getSoundChannelMask();
+        // Channels 1-4 drive both SPC voices 1-4 and the GB APU's CH1-CH4.
+        // In BIOS-less GB mode the SPC isn't running, so 5-8 control
+        // nothing — grey them there, as on win32.
+        const bool gb_only = Settings.SuperGameBoy && !Settings.SGB_BIOSModeActive;
+        for (int i = 0; i < 8; i++)
+        {
+            channel_actions[i]->setChecked(mask & (1 << i));
+            if (i >= 4)
+                channel_actions[i]->setEnabled(!gb_only);
+        }
+        mute_item->setChecked(app->config->mute_audio);
+    });
+
+    menuBar()->addMenu(sound_menu);
+
     // View Menu
     auto view_menu = new QMenu(tr("&View"));
 

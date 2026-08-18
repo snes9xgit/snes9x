@@ -85,4 +85,7 @@ class Snes9xController
 
 };
 
+uint8_t S9xGetSoundChannelMask();
+void S9xSetSoundChannelMask(uint8_t mask);
+
 #endif
