@@ -11,6 +11,7 @@ namespace fs = std::filesystem;
 #include "apu/apu.h"
 #include "sgb/sgb.h"
 #include "gfx.h"
+#include "ppu.h"
 #include "snapshot.h"
 #include "controls.h"
 #include "cheats.h"
@@ -194,6 +195,25 @@ void Snes9xController::updateSettings(EmuConfig *config)
         };
         S9xSGBMixGainSPC = clamp_db(config->sgb_mix_gain_spc);
         S9xSGBMixGainGB  = clamp_db(config->sgb_mix_gain_gb);
+    }
+
+    // Color correction feeds the palette tables, so a change only shows up
+    // after S9xFixColourBrightness rebuilds them.
+    {
+        bool changed = Settings.ColorCorrection != (bool8)config->color_correction ||
+                       Settings.AdjustmentsEnabled != (bool8)config->color_adjustments_enabled ||
+                       Settings.Gamma != config->color_gamma ||
+                       Settings.Contrast != config->color_contrast ||
+                       Settings.Saturation != config->color_saturation;
+
+        Settings.ColorCorrection = config->color_correction;
+        Settings.AdjustmentsEnabled = config->color_adjustments_enabled;
+        Settings.Gamma = config->color_gamma;
+        Settings.Contrast = config->color_contrast;
+        Settings.Saturation = config->color_saturation;
+
+        if (changed && active)
+            S9xFixColourBrightness();
     }
 
     Settings.DynamicRateControl = config->dynamic_rate_control;

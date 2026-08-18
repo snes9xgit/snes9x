@@ -295,6 +295,12 @@ bool EmuConfig::setDefaults(int section)
         gb_frame_blend = eGBBlendOff;
         gb_frame_blend_layer = eGBBlendLayerAll;
         gb_frame_blend_auto = true;
+
+        color_correction = false;
+        color_adjustments_enabled = false;
+        color_gamma = 0;
+        color_contrast = 0;
+        color_saturation = 0;
     }
 
     if (section == -1 || section == 2)
@@ -556,6 +562,23 @@ void EmuConfig::config(const std::string &filename, bool write)
     Enum("BlendGBFrames", gb_frame_blend, { "Off", "SimpleBlend", "LCDBlend" }, "Game Boy frame-blend (Super Game Boy only): Off, SimpleBlend (fixes flicker fake-transparency), or LCDBlend (LCD-style ghosting)");
     Enum("BlendGBFramesLayer", gb_frame_blend_layer, { "All", "Background", "Window", "Sprites" }, "Which Game Boy layer the frame-blend applies to: All, Background, Window, or Sprites");
     Bool("BlendGBFramesAuto", gb_frame_blend_auto, "Auto-pick the GB frame-blend per game from a built-in known-flicker table");
+
+    Bool("ColorCorrection", color_correction, "Enable accurate SNES color correction (simulates SNES CRT output)");
+    Bool("AdjustmentsEnabled", color_adjustments_enabled, "Apply the gamma/contrast/saturation adjustments below");
+    Int("Gamma", color_gamma, "Gamma adjustment (-100..+100, 0 = no change)");
+    Int("Contrast", color_contrast, "Contrast adjustment (-100..+100, 0 = no change)");
+    Int("Saturation", color_saturation, "Saturation adjustment (-100..+100, 0 = no change)");
+
+    if (!write)
+    {
+        auto clamp_adjustment = [](int &v) {
+            if (v < -100) v = -100;
+            if (v > 100) v = 100;
+        };
+        clamp_adjustment(color_gamma);
+        clamp_adjustment(color_contrast);
+        clamp_adjustment(color_saturation);
+    }
     EndSection();
 
     BeginSection("Sound");

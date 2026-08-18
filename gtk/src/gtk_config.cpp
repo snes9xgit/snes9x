@@ -144,6 +144,11 @@ int Snes9xConfig::load_defaults()
     Settings.GBFrameBlend = 0;
     Settings.GBFrameBlendLayer = 0;
     Settings.GBFrameBlendAuto = true;
+    Settings.ColorCorrection = false;
+    Settings.AdjustmentsEnabled = false;
+    Settings.Gamma = 0;
+    Settings.Contrast = 0;
+    Settings.Saturation = 0;
     netplay_activated = false;
     netplay_server_up = false;
     netplay_is_server = false;
@@ -280,6 +285,11 @@ int Snes9xConfig::save_config_file()
     outint("BlendGBFrames", Settings.GBFrameBlend, "Game Boy frame-blend mode (Super Game Boy only): 0=off, 1=Simple Blend (mix each frame 50/50 with the previous, fixes flicker-based fake transparency e.g. ZAS), 2=LCD Blend (slow-decay LCD-style ghosting)");
     outint("BlendGBFramesLayer", Settings.GBFrameBlendLayer, "Which Game Boy layer the frame-blend applies to: 0=all, 1=background (keeps moving sprites crisp), 2=window, 3=sprites");
     outbool("BlendGBFramesAuto", Settings.GBFrameBlendAuto, "Auto-pick the GB frame-blend per game from a built-in known-flicker-game table at load (off for unlisted games); when false the manual mode/layer apply to every GB game");
+    outbool("ColorCorrection", Settings.ColorCorrection, "Enable accurate SNES color correction (simulates SNES CRT output)");
+    outbool("AdjustmentsEnabled", Settings.AdjustmentsEnabled, "Apply the Gamma/Contrast/Saturation adjustments below");
+    outint("Gamma", Settings.Gamma, "Gamma adjustment (-100..+100, 0 = no change)");
+    outint("Contrast", Settings.Contrast, "Contrast adjustment (-100..+100, 0 = no change)");
+    outint("Saturation", Settings.Saturation, "Saturation adjustment (-100..+100, 0 = no change)");
     
     
     // NTSC composite-video filter knobs; only used when the NTSC software filter
@@ -547,6 +557,11 @@ int Snes9xConfig::load_config_file()
     inint("BlendGBFrames", Settings.GBFrameBlend);
     inint("BlendGBFramesLayer", Settings.GBFrameBlendLayer);
     inbool("BlendGBFramesAuto", Settings.GBFrameBlendAuto);
+    inbool("ColorCorrection", Settings.ColorCorrection);
+    inbool("AdjustmentsEnabled", Settings.AdjustmentsEnabled);
+    inint("Gamma", Settings.Gamma);
+    inint("Contrast", Settings.Contrast);
+    inint("Saturation", Settings.Saturation);
 
     section = "NTSC";
     indouble("Hue", ntsc_setup.hue);
@@ -790,6 +805,9 @@ int Snes9xConfig::load_config_file()
     hires_effect = CLAMP(hires_effect, 0, 2);
     Settings.GBFrameBlend = CLAMP(Settings.GBFrameBlend, 0, 2);
     Settings.GBFrameBlendLayer = CLAMP(Settings.GBFrameBlendLayer, 0, 3);
+    Settings.Gamma = CLAMP(Settings.Gamma, -100, 100);
+    Settings.Contrast = CLAMP(Settings.Contrast, -100, 100);
+    Settings.Saturation = CLAMP(Settings.Saturation, -100, 100);
     Settings.DynamicRateLimit = CLAMP(Settings.DynamicRateLimit, 1, 1000);
     Settings.SuperFXClockMultiplier = CLAMP(Settings.SuperFXClockMultiplier, 50, 400);
     ntsc_scanline_intensity = MIN(ntsc_scanline_intensity, 4);

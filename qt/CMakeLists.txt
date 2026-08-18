@@ -308,6 +308,8 @@ list(APPEND QT_GUI_SOURCES
     src/CheatsDialog.cpp
     src/StatePreviewDialog.cpp
     src/StatePreviewDialog.hpp
+    src/ColorCorrectionDialog.cpp
+    src/ColorCorrectionDialog.hpp
     src/SoftwareScalers.cpp
     src/SoftwareFilters.cpp
     src/SoftwareFilters.hpp

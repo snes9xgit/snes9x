@@ -11,6 +11,7 @@
 #endif
 
 #include "CheatsDialog.hpp"
+#include "ColorCorrectionDialog.hpp"
 #include "StatePreviewDialog.hpp"
 #include "EmuApplication.hpp"
 #include "EmuConfig.hpp"
@@ -616,6 +617,14 @@ void EmuMainWindow::createWidgets()
     view_menu->addAction(fullscreen_item);
     connect(fullscreen_item, &QAction::triggered, [&](bool checked) {
         toggleFullscreen();
+    });
+
+    view_menu->addSeparator();
+
+    auto color_correction_item = view_menu->addAction(tr("&Color Correction..."));
+    connect(color_correction_item, &QAction::triggered, [&] {
+        ColorCorrectionDialog dialog(app, this);
+        dialog.exec();
     });
 
     menuBar()->addMenu(view_menu);
