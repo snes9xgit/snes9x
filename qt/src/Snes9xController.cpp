@@ -462,7 +462,9 @@ bool8 S9xDeinitUpdate(int width, int height)
     if (display == nullptr)
         return true;
 
-    if (width < 256 || height < 224)
+    // BIOS-less Super Game Boy frames are native 160x144, so only reject
+    // degenerate sizes (as the gtk port does), not anything below 256x224.
+    if (width <= 0 || height <= 0)
         return false;
 
     if (last_height > height)
