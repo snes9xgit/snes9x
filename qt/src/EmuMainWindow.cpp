@@ -569,6 +569,15 @@ void EmuMainWindow::createWidgets()
         app->updateSettings();
     });
 
+    sound_menu->addSeparator();
+
+    auto sound_settings_item = sound_menu->addAction(QIcon(iconset + "sound.svg"), tr("&Settings..."));
+    connect(sound_settings_item, &QAction::triggered, [&] {
+        if (!g_emu_settings_window)
+            g_emu_settings_window = new EmuSettingsWindow(this, app);
+        g_emu_settings_window->show(2); // the Sound panel
+    });
+
     connect(sound_menu, &QMenu::aboutToShow, this, [this, channel_actions, mute_item] {
         const uint8_t mask = app->getSoundChannelMask();
         // Channels 1-4 drive both SPC voices 1-4 and the GB APU's CH1-CH4.

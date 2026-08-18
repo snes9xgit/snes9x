@@ -365,6 +365,10 @@ void Snes9xWindow::connect_signals()
         }
     });
 
+    get_object<Gtk::MenuItem>("sound_settings_item")->signal_activate().connect([&] {
+        snes9x_preferences_open(this, 1); // the Sound tab
+    });
+
     get_object<Gtk::MenuItem>("sound_menu_item")->signal_activate().connect([this] {
         uint8_t mask = S9xGetSoundChannelMask();
         // Channels 1-4 drive both SPC voices 1-4 and the GB APU's CH1-CH4.

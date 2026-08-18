@@ -20,7 +20,7 @@
 
 static Snes9xPreferences *preferences = nullptr;
 
-void snes9x_preferences_open(Snes9xWindow *window)
+void snes9x_preferences_open(Snes9xWindow *window, int page)
 {
     if (!preferences)
         preferences = new Snes9xPreferences(window->config);
@@ -30,6 +30,9 @@ void snes9x_preferences_open(Snes9xWindow *window)
     window->pause_from_focus_change ();
 
     preferences->window->set_transient_for(*window->window.get());
+
+    if (page >= 0)
+        preferences->get_object<Gtk::Notebook>("preferences_notebook")->set_current_page(page);
 
     config->joysticks.set_mode(JOY_MODE_GLOBAL);
     preferences->show();
