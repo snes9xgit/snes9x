@@ -781,6 +781,18 @@ void EmuApplication::loadUndoState()
     });
 }
 
+uint8_t EmuApplication::getSoundChannelMask()
+{
+    return S9xGetSoundChannelMask();
+}
+
+void EmuApplication::setSoundChannelMask(uint8_t mask)
+{
+    emu_thread->runOnThread([mask] {
+        S9xSetSoundChannelMask(mask);
+    });
+}
+
 std::string EmuApplication::getStateFolder()
 {
     return core->getStateFolder();

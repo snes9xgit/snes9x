@@ -334,6 +334,58 @@ void Snes9xWindow::connect_signals()
         configure_widgets();
     });
 
+    // Sound Channels submenu, as on win32's Sound->Channels popup.
+    for (int i = 0; i < 8; i++)
+    {
+        std::string name = "sound_channel_" + std::to_string(i + 1) + "_item";
+        auto item = get_object<Gtk::CheckMenuItem>(name.c_str());
+        item->signal_toggled().connect([i, item] {
+            uint8_t mask = S9xGetSoundChannelMask();
+            uint8_t new_mask = item->get_active() ? mask | (1 << i)
+                                                  : mask & ~(1 << i);
+            // The menu-open sync also flips items; only apply real changes.
+            if (new_mask != mask)
+                S9xSetSoundChannelMask(new_mask);
+        });
+    }
+
+    get_object<Gtk::MenuItem>("enable_all_channels_item")->signal_activate().connect([] {
+        S9xSetSoundChannelMask(255);
+    });
+
+    // Same setting as the preferences dialog's "Mute sound output" checkbox.
+    auto mute_item = get_object<Gtk::CheckMenuItem>("mute_item");
+    mute_item->signal_toggled().connect([mute_item] {
+        bool active = mute_item->get_active();
+        // The menu-open sync also flips the item; only apply real changes.
+        if (gui_config->mute_sound != active)
+        {
+            gui_config->mute_sound = active;
+            S9xPortSoundReinit();
+        }
+    });
+
+    get_object<Gtk::MenuItem>("sound_settings_item")->signal_activate().connect([&] {
+        snes9x_preferences_open(this, 1); // the Sound tab
+    });
+
+    get_object<Gtk::MenuItem>("sound_menu_item")->signal_activate().connect([this] {
+        uint8_t mask = S9xGetSoundChannelMask();
+        // Channels 1-4 drive both SPC voices 1-4 and the GB APU's CH1-CH4.
+        // In BIOS-less GB mode the SPC isn't running, so 5-8 control
+        // nothing — grey them there, as on win32.
+        bool gb_only = Settings.SuperGameBoy && !Settings.SGB_BIOSModeActive;
+        for (int i = 0; i < 8; i++)
+        {
+            std::string name = "sound_channel_" + std::to_string(i + 1) + "_item";
+            auto item = get_object<Gtk::CheckMenuItem>(name.c_str());
+            item->set_active((mask & (1 << i)) != 0);
+            if (i >= 4)
+                item->set_sensitive(!gb_only);
+        }
+        get_object<Gtk::CheckMenuItem>("mute_item")->set_active(gui_config->mute_sound);
+    });
+
 #ifdef RETROACHIEVEMENTS_SUPPORT
     get_object<Gtk::CheckMenuItem>("ra_enabled_item")->set_active(gui_config->ra_enabled);
     get_object<Gtk::CheckMenuItem>("ra_enabled_item")->signal_toggled().connect([this] {

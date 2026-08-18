@@ -10,7 +10,7 @@
 #include "gtk_builder_window.h"
 
 void snes9x_preferences_create(Snes9xConfig *config);
-void snes9x_preferences_open(Snes9xWindow *window);
+void snes9x_preferences_open(Snes9xWindow *window, int page = -1);
 
 class Snes9xPreferences final : public GtkBuilderWindow
 {
