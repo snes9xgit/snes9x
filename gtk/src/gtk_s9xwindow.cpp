@@ -33,9 +33,11 @@
 #include "gtk_s9xwindow.h"
 
 #include "fmt/format.h"
+#include <array>
 #include <utility>
 
 #include "snes9x.h"
+#include "ppu.h"
 #include "controls.h"
 #include "movie.h"
 #include "apu/apu.h"
@@ -351,6 +353,10 @@ void Snes9xWindow::connect_signals()
 
     get_object<Gtk::MenuItem>("enable_all_channels_item")->signal_activate().connect([] {
         S9xSetSoundChannelMask(255);
+    });
+
+    get_object<Gtk::MenuItem>("color_correction_item")->signal_activate().connect([this] {
+        show_color_correction_dialog();
     });
 
     // Same setting as the preferences dialog's "Mute sound output" checkbox.
@@ -1197,6 +1203,105 @@ const char *markup = _(R"(<b>Information for %s</b>
     auto dialog = Gtk::MessageDialog(*window.get(), str_output, true, Gtk::MESSAGE_OTHER, Gtk::BUTTONS_CLOSE, true);
     dialog.set_title(_("File Information"));
     dialog.run();
+
+    unpause_from_focus_change();
+}
+
+/* win32's Video->Color Correction dialog: an accurate-SNES-colors toggle plus
+ * optional gamma/contrast/saturation adjustments. Values apply on OK. */
+void Snes9xWindow::show_color_correction_dialog()
+{
+    const int RESPONSE_DEFAULTS = 1;
+
+    pause_from_focus_change();
+
+    Gtk::Dialog dialog(_("Color Correction"), *window.get(), true);
+    dialog.add_button(_("Defaults"), RESPONSE_DEFAULTS);
+    dialog.add_button(_("_Cancel"), Gtk::RESPONSE_CANCEL);
+    dialog.add_button(_("_OK"), Gtk::RESPONSE_OK);
+    dialog.set_default_response(Gtk::RESPONSE_OK);
+
+    auto vbox = Gtk::manage(new Gtk::VBox);
+    vbox->set_spacing(6);
+    vbox->set_border_width(12);
+
+    auto correction_check = Gtk::manage(new Gtk::CheckButton(_("Enable color correction (accurate SNES colors)")));
+    correction_check->set_active(Settings.ColorCorrection);
+    vbox->pack_start(*correction_check, Gtk::PACK_SHRINK);
+
+    auto frame = Gtk::manage(new Gtk::Frame(_("Adjustments")));
+    auto grid = Gtk::manage(new Gtk::Grid);
+    grid->set_row_spacing(6);
+    grid->set_column_spacing(12);
+    grid->set_border_width(12);
+
+    auto adjustments_check = Gtk::manage(new Gtk::CheckButton(_("Apply adjustments")));
+    adjustments_check->set_active(Settings.AdjustmentsEnabled);
+    grid->attach(*adjustments_check, 0, 0, 2, 1);
+
+    const std::pair<const char *, int> rows[] = {
+        { _("Gamma:"), Settings.Gamma },
+        { _("Contrast:"), Settings.Contrast },
+        { _("Saturation:"), Settings.Saturation },
+    };
+
+    std::array<Gtk::Scale *, 3> scales{};
+    for (int i = 0; i < 3; i++)
+    {
+        auto label = Gtk::manage(new Gtk::Label(rows[i].first));
+        label->set_halign(Gtk::ALIGN_END);
+
+        auto scale = Gtk::manage(new Gtk::Scale(
+            Gtk::Adjustment::create(rows[i].second, -100.0, 100.0, 1.0, 10.0, 0.0)));
+        scale->set_digits(0);
+        scale->set_value_pos(Gtk::POS_RIGHT);
+        scale->set_size_request(300, -1);
+        scale->set_hexpand(true);
+        scale->add_mark(0.0, Gtk::POS_BOTTOM, "");
+        scale->signal_format_value().connect([](double value) -> Glib::ustring {
+            int v = (int)value;
+            return (v > 0 ? "+" : "") + std::to_string(v);
+        });
+        scales[i] = scale;
+
+        grid->attach(*label, 0, i + 1, 1, 1);
+        grid->attach(*scale, 1, i + 1, 1, 1);
+    }
+
+    // Sliders mean nothing until "Apply adjustments" is on, as on win32.
+    auto sync_sensitive = [adjustments_check, scales] {
+        for (auto *scale : scales)
+            scale->set_sensitive(adjustments_check->get_active());
+    };
+    adjustments_check->signal_toggled().connect(sync_sensitive);
+    sync_sensitive();
+
+    frame->add(*grid);
+    vbox->pack_start(*frame, Gtk::PACK_SHRINK);
+
+    dialog.get_content_area()->pack_start(*vbox, Gtk::PACK_EXPAND_WIDGET);
+    dialog.show_all();
+
+    int result;
+    while ((result = dialog.run()) == RESPONSE_DEFAULTS)
+    {
+        correction_check->set_active(false);
+        adjustments_check->set_active(false);
+        for (auto *scale : scales)
+            scale->set_value(0.0);
+    }
+
+    if (result == Gtk::RESPONSE_OK)
+    {
+        Settings.ColorCorrection = correction_check->get_active();
+        Settings.AdjustmentsEnabled = adjustments_check->get_active();
+        Settings.Gamma = (int)scales[0]->get_value();
+        Settings.Contrast = (int)scales[1]->get_value();
+        Settings.Saturation = (int)scales[2]->get_value();
+        // The palette tables bake these in; rebuild them so the change shows.
+        if (config->rom_loaded)
+            S9xFixColourBrightness();
+    }
 
     unpause_from_focus_change();
 }

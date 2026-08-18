@@ -113,6 +113,12 @@ struct EmuConfig
     int gb_frame_blend_layer;
     bool gb_frame_blend_auto;
 
+    bool color_correction;
+    bool color_adjustments_enabled;
+    int color_gamma;
+    int color_contrast;
+    int color_saturation;
+
     // Sound
     std::string sound_driver;
     std::string sound_device;

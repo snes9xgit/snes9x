@@ -58,6 +58,7 @@ class Snes9xWindow : public GtkBuilderWindow
     void open_multicart_dialog();
     void open_voicekun_dialog();
     void show_rom_info();
+    void show_color_correction_dialog();
 
     /* GTK-base-related functions */
     void show();
