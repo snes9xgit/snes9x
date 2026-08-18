@@ -1964,9 +1964,11 @@ void Emulator::SetAudioRate(int32_t rate_hz)
 
 void Emulator::SetJoypad(uint16_t snes_pad_mask)
 {
-	// SNES->GB button mapping. B/Y map to A/B (SNES has extra shoulders & face buttons).
+	// SNES->GB mapping per the SGB BIOS's own shuffle (SGB2 sub_80BCDE):
+	// A → A, B → B, Y doubles as B (left-of-A on both pads), X unused.
 	uint8_t gb = 0;
-	if (snes_pad_mask & (1 << 15)) gb |= GB_A;       // SNES B  → GB A
+	if (snes_pad_mask & (1 <<  7)) gb |= GB_A;       // SNES A  → GB A
+	if (snes_pad_mask & (1 << 15)) gb |= GB_B;       // SNES B  → GB B
 	if (snes_pad_mask & (1 << 14)) gb |= GB_B;       // SNES Y  → GB B
 	if (snes_pad_mask & (1 << 12)) gb |= GB_START;
 	if (snes_pad_mask & (1 << 13)) gb |= GB_SELECT;
