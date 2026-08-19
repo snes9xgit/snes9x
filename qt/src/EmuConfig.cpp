@@ -389,6 +389,8 @@ bool EmuConfig::setDefaults(int section)
         patch_location = eROMDirectory;
         export_location = eROMDirectory;
         bios_location = eCustomDirectory;
+
+        sram_save_interval = 0;
     }
 
     return restart;

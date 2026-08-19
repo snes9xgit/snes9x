@@ -287,6 +287,9 @@ void Snes9xController::updateSettings(EmuConfig *config)
             dest = src;
     };
 
+    // 0 disables the timer; the core then only writes SRAM on exit/reset.
+    Settings.AutoSaveDelay = config->sram_save_interval < 0 ? 0 : config->sram_save_interval;
+
     doFolder(config->sram_location, sram_folder, config->sram_folder, "sram");
     doFolder(config->state_location, state_folder, config->state_folder, "state");
     doFolder(config->cheat_location, cheat_folder, config->cheat_folder, "cheat");
@@ -861,7 +864,6 @@ void S9xCloseSnapshotFile(STREAM file)
 
 void S9xAutoSaveSRAM()
 {
-    printf("%s\n", S9xGetFilename(".srm", SRAM_DIR).c_str());
     Memory.SaveSRAM(S9xGetFilename(".srm", SRAM_DIR).c_str());
     S9xSaveCheatFile(S9xGetFilename(".cht", CHEAT_DIR));
 }
