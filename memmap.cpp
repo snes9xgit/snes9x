@@ -2276,7 +2276,24 @@ void CMemory::InitROM (void)
 
 	if (WindowedLoROM)
 	{
+		// This layout provides no coprocessor registers, so one the header still
+		// declares is one the cartridge cannot reach. A conversion keeps the
+		// header of the cartridge it was made from unless somebody went back and
+		// corrected it, and plenty were not, so the byte routinely names the very
+		// part that expanding the data was what removed.
+		//
+		// SuperFX and SA-1 are left alone deliberately. Those run the game's own
+		// code rather than transforming its data, so no amount of expanding ahead
+		// of time removes one, and an image claiming either should not quietly
+		// pass for this layout.
+		Settings.DSP = 0;
+		Settings.C4 = FALSE;
 		Settings.SDD1 = FALSE;
+		Settings.SPC7110 = FALSE;
+		Settings.SPC7110RTC = FALSE;
+		Settings.OBC1 = FALSE;
+		Settings.SETA = 0;
+
 		Map_WindowedLoROMMap();
 	}
 	else if (HiROM)
