@@ -1347,6 +1347,20 @@ bool8 CMemory::LoadROM (const char *filename)
     return TRUE;
 }
 
+// An expanded cartridge outgrows every layout that could otherwise serve it.
+// Plain LoROM starts mirroring above 4 MB, the extended layouts reach 8 MB, and
+// no retail cartridge ever shipped larger than 6 MB, so an image past 8 MB in a
+// whole number of 64 KB banks is one of these conversions whichever coprocessor
+// it was built to do without. The window addresses 12 MB, which is the ceiling.
+//
+// Recognising the shape rather than a list of titles means a new conversion
+// needs no change here, and stops the code implying that this layout belongs to
+// the one chip the first three happened to remove.
+static bool8 is_windowed_lorom_size (uint32 size)
+{
+	return (size > 0x800000) && (size <= 0xC00000) && ((size & 0xFFFF) == 0);
+}
+
 bool8 CMemory::LoadROMInt (int32 ROMfillSize)
 {
 	Settings.DisplayColor = BUILD_PIXEL(31, 31, 31);
@@ -2248,11 +2262,7 @@ void CMemory::InitROM (void)
 	Map_Initialize();
 	CalculatedChecksum = 0;
 
-	const bool8	WindowedLoROM = (CalculatedSize >= 0x800000) &&
-			(Settings.SDD1 ||
-			 strncmp(ROMName, "STREET FIGHTER ALPHA2", 21) == 0 ||
-			 strncmp(ROMName, "STREET FIGHTER ZERO2", 20) == 0 ||
-			 strncmp(ROMName, "Star Ocean", 10) == 0);
+	const bool8	WindowedLoROM = is_windowed_lorom_size(CalculatedSize);
 
 	if (WindowedLoROM)
 	{
