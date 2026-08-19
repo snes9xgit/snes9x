@@ -1347,6 +1347,20 @@ bool8 CMemory::LoadROM (const char *filename)
     return TRUE;
 }
 
+// An expanded cartridge outgrows every layout that could otherwise serve it.
+// Plain LoROM starts mirroring above 4 MB, the extended layouts reach 8 MB, and
+// no retail cartridge ever shipped larger than 6 MB, so an image past 8 MB in a
+// whole number of 64 KB banks is one of these conversions whichever coprocessor
+// it was built to do without. The window addresses 12 MB, which is the ceiling.
+//
+// Recognising the shape rather than a list of titles means a new conversion
+// needs no change here, and stops the code implying that this layout belongs to
+// the one chip the first three happened to remove.
+static bool8 is_windowed_lorom_size (uint32 size)
+{
+	return (size > 0x800000) && (size <= 0xC00000) && ((size & 0xFFFF) == 0);
+}
+
 bool8 CMemory::LoadROMInt (int32 ROMfillSize)
 {
 	Settings.DisplayColor = BUILD_PIXEL(31, 31, 31);
@@ -1382,7 +1396,17 @@ bool8 CMemory::LoadROMInt (int32 ROMfillSize)
 
 	CalculatedSize = ((ROMfillSize + 0x1fff) / 0x2000) * 0x2000;
 
-	if (CalculatedSize > 0x400000 &&
+	// An expanded cartridge is decided by its shape further down and must not be
+	// pre-processed as an extended HiROM on the way there. SMALLFIRST rotates the
+	// ROM buffer in place before InitROM ever runs, and BIGFIRST reads the header
+	// from 0x407FB0, which only lands on one because the conversions in
+	// circulation happen to mirror it there.
+	//
+	// The two Star Ocean conversions escaped this because they kept an S-DD1
+	// chipset byte and the S-DD1 pairs are excluded below. Correcting a header to
+	// declare the coprocessor it no longer has took that protection away, and the
+	// Street Fighter conversions never had it.
+	if (CalculatedSize > 0x400000 && !is_windowed_lorom_size(CalculatedSize) &&
 		(ROM[0x7fd5] + (ROM[0x7fd6] << 8)) != 0x1320 && // exclude SuperFX
 		(ROM[0x7fd5] + (ROM[0x7fd6] << 8)) != 0x1420 &&
 		(ROM[0x7fd5] + (ROM[0x7fd6] << 8)) != 0x1520 &&
@@ -2248,16 +2272,29 @@ void CMemory::InitROM (void)
 	Map_Initialize();
 	CalculatedChecksum = 0;
 
-	const bool8	SDD1Decompressed = (CalculatedSize >= 0x800000) &&
-			(Settings.SDD1 ||
-			 strncmp(ROMName, "STREET FIGHTER ALPHA2", 21) == 0 ||
-			 strncmp(ROMName, "STREET FIGHTER ZERO2", 20) == 0 ||
-			 strncmp(ROMName, "Star Ocean", 10) == 0);
+	const bool8	WindowedLoROM = is_windowed_lorom_size(CalculatedSize);
 
-	if (SDD1Decompressed)
+	if (WindowedLoROM)
 	{
+		// This layout provides no coprocessor registers, so one the header still
+		// declares is one the cartridge cannot reach. A conversion keeps the
+		// header of the cartridge it was made from unless somebody went back and
+		// corrected it, and plenty were not, so the byte routinely names the very
+		// part that expanding the data was what removed.
+		//
+		// SuperFX and SA-1 are left alone deliberately. Those run the game's own
+		// code rather than transforming its data, so no amount of expanding ahead
+		// of time removes one, and an image claiming either should not quietly
+		// pass for this layout.
+		Settings.DSP = 0;
+		Settings.C4 = FALSE;
 		Settings.SDD1 = FALSE;
-		Map_SDD1DecompressedMap();
+		Settings.SPC7110 = FALSE;
+		Settings.SPC7110RTC = FALSE;
+		Settings.OBC1 = FALSE;
+		Settings.SETA = 0;
+
+		Map_WindowedLoROMMap();
 	}
 	else if (HiROM)
 	{
@@ -4064,19 +4101,24 @@ void CMemory::CheckForAnyPatch(const char *rom_filename, bool8 header, int32 &ro
     if (try_patch_type_sequence(PATCH_DIR))
         return;
 }
-// Street Fighter Alpha 2 and Star Ocean are the only two S-DD1 cartridges. Both
-// have circulating conversions whose graphics were decompressed ahead of time so
-// that the chip is no longer needed, which is what lets them run from flash
-// cartridges. The decompressed data does not fit the original address space, so
-// the conversions grow the image and address it in two halves: the upper half of
-// each bank sits where LoROM would put it, and the lower half sits one whole
-// image further into the file. Banks $C0 and above are a window composed from the
-// lower halves of two other banks.
+// A cartridge whose data was expanded ahead of time so that a coprocessor is no
+// longer needed, which is what lets it run from a flash cartridge or a backup
+// unit. The expanded data does not fit the address space the original used, so
+// the conversion grows the image and addresses it in two planes: the upper half
+// of each bank sits where LoROM would put it, and the lower half sits one whole
+// image further into the file. Banks $C0 and above are a window composed from
+// the lower halves of two other banks.
 //
-// No real S-DD1 cartridge is larger than Star Ocean's 48 Mbit, so an S-DD1 image
-// at or above 64 Mbit is one of these conversions.
+// The layout is a property of the conversion rather than of the chip it removed,
+// and nothing below reads a chipset byte. It was first used for the Star Ocean
+// and Street Fighter Alpha 2 conversions, which dropped an S-DD1, and the same
+// shape serves a cartridge that trades any other coprocessor for room.
+//
+// Banks $00-$3F and $80-$BF give only their upper half, because the lower half
+// belongs to the console. Banks $40-$7D and the window carry a whole 64 KB each,
+// which is what reaches 12 MB where no other layout gets past 8.
 
-void CMemory::Map_SDD1DecompressedMap (void)
+void CMemory::Map_WindowedLoROMMap (void)
 {
 	const int	banks = (int) (CalculatedSize >> 16);
 
@@ -4122,6 +4164,17 @@ void CMemory::Map_SDD1DecompressedMap (void)
 			BlockIsRAM[slot] = FALSE;
 		}
 	}
+
+	// The loop hands banks $70-$7D to cartridge, and that is where LoROM save
+	// memory lives. On hardware the cartridge decodes save RAM there whatever ROM
+	// data sits at the file offset those addresses would otherwise reach, so a
+	// conversion that declares save memory needs the window back.
+	//
+	// Guarded on the declaration because map_LoROMSRAM claims $70-$7D whether or
+	// not there is any save memory, and a conversion that declares none needs
+	// those banks for cartridge.
+	if (SRAMSize > 0)
+		map_LoROMSRAM();
 
 	map_WRAM();
 	map_WriteProtectROM();
