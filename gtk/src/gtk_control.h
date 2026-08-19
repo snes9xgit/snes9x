@@ -106,6 +106,7 @@ typedef struct JoypadBinding
 
 bool S9xGrabJoysticks();
 void S9xReleaseJoysticks();
+void S9xUpdateRumble();
 int S9xCurrentSaveSlot();
 
 typedef struct JoyEvent

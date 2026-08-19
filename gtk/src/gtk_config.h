@@ -183,6 +183,7 @@ class Snes9xConfig
 
     JoyDevices joysticks;
     int joystick_threshold;
+    bool enable_rumble;
 };
 
 std::string get_config_dir();

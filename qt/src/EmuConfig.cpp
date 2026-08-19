@@ -352,6 +352,7 @@ bool EmuConfig::setDefaults(int section)
     if (section == -1 || section == 4)
     {
         automap_gamepads = true;
+        enable_rumble = true;
         // Controllers
         port_configuration = 0;
         memset(binding.controller, 0, sizeof(binding.controller));
@@ -649,6 +650,7 @@ void EmuConfig::config(const std::string &filename, bool write)
 
     BeginSection("Ports");
     Bool("AutomapGamepads", automap_gamepads, "Automatically map newly connected gamepads to a sensible default layout");
+    Bool("EnableRumble", enable_rumble, "on to pass rumble-cart motor effects (LRG SNES releases) to the port-1 gamepad");
     Enum("PortConfiguration", port_configuration, { "OneController", "TwoControllers", "Mouse", "SuperScope", "Multitap" }, "What is plugged into the console's controller ports: OneController, TwoControllers, Mouse, SuperScope, or Multitap");
     EndSection();
 

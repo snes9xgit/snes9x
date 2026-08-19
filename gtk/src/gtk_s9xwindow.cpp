@@ -375,6 +375,14 @@ void Snes9xWindow::connect_signals()
         snes9x_preferences_open(this, 1); // the Sound tab
     });
 
+    // win32's Input->Enable Rumble (Shake): pass LRG rumble-cart motor
+    // effects to the port-1 gamepad.
+    auto rumble_item = get_object<Gtk::CheckMenuItem>("enable_rumble_item");
+    rumble_item->set_active(gui_config->enable_rumble);
+    rumble_item->signal_toggled().connect([rumble_item] {
+        gui_config->enable_rumble = rumble_item->get_active();
+    });
+
     get_object<Gtk::MenuItem>("sound_menu_item")->signal_activate().connect([this] {
         uint8_t mask = S9xGetSoundChannelMask();
         // Channels 1-4 drive both SPC voices 1-4 and the GB APU's CH1-CH4.

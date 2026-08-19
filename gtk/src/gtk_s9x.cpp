@@ -437,6 +437,8 @@ static void game_loop()
             S9xMainLoop();
         }
 
+        S9xUpdateRumble();
+
 #ifdef RETROACHIEVEMENTS_SUPPORT
         // Suspend achievement processing during netplay so remote players'
         // inputs can't earn unlocks on this account.

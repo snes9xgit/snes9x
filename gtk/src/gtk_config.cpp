@@ -101,6 +101,7 @@ int Snes9xConfig::load_defaults()
     num_threads = 2;
     mute_sound = false;
     mute_sound_turbo = false;
+    enable_rumble = true;
     fullscreen = false;
     ui_visible = true;
     default_esc_behavior = 1;
@@ -451,6 +452,7 @@ int Snes9xConfig::save_config_file()
     }
 
     outint("JoystickThreshold", joystick_threshold, "How far an analog stick/trigger must move to register as pressed (percent, 1-100)");
+    outbool("EnableRumble", enable_rumble, "on to pass rumble-cart motor effects (LRG SNES releases) to the port-1 gamepad");
 
     for (int i = 0; i < NUM_JOYPADS; i++)
     {
@@ -715,6 +717,7 @@ int Snes9xConfig::load_config_file()
     }
 
     inint("JoystickThreshold", joystick_threshold);
+    inbool("EnableRumble", enable_rumble);
 
     std::string buffer;
     for (int i = 0; i < NUM_JOYPADS; i++)

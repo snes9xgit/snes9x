@@ -634,6 +634,43 @@ void S9xProcessEvents(bool8 block)
     }
 }
 
+// LRG rumble dongle -> the SDL device holding SNES Port 1's bindings, as on
+// win32. Called once per emulated frame: the SDL effect's 120ms duration
+// outlives one refresh interval, so the motors keep running while the game
+// drives them and auto-stop if we go quiet (pause, ROM close). A single
+// zero-send stops them promptly when the magnitudes drop to zero.
+void S9xUpdateRumble()
+{
+#if SDL_VERSION_ATLEAST(2, 0, 9)
+    static uint16 last_low = 0, last_high = 0;
+
+    uint8 l = 0, r = 0;
+    if (gui_config->enable_rumble && !Settings.Paused)
+        S9xGetRumble(l, r);
+    const uint16 low = l * 0x1111, high = r * 0x1111;
+
+    if (low || high || last_low || last_high)
+    {
+        // Joypad 1's bindings store the device as joynum + 1.
+        Binding *pad = (Binding *)&gui_config->pad[0];
+        unsigned int devnum = 0;
+        for (int i = 0; i < NUM_JOYPAD_LINKS && !devnum; i++)
+            if (pad[i].is_joy())
+                devnum = pad[i].get_device();
+
+        if (devnum)
+        {
+            for (auto &j : gui_config->joysticks)
+                if (j.second->joynum == (int) (devnum - 1) && j.second->filedes)
+                    SDL_JoystickRumble(j.second->filedes, low, high, 120);
+        }
+    }
+
+    last_low = low;
+    last_high = high;
+#endif
+}
+
 
 void S9xInitInputDevices()
 {

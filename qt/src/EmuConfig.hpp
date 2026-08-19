@@ -244,6 +244,7 @@ struct EmuConfig
     static const int num_save_banks = 10;
 
     bool automap_gamepads;
+    bool enable_rumble;
 
     struct
     {

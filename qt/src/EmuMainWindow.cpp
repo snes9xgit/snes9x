@@ -668,6 +668,17 @@ void EmuMainWindow::createWidgets()
     options_menu->addAction(shader_settings_item);
     updateShaderSettingsItem();
 
+    options_menu->addSeparator();
+
+    // win32's Input->Enable Rumble (Shake): pass LRG rumble-cart motor
+    // effects to the port-1 gamepad.
+    auto rumble_item = options_menu->addAction(tr("Enable &Rumble (Shake)"));
+    rumble_item->setCheckable(true);
+    rumble_item->setChecked(app->config->enable_rumble);
+    QObject::connect(rumble_item, &QAction::triggered, [&](bool checked) {
+        app->config->enable_rumble = checked;
+    });
+
     menuBar()->addMenu(options_menu);
 
 #ifdef RETROACHIEVEMENTS_SUPPORT

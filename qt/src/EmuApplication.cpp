@@ -13,12 +13,14 @@
 #include <QScreen>
 #include <QThread>
 #include <QStyleHints>
+#include <chrono>
 #include <thread>
 
+#include "snes9x.h"
+#include "controls.h"
 #ifdef RETROACHIEVEMENTS_SUPPORT
 #include "RAIntegrationQt.hpp"
 #include "retroachievements.h"
-#include "snes9x.h"
 #include "display.h"
 #endif
 #ifdef KAILLERA_SUPPORT
@@ -681,6 +683,54 @@ void EmuApplication::pollJoysticks()
     }
 }
 
+// LRG rumble dongle -> the SDL device holding SNES Port 1's bindings, as on
+// win32. The motor magnitudes are plain uint8 snapshots written by the core on
+// the emu thread; a stale read here only delays the motor by one poll.
+// SDL effects have a finite duration, so refresh while active; one zero-send
+// stops the motors when the game goes quiet.
+void EmuApplication::updateRumble()
+{
+    static uint16_t last_low = 0, last_high = 0;
+    static std::chrono::steady_clock::time_point last_send;
+
+    uint8_t l = 0, r = 0;
+    if (config->enable_rumble && !isPaused())
+        S9xGetRumble(l, r);
+    const uint16_t low = l * 0x1111, high = r * 0x1111;
+
+    auto now = std::chrono::steady_clock::now();
+    const bool changed = (low != last_low || high != last_high);
+    const bool refresh = (low || high) &&
+                         (now - last_send >= std::chrono::milliseconds(50));
+    if (changed || refresh)
+    {
+        int device = -1;
+        for (auto &b : config->binding.controller[0].buttons)
+        {
+            if (b.type == EmuBinding::Joystick)
+            {
+                device = b.guid;
+                break;
+            }
+        }
+
+        for (auto &d : input_manager->devices)
+        {
+            if (d.second.index != device)
+                continue;
+            // 120ms outlives the refresh interval; auto-stops if we go quiet.
+            if (d.second.gamepad)
+                SDL_RumbleGamepad(d.second.gamepad, low, high, 120);
+            else if (d.second.joystick)
+                SDL_RumbleJoystick(d.second.joystick, low, high, 120);
+        }
+        last_send = now;
+    }
+
+    last_low = low;
+    last_high = high;
+}
+
 void EmuApplication::reportPointer(int x, int y)
 {
     emu_thread->runOnThread([&, x, y] {
@@ -701,7 +751,10 @@ void EmuApplication::startInputTimer()
     poll_input_timer->setTimerType(Qt::TimerType::PreciseTimer);
     poll_input_timer->setInterval(1);
     poll_input_timer->setSingleShot(false);
-    poll_input_timer->callOnTimeout([&] { pollJoysticks(); });
+    poll_input_timer->callOnTimeout([&] {
+        pollJoysticks();
+        updateRumble();
+    });
     poll_input_timer->start();
 }
 
