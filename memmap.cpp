@@ -2248,16 +2248,16 @@ void CMemory::InitROM (void)
 	Map_Initialize();
 	CalculatedChecksum = 0;
 
-	const bool8	SDD1Decompressed = (CalculatedSize >= 0x800000) &&
+	const bool8	WindowedLoROM = (CalculatedSize >= 0x800000) &&
 			(Settings.SDD1 ||
 			 strncmp(ROMName, "STREET FIGHTER ALPHA2", 21) == 0 ||
 			 strncmp(ROMName, "STREET FIGHTER ZERO2", 20) == 0 ||
 			 strncmp(ROMName, "Star Ocean", 10) == 0);
 
-	if (SDD1Decompressed)
+	if (WindowedLoROM)
 	{
 		Settings.SDD1 = FALSE;
-		Map_SDD1DecompressedMap();
+		Map_WindowedLoROMMap();
 	}
 	else if (HiROM)
 	{
@@ -4064,19 +4064,24 @@ void CMemory::CheckForAnyPatch(const char *rom_filename, bool8 header, int32 &ro
     if (try_patch_type_sequence(PATCH_DIR))
         return;
 }
-// Street Fighter Alpha 2 and Star Ocean are the only two S-DD1 cartridges. Both
-// have circulating conversions whose graphics were decompressed ahead of time so
-// that the chip is no longer needed, which is what lets them run from flash
-// cartridges. The decompressed data does not fit the original address space, so
-// the conversions grow the image and address it in two halves: the upper half of
-// each bank sits where LoROM would put it, and the lower half sits one whole
-// image further into the file. Banks $C0 and above are a window composed from the
-// lower halves of two other banks.
+// A cartridge whose data was expanded ahead of time so that a coprocessor is no
+// longer needed, which is what lets it run from a flash cartridge or a backup
+// unit. The expanded data does not fit the address space the original used, so
+// the conversion grows the image and addresses it in two planes: the upper half
+// of each bank sits where LoROM would put it, and the lower half sits one whole
+// image further into the file. Banks $C0 and above are a window composed from
+// the lower halves of two other banks.
 //
-// No real S-DD1 cartridge is larger than Star Ocean's 48 Mbit, so an S-DD1 image
-// at or above 64 Mbit is one of these conversions.
+// The layout is a property of the conversion rather than of the chip it removed,
+// and nothing below reads a chipset byte. It was first used for the Star Ocean
+// and Street Fighter Alpha 2 conversions, which dropped an S-DD1, and the same
+// shape serves a cartridge that trades any other coprocessor for room.
+//
+// Banks $00-$3F and $80-$BF give only their upper half, because the lower half
+// belongs to the console. Banks $40-$7D and the window carry a whole 64 KB each,
+// which is what reaches 12 MB where no other layout gets past 8.
 
-void CMemory::Map_SDD1DecompressedMap (void)
+void CMemory::Map_WindowedLoROMMap (void)
 {
 	const int	banks = (int) (CalculatedSize >> 16);
 
