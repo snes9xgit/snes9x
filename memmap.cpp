@@ -4165,6 +4165,17 @@ void CMemory::Map_WindowedLoROMMap (void)
 		}
 	}
 
+	// The loop hands banks $70-$7D to cartridge, and that is where LoROM save
+	// memory lives. On hardware the cartridge decodes save RAM there whatever ROM
+	// data sits at the file offset those addresses would otherwise reach, so a
+	// conversion that declares save memory needs the window back.
+	//
+	// Guarded on the declaration because map_LoROMSRAM claims $70-$7D whether or
+	// not there is any save memory, and a conversion that declares none needs
+	// those banks for cartridge.
+	if (SRAMSize > 0)
+		map_LoROMSRAM();
+
 	map_WRAM();
 	map_WriteProtectROM();
 }
