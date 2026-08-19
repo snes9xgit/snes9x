@@ -1396,7 +1396,17 @@ bool8 CMemory::LoadROMInt (int32 ROMfillSize)
 
 	CalculatedSize = ((ROMfillSize + 0x1fff) / 0x2000) * 0x2000;
 
-	if (CalculatedSize > 0x400000 &&
+	// An expanded cartridge is decided by its shape further down and must not be
+	// pre-processed as an extended HiROM on the way there. SMALLFIRST rotates the
+	// ROM buffer in place before InitROM ever runs, and BIGFIRST reads the header
+	// from 0x407FB0, which only lands on one because the conversions in
+	// circulation happen to mirror it there.
+	//
+	// The two Star Ocean conversions escaped this because they kept an S-DD1
+	// chipset byte and the S-DD1 pairs are excluded below. Correcting a header to
+	// declare the coprocessor it no longer has took that protection away, and the
+	// Street Fighter conversions never had it.
+	if (CalculatedSize > 0x400000 && !is_windowed_lorom_size(CalculatedSize) &&
 		(ROM[0x7fd5] + (ROM[0x7fd6] << 8)) != 0x1320 && // exclude SuperFX
 		(ROM[0x7fd5] + (ROM[0x7fd6] << 8)) != 0x1420 &&
 		(ROM[0x7fd5] + (ROM[0x7fd6] << 8)) != 0x1520 &&
