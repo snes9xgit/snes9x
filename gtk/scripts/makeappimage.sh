@@ -13,12 +13,12 @@ fi
 DESTDIR=AppDir ninja install
 ./linuxdeploy-x86_64.AppImage --appimage-extract-and-run --appdir=AppDir \
 	--exclude-library="libX*" \
-	--exclude-library="libglib*" \
+	--exclude-library="libglib-2.0.so*" \
 	--exclude-library="libgobject*" \
 	--exclude-library="libgdk_pixbuf*" \
 	--exclude-library="libwayland*" \
 	--exclude-library="libgmodule*" \
-	--exclude-library="libgio*" \
+	--exclude-library="libgio-2.0.so*" \
 	--exclude-library="libxcb*" \
 	--exclude-library="libxkbcommon*" \
 	--exclude-library="libdb*"
