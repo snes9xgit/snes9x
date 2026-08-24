@@ -21,7 +21,16 @@ DESTDIR=AppDir ninja install
 	--exclude-library="libgio-2.0.so*" \
 	--exclude-library="libxcb*" \
 	--exclude-library="libxkbcommon*" \
-	--exclude-library="libdb*"
+	--exclude-library="libdb*" \
+	--exclude-library="libgtk-3.so*" \
+	--exclude-library="libgdk-3.so*" \
+	--exclude-library="libcairo.so*" \
+	--exclude-library="libcairo-gobject.so*" \
+	--exclude-library="libpango-1.0.so*" \
+	--exclude-library="libpangocairo-1.0.so*" \
+	--exclude-library="libpangoft2-1.0.so*" \
+	--exclude-library="libatk-1.0.so*" \
+	--exclude-library="libatk-bridge-2.0.so*"
 
 rm AppDir/snes9x.png
 pushd AppDir
