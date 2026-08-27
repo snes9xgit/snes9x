@@ -127,7 +127,7 @@ int S9xVulkanDisplayDriver::init()
 
         context->swapchain->set_desired_size(current_width, current_height);
         if (!wayland_surface->attach(display, surface, get_metrics(*drawing_area)) ||
-            !context->init_wayland() ||
+            !context->init() ||
             !context->create_wayland_surface(wayland_surface->display, wayland_surface->child) ||
             !context->create_swapchain())
         {
