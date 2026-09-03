@@ -95,7 +95,6 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
 endif()
 find_package(Qt6 REQUIRED COMPONENTS Widgets Gui)
 list(APPEND LIBS Qt6::Widgets Qt6::Gui)
-list(APPEND INCLUDES ${Qt6Gui_PRIVATE_INCLUDE_DIRS})
 
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(ZLIB REQUIRED zlib)
