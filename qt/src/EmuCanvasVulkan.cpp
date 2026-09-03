@@ -14,11 +14,6 @@ EmuCanvasVulkan::EmuCanvasVulkan(EmuConfig *config, QWidget *main_window)
     setUpdatesEnabled(false);
     setAutoFillBackground(false);
 
-    setAttribute(Qt::WA_NoSystemBackground, true);
-    setAttribute(Qt::WA_NativeWindow, true);
-    setAttribute(Qt::WA_PaintOnScreen, true);
-    setAttribute(Qt::WA_OpaquePaintEvent, true);
-
     if (QGuiApplication::platformName() == "wayland")
     {
         main_window->createWinId();
@@ -26,6 +21,11 @@ EmuCanvasVulkan::EmuCanvasVulkan(EmuConfig *config, QWidget *main_window)
     }
     else
     {
+        setAttribute(Qt::WA_NoSystemBackground, true);
+        setAttribute(Qt::WA_NativeWindow, true);
+        setAttribute(Qt::WA_PaintOnScreen, true);
+        setAttribute(Qt::WA_OpaquePaintEvent, true);
+
         createWinId();
         window = windowHandle();
     }
