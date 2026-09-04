@@ -9,6 +9,7 @@
 #include <algorithm>
 
 #define CLAMP_U8(x, lo, hi) ((x) < (lo) ? (lo) : ((x) > (hi) ? (hi) : (x)))
+#define CLAMP_U16(x, lo, hi) ((x) < (lo) ? (lo) : ((x) > (hi) ? (hi) : (x)))
 
 // Smoothstep as in GLSL: cubic easing
 static inline float smoothstep01(float x)
@@ -17,29 +18,73 @@ static inline float smoothstep01(float x)
     return x * x * (3.0f - 2.0f * x);
 }
 
-static uint8_t gamma_r_encode[32];
-static uint8_t gamma_g_encode[64];
-static uint8_t gamma_decode[256];
+// RGB565 source values decoded into 16-bit linear-light space.
+static uint16_t gamma_r_encode[32];
+static uint16_t gamma_g_encode[64];
+
+// 16-bit linear-light value back to 8-bit display-space value.
+static uint8_t gamma_decode[65536];
 
 static void init_gamma_tables()
 {
-    constexpr float gamma = 1.6f;
+    constexpr float gamma = 2.2f;
     constexpr float inv_gamma = 1.0f / gamma;
 
+    // Red and blue: 5-bit RGB565 channel -> 16-bit linear-light value.
     for (int i = 0; i < 32; ++i)
-        gamma_r_encode[i] = uint8_t(CLAMP_U8(int(std::pow((i << 3) / 255.0f, gamma) * 255.0f + 0.5f), 0, 255));
+    {
+        float encoded = (i << 3) / 255.0f;
+        float linear = std::pow(encoded, gamma);
+
+        gamma_r_encode[i] = uint16_t(
+            CLAMP_U16(
+                int(linear * 65535.0f + 0.5f),
+                0,
+                65535));
+    }
+
+    // Green: 6-bit RGB565 channel -> 16-bit linear-light value.
     for (int i = 0; i < 64; ++i)
-        gamma_g_encode[i] = uint8_t(CLAMP_U8(int(std::pow((i << 2) / 255.0f, gamma) * 255.0f + 0.5f), 0, 255));
-    for (int i = 0; i < 256; ++i)
-        gamma_decode[i] = uint8_t(CLAMP_U8(int(std::pow(i / 255.0f, inv_gamma) * 255.0f + 0.5f), 0, 255));
+    {
+        float encoded = (i << 2) / 255.0f;
+        float linear = std::pow(encoded, gamma);
+
+        gamma_g_encode[i] = uint16_t(
+            CLAMP_U16(
+                int(linear * 65535.0f + 0.5f),
+                0,
+                65535));
+    }
+
+    // 16-bit linear-light value -> 8-bit display-space value.
+    for (int i = 0; i < 65536; ++i)
+    {
+        float linear = i / 65535.0f;
+        float encoded = std::pow(linear, inv_gamma);
+
+        gamma_decode[i] = uint8_t(
+            CLAMP_U8(
+                int(encoded * 255.0f + 0.5f),
+                0,
+                255));
+    }
 }
 
 static inline uint16_t build_rgb565_fast(int r, int g, int b)
 {
-    return ((r & 0xF8) << 8) | ((g & 0xFC) << 3) | (b >> 3);
+    return ((r & 0xF8) << 8) |
+        ((g & 0xFC) << 3) |
+        (b >> 3);
 }
 
-static inline void unpack_rgb565_gamma(const uint8_t* src, int pitch, int x, int y, int& r, int& g, int& b)
+static inline void unpack_rgb565_gamma(
+    const uint8_t* src,
+    int pitch,
+    int x,
+    int y,
+    int& r,
+    int& g,
+    int& b)
 {
     const uint8_t* pixel = src + y * pitch + x * 2;
     uint16_t color = pixel[0] | (pixel[1] << 8);
@@ -53,10 +98,11 @@ static inline void unpack_rgb565_gamma(const uint8_t* src, int pitch, int x, int
     b = gamma_r_encode[b5]; // reuse red gamma table for blue
 }
 
-// --------- NEW: safe floor div/mod by 4 (handles negatives correctly) ---------
-// We need this because centered mapping uses (x-2)/(y-2), which can be negative
-// for the first two output pixels. Right-shift of negative is implementation-defined,
-// so do it explicitly and keep remainder in [0..3].
+// Safe floor div/mod by 4 (handles negatives correctly).
+// We need this because centered mapping uses (x - 2)/(y - 2),
+// which can be negative for the first two output pixels.
+// Right-shift of negative is implementation-defined, so do it explicitly
+// and keep remainder in [0..3].
 static inline void floor_divmod_4(int v, int& q, int& r)
 {
     if (v >= 0)
@@ -70,16 +116,21 @@ static inline void floor_divmod_4(int v, int& q, int& r)
         int a = -v;
         q = -((a + 3) >> 2);
         r = v - (q << 2); // remainder in [0..3]
-        // Safety: due to any oddities, clamp remainder to 0..3
+
+        // Safety
         if (r < 0) r = 0;
         if (r > 3) r = 3;
     }
 }
-// ---------------------------------------------------------------------------
 
 extern "C"
-void ApplySharpBilinear4x(uint8_t* __restrict dst, int dst_pitch, const uint8_t* __restrict src,
-    int src_width, int src_height, int src_pitch)
+void ApplySharpBilinear4x(
+    uint8_t* __restrict dst,
+    int dst_pitch,
+    const uint8_t* __restrict src,
+    int src_width,
+    int src_height,
+    int src_pitch)
 {
     const int dst_width = src_width << 2;   // *4
     const int dst_height = src_height << 2; // *4
@@ -91,37 +142,61 @@ void ApplySharpBilinear4x(uint8_t* __restrict dst, int dst_pitch, const uint8_t*
         gamma_ready = true;
     }
 
-    // Gain > 1.0 = sharper (you can keep tweaking this one constant)
+    // Gain > 1.0 = sharper
     constexpr float gain = 1.1f;
 
-    // --------- CHANGED: centered fractional positions for 4× ---------
-    // Pixel-center mapping is:
-    //   src_x = (x + 0.5)/4 - 0.5
-    // which corresponds to fractional phases:
-    //   {0.125, 0.375, 0.625, 0.875}
-    const float fracLUT[4] = { 0.125f, 0.375f, 0.625f, 0.875f };
-    // ----------------------------------------------------------------
+    // Centered fractional positions for 4×.
+    //
+    // Pixel-center mapping:
+    //
+    //   src_x = (x + 0.5) / 4 - 0.5
+    //
+    // and likewise for Y.
+    //
+    // Fractional phases:
+    //
+    //   0.125, 0.375, 0.625, 0.875
+    //
+    const float fracLUT[4] =
+    {
+        0.125f,
+        0.375f,
+        0.625f,
+        0.875f
+    };
 
-    // Precompute 1D weights for x/y phases
+    // Precompute 1D weights for X/Y phases.
     float WX[4], IWX[4];
     float WY[4], IWY[4];
+
     for (int i = 0; i < 4; ++i)
     {
-        float xf = std::clamp(0.5f + (fracLUT[i] - 0.5f) * gain, 0.0f, 1.0f);
+        float xf = std::clamp(
+            0.5f + (fracLUT[i] - 0.5f) * gain,
+            0.0f,
+            1.0f);
+
         float w = smoothstep01(xf);
-        WX[i] = w;  IWX[i] = 1.0f - w;
-        WY[i] = w;  IWY[i] = 1.0f - w;
+
+        WX[i] = w;
+        IWX[i] = 1.0f - w;
+
+        WY[i] = w;
+        IWY[i] = 1.0f - w;
     }
 
     for (int y = 0; y < dst_height; ++y)
     {
-        // --------- CHANGED: centered phase mapping via (y - 2) ---------
-        // This implements src_y = (y + 0.5)/4 - 0.5 using integer ops.
+        // Centered phase mapping via (y - 2).
+        // Implements:
+        //
+        //   src_y = (y + 0.5) / 4 - 0.5
+        //
         int sy, dy;
         floor_divmod_4(y - 2, sy, dy);
-        // Clamp for safe +1 sampling
+
+        // Clamp for safe sy + 1 sampling.
         sy = std::clamp(sy, 0, src_height - 2);
-        // ----------------------------------------------------------------
 
         const float wy = WY[dy];
         const float iwy = IWY[dy];
@@ -130,11 +205,12 @@ void ApplySharpBilinear4x(uint8_t* __restrict dst, int dst_pitch, const uint8_t*
 
         for (int x = 0; x < dst_width; ++x)
         {
-            // --------- CHANGED: centered phase mapping via (x - 2) ---------
+            // Centered phase mapping via (x - 2).
             int sx, dx;
             floor_divmod_4(x - 2, sx, dx);
+
+            // Clamp for safe sx + 1 sampling.
             sx = std::clamp(sx, 0, src_width - 2);
-            // ----------------------------------------------------------------
 
             const float wx = WX[dx];
             const float iwx = IWX[dx];
@@ -144,12 +220,43 @@ void ApplySharpBilinear4x(uint8_t* __restrict dst, int dst_pitch, const uint8_t*
             int r01, g01, b01;
             int r11, g11, b11;
 
-            unpack_rgb565_gamma(src, src_pitch, sx, sy, r00, g00, b00);
-            unpack_rgb565_gamma(src, src_pitch, sx + 1, sy, r10, g10, b10);
-            unpack_rgb565_gamma(src, src_pitch, sx, sy + 1, r01, g01, b01);
-            unpack_rgb565_gamma(src, src_pitch, sx + 1, sy + 1, r11, g11, b11);
+            unpack_rgb565_gamma(
+                src,
+                src_pitch,
+                sx,
+                sy,
+                r00,
+                g00,
+                b00);
 
-            // Horizontal blends
+            unpack_rgb565_gamma(
+                src,
+                src_pitch,
+                sx + 1,
+                sy,
+                r10,
+                g10,
+                b10);
+
+            unpack_rgb565_gamma(
+                src,
+                src_pitch,
+                sx,
+                sy + 1,
+                r01,
+                g01,
+                b01);
+
+            unpack_rgb565_gamma(
+                src,
+                src_pitch,
+                sx + 1,
+                sy + 1,
+                r11,
+                g11,
+                b11);
+
+            // Horizontal blends in 16-bit linear-light space.
             float r_h = r00 * iwx + r10 * wx;
             float g_h = g00 * iwx + g10 * wx;
             float b_h = b00 * iwx + b10 * wx;
@@ -158,27 +265,43 @@ void ApplySharpBilinear4x(uint8_t* __restrict dst, int dst_pitch, const uint8_t*
             float g_v = g01 * iwx + g11 * wx;
             float b_v = b01 * iwx + b11 * wx;
 
-            // Vertical blend
+            // Vertical blend in 16-bit linear-light space.
             float rf = r_h * iwy + r_v * wy;
             float gf = g_h * iwy + g_v * wy;
             float bf = b_h * iwy + b_v * wy;
 
+            int ri = CLAMP_U16(int(rf + 0.5f), 0, 65535);
+            int gi = CLAMP_U16(int(gf + 0.5f), 0, 65535);
+            int bi = CLAMP_U16(int(bf + 0.5f), 0, 65535);
+
             uint16_t out = build_rgb565_fast(
-                gamma_decode[CLAMP_U8(int(rf + 0.5f), 0, 255)],
-                gamma_decode[CLAMP_U8(int(gf + 0.5f), 0, 255)],
-                gamma_decode[CLAMP_U8(int(bf + 0.5f), 0, 255)]
+                gamma_decode[ri],
+                gamma_decode[gi],
+                gamma_decode[bi]
             );
 
             uint8_t* __restrict dst_px = dst_row + (x << 1);
+
             dst_px[0] = out & 0xFF;
             dst_px[1] = (out >> 8) & 0xFF;
         }
     }
 }
 
-void sharpbilinear_4x(uint8_t* srcPtr, int srcPitch,
-    uint8_t* dstPtr, int dstPitch,
-    int width, int height)
+extern "C"
+void filter_sharpbilinear_4x(
+    uint8_t* srcPtr,
+    int srcPitch,
+    uint8_t* dstPtr,
+    int dstPitch,
+    int width,
+    int height)
 {
-    ApplySharpBilinear4x(dstPtr, dstPitch, srcPtr, width, height, srcPitch);
+    ApplySharpBilinear4x(
+        dstPtr,
+        dstPitch,
+        srcPtr,
+        width,
+        height,
+        srcPitch);
 }
