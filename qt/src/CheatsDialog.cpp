@@ -42,6 +42,22 @@ CheatsDialog::CheatsDialog(QWidget *parent, EmuApplication *app_)
         lineEdit_code->setText(item->text(2));
     });
 
+    treeWidget_cheats->setDragEnabled(true);
+    treeWidget_cheats->setDragDropMode(QAbstractItemView::DragDropMode::DragDrop);
+    treeWidget_cheats->setDefaultDropAction(Qt::DropAction::MoveAction);
+
+    connect(treeWidget_cheats->model(), &QAbstractItemModel::rowsRemoved, [&](const QModelIndex &parent, int first, int last) {
+        if (ignore_movement)
+            return;
+        row_removed = first;
+    });
+
+    connect(treeWidget_cheats->model(), &QAbstractItemModel::rowsInserted, [&](const QModelIndex &parent, int first, int last) {
+        if (ignore_movement)
+            return;
+        app->moveCheat(row_removed, first);
+    });
+
     if (app->config->cheat_dialog_width != 0)
         resize(app->config->cheat_dialog_width, app->config->cheat_dialog_height);
 
@@ -77,10 +93,12 @@ void CheatsDialog::removeCode()
     if (!treeWidget_cheats->currentIndex().isValid())
         return;
 
+    ignore_movement = true;
     auto index = treeWidget_cheats->currentIndex().row();
     app->deleteCheat(index);
     auto item = treeWidget_cheats->takeTopLevelItem(index);
     delete item;
+    ignore_movement = false;
 }
 
 void CheatsDialog::disableAll()
@@ -164,14 +182,16 @@ void CheatsDialog::refreshList()
     for (const auto &[enabled, name, cheat]: clist)
     {
         auto i = new QTreeWidgetItem();
-        i->setFlags(desired_flags);
         i->setCheckState(0, enabled ? Qt::Checked : Qt::Unchecked);
         i->setText(1, QString::fromStdString(name));
         i->setText(2, QString::fromStdString(cheat));
+        i->setFlags(i->flags() & ~Qt::ItemFlag::ItemIsDropEnabled);
         items.push_back(i);
     }
 
+    ignore_movement = true;
     treeWidget_cheats->insertTopLevelItems(0, items);
+    ignore_movement = false;
 }
 
 void CheatsDialog::resizeEvent(QResizeEvent *event)

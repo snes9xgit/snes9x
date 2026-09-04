@@ -871,6 +871,11 @@ void Snes9xController::deleteCheat(int index)
     S9xDeleteCheatGroup(index);
 }
 
+void Snes9xController::moveCheat(int from, int to)
+{
+    S9xMoveCheatGroup(from, to);
+}
+
 void Snes9xController::deleteAllCheats()
 {
     S9xDeleteCheats();

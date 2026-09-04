@@ -42,6 +42,7 @@ class Snes9xController
     void disableCheat(int index);
     bool addCheat(const std::string &description, const std::string &code);
     void deleteCheat(int index);
+    void moveCheat(int from, int to);
     void deleteAllCheats();
     int tryImportCheats(const std::string &filename);
     std::string validateCheat(const std::string &code);
