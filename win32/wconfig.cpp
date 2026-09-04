@@ -277,6 +277,9 @@ const TCHAR*	WinParseCommandLineAndLoadConfigFile (TCHAR *line)
 
 	S9xLoadConfigFiles(parameters, count);
 
+	if (GUI.CurrentSaveSlot < 0 || GUI.CurrentSaveSlot > LAST_SAVE_SLOT_IN_BANK)
+		GUI.CurrentSaveSlot = 0;
+
 	ReleaseMutex(configMutex);
 	CloseHandle(configMutex);
 

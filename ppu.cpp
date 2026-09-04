@@ -258,6 +258,23 @@ void S9xSetPPU (uint8 Byte, uint16 Address)
 				{
 					FLUSH_REDRAW();
 
+					// Brightness-only change in the middle of a visible line:
+					// a scanline renderer draws the whole line with one value,
+					// so log the event; the post-pass re-scales whatever span
+					// disagrees with the brightness the line was rendered with
+					// (A.S.P.'s mid-scanline aircraft shadow).
+					if (!(Byte & 0x80) && !((Memory.FillRAM[0x2100] ^ Byte) & 0x80) &&
+						PPU.Brightness != (Byte & 0xf) &&
+						CPU.V_Counter >= FIRST_VISIBLE_LINE &&
+						CPU.V_Counter < PPU.ScreenHeight + FIRST_VISIBLE_LINE &&
+						CPU.Cycles < Timings.HBlankStart)
+					{
+						int x = CPU.Cycles / ONE_DOT_CYCLE - 22;
+						if (x >= 1 && x <= 255)
+							S9xRecordMidLineBrightness(CPU.V_Counter - FIRST_VISIBLE_LINE, x,
+									PPU.Brightness, Byte & 0xf);
+					}
+
 					if (PPU.Brightness != (Byte & 0xf))
 					{
 						IPPU.ColorsChanged = TRUE;
@@ -368,10 +385,9 @@ void S9xSetPPU (uint8 Byte, uint16 Address)
 					PPU.BGMode = Byte & 7;
 					// BJ: BG3Priority only takes effect if BGMode == 1 and the bit is set
 					PPU.BG3Priority = ((Byte & 0x0f) == 0x09);
-					if (PPU.BGMode == 6 || PPU.BGMode == 5 || PPU.BGMode == 7)
-					    IPPU.Interlace = Memory.FillRAM[0x2133] & 1;
-					else
-					    IPPU.Interlace = 0;
+					// SETINI interlace applies in every BG mode (A.S.P. runs its
+					// mode-1 screens interlaced for the two-field map/message art)
+					IPPU.Interlace = Memory.FillRAM[0x2133] & 1;
 				#ifdef DEBUGGER
 					missing.modes[PPU.BGMode] = 1;
 				#endif
@@ -383,6 +399,7 @@ void S9xSetPPU (uint8 Byte, uint16 Address)
 				if (Byte != Memory.FillRAM[0x2106])
 				{
 					FLUSH_REDRAW();
+					S9xRecordMidLineWindowSel(3, Memory.FillRAM[0x2106], Byte);
 					PPU.MosaicStart = CPU.V_Counter;
 					if (PPU.MosaicStart > PPU.ScreenHeight)
 						PPU.MosaicStart = 0;
@@ -460,48 +477,80 @@ void S9xSetPPU (uint8 Byte, uint16 Address)
 				break;
 
 			case 0x210d: // BG1HOFS, M7HOFS
+			{
+				uint16 old = PPU.BG[0].HOffset;
 				PPU.BG[0].HOffset = (Byte << 8) | (PPU.BGnxOFSbyte & ~7) | ((PPU.BG[0].HOffset >> 8) & 7);
 				PPU.M7HOFS = (Byte << 8) | PPU.M7byte;
 				PPU.BGnxOFSbyte = Byte;
 				PPU.M7byte = Byte;
+				S9xRecordMidLineScroll(0, old, PPU.BG[0].HOffset);
 				break;
+			}
 
 			case 0x210e: // BG1VOFS, M7VOFS
+			{
+				uint16 old = PPU.BG[0].VOffset;
 				PPU.BG[0].VOffset = (Byte << 8) | PPU.BGnxOFSbyte;
 				PPU.M7VOFS = (Byte << 8) | PPU.M7byte;
 				PPU.BGnxOFSbyte = Byte;
 				PPU.M7byte = Byte;
+				S9xRecordMidLineScroll(1, old, PPU.BG[0].VOffset);
 				break;
+			}
 
 			case 0x210f: // BG2HOFS
+			{
+				uint16 old = PPU.BG[1].HOffset;
 				PPU.BG[1].HOffset = (Byte << 8) | (PPU.BGnxOFSbyte & ~7) | ((PPU.BG[1].HOffset >> 8) & 7);
 				PPU.BGnxOFSbyte = Byte;
+				S9xRecordMidLineScroll(2, old, PPU.BG[1].HOffset);
 				break;
+			}
 
 			case 0x2110: // BG2VOFS
+			{
+				uint16 old = PPU.BG[1].VOffset;
 				PPU.BG[1].VOffset = (Byte << 8) | PPU.BGnxOFSbyte;
 				PPU.BGnxOFSbyte = Byte;
+				S9xRecordMidLineScroll(3, old, PPU.BG[1].VOffset);
 				break;
+			}
 
 			case 0x2111: // BG3HOFS
+			{
+				uint16 old = PPU.BG[2].HOffset;
 				PPU.BG[2].HOffset = (Byte << 8) | (PPU.BGnxOFSbyte & ~7) | ((PPU.BG[2].HOffset >> 8) & 7);
 				PPU.BGnxOFSbyte = Byte;
+				S9xRecordMidLineScroll(4, old, PPU.BG[2].HOffset);
 				break;
+			}
 
 			case 0x2112: // BG3VOFS
+			{
+				uint16 old = PPU.BG[2].VOffset;
 				PPU.BG[2].VOffset = (Byte << 8) | PPU.BGnxOFSbyte;
 				PPU.BGnxOFSbyte = Byte;
+				S9xRecordMidLineScroll(5, old, PPU.BG[2].VOffset);
 				break;
+			}
 
 			case 0x2113: // BG4HOFS
+			{
+				uint16 old = PPU.BG[3].HOffset;
 				PPU.BG[3].HOffset = (Byte << 8) | (PPU.BGnxOFSbyte & ~7) | ((PPU.BG[3].HOffset >> 8) & 7);
 				PPU.BGnxOFSbyte = Byte;
+				S9xRecordMidLineScroll(6, old, PPU.BG[3].HOffset);
 				break;
+			}
 
 			case 0x2114: // BG4VOFS
+			{
+				uint16 old = PPU.BG[3].VOffset;
 				PPU.BG[3].VOffset = (Byte << 8) | PPU.BGnxOFSbyte;
 				PPU.BGnxOFSbyte = Byte;
+				S9xRecordMidLineScroll(7, old, PPU.BG[3].VOffset);
 				break;
+			}
 
 			case 0x2115: // VMAIN
 				PPU.VMA.High = (Byte & 0x80) == 0 ? FALSE : TRUE;
@@ -617,6 +666,7 @@ void S9xSetPPU (uint8 Byte, uint16 Address)
 				if (Byte != Memory.FillRAM[0x2123])
 				{
 					FLUSH_REDRAW();
+					S9xRecordMidLineWindowSel(0, Memory.FillRAM[0x2123], Byte);
 					PPU.ClipWindow1Enable[0] = !!(Byte & 0x02);
 					PPU.ClipWindow1Enable[1] = !!(Byte & 0x20);
 					PPU.ClipWindow2Enable[0] = !!(Byte & 0x08);
@@ -644,6 +694,7 @@ void S9xSetPPU (uint8 Byte, uint16 Address)
 				if (Byte != Memory.FillRAM[0x2124])
 				{
 					FLUSH_REDRAW();
+					S9xRecordMidLineWindowSel(1, Memory.FillRAM[0x2124], Byte);
 					PPU.ClipWindow1Enable[2] = !!(Byte & 0x02);
 					PPU.ClipWindow1Enable[3] = !!(Byte & 0x20);
 					PPU.ClipWindow2Enable[2] = !!(Byte & 0x08);
@@ -671,6 +722,7 @@ void S9xSetPPU (uint8 Byte, uint16 Address)
 				if (Byte != Memory.FillRAM[0x2125])
 				{
 					FLUSH_REDRAW();
+					S9xRecordMidLineWindowSel(2, Memory.FillRAM[0x2125], Byte);
 					PPU.ClipWindow1Enable[4] = !!(Byte & 0x02);
 					PPU.ClipWindow1Enable[5] = !!(Byte & 0x20);
 					PPU.ClipWindow2Enable[4] = !!(Byte & 0x08);
@@ -1676,6 +1728,15 @@ uint8 S9xGetCPU (uint16 Address)
 				return ((byte & 0x80) | (OpenBus & 0x70) | Model->_5A22);
 
 			case 0x4211: // TIMEUP
+				// The main loop only latches CPU.IRQLine at opcode boundaries, so a $4211 read landing after the
+				// H/V-timer trigger cycle but before that boundary would miss the IRQ; latch it here as hardware would
+				// (Traverse: Starlight & Prairie polls $4210 as a 16-bit read and waits on this flag in bit 15).
+				if (!CPU.IRQLine && Timings.NextIRQTimer != 0x0fffffff &&
+					CPU.Cycles >= Timings.NextIRQTimer)
+				{
+					S9xUpdateIRQPositions(false);
+					CPU.IRQLine = TRUE;
+				}
 				byte = 0;
 				if (CPU.IRQLine)
 				{

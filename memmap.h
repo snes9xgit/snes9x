@@ -19,7 +19,7 @@
 struct CMemory
 {
 	enum
-	{ MAX_ROM_SIZE = 0xC00000 };
+	{ MAX_ROM_SIZE = 0x1000000 };
 
 	enum file_formats
 	{ FILE_ZIP, FILE_JMA, FILE_DEFAULT };
@@ -156,6 +156,7 @@ struct CMemory
 	void	Map_SuperFXLoROMMap (void);
 	void	Map_SetaDSPLoROMMap (void);
 	void	Map_SDD1LoROMMap (void);
+	void	Map_SDD1DecompressedMap (void);
 	void	Map_SA1LoROMMap (void);
 	void	Map_BSSA1LoROMMap (void);
 	void	Map_HiROMMap (void);
@@ -208,7 +209,7 @@ inline bool S9xInterlaceField()
 }
 
 void S9xAutoSaveSRAM (void);
-bool8 LoadZip(const char *, uint32 *, uint8 *);
+bool8 LoadZip(const char *, uint32 *, uint8 *, uint32);
 
 enum s9xwrap_t
 {

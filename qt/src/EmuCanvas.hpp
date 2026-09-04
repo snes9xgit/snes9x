@@ -65,6 +65,7 @@ class EmuCanvas : public QWidget
     virtual void showParametersDialog() {};
     virtual void shaderChanged() {};
     virtual void saveParameters(std::string filename) {};
+    virtual void signalInputStage() {};
 
     struct
     {

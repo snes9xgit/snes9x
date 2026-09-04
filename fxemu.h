@@ -10,6 +10,8 @@
 #define FX_BREAKPOINT				(-1)
 #define FX_ERROR_ILLEGAL_ADDRESS	(-2)
 
+#define FX_MEMORY_32K_MIRRORS 0xC00000
+
 // The FxInfo_s structure, the link between the FxEmulator and the Snes Emulator
 struct FxInfo_s
 {

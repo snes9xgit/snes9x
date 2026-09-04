@@ -200,9 +200,28 @@ struct FxRegs_s
 	uint32	vSCBRDirty;					// If SCBR is written, our cached screen pointers need updating
 	
 	uint8	*avRegAddr;					// To reference avReg in snapshot.cpp
+
+    // Cycle-accurate GSU timing (costs in SNES master-clock cycles, derived from
+    // Mesen2's GSU model). When GSU.bCycleMode is set (default), fx_run() consumes
+    // a master-cycle budget instead of a flat instruction count: cached fetches
+    // cost 1 (2 at 10MHz), uncached fetches and RAM/ROM data accesses 5 (6),
+    // 16-byte cache-line fills 16x that, multiplies per CFGR MS0. This makes the
+    // GSU's throughput distribution match hardware: cache-hot loops run at full
+    // clock while plot/RAM/ROM-heavy work is paced by real access latency.
+    uint32	vCycles;		    // cycles consumed in the current fx_run
+    uint32	vCacheMask;		// cache lines treated as loaded (timing only)
+    uint32	vCostCache;		// fetch, cache hit:      CLSR ? 1 : 2
+    uint32	vCostMem;		// fetch/data, uncached:  CLSR ? 5 : 6
+    uint32	vCostFmult;		// fmult/lmult: (MS0 ? 3 : 7) * (CLSR ? 1 : 2)
+    uint32	vCostMult;		// mult/umult:   MS0 ? 1 : 2
+    uint8	bCycleMode;		// 1 = cycle budget (default), 0 = legacy
 };
 
 extern struct FxRegs_s	GSU;
+
+
+
+#define FX_CYC(n)	{ GSU.vCycles += (uint32) (n); }
 
 // GSU registers
 #define GSU_R0			0x000
@@ -289,12 +308,25 @@ extern struct FxRegs_s	GSU;
 // Access data in the current program bank
 #define PRGBANK(idx)	GSU.pvPrgBank[USEX16(idx)]
 
-// Update pipe from ROM
-#if 0
-#define FETCHPIPE		{ PIPE = PRGBANK(R15); GSU.vPipeAdr = (GSU.vPrgBankReg << 16) + R15; }
-#else
-#define FETCHPIPE		{ PIPE = PRGBANK(R15); }
-#endif
+// Update pipe from ROM, charging the per-byte fetch cost: 1 cycle from the
+// GSU cache (with a one-time 16-byte line-fill charge), 5-6 from ROM/RAM.
+#define FETCHPIPE \
+{ \
+	PIPE = PRGBANK(R15); \
+	uint32 _fca = USEX16(R15 - GSU.vCacheBaseReg); \
+	if (GSU.bCacheActive && _fca < 512) \
+	{ \
+		uint32 _flb = 1U << (_fca >> 4); \
+		if (!(GSU.vCacheMask & _flb)) \
+		{ \
+			GSU.vCacheMask |= _flb; \
+			GSU.vCycles += GSU.vCostMem << 4; \
+		} \
+		GSU.vCycles += GSU.vCostCache; \
+	} \
+	else \
+		GSU.vCycles += GSU.vCostMem; \
+}
 
 // ABS
 #define ABS(x)			((x) < 0 ? -(x) : (x))
