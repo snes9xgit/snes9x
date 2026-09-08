@@ -320,6 +320,7 @@ void EmuCanvasOpenGL::resizeEvent(QResizeEvent *event)
 #else
     ((WGLContext *)context.get())->resize();
 #endif
+    paintEvent(nullptr);
 }
 
 void EmuCanvasOpenGL::paintEvent(QPaintEvent *event)
