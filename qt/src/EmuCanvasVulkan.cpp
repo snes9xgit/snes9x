@@ -280,9 +280,9 @@ void EmuCanvasVulkan::deinit()
     {
         if (context)
             context->wait_idle();
-        imgui_descriptor_pool.reset();
         ImGui_ImplVulkan_Shutdown();
         ImGui::DestroyContext();
+        imgui_descriptor_pool.reset();
     }
 
     simple_output.reset();

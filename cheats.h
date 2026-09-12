@@ -78,6 +78,7 @@ extern Watch		watches[16];
 
 int S9xAddCheatGroup(const std::string &name, const std::string &cheat);
 int S9xModifyCheatGroup(uint32_t index, const std::string &name, const std::string &cheat);
+void S9xMoveCheatGroup(int from, int to);
 void S9xEnableCheatGroup(uint32_t index);
 void S9xDisableCheatGroup(uint32_t index);
 void S9xDeleteCheats(void);

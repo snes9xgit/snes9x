@@ -655,6 +655,13 @@ void EmuApplication::enableCheat(int index)
     });
 }
 
+void EmuApplication::moveCheat(int from, int to)
+{
+    emu_thread->runOnThread([&, from, to] {
+        core->moveCheat(from, to);
+    });
+}
+
 void EmuApplication::disableCheat(int index)
 {
     emu_thread->runOnThread([&, index] {

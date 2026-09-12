@@ -16,6 +16,8 @@ class CheatsDialog : public QDialog, public Ui_Dialog
     void refreshList();
     void showEvent(QShowEvent *) override;
     EmuApplication *app;
+    int row_removed = 0;
+    bool ignore_movement = false;
     void resizeEvent(QResizeEvent *event) override;
 };
 
