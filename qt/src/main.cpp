@@ -7,6 +7,7 @@
 #include <qnamespace.h>
 #include <QStyle>
 #include <QStyleHints>
+#include <QCommandLineParser>
 
 #ifndef _WIN32
 #include <csignal>
@@ -24,6 +25,12 @@ int main(int argc, char *argv[])
 #endif
     EmuApplication emu;
     emu.qtapp = std::make_unique<QApplication>(argc, argv);
+
+    QCommandLineParser parser;
+    parser.addHelpOption();
+    parser.addVersionOption();
+    parser.addPositionalArgument("filename", "ROM file name");
+    parser.process(emu.qtapp->arguments());
 
     QGuiApplication::setDesktopFileName("snes9x-qt");
 
@@ -85,6 +92,18 @@ int main(int argc, char *argv[])
 
     emu.updateBindings();
     emu.startInputTimer();
+
+    if (!parser.positionalArguments().empty())
+    {
+        QTimer *timer = new QTimer();
+        timer->setTimerType(Qt::CoarseTimer);
+        timer->setSingleShot(true);
+        timer->callOnTimeout([&] {
+            emu.window->openFile(parser.positionalArguments().front().toStdString());
+        });
+        timer->start();
+    }
+
     emu.qtapp->exec();
 
     emu.stopThread();

@@ -186,6 +186,7 @@ struct STimings
 	int32	IRQFlagChanging;	// This value is just a hack.
 	int32	APUSpeedup;
 	bool8	APUAllowTimeOverflow;
+    int32   GSUCelDelay;
 };
 
 struct SSettings
@@ -314,6 +315,7 @@ struct SSettings
 	int	OneSlowClockCycle;
 	int	TwoClockCycles;
 	int	MaxSpriteTilesPerLine;
+    bool8   DisableGSUCycleMode;
 };
 
 struct SSNESGameFixes

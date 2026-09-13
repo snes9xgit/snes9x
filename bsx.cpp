@@ -1335,7 +1335,7 @@ void S9xInitBSX (void)
 void S9xResetBSX (void)
 {
 	if (Settings.BSXItself)
-		memset(Memory.ROM, 0, FLASH_SIZE);
+		memset(Memory.ROM, 0xFF, FLASH_SIZE);
 
 	memset(BSX.PPU, 0, sizeof(BSX.PPU));
 	memset(BSX.MMC, 0, sizeof(BSX.MMC));

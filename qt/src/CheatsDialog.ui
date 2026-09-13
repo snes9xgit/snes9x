@@ -79,11 +79,20 @@
    </item>
    <item>
     <widget class="QTreeWidget" name="treeWidget_cheats">
+     <property name="dragEnabled">
+      <bool>true</bool>
+     </property>
+     <property name="defaultDropAction">
+      <enum>Qt::DropAction::MoveAction</enum>
+     </property>
      <property name="rootIsDecorated">
       <bool>false</bool>
      </property>
      <property name="itemsExpandable">
       <bool>false</bool>
+     </property>
+     <property name="supportedDragActions">
+      <set>Qt::DropAction::MoveAction</set>
      </property>
      <column>
       <property name="text">

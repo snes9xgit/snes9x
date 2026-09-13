@@ -11,21 +11,16 @@ if [ ! -f linuxdeploy-x86_64.AppImage ]; then
 fi
 
 DESTDIR=AppDir ninja install
-./linuxdeploy-x86_64.AppImage --appimage-extract-and-run --appdir=AppDir \
-	--exclude-library="libX*" \
-	--exclude-library="libglib*" \
-	--exclude-library="libgobject*" \
-	--exclude-library="libgdk_pixbuf*" \
-	--exclude-library="libwayland*" \
-	--exclude-library="libgmodule*" \
-	--exclude-library="libgio*" \
-	--exclude-library="libxcb*" \
-	--exclude-library="libxkbcommon*" \
-	--exclude-library="libdb*"
+./linuxdeploy-x86_64.AppImage --appimage-extract-and-run --appdir=AppDir
 
-rm AppDir/snes9x.png
 pushd AppDir
+rm snes9x.png
 ln -s usr/share/icons/hicolor/256x256/apps/snes9x.png
+rm snes9x-gtk.desktop
+ln -s usr/share/applications/snes9x-gtk.desktop
+rm AppRun
+ln -s usr/bin/snes9x-gtk AppRun
+
 chmod +x AppRun
 popd
 ./appimagetool-x86_64.AppImage --appimage-extract-and-run AppDir

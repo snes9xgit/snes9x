@@ -6411,15 +6411,10 @@ INT_PTR CALLBACK DlgOpenROMProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 					{
 						LVFINDINFO lvfi;
 						memset(&lvfi, 0, sizeof(LVFINDINFO));
-						TCHAR filename[_MAX_PATH];
-						TCHAR *tmp, *tmp2;
-						lstrcpy(filename,_tFromChar(Memory.ROMFilename.c_str()));
-						tmp = filename;
-						while(tmp2=_tcsstr(tmp, TEXT("\\")))
-							tmp=tmp2+sizeof(TCHAR);
 
-						lvfi.flags=LVFI_STRING;
-						lvfi.psz=tmp2;
+                        Utf8ToWide filename(S9xBasename(Memory.ROMFilename).c_str());
+						lvfi.flags = LVFI_STRING;
+						lvfi.psz = filename;
 
 						int idx=ListView_FindItem(romList, -1, &lvfi);
 						ListView_SetSelectionMark(romList, idx);

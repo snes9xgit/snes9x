@@ -20,6 +20,10 @@ CWaveOut::CWaveOut(void)
 {
     hWaveOut = NULL;
     initDone = false;
+    bufferCount = 0;
+    submittedBytes = 0;
+    playedBytesAccum = 0;
+    lastPosBytes = 0;
 }
 
 CWaveOut::~CWaveOut(void)
@@ -59,6 +63,13 @@ bool CWaveOut::SetupSound()
 	int device_index = FindDeviceIndex(GUI.AudioDevice) - 1;
 
     waveOutOpen(&hWaveOut, device_index, &wfx, (DWORD_PTR)WaveCallback, (DWORD_PTR)this, CALLBACK_FUNCTION);
+
+    // Fresh device: position restarts at 0 and nothing is in flight, so
+    // reset the accounting instead of trusting waveOutReset's callbacks.
+    bufferCount = 0;
+    submittedBytes = 0;
+    playedBytesAccum = 0;
+    lastPosBytes = 0;
 
     UINT32 blockTime = GUI.SoundBufferSize / blockCount;
     singleBufferSamples = (Settings.SoundPlaybackRate * blockTime) / 1000;
@@ -134,22 +145,57 @@ void CWaveOut::StopPlayback()
     waveOutPause(hWaveOut);
 }
 
+// Bytes actually played since the device was opened, from the driver's play
+// cursor — WOM_DONE arrival can lag this by a full winmm pump period.
+UINT64 CWaveOut::PlayedBytes()
+{
+    MMTIME mmt;
+    mmt.wType = TIME_BYTES;
+    if (!hWaveOut ||
+        waveOutGetPosition(hWaveOut, &mmt, sizeof(mmt)) != MMSYSERR_NOERROR)
+        return playedBytesAccum;
+
+    DWORD pos;
+    if (mmt.wType == TIME_BYTES)
+        pos = mmt.u.cb;
+    else if (mmt.wType == TIME_SAMPLES)
+        pos = mmt.u.sample * (2 * sizeof(int16));
+    else
+        return playedBytesAccum;
+
+    // Unsigned delta handles the DWORD wrap (~6h at 48kHz stereo).
+    playedBytesAccum += (DWORD)(pos - lastPosBytes);
+    lastPosBytes = pos;
+    return playedBytesAccum;
+}
+
 int CWaveOut::GetAvailableBytes()
 {
-    return ((blockCount - bufferCount) * singleBufferBytes) - partialOffset;
+    UINT64 played = PlayedBytes();
+    UINT64 inFlight = (submittedBytes > played) ? submittedBytes - played : 0;
+    if (inFlight > sumBufferSize)
+        inFlight = sumBufferSize;
+    return (int)(sumBufferSize - (UINT32)inFlight) - (int)partialOffset;
 }
 
 // Fill the set of blocks preceding writeOffset with silence and write them
 // to the output to get the buffer back to 50%
 void CWaveOut::RecoverFromUnderrun()
 {
+    // The partial block predates the underrun; letting it play later would
+    // insert a stale-audio blip after the silence cushion.
+    partialOffset = 0;
+
     writeOffset = (writeOffset - (blockCount / 2) + blockCount) % blockCount;
 
     for (int i = 0; i < blockCount / 2; i++)
     {
         memset(waveHeaders[writeOffset].lpData, 0, singleBufferBytes);
-        waveOutWrite(hWaveOut, &waveHeaders[writeOffset], sizeof(WAVEHDR));
-        InterlockedIncrement(&bufferCount);
+        if (waveOutWrite(hWaveOut, &waveHeaders[writeOffset], sizeof(WAVEHDR)) == MMSYSERR_NOERROR)
+        {
+            submittedBytes += singleBufferBytes;
+            InterlockedIncrement(&bufferCount);
+        }
         writeOffset++;
         writeOffset %= blockCount;
     }
@@ -157,11 +203,16 @@ void CWaveOut::RecoverFromUnderrun()
 
 void CWaveOut::ProcessSound()
 {
-    int freeBytes = ((blockCount - bufferCount) * singleBufferBytes) - partialOffset;
-
     if (bufferCount == 0)
+    {
         RecoverFromUnderrun();
+    }
 
+    // Cheap lower bound first: bufferCount only lags completions, so this
+    // never overestimates free space. waveOutGetPosition round-trips into
+    // winmm and is far too slow for the per-landing call rate — query the
+    // real cursor only once this bound says the queue may be full.
+    int freeBytes = ((blockCount - bufferCount) * singleBufferBytes) - partialOffset;
     if (Settings.DynamicRateControl)
     {
         S9xUpdateDynamicRate(freeBytes, sumBufferSize);
@@ -177,8 +228,12 @@ void CWaveOut::ProcessSound()
         // maintain an accurate measurement.
         if (availableSamples > (freeBytes >> 1))
         {
-            S9xClearSamples();
-            return;
+            freeBytes = GetAvailableBytes();
+            if (availableSamples > (freeBytes >> 1))
+            {
+                S9xClearSamples();
+                return;
+            }
         }
     }
 
@@ -188,14 +243,25 @@ void CWaveOut::ProcessSound()
     if(Settings.SoundSync && !Settings.TurboMode && !Settings.Mute)
     {
         // no sound sync when speed is not set to 100%
+        if ((freeBytes >> 1) < availableSamples)
+            freeBytes = GetAvailableBytes();
+        const DWORD sync_start = timeGetTime();
         while((freeBytes >> 1) < availableSamples)
         {
             ResetEvent(GUI.SoundSyncEvent);
-            if(!GUI.AllowSoundSync || WaitForSingleObject(GUI.SoundSyncEvent, 1000) != WAIT_OBJECT_0)
+            // Space may have freed between the check and the reset — waiting
+            // now would discard that wakeup and oversleep a full block.
+            freeBytes = GetAvailableBytes();
+            if ((freeBytes >> 1) >= availableSamples)
+                break;
+            if (!GUI.AllowSoundSync || timeGetTime() - sync_start > 1000)
             {
                 S9xClearSamples();
                 return;
             }
+            // The event is only a hint; cap the wait so pacing follows the
+            // play cursor, never winmm's lagging callback phase.
+            WaitForSingleObject(GUI.SoundSyncEvent, 4);
             freeBytes = GetAvailableBytes();
         }
     }
@@ -216,8 +282,13 @@ void CWaveOut::ProcessSound()
             S9xMixSamples(offsetBuffer, samplesleftinblock);
             partialOffset = 0;
             availableSamples -= samplesleftinblock;
-            waveOutWrite(hWaveOut, &waveHeaders[writeOffset], sizeof(WAVEHDR));
-            InterlockedIncrement(&bufferCount);
+            // A failed write never gets a WOM_DONE; counting it would leave a
+            // phantom entry that blinds underrun recovery forever.
+            if (waveOutWrite(hWaveOut, &waveHeaders[writeOffset], sizeof(WAVEHDR)) == MMSYSERR_NOERROR)
+            {
+                submittedBytes += singleBufferBytes;
+                InterlockedIncrement(&bufferCount);
+            }
             writeOffset++;
             writeOffset %= blockCount;
         }
@@ -226,8 +297,11 @@ void CWaveOut::ProcessSound()
     while (availableSamples >= singleBufferSamples && bufferCount < blockCount) {
         BYTE *curBuffer = (BYTE *)waveHeaders[writeOffset].lpData;
         S9xMixSamples(curBuffer, singleBufferSamples);
-        waveOutWrite(hWaveOut, &waveHeaders[writeOffset], sizeof(WAVEHDR));
-        InterlockedIncrement(&bufferCount);
+        if (waveOutWrite(hWaveOut, &waveHeaders[writeOffset], sizeof(WAVEHDR)) == MMSYSERR_NOERROR)
+        {
+            submittedBytes += singleBufferBytes;
+            InterlockedIncrement(&bufferCount);
+        }
         writeOffset++;
         writeOffset %= blockCount;
         availableSamples -= singleBufferSamples;

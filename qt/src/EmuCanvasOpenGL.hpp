@@ -1,5 +1,6 @@
 #pragma once
 #include <QWindow>
+#include <QThread>
 
 #include "EmuCanvas.hpp"
 #include "ShaderParametersDialog.hpp"
@@ -34,6 +35,7 @@ class EmuCanvasOpenGL : public EmuCanvas
     unsigned int texture;
     unsigned stock_coord_buffer;
     std::unique_ptr<OpenGLContext> context;
+    QThread *opengl_thread = nullptr;
     bool using_shader;
     std::unique_ptr<GLSLShader> shader;
     std::unique_ptr<ShaderParametersDialog> shader_parameters_dialog;

@@ -40,7 +40,7 @@ bool S9xVulkanDisplayDriver::init_imgui()
     defaults.spacing = defaults.font_size / 2.4;
     S9xImGuiInit(&defaults);
 
-    ImGui_ImplVulkan_LoadFunctions([](const char *function, void *instance) {
+    ImGui_ImplVulkan_LoadFunctions(VK_API_VERSION_1_1, [](const char *function, void *instance) {
         return VULKAN_HPP_DEFAULT_DISPATCHER.vkGetInstanceProcAddr(*((VkInstance *)instance), function);
     }, &context->instance.get());
 
@@ -62,15 +62,11 @@ bool S9xVulkanDisplayDriver::init_imgui()
     init_info.QueueFamily = context->graphics_queue_family_index;
     init_info.Queue = context->queue;
     init_info.DescriptorPool = static_cast<VkDescriptorPool>(imgui_descriptor_pool.get());
-    init_info.Subpass = 0;
+    init_info.PipelineInfoMain.RenderPass = static_cast<VkRenderPass>(context->swapchain->get_render_pass());
     init_info.MinImageCount = context->swapchain->get_num_frames();
     init_info.ImageCount = context->swapchain->get_num_frames();
-    init_info.MSAASamples = VK_SAMPLE_COUNT_1_BIT;
-    ImGui_ImplVulkan_Init(&init_info, static_cast<VkRenderPass>(context->swapchain->get_render_pass()));
+    ImGui_ImplVulkan_Init(&init_info);
 
-    auto cmd = context->begin_cmd_buffer();
-    ImGui_ImplVulkan_CreateFontsTexture(cmd);
-    context->end_cmd_buffer();
     context->wait_idle();
 
     return true;
@@ -127,7 +123,7 @@ int S9xVulkanDisplayDriver::init()
 
         context->swapchain->set_desired_size(current_width, current_height);
         if (!wayland_surface->attach(display, surface, get_metrics(*drawing_area)) ||
-            !context->init_wayland() ||
+            !context->init() ||
             !context->create_wayland_surface(wayland_surface->display, wayland_surface->child) ||
             !context->create_swapchain())
         {
@@ -141,7 +137,7 @@ int S9xVulkanDisplayDriver::init()
         display = gdk_x11_display_get_xdisplay(drawing_area->get_display()->gobj());
         xid = gdk_x11_window_get_xid(drawing_area->get_window()->gobj());
 
-        if (!context->init_Xlib() ||
+        if (!context->init() ||
             !context->create_Xlib_surface(display, xid) ||
             !context->create_swapchain())
         {

@@ -270,6 +270,13 @@ void S9xDisableCheat(SCheat &c)
     c.cond_true = false;
 }
 
+void S9xMoveCheatGroup(int from, int to)
+{
+    auto item = Cheat.group[from];
+    Cheat.group.erase(Cheat.group.begin() + from);
+    Cheat.group.insert(Cheat.group.begin() + to, item);
+}
+
 void S9xDeleteCheatGroup(uint32 g)
 {
     unsigned int i;

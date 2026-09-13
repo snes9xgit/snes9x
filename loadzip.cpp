@@ -17,7 +17,8 @@
 #include "memmap.h"
 
 
-bool8 LoadZip (const char *zipname, uint32 *TotalFileSize, uint8 *buffer)
+bool8 LoadZip (const char *zipname, uint32 *TotalFileSize, uint8 *buffer,
+               uint32 buffer_size)
 {
 	*TotalFileSize = 0;
 
@@ -101,6 +102,13 @@ bool8 LoadZip (const char *zipname, uint32 *TotalFileSize, uint8 *buffer)
 		assert(info.uncompressed_size <= CMemory::MAX_ROM_SIZE + 512);
 
 		uint32 FileSize = info.uncompressed_size;
+		uint32 used = ptr - buffer;
+		if (used > buffer_size || FileSize > buffer_size - used)
+		{
+			unzCloseCurrentFile(file);
+			unzClose(file);
+			return (FALSE);
+		}
 		int	l = unzReadCurrentFile(file, ptr, FileSize);
 
 		if (unzCloseCurrentFile(file) == UNZ_CRCERROR)
@@ -121,13 +129,13 @@ bool8 LoadZip (const char *zipname, uint32 *TotalFileSize, uint8 *buffer)
 
 		int	len;
 
-		if (ptr - Memory.ROM < CMemory::MAX_ROM_SIZE + 512 && (isdigit(ext[0]) && ext[1] == 0 && ext[0] < '9'))
+		if (ptr - buffer < buffer_size && (isdigit(ext[0]) && ext[1] == 0 && ext[0] < '9'))
 		{
 			more = TRUE;
 			ext[0]++;
 		}
 		else
-		if (ptr - Memory.ROM < CMemory::MAX_ROM_SIZE + 512)
+		if (ptr - buffer < buffer_size)
 		{
 			if (ext == tmp)
 				len = strlen(filename);

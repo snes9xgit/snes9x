@@ -12,7 +12,7 @@
 #  ifdef SYSTEM_ZIP
 #    include <minizip/unzip.h>
 #  else
-#    include "unzip.h"
+#    include "unzip/unzip.h"
 #  endif
 #endif
 #include "stream.h"

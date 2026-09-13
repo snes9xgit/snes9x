@@ -58,6 +58,7 @@ CDirect3D::CDirect3D()
 	shaderTimeStart = 0;
 	shaderTimeElapsed = 0;
 	frameCount = 0;
+	hWnd = NULL;
 	cgContext = NULL;
 	cgAvailable = false;
 	cgShader = NULL;
@@ -91,6 +92,8 @@ bool CDirect3D::Initialize(HWND hWnd)
 		return false;
 	}
 
+	this->hWnd = hWnd;
+
 	memset(&dPresentParams, 0, sizeof(dPresentParams));
 	dPresentParams.hDeviceWindow = hWnd;
     dPresentParams.Windowed = true;
@@ -100,7 +103,7 @@ bool CDirect3D::Initialize(HWND hWnd)
 
 	HRESULT hr = pD3D->CreateDevice(D3DADAPTER_DEFAULT,
                       D3DDEVTYPE_HAL,
-                      hWnd,
+                      GUI.hWnd,
                       D3DCREATE_MIXED_VERTEXPROCESSING,
 					  &dPresentParams,
                       &pDevice);
@@ -200,6 +203,7 @@ void CDirect3D::DeInitialize()
 	}
 
 	init_done = false;
+	hWnd = NULL;
 	afterRenderWidth = 0;
 	afterRenderHeight = 0;
 	quadTextureSize = 0;
@@ -289,7 +293,7 @@ void CDirect3D::Render(SSurface Src)
 			case D3DERR_DEVICELOST:		//do no rendering until device is restored
 				return;
 			case D3DERR_DEVICENOTRESET: //we can reset now
-                if(!IsIconic(dPresentParams.hDeviceWindow))
+                if(!IsIconic(GUI.hWnd))
 				    ResetDevice();
 				return;
 			default:
@@ -570,6 +574,7 @@ bool CDirect3D::ResetDevice()
 	}
 
 	//zero or unknown values result in the current window size/display settings
+	dPresentParams.hDeviceWindow = hWnd;
 	dPresentParams.BackBufferWidth = 0;
 	dPresentParams.BackBufferHeight = 0;
 	dPresentParams.BackBufferCount = GUI.DoubleBuffered?2:1;
@@ -580,6 +585,7 @@ bool CDirect3D::ResetDevice()
 	dPresentParams.Flags = D3DPRESENTFLAG_LOCKABLE_BACKBUFFER;
 
 	if(fullscreen) {
+		dPresentParams.hDeviceWindow = GUI.hWnd;
 		dPresentParams.BackBufferWidth = GUI.FullscreenMode.width;
 		dPresentParams.BackBufferHeight = GUI.FullscreenMode.height;
 		dPresentParams.BackBufferCount = GUI.DoubleBuffered?2:1;

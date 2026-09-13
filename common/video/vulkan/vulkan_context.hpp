@@ -22,15 +22,12 @@ class Context
     Context();
     ~Context();
 #ifdef VK_USE_PLATFORM_XLIB_KHR
-    bool init_Xlib();
     bool create_Xlib_surface(Display *dpy, Window xid);
 #endif
 #ifdef VK_USE_PLATFORM_WAYLAND_KHR
-    bool init_wayland();
     bool create_wayland_surface(wl_display *dpy, wl_surface *parent);
 #endif
 #ifdef VK_USE_PLATFORM_WIN32_KHR
-    bool init_win32();
     bool create_win32_surface(HINSTANCE hinstance, HWND hwnd);
 #endif
     bool init();
@@ -40,7 +37,6 @@ class Context
     void wait_idle();
     vk::CommandBuffer begin_cmd_buffer();
     void end_cmd_buffer();
-    void hard_barrier(vk::CommandBuffer cmd);
     bool update_anti_lag_stage(vk::AntiLagStageAMD);
     bool update_anti_lag_input();
     bool update_anti_lag_present();
@@ -56,7 +52,6 @@ class Context
     std::unique_ptr<Swapchain> swapchain;
     vk::UniqueInstance instance;
     vk::PhysicalDevice physical_device;
-    vk::PhysicalDeviceProperties physical_device_props;
     vk::UniqueSurfaceKHR surface;
     std::string platform_name;
     bool have_present_wait{};
@@ -68,11 +63,6 @@ class Context
     bool init_device();
     bool init_command_pool();
     int preferred_device{};
-
-#ifdef VK_USE_PLATFORM_XLIB_KHR
-    Display *xlib_display;
-    Window xlib_window;
-#endif
 
     vk::CommandBuffer one_time_use_cmd;
 };

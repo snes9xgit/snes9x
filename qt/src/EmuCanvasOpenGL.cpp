@@ -185,6 +185,8 @@ bool EmuCanvasOpenGL::createContext()
     context->make_current();
     gladLoaderLoadGL();
 
+    opengl_thread = QThread::currentThread();
+
     if (config->display_messages == EmuConfig::eOnscreen)
     {
         recreateUIAssets();
@@ -326,18 +328,33 @@ void EmuCanvasOpenGL::paintEvent(QPaintEvent *event)
     if (!context || !isVisible())
         return;
 
-    if (output_data.ready)
+    auto paint_function = [&] {
+        if (output_data.ready)
+        {
+            if (!dynamic_cast<EmuMainWindow *>(main_window)->isActivelyDrawing())
+                draw();
+            return;
+        }
+
+        context->resize();
+
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
+        context->swap_buffers();
+    };
+
+    if (QThread::currentThread() != opengl_thread)
     {
-        if (!dynamic_cast<EmuMainWindow *>(main_window)->isActivelyDrawing())
-            draw();
-        return;
+        QMetaObject::invokeMethod(opengl_thread,
+                                  "runOnThread",
+                                  Qt::BlockingQueuedConnection,
+                                  Q_ARG(std::function<void()>, paint_function),
+                                  Q_ARG(bool, true));
     }
-
-    context->resize();
-
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
-    context->swap_buffers();
+    else
+    {
+        paint_function();
+    }
 }
 
 void EmuCanvasOpenGL::deinit()

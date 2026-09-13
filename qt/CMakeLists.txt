@@ -95,7 +95,6 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
 endif()
 find_package(Qt6 REQUIRED COMPONENTS Widgets Gui)
 list(APPEND LIBS Qt6::Widgets Qt6::Gui)
-list(APPEND INCLUDES ${Qt6Gui_PRIVATE_INCLUDE_DIRS})
 
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(ZLIB REQUIRED zlib)
@@ -169,7 +168,7 @@ else()
     FetchContent_Declare(
         SDL3
         GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
-        GIT_TAG release-3.2.20
+        GIT_TAG release-3.4.8
         GIT_SHALLOW TRUE
         GIT_PROGRESS TRUE
         EXCLUDE_FROM_ALL
