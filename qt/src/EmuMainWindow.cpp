@@ -30,6 +30,10 @@ public:
     explicit DefaultBackground(QWidget *parent)
         : QWidget(parent)
     {
+        QPalette p;
+        for (auto i = 0; i < QPalette::NColorRoles; i++)
+            p.setColor(QPalette::ColorGroup::All, (QPalette::ColorRole)i, Qt::black);
+        setPalette(p);
     }
 
     void paintEvent(QPaintEvent *event) override
@@ -115,7 +119,7 @@ bool EmuMainWindow::createCanvas()
         canvas = new EmuCanvasQt(app->config.get(), this);
 
     setCentralWidget(canvas);
-    
+
     if (QGuiApplication::platformName() == "wayland")
     {
         // Qt 6.10+ has a bug with delayed widget repositioning, causing us to get
