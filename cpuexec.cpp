@@ -421,6 +421,11 @@ void S9xDoHEventProcessing (void)
 			S9xReschedule();
 
 			break;
+
+		default:
+			S9xMessage(S9X_FATAL_ERROR, 0, "Invalid H-event state.\n");
+			abort();
+			break;
 	}
 
 #ifdef DEBUGGER
