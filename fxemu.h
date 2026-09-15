@@ -32,6 +32,7 @@ void S9xResetSuperFX (void);
 void S9xSuperFXExec (void);
 void S9xSetSuperFX (uint8, uint16);
 uint8 S9xGetSuperFX (uint16);
+void S9xFixSuperFXState (void);
 void fx_flushCache (void);
 void fx_computeScreenPointers (void);
 uint32 fx_run (uint32);
