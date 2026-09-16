@@ -148,7 +148,7 @@ static struct
 
 static set<struct exemulti *>		exemultis;
 static set<uint32>					pollmap[NUMCTLS + 1];
-static map<uint32, s9xcommand_t>	keymap;
+static multimap<uint32, s9xcommand_t>	keymap;
 static vector<s9xcommand_t *>		multis;
 static uint8						turbo_time;
 static uint8						pseudobuttons[256];
@@ -1591,7 +1591,7 @@ s9xcommand_t S9xGetMapping (uint32 id)
 		return (cmd);
 	}
 	else
-		return (keymap[id]);
+		return (keymap.find(id)->second);
 }
 
 static const char * maptypename (int t)
@@ -1696,9 +1696,7 @@ bool S9xMapButton (uint32 id, s9xcommand_t mapping, bool poll)
 		}
 	}
 
-	S9xUnmapID(id);
-
-	keymap[id] = mapping;
+	keymap.insert({id, mapping});
 
 	if (t >= 0)
 		pollmap[t].insert(id);
@@ -1711,22 +1709,28 @@ void S9xReportButton (uint32 id, bool pressed)
 	if (keymap.count(id) == 0)
 		return;
 
-	if (keymap[id].type == S9xNoMapping)
-		return;
+    auto itrs = keymap.equal_range(id);
 
-	if (maptype(keymap[id].type) != MAP_BUTTON)
-	{
-		fprintf(stderr, "ERROR: S9xReportButton called on %s ID 0x%08x\n", maptypename(maptype(keymap[id].type)), id);
-		return;
-	}
+    for (auto id = itrs.first; id != keymap.end() && id != itrs.second; id++)
+    {
 
-	if (keymap[id].type == S9xButtonCommand)	// skips the "already-pressed check" unless it's a command, as a hack to work around the following problem:
-		if (keymap[id].button_norpt == pressed)	// FIXME: this makes the controls "stick" after loading a savestate while recording a movie and holding any button
-			return;
+        if (id->second.type == S9xNoMapping)
+            return;
 
-	keymap[id].button_norpt = pressed;
+        if (maptype(id->second.type) != MAP_BUTTON)
+        {
+            fprintf(stderr, "ERROR: S9xReportButton called on %s ID 0x%08x\n", maptypename(maptype(id->second.type)), id->first);
+            return;
+        }
 
-	S9xApplyCommand(keymap[id], pressed, 0);
+        if (id->second.type == S9xButtonCommand)    // skips the "already-pressed check" unless it's a command, as a hack to work around the following problem:
+            if (id->second.button_norpt == pressed) // FIXME: this makes the controls "stick" after loading a savestate while recording a movie and holding any button
+                return;
+
+        id->second.button_norpt = pressed;
+
+        S9xApplyCommand(id->second, pressed, 0);
+    }
 }
 
 bool S9xMapPointer (uint32 id, s9xcommand_t mapping, bool poll)
@@ -1829,7 +1833,7 @@ bool S9xMapPointer (uint32 id, s9xcommand_t mapping, bool poll)
 	if (id >= PseudoPointerBase)
 		pseudopointer[id - PseudoPointerBase].mapped = true;
 
-	keymap[id] = mapping;
+	keymap.insert({id, mapping});
 
 	if (mapping.pointer.aim_mouse0    )	mouse[0].ID     = id;
 	if (mapping.pointer.aim_mouse1    )	mouse[1].ID     = id;
@@ -1846,16 +1850,16 @@ void S9xReportPointer (uint32 id, int16 x, int16 y)
 	if (keymap.count(id) == 0)
 		return;
 
-	if (keymap[id].type == S9xNoMapping)
+	if (keymap.find(id)->second.type == S9xNoMapping)
 		return;
 
-	if (maptype(keymap[id].type) != MAP_POINTER)
+	if (maptype(keymap.find(id)->second.type) != MAP_POINTER)
 	{
-		fprintf(stderr, "ERROR: S9xReportPointer called on %s ID 0x%08x\n", maptypename(maptype(keymap[id].type)), id);
+		fprintf(stderr, "ERROR: S9xReportPointer called on %s ID 0x%08x\n", maptypename(maptype(keymap.find(id)->second.type)), id);
 		return;
 	}
 
-	S9xApplyCommand(keymap[id], x, y);
+	S9xApplyCommand(keymap.find(id)->second, x, y);
 }
 
 bool S9xMapAxis (uint32 id, s9xcommand_t mapping, bool poll)
@@ -1910,7 +1914,7 @@ bool S9xMapAxis (uint32 id, s9xcommand_t mapping, bool poll)
 
 	S9xUnmapID(id);
 
-	keymap[id] = mapping;
+	keymap.find(id)->second = mapping;
 
 	if (t >= 0)
 		pollmap[t].insert(id);
@@ -1923,16 +1927,16 @@ void S9xReportAxis (uint32 id, int16 value)
 	if (keymap.count(id) == 0)
 		return;
 
-	if (keymap[id].type == S9xNoMapping)
+	if (keymap.find(id)->second.type == S9xNoMapping)
 		return;
 
-	if (maptype(keymap[id].type) != MAP_AXIS)
+	if (maptype(keymap.find(id)->second.type) != MAP_AXIS)
 	{
-		fprintf(stderr, "ERROR: S9xReportAxis called on %s ID 0x%08x\n", maptypename(maptype(keymap[id].type)), id);
+		fprintf(stderr, "ERROR: S9xReportAxis called on %s ID 0x%08x\n", maptypename(maptype(keymap.find(id)->second.type)), id);
 		return;
 	}
 
-	S9xApplyCommand(keymap[id], value, 0);
+	S9xApplyCommand(keymap.find(id)->second, value, 0);
 }
 
 static int32 ApplyMulti (s9xcommand_t *multi, int32 pos, int16 data1)
@@ -2728,7 +2732,7 @@ static void do_polling (int mp)
 
 	for (itr = pollmap[mp].begin(); itr != pollmap[mp].end(); itr++)
 	{
-		switch (maptype(keymap[*itr].type))
+		switch (maptype(keymap.find(*itr)->second.type))
 		{
 			case MAP_BUTTON:
 			{
