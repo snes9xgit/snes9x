@@ -91,7 +91,7 @@ int main(int argc, char *argv[])
     emu.config->loadFile(EmuConfig::findConfigFile());
 
     emu.input_manager = std::make_unique<SDLInputManager>();
-    emu.window = std::make_unique<EmuMainWindow>(&emu);
+    emu.window = std::make_unique<EmuMainWindow>(emu);
     emu.window->show();
 
     emu.updateBindings();

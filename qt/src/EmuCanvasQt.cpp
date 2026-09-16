@@ -5,8 +5,8 @@
 #include <QtEvents>
 #include <QThread>
 
-EmuCanvasQt::EmuCanvasQt(EmuConfig *config, QWidget *main_window)
-    : EmuCanvas(config, main_window)
+EmuCanvasQt::EmuCanvasQt(EmuApplication &app, QWidget *parent)
+    : EmuCanvas(app, parent)
 {
     setMinimumSize(256 / devicePixelRatioF(), 224 / devicePixelRatioF());
 }
@@ -44,9 +44,9 @@ void EmuCanvasQt::paintEvent(QPaintEvent *event)
     }
 
     QPainter paint(this);
-    paint.setRenderHint(QPainter::SmoothPixmapTransform, config->bilinear_filter);
+    paint.setRenderHint(QPainter::SmoothPixmapTransform, config.bilinear_filter);
     QRect dest = { 0, 0, width(), height() };
-    if (config->maintain_aspect_ratio)
+    if (config.maintain_aspect_ratio)
     {
         paint.fillRect(QRect(0, 0, width(), height()), QBrush(QColor(0, 0, 0)));
         dest = applyAspect(dest);

@@ -1,10 +1,11 @@
 #include "EmuCanvas.hpp"
+#include "EmuApplication.hpp"
 #include "EmuConfig.hpp"
 #include <qnamespace.h>
 #include <qwidget.h>
 
-EmuCanvas::EmuCanvas(EmuConfig *config, QWidget *main_window)
-    : output_data{}, main_window(main_window), config(config)
+EmuCanvas::EmuCanvas(EmuApplication &app, QWidget *parent)
+    : app(app), output_data{}, parent(parent), config(*app.config)
 {
     setFocus();
     setFocusPolicy(Qt::StrongFocus);
@@ -34,44 +35,44 @@ void EmuCanvas::output(uint8_t *buffer, int width, int height, QImage::Format fo
 
 double EmuCanvas::get_late_frames()
 {
-    if (config->speed_sync_method != EmuConfig::eTimerWithFrameskip)
+    if (config.speed_sync_method != EmuConfig::eTimerWithFrameskip)
         return 0.0;
 
-    throttle_object.set_frame_rate(config->fixed_frame_rate == 0.0 ? output_data.frame_rate : config->fixed_frame_rate);
+    throttle_object.set_frame_rate(config.fixed_frame_rate == 0.0 ? output_data.frame_rate : config.fixed_frame_rate);
 
     return throttle_object.get_late_frames();
 }
 
 void EmuCanvas::throttle()
 {
-    if (config->speed_sync_method != EmuConfig::eTimer && config->speed_sync_method != EmuConfig::eTimerWithFrameskip)
+    if (config.speed_sync_method != EmuConfig::eTimer && config.speed_sync_method != EmuConfig::eTimerWithFrameskip)
         return;
 
-    throttle_object.set_frame_rate(config->fixed_frame_rate == 0.0 ? output_data.frame_rate : config->fixed_frame_rate);
+    throttle_object.set_frame_rate(config.fixed_frame_rate == 0.0 ? output_data.frame_rate : config.fixed_frame_rate);
     throttle_object.wait_for_frame_and_rebase_time();
 }
 
 QRect EmuCanvas::applyAspect(const QRect &viewport)
 {
-    if (!config->scale_image)
+    if (!config.scale_image)
     {
         return { (viewport.width() - output_data.width) / 2,
                  (viewport.height() - output_data.height) / 2,
                  output_data.width,
                  output_data.height };
     }
-    if (!config->maintain_aspect_ratio)
+    if (!config.maintain_aspect_ratio)
         return viewport;
 
-    int num = config->aspect_ratio_numerator;
-    int den = config->aspect_ratio_denominator;
-    if (config->show_overscan)
+    int num = config.aspect_ratio_numerator;
+    int den = config.aspect_ratio_denominator;
+    if (config.show_overscan)
     {
         num *= 224;
         den *= 239;
     }
 
-    if (config->use_integer_scaling)
+    if (config.use_integer_scaling)
     {
         int max_scale = 1;
 

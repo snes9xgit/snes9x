@@ -7,8 +7,8 @@
 #include "snes9x_imgui.h"
 #include "imgui_impl_vulkan.h"
 
-EmuCanvasVulkan::EmuCanvasVulkan(EmuConfig *config, QWidget *main_window)
-    : EmuCanvas(config, main_window)
+EmuCanvasVulkan::EmuCanvasVulkan(EmuApplication &app, QWidget *parent)
+    : EmuCanvas(app, parent)
 {
     setMinimumSize(256 / devicePixelRatioF(), 224 / devicePixelRatioF());
     setUpdatesEnabled(false);
@@ -16,8 +16,8 @@ EmuCanvasVulkan::EmuCanvasVulkan(EmuConfig *config, QWidget *main_window)
 
     if (QGuiApplication::platformName() == "wayland")
     {
-        main_window->createWinId();
-        window = main_window->windowHandle();
+        parent->createWinId();
+        window = parent->windowHandle();
     }
     else
     {
@@ -29,12 +29,16 @@ EmuCanvasVulkan::EmuCanvasVulkan(EmuConfig *config, QWidget *main_window)
         createWinId();
         window = windowHandle();
     }
+
+    QGuiApplication::processEvents();
+    if (!createContext())
+        throw std::runtime_error("Couldn't create Vulkan context.\n");
 }
 
 bool EmuCanvasVulkan::initImGui()
 {
     auto defaults = S9xImGuiGetDefaults();
-    defaults.font_size = config->osd_size;
+    defaults.font_size = config.osd_size;
     defaults.spacing = defaults.font_size / 2.4;
     S9xImGuiInit(&defaults);
 
@@ -72,15 +76,12 @@ bool EmuCanvasVulkan::initImGui()
 
 bool EmuCanvasVulkan::createContext()
 {
-    if (context)
-        return true;
-
     platform = QGuiApplication::platformName();
     QGuiApplication::sync();
     auto app = reinterpret_cast<QGuiApplication *>(QGuiApplication::instance());
 
     context = std::make_unique<Vulkan::Context>();
-    context->set_preferred_device(config->display_device_index);
+    context->set_preferred_device(config.display_device_index);
 
 #ifdef _WIN32
     auto hwnd = (HWND)winId();
@@ -94,16 +95,20 @@ bool EmuCanvasVulkan::createContext()
 #else
     if (platform == "wayland")
     {
-        auto iface = app->nativeInterface<QNativeInterface::QWaylandApplication>();
-        auto display = iface->display();
-        auto surface = (wl_surface *)main_window->winId();
+        auto native_interface = app->nativeInterface<QNativeInterface::QWaylandApplication>();
+        auto display = native_interface->display();
         wayland_surface = std::make_unique<WaylandSurface>();
-        wayland_surface->attach(display, surface, { x() - main_window->x(), y() - main_window->y(), width(), height(), static_cast<int>(devicePixelRatio()) });
+        wayland_surface->attach(native_interface->display(),
+                                (wl_surface *)parent->winId(),
+                                { x() - parent->x(),
+                                  y() - parent->y(),
+                                  width(),
+                                  height(),
+                                  static_cast<int>(devicePixelRatio()) });
         auto [scaled_width, scaled_height] = wayland_surface->get_size();
 
         context->swapchain->set_desired_size(scaled_width, scaled_height);
-        if (!context->init() ||
-            !context->create_wayland_surface(display, wayland_surface->child) ||
+        if (!context->init() || !context->create_wayland_surface(display, wayland_surface->child) ||
             !context->create_swapchain())
         {
             context.reset();
@@ -112,8 +117,8 @@ bool EmuCanvasVulkan::createContext()
     }
     else if (platform == "xcb")
     {
-        auto iface = app->nativeInterface<QNativeInterface::QX11Application>();
-        auto display = iface->display();
+        auto native_interface = app->nativeInterface<QNativeInterface::QX11Application>();
+        auto display = native_interface->display();
         auto xid = (Window)winId();
 
         if (!context->init() ||
@@ -126,7 +131,7 @@ bool EmuCanvasVulkan::createContext()
     }
 #endif
 
-    if (config->display_messages == EmuConfig::eOnscreen)
+    if (config.display_messages == EmuConfig::eOnscreen)
         initImGui();
 
     tryLoadShader();
@@ -141,21 +146,18 @@ bool EmuCanvasVulkan::createContext()
 
 void EmuCanvasVulkan::tryLoadShader()
 {
-    if (!context)
-        return;
-
     simple_output.reset();
     shader_chain.reset();
     shader_parameters_dialog.reset();
 
-    if (config->use_shader && !config->shader.empty())
+    if (config.use_shader && !config.shader.empty())
     {
         shader_chain = std::make_unique<Vulkan::ShaderChain>(context.get());
         auto previous_locale = setlocale(LC_NUMERIC, "C");
-        current_shader = config->shader;
-        if (!shader_chain->load_shader_preset(config->shader))
+        current_shader = config.shader;
+        if (!shader_chain->load_shader_preset(config.shader))
         {
-            printf("Couldn't load shader preset: %s\n", config->shader.c_str());
+            printf("Couldn't load shader preset: %s\n", config.shader.c_str());
             shader_chain.reset();
         }
         setlocale(LC_NUMERIC, previous_locale);
@@ -167,26 +169,21 @@ void EmuCanvasVulkan::tryLoadShader()
 
 void EmuCanvasVulkan::shaderChanged()
 {
-    if (!context)
-        return;
-
-    if (!config->use_shader)
+    if (!config.use_shader)
         current_shader.clear();
 
-    if ((!config->use_shader && shader_chain) ||
-        (config->use_shader && current_shader != config->shader))
+    if ((!config.use_shader && shader_chain) ||
+        (config.use_shader && current_shader != config.shader))
         tryLoadShader();
 }
 
 
 void EmuCanvasVulkan::draw()
 {
-    if (!context)
-        return;
     if (!window->isVisible())
         return;
 
-    context->swapchain->set_vsync(config->enable_vsync);
+    context->swapchain->set_vsync(config.enable_vsync);
 
     if (S9xImGuiDraw(width() * devicePixelRatioF(), height() * devicePixelRatioF()))
     {
@@ -205,16 +202,16 @@ void EmuCanvasVulkan::draw()
     }
     else if (simple_output)
     {
-        simple_output->set_filter(config->bilinear_filter);
+        simple_output->set_filter(config.bilinear_filter);
         retval = simple_output->do_frame_without_swap(output_data.buffer, output_data.width, output_data.height, output_data.bytes_per_line, viewport.x(), viewport.y(), viewport.width(), viewport.height());
     }
 
     if (retval)
     {
         throttle();
-        bool anti_lag_used = config->reduce_input_lag ? context->update_anti_lag_present() : false;
+        bool anti_lag_used = config.reduce_input_lag ? context->update_anti_lag_present() : false;
         context->swapchain->swap();
-        if (config->reduce_input_lag && !anti_lag_used)
+        if (config.reduce_input_lag && !anti_lag_used)
         {
             context->wait_idle();
             context->swapchain->present_wait();
@@ -231,14 +228,14 @@ void EmuCanvasVulkan::resizeEvent(QResizeEvent *event)
     if (!context)
         return;
 
-    context->swapchain->set_vsync(config->enable_vsync);
+    context->swapchain->set_vsync(config.enable_vsync);
 
 #ifndef _WIN32
     if (platform == "wayland")
     {
         WaylandSurface::Metrics m = {
-            this->x() - main_window->x(),
-            this->y() - main_window->y(),
+            this->x() - parent->x(),
+            this->y() - parent->y(),
             event->size().width(),
             event->size().height(),
             (int)devicePixelRatio()
@@ -258,10 +255,10 @@ void EmuCanvasVulkan::resizeEvent(QResizeEvent *event)
 void EmuCanvasVulkan::paintEvent(QPaintEvent *event)
 {
     // TODO: If emu not running
-    if (!context || !isVisible())
+    if (!isVisible())
         return;
 
-    auto window = (EmuMainWindow *)main_window;
+    auto window = (EmuMainWindow *)parent;
     if (output_data.ready)
     {
         if (!window->isActivelyDrawing())
@@ -300,12 +297,6 @@ std::vector<std::string> EmuCanvasVulkan::getDeviceList()
 
 void EmuCanvasVulkan::showParametersDialog()
 {
-    if (!context)
-    {
-        QMessageBox::warning(this, tr("Vulkan Driver"), tr("The vulkan display driver hasn't properly loaded."));
-        return;
-    }
-
     if (!shader_chain)
     {
         QMessageBox::warning(this, tr("Vulkan Driver"), tr("The driver isn't using a specialized shader preset right now."));
@@ -336,7 +327,7 @@ void EmuCanvasVulkan::signalInputStage()
     if (!context)
         return;
 
-    if (!config->reduce_input_lag)
+    if (!config.reduce_input_lag)
         return;
 
     context->update_anti_lag_input();
@@ -350,9 +341,6 @@ void EmuCanvasVulkan::saveParameters(std::string filename)
 
 void EmuCanvasVulkan::recreateUIAssets()
 {
-    if (!context)
-        return;
-
     if (ImGui::GetCurrentContext())
     {
         context->wait_idle();
@@ -361,7 +349,7 @@ void EmuCanvasVulkan::recreateUIAssets()
         ImGui::DestroyContext();
     }
 
-    if (config->display_messages != EmuConfig::eOnscreen)
+    if (config.display_messages != EmuConfig::eOnscreen)
         return;
 
     initImGui();

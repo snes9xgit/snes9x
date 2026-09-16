@@ -26,5 +26,5 @@ class ShaderParametersDialog : public QDialog
     std::vector<EmuCanvas::Parameter> *parameters;
 
     EmuCanvas *canvas = nullptr;
-    EmuConfig *config = nullptr;
+    EmuConfig &config;
 };

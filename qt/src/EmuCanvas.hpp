@@ -3,17 +3,17 @@
 #include <QImage>
 #include "common/video/std_chrono_throttle.hpp"
 
+class EmuApplication;
 class EmuConfig;
 
 class EmuCanvas : public QWidget
 {
   public:
-    EmuCanvas(EmuConfig *config, QWidget *main_window);
+    EmuCanvas(EmuApplication &app, QWidget *parent);
 
     virtual void deinit() = 0;
     virtual void draw() = 0;
     void paintEvent(QPaintEvent *) override = 0;
-    virtual bool createContext() { return false; }
     virtual void recreateUIAssets() {}
     void output(uint8_t *buffer, int width, int height, QImage::Format format, int bytes_per_line, double frame_rate);
     void throttle();
@@ -78,7 +78,8 @@ class EmuCanvas : public QWidget
         double frame_rate;
     } output_data;
 
-    QWidget *main_window{};
-    EmuConfig *config{};
+    QWidget *parent{};
+    EmuApplication &app;
+    EmuConfig &config;
     Throttle throttle_object;
 };
