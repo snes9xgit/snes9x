@@ -190,6 +190,7 @@ bool EmuCanvasOpenGL::createContext()
     if (!context->create_context())
     {
         printf("Couldn't create OpenGL context.\n");
+        return false;
     }
 
     context->make_current();
