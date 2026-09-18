@@ -317,7 +317,7 @@ void EmuCanvasVulkan::showParametersDialog()
 
     if (!shader_parameters_dialog)
         shader_parameters_dialog =
-            std::make_unique<ShaderParametersDialog>(this, properties);
+            std::make_unique<ShaderParametersDialog>(*this, properties);
 
     shader_parameters_dialog->show();
 }

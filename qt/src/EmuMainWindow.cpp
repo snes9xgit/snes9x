@@ -91,7 +91,6 @@ bool EmuMainWindow::createCanvas()
     }
     else if (app.config->display_driver == "opengl")
     {
-        printf("Here\n");
         canvas = new EmuCanvasOpenGL(app, this);
     }
     else

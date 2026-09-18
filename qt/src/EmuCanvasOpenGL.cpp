@@ -341,7 +341,7 @@ void EmuCanvasOpenGL::paintEvent(QPaintEvent *event)
     app.emu_thread->runOnThread([&] {
         if (output_data.ready)
         {
-            if (!dynamic_cast<EmuMainWindow *>(parent)->isActivelyDrawing())
+            if (!app.window->isActivelyDrawing())
                 draw();
             return;
         }
@@ -401,7 +401,7 @@ void EmuCanvasOpenGL::showParametersDialog()
 
     if (!shader_parameters_dialog)
         shader_parameters_dialog =
-            std::make_unique<ShaderParametersDialog>(this, properties);
+            std::make_unique<ShaderParametersDialog>(*this, properties);
 
     shader_parameters_dialog->show();
 }

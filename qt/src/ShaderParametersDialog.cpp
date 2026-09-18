@@ -20,8 +20,8 @@ static bool is_pointless(const EmuCanvas::Parameter &p)
     return (p.min == p.max);
 }
 
-ShaderParametersDialog::ShaderParametersDialog(EmuCanvas *parent_, EmuCanvas::ShaderProperties properties_)
-    : QDialog(parent_), properties(properties_), parameters(properties.parameters), canvas(parent_), config(*parent_->app.config)
+ShaderParametersDialog::ShaderParametersDialog(EmuCanvas &parent_, EmuCanvas::ShaderProperties properties_)
+    : QDialog(&parent_), properties(properties_), parameters(properties.parameters), canvas(parent_), config(*parent_.app.config)
 {
     setWindowTitle(tr("Shader Parameters"));
     setMinimumSize(600, 200);
@@ -166,7 +166,7 @@ void ShaderParametersDialog::save()
 
     QDir dir(EmuConfig::findConfigDir().c_str());
     auto filename = dir.absoluteFilePath(QString::fromStdString("customized_shader" + extension));
-    canvas->saveParameters(filename.toStdString());
+    canvas.saveParameters(filename.toStdString());
     config.shader = QDir::toNativeSeparators(filename).toStdString();
 }
 
@@ -174,7 +174,7 @@ void ShaderParametersDialog::saveAs()
 {
     auto folder = config.last_shader_folder;
     auto filename = QFileDialog::getSaveFileName(this, tr("Save Shader Preset As"), folder.c_str());
-    canvas->saveParameters(filename.toStdString());
+    canvas.saveParameters(filename.toStdString());
     config.shader = QDir::toNativeSeparators(filename).toStdString();
 }
 
