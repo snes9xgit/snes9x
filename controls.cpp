@@ -1713,7 +1713,6 @@ void S9xReportButton (uint32 id, bool pressed)
 
     for (auto id = itrs.first; id != keymap.end() && id != itrs.second; id++)
     {
-
         if (id->second.type == S9xNoMapping)
             return;
 
@@ -1850,16 +1849,18 @@ void S9xReportPointer (uint32 id, int16 x, int16 y)
 	if (keymap.count(id) == 0)
 		return;
 
-	if (keymap.find(id)->second.type == S9xNoMapping)
+	auto mapping = keymap.find(id)->second;
+
+	if (mapping.type == S9xNoMapping)
 		return;
 
-	if (maptype(keymap.find(id)->second.type) != MAP_POINTER)
+	if (maptype(mapping.type) != MAP_POINTER)
 	{
-		fprintf(stderr, "ERROR: S9xReportPointer called on %s ID 0x%08x\n", maptypename(maptype(keymap.find(id)->second.type)), id);
+		fprintf(stderr, "ERROR: S9xReportPointer called on %s ID 0x%08x\n", maptypename(maptype(mapping.type)), id);
 		return;
 	}
 
-	S9xApplyCommand(keymap.find(id)->second, x, y);
+	S9xApplyCommand(mapping, x, y);
 }
 
 bool S9xMapAxis (uint32 id, s9xcommand_t mapping, bool poll)
@@ -1913,13 +1914,12 @@ bool S9xMapAxis (uint32 id, s9xcommand_t mapping, bool poll)
 	}
 
 	S9xUnmapID(id);
-
-	keymap.find(id)->second = mapping;
+	keymap.insert({id, mapping});
 
 	if (t >= 0)
 		pollmap[t].insert(id);
 
-	return (true);
+	return true;
 }
 
 void S9xReportAxis (uint32 id, int16 value)
@@ -1927,16 +1927,18 @@ void S9xReportAxis (uint32 id, int16 value)
 	if (keymap.count(id) == 0)
 		return;
 
-	if (keymap.find(id)->second.type == S9xNoMapping)
+	auto mapping = keymap.find(id)->second;
+
+	if (mapping.type == S9xNoMapping)
 		return;
 
-	if (maptype(keymap.find(id)->second.type) != MAP_AXIS)
+	if (maptype(mapping.type) != MAP_AXIS)
 	{
-		fprintf(stderr, "ERROR: S9xReportAxis called on %s ID 0x%08x\n", maptypename(maptype(keymap.find(id)->second.type)), id);
+		fprintf(stderr, "ERROR: S9xReportAxis called on %s ID 0x%08x\n", maptypename(maptype(mapping.type)), id);
 		return;
 	}
 
-	S9xApplyCommand(keymap.find(id)->second, value, 0);
+	S9xApplyCommand(mapping, value, 0);
 }
 
 static int32 ApplyMulti (s9xcommand_t *multi, int32 pos, int16 data1)
