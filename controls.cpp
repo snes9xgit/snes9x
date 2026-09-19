@@ -1913,7 +1913,6 @@ bool S9xMapAxis (uint32 id, s9xcommand_t mapping, bool poll)
 		}
 	}
 
-	S9xUnmapID(id);
 	keymap.insert({id, mapping});
 
 	if (t >= 0)
