@@ -29,6 +29,7 @@ NSWindowFrameAutosaveName const kCheatsWindowIdentifier = @"s9xCheatsWindow";
 NSWindowFrameAutosaveName const kCheatFinderWindowIdentifier = @"s9xCheatFinderWindow";
 
 @interface AppDelegate () <S9xCheatFinderDelegate>
+@property (nonatomic, strong) id inputDeviceListChangeObserver;
 @end
 
 @implementation AppDelegate
@@ -62,9 +63,16 @@ NSWindowFrameAutosaveName const kCheatFinderWindowIdentifier = @"s9xCheatFinderW
     }];
 
     [self resetWindow];
+
+    self.inputDeviceListChangeObserver = [NSNotificationCenter.defaultCenter addObserverForName:S9xInputDeviceListChangeNotification object:nil queue:NSOperationQueue.mainQueue usingBlock:^(NSNotification *notification)
+    {
+        [self setupJoypadsFromDefaults];
+    }];
 }
 
 - (void)applicationWillTerminate:(NSNotification *)aNotification {
+    [[NSNotificationCenter defaultCenter] removeObserver:self.inputDeviceListChangeObserver];
+
     [self.s9xEngine quit];
 }
 
@@ -144,9 +152,26 @@ NSWindowFrameAutosaveName const kCheatFinderWindowIdentifier = @"s9xCheatFinderW
         [self setButtonCode:buttonCode forKeyCode:self.keys[control].integerValue player:player];
     }
 
-	NSDictionary *joypadPlayerPrefs = [defaults objectForKey:kJoypadPlayerPrefs];
+    [self setupJoypadsFromDefaults];
 
-    for ( S9xJoypad *joypad in [self listJoypads])
+    self.deviceSetting = Gamepads;
+
+    [self importKeySettings];
+    [self importGraphicsSettings];
+    [self applyEmulationSettings];
+
+    self.s9xEngine.cheatsEnabled = [defaults boolForKey:kEnableCheatsPref];
+
+    [defaults synchronize];
+}
+
+- (void)setupJoypadsFromDefaults
+{
+    NSUserDefaults *defaults = NSUserDefaults.standardUserDefaults;
+
+    NSDictionary *joypadPlayerPrefs = [defaults objectForKey:kJoypadPlayerPrefs];
+
+    for (S9xJoypad *joypad in [self listJoypads])
     {
         NSMutableDictionary *joypadPrefs = [[defaults objectForKey:kJoypadInputPrefs] mutableCopy];
 
@@ -196,16 +221,6 @@ NSWindowFrameAutosaveName const kCheatFinderWindowIdentifier = @"s9xCheatFinderW
             }
         }
     }
-
-	self.deviceSetting = Gamepads;
-
-    [self importKeySettings];
-    [self importGraphicsSettings];
-    [self applyEmulationSettings];
-
-    self.s9xEngine.cheatsEnabled = [defaults boolForKey:kEnableCheatsPref];
-
-    [defaults synchronize];
 }
 
 - (void)setButtonCode:(S9xButtonCode)buttonCode forKeyCode:(int16)keyCode player:(int8)player
