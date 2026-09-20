@@ -480,6 +480,7 @@ void S9xSetPPU (uint8 Byte, uint16 Address)
 			{
 				uint16 old = PPU.BG[0].HOffset;
 				PPU.BG[0].HOffset = (Byte << 8) | (PPU.BGnxOFSbyte & ~7) | ((PPU.BG[0].HOffset >> 8) & 7);
+				S9xPPULatchM7(PPU.M7HOFSLatch, PPU.M7HOFS, PPU.M7HOFSLatched);
 				PPU.M7HOFS = (Byte << 8) | PPU.M7byte;
 				PPU.BGnxOFSbyte = Byte;
 				PPU.M7byte = Byte;
@@ -491,6 +492,7 @@ void S9xSetPPU (uint8 Byte, uint16 Address)
 			{
 				uint16 old = PPU.BG[0].VOffset;
 				PPU.BG[0].VOffset = (Byte << 8) | PPU.BGnxOFSbyte;
+				S9xPPULatchM7(PPU.M7VOFSLatch, PPU.M7VOFS, PPU.M7VOFSLatched);
 				PPU.M7VOFS = (Byte << 8) | PPU.M7byte;
 				PPU.BGnxOFSbyte = Byte;
 				PPU.M7byte = Byte;
@@ -643,11 +645,13 @@ void S9xSetPPU (uint8 Byte, uint16 Address)
 				break;
 
 			case 0x211f: // M7X
+				S9xPPULatchM7(PPU.CentreXLatch, PPU.CentreX, PPU.CentreXLatched);
 				PPU.CentreX = PPU.M7byte | (Byte << 8);
 				PPU.M7byte = Byte;
 				break;
 
 			case 0x2120: // M7Y
+				S9xPPULatchM7(PPU.CentreYLatch, PPU.CentreY, PPU.CentreYLatched);
 				PPU.CentreY = PPU.M7byte | (Byte << 8);
 				PPU.M7byte = Byte;
 				break;

@@ -720,15 +720,20 @@ void RenderLine (uint8 C)
 
 		if (PPU.BGMode == 7)
 		{
+			S9xPPULatchM7(PPU.M7HOFSLatch, PPU.M7HOFS, PPU.M7HOFSLatched);
+			S9xPPULatchM7(PPU.M7VOFSLatch, PPU.M7VOFS, PPU.M7VOFSLatched);
+			S9xPPULatchM7(PPU.CentreXLatch, PPU.CentreX, PPU.CentreXLatched);
+			S9xPPULatchM7(PPU.CentreYLatch, PPU.CentreY, PPU.CentreYLatched);
+
 			struct SLineMatrixData *p = &LineMatrixData[C];
 			p->MatrixA = PPU.MatrixA;
 			p->MatrixB = PPU.MatrixB;
 			p->MatrixC = PPU.MatrixC;
 			p->MatrixD = PPU.MatrixD;
-			p->CentreX = PPU.CentreX;
-			p->CentreY = PPU.CentreY;
-			p->M7HOFS  = PPU.M7HOFS;
-			p->M7VOFS  = PPU.M7VOFS;
+			p->CentreX = PPU.CentreXLatch;
+			p->CentreY = PPU.CentreYLatch;
+			p->M7HOFS  = PPU.M7HOFSLatch;
+			p->M7VOFS  = PPU.M7VOFSLatch;
 		}
 		else
 		{

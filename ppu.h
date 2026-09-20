@@ -154,9 +154,17 @@ struct SPPU
 	short	MatrixC;
 	short	MatrixD;
 	short	CentreX;
+	short	CentreXLatch;
+	bool	CentreXLatched;
 	short	CentreY;
+	short	CentreYLatch;
+	bool	CentreYLatched;
 	short	M7HOFS;
+	short	M7HOFSLatch;
+	bool	M7HOFSLatched;
 	short	M7VOFS;
+	short	M7VOFSLatch;
+	bool	M7VOFSLatched;
 
 	uint8	Mosaic;
 	uint8	MosaicStart;
@@ -233,6 +241,15 @@ static inline void FLUSH_REDRAW (void)
 {
 	if (IPPU.PreviousLine != IPPU.CurrentLine)
 		S9xUpdateScreen();
+}
+
+static inline void S9xPPULatchM7(short &latch, short value, bool &alreadyLatched)
+{
+	if (!alreadyLatched && PPU.HTimerPosition >= 44)
+	{
+		latch = value;
+		alreadyLatched = true;
+	}
 }
 
 static inline void S9xUpdateVRAMReadBuffer()
