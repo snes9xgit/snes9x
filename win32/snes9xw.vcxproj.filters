@@ -1012,4 +1012,9 @@
     </CustomBuild>
     <CustomBuild Include="snes9x.cfg" />
   </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="SCheatGroup.natvis">
+      <Filter>GUI</Filter>
+    </Natvis>
+  </ItemGroup>
 </Project>
