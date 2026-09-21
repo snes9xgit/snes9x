@@ -245,7 +245,7 @@ static inline void FLUSH_REDRAW (void)
 
 static inline void S9xPPULatchM7(short &latch, short value, bool &alreadyLatched)
 {
-	if (!alreadyLatched && PPU.HTimerPosition >= 44)
+	if (!alreadyLatched && CPU.Cycles >= 44)
 	{
 		latch = value;
 		alreadyLatched = true;
