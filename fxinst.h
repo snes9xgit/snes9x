@@ -320,12 +320,12 @@ extern struct FxRegs_s	GSU;
 		if (!(GSU.vCacheMask & _flb)) \
 		{ \
 			GSU.vCacheMask |= _flb; \
-			GSU.vCycles += GSU.vCostMem << 4; \
+			FX_CYC(GSU.vCostMem << 4); \
 		} \
-		GSU.vCycles += GSU.vCostCache; \
+		FX_CYC(GSU.vCostCache); \
 	} \
 	else \
-		GSU.vCycles += GSU.vCostMem; \
+		FX_CYC(GSU.vCostMem); \
 }
 
 // ABS
