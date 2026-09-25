@@ -1038,9 +1038,14 @@ static bool valid_normal_bank (uint8 bankbyte)
     return (false);
 }
 
-static int is_bsx (uint8 *p)
+static int is_bsx (const uint8 *data, size_t size, size_t offset)
 {
-    if ((p[26] == 0x33 || p[26] == 0xFF) && (!p[21] || (p[21] & 131) == 128) && valid_normal_bank(p[24]))
+	if (!data || offset > size || size - offset < 27)
+		return (0);
+
+	const uint8 *p = data + offset;
+
+	if ((p[26] == 0x33 || p[26] == 0xFF) && (!p[21] || (p[21] & 131) == 128) && valid_normal_bank(p[24]))
     {
         unsigned char	m = p[22];
 
@@ -1089,8 +1094,8 @@ static bool8 LoadBIOS(uint8 *biosrom, const char *biosname, int biossize)
 
 static bool8 is_SufamiTurbo_Cart (const uint8 *data, uint32 size)
 {
-    if (size >= 0x80000 && size <= 0x100000 &&
-        strncmp((char *) data, "BANDAI SFC-ADX", 14) == 0 && strncmp((char * ) (data + 0x10), "SFC-ADX BACKUP", 14) != 0)
+	if (data && size >= 0x80000 && size <= 0x100000 &&
+		strncmp((char *) data, "BANDAI SFC-ADX", 14) == 0 && strncmp((char * ) (data + 0x10), "SFC-ADX BACKUP", 14) != 0)
         return (TRUE);
     else
         return (FALSE);
@@ -1120,7 +1125,7 @@ bool retro_load_game(const struct retro_game_info *game)
         }
 
         else
-        if ((is_bsx((uint8 *) game->data + 0x7fc0)==1) | (is_bsx((uint8 *) game->data + 0xffc0)==1)) {
+		if ((is_bsx((const uint8 *) game->data, game->size, 0x7fc0)==1) | (is_bsx((const uint8 *) game->data, game->size, 0xffc0)==1)) {
             if ((rom_loaded = LoadBIOS(biosrom,"BS-X.bin",0x100000)))
             rom_loaded = Memory.LoadMultiCartMem(biosrom, 0x100000, (const uint8_t*)game->data, game->size, 0, 0);
         }
