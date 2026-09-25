@@ -47,6 +47,7 @@ static const char	*HelpMessage[] =
 	"?, help                - Shows this command help",
 	"r                      - Shows the registers",
 	"i                      - Shows the interrupt vectors",
+	"c                      - Continue execution"
 	"t                      - Trace current instruction   [step-into]",
 	"p                      - Proceed to next instruction [step-over]",
 	"s                      - Skip to next instruction    [skip]",
@@ -66,7 +67,7 @@ static const char	*HelpMessage[] =
 	"bs [Number] [Address]  - Enable/disable breakpoint",
 	"                         [enable example: bs #2 $02:8002]",
 	"                         [disable example: bs #2]",
-	"c                      - Dump SNES colour palette",
+	"C                      - Dump SNES colour palette",
 	"W                      - Show what SNES hardware features the ROM is using",
 	"                         which might not be implemented yet",
 	"w                      - Show some SNES hardware features used so far in this frame",
@@ -1281,7 +1282,7 @@ void S9xDebugProcessCommand(char *Line)
 		}
 	}
 
-	if (*Line == 'c')
+	if (*Line == 'C')
 	{
 		printf("Colours:\n");
 
@@ -1569,6 +1570,9 @@ void S9xDebugProcessCommand(char *Line)
 		for (int i = 0; HelpMessage[i] != NULL; i++)
 			debug_line_print(HelpMessage[i]);
 	}
+
+	if (*Line == 'c')
+		CPU.Flags &= ~(SINGLE_STEP_FLAG | DEBUG_MODE_FLAG);
 
 	if (*Line == 't')
 	{

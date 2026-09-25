@@ -1612,7 +1612,7 @@ void S9xExit (void)
 static void sigbrkhandler (int)
 {
 	CPU.Flags |= DEBUG_MODE_FLAG;
-	signal(SIGINT, (SIG_PF) sigbrkhandler);
+	signal(SIGINT, sigbrkhandler);
 }
 #endif
 
