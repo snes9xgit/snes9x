@@ -27,7 +27,7 @@ static uint8_t gamma_decode[65536];
 
 static void init_gamma_tables()
 {
-    constexpr float gamma = 2.2f;
+    constexpr float gamma = 2.4f;
     constexpr float inv_gamma = 1.0f / gamma;
 
     // Red and blue: 5-bit RGB565 channel -> 16-bit linear-light value.
@@ -143,7 +143,7 @@ void ApplySharpBilinear4x(
     }
 
     // Gain > 1.0 = sharper
-    constexpr float gain = 1.1f;
+    constexpr float gain = 1.15f;
 
     // Centered fractional positions for 4×.
     //
