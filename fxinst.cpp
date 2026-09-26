@@ -724,10 +724,10 @@ static void fx_plot_2bit (void)
 		return;
 #endif
 
-	if (!(GSU.vPlotOptionReg & 0x01) && !(COLR & 0xf))
+	if (!(GSU.vPlotOptionReg & PLOT_TRANSPARENT) && !(COLR & 0xf))
 		return;
 
-	if (GSU.vPlotOptionReg & 0x02)
+	if (GSU.vPlotOptionReg & PLOT_DITHER)
 		c = ((x ^ y) & 1) ? (uint8) (GSU.vColorReg >> 4) : (uint8) GSU.vColorReg;
 	else
 		c = (uint8) GSU.vColorReg;
@@ -790,10 +790,10 @@ static void fx_plot_4bit (void)
 		return;
 #endif
 
-	if (!(GSU.vPlotOptionReg & 0x01) && !(COLR & 0xf))
+	if (!(GSU.vPlotOptionReg & PLOT_TRANSPARENT) && !(COLR & 0xf))
 		return;
 
-	if (GSU.vPlotOptionReg & 0x02)
+	if (GSU.vPlotOptionReg & PLOT_DITHER)
 		c = ((x ^ y) & 1) ? (uint8) (GSU.vColorReg >> 4) : (uint8) GSU.vColorReg;
 	else
 		c = (uint8) GSU.vColorReg;
@@ -869,14 +869,10 @@ static void fx_plot_8bit (void)
 #endif
 
 	c = (uint8) GSU.vColorReg;
-	if (!(GSU.vPlotOptionReg & 0x10))
-	{
-		if (!(GSU.vPlotOptionReg & 0x01) && (!c || ((GSU.vPlotOptionReg & 0x08) && !(c & 0xf))))
-			return;
-	}
-	else
-	if (!(GSU.vPlotOptionReg & 0x01) && !c)
-		return;
+    if (!(GSU.vPlotOptionReg & PLOT_TRANSPARENT)) {
+        if ( (GSU.vPlotOptionReg & PLOT_FREEZEHIGH) && !(c & 0xf)) return;
+        if (!(GSU.vPlotOptionReg & PLOT_FREEZEHIGH) && !c)         return;
+    }
 
 	a = GSU.apvScreen[y >> 3] + GSU.x[x >> 3] + ((y & 7) << 1);
 	v = 128 >> (x & 7);
@@ -990,9 +986,9 @@ static void fx_color (void)
 {
 	uint8	c = (uint8) SREG;
 
-	if (GSU.vPlotOptionReg & 0x04)
+	if (GSU.vPlotOptionReg & PLOT_HIGHNIBBLE)
 		c = (c & 0xf0) | (c >> 4);
-	if (GSU.vPlotOptionReg & 0x08)
+	if (GSU.vPlotOptionReg & PLOT_FREEZEHIGH)
 	{
 		GSU.vColorReg &= 0xf0;
 		GSU.vColorReg |= c & 0x0f;
@@ -1009,7 +1005,7 @@ static void fx_cmode (void)
 {
 	GSU.vPlotOptionReg = SREG;
 
-	if (GSU.vPlotOptionReg & 0x10)
+	if (GSU.vPlotOptionReg & PLOT_OBJECT)
 		GSU.vScreenHeight = 256; // OBJ Mode (for drawing into sprites)
 	else
 		GSU.vScreenHeight = GSU.vScreenRealHeight;
@@ -3516,10 +3512,10 @@ static void fx_getc (void)
 	uint8	c = GSU.vRomBuffer;
 #endif
 
-	if (GSU.vPlotOptionReg & 0x04)
+	if (GSU.vPlotOptionReg & PLOT_HIGHNIBBLE)
 		c = (c & 0xf0) | (c >> 4);
 
-	if (GSU.vPlotOptionReg & 0x08)
+	if (GSU.vPlotOptionReg & PLOT_FREEZEHIGH)
 	{
 		GSU.vColorReg &= 0xf0;
 		GSU.vColorReg |= c & 0x0f;

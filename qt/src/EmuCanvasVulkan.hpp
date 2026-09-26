@@ -13,9 +13,8 @@
 class EmuCanvasVulkan : public EmuCanvas
 {
   public:
-    EmuCanvasVulkan(EmuConfig *config, QWidget *main_window);
+    EmuCanvasVulkan(EmuApplication &app, QWidget *parent);
 
-    bool createContext() override;
     void deinit() override;
     void paintEvent(QPaintEvent *event) override;
     void resizeEvent(QResizeEvent *event) override;
@@ -38,6 +37,7 @@ class EmuCanvasVulkan : public EmuCanvas
     std::unique_ptr<Vulkan::ShaderChain> shader_chain;
 
   private:
+    bool createContext();
     void tryLoadShader();
     std::string current_shader;
     QWindow *window = nullptr;

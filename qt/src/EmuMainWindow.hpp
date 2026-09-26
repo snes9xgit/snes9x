@@ -16,7 +16,7 @@ class EmuMainWindow : public QMainWindow
     void output(uint8_t *buffer, int width, int height, QImage::Format format, int bytes_per_line, double frame_rate);
 
   public:
-    EmuMainWindow(EmuApplication *app);
+    EmuMainWindow(EmuApplication &app);
     ~EmuMainWindow();
 
     void toggleFullscreen();
@@ -39,7 +39,7 @@ class EmuMainWindow : public QMainWindow
     void gameChanging();
     void toggleMouseGrab();
     std::vector<std::string> getDisplayDeviceList();
-    EmuApplication *app = nullptr;
+    EmuApplication &app;
     EmuCanvas *canvas = nullptr;
 
   private:

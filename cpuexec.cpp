@@ -83,6 +83,7 @@ void S9xMainLoop (void)
 			if (CPU.WaitingForInterrupt)
 			{
 				CPU.WaitingForInterrupt = FALSE;
+				CPU.Cycles += ONE_DOT_CYCLE;
 				Registers.PCw++;
 				CPU.Cycles += TWO_CYCLES + ONE_DOT_CYCLE / 2;
 				while (CPU.Cycles >= CPU.NextEvent)
@@ -134,42 +135,50 @@ void S9xMainLoop (void)
 		{
 			break;
 		}
-
-		uint8				Op;
-		struct	SOpcodes	*Opcodes;
-
-		if (CPU.PCBase)
+		if (CPU.WaitingForInterrupt)
 		{
-			Op = CPU.PCBase[Registers.PCw];
-			CPU.Cycles += CPU.MemSpeed;
-			Opcodes = ICPU.S9xOpcodes;
-
-			if (CPU.Cycles > 1000000)
-			{
-				Settings.StopEmulation = true;
-				CPU.Flags |= HALTED_FLAG;
-				S9xMessage(S9X_FATAL_ERROR, 0, "CPU is deadlocked");
-				return;
-			}
+			CPU.Cycles += ONE_CYCLE;
+			while (CPU.Cycles >= CPU.NextEvent)
+				S9xDoHEventProcessing();
 		}
 		else
 		{
-			Op = S9xGetByte(Registers.PBPC);
-			OpenBus = Op;
-			Opcodes = S9xOpcodesSlow;
-		}
+			uint8				Op;
+			struct	SOpcodes	*Opcodes;
 
-		if ((Registers.PCw & MEMMAP_MASK) + ICPU.S9xOpLengths[Op] >= MEMMAP_BLOCK_SIZE)
-		{
-			uint8	*oldPCBase = CPU.PCBase;
+			if (CPU.PCBase)
+			{
+				Op = CPU.PCBase[Registers.PCw];
+				CPU.Cycles += CPU.MemSpeed;
+				Opcodes = ICPU.S9xOpcodes;
 
-			CPU.PCBase = S9xGetBasePointer(ICPU.ShiftedPB + ((uint16) (Registers.PCw + 4)));
-			if (oldPCBase != CPU.PCBase || (Registers.PCw & ~MEMMAP_MASK) == (0xffff & ~MEMMAP_MASK))
+				if (CPU.Cycles > 1000000)
+				{
+					Settings.StopEmulation = true;
+					CPU.Flags |= HALTED_FLAG;
+					S9xMessage(S9X_FATAL_ERROR, 0, "CPU is deadlocked");
+					return;
+				}
+			}
+			else
+			{
+				Op = S9xGetByte(Registers.PBPC);
+				OpenBus = Op;
 				Opcodes = S9xOpcodesSlow;
-		}
+			}
 
-		Registers.PCw++;
-		(*Opcodes[Op].S9xOpcode)();
+			if ((Registers.PCw & MEMMAP_MASK) + ICPU.S9xOpLengths[Op] >= MEMMAP_BLOCK_SIZE)
+			{
+				uint8	*oldPCBase = CPU.PCBase;
+
+				CPU.PCBase = S9xGetBasePointer(ICPU.ShiftedPB + ((uint16) (Registers.PCw + 4)));
+				if (oldPCBase != CPU.PCBase || (Registers.PCw & ~MEMMAP_MASK) == (0xffff & ~MEMMAP_MASK))
+					Opcodes = S9xOpcodesSlow;
+			}
+
+			Registers.PCw++;
+			(*Opcodes[Op].S9xOpcode)();
+		}
 
 		if (Settings.SA1)
 			S9xSA1MainLoop();
@@ -269,6 +278,11 @@ void S9xDoHEventProcessing (void)
 			if (Timings.NextIRQTimer != 0x0fffffff)
 				Timings.NextIRQTimer -= Timings.H_Max;
 			S9xAPUSetReferenceTime(CPU.Cycles);
+
+			PPU.CentreXLatched = false;
+			PPU.CentreYLatched = false;
+			PPU.M7HOFSLatched = false;
+			PPU.M7VOFSLatched = false;
 
 			if (Settings.SA1)
 				SA1.Cycles -= Timings.H_Max * 3;
@@ -386,6 +400,8 @@ void S9xDoHEventProcessing (void)
 			if (CPU.V_Counter == FIRST_VISIBLE_LINE)	// V=1
 				S9xStartScreenRefresh();
 
+
+
 			S9xReschedule();
 
 			break;
@@ -420,6 +436,11 @@ void S9xDoHEventProcessing (void)
 
 			S9xReschedule();
 
+			break;
+
+		default:
+			S9xMessage(S9X_FATAL_ERROR, 0, "Invalid H-event state.\n");
+			abort();
 			break;
 	}
 

@@ -7,7 +7,7 @@
 class EmuCanvasQt : public EmuCanvas
 {
   public:
-    EmuCanvasQt(EmuConfig *config, QWidget *main_window);
+    EmuCanvasQt(EmuApplication &app, QWidget *parent);
 
     void deinit() override;
     void draw() override;

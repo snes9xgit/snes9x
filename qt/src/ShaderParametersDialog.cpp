@@ -1,4 +1,5 @@
 #include "ShaderParametersDialog.hpp"
+#include "EmuApplication.hpp"
 #include <QLayout>
 #include <QTableWidget>
 #include <QLabel>
@@ -19,8 +20,8 @@ static bool is_pointless(const EmuCanvas::Parameter &p)
     return (p.min == p.max);
 }
 
-ShaderParametersDialog::ShaderParametersDialog(EmuCanvas *parent_, EmuCanvas::ShaderProperties properties_)
-    : QDialog(parent_), properties(properties_), parameters(properties.parameters), canvas(parent_), config(parent_->config)
+ShaderParametersDialog::ShaderParametersDialog(EmuCanvas &parent_, EmuCanvas::ShaderProperties properties_)
+    : QDialog(&parent_), properties(properties_), parameters(properties.parameters), canvas(parent_), config(*parent_.app.config)
 {
     setWindowTitle(tr("Shader Parameters"));
     setMinimumSize(600, 200);
@@ -143,8 +144,8 @@ ShaderParametersDialog::ShaderParametersDialog(EmuCanvas *parent_, EmuCanvas::Sh
     layout->addWidget(scroll_area);
     layout->addLayout(buttonbox, 0);
 
-    if (config->shader_parameters_dialog_width != 0)
-        resize(config->shader_parameters_dialog_width, config->shader_parameters_dialog_height);
+    if (config.shader_parameters_dialog_width != 0)
+        resize(config.shader_parameters_dialog_width, config.shader_parameters_dialog_height);
 }
 
 void ShaderParametersDialog::save()
@@ -153,7 +154,7 @@ void ShaderParametersDialog::save()
         *properties.name == saved_name)
         return;
 
-    QString shadername(config->shader.c_str());
+    QString shadername(config.shader.c_str());
     std::string extension;
     if (shadername.endsWith("slangp", Qt::CaseInsensitive))
         extension = ".slangp";
@@ -165,16 +166,16 @@ void ShaderParametersDialog::save()
 
     QDir dir(EmuConfig::findConfigDir().c_str());
     auto filename = dir.absoluteFilePath(QString::fromStdString("customized_shader" + extension));
-    canvas->saveParameters(filename.toStdString());
-    config->shader = QDir::toNativeSeparators(filename).toStdString();
+    canvas.saveParameters(filename.toStdString());
+    config.shader = QDir::toNativeSeparators(filename).toStdString();
 }
 
 void ShaderParametersDialog::saveAs()
 {
-    auto folder = config->last_shader_folder;
+    auto folder = config.last_shader_folder;
     auto filename = QFileDialog::getSaveFileName(this, tr("Save Shader Preset As"), folder.c_str());
-    canvas->saveParameters(filename.toStdString());
-    config->shader = QDir::toNativeSeparators(filename).toStdString();
+    canvas.saveParameters(filename.toStdString());
+    config.shader = QDir::toNativeSeparators(filename).toStdString();
 }
 
 void ShaderParametersDialog::refreshWidgets()
@@ -217,6 +218,6 @@ void ShaderParametersDialog::closeEvent(QCloseEvent *event)
 
 void ShaderParametersDialog::resizeEvent(QResizeEvent *event)
 {
-    config->shader_parameters_dialog_width = event->size().width();
-    config->shader_parameters_dialog_height = event->size().height();
+    config.shader_parameters_dialog_width = event->size().width();
+    config.shader_parameters_dialog_height = event->size().height();
 }

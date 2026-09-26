@@ -11,9 +11,8 @@ class GLSLShader;
 class EmuCanvasOpenGL : public EmuCanvas
 {
   public:
-    EmuCanvasOpenGL(EmuConfig *config, QWidget *main_window);
+    EmuCanvasOpenGL(EmuApplication &app, QWidget *parent);
 
-    bool createContext() override;
     void deinit() override;
     void paintEvent(QPaintEvent *event) override;
     void resizeEvent(QResizeEvent *event) override;
@@ -25,6 +24,7 @@ class EmuCanvasOpenGL : public EmuCanvas
     void recreateUIAssets() override;
 
   private:
+    bool createContext();
     void createStockShaders();
     void stockShaderDraw();
     void customShaderDraw();
@@ -35,7 +35,6 @@ class EmuCanvasOpenGL : public EmuCanvas
     unsigned int texture;
     unsigned stock_coord_buffer;
     std::unique_ptr<OpenGLContext> context;
-    QThread *opengl_thread = nullptr;
     bool using_shader;
     std::unique_ptr<GLSLShader> shader;
     std::unique_ptr<ShaderParametersDialog> shader_parameters_dialog;
