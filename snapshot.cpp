@@ -1616,6 +1616,7 @@ int S9xUnfreezeFromStream (STREAM stream)
 		{
 			GSU.avRegAddr = (uint8 *) &GSU.avReg;
 			UnfreezeStructFromCopy(&GSU, SnapFX, COUNT(SnapFX), local_superfx, version);
+			S9xFixSuperFXState();
 		}
 
 		if (local_sa1)
@@ -2405,8 +2406,22 @@ static void UnfreezeStructFromCopy (void *sbase, FreezeData *fields, int num_fie
 		if (fields[i].type == POINTER_V)
 		{
 			relativeAddr = (int) *((pint *) ((uint8 *) base + fields[i].offset));
-			uint8	*relativeTo = (uint8 *) *((pint *) ((uint8 *) base + fields[i].offset2));
-			*((pint *) (addr)) = (pint) (relativeTo + relativeAddr);
+			uintptr_t relativeTo = (uintptr_t) *((pint *) ((uint8 *) base + fields[i].offset2));
+			uintptr_t pointer;
+			uintptr_t max_pointer = ~(uintptr_t) 0;
+
+			if (relativeAddr >= 0)
+			{
+				uintptr_t offset = (uintptr_t) relativeAddr;
+				pointer = offset > max_pointer - relativeTo ? 0 : relativeTo + offset;
+			}
+			else
+			{
+				uintptr_t offset = (uintptr_t) (-(int64) relativeAddr);
+				pointer = offset > relativeTo ? 0 : relativeTo - offset;
+			}
+
+			*((pint *) (addr)) = (pint) pointer;
 		}
 	}
 }
