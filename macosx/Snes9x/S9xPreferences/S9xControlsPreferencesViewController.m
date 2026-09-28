@@ -29,6 +29,7 @@
 @property (nonatomic, weak) IBOutlet NSPopUpButton *devicePopUp;
 @property (nonatomic, weak) IBOutlet NSPopUpButton *playerPopUp;
 @property (nonatomic, strong) NSArray *configTextFields;
+@property (nonatomic, strong) id inputDeviceListChangeObserver;
 @end
 
 @implementation S9xControlsPreferencesViewController
@@ -48,15 +49,6 @@
     [super viewDidLoad];
 
 	AppDelegate *appDelegate = (AppDelegate *)NSApp.delegate;
-	NSUInteger joypadIndex = 0;
-	for (S9xJoypad *joypad in [appDelegate listJoypads])
-	{
-		NSMenuItem *item = [NSMenuItem new];
-		item.title = joypad.name;
-		item.tag = joypadIndex++;
-		item.representedObject = joypad;
-		[self.devicePopUp.menu addItem:item];
-	}
 
 	// collect all S9xButtonConfigTextFields within subviews
 	NSMutableArray *configTextFields = [[NSMutableArray alloc] init];
@@ -76,10 +68,50 @@
 		[configTextField addObserver:self forKeyPath:@"keyCode" options:NSKeyValueObservingOptionNew context:NULL];
 		[configTextField addObserver:self forKeyPath:@"joypadInput" options:NSKeyValueObservingOptionNew context:NULL];
 	}
+}
 
-	// select Keyboard as default
-	[self selectDeviceForPlayer:0];
+- (void)viewWillAppear
+{
+	[self refreshDeviceList];
 
+	[super viewWillAppear];
+
+	self.inputDeviceListChangeObserver = [NSNotificationCenter.defaultCenter addObserverForName:S9xInputDeviceListChangeNotification object:nil queue:NSOperationQueue.mainQueue usingBlock:^(NSNotification *notification)
+	{
+		[self refreshDeviceList];
+		[self refresh];
+	}];
+}
+
+- (void)viewWillDisappear
+{
+	[[NSNotificationCenter defaultCenter] removeObserver:self.inputDeviceListChangeObserver];
+
+	[super viewWillDisappear];
+}
+
+- (void)refreshDeviceList
+{
+	AppDelegate *appDelegate = (AppDelegate *)NSApp.delegate;
+
+	// Remove all dynamic devices (keyboard is hard-coded as the first item).
+	while (self.devicePopUp.menu.numberOfItems > 1)
+	{
+		[self.devicePopUp.menu removeItemAtIndex:self.devicePopUp.menu.numberOfItems - 1];
+	}
+
+	NSUInteger joypadIndex = 0;
+	for (S9xJoypad *joypad in [appDelegate listJoypads])
+	{
+		NSMenuItem *item = [NSMenuItem new];
+		item.title = joypad.name;
+		item.tag = joypadIndex++;
+		item.representedObject = joypad;
+		[self.devicePopUp.menu addItem:item];
+	}
+
+	NSInteger playerNum = self.playerPopUp.selectedItem.tag;
+	[self selectDeviceForPlayer:playerNum];
 }
 
 - (void)refresh
@@ -167,7 +199,9 @@
 	AppDelegate *appDelegate = (AppDelegate *)NSApp.delegate;
 	NSString* joypadKey = [[NSUserDefaults.standardUserDefaults objectForKey:kJoypadPlayerPrefs] objectForKey:@(player).stringValue];
 
-	[self.devicePopUp selectItemAtIndex:0];
+	// Select keyboard as default if there is no device configured or as a fallback when the
+	// configured device is not connected.
+	NSInteger deviceItemIndex = 0;
 
 	if (joypadKey != nil)
 	{
@@ -175,23 +209,26 @@
 		uint32 productID = 0;
 		uint32 index = 0;
 
-		if ( [appDelegate getValuesFromString:joypadKey vendorID:&vendorID productID:&productID index:&index])
+		if ([appDelegate getValuesFromString:joypadKey vendorID:&vendorID productID:&productID index:&index])
 		{
 			S9xJoypad *joypad = [S9xJoypad new];
 			joypad.vendorID = vendorID;
 			joypad.productID = productID;
 			joypad.index = index;
 
-			for (NSMenuItem *item in self.devicePopUp.menu.itemArray)
+			NSArray<NSMenuItem *> * items = self.devicePopUp.menu.itemArray;
+			for (NSInteger i = 1; i < items.count; i++)
 			{
-				if ([joypad isEqual:item.representedObject])
+				if ([joypad isEqual:items[i].representedObject])
 				{
-					[self.devicePopUp selectItem:item];
+					deviceItemIndex = i;
 					break;
 				}
 			}
 		}
 	}
+
+	[self.devicePopUp selectItemAtIndex:deviceItemIndex];
 }
 
 - (BOOL)handleInput:(S9xJoypadInput *)input fromJoypad:(S9xJoypad *)joypad

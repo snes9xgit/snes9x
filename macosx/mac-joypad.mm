@@ -45,6 +45,7 @@ std::unordered_map<uint32, int8> deviceIndexByPort;
 std::unordered_map<JoypadCookie, JoypadCookieInfo> infoByCookie;
 std::unordered_map<JoypadInput, S9xButtonCode> buttonCodeByJoypadInput;
 std::unordered_map<JoypadDevice, std::string> namesByDevice;
+std::vector<std::pair<DeviceListChangeCallback, void *>> deviceListChangeCallbacks;
 
 @interface NSData (S9xHexString)
 +(id)s9x_dataWithHexString:(NSString *)hex;
@@ -518,8 +519,14 @@ void SetDefaultButtonCodeForJoypadControl(struct JoypadInput &input, S9xButtonCo
     SetButtonCodeForJoypadControl(input.cookie.device.vendorID, input.cookie.device.productID, input.cookie.device.index, input.cookie.cookie, input.value, buttonCode, false, NULL);
 }
 
-void AddDevice (IOHIDDeviceRef device)
+void AddDevice(IOHIDDeviceRef device)
 {
+    uint32_t port = ((NSNumber *)IOHIDDeviceGetProperty(device, CFSTR(kIOHIDLocationIDKey))).unsignedIntValue;
+    if (deviceIndexByPort.find(port) != deviceIndexByPort.end())
+    {
+        return; // There's already something at that location.
+    }
+
     NSNumber *vendor = (NSNumber *)IOHIDDeviceGetProperty(device, CFSTR(kIOHIDVendorIDKey));
     NSNumber *product = (NSNumber *)IOHIDDeviceGetProperty(device, CFSTR(kIOHIDProductIDKey));
     NSString *name = (NSString *)IOHIDDeviceGetProperty(device, CFSTR(kIOHIDProductKey));
@@ -554,7 +561,6 @@ void AddDevice (IOHIDDeviceRef device)
     }
 
     namesByDevice[deviceStruct] = s;
-    uint32_t port = ((NSNumber *)IOHIDDeviceGetProperty(device, CFSTR(kIOHIDLocationIDKey))).unsignedIntValue;
     deviceIndexByPort[port] = deviceStruct.index;
 
     CFMutableDictionaryRef properties = NULL;
@@ -682,6 +688,54 @@ void AddDevice (IOHIDDeviceRef device)
     CFRelease(properties);
 }
 
+void RemoveDevice(IOHIDDeviceRef device)
+{
+    uint32 port = ((NSNumber *)IOHIDDeviceGetProperty(device, CFSTR(kIOHIDLocationIDKey))).unsignedIntValue;
+
+    auto deviceIndexByPortIterator = deviceIndexByPort.find(port);
+    if (deviceIndexByPortIterator == deviceIndexByPort.end())
+    {
+        return; // unknown device
+    }
+
+    NSNumber *vendor = (NSNumber *)IOHIDDeviceGetProperty(device, CFSTR(kIOHIDVendorIDKey));
+    NSNumber *product = (NSNumber *)IOHIDDeviceGetProperty(device, CFSTR(kIOHIDProductIDKey));
+
+    struct JoypadDevice deviceStruct;
+    deviceStruct.vendorID = vendor.unsignedIntValue;
+    deviceStruct.productID = product.unsignedIntValue;
+    deviceStruct.index = deviceIndexByPortIterator->second;
+
+    allDevices.erase(deviceStruct);
+    deviceIndexByPort.erase(deviceIndexByPortIterator);
+}
+
+void TriggerDeviceListChange()
+{
+    for (auto it = deviceListChangeCallbacks.begin(); it != deviceListChangeCallbacks.end(); ++it)
+    {
+        (*it->first)(it->second);
+    }
+}
+
+void gamepadMatchingAction(void *inContext, IOReturn inResult, void *inSender, IOHIDDeviceRef device)
+{
+    pthread_mutex_lock(&keyLock);
+    AddDevice(device);
+    pthread_mutex_unlock(&keyLock);
+
+    TriggerDeviceListChange();
+}
+
+void gamepadRemovalAction(void *inContext, IOReturn inResult, void *inSender, IOHIDDeviceRef device)
+{
+    pthread_mutex_lock(&keyLock);
+    RemoveDevice(device);
+    pthread_mutex_unlock(&keyLock);
+
+    TriggerDeviceListChange();
+}
+
 void ClearJoypad(uint32 vendorID, uint32 productID, uint32 index)
 {
     struct JoypadDevice device;
@@ -728,6 +782,9 @@ void SetUpHID (void)
 
     if (hidManager != NULL && IOHIDManagerOpen(hidManager, kIOHIDOptionsTypeNone) == kIOReturnSuccess)
     {
+        IOHIDManagerRegisterDeviceMatchingCallback(hidManager, gamepadMatchingAction, NULL);
+        IOHIDManagerRegisterDeviceRemovalCallback(hidManager, gamepadRemovalAction, NULL);
+
         IOHIDManagerRegisterInputValueCallback(hidManager, gamepadAction, NULL);
         IOHIDManagerScheduleWithRunLoop(hidManager, CFRunLoopGetMain(), kCFRunLoopDefaultMode);
 
@@ -836,6 +893,19 @@ void ReleaseHID (void)
     if ( hidManager != NULL)
     {
         IOHIDManagerClose(hidManager, kIOHIDOptionsTypeNone);
+
+        pthread_mutex_lock(&keyLock);
+        allDevices.clear();
+        defaultAxes.clear();
+        defaultButtons.clear();
+        defaultHatValues.clear();
+        playerNumByDevice.clear();
+        deviceIndexByPort.clear();
+        infoByCookie.clear();
+        buttonCodeByJoypadInput.clear();
+        namesByDevice.clear();
+        deviceListChangeCallbacks.clear();
+        pthread_mutex_unlock(&keyLock);
     }
 }
 
@@ -1105,4 +1175,44 @@ std::string LabelForInput(uint32 vendorID, uint32 productID, uint32 cookie, int3
     }
 
     return std::to_string(cookie);
+}
+
+void RegisterDeviceListChangeCallback(DeviceListChangeCallback _Nullable callback, void * _Nullable context)
+{
+    pthread_mutex_lock(&keyLock);
+
+    auto it = deviceListChangeCallbacks.begin();
+    for (; it != deviceListChangeCallbacks.end(); ++it)
+    {
+        if (it->first == callback)
+        {
+            break;
+        }
+    }
+    if (it == deviceListChangeCallbacks.end())
+    {
+        deviceListChangeCallbacks.push_back(std::pair<DeviceListChangeCallback, void *>(callback, context));
+    }
+    else
+    {
+        it->second = context;
+    }
+
+    pthread_mutex_unlock(&keyLock);
+}
+
+void UnregisterDeviceListChangeCallback(DeviceListChangeCallback _Nullable callback)
+{
+    pthread_mutex_lock(&keyLock);
+
+    for (auto it = deviceListChangeCallbacks.begin(); it != deviceListChangeCallbacks.end(); ++it)
+    {
+        if (it->first == callback)
+        {
+            deviceListChangeCallbacks.erase(it);
+            break;
+        }
+    }
+
+    pthread_mutex_unlock(&keyLock);
 }
