@@ -2609,7 +2609,7 @@ static void fx_jmp_r13 (void)
 
 // 98-9d (ALT1) - ljmp rn - set program bank to source register and jump to address of register
 #define FX_LJMP(reg) \
-	GSU.vPrgBankReg = GSU.avReg[reg] & 0x7f; \
+	GSU.vPrgBankReg = (GSU.nRomBanks > 0x40) ? (GSU.avReg[reg] & 0xff) : (GSU.avReg[reg] & 0x7f); \
 	GSU.pvPrgBank = GSU.apvRomBank[GSU.vPrgBankReg]; \
 	R15 = SREG; \
 	GSU.bCacheActive = FALSE; \
@@ -3539,7 +3539,7 @@ static void fx_ramb (void)
 // df (ALT3) - romb - set current ROM bank
 static void fx_romb (void)
 {
-	GSU.vRomBankReg = USEX8(SREG) & 0x7f;
+	GSU.vRomBankReg = (GSU.nRomBanks > 0x40) ? USEX8(SREG) : (USEX8(SREG) & 0x7f);
 	GSU.pvRomBank = GSU.apvRomBank[GSU.vRomBankReg];
 	CLRFLAGS;
 	R15++;

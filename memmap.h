@@ -166,7 +166,7 @@ struct CMemory
 	void	Map_BSCartHiROMMap(void);
 
 	uint16	checksum_calc_sum (uint8 *, uint32);
-	uint16	checksum_mirror_sum (uint8 *, uint32 &, uint32 mask = 0x800000);
+	uint16	checksum_mirror_sum (uint8 *, uint32 &, uint32 mask = MAX_ROM_SIZE);
 	void	Checksum_Calculate (void);
 
 	bool8	match_na (const char *);

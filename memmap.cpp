@@ -930,7 +930,7 @@ bool8 CMemory::Init (void)
 		return (FALSE);
     }
 
-	ROMStorage.resize(MAX_ROM_SIZE + 0x200 + 0x8000);
+	ROMStorage.resize(MAX_ROM_SIZE + 0x400000 + 0x200 + 0x8000);
 	std::fill(ROMStorage.begin(), ROMStorage.end(), 0);
 	SRAMStorage.resize(SRAM_SIZE);
 	std::fill(SRAMStorage.begin(), SRAMStorage.end(), 0);
@@ -1383,10 +1383,10 @@ bool8 CMemory::LoadROMInt (int32 ROMfillSize)
 	CalculatedSize = ((ROMfillSize + 0x1fff) / 0x2000) * 0x2000;
 
 	if (CalculatedSize > 0x400000 &&
-		(ROM[0x7fd5] + (ROM[0x7fd6] << 8)) != 0x1320 && // exclude SuperFX
-		(ROM[0x7fd5] + (ROM[0x7fd6] << 8)) != 0x1420 &&
-		(ROM[0x7fd5] + (ROM[0x7fd6] << 8)) != 0x1520 &&
-		(ROM[0x7fd5] + (ROM[0x7fd6] << 8)) != 0x1A20 &&
+		((ROM[0x7fd5] & 0xef) + (ROM[0x7fd6] << 8)) != 0x1320 && // exclude SuperFX (SlowROM & FastROM)
+		((ROM[0x7fd5] & 0xef) + (ROM[0x7fd6] << 8)) != 0x1420 &&
+		((ROM[0x7fd5] & 0xef) + (ROM[0x7fd6] << 8)) != 0x1520 &&
+		((ROM[0x7fd5] & 0xef) + (ROM[0x7fd6] << 8)) != 0x1A20 &&
 		(ROM[0x7fd5] + (ROM[0x7fd6] << 8)) != 0x3423 && // exclude SA-1
 		(ROM[0x7fd5] + (ROM[0x7fd6] << 8)) != 0x3523 &&
 		(ROM[0x7fd5] + (ROM[0x7fd6] << 8)) != 0x4332 && // exclude S-DD1
@@ -2064,7 +2064,7 @@ void CMemory::InitROM (void)
 	Settings.BS = FALSE;
 	Settings.MSU1 = FALSE;
 
-	SuperFX.nRomBanks = CalculatedSize >> 15;
+	SuperFX.nRomBanks = (CalculatedSize + 0x7fff) >> 15;
 
 	//// Parse ROM header and read ROM informatoin
 
@@ -2899,7 +2899,10 @@ void CMemory::Map_SuperFXLoROMMap (void)
 		memmove(&ROM[FX_MEMORY_32K_MIRRORS + 0x8000 + c * 0x10000], &ROM[c * 0x8000], 0x8000);
 	}
 
-	// Support for ROMs up to 11MB by setting the ROM size to $0E, The GSU still cannot access more than 2 MB.
+	SuperFX.nRomBanks = (CalculatedSize + 0x7fff) >> 15;
+	S9xResetSuperFX();
+
+	// S-CPU maps up to 11MB when ROM size >= $0E; GSU accesses up to 16MB via 8-bit bank addressing.
 	if (ROM[0x7FD7] >= 0x0E) {
 		map_lorom(0x00, 0x3f, 0x8000, 0xffff, 0x200000);
 		map_lorom_offset(0x80, 0xbf, 0x8000, 0xffff, 0x200000, 0x200000);
@@ -3235,6 +3238,8 @@ uint16 CMemory::checksum_mirror_sum (uint8 *start, uint32 &length, uint32 mask)
 	// from NSRT
 	while (!(length & mask) && mask)
 		mask >>= 1;
+	if (!mask)
+		return (0);
 
 	uint16	part1 = checksum_calc_sum(start, mask);
 	uint16	part2 = 0;

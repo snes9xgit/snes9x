@@ -10,7 +10,7 @@
 #define FX_BREAKPOINT				(-1)
 #define FX_ERROR_ILLEGAL_ADDRESS	(-2)
 
-#define FX_MEMORY_32K_MIRRORS 0xC00000
+#define FX_MEMORY_32K_MIRRORS 0x1000000
 
 // The FxInfo_s structure, the link between the FxEmulator and the Snes Emulator
 struct FxInfo_s
@@ -29,6 +29,7 @@ extern struct FxInfo_s	SuperFX;
 
 void S9xInitSuperFX (void);
 void S9xResetSuperFX (void);
+void S9xSuperFXPostLoadState (void);
 void S9xSuperFXExec (void);
 void S9xSetSuperFX (uint8, uint16);
 uint8 S9xGetSuperFX (uint16);
