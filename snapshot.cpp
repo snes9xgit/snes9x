@@ -1731,8 +1731,7 @@ int S9xUnfreezeFromStream (STREAM stream)
 
 		if (local_superfx)
 		{
-			GSU.pfPlot = fx_PlotTable[GSU.vMode];
-			GSU.pfRpix = fx_PlotTable[GSU.vMode + 5];
+			S9xSuperFXPostLoadState();
 		}
 
 		if (local_sa1 && local_sa1_registers)

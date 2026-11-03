@@ -10,6 +10,8 @@
 #include "fxemu.h"
 
 static void FxReset (struct FxInfo_s *);
+static uint32 fx_mirrorRom (uint32, uint32);
+static void fx_rebuildBankTables (void);
 static void fx_readRegisterSpace (void);
 static void fx_writeRegisterSpace (void);
 static void fx_updateRamBank (uint8);
@@ -225,10 +227,13 @@ static void FxReset (struct FxInfo_s *psFxInfo)
 	GSU.vPrevScreenHeight = ~0;
 	GSU.vPrevMode         = ~0;
 
+	if (GSU.nRamBanks == 0 || GSU.nRamBanks > FX_RAM_BANKS)
+		GSU.nRamBanks = 2;
+
 	if (GSU.nRomBanks > 0x200)
 		GSU.nRomBanks = 0x200;
 	else if (GSU.nRomBanks == 0)
-		GSU.nRomBanks = 0x20;
+		GSU.nRomBanks = 0x40;
 
 	// Clear FxChip register space
 	memset(GSU.pvRegisters, 0, 0x300);
@@ -236,48 +241,7 @@ static void FxReset (struct FxInfo_s *psFxInfo)
 	// Set FxChip version Number
 	GSU.pvRegisters[0x3b] = 0;
 
-	// Make ROM bank table
-	for (int i = 0; i < 256; i++)
-	{
-		if (GSU.nRomBanks > 0x40)
-		{
-			if (i < 0x40)
-			{
-				GSU.apvRomBank[i] = &GSU.pvRom[(i << 16) + FX_MEMORY_32K_MIRRORS];
-			}
-			else
-			{
-				uint32	b = i % (GSU.nRomBanks >> 1);
-				GSU.apvRomBank[i] = &GSU.pvRom[b << 16];
-			}
-		}
-		else
-		{
-			uint32	b = i & 0x7f;
-
-			if (b >= 0x40)
-			{
-				if (GSU.nRomBanks > 1)
-					b %= GSU.nRomBanks;
-				else
-					b &= 1;
-
-				GSU.apvRomBank[i] = &GSU.pvRom[b << 16];
-			}
-			else
-			{
-				b %= GSU.nRomBanks * 2;
-				GSU.apvRomBank[i] = &GSU.pvRom[(b << 16) + FX_MEMORY_32K_MIRRORS];
-			}
-		}
-	}
-
-	// Make RAM bank table
-	for (int i = 0; i < 4; i++)
-	{
-		GSU.apvRamBank[i] = &GSU.pvRam[(i % GSU.nRamBanks) << 16];
-		GSU.apvRomBank[0x70 + i] = GSU.apvRamBank[i];
-	}
+	fx_rebuildBankTables();
 
 	// Start with a nop in the pipe
 	GSU.vPipe = 0x01;
@@ -297,6 +261,119 @@ static void FxReset (struct FxInfo_s *psFxInfo)
 	fx_readRegisterSpace();
 }
 
+static uint32 fx_mirrorRom (uint32 size, uint32 pos)
+{
+	if (size == 0)
+		return (0);
+	if (pos < size)
+		return (pos);
+
+	uint32	mask = 1U << 31;
+	while (!(pos & mask))
+		mask >>= 1;
+
+	if (size <= (pos & mask))
+		return (fx_mirrorRom(size, pos - mask));
+	else
+		return (mask + fx_mirrorRom(size - mask, pos - mask));
+}
+
+static void fx_rebuildBankTables (void)
+{
+	uint32	n32k = (GSU.nRomBanks > 0x40) ? 0x40 : GSU.nRomBanks;
+	uint32	n64k = (GSU.nRomBanks + 1) >> 1;
+
+	if (n32k == 0)
+		n32k = 1;
+	if (n64k == 0)
+		n64k = 1;
+	else if (n64k > 0x100)
+		n64k = 0x100;
+
+	// Make ROM bank table
+	for (int i = 0; i < 256; i++)
+	{
+		if (GSU.nRomBanks > 0x40)
+		{
+			if (i < 0x40)
+			{
+				uint32	b = fx_mirrorRom(n32k, (uint32) i);
+				GSU.apvRomBank[i] = &GSU.pvRom[(b << 16) + FX_MEMORY_32K_MIRRORS];
+			}
+			else
+			{
+				uint32	b = fx_mirrorRom(n64k, (uint32) i);
+				GSU.apvRomBank[i] = &GSU.pvRom[b << 16];
+			}
+		}
+		else
+		{
+			uint32	b = (uint32) (i & 0x7f);
+
+			if (b >= 0x40)
+			{
+				uint32	m = fx_mirrorRom(n64k, b - 0x40);
+				GSU.apvRomBank[i] = &GSU.pvRom[m << 16];
+			}
+			else
+			{
+				uint32	m = fx_mirrorRom(n32k, b);
+				GSU.apvRomBank[i] = &GSU.pvRom[(m << 16) + FX_MEMORY_32K_MIRRORS];
+			}
+		}
+	}
+
+	// Make RAM bank table
+	uint32	ramBanks = (GSU.nRamBanks == 0 || GSU.nRamBanks > FX_RAM_BANKS) ? 2 : GSU.nRamBanks;
+	for (int i = 0; i < 4; i++)
+	{
+		GSU.apvRamBank[i] = &GSU.pvRam[(i % ramBanks) << 16];
+		GSU.apvRomBank[0x70 + i] = GSU.apvRamBank[i];
+	}
+}
+
+void S9xSuperFXPostLoadState (void)
+{
+	GSU.pvRegisters = SuperFX.pvRegisters;
+	GSU.pvRam       = SuperFX.pvRam;
+	GSU.pvRom       = SuperFX.pvRom;
+
+	GSU.nRamBanks   = SuperFX.nRamBanks;
+	if (GSU.nRamBanks == 0 || GSU.nRamBanks > FX_RAM_BANKS)
+		GSU.nRamBanks = 2;
+
+	GSU.nRomBanks   = SuperFX.nRomBanks;
+	if (GSU.nRomBanks > 0x200)
+		GSU.nRomBanks = 0x200;
+	else if (GSU.nRomBanks == 0)
+		GSU.nRomBanks = 0x40;
+
+	fx_rebuildBankTables();
+
+	uint32	bankMask = (GSU.nRomBanks > 0x40) ? 0xff : 0x7f;
+	GSU.vPrgBankReg &= bankMask;
+	GSU.vRomBankReg &= bankMask;
+	GSU.vRamBankReg &= (FX_RAM_BANKS - 1);
+
+	GSU.pvRamBank = GSU.apvRamBank[GSU.vRamBankReg & 0x3];
+	GSU.pvRomBank = GSU.apvRomBank[GSU.vRomBankReg];
+	GSU.pvPrgBank = GSU.apvRomBank[GSU.vPrgBankReg];
+	GSU.pvCache   = &GSU.pvRegisters[0x100];
+
+	GSU.vMode &= 0x03;
+	GSU.pfPlot = fx_PlotTable[GSU.vMode];
+	GSU.pfRpix = fx_PlotTable[GSU.vMode + 5];
+	fx_OpcodeTable[0x04c] = GSU.pfPlot;
+	fx_OpcodeTable[0x14c] = GSU.pfRpix;
+	fx_OpcodeTable[0x24c] = GSU.pfPlot;
+	fx_OpcodeTable[0x34c] = GSU.pfRpix;
+
+	GSU.vPrevMode = ~0;
+	GSU.vPrevScreenHeight = ~0;
+	GSU.vSCBRDirty = TRUE;
+	fx_computeScreenPointers();
+}
+
 static void fx_readRegisterSpace (void)
 {
 	static const uint32	avHeight[] = { 128, 160, 192, 256 };
@@ -314,9 +391,10 @@ static void fx_readRegisterSpace (void)
 
 	// Update other registers
 	p = GSU.pvRegisters;
+	uint32	bankMask   = (GSU.nRomBanks > 0x40) ? 0xff : 0x7f;
 	GSU.vStatusReg     =  (uint32) READ_WORD(&p[GSU_SFR]);
-	GSU.vPrgBankReg    =  (uint32) p[GSU_PBR];
-	GSU.vRomBankReg    =  (uint32) p[GSU_ROMBR];
+	GSU.vPrgBankReg    = ((uint32) p[GSU_PBR]) & bankMask;
+	GSU.vRomBankReg    = ((uint32) p[GSU_ROMBR]) & bankMask;
 	GSU.vRamBankReg    = ((uint32) p[GSU_RAMBR]) & (FX_RAM_BANKS - 1);
 	GSU.vCacheBaseReg  =  (uint32) p[GSU_CBR];
 	GSU.vCacheBaseReg |= ((uint32) p[GSU_CBR + 1]) << 8;
@@ -425,7 +503,12 @@ static bool8 fx_checkStartAddress (void)
 
 	if (SCMR & (1 << 4))
 	{
-		if (GSU.vPrgBankReg <= 0x5f || GSU.vPrgBankReg >= 0x80)
+		if (GSU.nRomBanks > 0x40)
+		{
+			if (GSU.vPrgBankReg < 0x70 || GSU.vPrgBankReg >= 0x74)
+				return true;
+		}
+		else if (GSU.vPrgBankReg <= 0x5f || GSU.vPrgBankReg >= 0x80)
 			return true;
 	}
 
