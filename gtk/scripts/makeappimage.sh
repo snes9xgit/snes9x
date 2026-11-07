@@ -23,4 +23,9 @@ ln -s usr/bin/snes9x-gtk AppRun
 
 chmod +x AppRun
 popd
+
+# Bundle fontconfig/freetype so they match the bundled Pango
+cp -L /usr/lib/x86_64-linux-gnu/libfontconfig.so.1 \
+      /usr/lib/x86_64-linux-gnu/libfreetype.so.6 AppDir/usr/lib/
+
 ./appimagetool-x86_64.AppImage --appimage-extract-and-run AppDir
