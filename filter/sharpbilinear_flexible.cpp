@@ -1,0 +1,343 @@
+
+/*****************************************************************************\
+     Snes9x - Portable Super Nintendo Entertainment System (TM) emulator.
+                 This file is licensed under the Snes9x License.
+    For further information, consult the LICENSE file in the root directory.
+\*****************************************************************************/
+
+#include <cstdint>
+#include <cmath>
+#include <algorithm>
+
+#define CLAMP_U16(x, lo, hi) ((x) < (lo) ? (lo) : ((x) > (hi) ? (hi) : (x)))
+
+// -----------------------------------------------------------------------------
+// Interpolation helper
+// -----------------------------------------------------------------------------
+
+// Smoothstep as in GLSL: cubic easing.
+static inline float smoothstep01(float x)
+{
+    x = std::clamp(x, 0.0f, 1.0f);
+    return x * x * (3.0f - 2.0f * x);
+}
+
+// -----------------------------------------------------------------------------
+// sRGB lookup tables
+// -----------------------------------------------------------------------------
+
+// Decode sRGB-encoded RGB565 channels into normalized Float32 linear light.
+// Red and blue use the same 5-bit lookup table.
+static float srgb_to_linear_r5[32];
+static float srgb_to_linear_g6[64];
+
+// Encode normalized linear-light values into quantized RGB565 channels.
+// The 16-bit table index represents a linear-light value in [0, 1].
+static uint8_t linear_to_srgb_r5[65536];
+static uint8_t linear_to_srgb_g6[65536];
+
+static void init_srgb_tables()
+{
+    // Exact piecewise sRGB transfer functions.
+    // Evaluated only during lookup table initialization.
+
+    // sRGB decoding: encoded color -> linear light.
+    auto srgb_to_linear = [](float encoded) -> float
+        {
+            return encoded <= 0.04045f
+                ? encoded / 12.92f
+                : std::pow((encoded + 0.055f) / 1.055f, 2.4f);
+        };
+
+    // sRGB encoding: linear light -> encoded color.
+    auto linear_to_srgb = [](float linear) -> float
+        {
+            return linear <= 0.0031308f
+                ? 12.92f * linear
+                : 1.055f * std::pow(linear, 1.0f / 2.4f) - 0.055f;
+        };
+
+    // Red and blue: 5-bit sRGB channel -> Float32 linear light.
+    for (int i = 0; i < 32; ++i)
+    {
+        float encoded = i / 31.0f;
+        float linear = srgb_to_linear(encoded);
+
+        srgb_to_linear_r5[i] = linear;
+    }
+
+    // Green: 6-bit sRGB channel -> Float32 linear light.
+    for (int i = 0; i < 64; ++i)
+    {
+        float encoded = i / 63.0f;
+        float linear = srgb_to_linear(encoded);
+
+        srgb_to_linear_g6[i] = linear;
+    }
+
+    // Linear-light 16-bit index -> sRGB-encoded RGB565 channel levels.
+    for (int i = 0; i < 65536; ++i)
+    {
+        float linear = i / 65535.0f;
+        float encoded = linear_to_srgb(linear);
+
+        linear_to_srgb_r5[i] = uint8_t(
+            CLAMP_U16(int(encoded * 31.0f + 0.5f), 0, 31));
+        linear_to_srgb_g6[i] = uint8_t(
+            CLAMP_U16(int(encoded * 63.0f + 0.5f), 0, 63));
+    }
+}
+
+// -----------------------------------------------------------------------------
+// RGB565 pixel helpers
+// -----------------------------------------------------------------------------
+
+// Pack 5-bit red, 6-bit green and 5-bit blue into RGB565.
+static inline uint16_t build_rgb565_fast(int r5, int g6, int b5)
+{
+    return uint16_t((r5 << 11) | (g6 << 5) | b5);
+}
+
+// Read an RGB565 source pixel and decode its channels into linear light.
+static inline void unpack_rgb565_to_linear(
+    const uint8_t* src,
+    int pitch,
+    int x,
+    int y,
+    float& r,
+    float& g,
+    float& b)
+{
+    const uint8_t* pixel = src + y * pitch + x * 2;
+    uint16_t color = pixel[0] | (pixel[1] << 8);
+
+    int r5 = (color >> 11) & 0x1F;
+    int g6 = (color >> 5) & 0x3F;
+    int b5 = color & 0x1F;
+
+    r = srgb_to_linear_r5[r5];
+    g = srgb_to_linear_g6[g6];
+    b = srgb_to_linear_r5[b5]; // Blue shares the 5-bit red table.
+}
+
+// -----------------------------------------------------------------------------
+// Centered 4x coordinate mapping
+// -----------------------------------------------------------------------------
+
+// Safe floor division and modulo by 4, including negative coordinates.
+// Centered mapping uses (x - 2) and (y - 2), which are negative
+// for the first two output pixels.
+//
+// Avoid right-shifting negative values, whose behavior is
+// implementation-defined. Keep the remainder in [0..3].
+static inline void floor_divmod_4(int v, int& q, int& r)
+{
+    if (v >= 0)
+    {
+        q = v >> 2;
+        r = v & 3;
+    }
+    else
+    {
+        // Floor division: q = floor(v/4).
+        int a = -v;
+        q = -((a + 3) >> 2);
+        r = v - (q << 2); // Remainder in [0..3].
+
+        // Safety.
+        if (r < 0) r = 0;
+        if (r > 3) r = 3;
+    }
+}
+
+// -----------------------------------------------------------------------------
+// Main Sharp Bilinear 4x filter
+// -----------------------------------------------------------------------------
+
+// Input and output are RGB565.
+// Interpolation is performed in normalized Float32 linear-light space,
+// using smoothstep weights and exact sRGB transfer functions.
+extern "C"
+void ApplySharpBilinear4x(
+    uint8_t* __restrict dst,
+    int dst_pitch,
+    const uint8_t* __restrict src,
+    int src_width,
+    int src_height,
+    int src_pitch)
+{
+    const int dst_width = src_width << 2;   // *4
+    const int dst_height = src_height << 2; // *4
+
+    // Initialize sRGB conversion tables once.
+    static bool srgb_tables_ready = false;
+    if (!srgb_tables_ready)
+    {
+        init_srgb_tables();
+        srgb_tables_ready = true;
+    }
+
+    // Gain > 1.0 = sharper.
+    constexpr float gain = 1.15f;
+
+    // Centered fractional positions for 4x.
+    //
+    // Pixel-center mapping:
+    //
+    //   src_x = (x + 0.5) / 4 - 0.5
+    //
+    // and likewise for Y.
+    //
+    // Fractional phases:
+    //
+    //   0.125, 0.375, 0.625, 0.875
+    //
+    const float fracLUT[4] =
+    {
+        0.125f,
+        0.375f,
+        0.625f,
+        0.875f
+    };
+
+    // Precompute smoothstep weights for the four X/Y phases.
+    // IWX/IWY hold the complementary weights (1 - w).
+    float WX[4], IWX[4];
+    float WY[4], IWY[4];
+
+    for (int i = 0; i < 4; ++i)
+    {
+        float xf = std::clamp(
+            0.5f + (fracLUT[i] - 0.5f) * gain,
+            0.0f,
+            1.0f);
+
+        float w = smoothstep01(xf);
+
+        WX[i] = w;
+        IWX[i] = 1.0f - w;
+
+        WY[i] = w;
+        IWY[i] = 1.0f - w;
+    }
+
+    // Process each output pixel.
+    for (int y = 0; y < dst_height; ++y)
+    {
+        // Centered vertical phase mapping via (y - 2).
+        // Implements:
+        //
+        //   src_y = (y + 0.5) / 4 - 0.5
+        //
+        int sy, dy;
+        floor_divmod_4(y - 2, sy, dy);
+
+        // Extend edge pixels when sampling beyond the source image.
+        const int sy0 = std::clamp(sy, 0, src_height - 1);
+        const int sy1 = std::clamp(sy + 1, 0, src_height - 1);
+
+        const float wy = WY[dy];
+        const float iwy = IWY[dy];
+
+        uint8_t* __restrict dst_row = dst + y * dst_pitch;
+
+        for (int x = 0; x < dst_width; ++x)
+        {
+            // Centered horizontal phase mapping via (x - 2).
+            int sx, dx;
+            floor_divmod_4(x - 2, sx, dx);
+
+            // Clamp each neighbor independently to preserve edge colors.
+            const int sx0 = std::clamp(sx, 0, src_width - 1);
+            const int sx1 = std::clamp(sx + 1, 0, src_width - 1);
+
+            const float wx = WX[dx];
+            const float iwx = IWX[dx];
+
+            // Four neighboring source pixels, decoded into linear light.
+            float r00, g00, b00;
+            float r10, g10, b10;
+            float r01, g01, b01;
+            float r11, g11, b11;
+
+            unpack_rgb565_to_linear(
+                src,
+                src_pitch,
+                sx0,
+                sy0,
+                r00,
+                g00,
+                b00);
+
+            unpack_rgb565_to_linear(
+                src,
+                src_pitch,
+                sx1,
+                sy0,
+                r10,
+                g10,
+                b10);
+
+            unpack_rgb565_to_linear(
+                src,
+                src_pitch,
+                sx0,
+                sy1,
+                r01,
+                g01,
+                b01);
+
+            unpack_rgb565_to_linear(
+                src,
+                src_pitch,
+                sx1,
+                sy1,
+                r11,
+                g11,
+                b11);
+
+            // Horizontal blends in normalized Float32 linear-light space.
+            float r_h = r00 * iwx + r10 * wx;
+            float g_h = g00 * iwx + g10 * wx;
+            float b_h = b00 * iwx + b10 * wx;
+
+            float r_v = r01 * iwx + r11 * wx;
+            float g_v = g01 * iwx + g11 * wx;
+            float b_v = b01 * iwx + b11 * wx;
+
+            // Vertical blend in normalized Float32 linear-light space.
+            float rf = r_h * iwy + r_v * wy;
+            float gf = g_h * iwy + g_v * wy;
+            float bf = b_h * iwy + b_v * wy;
+
+            // Quantize linear-light results to 16-bit LUT indices.
+            int ri = CLAMP_U16(int(rf * 65535.0f + 0.5f), 0, 65535);
+            int gi = CLAMP_U16(int(gf * 65535.0f + 0.5f), 0, 65535);
+            int bi = CLAMP_U16(int(bf * 65535.0f + 0.5f), 0, 65535);
+
+            // Encode linear light back to sRGB and pack as RGB565.
+            uint16_t out = build_rgb565_fast(
+                linear_to_srgb_r5[ri],
+                linear_to_srgb_g6[gi],
+                linear_to_srgb_r5[bi]
+            );
+
+            uint8_t* __restrict dst_px = dst_row + (x << 1);
+
+            dst_px[0] = out & 0xFF;
+            dst_px[1] = (out >> 8) & 0xFF;
+        }
+    }
+}
+
+// -----------------------------------------------------------------------------
+// SNES9x software-filter interface
+// -----------------------------------------------------------------------------
+
+// C++ wrapper expected by the SNES9x filter integration.
+void sharpbilinear_4x(uint8_t* srcPtr, int srcPitch,
+    uint8_t* dstPtr, int dstPitch,
+    int width, int height)
+{
+    ApplySharpBilinear4x(dstPtr, dstPitch, srcPtr, width, height, srcPitch);
+}
