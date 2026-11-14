@@ -8,7 +8,6 @@
 #include <cmath>
 #include <algorithm>
 
-#define CLAMP_U8(x, lo, hi) ((x) < (lo) ? (lo) : ((x) > (hi) ? (hi) : (x)))
 #define CLAMP_U16(x, lo, hi) ((x) < (lo) ? (lo) : ((x) > (hi) ? (hi) : (x)))
 
 // Smoothstep as in GLSL: cubic easing
@@ -18,63 +17,65 @@ static inline float smoothstep01(float x)
     return x * x * (3.0f - 2.0f * x);
 }
 
-// RGB565 source values decoded into 16-bit linear-light space.
-static uint16_t gamma_r_encode[32];
-static uint16_t gamma_g_encode[64];
+// RGB565 source values decoded into normalized Float32 linear-light space.
+static float gamma_r_encode[32];
+static float gamma_g_encode[64];
 
-// 16-bit linear-light value back to 8-bit display-space value.
-static uint8_t gamma_decode[65536];
+// 16-bit linear-light value directly to RGB565 channel levels.
+static uint8_t gamma_decode_r5[65536];
+static uint8_t gamma_decode_g6[65536];
 
 static void init_gamma_tables()
 {
-    constexpr float gamma = 2.4f;
-    constexpr float inv_gamma = 1.0f / gamma;
+    // Exact sRGB transfer functions, evaluated only during LUT initialization.
+    auto srgb_to_linear = [](float encoded) -> float
+        {
+            return encoded <= 0.04045f
+                ? encoded / 12.92f
+                : std::pow((encoded + 0.055f) / 1.055f, 2.4f);
+        };
 
-    // Red and blue: 5-bit RGB565 channel -> 16-bit linear-light value.
+    auto linear_to_srgb = [](float linear) -> float
+        {
+            return linear <= 0.0031308f
+                ? 12.92f * linear
+                : 1.055f * std::pow(linear, 1.0f / 2.4f) - 0.055f;
+        };
+
+    // Red and blue: 5-bit RGB565 channel -> normalized Float32 linear-light value.
     for (int i = 0; i < 32; ++i)
     {
-        float encoded = (i << 3) / 255.0f;
-        float linear = std::pow(encoded, gamma);
+        float encoded = i / 31.0f;
+        float linear = srgb_to_linear(encoded);
 
-        gamma_r_encode[i] = uint16_t(
-            CLAMP_U16(
-                int(linear * 65535.0f + 0.5f),
-                0,
-                65535));
+        gamma_r_encode[i] = linear;
     }
 
-    // Green: 6-bit RGB565 channel -> 16-bit linear-light value.
+    // Green: 6-bit RGB565 channel -> normalized Float32 linear-light value.
     for (int i = 0; i < 64; ++i)
     {
-        float encoded = (i << 2) / 255.0f;
-        float linear = std::pow(encoded, gamma);
+        float encoded = i / 63.0f;
+        float linear = srgb_to_linear(encoded);
 
-        gamma_g_encode[i] = uint16_t(
-            CLAMP_U16(
-                int(linear * 65535.0f + 0.5f),
-                0,
-                65535));
+        gamma_g_encode[i] = linear;
     }
 
-    // 16-bit linear-light value -> 8-bit display-space value.
+    // 16-bit linear-light value -> directly rounded RGB565 channel levels.
     for (int i = 0; i < 65536; ++i)
     {
         float linear = i / 65535.0f;
-        float encoded = std::pow(linear, inv_gamma);
+        float encoded = linear_to_srgb(linear);
 
-        gamma_decode[i] = uint8_t(
-            CLAMP_U8(
-                int(encoded * 255.0f + 0.5f),
-                0,
-                255));
+        gamma_decode_r5[i] = uint8_t(
+            CLAMP_U16(int(encoded * 31.0f + 0.5f), 0, 31));
+        gamma_decode_g6[i] = uint8_t(
+            CLAMP_U16(int(encoded * 63.0f + 0.5f), 0, 63));
     }
 }
 
-static inline uint16_t build_rgb565_fast(int r, int g, int b)
+static inline uint16_t build_rgb565_fast(int r5, int g6, int b5)
 {
-    return ((r & 0xF8) << 8) |
-        ((g & 0xFC) << 3) |
-        (b >> 3);
+    return uint16_t((r5 << 11) | (g6 << 5) | b5);
 }
 
 static inline void unpack_rgb565_gamma(
@@ -82,9 +83,9 @@ static inline void unpack_rgb565_gamma(
     int pitch,
     int x,
     int y,
-    int& r,
-    int& g,
-    int& b)
+    float& r,
+    float& g,
+    float& b)
 {
     const uint8_t* pixel = src + y * pitch + x * 2;
     uint16_t color = pixel[0] | (pixel[1] << 8);
@@ -143,9 +144,9 @@ void ApplySharpBilinear4x(
     }
 
     // Gain > 1.0 = sharper
-    constexpr float gain = 1.15f;
+    constexpr float gain = 1.1f;
 
-    // Centered fractional positions for 4×.
+    // Centered fractional positions for 4x.
     //
     // Pixel-center mapping:
     //
@@ -215,10 +216,10 @@ void ApplySharpBilinear4x(
             const float wx = WX[dx];
             const float iwx = IWX[dx];
 
-            int r00, g00, b00;
-            int r10, g10, b10;
-            int r01, g01, b01;
-            int r11, g11, b11;
+            float r00, g00, b00;
+            float r10, g10, b10;
+            float r01, g01, b01;
+            float r11, g11, b11;
 
             unpack_rgb565_gamma(
                 src,
@@ -256,7 +257,7 @@ void ApplySharpBilinear4x(
                 g11,
                 b11);
 
-            // Horizontal blends in 16-bit linear-light space.
+            // Horizontal blends in normalized Float32 linear-light space.
             float r_h = r00 * iwx + r10 * wx;
             float g_h = g00 * iwx + g10 * wx;
             float b_h = b00 * iwx + b10 * wx;
@@ -265,19 +266,20 @@ void ApplySharpBilinear4x(
             float g_v = g01 * iwx + g11 * wx;
             float b_v = b01 * iwx + b11 * wx;
 
-            // Vertical blend in 16-bit linear-light space.
+            // Vertical blend in normalized Float32 linear-light space.
             float rf = r_h * iwy + r_v * wy;
             float gf = g_h * iwy + g_v * wy;
             float bf = b_h * iwy + b_v * wy;
 
-            int ri = CLAMP_U16(int(rf + 0.5f), 0, 65535);
-            int gi = CLAMP_U16(int(gf + 0.5f), 0, 65535);
-            int bi = CLAMP_U16(int(bf + 0.5f), 0, 65535);
+            int ri = CLAMP_U16(int(rf * 65535.0f + 0.5f), 0, 65535);
+            int gi = CLAMP_U16(int(gf * 65535.0f + 0.5f), 0, 65535);
+            int bi = CLAMP_U16(int(bf * 65535.0f + 0.5f), 0, 65535);
 
+            // Direct quantization to RGB565 channel levels.
             uint16_t out = build_rgb565_fast(
-                gamma_decode[ri],
-                gamma_decode[gi],
-                gamma_decode[bi]
+                gamma_decode_r5[ri],
+                gamma_decode_g6[gi],
+                gamma_decode_r5[bi]
             );
 
             uint8_t* __restrict dst_px = dst_row + (x << 1);
@@ -288,20 +290,9 @@ void ApplySharpBilinear4x(
     }
 }
 
-extern "C"
-void filter_sharpbilinear_4x(
-    uint8_t* srcPtr,
-    int srcPitch,
-    uint8_t* dstPtr,
-    int dstPitch,
-    int width,
-    int height)
+void sharpbilinear_4x(uint8_t* srcPtr, int srcPitch,
+    uint8_t* dstPtr, int dstPitch,
+    int width, int height)
 {
-    ApplySharpBilinear4x(
-        dstPtr,
-        dstPitch,
-        srcPtr,
-        width,
-        height,
-        srcPitch);
+    ApplySharpBilinear4x(dstPtr, dstPitch, srcPtr, width, height, srcPitch);
 }
