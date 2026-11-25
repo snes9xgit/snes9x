@@ -1780,6 +1780,8 @@ int S9xUnfreezeFromStream (STREAM stream)
 			GFX.DoInterlace = ssi->Interlaced;
 
 			uint8	*rowpix = ssi->Data;
+			// Width and Height come from the save state, so don't read past the data
+			const uint8	*data_end = ssi->Data + sizeof(ssi->Data);
 			uint16	*screen = GFX.Screen;
 
 			for (int y = 0; y < IPPU.RenderedScreenHeight; y++, screen += GFX.RealPPL)
@@ -1787,6 +1789,9 @@ int S9xUnfreezeFromStream (STREAM stream)
 				for (int x = 0; x < IPPU.RenderedScreenWidth; x++)
 				{
 					uint32	r, g, b;
+
+					if (data_end - rowpix < (scaleDownX ? 6 : 3))
+						break;
 
 					r = *(rowpix++);
 					g = *(rowpix++);
@@ -1807,6 +1812,8 @@ int S9xUnfreezeFromStream (STREAM stream)
 
 				if (scaleDownY)
 				{
+					if (data_end - rowpix < 3 * ssi->Width)
+						break;
 					rowpix += 3 * ssi->Width;
 					if (y + y + 1 >= ssi->Height)
 						break;
