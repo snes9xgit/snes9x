@@ -570,7 +570,9 @@ void AddDevice (IOHIDDeviceRef device)
     {
         NSNumber *usageA = a[@kIOHIDElementUsageKey];
         NSNumber *usageB = b[@kIOHIDElementUsageKey];
-
+        if (usageA == nil && usageB == nil) return NSOrderedSame;
+        if (usageA == nil) return NSOrderedAscending;
+        if (usageB == nil) return NSOrderedDescending;
         return [usageA compare:usageB];
     };
 
@@ -651,7 +653,7 @@ void AddDevice (IOHIDDeviceRef device)
         infoByCookie[cookie] = info;
     }
 
-    if ([hat count] >= 0)
+    if (hat.count > 0)
     {
         struct JoypadCookie cookie;
         struct JoypadCookieInfo info;
@@ -679,7 +681,10 @@ void AddDevice (IOHIDDeviceRef device)
         infoByCookie[cookie] = info;
     }
 
-    CFRelease(properties);
+    if (properties != NULL)
+    {
+        CFRelease(properties);
+    }
 }
 
 void ClearJoypad(uint32 vendorID, uint32 productID, uint32 index)
@@ -792,28 +797,29 @@ void SetUpHID (void)
 
         [orderedDevices sortUsingComparator:^NSComparisonResult(id a, id b)
         {
+            auto safeCompare = ^NSComparisonResult(NSNumber *x, NSNumber *y) {
+                if (x == nil && y == nil) return NSOrderedSame;
+                if (x == nil) return NSOrderedAscending;
+                if (y == nil) return NSOrderedDescending;
+                return [x compare:y];
+            };
+
             NSNumber *vendorA = (NSNumber *)IOHIDDeviceGetProperty((__bridge IOHIDDeviceRef)a, CFSTR(kIOHIDVendorIDKey));
-
             NSNumber *vendorB = (NSNumber *)IOHIDDeviceGetProperty((__bridge IOHIDDeviceRef)b, CFSTR(kIOHIDVendorIDKey));
-
-            NSComparisonResult result = [vendorA compare:vendorB];
+            NSComparisonResult result = safeCompare(vendorA, vendorB);
 
             if (result == NSOrderedSame)
             {
                 NSNumber *productA = (NSNumber *)IOHIDDeviceGetProperty((__bridge IOHIDDeviceRef)a, CFSTR(kIOHIDProductIDKey));
-
                 NSNumber *productB = (NSNumber *)IOHIDDeviceGetProperty((__bridge IOHIDDeviceRef)b, CFSTR(kIOHIDProductIDKey));
-
-                result = [productA compare:productB];
+                result = safeCompare(productA, productB);
             }
 
             if (result == NSOrderedSame)
             {
                 NSNumber *portA = (NSNumber *)IOHIDDeviceGetProperty((__bridge IOHIDDeviceRef)a, CFSTR(kIOHIDLocationIDKey));
-
                 NSNumber *portB = (NSNumber *)IOHIDDeviceGetProperty((__bridge IOHIDDeviceRef)b, CFSTR(kIOHIDLocationIDKey));
-
-                result = [portA compare:portB];
+                result = safeCompare(portA, portB);
             }
 
             return result;

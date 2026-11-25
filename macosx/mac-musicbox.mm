@@ -64,7 +64,7 @@ static void * SoundTask (void *);
 	if (!self)
 		return (self);
 
-	r = [NSBundle loadNibNamed: @"musicbox" owner: self ];
+	r = [[NSBundle bundleForClass:[self class]] loadNibNamed:@"musicbox" owner:self topLevelObjects:nil];
 	if (!r)
 		return (self);
 
@@ -82,7 +82,7 @@ static void * SoundTask (void *);
 
 	if (!apuonly)
 	{
-		[rewind setState: NSOffState];
+		[rewind setState: NSControlStateValueOff];
 		[rewind setEnabled: NO];
 	}
 
@@ -105,7 +105,7 @@ static void * SoundTask (void *);
 	rect = [window frame];
 	showIndicator = (rect.size.height > mbxClosedHeight) ? true : false;
 
-	[disclosure setState: (showIndicator ? NSOnState : NSOffState)];
+	[disclosure setState: (showIndicator ? NSControlStateValueOn : NSControlStateValueOff)];
 
 	[window makeKeyAndOrderFront: self];
 
@@ -131,7 +131,6 @@ static void * SoundTask (void *);
 {
 	NSUserDefaults	*defaults;
 	NSString		*s;
-	BOOL			r;
 
 	[timer invalidate];
     timer = nil;
@@ -145,7 +144,7 @@ static void * SoundTask (void *);
 	defaults = [NSUserDefaults standardUserDefaults];
 	s = NSStringFromRect([window frame]);
 	[defaults setObject: s forKey: @"frame_musicbox"];
-	r = [defaults synchronize];
+	[defaults synchronize];
 
 	[NSApp stopModal];
 }
@@ -257,7 +256,7 @@ static void * SoundTask (void *);
 {
 	CGContextRef	mboxctx;
 
-	mboxctx = (CGContextRef) [[NSGraphicsContext currentContext] graphicsPort];
+	mboxctx = [[NSGraphicsContext currentContext] CGContext];
 
 	// Bar
 
@@ -292,8 +291,8 @@ static void * SoundTask (void *);
 		long long		currentTime;
 		struct timeval	tv;
 
-		if (vl <= 0) vl = 0; else if (vl > 64) vl = 64; else vl = (short) (yyscale * sqrt((double) vl)) & (~0 << 1);
-		if (vr <= 0) vr = 0; else if (vr > 64) vr = 64; else vr = (short) (yyscale * sqrt((double) vr)) & (~0 << 1);
+		if (vl <= 0) vl = 0; else if (vl > 64) vl = 64; else vl = (short) (yyscale * sqrt((double) vl)) & ~1;
+		if (vr <= 0) vr = 0; else if (vr > 64) vr = 64; else vr = (short) (yyscale * sqrt((double) vr)) & ~1;
 
 		if (vl < prevLVol[h]) vl = ((prevLVol[h] + vl) >> 1);
 		if (vr < prevRVol[h]) vr = ((prevRVol[h] + vr) >> 1);

@@ -49,10 +49,13 @@ bool S9xProActionReplayToRaw(const std::string &code, uint32 &address, uint8 &by
 
 - (void)setAddress:(uint32)address value:(uint8)value cheatDescription:(const char *)cheatDescription
 {
+	if (self.cheatID >= Cheat.group.size())
+		return;
+
 	bool enabled = self.enabled.boolValue;
 
 	char code[256];
-	sprintf(code, "%x=%x", address, value);
+	snprintf(code, sizeof(code), "%x=%x", address, value);
 	S9xModifyCheatGroup(self.cheatID, cheatDescription, code);
 
 	if (enabled)
@@ -64,33 +67,45 @@ bool S9xProActionReplayToRaw(const std::string &code, uint32 &address, uint8 &by
 @dynamic address;
 - (NSNumber *)address
 {
+	if (self.cheatID >= Cheat.group.size() || Cheat.group[self.cheatID].cheat.empty())
+		return @(0);
 	return @(Cheat.group[self.cheatID].cheat[0].address);
 }
 
 - (void)setAddress:(NSNumber *)address
 {
+	if (self.cheatID >= Cheat.group.size() || Cheat.group[self.cheatID].cheat.empty())
+		return;
 	[self setAddress:address.unsignedIntValue value:Cheat.group[self.cheatID].cheat[0].byte cheatDescription:self.cheatDescription.UTF8String];
 }
 
 @dynamic value;
 - (NSNumber *)value
 {
+	if (self.cheatID >= Cheat.group.size() || Cheat.group[self.cheatID].cheat.empty())
+		return @(0);
 	return @(Cheat.group[self.cheatID].cheat[0].byte);
 }
 
 - (void)setValue:(NSNumber *)value
 {
+	if (self.cheatID >= Cheat.group.size() || Cheat.group[self.cheatID].cheat.empty())
+		return;
 	[self setAddress:Cheat.group[self.cheatID].cheat[0].address value:value.unsignedCharValue cheatDescription:self.cheatDescription.UTF8String];
 }
 
 @dynamic enabled;
 - (NSNumber *)enabled
 {
+	if (self.cheatID >= Cheat.group.size())
+		return @(NO);
 	return @(Cheat.group[self.cheatID].enabled);
 }
 
 - (void)setEnabled:(NSNumber *)enabled
 {
+	if (self.cheatID >= Cheat.group.size())
+		return;
 	if (enabled.boolValue)
 	{
 		S9xEnableCheatGroup(self.cheatID);
@@ -104,17 +119,22 @@ bool S9xProActionReplayToRaw(const std::string &code, uint32 &address, uint8 &by
 @dynamic cheatDescription;
 - (NSString *)cheatDescription
 {
+	if (self.cheatID >= Cheat.group.size())
+		return @"";
 	return [NSString stringWithUTF8String:Cheat.group[self.cheatID].name.c_str()];
 }
 
 - (void)setCheatDescription:(NSString *)cheatDescription
 {
+	if (self.cheatID >= Cheat.group.size() || Cheat.group[self.cheatID].cheat.empty())
+		return;
 	[self setAddress:Cheat.group[self.cheatID].cheat[0].address value:Cheat.group[self.cheatID].cheat[0].byte cheatDescription:cheatDescription.UTF8String];
 }
 
 - (void)delete
 {
-	S9xDeleteCheatGroup(self.cheatID);
+	if (self.cheatID < Cheat.group.size())
+		S9xDeleteCheatGroup(self.cheatID);
 }
 
 @end
@@ -124,7 +144,12 @@ extern "C"
 
 bool CheatValuesFromCode(NSString *code, uint32 *address, uint8 *value)
 {
+	if (!code || !address || !value)
+		return false;
+
 	const char *text = code.UTF8String;
+	unsigned int tempAddr = 0;
+	unsigned int tempValue = 0;
 
 	if (!S9xGameGenieToRaw (text, *address, *value))
 	{
@@ -136,13 +161,17 @@ bool CheatValuesFromCode(NSString *code, uint32 *address, uint8 *value)
 		return true;
 	}
 
-	else if (sscanf (text, "%x = %x", (unsigned int *)address, (unsigned int *)value) == 2)
+	if (sscanf (text, "%x = %x", &tempAddr, &tempValue) == 2)
 	{
+		*address = (uint32)tempAddr;
+		*value = (uint8)tempValue;
 		return true;
 	}
 
-	else if (sscanf (text, "%x / %x", (unsigned int *)address, (unsigned int *)value) == 2)
+	if (sscanf (text, "%x / %x", &tempAddr, &tempValue) == 2)
 	{
+		*address = (uint32)tempAddr;
+		*value = (uint8)tempValue;
 		return true;
 	}
 
@@ -152,7 +181,7 @@ bool CheatValuesFromCode(NSString *code, uint32 *address, uint8 *value)
 void CreateCheatFromAddress(NSNumber *address, NSNumber *value, NSString *cheatDescription)
 {
 	char code[256];
-	sprintf(code, "%x=%x", address.unsignedIntValue, value.unsignedCharValue);
+	snprintf(code, sizeof(code), "%x=%x", address.unsignedIntValue, value.unsignedCharValue);
 	S9xAddCheatGroup(cheatDescription.UTF8String, code);
 	S9xEnableCheatGroup(Cheat.group.size() - 1);
 }

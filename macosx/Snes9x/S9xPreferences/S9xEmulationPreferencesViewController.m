@@ -24,7 +24,7 @@
 #import "S9xPreferencesConstants.h"
 
 @interface S9xEmulationPreferencesViewController ()
-
+@property (nonatomic, strong) id<NSObject> defaultsObserver;
 @end
 
 @implementation S9xEmulationPreferencesViewController
@@ -44,20 +44,27 @@
 {
 	[super viewWillAppear];
 
-	[NSNotificationCenter.defaultCenter addObserverForName:NSUserDefaultsDidChangeNotification
-													object:NSUserDefaults.standardUserDefaults
-													 queue:NSOperationQueue.mainQueue
-												usingBlock:^(NSNotification *notification)
+	if (self.defaultsObserver == nil)
 	{
-		[((AppDelegate *)NSApp.delegate) applyEmulationSettings];
-	}];
+		self.defaultsObserver = [NSNotificationCenter.defaultCenter addObserverForName:NSUserDefaultsDidChangeNotification
+														object:NSUserDefaults.standardUserDefaults
+														 queue:NSOperationQueue.mainQueue
+													usingBlock:^(NSNotification *notification)
+		{
+			[((AppDelegate *)NSApp.delegate) applyEmulationSettings];
+		}];
+	}
 }
 
 - (void)viewDidDisappear
 {
 	[super viewDidDisappear];
 
-	[NSNotificationCenter.defaultCenter removeObserver:self];
+	if (self.defaultsObserver != nil)
+	{
+		[NSNotificationCenter.defaultCenter removeObserver:self.defaultsObserver];
+		self.defaultsObserver = nil;
+	}
 }
 
 - (IBAction)resetDefaults:(id)sender
