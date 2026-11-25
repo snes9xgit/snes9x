@@ -170,10 +170,11 @@ static NSURL *FindCustomFolder (const char *folderName)
 	if (![NSFileManager.defaultManager fileExistsAtPath:purl.path])
 	{
 		NSError *error = nil;
-		if ([NSFileManager.defaultManager createDirectoryAtPath:saveFolderPath withIntermediateDirectories:YES attributes:nil error:&error])
+		if ([NSFileManager.defaultManager createDirectoryAtPath:purl.path withIntermediateDirectories:YES attributes:nil error:&error])
 		{
 			AddFolderIcon(purl, folderName);
 		}
+		else
 		{
 			[[NSAlert alertWithError:error] runModal];
 			return nil;
@@ -312,7 +313,7 @@ const char * S9xGetSPCFilename (void)
 {
 	char	spcExt[16];
 
-	sprintf(spcExt, ".%03d.spc", (int) spcFileCount);
+	snprintf(spcExt, sizeof(spcExt), ".%03d.spc", (int) spcFileCount);
 
 	spcFileCount++;
 	if (spcFileCount == 1000)
@@ -325,7 +326,7 @@ const char * S9xGetPNGFilename (void)
 {
 	char	pngExt[16];
 
-	sprintf(pngExt, ".%03d.png", (int) pngFileCount);
+	snprintf(pngExt, sizeof(pngExt), ".%03d.png", (int) pngFileCount);
 
 	pngFileCount++;
 	if (pngFileCount == 1000)
@@ -338,7 +339,7 @@ const char * S9xGetFreezeFilename (int which)
 {
 	char	frzExt[16];
 
-	sprintf(frzExt, ".%03d.frz", which);
+	snprintf(frzExt, sizeof(frzExt), ".%03d.frz", which);
 
 	return (S9xGetFilename(frzExt, SNAPSHOT_DIR));
 }

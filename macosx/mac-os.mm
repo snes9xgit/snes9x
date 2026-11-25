@@ -209,8 +209,8 @@ uint8 functionButtons[kNumFunctionButtons] = {
     kVK_ANSI_P
 };
 
-bool8               pressedKeys[MAC_MAX_PLAYERS][kNumButtons] = { 0 };
-bool8               pressedGamepadButtons[MAC_MAX_PLAYERS][kNumButtons] = { 0 };
+bool8               pressedKeys[MAC_MAX_PLAYERS][kNumButtons] = { { 0 } };
+bool8               pressedGamepadButtons[MAC_MAX_PLAYERS][kNumButtons] = { { 0 } };
 bool8               pressedFunctionButtons[kNumFunctionButtons] = { 0 };
 bool8               pressedRawKeyboardButtons[MAC_NUM_KEYCODES] = { 0 };
 bool8               heldFunctionButtons[kNumFunctionButtons] = { 0 };
@@ -1587,7 +1587,6 @@ void ChangeInputDevice (void)
 
 void ApplyNSRTHeaderControllers (void)
 {
-    uint32 valid = 0;
     deviceSetting = deviceSettingMaster;
 
     if (!strncmp((const char *) Memory.NSRTHeader + 24, "NSRT", 4))
@@ -1596,67 +1595,54 @@ void ApplyNSRTHeaderControllers (void)
         {
             case 0x00: // Everything goes
                 deviceSetting = Gamepads;
-                valid = (1 << Gamepads);
                 break;
 
             case 0x10: // Mouse in Port 0
                 deviceSetting = Mouse;
-                valid = (1 << Mouse);
                 break;
 
             case 0x01: // Mouse in Port 1
                 deviceSetting = Mouse2;
-                valid = (1 << Mouse2);
                 break;
 
             case 0x03: // Super Scope in Port 1
                 deviceSetting = SuperScope;
-                valid = (1 << SuperScope);
                 break;
 
             case 0x06: // Multitap in Port 1
                 deviceSetting = MultiTap;
-                valid = (1 << Gamepads) | (1 << MultiTap);
                 break;
 
             case 0x66: // Multitap in Ports 0 and 1
                 deviceSetting = DoubleMultiTap;
-                valid = (1 << Gamepads) | (1 << MultiTap) | (1 << DoubleMultiTap);
                 break;
 
             case 0x08: // Multitap in Port 1, Mouse in new Port 1
                 deviceSetting = Mouse;
-                valid = (1 << Gamepads) | (1 << Mouse2) | (1 << MultiTap);
                 break;
 
             case 0x04: // Pad or Super Scope in Port 1
                 deviceSetting = SuperScope;
-                valid = (1 << Gamepads) | (1 << SuperScope);
                 break;
 
             case 0x05: // Justifier - Must ask user...
                 deviceSetting = Justifier1;
-                valid = (1 << Justifier1) | (1 << Justifier2);
                 break;
 
             case 0x20: // Pad or Mouse in Port 0
                 deviceSetting = Mouse;
-                valid = (1 << Gamepads) | (1 << Mouse);
                 break;
 
             case 0x22: // Pad or Mouse in Port 0 & 1
                 deviceSetting = Mouse;
-                valid = (1 << Gamepads) | (1 << Mouse) | (1 << Mouse2);
                 break;
 
             case 0x24: // Pad or Mouse in Port 0, Pad or Super Scope in Port 1
                 deviceSetting = SuperScope;
-                valid = (1 << Gamepads) | (1 << Mouse) | (1 << SuperScope);
                 break;
 
             case 0x27: // Pad or Mouse in Port 0, Pad or Mouse or Super Scope in Port 1
                 deviceSetting = SuperScope;
-                valid = (1 << Gamepads) | (1 << Mouse) | (1 << Mouse2) | (1 << SuperScope);
                 break;
 
             case 0x99: // Lasabirdie
@@ -1822,26 +1808,27 @@ int PromptFreezeDefrost (Boolean freezing)
             y = rct.origin.y + 102.0f;
             DrawString(ctx, [NSString stringWithFormat:@"%c", letters[count]], 12.0, x, y);
 
-            if (showtimeinfrz)
+            if (showtimeinfrz && currentDate != DBL_MIN)
             {
-                CFAbsoluteTime        at;
                 CFDateFormatterRef    format;
-                CFLocaleRef            locale;
-                CFStringRef            datstr;
-                Boolean                r;
+                CFLocaleRef           locale;
+                CFStringRef           datstr;
 
-                err = UCConvertUTCDateTimeToCFAbsoluteTime(&(info.contentModDate), &at);
                 locale = CFLocaleCopyCurrent();
                 format = CFDateFormatterCreate(kCFAllocatorDefault, locale, kCFDateFormatterShortStyle, kCFDateFormatterMediumStyle);
-                datstr = CFDateFormatterCreateStringWithAbsoluteTime(kCFAllocatorDefault, format, at);
-                r = CFStringGetCString(datstr, dateC, sizeof(dateC), CFStringGetSystemEncoding());
-                CFRelease(datstr);
+                datstr = CFDateFormatterCreateStringWithAbsoluteTime(kCFAllocatorDefault, format, currentDate);
+                if (datstr != NULL)
+                {
+                    if (CFStringGetCString(datstr, dateC, sizeof(dateC), kCFStringEncodingUTF8))
+                    {
+                        x = rct.origin.x + 20.0f;
+                        y = rct.origin.y + 102.0f;
+                        DrawString(ctx, [NSString stringWithUTF8String:dateC], 10.0, x, y);
+                    }
+                    CFRelease(datstr);
+                }
                 CFRelease(format);
                 CFRelease(locale);
-
-                x = rct.origin.x +  20.0f;
-                y = rct.origin.y + 102.0f;
-                DrawString(ctx, [NSString stringWithUTF8String:dateC], 10.0, x, y);
             }
         }
         else
@@ -2214,14 +2201,14 @@ static void ProcessInput (void)
                         case IncreaseFrameAdvanceRate:
                             if (macFrameAdvanceRate < 5000000)
                                 macFrameAdvanceRate += 100000;
-                            sprintf(msg, "Emulation Speed: 100/%d", macFrameAdvanceRate / 10000);
+                            snprintf(msg, sizeof(msg), "Emulation Speed: 100/%d", macFrameAdvanceRate / 10000);
                             S9xSetInfoString(msg);
                             break;
 
                         case DecreaseFrameAdvanceRate:
                             if (macFrameAdvanceRate > 500000)
                                 macFrameAdvanceRate -= 100000;
-                            sprintf(msg, "Emulation Speed: 100/%d", macFrameAdvanceRate / 10000);
+                            snprintf(msg, sizeof(msg), "Emulation Speed: 100/%d", macFrameAdvanceRate / 10000);
                             S9xSetInfoString(msg);
                             break;
 
@@ -2787,10 +2774,11 @@ void QuitWithFatalError ( NSString *message)
 
     if (self)
     {
+        [self registerForDraggedTypes:@[NSPasteboardTypeFileURL]];
+
         NSView *dimmedView = [[NSView alloc] initWithFrame:frameRect];
         dimmedView.wantsLayer = YES;
-        dimmedView.layer.backgroundColor = NSColor.blackColor.CGColor;
-        dimmedView.layer.opacity = 0.5;
+        dimmedView.layer.backgroundColor = [NSColor colorWithWhite:0.0 alpha:0.55].CGColor;
         dimmedView.layer.zPosition = 100.0;
         dimmedView.translatesAutoresizingMaskIntoConstraints = NO;
         [self addSubview:dimmedView];
@@ -2800,10 +2788,141 @@ void QuitWithFatalError ( NSString *message)
         [dimmedView.leadingAnchor constraintEqualToAnchor:self.leadingAnchor].active = YES;
         [dimmedView.trailingAnchor constraintEqualToAnchor:self.trailingAnchor].active = YES;
 
+        NSVisualEffectView *hudPill = [[NSVisualEffectView alloc] initWithFrame:NSZeroRect];
+        hudPill.material = NSVisualEffectMaterialHUDWindow;
+        hudPill.blendingMode = NSVisualEffectBlendingModeWithinWindow;
+        hudPill.state = NSVisualEffectStateActive;
+        hudPill.appearance = [NSAppearance appearanceNamed:NSAppearanceNameVibrantDark];
+        hudPill.wantsLayer = YES;
+        hudPill.layer.cornerRadius = 14.0;
+        hudPill.layer.masksToBounds = YES;
+        hudPill.translatesAutoresizingMaskIntoConstraints = NO;
+        [dimmedView addSubview:hudPill];
+
+        [hudPill.centerXAnchor constraintEqualToAnchor:dimmedView.centerXAnchor].active = YES;
+        [hudPill.centerYAnchor constraintEqualToAnchor:dimmedView.centerYAnchor].active = YES;
+
+        NSTextField *titleLabel = [NSTextField labelWithString:NSLocalizedString(@"PAUSED", nil)];
+        titleLabel.font = [NSFont systemFontOfSize:22.0 weight:NSFontWeightBold];
+        titleLabel.textColor = NSColor.whiteColor;
+        titleLabel.alignment = NSTextAlignmentCenter;
+
+        NSTextField *subtitleLabel = [NSTextField labelWithString:NSLocalizedString(@"Click or press Esc to resume", nil)];
+        subtitleLabel.font = [NSFont systemFontOfSize:12.0 weight:NSFontWeightMedium];
+        subtitleLabel.textColor = [NSColor colorWithWhite:1.0 alpha:0.75];
+        subtitleLabel.alignment = NSTextAlignmentCenter;
+
+        NSStackView *stack = [NSStackView stackViewWithViews:@[titleLabel, subtitleLabel]];
+        stack.orientation = NSUserInterfaceLayoutOrientationVertical;
+        stack.alignment = NSLayoutAttributeCenterX;
+        stack.spacing = 4.0;
+        stack.translatesAutoresizingMaskIntoConstraints = NO;
+        [hudPill addSubview:stack];
+
+        [stack.topAnchor constraintEqualToAnchor:hudPill.topAnchor constant:16.0].active = YES;
+        [stack.bottomAnchor constraintEqualToAnchor:hudPill.bottomAnchor constant:-16.0].active = YES;
+        [stack.leadingAnchor constraintEqualToAnchor:hudPill.leadingAnchor constant:28.0].active = YES;
+        [stack.trailingAnchor constraintEqualToAnchor:hudPill.trailingAnchor constant:-28.0].active = YES;
+
+        self.pauseOverlayView = dimmedView;
         dimmedView.hidden = YES;
+
+        NSVisualEffectView *emptyCard = [[NSVisualEffectView alloc] initWithFrame:NSZeroRect];
+        emptyCard.material = NSVisualEffectMaterialHUDWindow;
+        emptyCard.blendingMode = NSVisualEffectBlendingModeWithinWindow;
+        emptyCard.state = NSVisualEffectStateActive;
+        emptyCard.appearance = [NSAppearance appearanceNamed:NSAppearanceNameVibrantDark];
+        emptyCard.wantsLayer = YES;
+        emptyCard.layer.cornerRadius = 16.0;
+        emptyCard.layer.masksToBounds = YES;
+        emptyCard.layer.zPosition = 90.0;
+        emptyCard.translatesAutoresizingMaskIntoConstraints = NO;
+        [self addSubview:emptyCard];
+
+        [emptyCard.centerXAnchor constraintEqualToAnchor:self.centerXAnchor].active = YES;
+        [emptyCard.centerYAnchor constraintEqualToAnchor:self.centerYAnchor].active = YES;
+
+        NSImageView *iconView = [[NSImageView alloc] initWithFrame:NSZeroRect];
+        iconView.image = NSApp.applicationIconImage;
+        iconView.imageScaling = NSImageScaleProportionallyUpOrDown;
+        [iconView.widthAnchor constraintEqualToConstant:64.0].active = YES;
+        [iconView.heightAnchor constraintEqualToConstant:64.0].active = YES;
+
+        NSTextField *welcomeTitle = [NSTextField labelWithString:NSLocalizedString(@"Snes9x", nil)];
+        welcomeTitle.font = [NSFont systemFontOfSize:22.0 weight:NSFontWeightBold];
+        welcomeTitle.textColor = NSColor.whiteColor;
+        welcomeTitle.alignment = NSTextAlignmentCenter;
+
+        NSTextField *welcomeSubtitle = [NSTextField labelWithString:NSLocalizedString(@"Drop a SNES ROM here or choose a file to play", nil)];
+        welcomeSubtitle.font = [NSFont systemFontOfSize:13.0 weight:NSFontWeightRegular];
+        welcomeSubtitle.textColor = [NSColor colorWithWhite:1.0 alpha:0.78];
+        welcomeSubtitle.alignment = NSTextAlignmentCenter;
+
+        NSButton *openButton = [NSButton buttonWithTitle:NSLocalizedString(@"Open ROM…", nil) target:nil action:@selector(openDocument:)];
+        openButton.bezelStyle = NSBezelStyleRounded;
+        openButton.controlSize = NSControlSizeLarge;
+        openButton.keyEquivalent = @"o";
+
+        NSButton *prefsButton = [NSButton buttonWithTitle:NSLocalizedString(@"Preferences…", nil) target:nil action:@selector(openPreferencesWindow:)];
+        prefsButton.bezelStyle = NSBezelStyleRounded;
+        prefsButton.controlSize = NSControlSizeLarge;
+
+        NSStackView *buttonRow = [NSStackView stackViewWithViews:@[openButton, prefsButton]];
+        buttonRow.orientation = NSUserInterfaceLayoutOrientationHorizontal;
+        buttonRow.spacing = 10.0;
+
+        NSTextField *shortcutHint = [NSTextField labelWithString:NSLocalizedString(@"⌘O Open  •  Esc / ⌘P Pause  •  ⌘⌥S / ⌘⌥L Quick Save/Load  •  ⌘1–4 Scale", nil)];
+        shortcutHint.font = [NSFont systemFontOfSize:11.0 weight:NSFontWeightRegular];
+        shortcutHint.textColor = [NSColor colorWithWhite:1.0 alpha:0.55];
+        shortcutHint.alignment = NSTextAlignmentCenter;
+
+        NSStackView *emptyStack = [NSStackView stackViewWithViews:@[iconView, welcomeTitle, welcomeSubtitle, buttonRow, shortcutHint]];
+        emptyStack.orientation = NSUserInterfaceLayoutOrientationVertical;
+        emptyStack.alignment = NSLayoutAttributeCenterX;
+        emptyStack.spacing = 10.0;
+        emptyStack.translatesAutoresizingMaskIntoConstraints = NO;
+        [emptyCard addSubview:emptyStack];
+
+        [emptyStack.topAnchor constraintEqualToAnchor:emptyCard.topAnchor constant:24.0].active = YES;
+        [emptyStack.bottomAnchor constraintEqualToAnchor:emptyCard.bottomAnchor constant:-24.0].active = YES;
+        [emptyStack.leadingAnchor constraintEqualToAnchor:emptyCard.leadingAnchor constant:28.0].active = YES;
+        [emptyStack.trailingAnchor constraintEqualToAnchor:emptyCard.trailingAnchor constant:-28.0].active = YES;
+
+        self.emptyStateView = emptyCard;
+        emptyCard.hidden = (cartOpen ? YES : NO);
     }
 
     return self;
+}
+
+- (NSDragOperation)draggingEntered:(id<NSDraggingInfo>)sender
+{
+    NSPasteboard *pb = [sender draggingPasteboard];
+    NSArray<NSURL *> *urls = [pb readObjectsForClasses:@[[NSURL class]] options:@{NSPasteboardURLReadingFileURLsOnlyKey: @YES}];
+    NSSet *supported = [NSSet setWithArray:@[@"sfc", @"smc", @"swc", @"fig", @"gd3", @"zip", @"jma"]];
+    for (NSURL *url in urls)
+    {
+        if ([supported containsObject:url.pathExtension.lowercaseString])
+        {
+            return NSDragOperationCopy;
+        }
+    }
+    return NSDragOperationNone;
+}
+
+- (BOOL)performDragOperation:(id<NSDraggingInfo>)sender
+{
+    NSPasteboard *pb = [sender draggingPasteboard];
+    NSArray<NSURL *> *urls = [pb readObjectsForClasses:@[[NSURL class]] options:@{NSPasteboardURLReadingFileURLsOnlyKey: @YES}];
+    NSSet *supported = [NSSet setWithArray:@[@"sfc", @"smc", @"swc", @"fig", @"gd3", @"zip", @"jma"]];
+    for (NSURL *url in urls)
+    {
+        if ([supported containsObject:url.pathExtension.lowercaseString])
+        {
+            return [NSApp.delegate application:NSApp openFile:url.path];
+        }
+    }
+    return NO;
 }
 
 - (void)viewWillMoveToWindow:(NSWindow *)newWindow
@@ -2813,14 +2932,14 @@ void QuitWithFatalError ( NSString *message)
 
 - (void)keyDown:(NSEvent *)event
 {
-    if (!NSApp.isActive)
+    if (!NSApp.isActive || event.keyCode >= MAC_NUM_KEYCODES)
     {
         return;
     }
 
     pthread_mutex_lock(&keyLock);
     S9xButton button = keyCodes[event.keyCode];
-    if ( button.buttonCode >= 0 && button.buttonCode < kNumButtons && button.player >= 0 && button.player <= MAC_MAX_PLAYERS)
+    if ( button.buttonCode >= 0 && button.buttonCode < kNumButtons && button.player >= 0 && button.player < MAC_MAX_PLAYERS)
     {
         pressedKeys[button.player][button.buttonCode] = true;
     }
@@ -2841,14 +2960,14 @@ void QuitWithFatalError ( NSString *message)
 
 - (void)keyUp:(NSEvent *)event
 {
-    if (!NSApp.isActive)
+    if (!NSApp.isActive || event.keyCode >= MAC_NUM_KEYCODES)
     {
         return;
     }
 
     pthread_mutex_lock(&keyLock);
     S9xButton button = keyCodes[event.keyCode];
-    if ( button.buttonCode >= 0 && button.buttonCode < kNumButtons && button.player >= 0 && button.player <= MAC_MAX_PLAYERS)
+    if ( button.buttonCode >= 0 && button.buttonCode < kNumButtons && button.player >= 0 && button.player < MAC_MAX_PLAYERS)
     {
         pressedKeys[button.player][button.buttonCode] = false;
     }
@@ -2927,10 +3046,17 @@ void QuitWithFatalError ( NSString *message)
 				break;
 		}
 	}
-	else
+	else if (running && !frzselecting)
 	{
-		pauseEmulation = true;
-		[self.emulationDelegate emulationPaused];
+		pauseEmulation = !pauseEmulation;
+		if (pauseEmulation)
+		{
+			[self.emulationDelegate emulationPaused];
+		}
+		else
+		{
+			[self.emulationDelegate emulationResumed];
+		}
 
 		[s9xView updatePauseOverlay];
 	}
@@ -3054,7 +3180,8 @@ void QuitWithFatalError ( NSString *message)
 - (void)updatePauseOverlay
 {
 	dispatch_async(dispatch_get_main_queue(), ^{
-		self.subviews[0].hidden = (frzselecting || !pauseEmulation);
+		self.emptyStateView.hidden = (cartOpen ? YES : NO);
+		self.pauseOverlayView.hidden = (!cartOpen || frzselecting || !pauseEmulation);
 		CGFloat scaleFactor = MAX(self.window.backingScaleFactor, 1.0);
 		glScreenW = self.frame.size.width * scaleFactor;
 		glScreenH = self.frame.size.height * scaleFactor;
@@ -3077,6 +3204,20 @@ void QuitWithFatalError ( NSString *message)
 			[NSCursor hide];
 		}
 	});
+}
+
+- (void)layout
+{
+    [super layout];
+    CGFloat scale = MAX(self.window.backingScaleFactor, 1.0);
+    self.drawableSize = CGSizeMake(self.bounds.size.width * scale, self.bounds.size.height * scale);
+}
+
+- (void)viewDidChangeBackingProperties
+{
+    [super viewDidChangeBackingProperties];
+    CGFloat scale = MAX(self.window.backingScaleFactor, 1.0);
+    self.drawableSize = CGSizeMake(self.bounds.size.width * scale, self.bounds.size.height * scale);
 }
 
 - (void)setFrame:(NSRect)frame
@@ -3129,13 +3270,15 @@ void QuitWithFatalError ( NSString *message)
 	CGRect frame = NSMakeRect(0, 0, SNES_WIDTH * 2, SNES_HEIGHT * 2);
 	s9xView = [[S9xView alloc] initWithFrame:frame];
 	s9xView.translatesAutoresizingMaskIntoConstraints = NO;
-	s9xView.autoresizingMask = NSViewWidthSizable|NSViewHeightSizable;
+	s9xView.paused = YES;
+	s9xView.enableSetNeedsDisplay = NO;
 	[s9xView addConstraint:[NSLayoutConstraint constraintWithItem:s9xView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:s9xView attribute:NSLayoutAttributeWidth multiplier:(CGFloat)SNES_HEIGHT/(CGFloat)SNES_WIDTH constant:0.0]];
-	[s9xView addConstraint:[NSLayoutConstraint constraintWithItem:s9xView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationGreaterThanOrEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:SNES_WIDTH * 2.0]];
-	[s9xView addConstraint:[NSLayoutConstraint constraintWithItem:s9xView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationGreaterThanOrEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:SNES_HEIGHT * 2.0]];
+	[s9xView addConstraint:[NSLayoutConstraint constraintWithItem:s9xView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationGreaterThanOrEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:SNES_WIDTH]];
+	[s9xView addConstraint:[NSLayoutConstraint constraintWithItem:s9xView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationGreaterThanOrEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:SNES_HEIGHT]];
 	s9xView.device = MTLCreateSystemDefaultDevice();
 	s9xView.emulationDelegate = self;
-	S9xInitDisplay(NULL, NULL);
+	S9xInitDisplay(0, NULL);
+	[s9xView updatePauseOverlay];
 }
 
 - (void)start
@@ -3151,8 +3294,6 @@ void QuitWithFatalError ( NSString *message)
 		skipFrames = 3;
 	else
 		skipFrames = macFrameSkip;
-
-	S9xInitDisplay(NULL, NULL);
 
 	[NSThread detachNewThreadWithBlock:^
 	{
@@ -3334,9 +3475,11 @@ void QuitWithFatalError ( NSString *message)
 
     if ( SNES9X_OpenCart(fileURL) )
     {
+		S9xSetSoundMute([NSUserDefaults.standardUserDefaults boolForKey:@"SoundMute"] ? true : false);
 		[self.emulationDelegate gameLoaded];
 		
         SNES9X_Go();
+        [s9xView updatePauseOverlay];
         s9xView.window.title = fileURL.lastPathComponent.stringByDeletingPathExtension;
         [s9xView.window makeKeyAndOrderFront:nil];
 
@@ -3367,11 +3510,13 @@ void QuitWithFatalError ( NSString *message)
 		usleep(Settings.FrameTime);
 	}
 
-	if (SNES9X_OpenMultiCart(fileURLs.firstObject, fileURLs.lastObject))
+	if (SNES9X_OpenMultiCart(fileURLs.firstObject, (fileURLs.count > 1 ? fileURLs[1] : nil)))
 	{
+		S9xSetSoundMute([NSUserDefaults.standardUserDefaults boolForKey:@"SoundMute"] ? true : false);
 		[self.emulationDelegate gameLoaded];
 
 		SNES9X_Go();
+		[s9xView updatePauseOverlay];
 		s9xView.window.title = fileURLs.firstObject.lastPathComponent.stringByDeletingPathExtension;
 		[s9xView.window makeKeyAndOrderFront:nil];
 
@@ -3441,7 +3586,7 @@ void QuitWithFatalError ( NSString *message)
 
 - (void)setSeparateEchoBufferFromRAM:(BOOL)flag
 {
-	Settings.SeparateEchoBuffer = false;
+	Settings.SeparateEchoBuffer = flag;
 }
 
 - (void)setDisableSpriteLimit:(BOOL)flag
@@ -3454,6 +3599,110 @@ void QuitWithFatalError ( NSString *message)
 	{
 		Settings.MaxSpriteTilesPerLine = 34;
 	}
+}
+
+- (void)setSoundVolume:(NSInteger)volume
+{
+	if (volume < 0) volume = 0;
+	if (volume > 100) volume = 100;
+	macSoundVolume = (SInt32)volume;
+	MacUpdateSoundVolume();
+}
+
+- (void)setSoundMuted:(BOOL)muted
+{
+	S9xSetSoundMute(muted ? true : false);
+}
+
+- (void)setSoundSync:(BOOL)soundSync
+{
+	Settings.SoundSync = soundSync ? true : false;
+}
+
+- (void)setDynamicRateControl:(BOOL)enabled
+{
+	Settings.DynamicRateControl = enabled ? true : false;
+}
+
+- (void)setSoundBufferMs:(uint32_t)bufferMs
+{
+	if (bufferMs < 20) bufferMs = 20;
+	if (bufferMs > 200) bufferMs = 200;
+	macSoundBuffer_ms = bufferMs;
+	S9xOpenSoundDevice();
+}
+
+- (void)setSaveLocationMode:(uint8_t)mode
+{
+	saveInROMFolder = mode;
+}
+
+- (void)setCustomSaveFolderPath:(NSString *)path
+{
+	saveFolderPath = [path copy];
+}
+
+- (NSURL *)currentSaveRootURL
+{
+	if (saveInROMFolder == 4 && saveFolderPath.length > 0)
+	{
+		return [NSURL fileURLWithPath:saveFolderPath];
+	}
+	else if (saveInROMFolder == 0)
+	{
+		return [[NSBundle mainBundle] bundleURL].URLByDeletingLastPathComponent;
+	}
+	else
+	{
+		NSURL *baseURL = [NSFileManager.defaultManager URLsForDirectory:NSApplicationSupportDirectory inDomains:NSUserDomainMask].firstObject;
+		NSURL *s9xURL = [baseURL URLByAppendingPathComponent:@"Snes9x"];
+		[NSFileManager.defaultManager createDirectoryAtURL:s9xURL withIntermediateDirectories:YES attributes:nil error:NULL];
+		return s9xURL;
+	}
+}
+
+- (void)togglePause
+{
+	if (!running)
+		return;
+	if (pauseEmulation)
+		[self resume];
+	else
+		[self pause];
+}
+
+- (void)takeScreenshot
+{
+	if (cartOpen)
+	{
+		Settings.TakeScreenshot = true;
+	}
+}
+
+- (BOOL)quickSaveToSlot:(int)slot
+{
+	if (!cartOpen || slot < 0 || slot >= 12)
+		return NO;
+	const char *filename = S9xGetFreezeFilename(slot);
+	if (!filename)
+		return NO;
+	unlink(filename);
+	S9xFreezeGame(filename);
+	WriteThumbnailToExtendedAttribute(filename, 128, 120);
+	CocoaPlayFreezeDefrostSound();
+	return YES;
+}
+
+- (BOOL)quickLoadFromSlot:(int)slot
+{
+	if (!cartOpen || slot < 0 || slot >= 12)
+		return NO;
+	const char *filename = S9xGetFreezeFilename(slot);
+	if (!filename || access(filename, R_OK) != 0)
+		return NO;
+	S9xUnfreezeGame(filename);
+	CocoaPlayFreezeDefrostSound();
+	return YES;
 }
 
 @dynamic inputDelegate;

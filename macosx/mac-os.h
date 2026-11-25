@@ -142,10 +142,12 @@ extern pthread_mutex_t	keyLock;
 - (void)emulationResumed;
 @end
 
-@interface S9xView: MTKView
+@interface S9xView: MTKView <NSDraggingDestination>
 - (void)updatePauseOverlay;
 
 @property (nonatomic, weak) id<S9xEmulationDelegate> emulationDelegate;
+@property (nonatomic, strong) NSView *pauseOverlayView;
+@property (nonatomic, strong) NSView *emptyStateView;
 @end
 extern S9xView			*s9xView;
 
@@ -244,6 +246,21 @@ extern id<S9xInputDelegate> inputDelegate;
 - (void)setAllowInvalidVRAMAccess:(BOOL)flag;
 - (void)setSeparateEchoBufferFromRAM:(BOOL)flag;
 - (void)setDisableSpriteLimit:(BOOL)flag;
+
+- (void)setSoundVolume:(NSInteger)volume;
+- (void)setSoundMuted:(BOOL)muted;
+- (void)setSoundSync:(BOOL)soundSync;
+- (void)setDynamicRateControl:(BOOL)enabled;
+- (void)setSoundBufferMs:(uint32_t)bufferMs;
+
+- (void)setSaveLocationMode:(uint8_t)mode;
+- (void)setCustomSaveFolderPath:(NSString *)path;
+- (NSURL *)currentSaveRootURL;
+
+- (void)togglePause;
+- (void)takeScreenshot;
+- (BOOL)quickSaveToSlot:(int)slot;
+- (BOOL)quickLoadFromSlot:(int)slot;
 
 - (void)copyRAM:(uint8_t *)buffer length:(size_t)length;
 
