@@ -29,7 +29,6 @@ void CocoaPlayFreezeDefrostSound (void)
 	NSBundle			*bundle;
 	NSString			*path;
 	NSSound				*sound;
-	BOOL				r;
 
     @autoreleasepool
     {
@@ -40,7 +39,7 @@ void CocoaPlayFreezeDefrostSound (void)
             sound = [[NSSound alloc] initWithContentsOfFile: path byReference: YES];
             if (sound)
             {
-                r = [sound play];
+                [sound play];
             }
         }
     }

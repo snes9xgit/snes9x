@@ -854,11 +854,11 @@ typedef NS_ENUM(uint32_t, S9xCheatFinderWatchSegments) {
 {
 	S9xCheatFinderValueType valueType;
 
-	if (((NSButton *)[self.view viewWithTag:S9xCheatFinderValueTypeUnsigned]).state == NSOnState)
+	if (((NSButton *)[self.view viewWithTag:S9xCheatFinderValueTypeUnsigned]).state == NSControlStateValueOn)
 	{
 		valueType = S9xCheatFinderValueTypeUnsigned;
 	}
-	else if (((NSButton *)[self.view viewWithTag:S9xCheatFinderValueTypeSigned]).state == NSOnState)
+	else if (((NSButton *)[self.view viewWithTag:S9xCheatFinderValueTypeSigned]).state == NSControlStateValueOn)
 	{
 		valueType = S9xCheatFinderValueTypeSigned;
 	}
@@ -881,11 +881,11 @@ typedef NS_ENUM(uint32_t, S9xCheatFinderWatchSegments) {
 {
 	S9xCheatFinderCompareTo compareTo;
 
-	if (((NSButton *)[self.view viewWithTag:S9xCheatFinderCompareToCustom]).state == NSOnState)
+	if (((NSButton *)[self.view viewWithTag:S9xCheatFinderCompareToCustom]).state == NSControlStateValueOn)
 	{
 		compareTo = S9xCheatFinderCompareToCustom;
 	}
-	else if (((NSButton *)[self.view viewWithTag:S9xCheatFinderCompareToStored]).state == NSOnState)
+	else if (((NSButton *)[self.view viewWithTag:S9xCheatFinderCompareToStored]).state == NSControlStateValueOn)
 	{
 		compareTo = S9xCheatFinderCompareToStored;
 	}

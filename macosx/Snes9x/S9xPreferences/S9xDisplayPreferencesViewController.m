@@ -57,16 +57,18 @@
 	// from stepper/text field, else leave automatic checkbox
 	// unchecked and set textfield to value
 	if (macFrameSkipDefault == -1) {
-		[self.macFrameSkipTextField setEnabled: false];
-		[self.macFrameSkipStepper setEnabled: false];
-		[self.macFrameSkipTextField setIntValue: 0]; // show something at least
-		[self.macFrameSkipAutomaticButton setIntValue: 1];
+		[self.macFrameSkipTextField setEnabled:NO];
+		[self.macFrameSkipStepper setEnabled:NO];
+		[self.macFrameSkipTextField setIntValue:0];
+		[self.macFrameSkipAutomaticButton setState:NSControlStateValueOn];
 	} else {
-		[self.macFrameSkipTextField setIntValue: (int)macFrameSkipDefault];
-		[self.macFrameSkipAutomaticButton setIntValue: 0];
+		[self.macFrameSkipTextField setEnabled:YES];
+		[self.macFrameSkipStepper setEnabled:YES];
+		[self.macFrameSkipTextField setIntValue:(int)macFrameSkipDefault];
+		[self.macFrameSkipAutomaticButton setState:NSControlStateValueOff];
 	}
 
-	self.showFPSCheckbox.state = [NSUserDefaults.standardUserDefaults boolForKey:kShowFPSPref];
+	self.showFPSCheckbox.state = [NSUserDefaults.standardUserDefaults boolForKey:kShowFPSPref] ? NSControlStateValueOn : NSControlStateValueOff;
 }
 
 - (void)setShowFPS:(BOOL)value
@@ -89,7 +91,7 @@
 
 - (IBAction)onCheckShowFPS:(NSButton *)sender
 {
-	[self setShowFPS:sender.state == NSOnState];
+	[self setShowFPS:sender.state == NSControlStateValueOn];
 }
 
 - (IBAction)onSelectVideoMode:(NSPopUpButton *)sender
@@ -117,7 +119,11 @@
 
 - (IBAction)onChangeMacFrameSkipTextField:(NSTextField *)sender
 {
-	[self setMacFrameSkip:sender.intValue];
+	int val = sender.intValue;
+	if (val < 0) val = 0;
+	if (val > 200) val = 200;
+	sender.intValue = val;
+	[self setMacFrameSkip:val];
 }
 
 - (IBAction)onCheckMacFrameSkipAutomaticButton:(NSButton *)sender

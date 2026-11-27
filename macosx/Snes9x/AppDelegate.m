@@ -28,7 +28,7 @@ NSWindowFrameAutosaveName const kMainWindowIdentifier = @"s9xMainWindow";
 NSWindowFrameAutosaveName const kCheatsWindowIdentifier = @"s9xCheatsWindow";
 NSWindowFrameAutosaveName const kCheatFinderWindowIdentifier = @"s9xCheatFinderWindow";
 
-@interface AppDelegate () <S9xCheatFinderDelegate>
+@interface AppDelegate () <S9xCheatFinderDelegate, NSMenuItemValidation>
 @end
 
 @implementation AppDelegate
@@ -48,6 +48,7 @@ NSWindowFrameAutosaveName const kCheatFinderWindowIdentifier = @"s9xCheatFinderW
     gameWindow.frameAutosaveName = kMainWindowIdentifier;
     gameWindow.releasedWhenClosed = NO;
     gameWindow.backgroundColor = NSColor.clearColor;
+    gameWindow.collectionBehavior = NSWindowCollectionBehaviorFullScreenPrimary;
 
     if ( ![gameWindow setFrameUsingName:kMainWindowIdentifier] )
     {
@@ -61,11 +62,24 @@ NSWindowFrameAutosaveName const kCheatFinderWindowIdentifier = @"s9xCheatFinderW
         [self.s9xEngine quit];
     }];
 
+    [self setupExtraMenuItems];
     [self resetWindow];
+    [NSApp activateIgnoringOtherApps:YES];
 }
 
 - (void)applicationWillTerminate:(NSNotification *)aNotification {
     [self.s9xEngine quit];
+}
+
+- (BOOL)applicationShouldHandleReopen:(NSApplication *)sender hasVisibleWindows:(BOOL)flag
+{
+    if (!flag && self.gameWindow != nil)
+    {
+        [self.gameWindow deminiaturize:nil];
+        [self.gameWindow makeKeyAndOrderFront:self];
+        [NSApp activateIgnoringOtherApps:YES];
+    }
+    return YES;
 }
 
 - (void)setupDefaults
@@ -128,6 +142,9 @@ NSWindowFrameAutosaveName const kCheatFinderWindowIdentifier = @"s9xCheatFinderW
         kAllowInvalidVRAMAccessPref : @(NO),
         kSeparateEchoBufferFromRAMPref : @(NO),
         kDisableSpriteLimitPref : @(NO),
+
+        kSaveLocationModePref : @(2),
+        kCustomSaveFolderPref : @"",
     };
 
     [defaults registerDefaults:defaultSettings];
@@ -202,6 +219,7 @@ NSWindowFrameAutosaveName const kCheatFinderWindowIdentifier = @"s9xCheatFinderW
     [self importKeySettings];
     [self importGraphicsSettings];
     [self applyEmulationSettings];
+    [self applyFileSettings];
 
     self.s9xEngine.cheatsEnabled = [defaults boolForKey:kEnableCheatsPref];
 
@@ -529,8 +547,18 @@ NSWindowFrameAutosaveName const kCheatFinderWindowIdentifier = @"s9xCheatFinderW
 	if (action == @selector(resume:) || action == @selector(softwareReset:) || action == @selector(hardwareReset:)) {
 		return [self.s9xEngine isRunning] && [self.s9xEngine isPaused];
 	}
+	else if (action == @selector(togglePause:)) {
+		menuItem.title = [self.s9xEngine isPaused] ? NSLocalizedString(@"Resume", nil) : NSLocalizedString(@"Pause", nil);
+		return [self.s9xEngine isRunning];
+	}
+	else if (action == @selector(takeScreenshot:) || action == @selector(quickSave:) || action == @selector(quickLoad:)) {
+		return [self.s9xEngine isRunning];
+	}
+	else if (action == @selector(setWindowScale:) || action == @selector(openSavesFolder:) || action == @selector(showGameWindow:)) {
+		return YES;
+	}
 	else if (action == @selector(updateDeviceSetting:)) {
-		menuItem.state = (self.deviceSetting == (S9xDeviceSetting)menuItem.tag) ? NSOnState : NSOffState;
+		menuItem.state = (self.deviceSetting == (S9xDeviceSetting)menuItem.tag) ? NSControlStateValueOn : NSControlStateValueOff;
 	}
     else if (action == @selector(toggleCheats:))
     {
@@ -605,6 +633,122 @@ NSWindowFrameAutosaveName const kCheatFinderWindowIdentifier = @"s9xCheatFinderW
     [engine setAllowInvalidVRAMAccess:[defaults boolForKey:kAllowInvalidVRAMAccessPref]];
     [engine setSeparateEchoBufferFromRAM:[defaults boolForKey:kSeparateEchoBufferFromRAMPref]];
     [engine setDisableSpriteLimit:[defaults boolForKey:kDisableSpriteLimitPref]];
+}
+
+- (void)applyFileSettings
+{
+    S9xEngine *engine = self.s9xEngine;
+    NSUserDefaults *defaults = NSUserDefaults.standardUserDefaults;
+
+    [engine setSaveLocationMode:(uint8_t)[defaults integerForKey:kSaveLocationModePref]];
+    NSString *customPath = [defaults stringForKey:kCustomSaveFolderPref];
+    if (customPath.length > 0)
+    {
+        [engine setCustomSaveFolderPath:customPath];
+    }
+}
+
+- (void)setupExtraMenuItems
+{
+    NSMenu *mainMenu = NSApp.mainMenu;
+    for (NSMenuItem *topItem in mainMenu.itemArray)
+    {
+        NSMenu *submenu = topItem.submenu;
+        if (!submenu) continue;
+
+        if ([submenu.title isEqualToString:@"Emulation"])
+        {
+            NSMenuItem *pauseItem = [[NSMenuItem alloc] initWithTitle:NSLocalizedString(@"Pause", nil) action:@selector(togglePause:) keyEquivalent:@"p"];
+            [submenu insertItem:pauseItem atIndex:0];
+
+            [submenu addItem:[NSMenuItem separatorItem]];
+            NSMenuItem *quickSaveItem = [[NSMenuItem alloc] initWithTitle:NSLocalizedString(@"Quick Save (Slot 1)", nil) action:@selector(quickSave:) keyEquivalent:@"s"];
+            quickSaveItem.keyEquivalentModifierMask = NSEventModifierFlagCommand | NSEventModifierFlagOption;
+            [submenu addItem:quickSaveItem];
+
+            NSMenuItem *quickLoadItem = [[NSMenuItem alloc] initWithTitle:NSLocalizedString(@"Quick Load (Slot 1)", nil) action:@selector(quickLoad:) keyEquivalent:@"l"];
+            quickLoadItem.keyEquivalentModifierMask = NSEventModifierFlagCommand | NSEventModifierFlagOption;
+            [submenu addItem:quickLoadItem];
+
+            NSMenuItem *screenshotItem = [[NSMenuItem alloc] initWithTitle:NSLocalizedString(@"Take Screenshot", nil) action:@selector(takeScreenshot:) keyEquivalent:@"S"];
+            [submenu addItem:screenshotItem];
+        }
+        else if ([submenu.title isEqualToString:@"File"])
+        {
+            [submenu addItem:[NSMenuItem separatorItem]];
+            NSMenuItem *savesItem = [[NSMenuItem alloc] initWithTitle:NSLocalizedString(@"Open Saves Folder", nil) action:@selector(openSavesFolder:) keyEquivalent:@""];
+            [submenu addItem:savesItem];
+        }
+        else if ([submenu.title isEqualToString:@"Window"])
+        {
+            [submenu addItem:[NSMenuItem separatorItem]];
+            NSMenuItem *showWindowItem = [[NSMenuItem alloc] initWithTitle:NSLocalizedString(@"Show Game Window", nil) action:@selector(showGameWindow:) keyEquivalent:@"0"];
+            [submenu addItem:showWindowItem];
+            for (NSInteger scale = 1; scale <= 4; ++scale)
+            {
+                NSMenuItem *scaleItem = [[NSMenuItem alloc] initWithTitle:[NSString stringWithFormat:@"%ldx Window Size", (long)scale] action:@selector(setWindowScale:) keyEquivalent:@(scale).stringValue];
+                scaleItem.tag = scale;
+                [submenu addItem:scaleItem];
+            }
+        }
+    }
+}
+
+- (IBAction)togglePause:(id)sender
+{
+    [self.s9xEngine togglePause];
+}
+
+- (IBAction)takeScreenshot:(id)sender
+{
+    [self.s9xEngine takeScreenshot];
+}
+
+- (IBAction)quickSave:(id)sender
+{
+    [self.s9xEngine quickSaveToSlot:0];
+}
+
+- (IBAction)quickLoad:(id)sender
+{
+    [self.s9xEngine quickLoadFromSlot:0];
+}
+
+- (IBAction)showGameWindow:(id)sender
+{
+    if (self.gameWindow != nil)
+    {
+        if (self.gameWindow.isMiniaturized)
+        {
+            [self.gameWindow deminiaturize:nil];
+        }
+        [self.gameWindow makeKeyAndOrderFront:self];
+        [NSApp activateIgnoringOtherApps:YES];
+    }
+}
+
+- (IBAction)openSavesFolder:(id)sender
+{
+    NSURL *url = [self.s9xEngine currentSaveRootURL];
+    if (url != nil)
+    {
+        [NSWorkspace.sharedWorkspace openURL:url];
+    }
+}
+
+- (IBAction)setWindowScale:(id)sender
+{
+    NSInteger scale = [sender tag];
+    if (scale < 1) scale = 1;
+    if (scale > 4) scale = 4;
+
+    if ((self.gameWindow.styleMask & NSWindowStyleMaskFullScreen) != 0)
+    {
+        [self.gameWindow toggleFullScreen:nil];
+    }
+
+    NSSize contentSize = NSMakeSize(256.0 * scale, 224.0 * scale);
+    [self.gameWindow setContentSize:contentSize];
 }
 
 - (IBAction)resume:(id)sender

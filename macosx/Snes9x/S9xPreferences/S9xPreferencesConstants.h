@@ -40,4 +40,7 @@ extern NSString * const kDisableSpriteLimitPref;
 
 extern NSString * const kEnableCheatsPref;
 
+extern NSString * const kSaveLocationModePref;
+extern NSString * const kCustomSaveFolderPref;
+
 NS_ASSUME_NONNULL_END

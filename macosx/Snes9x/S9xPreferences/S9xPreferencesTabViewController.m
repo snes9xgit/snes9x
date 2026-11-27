@@ -34,9 +34,12 @@
 	[super tabView:tabView willSelectTabViewItem:tabViewItem];
 
 	NSTabViewItem *currentTabViewItem = tabView.selectedTabViewItem;
+	NSWindow *window = self.view.window;
+	window.title = tabViewItem.label ?: NSLocalizedString(@"Preferences", nil);
 
 	if ( currentTabViewItem == nil || currentTabViewItem == tabViewItem )
 	{
+		tabViewItem.view.hidden = NO;
 		return;
 	}
 
@@ -44,7 +47,6 @@
 	tabViewItem.view.hidden = YES;
 	_didHide = YES;
 
-	NSWindow *window = self.view.window;
 	NSSize tabViewSize = tabViewItem.view.fittingSize;
 	NSSize newWindowSize = [window frameRectForContentRect:(CGRect){CGPointZero, tabViewSize}].size;
 
@@ -57,11 +59,19 @@
 	{
 		[NSAnimationContext runAnimationGroup:^(NSAnimationContext *context)
 		{
-			[self.view.window.animator setFrame:windowFrame display:YES];
+			context.duration = 0.18;
+			[window.animator setFrame:windowFrame display:YES];
 		} completionHandler:^
 		{
-			tabViewItem.view.hidden = NO;
+			if (tabView.selectedTabViewItem == tabViewItem)
+			{
+				tabViewItem.view.hidden = NO;
+			}
 		}];
+	}
+	else
+	{
+		tabViewItem.view.hidden = NO;
 	}
 }
 
@@ -71,9 +81,9 @@
 
 	if ( _didHide )
 	{
-		tabViewItem.view.hidden = YES;
 		_didHide = NO;
 	}
+	tabViewItem.view.hidden = NO;
 }
 
 @end

@@ -2787,6 +2787,8 @@ void QuitWithFatalError ( NSString *message)
 
     if (self)
     {
+        [self registerForDraggedTypes:@[NSPasteboardTypeFileURL]];
+
         NSView *dimmedView = [[NSView alloc] initWithFrame:frameRect];
         dimmedView.wantsLayer = YES;
         dimmedView.layer.backgroundColor = NSColor.blackColor.CGColor;
@@ -2804,6 +2806,36 @@ void QuitWithFatalError ( NSString *message)
     }
 
     return self;
+}
+
+- (NSDragOperation)draggingEntered:(id<NSDraggingInfo>)sender
+{
+    NSPasteboard *pb = [sender draggingPasteboard];
+    NSArray<NSURL *> *urls = [pb readObjectsForClasses:@[[NSURL class]] options:@{NSPasteboardURLReadingFileURLsOnlyKey: @YES}];
+    NSSet *supported = [NSSet setWithArray:@[@"sfc", @"smc", @"swc", @"fig", @"gd3", @"zip", @"jma"]];
+    for (NSURL *url in urls)
+    {
+        if ([supported containsObject:url.pathExtension.lowercaseString])
+        {
+            return NSDragOperationCopy;
+        }
+    }
+    return NSDragOperationNone;
+}
+
+- (BOOL)performDragOperation:(id<NSDraggingInfo>)sender
+{
+    NSPasteboard *pb = [sender draggingPasteboard];
+    NSArray<NSURL *> *urls = [pb readObjectsForClasses:@[[NSURL class]] options:@{NSPasteboardURLReadingFileURLsOnlyKey: @YES}];
+    NSSet *supported = [NSSet setWithArray:@[@"sfc", @"smc", @"swc", @"fig", @"gd3", @"zip", @"jma"]];
+    for (NSURL *url in urls)
+    {
+        if ([supported containsObject:url.pathExtension.lowercaseString])
+        {
+            return [NSApp.delegate application:NSApp openFile:url.path];
+        }
+    }
+    return NO;
 }
 
 - (void)viewWillMoveToWindow:(NSWindow *)newWindow
@@ -3454,6 +3486,79 @@ void QuitWithFatalError ( NSString *message)
 	{
 		Settings.MaxSpriteTilesPerLine = 34;
 	}
+}
+
+- (void)setSaveLocationMode:(uint8_t)mode
+{
+	saveInROMFolder = mode;
+}
+
+- (void)setCustomSaveFolderPath:(NSString *)path
+{
+	saveFolderPath = [path copy];
+}
+
+- (NSURL *)currentSaveRootURL
+{
+	if (saveInROMFolder == 4 && saveFolderPath.length > 0)
+	{
+		return [NSURL fileURLWithPath:saveFolderPath];
+	}
+	else if (saveInROMFolder == 0)
+	{
+		return [[NSBundle mainBundle] bundleURL].URLByDeletingLastPathComponent;
+	}
+	else
+	{
+		NSURL *baseURL = [NSFileManager.defaultManager URLsForDirectory:NSApplicationSupportDirectory inDomains:NSUserDomainMask].firstObject;
+		NSURL *s9xURL = [baseURL URLByAppendingPathComponent:@"Snes9x"];
+		[NSFileManager.defaultManager createDirectoryAtURL:s9xURL withIntermediateDirectories:YES attributes:nil error:NULL];
+		return s9xURL;
+	}
+}
+
+- (void)togglePause
+{
+	if (!running)
+		return;
+	if (pauseEmulation)
+		[self resume];
+	else
+		[self pause];
+}
+
+- (void)takeScreenshot
+{
+	if (cartOpen)
+	{
+		Settings.TakeScreenshot = true;
+	}
+}
+
+- (BOOL)quickSaveToSlot:(int)slot
+{
+	if (!cartOpen || slot < 0 || slot >= 12)
+		return NO;
+	const char *filename = S9xGetFreezeFilename(slot);
+	if (!filename)
+		return NO;
+	unlink(filename);
+	S9xFreezeGame(filename);
+	WriteThumbnailToExtendedAttribute(filename, 128, 120);
+	CocoaPlayFreezeDefrostSound();
+	return YES;
+}
+
+- (BOOL)quickLoadFromSlot:(int)slot
+{
+	if (!cartOpen || slot < 0 || slot >= 12)
+		return NO;
+	const char *filename = S9xGetFreezeFilename(slot);
+	if (!filename || access(filename, R_OK) != 0)
+		return NO;
+	S9xUnfreezeGame(filename);
+	CocoaPlayFreezeDefrostSound();
+	return YES;
 }
 
 @dynamic inputDelegate;
