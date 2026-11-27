@@ -37,3 +37,9 @@ NSString * const kSeparateEchoBufferFromRAMPref = @"SeparateEchoBufferFromRAM";
 NSString * const kDisableSpriteLimitPref = @"DisableSpriteLimit";
 
 NSString * const kEnableCheatsPref = @"EnableCheats";
+
+NSString * const kSoundVolumePref = @"SoundVolume";
+NSString * const kSoundMutePref = @"SoundMute";
+NSString * const kSoundSyncPref = @"SoundSync";
+NSString * const kDynamicRateControlPref = @"DynamicRateControl";
+NSString * const kSoundBufferMsPref = @"SoundBufferMs";

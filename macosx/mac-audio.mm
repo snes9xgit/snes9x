@@ -26,8 +26,8 @@
 #include <CoreAudio/CoreAudio.h>
 #include <AudioToolbox/AudioToolbox.h>
 #include <AudioUnit/AudioUnitCarbonView.h>
+#include <dispatch/dispatch.h>
 #include <pthread.h>
-#include <semaphore.h>
 
 #include "mac-prefix.h"
 #include "mac-dialog.h"
@@ -49,7 +49,7 @@ static UInt32				outStoredFrames, cnvStoredFrames, revStoredFrames, eqlStoredFra
 static int16_t				*audioBuffer;
 static uint32_t				audioBufferSampleCapacity;
 static uint32_t				audioBufferSampleCount;
-static sem_t				*soundSyncSemaphore;
+static dispatch_semaphore_t	soundSyncSemaphore = nil;
 
 static void ConnectAudioUnits (void);
 static void DisconnectAudioUnits (void);
@@ -119,8 +119,9 @@ void InitMacSound (void)
 	LoadEffectPresets();
 
 	pthread_mutex_init(&mutex, NULL);
-	soundSyncSemaphore = sem_open("/s9x_mac_soundsync", O_CREAT, 0644, 1);
+	soundSyncSemaphore = dispatch_semaphore_create(1);
 	S9xSetSamplesAvailableCallback(MacSamplesAvailableCallBack, NULL);
+	(void)err;
 }
 
 void DeinitMacSound (void)
@@ -128,13 +129,13 @@ void DeinitMacSound (void)
 	OSStatus	err;
 
 	pthread_mutex_destroy(&mutex);
-	sem_close(soundSyncSemaphore);
-	sem_unlink("/s9x_mac_soundsync");
+	soundSyncSemaphore = nil;
 	SaveEffectPresets();
 	DisconnectAudioUnits();
 	err = AUGraphUninitialize(agraph);
 	err = AUGraphClose(agraph);
 	err = DisposeAUGraph(agraph);
+	(void)err;
 }
 
 static void SetAudioUnitSoundFormat (void)
@@ -160,13 +161,20 @@ static void SetAudioUnitSoundFormat (void)
 	format.mBitsPerChannel   = Settings.SixteenBitSound ? 16 : 8;
 
 	err = AudioUnitSetProperty(aueffect ? cnvAU : outAU, kAudioUnitProperty_StreamFormat, kAudioUnitScope_Input, 0, &format, sizeof(format));
+	(void)err;
 }
 
 static void SetAudioUnitVolume (void)
 {
 	OSStatus	err;
 
-	err = AudioUnitSetParameter(outAU, kAudioUnitParameterUnit_LinearGain, kAudioUnitScope_Output, 0, (float) macSoundVolume / 100.0f, 0);
+	err = AudioUnitSetParameter(outAU, kHALOutputParam_Volume, kAudioUnitScope_Global, 0, (float) macSoundVolume / 100.0f, 0);
+	(void)err;
+}
+
+void MacUpdateSoundVolume (void)
+{
+	SetAudioUnitVolume();
 }
 
 static void StoreBufferFrameSize (void)
@@ -320,7 +328,7 @@ static OSStatus MacAURenderCallBack (void *inRefCon, AudioUnitRenderActionFlags 
 			memcpy(ioData->mBuffers[0].mData, audioBuffer, samples*2);
 			memmove(audioBuffer, audioBuffer+samples, (audioBufferSampleCount-samples)*2);
 			audioBufferSampleCount -= samples;
-			sem_post(soundSyncSemaphore);
+			dispatch_semaphore_signal(soundSyncSemaphore);
 		}
 		pthread_mutex_unlock(&mutex);
 	}
@@ -352,7 +360,7 @@ tryLock:
 		{
 			/* when SoundSync is enabled, wait buffer for being drained by render callback */
 			pthread_mutex_unlock(&mutex);
-			sem_wait(soundSyncSemaphore);
+			dispatch_semaphore_wait(soundSyncSemaphore, dispatch_time(DISPATCH_TIME_NOW, 100 * NSEC_PER_MSEC));
 			goto tryLock;
 		}
 		/* dispose samples to allocate 50% of the buffer capacity */
@@ -472,11 +480,14 @@ bool8 S9xOpenSoundDevice (void)
 	ChangeBufferFrameSize();
 
 	err = AUGraphInitialize(agraph);
+	(void)err;
 
+	pthread_mutex_lock(&mutex);
 	if (audioBuffer) free(audioBuffer);
 	audioBufferSampleCapacity = 2 * macSoundBuffer_ms * Settings.SoundPlaybackRate / 1000;
 	audioBuffer = (int16_t *)calloc(audioBufferSampleCapacity,sizeof(int16_t));
 	audioBufferSampleCount = 0;
+	pthread_mutex_unlock(&mutex);
 	return (true);
 }
 

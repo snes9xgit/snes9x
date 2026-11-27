@@ -40,4 +40,10 @@ extern NSString * const kDisableSpriteLimitPref;
 
 extern NSString * const kEnableCheatsPref;
 
+extern NSString * const kSoundVolumePref;
+extern NSString * const kSoundMutePref;
+extern NSString * const kSoundSyncPref;
+extern NSString * const kDynamicRateControlPref;
+extern NSString * const kSoundBufferMsPref;
+
 NS_ASSUME_NONNULL_END

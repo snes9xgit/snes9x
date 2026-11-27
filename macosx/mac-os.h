@@ -245,6 +245,12 @@ extern id<S9xInputDelegate> inputDelegate;
 - (void)setSeparateEchoBufferFromRAM:(BOOL)flag;
 - (void)setDisableSpriteLimit:(BOOL)flag;
 
+- (void)setSoundVolume:(NSInteger)volume;
+- (void)setSoundMuted:(BOOL)muted;
+- (void)setSoundSync:(BOOL)soundSync;
+- (void)setDynamicRateControl:(BOOL)enabled;
+- (void)setSoundBufferMs:(uint32_t)bufferMs;
+
 - (void)copyRAM:(uint8_t *)buffer length:(size_t)length;
 
 - (NSArray<S9xWatchPoint *> *)getWatchPoints;
