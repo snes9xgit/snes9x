@@ -25,7 +25,7 @@
 
 - (void)sendEvent:(NSEvent *)event
 {
-    if (event.modifierFlags * NSEventModifierFlagCommand && event.type == NSEventTypeKeyUp && ((AppDelegate *)self.delegate).isRunningEmulation)
+    if ((event.modifierFlags & NSEventModifierFlagCommand) && event.type == NSEventTypeKeyUp && ((AppDelegate *)self.delegate).isRunningEmulation)
     {
         [self.keyWindow sendEvent:event];
     }

@@ -209,8 +209,8 @@ uint8 functionButtons[kNumFunctionButtons] = {
     kVK_ANSI_P
 };
 
-bool8               pressedKeys[MAC_MAX_PLAYERS][kNumButtons] = { 0 };
-bool8               pressedGamepadButtons[MAC_MAX_PLAYERS][kNumButtons] = { 0 };
+bool8               pressedKeys[MAC_MAX_PLAYERS][kNumButtons] = { { 0 } };
+bool8               pressedGamepadButtons[MAC_MAX_PLAYERS][kNumButtons] = { { 0 } };
 bool8               pressedFunctionButtons[kNumFunctionButtons] = { 0 };
 bool8               pressedRawKeyboardButtons[MAC_NUM_KEYCODES] = { 0 };
 bool8               heldFunctionButtons[kNumFunctionButtons] = { 0 };
@@ -1822,26 +1822,27 @@ int PromptFreezeDefrost (Boolean freezing)
             y = rct.origin.y + 102.0f;
             DrawString(ctx, [NSString stringWithFormat:@"%c", letters[count]], 12.0, x, y);
 
-            if (showtimeinfrz)
+            if (showtimeinfrz && currentDate != DBL_MIN)
             {
-                CFAbsoluteTime        at;
                 CFDateFormatterRef    format;
-                CFLocaleRef            locale;
-                CFStringRef            datstr;
-                Boolean                r;
+                CFLocaleRef           locale;
+                CFStringRef           datstr;
 
-                err = UCConvertUTCDateTimeToCFAbsoluteTime(&(info.contentModDate), &at);
                 locale = CFLocaleCopyCurrent();
                 format = CFDateFormatterCreate(kCFAllocatorDefault, locale, kCFDateFormatterShortStyle, kCFDateFormatterMediumStyle);
-                datstr = CFDateFormatterCreateStringWithAbsoluteTime(kCFAllocatorDefault, format, at);
-                r = CFStringGetCString(datstr, dateC, sizeof(dateC), CFStringGetSystemEncoding());
-                CFRelease(datstr);
+                datstr = CFDateFormatterCreateStringWithAbsoluteTime(kCFAllocatorDefault, format, currentDate);
+                if (datstr != NULL)
+                {
+                    if (CFStringGetCString(datstr, dateC, sizeof(dateC), kCFStringEncodingUTF8))
+                    {
+                        x = rct.origin.x + 20.0f;
+                        y = rct.origin.y + 102.0f;
+                        DrawString(ctx, [NSString stringWithUTF8String:dateC], 10.0, x, y);
+                    }
+                    CFRelease(datstr);
+                }
                 CFRelease(format);
                 CFRelease(locale);
-
-                x = rct.origin.x +  20.0f;
-                y = rct.origin.y + 102.0f;
-                DrawString(ctx, [NSString stringWithUTF8String:dateC], 10.0, x, y);
             }
         }
         else
@@ -2214,14 +2215,14 @@ static void ProcessInput (void)
                         case IncreaseFrameAdvanceRate:
                             if (macFrameAdvanceRate < 5000000)
                                 macFrameAdvanceRate += 100000;
-                            sprintf(msg, "Emulation Speed: 100/%d", macFrameAdvanceRate / 10000);
+                            snprintf(msg, sizeof(msg), "Emulation Speed: 100/%d", macFrameAdvanceRate / 10000);
                             S9xSetInfoString(msg);
                             break;
 
                         case DecreaseFrameAdvanceRate:
                             if (macFrameAdvanceRate > 500000)
                                 macFrameAdvanceRate -= 100000;
-                            sprintf(msg, "Emulation Speed: 100/%d", macFrameAdvanceRate / 10000);
+                            snprintf(msg, sizeof(msg), "Emulation Speed: 100/%d", macFrameAdvanceRate / 10000);
                             S9xSetInfoString(msg);
                             break;
 
@@ -2813,14 +2814,14 @@ void QuitWithFatalError ( NSString *message)
 
 - (void)keyDown:(NSEvent *)event
 {
-    if (!NSApp.isActive)
+    if (!NSApp.isActive || event.keyCode >= MAC_NUM_KEYCODES)
     {
         return;
     }
 
     pthread_mutex_lock(&keyLock);
     S9xButton button = keyCodes[event.keyCode];
-    if ( button.buttonCode >= 0 && button.buttonCode < kNumButtons && button.player >= 0 && button.player <= MAC_MAX_PLAYERS)
+    if ( button.buttonCode >= 0 && button.buttonCode < kNumButtons && button.player >= 0 && button.player < MAC_MAX_PLAYERS)
     {
         pressedKeys[button.player][button.buttonCode] = true;
     }
@@ -2841,14 +2842,14 @@ void QuitWithFatalError ( NSString *message)
 
 - (void)keyUp:(NSEvent *)event
 {
-    if (!NSApp.isActive)
+    if (!NSApp.isActive || event.keyCode >= MAC_NUM_KEYCODES)
     {
         return;
     }
 
     pthread_mutex_lock(&keyLock);
     S9xButton button = keyCodes[event.keyCode];
-    if ( button.buttonCode >= 0 && button.buttonCode < kNumButtons && button.player >= 0 && button.player <= MAC_MAX_PLAYERS)
+    if ( button.buttonCode >= 0 && button.buttonCode < kNumButtons && button.player >= 0 && button.player < MAC_MAX_PLAYERS)
     {
         pressedKeys[button.player][button.buttonCode] = false;
     }
@@ -3441,7 +3442,7 @@ void QuitWithFatalError ( NSString *message)
 
 - (void)setSeparateEchoBufferFromRAM:(BOOL)flag
 {
-	Settings.SeparateEchoBuffer = false;
+	Settings.SeparateEchoBuffer = flag;
 }
 
 - (void)setDisableSpriteLimit:(BOOL)flag

@@ -28,7 +28,7 @@ NSWindowFrameAutosaveName const kMainWindowIdentifier = @"s9xMainWindow";
 NSWindowFrameAutosaveName const kCheatsWindowIdentifier = @"s9xCheatsWindow";
 NSWindowFrameAutosaveName const kCheatFinderWindowIdentifier = @"s9xCheatFinderWindow";
 
-@interface AppDelegate () <S9xCheatFinderDelegate>
+@interface AppDelegate () <S9xCheatFinderDelegate, NSWindowRestoration>
 @end
 
 @implementation AppDelegate
@@ -45,12 +45,27 @@ NSWindowFrameAutosaveName const kCheatFinderWindowIdentifier = @"s9xCheatFinderW
     gameWindow.contentView.layer.backgroundColor = NSColor.blackColor.CGColor;
 
     gameWindow.title = @"Snes9x";
+    gameWindow.identifier = kMainWindowIdentifier;
+    gameWindow.restorationClass = [self class];
     gameWindow.frameAutosaveName = kMainWindowIdentifier;
     gameWindow.releasedWhenClosed = NO;
-    gameWindow.backgroundColor = NSColor.clearColor;
+    gameWindow.backgroundColor = NSColor.blackColor;
+    gameWindow.opaque = YES;
+    gameWindow.minSize = NSMakeSize(256.0, 224.0);
 
-    if ( ![gameWindow setFrameUsingName:kMainWindowIdentifier] )
+    BOOL restored = [gameWindow setFrameUsingName:kMainWindowIdentifier];
+    BOOL onScreen = NO;
+    for (NSScreen *screen in NSScreen.screens)
     {
+        if (NSIntersectsRect(gameWindow.frame, screen.visibleFrame))
+        {
+            onScreen = YES;
+            break;
+        }
+    }
+    if ( !restored || !onScreen || gameWindow.frame.size.width < 256.0 || gameWindow.frame.size.height < 224.0 )
+    {
+        [gameWindow setContentSize:NSMakeSize(512.0, 448.0)];
         [gameWindow center];
     }
 
@@ -659,6 +674,8 @@ NSWindowFrameAutosaveName const kCheatFinderWindowIdentifier = @"s9xCheatFinderW
         window = self.cheatsWindowController.window;
 
         window.title = NSLocalizedString(@"Cheats", nil);
+        window.identifier = kCheatsWindowIdentifier;
+        window.restorationClass = [self class];
         window.frameAutosaveName = kCheatsWindowIdentifier;
         window.releasedWhenClosed = NO;
 
@@ -693,6 +710,8 @@ NSWindowFrameAutosaveName const kCheatFinderWindowIdentifier = @"s9xCheatFinderW
         window = self.cheatFinderWindowController.window;
 
         window.title = NSLocalizedString(@"Cheat Finder", nil);
+        window.identifier = kCheatFinderWindowIdentifier;
+        window.restorationClass = [self class];
         window.frameAutosaveName = kCheatFinderWindowIdentifier;
         window.releasedWhenClosed = NO;
 
@@ -711,6 +730,29 @@ NSWindowFrameAutosaveName const kCheatFinderWindowIdentifier = @"s9xCheatFinderW
 {
     [((S9xCheatsViewController *)self.cheatsWindowController.contentViewController) deselectAll];
     [((S9xCheatsViewController *)self.cheatsWindowController.contentViewController) reloadData];
+}
+
++ (void)restoreWindowWithIdentifier:(NSUserInterfaceItemIdentifier)identifier state:(NSCoder *)state completionHandler:(void (^)(NSWindow *, NSError *))completionHandler
+{
+    AppDelegate *delegate = (AppDelegate *)NSApp.delegate;
+    if ([identifier isEqualToString:kMainWindowIdentifier])
+    {
+        completionHandler(delegate.gameWindow, nil);
+    }
+    else if ([identifier isEqualToString:kCheatsWindowIdentifier])
+    {
+        [delegate openCheatsWindow:nil];
+        completionHandler(delegate.cheatsWindowController.window, nil);
+    }
+    else if ([identifier isEqualToString:kCheatFinderWindowIdentifier])
+    {
+        [delegate openCheatFinderWindow:nil];
+        completionHandler(delegate.cheatFinderWindowController.window, nil);
+    }
+    else
+    {
+        completionHandler(nil, nil);
+    }
 }
 
 @end
