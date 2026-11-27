@@ -50,26 +50,25 @@ unsigned char *CGImageToPNGData (CGImageRef image, CFIndex *outLength)
     if (dataRef)
     {
         CGImageDestinationRef dest = CGImageDestinationCreateWithData(dataRef, kUTTypePNG, 1, NULL);
+        unsigned char *data = NULL;
 
         if (dest)
         {
             CGImageDestinationAddImage(dest, image, NULL);
-            CGImageDestinationFinalize(dest);
-            CFRelease(dest);
-
-            *outLength = CFDataGetLength(dataRef);
-            unsigned char *data = (unsigned char *)malloc(*outLength);
-
-            if (data)
+            if (CGImageDestinationFinalize(dest))
             {
-                CFDataGetBytes(dataRef, CFRangeMake(0, *outLength), data);
-                return data;
+                *outLength = CFDataGetLength(dataRef);
+                data = (unsigned char *)malloc(*outLength);
+                if (data)
+                {
+                    CFDataGetBytes(dataRef, CFRangeMake(0, *outLength), data);
+                }
             }
+            CFRelease(dest);
         }
-        else
-        {
-            CFRelease(dataRef);
-        }
+
+        CFRelease(dataRef);
+        return data;
     }
 
     return NULL;
@@ -156,37 +155,47 @@ CGImageRef CreateBlitScreenCGImage (int width, int height, int rowbytes, uint8 *
 
 void WriteThumbnailToExtendedAttribute (const char *path, int destWidth, int destHeight)
 {
+    if (destWidth <= 0 || destHeight <= 0)
+        return;
+
     CGContextRef    ctx;
     CGColorSpaceRef color = NULL;
-    char            *data[destWidth * destHeight * 2];
+    void            *pixelBuffer = calloc((size_t)destWidth * (size_t)destHeight, 2);
     CGImageRef      image = CreateGameScreenCGImage();
 
-    if (image)
+    if (image && pixelBuffer)
     {
         color = CGColorSpaceCreateDeviceRGB();
         if (color)
         {
-            ctx = CGBitmapContextCreate(data, destWidth, destHeight, 5, destWidth * 2, color, kCGImageAlphaNoneSkipFirst | kCGBitmapByteOrder16Big);
+            ctx = CGBitmapContextCreate(pixelBuffer, destWidth, destHeight, 5, destWidth * 2, color, kCGImageAlphaNoneSkipFirst | kCGBitmapByteOrder16Big);
 
             if (ctx)
             {
                 CGContextDrawImage(ctx, CGRectMake(0.0f, 0.0f, (float) destWidth, (float) destHeight), image);
+                CGImageRef thumbImage = CGBitmapContextCreateImage(ctx);
                 CGContextRelease(ctx);
 
-                CFIndex length = 0;
-                unsigned char *data = CGImageToPNGData(image, &length);
-                if (data)
+                if (thumbImage)
                 {
-                    setxattr(path, extendedAttributeName, data, length, 0, 0);
-                    free(data);
+                    CFIndex length = 0;
+                    unsigned char *pngData = CGImageToPNGData(thumbImage, &length);
+                    if (pngData)
+                    {
+                        setxattr(path, extendedAttributeName, pngData, length, 0, 0);
+                        free(pngData);
+                    }
+                    CGImageRelease(thumbImage);
                 }
             }
 
             CGColorSpaceRelease(color);
         }
-
-        CGImageRelease(image);
     }
+
+    if (image)
+        CGImageRelease(image);
+    free(pixelBuffer);
 }
 
 void DrawThumbnailFromExtendedAttribute (const char *path, CGContextRef ctx, CGRect bounds)
@@ -248,7 +257,7 @@ void DrawThumbnailFromExtendedAttribute (const char *path, CGContextRef ctx, CGR
 
                 if (imageData)
                 {
-                    CGDataProviderRef provider = CGDataProviderCreateWithData(NULL, (__bridge CFDataRef)imageData, size, NULL);
+                    CGDataProviderRef provider = CGDataProviderCreateWithData(NULL, imageData.bytes, size, NULL);
 
                     if (provider)
                     {
