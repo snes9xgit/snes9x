@@ -37,3 +37,6 @@ NSString * const kSeparateEchoBufferFromRAMPref = @"SeparateEchoBufferFromRAM";
 NSString * const kDisableSpriteLimitPref = @"DisableSpriteLimit";
 
 NSString * const kEnableCheatsPref = @"EnableCheats";
+
+NSString * const kSaveLocationModePref = @"SaveLocationMode";
+NSString * const kCustomSaveFolderPref = @"CustomSaveFolder";
