@@ -3079,6 +3079,20 @@ void QuitWithFatalError ( NSString *message)
 	});
 }
 
+- (void)layout
+{
+    [super layout];
+    CGFloat scale = MAX(self.window.backingScaleFactor, 1.0);
+    self.drawableSize = CGSizeMake(self.bounds.size.width * scale, self.bounds.size.height * scale);
+}
+
+- (void)viewDidChangeBackingProperties
+{
+    [super viewDidChangeBackingProperties];
+    CGFloat scale = MAX(self.window.backingScaleFactor, 1.0);
+    self.drawableSize = CGSizeMake(self.bounds.size.width * scale, self.bounds.size.height * scale);
+}
+
 - (void)setFrame:(NSRect)frame
 {
     if ( !NSEqualRects(frame, self.frame) )
@@ -3129,13 +3143,14 @@ void QuitWithFatalError ( NSString *message)
 	CGRect frame = NSMakeRect(0, 0, SNES_WIDTH * 2, SNES_HEIGHT * 2);
 	s9xView = [[S9xView alloc] initWithFrame:frame];
 	s9xView.translatesAutoresizingMaskIntoConstraints = NO;
-	s9xView.autoresizingMask = NSViewWidthSizable|NSViewHeightSizable;
+	s9xView.paused = YES;
+	s9xView.enableSetNeedsDisplay = NO;
 	[s9xView addConstraint:[NSLayoutConstraint constraintWithItem:s9xView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:s9xView attribute:NSLayoutAttributeWidth multiplier:(CGFloat)SNES_HEIGHT/(CGFloat)SNES_WIDTH constant:0.0]];
-	[s9xView addConstraint:[NSLayoutConstraint constraintWithItem:s9xView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationGreaterThanOrEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:SNES_WIDTH * 2.0]];
-	[s9xView addConstraint:[NSLayoutConstraint constraintWithItem:s9xView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationGreaterThanOrEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:SNES_HEIGHT * 2.0]];
+	[s9xView addConstraint:[NSLayoutConstraint constraintWithItem:s9xView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationGreaterThanOrEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:SNES_WIDTH]];
+	[s9xView addConstraint:[NSLayoutConstraint constraintWithItem:s9xView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationGreaterThanOrEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:SNES_HEIGHT]];
 	s9xView.device = MTLCreateSystemDefaultDevice();
 	s9xView.emulationDelegate = self;
-	S9xInitDisplay(NULL, NULL);
+	S9xInitDisplay(0, NULL);
 }
 
 - (void)start
@@ -3151,8 +3166,6 @@ void QuitWithFatalError ( NSString *message)
 		skipFrames = 3;
 	else
 		skipFrames = macFrameSkip;
-
-	S9xInitDisplay(NULL, NULL);
 
 	[NSThread detachNewThreadWithBlock:^
 	{
