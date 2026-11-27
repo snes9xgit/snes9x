@@ -3367,7 +3367,7 @@ void QuitWithFatalError ( NSString *message)
 		usleep(Settings.FrameTime);
 	}
 
-	if (SNES9X_OpenMultiCart(fileURLs.firstObject, fileURLs.lastObject))
+	if (SNES9X_OpenMultiCart(fileURLs.firstObject, (fileURLs.count > 1 ? fileURLs[1] : nil)))
 	{
 		[self.emulationDelegate gameLoaded];
 

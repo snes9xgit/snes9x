@@ -29,6 +29,7 @@ NSWindowFrameAutosaveName const kCheatsWindowIdentifier = @"s9xCheatsWindow";
 NSWindowFrameAutosaveName const kCheatFinderWindowIdentifier = @"s9xCheatFinderWindow";
 
 @interface AppDelegate () <S9xCheatFinderDelegate>
+@property (nonatomic, strong) NSURL *pendingOpenURL;
 @end
 
 @implementation AppDelegate
@@ -62,6 +63,13 @@ NSWindowFrameAutosaveName const kCheatFinderWindowIdentifier = @"s9xCheatFinderW
     }];
 
     [self resetWindow];
+
+    if (self.pendingOpenURL != nil)
+    {
+        NSURL *url = self.pendingOpenURL;
+        self.pendingOpenURL = nil;
+        [self openURL:url];
+    }
 }
 
 - (void)applicationWillTerminate:(NSNotification *)aNotification {
@@ -446,7 +454,13 @@ NSWindowFrameAutosaveName const kCheatFinderWindowIdentifier = @"s9xCheatFinderW
 
 - (BOOL)application:(NSApplication *)sender openFile:(NSString *)filename
 {
-    return [self openURL:[NSURL fileURLWithPath:filename]];
+    NSURL *url = [NSURL fileURLWithPath:filename];
+    if (self.s9xEngine == nil || self.gameWindow == nil)
+    {
+        self.pendingOpenURL = url;
+        return YES;
+    }
+    return [self openURL:url];
 }
 
 - (IBAction)openDocument:(id)sender
@@ -465,12 +479,34 @@ NSWindowFrameAutosaveName const kCheatFinderWindowIdentifier = @"s9xCheatFinderW
 
 - (BOOL)openURL:(NSURL *)url
 {
+    if (url == nil)
+    {
+        return NO;
+    }
+
     if ([self.s9xEngine loadROM:url])
     {
-        [self resetWindow];
+        if (self.cheatsWindowController != nil)
+        {
+            [((S9xCheatsViewController *)self.cheatsWindowController.contentViewController) deselectAll];
+            [((S9xCheatsViewController *)self.cheatsWindowController.contentViewController) reloadData];
+        }
+        if (self.gameWindow.isMiniaturized)
+        {
+            [self.gameWindow deminiaturize:nil];
+        }
+        [self.gameWindow makeKeyAndOrderFront:self];
+        [NSApp activateIgnoringOtherApps:YES];
         [NSDocumentController.sharedDocumentController noteNewRecentDocumentURL:url];
         return YES;
     }
+
+    NSAlert *alert = [NSAlert new];
+    alert.alertStyle = NSAlertStyleWarning;
+    alert.messageText = [NSString stringWithFormat:NSLocalizedString(@"Could not open \"%@\"", nil), url.lastPathComponent];
+    alert.informativeText = NSLocalizedString(@"Make sure the file is a valid Super Nintendo (SNES) ROM (.sfc, .smc, .swc, .fig, .zip, or .jma).", nil);
+    [alert addButtonWithTitle:NSLocalizedString(@"OK", nil)];
+    [alert runModal];
 
     return NO;
 }
@@ -495,9 +531,21 @@ NSWindowFrameAutosaveName const kCheatFinderWindowIdentifier = @"s9xCheatFinderW
 {
     if ([self.s9xEngine loadMultiple:urls])
     {
-        [self resetWindow];
+        if (self.cheatsWindowController != nil)
+        {
+            [((S9xCheatsViewController *)self.cheatsWindowController.contentViewController) deselectAll];
+            [((S9xCheatsViewController *)self.cheatsWindowController.contentViewController) reloadData];
+        }
+        [self.gameWindow makeKeyAndOrderFront:self];
         return YES;
     }
+
+    NSAlert *alert = [NSAlert new];
+    alert.alertStyle = NSAlertStyleWarning;
+    alert.messageText = NSLocalizedString(@"Could not open MultiCart ROMs", nil);
+    alert.informativeText = NSLocalizedString(@"Make sure the selected files are valid Super Nintendo (SNES) ROMs.", nil);
+    [alert addButtonWithTitle:NSLocalizedString(@"OK", nil)];
+    [alert runModal];
 
     return NO;
 }
