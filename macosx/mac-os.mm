@@ -3334,6 +3334,7 @@ void QuitWithFatalError ( NSString *message)
 
     if ( SNES9X_OpenCart(fileURL) )
     {
+		S9xSetSoundMute([NSUserDefaults.standardUserDefaults boolForKey:@"SoundMute"] ? true : false);
 		[self.emulationDelegate gameLoaded];
 		
         SNES9X_Go();
@@ -3369,6 +3370,7 @@ void QuitWithFatalError ( NSString *message)
 
 	if (SNES9X_OpenMultiCart(fileURLs.firstObject, fileURLs.lastObject))
 	{
+		S9xSetSoundMute([NSUserDefaults.standardUserDefaults boolForKey:@"SoundMute"] ? true : false);
 		[self.emulationDelegate gameLoaded];
 
 		SNES9X_Go();
@@ -3454,6 +3456,37 @@ void QuitWithFatalError ( NSString *message)
 	{
 		Settings.MaxSpriteTilesPerLine = 34;
 	}
+}
+
+- (void)setSoundVolume:(NSInteger)volume
+{
+	if (volume < 0) volume = 0;
+	if (volume > 100) volume = 100;
+	macSoundVolume = (SInt32)volume;
+	MacUpdateSoundVolume();
+}
+
+- (void)setSoundMuted:(BOOL)muted
+{
+	S9xSetSoundMute(muted ? true : false);
+}
+
+- (void)setSoundSync:(BOOL)soundSync
+{
+	Settings.SoundSync = soundSync ? true : false;
+}
+
+- (void)setDynamicRateControl:(BOOL)enabled
+{
+	Settings.DynamicRateControl = enabled ? true : false;
+}
+
+- (void)setSoundBufferMs:(uint32_t)bufferMs
+{
+	if (bufferMs < 20) bufferMs = 20;
+	if (bufferMs > 200) bufferMs = 200;
+	macSoundBuffer_ms = bufferMs;
+	S9xOpenSoundDevice();
 }
 
 @dynamic inputDelegate;

@@ -128,6 +128,12 @@ NSWindowFrameAutosaveName const kCheatFinderWindowIdentifier = @"s9xCheatFinderW
         kAllowInvalidVRAMAccessPref : @(NO),
         kSeparateEchoBufferFromRAMPref : @(NO),
         kDisableSpriteLimitPref : @(NO),
+
+        kSoundVolumePref : @(80),
+        kSoundMutePref : @(NO),
+        kSoundSyncPref : @(NO),
+        kDynamicRateControlPref : @(NO),
+        kSoundBufferMsPref : @(80),
     };
 
     [defaults registerDefaults:defaultSettings];
@@ -202,6 +208,7 @@ NSWindowFrameAutosaveName const kCheatFinderWindowIdentifier = @"s9xCheatFinderW
     [self importKeySettings];
     [self importGraphicsSettings];
     [self applyEmulationSettings];
+    [self applySoundSettings];
 
     self.s9xEngine.cheatsEnabled = [defaults boolForKey:kEnableCheatsPref];
 
@@ -605,6 +612,18 @@ NSWindowFrameAutosaveName const kCheatFinderWindowIdentifier = @"s9xCheatFinderW
     [engine setAllowInvalidVRAMAccess:[defaults boolForKey:kAllowInvalidVRAMAccessPref]];
     [engine setSeparateEchoBufferFromRAM:[defaults boolForKey:kSeparateEchoBufferFromRAMPref]];
     [engine setDisableSpriteLimit:[defaults boolForKey:kDisableSpriteLimitPref]];
+}
+
+- (void)applySoundSettings
+{
+    S9xEngine *engine = self.s9xEngine;
+    NSUserDefaults *defaults = NSUserDefaults.standardUserDefaults;
+
+    [engine setSoundVolume:[defaults integerForKey:kSoundVolumePref]];
+    [engine setSoundMuted:[defaults boolForKey:kSoundMutePref]];
+    [engine setSoundSync:[defaults boolForKey:kSoundSyncPref]];
+    [engine setDynamicRateControl:[defaults boolForKey:kDynamicRateControlPref]];
+    [engine setSoundBufferMs:(uint32_t)[defaults integerForKey:kSoundBufferMsPref]];
 }
 
 - (IBAction)resume:(id)sender
